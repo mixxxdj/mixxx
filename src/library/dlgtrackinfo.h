@@ -119,7 +119,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
-    parented_ptr<WStarRating> m_pWStarRating;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;

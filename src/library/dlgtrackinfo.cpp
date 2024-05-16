@@ -45,7 +45,6 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(this)),
           m_pColorPicker(make_parented<WColorPickerAction>(
                   WColorPicker::Option::AllowNoColor |
                           // TODO(xxx) remove this once the preferences are themed via QSS
@@ -87,10 +86,6 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("track_locations.location", txtLocation);
 
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
-
-    starsLayout->insertWidget(0, m_pWStarRating.get());
-    // This is necessary to pass on mouseMove events to WStarRating
-    m_pWStarRating->setMouseTracking(true);
 
     // Workaround: Align the baseline of the "Comments" label
     // with the baseline of the text inside the comments field
@@ -275,7 +270,7 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 
-    connect(m_pWStarRating,
+    connect(starRating,
             &WStarRating::ratingChangeRequest,
             this,
             &DlgTrackInfo::slotRatingChanged);
@@ -364,7 +359,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_pWStarRating->slotSetRating(m_pLoadedTrack->getRating());
+    starRating->slotSetRating(m_pLoadedTrack->getRating());
 }
 
 void DlgTrackInfo::replaceTrackRecord(
@@ -643,7 +638,7 @@ void DlgTrackInfo::clear() {
 
     txtLocation->setText("");
 
-    m_pWStarRating->slotSetRating(0);
+    starRating->slotSetRating(0);
 }
 
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
@@ -758,7 +753,7 @@ void DlgTrackInfo::slotRatingChanged(int rating) {
     }
     if (m_trackRecord.isValidRating(rating) &&
             rating != m_trackRecord.getRating()) {
-        m_pWStarRating->slotSetRating(rating);
+        starRating->slotSetRating(rating);
         m_trackRecord.setRating(rating);
     }
 }
