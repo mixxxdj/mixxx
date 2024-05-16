@@ -110,7 +110,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QHash<QString, TransformScreenFrameFunction> m_transformScreenFrameFunctions;
     QList<LegacyControllerMapping::QMLModuleInfo> m_modules;
     QList<LegacyControllerMapping::ScreenInfo> m_infoScreens;
-    QString m_resourcePath{"."};
+    QString m_resourcePath{QStringLiteral(".")};
 #endif
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;

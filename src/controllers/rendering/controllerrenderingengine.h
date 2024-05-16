@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <chrono>
+#include <gsl/pointers>
 
 #include "controllers/legacycontrollermapping.h"
 #include "preferences/configobject.h"
@@ -26,6 +27,8 @@ class ControllerRenderingEngine : public QObject {
   public:
     ControllerRenderingEngine(const LegacyControllerMapping::ScreenInfo& info,
             ControllerEngineThreadControl* parent);
+    // Destructor will wait for the ControllerRenderingEngine's thread to
+    // complete. It should be called from the Controller thread.
     ~ControllerRenderingEngine();
 
     bool event(QEvent* event) override;
@@ -102,5 +105,5 @@ class ControllerRenderingEngine : public QObject {
     // made that ControllerScriptEngineBase always outlive
     // ControllerRenderingEngine as it is in charge of stopping and joining the
     // thread
-    ControllerEngineThreadControl* m_pEngineThreadControl;
+    gsl::not_null<ControllerEngineThreadControl*> m_pEngineThreadControl;
 };

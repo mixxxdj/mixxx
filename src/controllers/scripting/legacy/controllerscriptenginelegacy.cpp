@@ -6,6 +6,13 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QtEndian>
+#include <algorithm>
+
+// Prevent conflict with methods called 'emit' in <execution> source
+#pragma push_macro("emit")
+#undef emit
+#include <execution>
+#pragma pop_macro("emit")
 #endif
 
 #include "control/controlobject.h"
@@ -25,20 +32,15 @@
 using Clock = std::chrono::steady_clock;
 #endif
 
-namespace {
 #ifdef MIXXX_USE_QML
+namespace {
 const QByteArray kScreenTransformFunctionUntypedSignature =
         QMetaObject::normalizedSignature(
                 "transformFrame(QVariant,QVariant)");
 const QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
-
-template<class T>
-void delete_later(T* screen) {
-    screen->deleteLater();
-}
-#endif
 } // anonymous namespace
+#endif
 
 ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(
         Controller* controller, const RuntimeLoggingCategory& logger)
@@ -255,14 +257,13 @@ void ControllerScriptEngineLegacy::setScriptFiles(
     m_scriptFiles = scripts;
 
 #ifdef MIXXX_USE_QML
-    for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
-        if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::Qml) {
-            setQMLMode(true);
-            return;
-        }
-    }
-
-    setQMLMode(false);
+    setQMLMode(std::any_of(std::execution::par_unseq,
+            m_scriptFiles.cbegin(),
+            m_scriptFiles.cend(),
+            [](const auto& scriptFileInfo) {
+                return scriptFileInfo.type ==
+                        LegacyControllerMapping::ScriptFileInfo::Type::Qml;
+            }));
 #endif
 }
 
@@ -597,7 +598,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         emit previewRenderedScreen(screeninfo, screenDebug);
     }
 
-    QByteArray input((const char*)frame.constBits(), frame.sizeInBytes());
+    QByteArray input(reinterpret_cast<const char*>(frame.constBits()), frame.sizeInBytes());
     const TransformScreenFrameFunction& tranformMethod =
             m_transformScreenFrameFunctions[screeninfo.identifier];
 

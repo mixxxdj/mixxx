@@ -26,7 +26,7 @@ class ControllerEngineThreadControl : public QObject {
     void resume();
 
     // Change whether or not it is possible to pause the thread. Should be
-    // called from eh same thread than ControllerEngineThreadControl
+    // called from the same thread than ControllerEngineThreadControl
     void setCanPause(bool canPause);
   private slots:
     // Used to effectively pause the thread. Must be called from the same thread
