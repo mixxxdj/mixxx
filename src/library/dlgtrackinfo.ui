@@ -387,9 +387,21 @@
              </widget>
             </item>
             <item row="7" column="1" colspan="3">
-             <widget class="QPlainTextEdit" name="txtComment">
+             <widget class="WMultiLineTextEdit" name="txtComment">
               <property name="tabChangesFocus">
                <bool>true</bool>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="verticalScrollBarPolicy">
+               <enum>Qt::ScrollBarAsNeeded</enum>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
              </widget>
             </item>
@@ -437,7 +449,7 @@
             <item row="9" column="1" colspan="3">
              <widget class="QPushButton" name="btnColorPicker">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -715,7 +727,7 @@
           <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
+          <enum>QSizePolicy::Minimum</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -1050,6 +1062,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>WMultiLineTextEdit</class>
+   <extends>QLineEdit</extends>
+   <header>widget/wmultilinetextedit.h</header>
+  </customwidget>
   <customwidget>
    <class>WStarRating</class>
    <extends>QWidget</extends>
