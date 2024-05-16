@@ -324,9 +324,14 @@ void DlgTrackInfo::slotPrevDlgTagFetcher() {
     loadPrevTrack();
 }
 
+QModelIndex DlgTrackInfo::getPrevNextTrack(bool next) {
+    return m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() + (next ? 1 : -1),
+            m_currentTrackIndex.column());
+}
+
 void DlgTrackInfo::loadNextTrack() {
-    auto nextRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+    auto nextRow = getPrevNextTrack(true);
     if (nextRow.isValid()) {
         loadTrack(nextRow);
         emit next();
@@ -334,8 +339,7 @@ void DlgTrackInfo::loadNextTrack() {
 }
 
 void DlgTrackInfo::loadPrevTrack() {
-    QModelIndex prevRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+    auto prevRow = getPrevNextTrack(false);
     if (prevRow.isValid()) {
         loadTrack(prevRow);
         emit previous();
@@ -495,7 +499,11 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
         return;
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
+
     m_currentTrackIndex = index;
+    btnPrev->setEnabled(getPrevNextTrack(false).isValid());
+    btnNext->setEnabled(getPrevNextTrack(true).isValid());
+
     loadTrackInternal(pTrack);
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);

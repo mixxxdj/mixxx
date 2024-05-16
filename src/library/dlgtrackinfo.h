@@ -77,6 +77,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
+    QModelIndex getPrevNextTrack(bool next);
     void loadNextTrack();
     void loadPrevTrack();
     void loadTrackInternal(const TrackPointer& pTrack);
