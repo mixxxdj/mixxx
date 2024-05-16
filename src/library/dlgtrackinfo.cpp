@@ -86,14 +86,8 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("replaygain_peak", txtReplayGain);
     m_propertyWidgets.insert("track_locations.location", txtLocation);
 
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
 
-    starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    starsLayout->setSpacing(0);
-    starsLayout->setContentsMargins(0, 0, 0, 0);
     starsLayout->insertWidget(0, m_pWStarRating.get());
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
