@@ -1,6 +1,7 @@
 #include "library/dlgtrackinfo.h"
 
 #include <QScrollArea>
+#include <QShortcut>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -105,6 +106,18 @@ void DlgTrackInfo::init() {
                 &QPushButton::clicked,
                 this,
                 &DlgTrackInfo::slotPrevButton);
+
+        QShortcut* nextShortcut = new QShortcut(QKeySequence("Alt+Right"), this);
+        QShortcut* prevShortcut = new QShortcut(QKeySequence("Alt+Left"), this);
+
+        connect(nextShortcut,
+                &QShortcut::activated,
+                btnNext,
+                [this] { btnNext->animateClick(); });
+        connect(prevShortcut,
+                &QShortcut::activated,
+                btnPrev,
+                [this] { btnPrev->animateClick(); });
     } else {
         btnNext->hide();
         btnPrev->hide();
