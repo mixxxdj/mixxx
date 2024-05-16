@@ -88,6 +88,11 @@ void DlgTrackInfo::init() {
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
 
+    // Workaround: Align the baseline of the "Comments" label
+    // with the baseline of the text inside the comments field
+    const int topMargin = txtComment->frameWidth() + int(txtComment->document()->documentMargin());
+    lblTrackComment->setContentsMargins(0, topMargin, 0, 0);
+
     if (m_pTrackModel) {
         connect(btnNext,
                 &QPushButton::clicked,
