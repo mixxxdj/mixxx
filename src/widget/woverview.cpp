@@ -577,7 +577,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
 
 void WOverview::paintEvent(QPaintEvent* pEvent) {
     Q_UNUSED(pEvent);
-    ScopedTimer t("WOverview::paintEvent");
+    ScopedTimer t(QStringLiteral("WOverview::paintEvent"));
 
     QPainter painter(this);
     painter.fillRect(rect(), m_backgroundColor);
