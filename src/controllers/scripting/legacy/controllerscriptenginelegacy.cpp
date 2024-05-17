@@ -598,7 +598,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         emit previewRenderedScreen(screeninfo, screenDebug);
     }
 
-    QByteArray input(reinterpret_cast<const char*>(frame.constBits()), frame.sizeInBytes());
+    QByteArray input(std::bit_cast<const char*>(frame.constBits()), frame.sizeInBytes());
     const TransformScreenFrameFunction& tranformMethod =
             m_transformScreenFrameFunctions[screeninfo.identifier];
 
