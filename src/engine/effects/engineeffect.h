@@ -4,12 +4,12 @@
 #include <QSet>
 #include <QString>
 #include <QVector>
+#include <memory>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates

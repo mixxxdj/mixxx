@@ -3,8 +3,9 @@
 #include "waveform/renderers/glwaveformrenderersignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
+#include <memory>
+
 #include "track/track_decl.h"
-#include "util/memory.h"
 
 #ifdef MIXXX_USE_QOPENGL
 class QOpenGLFramebufferObject;
