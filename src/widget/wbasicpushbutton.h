@@ -22,6 +22,8 @@ class WBasicPushButton : public QPushButton {
     QSize minimumSizeHint() const override;
 
   protected:
+    QString buildToolTip() const;
+    bool event(QEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
 
     Qt::TextElideMode m_elideMode;
