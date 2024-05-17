@@ -697,12 +697,15 @@ void DlgTrackInfoMulti::slotImportMetadataFromFiles() {
                 SoundSourceProxy(pTrack)
                         .importTrackMetadataAndCoverImage(
                                 &trackMetadata, &coverImage, resetMissingTagMetadata);
+        // Skip tracks that don't have metadata (Unavailable) or where retrieval failed
+        // for other reasons (Failed). For fails user feedback would be good.
         if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
-            // One track failed, abort. User feedback would be good.
-            qWarning() << "DlgTrackInfoMulti::slotImportMetadataFromFiles: "
-                          "failed to load metadata from file for track"
-                       << pTrack->getId() << pTrack->getLocation();
-            return;
+            if (importResult == mixxx::MetadataSource::ImportResult::Failed) {
+                qWarning() << "DlgTrackInfoMulti::slotImportMetadataFromFiles: "
+                              "failed to load metadata from file for track"
+                           << pTrack->getId() << pTrack->getLocation();
+            }
+            continue;
         }
         auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
                 pTrack->getFileInfo(),
