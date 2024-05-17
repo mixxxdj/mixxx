@@ -202,7 +202,7 @@ void DlgTrackInfoMulti::init() {
     connect(txtCommentBox,
             &QComboBox::currentIndexChanged,
             this,
-            [this](int idx) {
+            [this]() {
                 txtCommentBox->blockSignals(true);
                 txtComment->setPlaceholderText(QString());
                 // If we have multiple value we also added the Clear All item.
@@ -770,6 +770,7 @@ void DlgTrackInfoMulti::slotColorButtonClicked() {
 }
 
 void DlgTrackInfoMulti::slotColorPicked(const mixxx::RgbColor::optional_t& newColor) {
+    m_colorChanged = true;
     m_newColor = newColor;
     trackColorDialogSetColorStyleButton(newColor);
 }
