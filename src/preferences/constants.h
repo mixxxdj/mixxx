@@ -7,7 +7,7 @@ namespace mixxx {
 
 namespace preferences {
 
-namespace constants {
+inline namespace constants {
 Q_NAMESPACE
 
 // In order for this Q_NAMESPACE to work, all members of the namespace must

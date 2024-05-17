@@ -50,8 +50,8 @@ class MixxxMainWindow : public QMainWindow {
     /// creates the menu_bar and inserts the file Menu
     void createMenuBar();
     void connectMenuBar();
-    void setInhibitScreensaver(mixxx::preferences::constants::ScreenSaver inhibit);
-    mixxx::preferences::constants::ScreenSaver getInhibitScreensaver();
+    void setInhibitScreensaver(mixxx::preferences::ScreenSaver inhibit);
+    mixxx::preferences::ScreenSaver getInhibitScreensaver();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
@@ -87,7 +87,7 @@ class MixxxMainWindow : public QMainWindow {
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
   private slots:
-    void slotTooltipModeChanged(mixxx::preferences::constants::Tooltips tt);
+    void slotTooltipModeChanged(mixxx::preferences::Tooltips tt);
 
   signals:
     void skinLoaded();
@@ -148,9 +148,9 @@ class MixxxMainWindow : public QMainWindow {
     std::unique_ptr<mixxx::LibraryExporter> m_pLibraryExporter;
 #endif
 
-    mixxx::preferences::constants::Tooltips m_toolTipsCfg;
+    mixxx::preferences::Tooltips m_toolTipsCfg;
 
-    mixxx::preferences::constants::ScreenSaver m_inhibitScreensaver;
+    mixxx::preferences::ScreenSaver m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
 };

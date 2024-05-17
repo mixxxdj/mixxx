@@ -39,7 +39,7 @@ QVariantList QmlConfigProxy::getTrackColorPalette() {
 int QmlConfigProxy::getMultiSamplingLevel() {
     return static_cast<int>(m_pConfig->getValue(
             ConfigKey(kPreferencesGroup, kMultiSamplingKey),
-            mixxx::preferences::constants::MultiSamplingMode::Disabled));
+            mixxx::preferences::MultiSamplingMode::Disabled));
 }
 
 // static

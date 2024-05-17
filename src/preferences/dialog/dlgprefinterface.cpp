@@ -44,8 +44,6 @@ const bool kHideMenuBarDefault = true;
 
 } // namespace
 
-using namespace mixxx::preferences;
-
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -181,11 +179,11 @@ DlgPrefInterface::DlgPrefInterface(
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
-            QVariant::fromValue(constants::ScreenSaver::Off));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::Off));
     comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
-            QVariant::fromValue((constants::ScreenSaver::On)));
+            QVariant::fromValue((mixxx::preferences::ScreenSaver::On)));
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
-            QVariant::fromValue(constants::ScreenSaver::OnPlay));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::OnPlay));
 
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
             QVariant::fromValue(m_pScreensaverManager->status())));
@@ -195,19 +193,19 @@ DlgPrefInterface::DlgPrefInterface(
     if (CmdlineArgs::Instance().isQml()) {
         multiSamplingComboBox->clear();
         multiSamplingComboBox->addItem(tr("Disabled"),
-                QVariant::fromValue(constants::MultiSamplingMode::Disabled));
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Disabled));
         multiSamplingComboBox->addItem(tr("2x MSAA"),
-                QVariant::fromValue(constants::MultiSamplingMode::Two));
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Two));
         multiSamplingComboBox->addItem(tr("4x MSAA"),
-                QVariant::fromValue(constants::MultiSamplingMode::Four));
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Four));
         multiSamplingComboBox->addItem(tr("8x MSAA"),
-                QVariant::fromValue(constants::MultiSamplingMode::Eight));
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Eight));
         multiSamplingComboBox->addItem(tr("16x MSAA"),
-                QVariant::fromValue(constants::MultiSamplingMode::Sixteen));
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Sixteen));
 
-        m_multiSampling = m_pConfig->getValue<constants::MultiSamplingMode>(
+        m_multiSampling = m_pConfig->getValue<mixxx::preferences::MultiSamplingMode>(
                 ConfigKey(kPreferencesGroup, kMultiSamplingKey),
-                constants::MultiSamplingMode::Four);
+                mixxx::preferences::MultiSamplingMode::Four);
         int multiSamplingIndex = multiSamplingComboBox->findData(
                 QVariant::fromValue((m_multiSampling)));
         if (multiSamplingIndex != -1) {
@@ -215,13 +213,13 @@ DlgPrefInterface::DlgPrefInterface(
         } else {
             multiSamplingComboBox->setCurrentIndex(0); // Disabled
             m_pConfig->setValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey),
-                    constants::MultiSamplingMode::Disabled);
+                    mixxx::preferences::MultiSamplingMode::Disabled);
         }
     } else
 #endif
     {
 #ifdef MIXXX_USE_QML
-        m_multiSampling = mixxx::MultiSamplingMode::Disabled;
+        m_multiSampling = mixxx::preferences::MultiSamplingMode::Disabled;
 #endif
         multiSamplingLabel->hide();
         multiSamplingComboBox->hide();
@@ -354,12 +352,12 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
-            QVariant::fromValue(constants::ScreenSaver::On)));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::On)));
 
 #ifdef MIXXX_USE_QML
     multiSamplingComboBox->setCurrentIndex(
             multiSamplingComboBox->findData(QVariant::fromValue(
-                    constants::MultiSamplingMode::Four))); // 4x MSAA
+                    mixxx::preferences::MultiSamplingMode::Four))); // 4x MSAA
 #endif
 
 #ifdef Q_OS_IOS
@@ -372,11 +370,11 @@ void DlgPrefInterface::slotResetToDefaults() {
 }
 
 void DlgPrefInterface::slotSetTooltips() {
-    m_tooltipMode = constants::Tooltips::On;
+    m_tooltipMode = mixxx::preferences::Tooltips::On;
     if (radioButtonTooltipsOff->isChecked()) {
-        m_tooltipMode = constants::Tooltips::Off;
+        m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
-        m_tooltipMode = constants::Tooltips::OnlyInLibrary;
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
     }
 }
 
@@ -479,17 +477,17 @@ void DlgPrefInterface::slotApply() {
 
     // screensaver mode update
     const auto screensaverComboBoxState =
-            comboBoxScreensaver->currentData().value<constants::ScreenSaver>();
+            comboBoxScreensaver->currentData().value<mixxx::preferences::ScreenSaver>();
     const auto screensaverConfiguredState = m_pScreensaverManager->status();
     if (screensaverComboBoxState != screensaverConfiguredState) {
         m_pScreensaverManager->setStatus(screensaverComboBoxState);
     }
 
 #ifdef MIXXX_USE_QML
-    constants::MultiSamplingMode multiSampling =
+    mixxx::preferences::MultiSamplingMode multiSampling =
             multiSamplingComboBox->currentData()
-                    .value<constants::MultiSamplingMode>();
-    m_pConfig->setValue<constants::MultiSamplingMode>(
+                    .value<mixxx::preferences::MultiSamplingMode>();
+    m_pConfig->setValue<mixxx::preferences::MultiSamplingMode>(
             ConfigKey(kPreferencesGroup, kMultiSamplingKey), multiSampling);
 #endif
 
@@ -519,21 +517,21 @@ void DlgPrefInterface::slotApply() {
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    const auto tooltipMode =
-            m_pConfig->getValue<constants::Tooltips>(ConfigKey(kControlsGroup, kTooltipsKey),
+    const auto tooltipMode = m_pConfig->getValue<mixxx::preferences::Tooltips>(
+            ConfigKey(kControlsGroup, kTooltipsKey),
 #ifdef Q_OS_IOS
-                    constants::Tooltips::Off);
+            mixxx::preferences::Tooltips::Off);
 #else
-                    constants::Tooltips::On);
+            mixxx::preferences::Tooltips::On);
 #endif
     switch (tooltipMode) {
-    case constants::Tooltips::Off:
+    case mixxx::preferences::Tooltips::Off:
         radioButtonTooltipsOff->setChecked(true);
         break;
-    case constants::Tooltips::OnlyInLibrary:
+    case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
         break;
-    case constants::Tooltips::On:
+    case mixxx::preferences::Tooltips::On:
     default:
         radioButtonTooltipsLibraryAndSkin->setChecked(true);
         break;
