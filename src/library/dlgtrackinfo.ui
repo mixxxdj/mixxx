@@ -408,16 +408,34 @@
             <item row="8" column="1" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
-               <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
+               <widget class="WBasicPushButton" name="btnImportMetadataFromMusicBrainz">
                 <property name="text">
                  <string>Import Metadata from MusicBrainz</string>
+                </property>
+                <property name="elideMode">
+                  <enum>Qt::ElideLeft</enum>
+                 </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btnImportMetadataFromFile">
+               <widget class="WBasicPushButton" name="btnImportMetadataFromFile">
                 <property name="text">
                  <string>Re-Import Metadata from file</string>
+                </property>
+                <property name="elideMode">
+                 <enum>Qt::ElideLeft</enum>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                </widget>
               </item>
@@ -428,7 +446,7 @@
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
+                  <width>0</width>
                   <height>10</height>
                  </size>
                 </property>
@@ -1062,6 +1080,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>WBasicPushButton</class>
+   <extends>QPushButton</extends>
+   <header>widget/wbasicpushbutton.h</header>
+  </customwidget>
   <customwidget>
    <class>WMultiLineTextEdit</class>
    <extends>QLineEdit</extends>
