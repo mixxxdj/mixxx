@@ -28,16 +28,6 @@ const QString kVariousText = QChar('<') + QObject::tr("various") + QChar('>');
 const char* kOrigValProp = "origVal";
 const QString kClearItem = QStringLiteral("clearItem");
 
-/// If value differs from the current value, add it to the list.
-/// If new and current are identical, keep only one. Later on we can use the
-/// item count to maybe join the list and format the font accordingly.
-template<typename T>
-void addToTagSet(QSet<T>* pList, const T& value) {
-    if (pList->isEmpty() || !pList->contains(value)) {
-        pList->insert(value);
-    }
-}
-
 void setItalic(QWidget* pEditor, bool italic) {
     auto font = pEditor->font();
     if (font.italic() == italic) {
@@ -401,30 +391,30 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     QSet<QString> filetypes;
 
     for (const auto& rec : m_trackRecords) {
-        addToTagSet(&titles, rec.getMetadata().getTrackInfo().getTitle());
-        addToTagSet(&artists, rec.getMetadata().getTrackInfo().getArtist());
-        addToTagSet(&aTitles, rec.getMetadata().getAlbumInfo().getTitle());
-        addToTagSet(&aArtists, rec.getMetadata().getAlbumInfo().getArtist());
-        addToTagSet(&genres, rec.getMetadata().getTrackInfo().getGenre());
-        addToTagSet(&composers, rec.getMetadata().getTrackInfo().getComposer());
-        addToTagSet(&grouping, rec.getMetadata().getTrackInfo().getGrouping());
-        addToTagSet(&years, rec.getMetadata().getTrackInfo().getYear());
-        addToTagSet(&keys, rec.getMetadata().getTrackInfo().getKeyText());
-        addToTagSet(&nums, rec.getMetadata().getTrackInfo().getTrackNumber());
-        addToTagSet(&comments, rec.getMetadata().getTrackInfo().getComment());
+        titles.insert(rec.getMetadata().getTrackInfo().getTitle());
+        artists.insert(rec.getMetadata().getTrackInfo().getArtist());
+        aTitles.insert(rec.getMetadata().getAlbumInfo().getTitle());
+        aArtists.insert(rec.getMetadata().getAlbumInfo().getArtist());
+        genres.insert(rec.getMetadata().getTrackInfo().getGenre());
+        composers.insert(rec.getMetadata().getTrackInfo().getComposer());
+        grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
+        years.insert(rec.getMetadata().getTrackInfo().getYear());
+        keys.insert(rec.getMetadata().getTrackInfo().getKeyText());
+        nums.insert(rec.getMetadata().getTrackInfo().getTrackNumber());
+        comments.insert(rec.getMetadata().getTrackInfo().getComment());
 
         auto bpm = rec.getMetadata().getTrackInfo().getBpm();
-        addToTagSet(&bpms, bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueMin);
+        bpms.insert(bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueMin);
 
         auto bitrate = rec.getMetadata().getStreamInfo().getBitrate();
-        addToTagSet(&bitrates, bitrate.isValid() ? bitrate.value() : 0);
+        bitrates.insert(bitrate.isValid() ? bitrate.value() : 0);
 
-        addToTagSet(&durations, rec.getMetadata().getDurationSecondsRounded());
+        durations.insert(rec.getMetadata().getDurationSecondsRounded());
 
         auto samplerate = rec.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
-        addToTagSet(&samplerates, samplerate.isValid() ? samplerate.value() : 0);
+        samplerates.insert(samplerate.isValid() ? samplerate.value() : 0);
 
-        addToTagSet(&filetypes, rec.getFileType());
+        filetypes.insert(rec.getFileType());
     }
 
     addValuesToComboBox(txtTitle, titles);
