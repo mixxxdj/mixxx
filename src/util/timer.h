@@ -65,7 +65,7 @@ class ScopedTimer {
     template<typename T, typename... Ts>
     ScopedTimer(Stat::ComputeFlags compute, T&& key, Ts&&... args)
             : m_timer(std::nullopt) {
-        static_assert(char_type_size<T>() == sizeof(QString::value_type),
+        static_assert(!std::is_same_v<std::remove_cvref_t<std::decay_t<T>>, char*>,
                 "string type likely not UTF-16, please pass QStringLiteral by "
                 "means of u\"key text\"_s");
         if (!CmdlineArgs::Instance().getDeveloper()) {
@@ -96,19 +96,6 @@ class ScopedTimer {
         m_timer.reset();
     }
   private:
-    // utility function
-    template<typename T>
-    constexpr static std::size_t char_type_size() {
-        if constexpr (std::is_array_v<T>) {
-            return sizeof(std::remove_all_extents_t<T>);
-        } else if constexpr (std::is_pointer_v<T>) {
-            // assume this is some point to char array then.
-            return sizeof(std::remove_pointer_t<T>);
-        } else {
-            // assume this is some QString or std::string type
-            return sizeof(typename T::value_type);
-        }
-    }
     // nullopt also counts as cancelled
     std::optional<Timer> m_timer;
 };
