@@ -104,18 +104,14 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateSpinBpmFromBeats();
 
     const UserSettingsPointer m_pUserSettings;
-
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
-
     QModelIndex m_currentTrackIndex;
-
     mixxx::TrackRecord m_trackRecord;
 
     mixxx::BeatsPointer m_pBeatsClone;
     bool m_trackHasBeatMap;
-
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 
