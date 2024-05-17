@@ -3,6 +3,7 @@
 #include <QPaintEvent>
 #include <QStyleOption>
 #include <QStylePainter>
+#include <QToolTip>
 
 #include "moc_wbasicpushbutton.cpp"
 
@@ -65,4 +66,50 @@ void WBasicPushButton::paintEvent(QPaintEvent* /*unused*/) {
     initStyleOption(&option);
     elideButtonLabelIfNeeded(option, p.style(), this, m_elideMode);
     p.drawControl(QStyle::CE_PushButton, option);
+}
+
+QString WBasicPushButton::buildToolTip() const {
+    // Show the button label as a tooltip when the label text
+    // is partially hidden due to the button's size
+
+    QString txtToolTip = toolTip();
+
+    if (!txtToolTip.isEmpty()) {
+        return txtToolTip;
+    }
+
+    QString txtLabel = text();
+    QSize currentSize = size();
+    QSize fullSize = sizeHint();
+
+    if ((currentSize.height() < fullSize.height() ||
+                currentSize.width() < fullSize.width()) &&
+            !txtLabel.isEmpty()) {
+        // The label text is not fully visible,
+        // so show it as a tooltip
+        return txtLabel;
+    }
+
+    return QString();
+}
+
+bool WBasicPushButton::event(QEvent* e) {
+    switch (e->type()) {
+    case QEvent::ToolTip: {
+        QString toolTipToShow = buildToolTip();
+        if (!toolTipToShow.isEmpty()) {
+            QToolTip::showText(static_cast<QHelpEvent*>(e)->globalPos(),
+                    toolTipToShow,
+                    this,
+                    QRect(),
+                    toolTipDuration());
+        } else {
+            e->ignore();
+        }
+        return true;
+    }
+    default: {
+        return QPushButton::event(e);
+    }
+    }
 }
