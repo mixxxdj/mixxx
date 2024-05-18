@@ -57,8 +57,9 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
             const CoverInfo& info,
             const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
-
     void slotReloadCoverArt();
+
+    void slotOpenInFileBrowser();
 
   private:
     void init();

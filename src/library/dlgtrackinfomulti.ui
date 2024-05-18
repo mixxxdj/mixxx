@@ -601,6 +601,31 @@
             <item row="4" column="1" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
+               <widget class="QPushButton" name="btnOpenFileBrowser">
+                <property name="text">
+                 <string>Open in File Browser</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>10</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+
+            <item row="5" column="1" colspan="3">
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
                <spacer name="horizontalSpacer_6">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>

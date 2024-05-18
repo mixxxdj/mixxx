@@ -16,6 +16,7 @@
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/datetime.h"
+#include "util/desktophelper.h"
 #include "util/duration.h"
 #include "util/stringformat.h"
 #include "widget/wcoverartlabel.h"
@@ -144,6 +145,11 @@ void DlgTrackInfoMulti::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfoMulti::slotImportMetadataFromFiles);
+
+    connect(btnOpenFileBrowser,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfoMulti::slotOpenInFileBrowser);
 
     QList<QComboBox*> valueComboBoxes;
     valueComboBoxes.append(txtArtist);
@@ -368,6 +374,8 @@ void DlgTrackInfoMulti::updateFromTracks() {
         }
     }
     setCommonValueOrVariousStringAndFormatFont(txtLocation, dirs);
+    // Enable the button if all tracks are in the same directory.
+    btnOpenFileBrowser->setEnabled(dirs.size() == 1 ? true : false);
 
     // And the cover label
     updateCoverArtFromTracks();
@@ -745,6 +753,14 @@ void DlgTrackInfoMulti::slotImportMetadataFromFiles() {
         trackRecords.append(trackRecord);
     }
     replaceTrackRecords(trackRecords);
+}
+
+void DlgTrackInfoMulti::slotOpenInFileBrowser() {
+    if (m_pLoadedTracks.isEmpty()) {
+        return;
+    }
+    auto pFirstTrack = m_pLoadedTracks.constBegin().value();
+    mixxx::DesktopHelper::openInFileBrowser(QStringList(pFirstTrack->getLocation()));
 }
 
 void DlgTrackInfoMulti::slotTrackChanged(TrackId trackId) {
