@@ -576,7 +576,8 @@ void DlgTrackInfoMulti::saveTracks() {
     if (txtComment->placeholderText().isNull() && currVal != origVal) {
         // This is either a single-value box and the value changed, or this is a
         // multi-value box and the placeholder text was removed when clearing it.
-        comment = currVal.trimmed();
+        // Don't trim as that would remove line breaks.
+        comment = currVal;
     }
 
     for (auto& rec : m_trackRecords) {
