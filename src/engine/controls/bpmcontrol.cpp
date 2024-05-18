@@ -319,6 +319,7 @@ void BpmControl::slotBpmTapFilter(double averageLength, int numSamples) {
     }
     pTrack->trySetBeats(*newBeats);
 }
+
 void BpmControl::slotTempoTap(double v) {
     if (v > 0) {
         m_tempoTapFilter.tap();
@@ -1005,16 +1006,17 @@ mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos this
     return position - thisPosition;
 }
 
-void BpmControl::slotUpdateEngineBpm(double value) {
+void BpmControl::slotUpdateEngineBpm(double rateRatio) {
     // Adjust playback bpm in response to a rate_ratio update
-
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
-                        << m_pLocalBpm->get() << value;
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm: local BPM:"
+                        << m_pLocalBpm->get()
+                        << "rate ratio:"
+                        << rateRatio;
         // This can be used to detect pitch shift issues with cloned decks
         // DEBUG_ASSERT(getGroup() != "[Channel1]" || m_pRateRatio->get(); == 1);
     }
-    m_pEngineBpm->set(m_pLocalBpm->get() * value);
+    m_pEngineBpm->set(m_pLocalBpm->get() * rateRatio);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
