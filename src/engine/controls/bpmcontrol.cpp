@@ -67,25 +67,39 @@ BpmControl::BpmControl(const QString& group,
     m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
 
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
-    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
+
+    m_pAdjustBeatsFaster = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_faster"), false);
     m_pAdjustBeatsFaster->setKbdRepeatable(true);
-    connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsFaster,
+    connect(m_pAdjustBeatsFaster.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotAdjustBeatsFaster,
             Qt::DirectConnection);
-    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group, "beats_adjust_slower"), false);
+    m_pAdjustBeatsSlower = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_slower"), false);
     m_pAdjustBeatsSlower->setKbdRepeatable(true);
-    connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsSlower,
+    connect(m_pAdjustBeatsSlower.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotAdjustBeatsSlower,
             Qt::DirectConnection);
-    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
+
+    m_pTranslateBeatsEarlier = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_earlier"), false);
     m_pTranslateBeatsEarlier->setKbdRepeatable(true);
-    connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsEarlier,
+    connect(m_pTranslateBeatsEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsEarlier,
             Qt::DirectConnection);
-    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group, "beats_translate_later"), false);
+    m_pTranslateBeatsLater = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_later"), false);
     m_pTranslateBeatsLater->setKbdRepeatable(true);
-    connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsLater,
+    connect(m_pTranslateBeatsLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
     m_pTranslateBeatsMove = new ControlEncoder(ConfigKey(group, "beats_translate_move"), false);
     connect(m_pTranslateBeatsMove,
@@ -93,6 +107,66 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotTranslateBeatsMove,
             Qt::DirectConnection);
+
+    m_pBeatsHalve = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_halve"), false);
+    connect(m_pBeatsHalve.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::Halve);
+                }
+            });
+    m_pBeatsTwoThirds = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_twothirds"), false);
+    connect(m_pBeatsTwoThirds.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::TwoThirds);
+                }
+            });
+    m_pBeatsThreeFourths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_threefourths"), false);
+    connect(m_pBeatsThreeFourths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
+                }
+            });
+    m_pBeatsFourThirds = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fourthirds"), false);
+    connect(m_pBeatsFourThirds.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FourThirds);
+                }
+            });
+    m_pBeatsThreeHalves = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_threehalves"), false);
+    connect(m_pBeatsThreeHalves.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
+                }
+            });
+    m_pBeatsDouble = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_double"), false);
+    connect(m_pBeatsDouble.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::Double);
+                }
+            });
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -156,11 +230,7 @@ BpmControl::~BpmControl() {
     delete m_pButtonTap;
     delete m_pTranslateBeats;
     delete m_pBeatsTranslateMatchAlignment;
-    delete m_pTranslateBeatsEarlier;
-    delete m_pTranslateBeatsLater;
     delete m_pTranslateBeatsMove;
-    delete m_pAdjustBeatsFaster;
-    delete m_pAdjustBeatsSlower;
     delete m_pBeatsUndo;
 }
 
@@ -285,6 +355,22 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
             averageBpm,
             averageBpm + kBpmTabRounding);
     const auto newBeats = pBeats->trySetBpm(averageBpm);
+    if (!newBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*newBeats);
+}
+
+void BpmControl::slotScaleBpm(mixxx::Beats::BpmScale bpmScale) {
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto newBeats = pBeats->tryScale(bpmScale);
     if (!newBeats) {
         return;
     }

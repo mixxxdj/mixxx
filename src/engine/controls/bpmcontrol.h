@@ -121,6 +121,7 @@ class BpmControl : public EngineControl {
     }
     double calcSyncAdjustment(bool userTweakingSync);
     void adjustBeatsBpm(double deltaBpm);
+    void slotScaleBpm(mixxx::Beats::BpmScale bpmScale);
 
     friend class SyncControl;
 
@@ -142,12 +143,19 @@ class BpmControl : public EngineControl {
 
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
-    ControlPushButton* m_pAdjustBeatsFaster;
-    ControlPushButton* m_pAdjustBeatsSlower;
-    ControlPushButton* m_pTranslateBeatsEarlier;
-    ControlPushButton* m_pTranslateBeatsLater;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsFaster;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsSlower;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsEarlier;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
     ControlEncoder* m_pTranslateBeatsMove;
     ControlPushButton* m_pBeatsUndo;
+
+    std::unique_ptr<ControlPushButton> m_pBeatsHalve;
+    std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;
+    std::unique_ptr<ControlPushButton> m_pBeatsThreeFourths;
+    std::unique_ptr<ControlPushButton> m_pBeatsFourThirds;
+    std::unique_ptr<ControlPushButton> m_pBeatsThreeHalves;
+    std::unique_ptr<ControlPushButton> m_pBeatsDouble;
 
     std::unique_ptr<ControlPushButton> m_pBpmLock;
 
