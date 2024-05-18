@@ -251,6 +251,9 @@
             <property name="text">
              <string>Year</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
           <item row="4" column="3">
@@ -293,6 +296,9 @@
            <widget class="QLabel" name="lblKey">
             <property name="text">
              <string>Key</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -343,6 +349,9 @@
             <property name="text">
              <string>Track #</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
           <item row="6" column="3">
@@ -367,7 +376,7 @@
              <string>Comments</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -407,7 +416,7 @@
              <string>Color</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
