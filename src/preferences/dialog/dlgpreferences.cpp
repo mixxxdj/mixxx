@@ -147,6 +147,11 @@ DlgPreferences::DlgPreferences(
             this,
             &DlgPreferences::reloadUserInterface,
             Qt::DirectConnection);
+    connect(pInterfacePage,
+            &DlgPrefInterface::menuBarAutoHideChanged,
+            this,
+            &DlgPreferences::menuBarAutoHideChanged,
+            Qt::DirectConnection);
     addPageWidget(PreferencesPage(pInterfacePage,
                           new QTreeWidgetItem(
                                   contentsTreeWidget, QTreeWidgetItem::Type)),
