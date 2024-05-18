@@ -16,7 +16,6 @@
 #include "util/color/color.h"
 #include "util/datetime.h"
 #include "util/duration.h"
-#include "util/optional.h"
 #include "util/stringformat.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
@@ -535,10 +534,17 @@ void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
     } else {
         txtCommentBox->setEnabled(true);
         // The empty item allows to clear the text for all tracks.
+        // Nice to have: make the text italic
         txtCommentBox->addItem(tr("clear tag for all tracks"), kClearItem);
         txtCommentBox->addItems(comments.values());
         txtCommentBox->setCurrentIndex(-1);
+        // It would be nice to set the <various> text also for the combobox,
+        // but since editing is disabled that's not possible (only by sublassing
+        // QComboBox and overriding the paintEvent(), or maybe other hacks).
         txtComment->setPlaceholderText(kVariousText);
+        // For some reason we need to clear the box again in order to show
+        // the placeholder text.
+        txtComment->clear();
         txtComment->setProperty(kOrigValProp, kVariousText);
     }
     txtCommentBox->blockSignals(false);
@@ -705,6 +711,7 @@ void DlgTrackInfoMulti::slotImportMetadataFromFiles() {
                 qWarning() << "DlgTrackInfoMulti::slotImportMetadataFromFiles: "
                               "failed to load metadata from file for track"
                            << pTrack->getId() << pTrack->getLocation();
+                // TODO Collect failed files and show a popup.
             }
             continue;
         }
