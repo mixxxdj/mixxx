@@ -65,7 +65,7 @@ class ScopedTimer {
     template<typename T, typename... Ts>
     ScopedTimer(Stat::ComputeFlags compute, T&& key, Ts&&... args)
             : m_timer(std::nullopt) {
-        static_assert(!std::is_same_v<std::remove_cvref_t<std::decay_t<T>>, char*>,
+        static_assert(!std::is_same_v<std::decay_t<T>, char const*>,
                 "string type likely not UTF-16, please pass QStringLiteral by "
                 "means of u\"key text\"_s");
         if (!CmdlineArgs::Instance().getDeveloper()) {
@@ -74,6 +74,8 @@ class ScopedTimer {
         // key is explicitly `auto` to allow passing non-QString types such as `const char*`
         // its conversion is delayed until after we've checked if we're in developer mode
         auto assembledKey = QString(std::forward<T>(key));
+        // ensure the string was indeed a literal an not unnecessarily heap-allocated
+        DEBUG_ASSERT(assembledKey.capacity() == 0);
         if constexpr (sizeof...(args) > 0) {
             // only try to call QString::arg when we've been given parameters
             assembledKey = assembledKey.arg(convertToQStringConvertible(std::forward<Ts>(args))...);
