@@ -1,6 +1,7 @@
 #include "library/dlgtrackinfomulti.h"
 
 #include <QLineEdit>
+#include <QListView>
 #include <QStyleFactory>
 #include <QtDebug>
 
@@ -188,6 +189,15 @@ void DlgTrackInfoMulti::init() {
     // * for multiple values, we show the <various> placeholder also in txtCommentBox
     // This also requires some special handling in saveTracks().
     txtCommentBox->setInsertPolicy(QComboBox::NoInsert);
+    // We create a view in order to enable word-wrap.
+    auto pView = new QListView();
+    pView->setWordWrap(true);
+    // Even though we enabled word-wrap, and even if we'd set the view's max width,
+    // the view (actually its container) would still expand wider than that for
+    // long lines. To work around that we manually set the max width for that, too.
+    // We do this in resizeEvent().
+    txtCommentBox->setView(pView);
+    txtCommentBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     connect(txtCommentBox,
             &QComboBox::currentIndexChanged,
             this,
@@ -548,6 +558,14 @@ void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
         txtComment->setProperty(kOrigValProp, kVariousText);
     }
     txtCommentBox->blockSignals(false);
+}
+
+void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
+    Q_UNUSED(pEvent);
+    // Limit comment popup to dialog width. This may introduce some linebreaks
+    // but is still much better than letting the popup expand to screen width,
+    // which it would do regrardless if it's actually necessary.
+    txtCommentBox->view()->parentWidget()->setMaximumWidth(width());
 }
 
 void DlgTrackInfoMulti::saveTracks() {

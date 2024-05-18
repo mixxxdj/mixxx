@@ -30,6 +30,10 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     void loadTracks(const QList<TrackPointer>& pTracks);
 
+    /// We need this to set the max width of the comment QComboBox which has
+    /// issues with long lines / multi-line content. See init() for details.
+    void resizeEvent(QResizeEvent* event) override;
+
   private slots:
     void slotOk();
     void slotApply();
