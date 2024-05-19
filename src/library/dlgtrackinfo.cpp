@@ -21,6 +21,7 @@
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "widget/wcolorpickeractionmenu.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
@@ -52,7 +53,7 @@ DlgTrackInfo::DlgTrackInfo(
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
           m_pWStarRating(make_parented<WStarRating>(this)),
-          m_pColorPicker(make_parented<WColorPickerAction>(
+          m_pColorPicker(make_parented<WColorPickerActionMenu>(
                   WColorPicker::Option::AllowNoColor |
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
@@ -60,6 +61,13 @@ DlgTrackInfo::DlgTrackInfo(
                   this)),
           m_widgetSizesFixed(false) {
     init();
+}
+
+DlgTrackInfo::~DlgTrackInfo() {
+    // ~parented_ptr() needs the definition of the wrapped type
+    // upon deletion! Otherwise the behavior is undefined.
+    // The wrapped types of some parented_ptr members are only
+    // forward declared in the header file.
 }
 
 void DlgTrackInfo::init() {
@@ -308,12 +316,10 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotRatingChanged);
 
     btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
-    QMenu* pColorPickerMenu = new QMenu(this);
-    pColorPickerMenu->addAction(m_pColorPicker);
-    btnColorPicker->setMenu(pColorPickerMenu);
+    btnColorPicker->setMenu(m_pColorPicker.get());
 
     connect(m_pColorPicker.get(),
-            &WColorPickerAction::colorPicked,
+            &WColorPickerActionMenu::colorPicked,
             this,
             [this](const mixxx::RgbColor::optional_t& newColor) {
                 trackColorDialogSetColor(newColor);
