@@ -207,8 +207,15 @@ void AutoDJProcessor::setCrossfader(double value) {
 }
 
 void AutoDJProcessor::playlistTracksChanged() {
-    m_queueRemainingTracks.set(m_pAutoDJTableModel->rowCount());
-    m_queueRemainingDuration.set(m_pAutoDJTableModel->getTotalDuration().toDoubleSeconds());
+    const int numTracksInQueue = m_pAutoDJTableModel->rowCount();
+    m_queueRemainingTracks.set(numTracksInQueue);
+    m_queueDuration = m_pAutoDJTableModel->getTotalDuration();
+    m_queueRemainingDuration.set(m_queueDuration.toDoubleSeconds());
+    emit queueDurationChanged(numTracksInQueue, m_queueDuration);
+}
+
+int AutoDJProcessor::getQueueTrackCount() const {
+    return m_pAutoDJTableModel->rowCount();
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
