@@ -300,6 +300,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     }
 
     spinBox_sidebar_hover_expand_delay->setValue(kSidebarHoverExpandDelayDefault);
+    spinBox_sidebar_hover_collapse_delay->setValue(kSidebarHoverCollapseDelayDefault);
 
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -464,6 +465,12 @@ void DlgPrefLibrary::slotUpdate() {
                     kSidebarHoverExpandDelayConfigKey,
                     kSidebarHoverExpandDelayDefault);
     spinBox_sidebar_hover_expand_delay->setValue(sidebarHoverExpandDelay);
+
+    const auto sidebarHoverCollapseDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverCollapseDelayConfigKey,
+                    kSidebarHoverCollapseDelayDefault);
+    spinBox_sidebar_hover_collapse_delay->setValue(sidebarHoverCollapseDelay);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -684,8 +691,10 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue(checkbox_played_track_color->isChecked()));
 
     int sidebarHoverExpandDelay = spinBox_sidebar_hover_expand_delay->value();
+    int sidebarHoverCollapseDelay = spinBox_sidebar_hover_collapse_delay->value();
     m_pConfig->setValue(kSidebarHoverExpandDelayConfigKey, sidebarHoverExpandDelay);
-    emit m_pLibrary->setSidebarHoverExpandDelay(sidebarHoverExpandDelay);
+    m_pConfig->setValue(kSidebarHoverCollapseDelayConfigKey, sidebarHoverCollapseDelay);
+    emit m_pLibrary->setSidebarHoverDelay(sidebarHoverExpandDelay, sidebarHoverCollapseDelay);
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();
