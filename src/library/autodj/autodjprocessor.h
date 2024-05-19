@@ -251,6 +251,12 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
+    mixxx::Duration getRemainingTime() const {
+        return m_timeRemaining;
+    }
+
+    int getRemainingTracks() const;
+
     bool nextTrackLoaded();
 
     void setTransitionTime(int seconds);
@@ -273,6 +279,7 @@ class AutoDJProcessor : public QObject {
 #endif
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void autoDJError(AutoDJProcessor::AutoDJError error);
+    void remainingTimeChanged(int numTracks, mixxx::Duration duration);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
@@ -391,6 +398,7 @@ class AutoDJProcessor : public QObject {
 
     ControlObject m_tracksRemaining;
     ControlObject m_timeRemaining;
+    mixxx::Duration m_remainingTime;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
