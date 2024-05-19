@@ -39,6 +39,13 @@ const QByteArray kScreenTransformFunctionUntypedSignature =
                 "transformFrame(QVariant,QVariant)");
 const QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
+const QByteArray kScreenInitFunctionUntypedSignature =
+        QMetaObject::normalizedSignature(
+                "init(QVariant,QVariant)");
+const QByteArray kScreenInitFunctionTypedSignature =
+        QMetaObject::normalizedSignature("init(QString,bool)");
+const QByteArray kScreenShutdownFunctionSignature =
+        QMetaObject::normalizedSignature("shutdown()");
 } // anonymous namespace
 #endif
 
@@ -116,28 +123,54 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(
             success = false;
         }
     }
+    return success;
+}
+
+bool ControllerScriptEngineLegacy::callShutdownFunction() {
+    // There is no js engine if the mapping was not loaded from a file but by
+    // creating a new, empty mapping LegacyMidiControllerMapping with the wizard
+    if (!m_pJSEngine) {
+        return true;
+    }
+
 #ifdef MIXXX_USE_QML
-    if (m_bQmlMode) {
+    if (!m_bQmlMode) {
+#endif
+        return callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+#ifdef MIXXX_USE_QML
+    } else {
+        VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine->hasError()) {
+            qCWarning(m_logger) << "Controller JS engine has an unhandled error.";
+            qCDebug(m_logger) << "Unhandled controller JS error is:"
+                              << m_pJSEngine->catchError().toString();
+        }
         QHashIterator<QString, std::shared_ptr<QQuickItem>> i(m_rootItems);
+        bool success = true;
         while (i.hasNext()) {
             i.next();
             const QMetaObject* metaObject = i.value()->metaObject();
-            QStringList argList;
-            for (int i = 0; i < args.size(); i++) {
-                argList << "QVariant";
-            }
-            int methodIdx =
-                    metaObject->indexOfMethod(QString("%1(%2)")
-                                                      .arg(function, argList.join(','))
-                                                      .toUtf8());
-            if (methodIdx == -1) {
-                qCWarning(m_logger) << "QML Scene " << i.key() << "has no"
-                                    << function << " method";
+            const QString& screenIdentifier = i.key();
+
+            VERIFY_OR_DEBUG_ASSERT(metaObject) {
+                qCWarning(m_logger)
+                        << "Invalid meta object for screen" << screenIdentifier
+                        << "It may be that an unhandled issue occurred when importing "
+                           "the scene.";
                 continue;
             }
-            QMetaMethod method = metaObject->method(methodIdx);
-            qCDebug(m_logger) << "Executing"
-                              << function << "on QML Scene " << i.key();
+
+            QMetaMethod shutdownFunction;
+            int methodIdx = metaObject->indexOfMethod(kScreenShutdownFunctionSignature);
+
+            if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
+                qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
+                                  << "has no valid shutdown method.";
+                continue;
+            }
+
+            shutdownFunction = metaObject->method(methodIdx);
+
+            qCDebug(m_logger) << "Executing shutdown on QML Scene " << screenIdentifier;
 
             VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine->hasError()) {
                 qCWarning(m_logger) << "Controller JS engine has an unhandled error. Discarding.";
@@ -145,55 +178,88 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(
                                   << m_pJSEngine->catchError().toString();
             }
 
-            switch (args.size()) {
-            case 0:
-                success &= method.invoke(i.value().get(),
-                        Qt::DirectConnection);
-                break;
-            case 1:
-                success &= method.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QVariant, args[0].toVariant()));
-                break;
-            case 2:
-                success &= method.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QVariant, args[0].toVariant()),
-                        Q_ARG(QVariant, args[1].toVariant()));
-                break;
-            case 3:
-                success &= method.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QVariant, args[0].toVariant()),
-                        Q_ARG(QVariant, args[1].toVariant()),
-                        Q_ARG(QVariant, args[2].toVariant()));
-                break;
-            case 4:
-                success &= method.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QVariant, args[0].toVariant()),
-                        Q_ARG(QVariant, args[1].toVariant()),
-                        Q_ARG(QVariant, args[2].toVariant()),
-                        Q_ARG(QVariant, args[3].toVariant()));
-                break;
-            default:
-                qCDebug(m_logger) << "Trying to call a controller lifecycle method with "
-                                     "more than 5 args. Ignoring extra args";
-                [[fallthrough]];
-            case 5:
-                success &= method.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QVariant, args[0].toVariant()),
-                        Q_ARG(QVariant, args[1].toVariant()),
-                        Q_ARG(QVariant, args[2].toVariant()),
-                        Q_ARG(QVariant, args[3].toVariant()),
-                        Q_ARG(QVariant, args[4].toVariant()));
-                break;
-            }
+            success &= shutdownFunction.invoke(i.value().get(),
+                    Qt::DirectConnection);
+            // Error handling is done in ControllerScriptEngineBase, with the
+            // connection QQmlEngine::warnings ->
+            // ControllerScriptEngineBase::handleQMLErrors
         }
+        return success;
     }
 #endif
-    return success;
+}
+bool ControllerScriptEngineLegacy::callInitFunction() {
+    // m_pController is nullptr in tests.
+    const auto controllerName = m_pController ? m_pController->getName() : QString{};
+
+#ifdef MIXXX_USE_QML
+    if (!m_bQmlMode) {
+#endif
+        const auto args = QJSValueList{
+                controllerName,
+                m_logger().isDebugEnabled(),
+        };
+        return callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
+#ifdef MIXXX_USE_QML
+    } else {
+        VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine->hasError()) {
+            qCWarning(m_logger) << "Controller JS engine has an unhandled error.";
+            qCDebug(m_logger) << "Unhandled controller JS error is:"
+                              << m_pJSEngine->catchError().toString();
+        }
+        QHashIterator<QString, std::shared_ptr<QQuickItem>> i(m_rootItems);
+        bool success = true;
+        while (i.hasNext()) {
+            i.next();
+            const QMetaObject* metaObject = i.value()->metaObject();
+            const QString& screenIdentifier = i.key();
+
+            VERIFY_OR_DEBUG_ASSERT(metaObject) {
+                qCWarning(m_logger)
+                        << "Invalid meta object for screen" << screenIdentifier
+                        << "It may be that an unhandled issue occurred when importing "
+                           "the scene.";
+                continue;
+            }
+
+            QMetaMethod initFunction;
+            bool typed = false;
+            int methodIdx = metaObject->indexOfMethod(kScreenInitFunctionUntypedSignature);
+
+            if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
+                qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
+                                  << "has no valid untyped init method.";
+                methodIdx = metaObject->indexOfMethod(kScreenInitFunctionTypedSignature);
+                typed = true;
+            }
+
+            initFunction = metaObject->method(methodIdx);
+
+            if (!initFunction.isValid()) {
+                qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
+                                  << "has no valid typed init method. Skipping.";
+                continue;
+            }
+
+            qCDebug(m_logger) << "Executing init on QML Scene " << screenIdentifier;
+            if (typed) {
+                success &= initFunction.invoke(i.value().get(),
+                        Qt::DirectConnection,
+                        Q_ARG(QString, controllerName),
+                        Q_ARG(bool, m_logger().isDebugEnabled()));
+            } else {
+                success &= initFunction.invoke(i.value().get(),
+                        Qt::DirectConnection,
+                        Q_ARG(QVariant, controllerName),
+                        Q_ARG(QVariant, m_logger().isDebugEnabled()));
+            }
+            // Error handling is done in ControllerScriptEngineBase, with the
+            // connection QQmlEngine::warnings ->
+            // ControllerScriptEngineBase::handleQMLErrors
+        }
+        return success;
+    }
+#endif
 }
 
 QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
@@ -459,13 +525,6 @@ bool ControllerScriptEngineLegacy::initialize() {
                         wrapFunctionCode(functionName, 2)));
     }
 
-    // m_pController is nullptr in tests.
-    const auto controllerName = m_pController ? m_pController->getName() : QString{};
-    const auto args = QJSValueList{
-            controllerName,
-            m_logger().isDebugEnabled(),
-    };
-
 #ifdef MIXXX_USE_QML
     m_engineThreadControl.setCanPause(true);
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
@@ -473,8 +532,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     }
 #endif
 
-    if (
-            !callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true)) {
+    if (!callInitFunction()) {
         shutdown();
         return false;
     }
@@ -497,7 +555,7 @@ void ControllerScriptEngineLegacy::extractTransformFunction(
         return;
     }
 
-    QMetaMethod tranformFunction;
+    QMetaMethod transformFunction;
     bool typed = false;
     int methodIdx = metaObject->indexOfMethod(kScreenTransformFunctionUntypedSignature);
 
@@ -508,9 +566,9 @@ void ControllerScriptEngineLegacy::extractTransformFunction(
         typed = true;
     }
 
-    tranformFunction = metaObject->method(methodIdx);
+    transformFunction = metaObject->method(methodIdx);
 
-    if (!tranformFunction.isValid()) {
+    if (!transformFunction.isValid()) {
         qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
                           << "has no valid typed transformFrame method. The "
                              "frame data will be sent "
@@ -523,7 +581,7 @@ void ControllerScriptEngineLegacy::extractTransformFunction(
     }
 
     m_transformScreenFrameFunctions.insert(screenIdentifier,
-            TransformScreenFrameFunction{tranformFunction, typed});
+            TransformScreenFrameFunction{transformFunction, typed});
 }
 
 bool ControllerScriptEngineLegacy::bindSceneToScreen(
@@ -560,16 +618,16 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
 }
 
 void ControllerScriptEngineLegacy::handleScreenFrame(
-        const LegacyControllerMapping::ScreenInfo& screeninfo,
+        const LegacyControllerMapping::ScreenInfo& screenInfo,
         const QImage& frame,
         const QDateTime& timestamp) {
     VERIFY_OR_DEBUG_ASSERT(
-            m_transformScreenFrameFunctions.contains(screeninfo.identifier) ||
-            m_renderingScreens.contains(screeninfo.identifier)) {
+            m_transformScreenFrameFunctions.contains(screenInfo.identifier) ||
+            m_renderingScreens.contains(screenInfo.identifier)) {
         qCWarning(m_logger) << "Unable to find transform function info for the given screen";
         return;
     };
-    VERIFY_OR_DEBUG_ASSERT(m_rootItems.contains(screeninfo.identifier)) {
+    VERIFY_OR_DEBUG_ASSERT(m_rootItems.contains(screenInfo.identifier)) {
         qCWarning(m_logger) << "Unable to find a root item for the given screen";
         return;
     };
@@ -577,7 +635,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     if (CmdlineArgs::Instance().getControllerPreviewScreens()) {
         QImage screenDebug(frame);
 
-        switch (screeninfo.endian) {
+        switch (screenInfo.endian) {
         case LegacyControllerMapping::ScreenInfo::ColorEndian::Big:
             qFromBigEndian<ushort>(frame.constBits(),
                     frame.sizeInBytes() / 2,
@@ -591,27 +649,27 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         default:
             break;
         }
-        if (screeninfo.reversedColor) {
+        if (screenInfo.reversedColor) {
             screenDebug.rgbSwap();
         }
 
-        emit previewRenderedScreen(screeninfo, screenDebug);
+        emit previewRenderedScreen(screenInfo, screenDebug);
     }
 
     QByteArray input(std::bit_cast<const char*>(frame.constBits()), frame.sizeInBytes());
-    const TransformScreenFrameFunction& tranformMethod =
-            m_transformScreenFrameFunctions[screeninfo.identifier];
+    const TransformScreenFrameFunction& transformMethod =
+            m_transformScreenFrameFunctions[screenInfo.identifier];
 
-    if (!tranformMethod.method.isValid() && screeninfo.rawData) {
-        m_renderingScreens[screeninfo.identifier]->requestSendingFrameData(m_pController, input);
+    if (!transformMethod.method.isValid() && screenInfo.rawData) {
+        m_renderingScreens[screenInfo.identifier]->requestSendingFrameData(m_pController, input);
         return;
     }
 
-    if (!tranformMethod.method.isValid()) {
+    if (!transformMethod.method.isValid()) {
         qCWarning(m_logger)
                 << "Could not find a valid transform function but the screen "
                    "doesn't accept raw data. Aborting screen rendering.";
-        m_renderingScreens[screeninfo.identifier]->stop();
+        m_renderingScreens[screenInfo.identifier]->stop();
         return;
     }
 
@@ -623,15 +681,15 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     }
     // During the frame transformation, any QML errors are considered fatal.
     setErrorsAreFatal(true);
-    bool isSuccessful = tranformMethod.typed
-            ? tranformMethod.method.invoke(
-                      m_rootItems.value(screeninfo.identifier).get(),
+    bool isSuccessful = transformMethod.typed
+            ? transformMethod.method.invoke(
+                      m_rootItems.value(screenInfo.identifier).get(),
                       Qt::DirectConnection,
                       Q_RETURN_ARG(QVariant, returnedValue),
                       Q_ARG(QVariant, input),
                       Q_ARG(QDateTime, timestamp))
-            : tranformMethod.method.invoke(
-                      m_rootItems.value(screeninfo.identifier).get(),
+            : transformMethod.method.invoke(
+                      m_rootItems.value(screenInfo.identifier).get(),
                       Qt::DirectConnection,
                       Q_RETURN_ARG(QVariant, returnedValue),
                       Q_ARG(QVariant, input),
@@ -640,7 +698,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
 
     if (!isSuccessful) {
         qCWarning(m_logger) << "Could not transform rendering buffer for screen"
-                            << screeninfo.identifier;
+                            << screenInfo.identifier;
 
         // We manually stop the screen before we trigger the shutdown procedure
         // as this last one may continue rendering process in order to perform
@@ -667,23 +725,19 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     }
 
     if (CmdlineArgs::Instance().getControllerDebug()) {
-        qCDebug(m_logger) << "Transform screen data for screen " << screeninfo.identifier
+        qCDebug(m_logger) << "Transform screen data for screen " << screenInfo.identifier
                           << "(first 64 bytes)"
                           << QByteArray(transformedFrame.toHex(' '), 128);
         m_pController->sendBytes(returnedValue.view<QByteArray>());
     }
 
-    m_renderingScreens[screeninfo.identifier]->requestSendingFrameData(
+    m_renderingScreens[screenInfo.identifier]->requestSendingFrameData(
             m_pController, transformedFrame);
 }
 #endif
 
 void ControllerScriptEngineLegacy::shutdown() {
-    // There is no js engine if the mapping was not loaded from a file but by
-    // creating a new, empty mapping LegacyMidiControllerMapping with the wizard
-    if (m_pJSEngine) {
-        callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
-    }
+    callShutdownFunction();
 
 #ifdef MIXXX_USE_QML
     m_engineThreadControl.setCanPause(false);

@@ -94,6 +94,12 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     };
 #endif
 
+    /// @brief Call the shutdown hook on the mapping script.
+    /// @return true if the hook was run successfully, or if there was none.
+    bool callShutdownFunction();
+    /// @brief Call the init hook on the mapping script.
+    /// @return true if the hook was run successfully, or if there was none.
+    bool callInitFunction();
     void shutdown() override;
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
     bool callFunctionOnObjects(const QList<QString>& scriptFunctionPrefixes,
@@ -106,6 +112,9 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QString> m_scriptFunctionPrefixes;
 #ifdef MIXXX_USE_QML
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
+    // Contains all the scenes loaded for this mapping. Key is the scene
+    // identifier (LegacyControllerMapping::ScreenInfo::identifier), value in
+    // the QML root item
     QHash<QString, std::shared_ptr<QQuickItem>> m_rootItems;
     QHash<QString, TransformScreenFrameFunction> m_transformScreenFrameFunctions;
     QList<LegacyControllerMapping::QMLModuleInfo> m_modules;
