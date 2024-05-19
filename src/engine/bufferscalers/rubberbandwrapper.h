@@ -31,5 +31,5 @@ class RubberBandWrapper {
     bool isValid() const;
 
   private:
-    std::unique_ptr<RubberBand::RubberBandStretcher> m_pInstance;
+    std::vector<std::unique_ptr<RubberBand::RubberBandStretcher>> m_pInstances;
 };
