@@ -27,6 +27,8 @@ QMap<QString, LegacyControllerMapping::ScreenInfo::ColorEndian>
 namespace {
 const mixxx::Logger kLogger("LegacyControllerMappingFileHandler");
 
+const QString kRequiredScriptFile = QStringLiteral("common-controller-scripts.js");
+
 #ifdef MIXXX_USE_QML
 
 /// Find a module directory (QML) in the mapping or system path.
@@ -165,7 +167,8 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
     }
 
     kLogger.debug() << "Adding screen" << identifier;
-    mapping->addScreenInfo(identifier,
+    mapping->addScreenInfo(LegacyControllerMapping::ScreenInfo{
+            identifier,
             QSize(width, height),
             targetFps,
             msaa,
@@ -173,7 +176,7 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
             pixelFormat,
             endian,
             reversedColor,
-            rawData);
+            rawData});
     return true;
 }
 #endif
@@ -374,11 +377,12 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
                                      .firstChildElement("file");
 
     // Default currently required file
-    mapping->addScriptFile(REQUIRED_SCRIPT_FILE,
+    mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
+            kRequiredScriptFile,
             "",
-            findScriptFile(mapping, REQUIRED_SCRIPT_FILE, systemMappingsPath),
+            findScriptFile(mapping, kRequiredScriptFile, systemMappingsPath),
             LegacyControllerMapping::ScriptFileInfo::Type::Javascript,
-            true);
+            true});
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
@@ -387,10 +391,12 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         if (file.suffix() == "qml") {
 #ifdef MIXXX_USE_QML
             QString identifier = scriptFile.attribute("identifier", "");
-            mapping->addScriptFile(filename,
+            mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
+                    filename,
                     identifier,
                     file,
-                    LegacyControllerMapping::ScriptFileInfo::Type::Qml);
+                    LegacyControllerMapping::ScriptFileInfo::Type::Qml,
+                    false});
 #else
             kLogger.warning()
                     << "Unsupported render scene for file" << file.filePath()
@@ -399,10 +405,11 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
 #endif
         } else {
             QString functionPrefix = scriptFile.attribute("functionprefix", "");
-            mapping->addScriptFile(filename,
+            mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{filename,
                     functionPrefix,
                     file,
-                    LegacyControllerMapping::ScriptFileInfo::Type::Javascript);
+                    LegacyControllerMapping::ScriptFileInfo::Type::Javascript,
+                    false});
         }
         scriptFile = scriptFile.nextSiblingElement("file");
     }

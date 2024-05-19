@@ -65,15 +65,13 @@ class LegacyControllerMapping {
 #endif
         };
 
-        ScriptFileInfo()
-                : builtin(false) {
-        }
-
-        QString name;
-        QString identifier;
-        QFileInfo file;
-        Type type;
-        bool builtin;
+        QString name;       // Name of the script file to add.
+        QString identifier; // The script's function prefix with Javascript OR
+                            // the screen identifier this QML should be run for
+                            // (or empty string).
+        QFileInfo file;     // A FileInfo object pointing to the script file.
+        Type type;          // A ScriptFileInfo::Type the specify script file type.
+        bool builtin;       // If this is true, the script won't be written to the XML.
     };
 
     // TODO (xxx): this is a temporary solution to address devices that don't
@@ -126,24 +124,9 @@ class LegacyControllerMapping {
 #endif
 
     /// Adds a script file to the list of controller scripts for this mapping.
-    /// @param filename Name of the script file to add.
-    /// @param identifier The script's function prefix with Javascript OR the
-    /// screen identifier this QML should be run for (or empty string).
-    /// @param file A FileInfo object pointing to the script file.
-    /// @param type A ScriptFileInfo::Type the specify script file type.
-    /// @param builtin If this is true, the script won't be written to the XML.
-    virtual void addScriptFile(const QString& name,
-            const QString& identifier,
-            const QFileInfo& file,
-            ScriptFileInfo::Type type = ScriptFileInfo::Type::Javascript,
-            bool builtin = false) {
-        ScriptFileInfo info;
-        info.name = name;
-        info.identifier = identifier;
-        info.file = file;
-        info.type = type;
-        info.builtin = builtin;
-        m_scripts.append(info);
+    /// @param info The script info to add.
+    virtual void addScriptFile(ScriptFileInfo info) {
+        m_scripts.append(std::move(info));
         setDirty(true);
     }
 
@@ -233,24 +216,8 @@ class LegacyControllerMapping {
     /// @param endian the pixel endian format
     /// @param reversedColor whether or not the RGB is swapped BGR
     /// @param rawData whether or not the screen is allowed to reserve bare data, not transformed
-    virtual void addScreenInfo(const QString& identifier,
-            const QSize& size,
-            uint targetFps,
-            uint msaa,
-            std::chrono::milliseconds splashoff,
-            QImage::Format pixelFormat,
-            LegacyControllerMapping::ScreenInfo::ColorEndian endian,
-            bool reversedColor,
-            bool rawData) {
-        m_screens.append(ScreenInfo{identifier,
-                size,
-                targetFps,
-                msaa,
-                splashoff,
-                pixelFormat,
-                endian,
-                reversedColor,
-                rawData});
+    virtual void addScreenInfo(ScreenInfo info) {
+        m_screens.append(std::move(info));
         setDirty(true);
     }
 
