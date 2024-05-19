@@ -26,7 +26,7 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
     if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
     }
-    m_enabled = pConfig->getValue<bool>(ConfigKey("[Keyboard]", "Enabled"));
+    m_enabled = pConfig->getValue<bool>(ConfigKey("[Keyboard]", "Enabled"), true);
 
     createKeyboardConfig();
 
@@ -239,7 +239,7 @@ void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
 }
 
 void KeyboardEventFilter::updateWidgetShortcuts() {
-    for (auto pWidget : m_widgets) {
+    for (auto* pWidget : m_widgets) {
         QString shortcutHints;
         const QList<std::pair<ConfigKey, QString>> keys = pWidget->getShortcutKeys();
         QString keyString;
@@ -255,7 +255,7 @@ void KeyboardEventFilter::updateWidgetShortcuts() {
 }
 
 void KeyboardEventFilter::clearWidgets() {
-    disconnect(this, nullptr, nullptr, nullptr);
+    disconnect();
     m_widgets.clear();
 }
 
@@ -283,8 +283,6 @@ const QString KeyboardEventFilter::buildShortcutString(
 void KeyboardEventFilter::registerMenuBarActionSetShortcut(QAction* pAction,
         const ConfigKey& command,
         const QString& defaultShortcut) {
-    VERIFY_OR_DEBUG_ASSERT(true /* reminder */) {
-    }
     const auto cmdStr = std::make_pair(command, defaultShortcut);
     m_menuBarActions.insert(pAction, cmdStr);
     pAction->setShortcut(QKeySequence(m_pKbdConfig->getValue(command, defaultShortcut)));
@@ -300,7 +298,7 @@ void KeyboardEventFilter::updateMenuBarActionShortcuts() {
     while (it.hasNext()) {
         it.next();
         const QString keyStr = m_pKbdConfig->getValue(it.value().first, it.value().second);
-        auto pAction = it.key();
+        auto* pAction = it.key();
         pAction->setShortcut(QKeySequence(keyStr));
     }
 }
