@@ -579,7 +579,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-void Library::slotRequestAddDir(const QString& dir) {
+bool Library::requestAddDir(const QString& dir) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -589,24 +589,59 @@ void Library::slotRequestAddDir(const QString& dir) {
     QDir directory(dir);
     Sandbox::createSecurityTokenForDir(directory);
 
-    if (!m_pTrackCollectionManager->addDirectory(mixxx::FileInfo(dir))) {
+    DirectoryDAO::AddResult result =
+            m_pTrackCollectionManager->addDirectory(mixxx::FileInfo(dir));
+    QString error;
+    switch (result) {
+    case DirectoryDAO::AddResult::Ok:
+        break;
+    case DirectoryDAO::AddResult::AlreadyWatching:
+        error = tr("This or a parent directory is already in your library.");
+        break;
+    case DirectoryDAO::AddResult::InvalidOrMissingDirectory:
+        error = tr(
+                "This or a listed directory does not exist or is inaccessible.\n"
+                "Aborting the operation to avoid library inconsistencies");
+        break;
+    case DirectoryDAO::AddResult::UnreadableDirectory:
+        error = tr(
+                "This directory can not be read.");
+        break;
+    case DirectoryDAO::AddResult::SqlError:
+        error = tr(
+                "An unknown error occurred.\n"
+                "Aborting the operation to avoid library inconsistencies");
+        break;
+    default:
+        return false;
+    }
+    if (!error.isEmpty()) {
         QMessageBox::information(nullptr,
-                tr("Add Directory to Library"),
-                tr("Could not add the directory to your library. Either this "
-                   "directory is already in your library or you are currently "
-                   "rescanning your library."));
+                tr("Can't add Directory to Library"),
+                tr("Could not add <b>%1</b> to your library.\n\n%2")
+                        .arg(directory.absolutePath(), error));
+        return false;
     }
-    // set at least one directory in the config file so that it will be possible
-    // to downgrade from 1.12
-    if (m_pConfig->getValueString(kLegacyDirectoryConfigKey).length() < 1) {
-        m_pConfig->set(kLegacyDirectoryConfigKey, dir);
-    }
+
+    return true;
 }
 
-void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
+bool Library::requestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
     // Remove the directory from the directory list.
-    if (!m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir))) {
-        return;
+    DirectoryDAO::RemoveResult result =
+            m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir));
+    if (result != DirectoryDAO::RemoveResult::Ok) {
+        switch (result) {
+        case DirectoryDAO::RemoveResult::NotFound:
+        case DirectoryDAO::RemoveResult::SqlError:
+            QMessageBox::information(nullptr,
+                    tr("Can't remove Directory from Library"),
+                    tr("An unknown error occurred."));
+            break;
+        default:
+            DEBUG_ASSERT(!"unreachable");
+        }
+        return false;
     }
 
     switch (removalType) {
@@ -625,32 +660,36 @@ void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType remova
         DEBUG_ASSERT(!"unreachable");
     }
 
-    // Also update the config file if necessary so that downgrading is still
-    // possible.
-    QString confDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
-
-    if (QDir(dir) == QDir(confDir)) {
-        const QList<mixxx::FileInfo> dirList =
-                m_pTrackCollectionManager->internalCollection()->loadRootDirs();
-        if (dirList.isEmpty()) {
-            // Save empty string so that an old version of mixxx knows it has to
-            // ask for a new directory.
-            m_pConfig->set(kLegacyDirectoryConfigKey, QString());
-        } else {
-            m_pConfig->set(kLegacyDirectoryConfigKey, dirList.first().location());
-        }
-    }
+    return true;
 }
 
-void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
-    m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
-
-    // also update the config file if necessary so that downgrading is still
-    // possible
-    QString conDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
-    if (oldDir == conDir) {
-        m_pConfig->set(kLegacyDirectoryConfigKey, newDir);
+bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
+    DirectoryDAO::RelocateResult result =
+            m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
+    if (result == DirectoryDAO::RelocateResult::Ok) {
+        return true;
     }
+
+    QString error;
+    switch (result) {
+    case DirectoryDAO::RelocateResult::InvalidOrMissingDirectory:
+        error = tr(
+                "This directory does not exist or is inaccessible.");
+        break;
+    case DirectoryDAO::RelocateResult::UnreadableDirectory:
+        error = tr(
+                "This directory can not be read.");
+        break;
+    default:
+        DEBUG_ASSERT(!"unreachable");
+    }
+    if (!error.isEmpty()) {
+        QMessageBox::information(nullptr,
+                tr("Relink Directory"),
+                tr("Could not relink <b>%1</b> to <b>%2</b>.\n\n%3")
+                        .arg(oldDir, newDir, error));
+    }
+    return false;
 }
 
 void Library::setFont(const QFont& font) {

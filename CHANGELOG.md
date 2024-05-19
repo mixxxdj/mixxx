@@ -209,11 +209,14 @@
   [#12989](https://github.com/mixxxdj/mixxx/pull/12989)
 * CMakeLists: Always prefer OpenGL framework on macOS
   [#13080](https://github.com/mixxxdj/mixxx/pull/13080)
+* Use capitalized Mixxx in Windows installer and start menu
+  [#13178](https://github.com/mixxxdj/mixxx/pull/13178)
 
 ### Skins
 
 * Deere: make sampler rows persist [#12928](https://github.com/mixxxdj/mixxx/pull/12928)
 * Tango: Remove unneeded waveform Singleton [#12938](https://github.com/mixxxdj/mixxx/pull/12938)
+* Tango 64: fix Main VU meter
 * Prevent possible crash in customs skins using parallel waveforms
   [#13043](https://github.com/mixxxdj/mixxx/pull/13043)
   [#12580](https://github.com/mixxxdj/mixxx/issues/12580)
@@ -222,6 +225,9 @@
 * Tooltips: update 'hotcue' with saved loop features [#12875](https://github.com/mixxxdj/mixxx/pull/12875)
 * Animate long press latching of sync button [#12990](https://github.com/mixxxdj/mixxx/pull/12990)
 * Polish fx chain controls [#12805](https://github.com/mixxxdj/mixxx/pull/12805)
+* Waveforms: draw loop gradient at the correct position
+  [#13061](https://github.com/mixxxdj/mixxx/pull/13061)
+  [#13060](https://github.com/mixxxdj/mixxx/issues/13060)
 
 ### Library
 
@@ -245,6 +251,7 @@
 * Require a minimum movement before initiating the drag&drop of tracks
   [#13135](https://github.com/mixxxdj/mixxx/pull/13135)
   [#12902](https://github.com/mixxxdj/mixxx/issues/12902)
+  [#12979](https://github.com/mixxxdj/mixxx/pull/12979)
 * iTunes/Serato/Traktor/Rhythmbox: Print error if library file could not be opened
   [#13012](https://github.com/mixxxdj/mixxx/pull/13012)
 * Playlists: improve table update after deleting (purging) track files
@@ -278,6 +285,9 @@
 * Fix FLAC recording on macOS and Windows
   [#10880](https://github.com/mixxxdj/mixxx/issues/10880)
   [#13154](https://github.com/mixxxdj/mixxx/pull/13154)
+* LV Mix EQ: Fix pops when enabling in effect rack
+  [#13055](https://github.com/mixxxdj/mixxx/issues/13055)
+  [#13073](https://github.com/mixxxdj/mixxx/pull/13073)
 
 ## [2.4.0](https://github.com/mixxxdj/mixxx/milestone/15?closed=1) (2024-02-16)
 

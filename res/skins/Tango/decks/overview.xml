@@ -26,6 +26,9 @@ Variables:
     <PlayPosColor>#FF4300</PlayPosColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+    <SlipBorderTopOutlineSize><Variable name="SlipBorderTopOutlineSize"/></SlipBorderTopOutlineSize>
+    <SlipBorderBottomOutlineSize><Variable name="SlipBorderBottomOutlineSize"/></SlipBorderBottomOutlineSize>
     <LabelTextColor>#ffffff</LabelTextColor>
     <LabelBackgroundColor>#85000000</LabelBackgroundColor>
     <DefaultMark>

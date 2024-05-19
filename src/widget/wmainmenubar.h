@@ -38,6 +38,10 @@ class WMainMenuBar : public QMenuBar {
     WMainMenuBar(QWidget* pParent,
             UserSettingsPointer pConfig,
             std::shared_ptr<KeyboardEventFilter> pKbd);
+#ifndef __APPLE__
+    void hideMenuBar();
+    void showMenuBar();
+#endif
 
   public slots:
     void onLibraryScanStarted();
@@ -52,6 +56,9 @@ class WMainMenuBar : public QMenuBar {
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
     void onKeywheelChange(int state);
+#ifndef __APPLE__
+    void slotToggleMenuBar();
+#endif
 
   signals:
     void createCrate();
@@ -84,6 +91,9 @@ class WMainMenuBar : public QMenuBar {
     void internalOnNewSkinAboutToLoad();
 
   private slots:
+#ifndef __APPLE__
+    void slotAutoHideMenuBarToggled(bool autoHide);
+#endif
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
     void slotDeveloperDebugger(bool toggle);
@@ -91,6 +101,11 @@ class WMainMenuBar : public QMenuBar {
 
   private:
     void initialize();
+#ifndef __APPLE__
+    /// this ensures the menubar is shown when a menu hotkey is pressed
+    /// while the menubar is hidden
+    void connectMenuToSlotShowMenuBar(const QMenu* pMenu);
+#endif
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;

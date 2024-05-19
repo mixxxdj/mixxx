@@ -206,6 +206,24 @@
       </item>
 
       <item row="3" column="0">
+       <widget class="QLabel" name="labelHideMenuBarOption">
+        <property name="text">
+         <string>Menu bar</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxHideMenuBar</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxHideMenuBar">
+        <property name="text">
+         <string>Auto-hide the menu bar, toggle it with a single Alt key press</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="4" column="0">
        <widget class="QLabel" name="labelTooltips">
         <property name="enabled">
          <bool>true</bool>
@@ -224,7 +242,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1" colspan="2">
+      <item row="4" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QRadioButton" name="radioButtonTooltipsOff">
@@ -259,14 +277,14 @@
        </layout>
       </item>
 
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Screen saver</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1" colspan="2">
+      <item row="5" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
       <item row="5" column="0">
@@ -304,6 +322,7 @@
   <tabstop>ComboBoxLocale</tabstop>
   <tabstop>spinBoxScaleFactor</tabstop>
   <tabstop>checkBoxStartFullScreen</tabstop>
+  <tabstop>checkBoxHideMenuBar</tabstop>
   <tabstop>radioButtonTooltipsOff</tabstop>
   <tabstop>radioButtonTooltipsLibrary</tabstop>
   <tabstop>radioButtonTooltipsLibraryAndSkin</tabstop>

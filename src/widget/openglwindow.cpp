@@ -18,6 +18,9 @@ OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
     // width and minimum height of 100 pixels).
     setFlag(Qt::FramelessWindowHint);
 #endif
+    // Set the tooltip flag to prevent this window/widget from getting
+    // keyboard focus on click.
+    setFlag(Qt::ToolTip);
 }
 
 OpenGLWindow::~OpenGLWindow() {

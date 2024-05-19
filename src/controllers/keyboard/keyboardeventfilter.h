@@ -56,6 +56,10 @@ class KeyboardEventFilter : public QObject {
     // We're only the relay here: CoreServices -> this -> WBaseWidget
     void shortcutsEnabled(bool enabled);
 
+#ifndef __APPLE__
+    void altPressedWithoutKeys();
+#endif
+
   private:
     struct KeyDownInformation {
         KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)
@@ -89,6 +93,9 @@ class KeyboardEventFilter : public QObject {
     // Pointer to keyboard config object
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     QLocale m_locale;
+#ifndef __APPLE__
+    bool m_altPressedWithoutKey;
+#endif
     bool m_enabled;
 
     QFileSystemWatcher m_fileWatcher;

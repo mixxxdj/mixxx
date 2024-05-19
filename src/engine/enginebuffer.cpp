@@ -651,12 +651,18 @@ void EngineBuffer::notifyTrackLoaded(
     }
 
     if (pNewTrack) {
-        connect(
-                pNewTrack.get(),
+        connect(pNewTrack.get(),
                 &Track::beatsUpdated,
                 this,
                 &EngineBuffer::slotUpdatedTrackBeats,
                 Qt::DirectConnection);
+        connect(pNewTrack.get(),
+                &Track::bpmLockChanged,
+                m_pBpmControl,
+                &BpmControl::trackBpmLockChanged,
+                Qt::DirectConnection);
+        bool bpmLocked = pNewTrack.get()->isBpmLocked();
+        m_pBpmControl->trackBpmLockChanged(bpmLocked);
     }
 
     // Inform BaseTrackPlayer via a queued connection

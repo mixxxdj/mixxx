@@ -86,6 +86,20 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
     return false;
 }
 
+QStringList PlayerInfo::getPlayerGroupsWithTracksLoaded(const TrackPointerList& tracks) const {
+    const auto locker = lockMutex(&m_mutex);
+    QStringList groups;
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        TrackPointer pLoadedTrack = it.value();
+        if (pLoadedTrack && tracks.contains(pLoadedTrack)) {
+            groups.append(it.key());
+        }
+    }
+    return groups;
+}
+
 QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {
     const auto locker = lockMutex(&m_mutex);
     QMap<QString, TrackPointer> ret = m_loadedTrackMap;

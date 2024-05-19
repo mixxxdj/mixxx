@@ -213,7 +213,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "True"
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
     REM CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"

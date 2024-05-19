@@ -149,44 +149,48 @@ QStringList TrackCollection::getRootDirStrings() const {
     return m_directoryDao.getRootDirStrings();
 }
 
-bool TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
+DirectoryDAO::AddResult TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.addDirectory(rootDir)) {
+    DirectoryDAO::AddResult result = m_directoryDao.addDirectory(rootDir);
+    switch (result) {
     case DirectoryDAO::AddResult::Ok:
         transaction.commit();
-        return true;
+        break;
     case DirectoryDAO::AddResult::AlreadyWatching:
-        return true;
     case DirectoryDAO::AddResult::InvalidOrMissingDirectory:
+    case DirectoryDAO::AddResult::UnreadableDirectory:
     case DirectoryDAO::AddResult::SqlError:
-        return false;
+        break;
     default:
         DEBUG_ASSERT("unreachable");
+        return DirectoryDAO::AddResult::SqlError;
     }
-    return false;
+    return result;
 }
 
-bool TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
+DirectoryDAO::RemoveResult TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.removeDirectory(rootDir)) {
+    DirectoryDAO::RemoveResult result = m_directoryDao.removeDirectory(rootDir);
+    switch (result) {
     case DirectoryDAO::RemoveResult::Ok:
         transaction.commit();
-        return true;
+        break;
     case DirectoryDAO::RemoveResult::NotFound:
-        return true;
     case DirectoryDAO::RemoveResult::SqlError:
-        return false;
+        break;
     default:
         DEBUG_ASSERT("unreachable");
+        return DirectoryDAO::RemoveResult::SqlError;
     }
-    return false;
+    return result;
 }
 
-void TrackCollection::relocateDirectory(const QString& oldDir, const QString& newDir) {
+DirectoryDAO::RelocateResult TrackCollection::relocateDirectory(
+        const QString& oldDir, const QString& newDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // We only call this method if the user has picked a relocated directory via
@@ -198,19 +202,22 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
     Sandbox::createSecurityTokenForDir(QDir(newDir));
 
     SqlTransaction transaction(m_database);
-    QList<RelocatedTrack> relocatedTracks =
-            m_directoryDao.relocateDirectory(oldDir, newDir);
+    DirectoryDAO::RelocateResult result;
+    QList<RelocatedTrack> relocatedTracks;
+    std::tie(result, relocatedTracks) = m_directoryDao.relocateDirectory(oldDir, newDir);
     transaction.commit();
 
-    if (relocatedTracks.isEmpty()) {
-        // No tracks moved
-        return;
+    if (result != DirectoryDAO::RelocateResult::Ok || relocatedTracks.isEmpty()) {
+        // Error or no tracks moved
+        return result;
     }
 
     // Inform the TrackDAO about the changes
     m_trackDao.slotDatabaseTracksRelocated(std::move(relocatedTracks));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
+
+    return result;
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(

@@ -48,17 +48,18 @@ void TableItemDelegate::paint(
     if (option.state & QStyle::State_Selected) {
         painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
     } else {
-        // This gets the custom 'played' text color from BaseTrackTableModel
-        // depending on check state of the 'played' column.
+        // This gets the custom 'missing' or played text color from BaseTrackTableModel
+        // depending on check state of the (hidden) 'missing' (fs_deleted)
+        // or 'played' columns.
         // Note that we need to do this again in BPMDelegate which uses the
         // style of the TableView.
-        auto playedColorData = index.data(Qt::ForegroundRole);
-        if (playedColorData.canConvert<QColor>()) {
-            QColor playedColor = playedColorData.value<QColor>();
+        auto customColorData = index.data(Qt::ForegroundRole);
+        if (customColorData.canConvert<QColor>()) {
+            QColor customColor = customColorData.value<QColor>();
             // for the star rating polygons
-            painter->setBrush(playedColor);
+            painter->setBrush(customColor);
             // for the 'location' text
-            painter->setPen(playedColor);
+            painter->setPen(customColor);
         } else {
             painter->setBrush(option.palette.color(cg, QPalette::Text));
         }

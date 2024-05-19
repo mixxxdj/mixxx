@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QStack>
 #include <QUrl>
 
 #include "audio/streaminfo.h"
@@ -15,6 +16,7 @@
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
+#include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {
@@ -348,6 +350,11 @@ class Track : public QObject {
     bool trySetBeats(mixxx::BeatsPointer pBeats);
     bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
+    void undoBeatsChange();
+    bool canUndoBeatsChange() const {
+        return !m_pBeatsUndoStack.isEmpty();
+    }
+
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!
     ///
@@ -425,6 +432,7 @@ class Track : public QObject {
     void trackTotalChanged(const QString&);
     void commentChanged(const QString&);
     void bpmChanged();
+    void bpmLockChanged(bool locked);
     void keyChanged();
     void timesPlayedChanged();
     void durationChanged();
@@ -561,6 +569,9 @@ class Track : public QObject {
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;
+    QStack<mixxx::BeatsPointer> m_pBeatsUndoStack;
+    bool m_undoingBeatsChange;
+    PerformanceTimer m_beatChangeTimer;
 
     // Visual waveform data
     ConstWaveformPointer m_waveform;

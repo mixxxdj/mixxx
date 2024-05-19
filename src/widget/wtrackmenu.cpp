@@ -27,6 +27,7 @@
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -498,6 +499,12 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotClearBeats);
+
+        m_pBpmUndoAction = new QAction(tr("Undo last BPM/beats change"), m_pBPMMenu);
+        connect(m_pBpmUndoAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotUndoBeatsChange);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -613,7 +620,7 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmResetAction);
-        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmUndoAction);
 
         addMenu(m_pBPMMenu);
     }
@@ -1014,6 +1021,7 @@ void WTrackMenu::updateMenus() {
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
+            m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
 
             // Append scaled BPM preview for single selection
             if (singleTrackSelected) {
@@ -1196,6 +1204,21 @@ TrackPointer WTrackMenu::getFirstTrackPointer() const {
         return TrackPointer();
     }
     return m_pTrack;
+}
+
+TrackPointerList WTrackMenu::getTrackPointers() const {
+    TrackPointerList tracks;
+    if (m_pTrackModel) {
+        for (const auto& index : m_trackIndexList) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                tracks.append(pTrack);
+            }
+        }
+    } else {
+        tracks.append(m_pTrack);
+    }
+    return tracks;
 }
 
 std::unique_ptr<mixxx::TrackPointerIterator> WTrackMenu::newTrackPointerIterator() const {
@@ -1646,6 +1669,50 @@ void WTrackMenu::slotScaleBpm(mixxx::Beats::BpmScale scale) {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+}
+
+namespace {
+
+class UndoBeatsChangeTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit UndoBeatsChangeTrackPointerOperation() {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        if (pTrack->isBpmLocked()) {
+            return;
+        }
+        pTrack->undoBeatsChange();
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotUndoBeatsChange() {
+    const auto progressLabelText =
+            tr("Undo BPM/beats change of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            UndoBeatsChangeTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+bool WTrackMenu::canUndoBeatsChange() const {
+    const auto pTrackPointerIterator = newTrackPointerIterator();
+    if (!pTrackPointerIterator) {
+        // Empty, i.e. nothing to do
+        return false;
+    }
+    while (auto nextTrackPointer = pTrackPointerIterator->nextItem()) {
+        const auto pTrack = *nextTrackPointer;
+        if (!pTrack->canUndoBeatsChange()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 namespace {
@@ -2212,7 +2279,9 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         QString delWarningText;
         if (m_pTrackModel) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            delWarningText = tr("Move these files to the trash bin?");
+#else
             delWarningText = tr("Permanently delete these files from disk?") +
                     QStringLiteral("<br><br><b>") +
                     tr("This can not be undone!") + QStringLiteral("</b>");
@@ -2220,13 +2289,23 @@ void WTrackMenu::slotRemoveFromDisk() {
         } else { // track menu of track labels
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 
-            delWarningText = tr("Stop the deck and move this track file to the trash bin?");
+            delWarningText = tr("Move this track file to the trash bin?");
 #else
             delWarningText =
-                    tr("Stop the deck and permanently delete this track file from disk?") +
+                    tr("Permanently delete this track file from disk?") +
                     QStringLiteral("<br><br><b>") +
                     tr("This can not be undone!") + QStringLiteral("</b>");
 #endif
+        }
+        delWarningText.append(QStringLiteral("<br><br>"));
+        if (m_pTrackModel) {
+            delWarningText.append(tr(
+                    "All decks where these tracks are loaded will be "
+                    "stopped and the tracks will be ejected."));
+        } else {
+            delWarningText.append(tr(
+                    "All decks where this track is loaded will be "
+                    "stopped and the track will be ejected."));
         }
 
         // Setup the warning message and dialog buttons
@@ -2274,24 +2353,19 @@ void WTrackMenu::slotRemoveFromDisk() {
         }
     }
 
-    // If the operation was initiated from a deck's track menu
-    // we'll first stop the deck and eject the track.
-    // TODO(ronso0) Consider querying PlayerManager if any of the tracks is loaded
-    // into another (playing?) deck?
-    // Also (rare situation) the track we work on might have been replaced (in the deck)
-    // by another one in the mean time (Auto DJ) and we would unnecessarily stop & eject.
-    // Ideally, there would be a PlayerManager instance that does
-    // stopAndEjectAllPlayersWithTrackLoaded(TrackPointer / TrackId)
+    // Try to keep a usable index for navigation if the track is in the
+    // current track view.
     bool restoreViewState = false;
-    if (m_pTrack) {
-        ControlObject::set(ConfigKey(m_deckGroup, "stop"), 1.0);
-        ControlObject::set(ConfigKey(m_deckGroup, "eject"), 1.0);
-        // Try to keep a usable index for navigation if the track is in the
-        // current track view.
-        if (m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId())) {
-            restoreViewState = true;
-            emit saveCurrentViewState();
-        }
+    if (m_pTrack && m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId())) {
+        restoreViewState = true;
+        emit saveCurrentViewState();
+    }
+    // Stop all affected decks and eject tracks.
+    const TrackPointerList tracks = getTrackPointers();
+    const QStringList groups = PlayerInfo::instance().getPlayerGroupsWithTracksLoaded(tracks);
+    for (const QString& group : groups) {
+        ControlObject::set(ConfigKey(group, "stop"), 1.0);
+        ControlObject::set(ConfigKey(group, "eject"), 1.0);
     }
 
     // Set up and initiate the track batch operation

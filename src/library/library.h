@@ -86,6 +86,10 @@ class Library: public QObject {
         return m_trackTableFont;
     }
 
+    bool selectedClickEnabled() const {
+        return m_editMetadataSelectedClick;
+    }
+
     //static Library* buildDefaultLibrary();
 
     static const int kDefaultRowHeightPx;
@@ -97,6 +101,10 @@ class Library: public QObject {
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
+
+    bool requestAddDir(const QString& directory);
+    bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
+    bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
 
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
@@ -111,9 +119,6 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotRequestAddDir(const QString& directory);
-    void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
-    void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;

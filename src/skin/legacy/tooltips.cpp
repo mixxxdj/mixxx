@@ -435,6 +435,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust Beatgrid")
             << tr("Adjust beatgrid to match another playing deck.");
 
+    add("beats_undo_adjustment")
+            << tr("Revert last BPM/Beatgrid Change")
+            << tr("Revert last BPM/Beatgrid Change of the loaded track.");
+
     //this is a special case, in some skins we might display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
@@ -696,17 +700,28 @@ void Tooltips::addStandardTooltips() {
             << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
 
-    add("vinylcontrol_enabled")
-            << tr("Enable Vinyl Control")
-            << tr("When disabled, the track is controlled by Mixxx playback controls.")
-            << tr("When enabled, the track responds to external vinyl control.");
+    QStringList vcStatus;
+    vcStatus << tr("Provides visual feedback for vinyl control status:")
+             << tr("Green for control enabled.")
+             << tr("Blinking yellow for when the needle reaches the end of the "
+                   "record.")
+             << tr("Red for when needle skip has been detected.");
+    QStringList vcEnabled;
+    vcEnabled << tr("Enable Vinyl Control")
+              << tr("When disabled, the track is controlled by Mixxx playback "
+                    "controls.")
+              << tr("When enabled, the track responds to external vinyl "
+                    "control.");
+
+    add("vinylcontrol_enabled") << vcEnabled;
 
     add("vinylcontrol_status")
-            << tr("Vinyl Status")
-            << tr("Provides visual feedback for vinyl control status:")
-            << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Blue for passthrough enabled.");
+            << tr("Vinyl Status") << vcStatus;
+
+    add("vinylcontrol_enabled_status")
+            << vcEnabled
+            << " " // generates a linebreak. \n would result in two linebrekas.
+            << vcStatus;
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
