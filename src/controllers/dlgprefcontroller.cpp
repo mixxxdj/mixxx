@@ -41,8 +41,8 @@ QString mappingNameToPath(const QString& directory, const QString& mappingName) 
 const QString kBuiltinFileSuffix =
         QStringLiteral(" (") + QObject::tr("built-in") + QStringLiteral(")");
 
-/// @brief  Format a controller file to display attributes (system, missing) in the UI
-/// @return The formatted string
+/// @brief  Format a controller file to display attributes (system, missing) in the UI.
+/// @return The formatted string.
 QString formatFilePath(UserSettingsPointer pConfig,
         QColor linkColor,
         const QString& name,

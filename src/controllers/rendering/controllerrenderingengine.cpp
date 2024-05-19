@@ -23,7 +23,7 @@
 #include "util/time.h"
 #include "util/timer.h"
 
-// Used in the renderFrame method to properly abort the rendering and terminate the engine
+// Used in the renderFrame method to properly abort the rendering and terminate the engine.
 #define VERIFY_OR_TERMINATE(cond, msg) \
     VERIFY_OR_DEBUG_ASSERT(cond) {     \
         kLogger.warning() << msg;      \
@@ -172,7 +172,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_offscreenSurface = std::make_unique<QOffscreenSurface>();
     m_offscreenSurface->setFormat(m_context->format());
 
-    // offscreen surface needs to be created from application main thread
+    // offscreen surface needs to be created from application main thread.
     VERIFY_OR_DEBUG_ASSERT(QMetaObject::invokeMethod(
                                    qApp,
                                    [this] {
@@ -219,7 +219,7 @@ void ControllerRenderingEngine::finish() {
                 });
         m_quickWindow.reset();
 
-        // Free the engine and FBO
+        // Free the engine and FBO.
         m_fbo.reset();
 
         m_context->doneCurrent();
@@ -304,7 +304,7 @@ void ControllerRenderingEngine::renderFrame() {
     m_renderControl->render();
     m_renderControl->endFrame();
 
-    // Flush any remaining GL errors
+    // Flush any remaining GL errors.
     while ((glError = m_context->functions()->glGetError()) != GL_NO_ERROR) {
         kLogger.debug() << "Retrieved a previously unhandled GL error: " << glError;
     }
@@ -381,7 +381,7 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
 
 bool ControllerRenderingEngine::event(QEvent* event) {
     // In case there is a request for update (e.g using QWindow::requestUpdate),
-    // we emit the signal to request rendering using the engine
+    // we emit the signal to request rendering using the engine.
     if (event->type() == QEvent::UpdateRequest) {
         renderFrame();
         return true;

@@ -110,28 +110,28 @@ class LegacyControllerMapping {
             Little = static_cast<int>(std::endian::little),
         };
 
-        QString identifier; // The screen identifier
-        QSize size;         // the size of the screen
-        uint target_fps;    // the maximum FPS to render
-        uint msaa;          // the MSAA value to use for render
+        QString identifier; // The screen identifier.
+        QSize size;         // The size of the screen.
+        uint target_fps;    // The maximum FPS to render.
+        uint msaa;          // The MSAA value to use for render.
         std::chrono::milliseconds
-                splash_off;         // the rendering grace time given when the screen is
-                                    // requested to shutdown
-        QImage::Format pixelFormat; // the pixel encoding format
-        ColorEndian endian;         // the pixel endian format
-        bool reversedColor;         // whether or not the RGB is swapped BGR
-        bool rawData;               // whether or not the screen is allowed to receive bare
-                                    // data, not transformed
+                splash_off;         // The rendering grace time given when the screen is
+                                    // requested to shutdown.
+        QImage::Format pixelFormat; // The pixel encoding format.
+        ColorEndian endian;         // The pixel endian format.
+        bool reversedColor;         // Whether or not the RGB is swapped BGR.
+        bool rawData;               // Whether or not the screen is allowed to receive bare
+                                    // data, not transformed.
     };
 #endif
 
     /// Adds a script file to the list of controller scripts for this mapping.
-    /// @param filename Name of the script file to add
+    /// @param filename Name of the script file to add.
     /// @param identifier The script's function prefix with Javascript OR the
-    /// screen identifier this QML should be run for (or empty string)
-    /// @param file A FileInfo object pointing to the script file
-    /// @param type A ScriptFileInfo::Type the specify script file type
-    /// @param builtin If this is true, the script won't be written to the XML
+    /// screen identifier this QML should be run for (or empty string).
+    /// @param file A FileInfo object pointing to the script file.
+    /// @param type A ScriptFileInfo::Type the specify script file type.
+    /// @param builtin If this is true, the script won't be written to the XML.
     virtual void addScriptFile(const QString& name,
             const QString& identifier,
             const QFileInfo& file,

@@ -285,7 +285,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     }
 
 #ifdef MIXXX_USE_QML
-    // During the initialisation, any QML errors are considered fatal
+    // During the initialisation, any QML errors are considered fatal.
     setErrorsAreFatal(true);
     QMap<QString, std::shared_ptr<ControllerRenderingEngine>> availableScreens;
 
@@ -312,7 +312,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             }
 
             // Rename the ControllerRenderingEngine with the actual screen
-            // identifier to help debbuging
+            // identifier to help debugging.
             availableScreens.value(screen.identifier)
                     ->thread()
                     ->setObjectName(
@@ -479,7 +479,7 @@ bool ControllerScriptEngineLegacy::initialize() {
         return false;
     }
 #ifdef MIXXX_USE_QML
-    // At runtime, QML errors aren't considered fatal anymore now that the engine has started
+    // At runtime, QML errors aren't considered fatal anymore now that the engine has started.
     setErrorsAreFatal(false);
 #endif
 
@@ -551,7 +551,7 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
             &ControllerScriptEngineLegacy::handleScreenFrame);
     m_renderingScreens.insert(screenIdentifier, pScreen);
     m_rootItems.insert(screenIdentifier, pScene);
-    // In case a rendering issue occurs, we need to shutdown the controller
+    // In case a rendering issue occurs, we need to shutdown the controller.
     connect(pScreen.get(),
             &ControllerRenderingEngine::stopping,
             this,
@@ -621,7 +621,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         qCWarning(m_logger) << "Controller JS engine has an unhandled error. Discarding.";
         qCDebug(m_logger) << "Controller JS error is:" << m_pJSEngine->catchError().toString();
     }
-    // During the frame transformation, any QML errors are considered fatal
+    // During the frame transformation, any QML errors are considered fatal.
     setErrorsAreFatal(true);
     bool isSuccessful = tranformMethod.typed
             ? tranformMethod.method.invoke(
@@ -644,7 +644,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
 
         // We manually stop the screen before we trigger the shutdown procedure
         // as this last one may continue rendering process in order to perform
-        // screen splash off
+        // screen splash off.
         shutdown();
         return;
     }
@@ -687,7 +687,7 @@ void ControllerScriptEngineLegacy::shutdown() {
 
 #ifdef MIXXX_USE_QML
     m_engineThreadControl.setCanPause(false);
-    // Wait till the splash off animation has finished rendering
+    // Wait till the splash off animation has finished rendering.
     std::chrono::milliseconds maxSplashOffDuration{};
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         if (!pScreen->isRunning()) {
@@ -708,7 +708,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         // When stopping, the rendering engine emits an event which triggers the
         // shutdown in case it was initiated following a rendering issue. We
-        // need to disconnect first before stopping
+        // need to disconnect first before stopping.
         pScreen->disconnect(this);
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {

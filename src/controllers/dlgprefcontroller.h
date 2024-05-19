@@ -65,9 +65,9 @@ class DlgPrefController : public DlgPreferencePage {
     void enableWizardAndIOTabs(bool enable);
 
 #ifdef MIXXX_USE_QML
-    // Onboard screen controller
+    // Onboard screen controller.
     void slotShowPreviewScreens(std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine);
-    // Wrapper used on shutdown
+    // Wrapper used on shutdown.
     void slotClearPreviewScreens() {
         slotShowPreviewScreens(nullptr);
     }

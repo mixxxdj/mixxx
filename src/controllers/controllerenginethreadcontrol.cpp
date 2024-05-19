@@ -62,7 +62,7 @@ void ControllerEngineThreadControl::setCanPause(bool canPause) {
         // New signals may have been queued emitted requesting for pause, so we
         // manually process the event loop now to clear and handle those, before
         // disabling pausing. Without this, thread requesting pause will stay
-        // stuck waiting on the condvar
+        // stuck waiting on the condvar.
         lock.unlock();
         QCoreApplication::processEvents();
         lock.relock();

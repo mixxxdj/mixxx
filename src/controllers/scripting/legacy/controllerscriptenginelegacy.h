@@ -64,9 +64,9 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             const QDateTime& timestamp);
 
   signals:
-    /// Emitted when a screen has been rendered
+    /// Emitted when a screen has been rendered.
     // TODO (XXX) Move this signal in ControllerScriptEngineBase when ScreenInfo
-    // isn't tight to LegacyControllerMapping anymore
+    // isn't tight to LegacyControllerMapping anymore.
     void previewRenderedScreen(const LegacyControllerMapping::ScreenInfo& screen, QImage frame);
 #endif
 
