@@ -53,4 +53,5 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void setSourceOfCurrentDragDropEvent(QObject* pSource);
 
     int m_hoverExpandDelay;
+    QModelIndex m_autoExpandIndex;
 };
