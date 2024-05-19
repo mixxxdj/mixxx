@@ -13,7 +13,8 @@
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
-          m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault) {
+          m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault),
+          m_hoverCollapseDelay(mixxx::library::prefs::kSidebarHoverCollapseDelayDefault) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
@@ -136,6 +137,11 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
 
     if (m_autoExpandIndex != index) {
         m_autoExpandIndex = index;
+        if (isExpanded(index)) {
+            setAutoExpandDelay(m_hoverCollapseDelay);
+        } else {
+            setAutoExpandDelay(m_hoverExpandDelay);
+        }
         // QTreeView::dragMoveEvent just restarts the autoExpand timer
         // and then calls QAbstractItemView::dragMoveEvent
         setSourceOfCurrentDragDropEvent(pEvent->source());
@@ -477,7 +483,7 @@ void WLibrarySidebar::slotSetFont(const QFont& font) {
     setIconSize(QSize(iconSize, iconSize));
 }
 
-void WLibrarySidebar::slotSetExpandOnHoverDelay(int delay) {
-    m_hoverExpandDelay = delay;
-    setAutoExpandDelay(m_hoverExpandDelay);
+void WLibrarySidebar::slotSetExpandCollapseOnHoverDelay(int expandDelay, int collapseDelay) {
+    m_hoverExpandDelay = expandDelay;
+    m_hoverCollapseDelay = collapseDelay;
 }
