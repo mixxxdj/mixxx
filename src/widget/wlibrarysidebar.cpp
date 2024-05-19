@@ -83,6 +83,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
 /// or when the drag is aborted through Escape or other means.
 void WLibrarySidebar::dragLeaveEvent(QDragLeaveEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dragLeaveEvent";
+    m_autoExpandIndex = QModelIndex();
     toggleDragHoverPropertyAndUpdateStyle(false);
 
     QTreeView::dragLeaveEvent(pEvent);
@@ -101,22 +102,58 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     // actual data being dragged is supported, e.g. whether it is
     // a list of valid track URLs.
     //
-    // Note: We go through QTreeView here instead of directly calling
-    // SidebarModel to retain other useful features from the base class,
-    // like e.g. auto-scroll behavior when the mouse cursor reaches
-    // the boundaries of the tree view.
+    // Note: We go through QTreeView/QAbstractItemView here, instead of
+    // directly calling SidebarModel, to retain other useful features
+    // from the base class, like e.g. auto-scroll behavior when the mouse
+    // cursor reaches the boundaries of the tree view.
     //
     // Note: pEvent->source() will be NULL if something is dropped
     // from a different application. This knowledge is used
     // inside the LibraryFeature implementations.
-    setSourceOfCurrentDragDropEvent(pEvent->source());
-    QTreeView::dragMoveEvent(pEvent);
-    setSourceOfCurrentDragDropEvent(nullptr);
+
+    // ========================================================================
+    // Fix autoExpand timer reset behavior (workaround for bug in Qt framework)
+    //
+    // Starting with at least Qt 5.0.0 (released in 2011) and still present
+    // in current versions of Qt (Qt 6.8.0 at the time of this commit), there
+    // is a bug in the implementation of QTreeView::dragMoveEvent and autoExpandDelay:
+    //
+    // QT BUG DESCRIPTION
+    //
+    // Instead of resetting the delay timer whenever the mouse moves to a
+    // new item, it is reset on every little mouse movement, which makes
+    // autoExpand useless e.g. on laptop touchpads.
+    //
+    // OUR WORKAROUND
+    //
+    // Only reset the delay timer whenever the mouse has moved to a new item,
+    // by bypassing QTreeView::dragMoveEvent() and directly calling
+    // QAbstractItemView::dragMoveEvent() instead unless the mouse
+    // has moved to a new item.
+    // ========================================================================
+    const QPoint pos = pEvent->position().toPoint();
+    const QModelIndex index = indexAt(pos);
+
+    if (m_autoExpandIndex != index) {
+        m_autoExpandIndex = index;
+        // QTreeView::dragMoveEvent just restarts the autoExpand timer
+        // and then calls QAbstractItemView::dragMoveEvent
+        setSourceOfCurrentDragDropEvent(pEvent->source());
+        QTreeView::dragMoveEvent(pEvent);
+        setSourceOfCurrentDragDropEvent(nullptr);
+    } else {
+        // Skip resetting the autoExpand timer (see above)
+        // because we are still hovering over the same item
+        setSourceOfCurrentDragDropEvent(pEvent->source());
+        QAbstractItemView::dragMoveEvent(pEvent);
+        setSourceOfCurrentDragDropEvent(nullptr);
+    }
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dropEvent";
+    m_autoExpandIndex = QModelIndex();
     toggleDragHoverPropertyAndUpdateStyle(false);
 
     // QTreeView::dropEvent will, through some indirection, call
