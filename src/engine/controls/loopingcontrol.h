@@ -11,6 +11,7 @@
 
 class ControlPushButton;
 class ControlObject;
+class ControlProxy;
 class RateControl;
 class LoopMoveControl;
 class BeatJumpControl;
@@ -61,6 +62,14 @@ class LoopingControl : public EngineControl {
         Changed, // force the playposition to be inside the loop after adjusting it.
         MovedOut,
         None,
+    };
+
+    enum class LoopAnchorPoint {
+        Start, // The loop has been defined by its start point. Adjusting the
+               // size will move the end point
+        End,   // The loop has been defined by its end point. Adjusting the size
+               // will move the end point
+        None,  // Used to indicate the end of the enum type and the null type
     };
 
     struct LoopInfo {
@@ -114,12 +123,20 @@ class LoopingControl : public EngineControl {
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
-    void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
+    void slotBeatLoop(double loopSize,
+            bool keepSetPoint = false,
+            bool enable = true,
+            LoopingControl::LoopAnchorPoint forcedAnchor =
+                    LoopingControl::LoopAnchorPoint::None);
     void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
     void slotBeatLoopRollActivate(double pressed);
-    void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
-    void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
+    void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl,
+            LoopingControl::LoopAnchorPoint forcedAnchor =
+                    LoopingControl::LoopAnchorPoint::None);
+    void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl,
+            LoopingControl::LoopAnchorPoint forcedAnchor =
+                    LoopingControl::LoopAnchorPoint::None);
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl);
 
@@ -174,6 +191,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
+    ControlPushButton* m_pCOLoopAnchor;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInGotoButton;
     ControlPushButton* m_pLoopOutButton;
@@ -279,7 +297,6 @@ class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
     BeatLoopingControl(const QString& group, double size);
-    virtual ~BeatLoopingControl();
 
     void activate();
     void deactivate();
@@ -288,22 +305,29 @@ class BeatLoopingControl : public QObject {
     }
   public slots:
     void slotLegacy(double value);
-    void slotActivate(double value);
-    void slotActivateRoll(double value);
-    void slotToggle(double value);
+    void slotActivate(double value, LoopingControl::LoopAnchorPoint forcedAnchor);
+    void slotActivateRoll(double value, LoopingControl::LoopAnchorPoint forcedAnchor);
+    void slotToggle(double value, LoopingControl::LoopAnchorPoint forcedAnchor);
+  private slots:
+    void slotReverseActivate(double value);
+    void slotReverseActivateRoll(double value);
+    void slotReverseToggle(double value);
 
   signals:
-    void activateBeatLoop(BeatLoopingControl*);
+    void activateBeatLoop(BeatLoopingControl*, LoopingControl::LoopAnchorPoint forcedAnchor);
     void deactivateBeatLoop(BeatLoopingControl*);
-    void activateBeatLoopRoll(BeatLoopingControl*);
+    void activateBeatLoopRoll(BeatLoopingControl*, LoopingControl::LoopAnchorPoint forcedAnchor);
     void deactivateBeatLoopRoll(BeatLoopingControl*);
 
   private:
     double m_dBeatLoopSize;
     bool m_bActive;
-    ControlPushButton* m_pLegacy;
-    ControlPushButton* m_pActivate;
-    ControlPushButton* m_pActivateRoll;
-    ControlPushButton* m_pToggle;
-    ControlObject* m_pEnabled;
+    std::unique_ptr<ControlPushButton> m_pLegacy;
+    std::unique_ptr<ControlPushButton> m_pActivate;
+    std::unique_ptr<ControlPushButton> m_pRActivate;
+    std::unique_ptr<ControlPushButton> m_pActivateRoll;
+    std::unique_ptr<ControlPushButton> m_pRActivateRoll;
+    std::unique_ptr<ControlPushButton> m_pToggle;
+    std::unique_ptr<ControlPushButton> m_pRToggle;
+    std::unique_ptr<ControlObject> m_pEnabled;
 };

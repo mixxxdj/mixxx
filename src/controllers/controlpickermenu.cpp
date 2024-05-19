@@ -638,9 +638,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString beatloopRollActivateTitle = tr("Loop Roll Selected Beats");
     QString beatloopRollActivateDescription = tr("Create a rolling beat loop of selected beat size");
     QString beatLoopTitle = tr("Loop %1 Beats");
+    QString reverseBeatLoopTitle = tr("Loop %1 Beats set from its end point");
     QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
+    QString reverseBeatLoopRollTitle = tr("Loop Roll %1 Beats set from its end point");
     QString beatLoopDescription = tr("Create %1-beat loop");
+    QString reverseBeatLoopDescription = tr(
+            "Create %1-beat loop with the current play position as loop end");
     QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
+    QString reverseBeatLoopRollDescription =
+            tr("Create temporary %1-beat loop roll with the current play "
+               "position as loop end");
 
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 
@@ -671,6 +678,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 beatLoopDescription.arg(humanBeats),
                 pLoopActivateMenu);
     }
+    for (double beats : beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatloop_r%1_toggle").arg(beats),
+                reverseBeatLoopTitle.arg(humanBeats),
+                reverseBeatLoopDescription.arg(humanBeats),
+                pLoopActivateMenu);
+    }
     pLoopMenu->addSeparator();
 
     addDeckControl("beatlooproll_activate",
@@ -683,6 +697,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         addDeckControl(QString("beatlooproll_%1_activate").arg(beats),
                 beatLoopRollTitle.arg(humanBeats),
                 beatLoopRollDescription.arg(humanBeats),
+                pLooprollActivateMenu);
+    }
+    for (double beats : beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatlooproll_r%1_activate").arg(beats),
+                reverseBeatLoopRollTitle.arg(humanBeats),
+                reverseBeatLoopRollDescription.arg(humanBeats),
                 pLooprollActivateMenu);
     }
     pLoopMenu->addSeparator();
@@ -721,6 +742,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Jump backward by the selected number of beats, or if a loop is "
                "enabled, move the loop backward by the selected number of "
                "beats"),
+            pBeatJumpMenu);
+    addDeckControl("loop_anchor",
+            tr("Beat Jump"),
+            tr("Indicate which loop marker remain static when adjusting the "
+               "size or is inherited from the current position"),
             pBeatJumpMenu);
     pBeatJumpMenu->addSeparator();
 

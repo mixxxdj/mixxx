@@ -1692,6 +1692,7 @@ QPushButton#pushButtonAnalyze:checked {
 #SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
+WPushButton#LoopAnchor[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
 #BeatgridControls WPushButton[pressed="true"]/*,
@@ -2105,6 +2106,12 @@ WPushButton#PlayDeck[value="0"] {
   }
   #LoopOut[pressed="true"] {
     image: url(skins:LateNight/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
+  }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_end.svg) no-repeat center center;
   }
 
 #JumpForward {
