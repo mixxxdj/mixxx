@@ -3200,11 +3200,8 @@ WRateRange {
 }
 
 #RateDisplayTopPrefix,
-#RateDisplayTopRate {
-    qproperty-alignment: 'AlignHCenter | AlignTop';
-}
-
 #RateDisplayBottomPrefix,
+#RateDisplayTopRate,
 #RateDisplayBottomRate {
-    qproperty-alignment: 'AlignHCenter | AlignBottom';
+    qproperty-alignment: 'AlignHCenter';
 }
