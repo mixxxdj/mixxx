@@ -9,7 +9,7 @@
 
 #include "track/taglib/trackmetadata_file.h"
 
-#include <taglib/tfile.h>
+#include <tfile.h>
 
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"

@@ -4,6 +4,7 @@
 #include <QList>
 #include <QLocale>
 #include <QScreen>
+#include <QtGlobal>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -25,12 +26,19 @@ namespace {
 
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlsGroup = QStringLiteral("[Controls]");
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kSchemeKey = QStringLiteral("Scheme");
 const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
+
+// TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
+const bool kStartInFullscreenDefault = false;
+const bool kHideMenuBarDefault = true;
 
 } // namespace
 
@@ -125,12 +133,9 @@ DlgPrefInterface::DlgPrefInterface(
 
     if (pSkinLoader) {
         // Skin configurations
-        QString sizeWarningString =
-                "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
-                "width=16 height=16 />   " +
+        warningLabel->setText(kWarningIconHtmlString +
                 tr("The minimum size of the selected skin is bigger than your "
-                   "screen resolution.");
-        warningLabel->setText(sizeWarningString);
+                   "screen resolution."));
 
         ComboBoxSkinconf->clear();
         skinPreviewLabel->setText("");
@@ -180,6 +185,34 @@ DlgPrefInterface::DlgPrefInterface(
 
     int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+
+    // Multi-Sampling
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        multiSamplingComboBox->clear();
+        multiSamplingComboBox->addItem(tr("Disabled"), 0);
+        multiSamplingComboBox->addItem(tr("2x MSAA"), 2);
+        multiSamplingComboBox->addItem(tr("4x MSAA"), 4);
+        multiSamplingComboBox->addItem(tr("8x MSAA"), 8);
+        multiSamplingComboBox->addItem(tr("16x MSAA"), 16);
+
+        m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 4);
+        int multiSamplingIndex = multiSamplingComboBox->findData(m_multiSampling);
+        if (multiSamplingIndex != -1) {
+            multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
+        } else {
+            multiSamplingComboBox->setCurrentIndex(0);
+            m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(0));
+        }
+    } else
+#endif
+    {
+#ifdef MIXXX_USE_QML
+        m_multiSampling = 0;
+#endif
+        multiSamplingLabel->hide();
+        multiSamplingComboBox->hide();
+    }
 
     // Tooltip configuration
     connect(buttonGroupTooltips,
@@ -273,7 +306,10 @@ void DlgPrefInterface::slotUpdate() {
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kStartInFullscreenKey), false));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), kStartInFullscreenDefault));
+
+    checkBoxHideMenuBar->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kHideMenuBarKey), kHideMenuBarDefault));
 
     loadTooltipPreferenceFromConfig();
 
@@ -296,14 +332,28 @@ void DlgPrefInterface::slotResetToDefaults() {
     spinBoxScaleFactor->setValue(100);
 
     // Don't start in full screen.
-    checkBoxStartFullScreen->setChecked(false);
+    checkBoxStartFullScreen->setChecked(kStartInFullscreenDefault);
+
+    // Always show the menu bar
+    checkBoxHideMenuBar->setChecked(kHideMenuBarDefault);
+    // Also show the menu bar hint again on next start?
+    // Use bool member to set [Config],show_menubar_hint to 1 in slotApply()
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
+#ifdef MIXXX_USE_QML
+    multiSamplingComboBox->setCurrentIndex(4); // 4x MSAA
+#endif
+
+#ifdef Q_OS_IOS
+    // Tooltips off everywhere.
+    radioButtonTooltipsOff->setChecked(true);
+#else
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+#endif
 }
 
 void DlgPrefInterface::slotSetTooltips() {
@@ -319,7 +369,7 @@ void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(this,
             tr("Information"),
-            tr("Mixxx must be restarted before the new locale or scaling "
+            tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
                "settings will take effect."));
 }
 
@@ -405,6 +455,10 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey(kConfigGroup, kStartInFullscreenKey),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
+    m_pConfig->set(ConfigKey(kConfigGroup, kHideMenuBarKey),
+            ConfigValue(checkBoxHideMenuBar->isChecked()));
+    emit menuBarAutoHideChanged();
+
     m_pConfig->set(ConfigKey(kControlsGroup, kTooltipsKey),
             ConfigValue(static_cast<int>(m_tooltipMode)));
     emit tooltipModeChanged(m_tooltipMode);
@@ -418,11 +472,25 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor) {
+#ifdef MIXXX_USE_QML
+    int multiSampling = multiSamplingComboBox->itemData(
+                                                     multiSamplingComboBox->currentIndex())
+                                .toInt();
+    m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(multiSampling));
+#endif
+
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
+#ifdef MIXXX_USE_QML
+            || multiSampling != m_multiSampling
+#endif
+    ) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
         m_dScaleFactor = scaleFactor;
+#ifdef MIXXX_USE_QML
+        m_multiSampling = multiSampling;
+#endif
     }
 
     // load skin/scheme if necessary
@@ -439,7 +507,11 @@ void DlgPrefInterface::slotApply() {
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
     const auto tooltipMode = static_cast<mixxx::TooltipsPreference>(
             m_pConfig->getValue(ConfigKey(kControlsGroup, kTooltipsKey),
+#ifdef Q_OS_IOS
+                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_OFF)));
+#else
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+#endif
     switch (tooltipMode) {
     case mixxx::TooltipsPreference::TOOLTIPS_OFF:
         radioButtonTooltipsOff->setChecked(true);

@@ -3,6 +3,7 @@
 #include <QPair>
 #include <QSemaphore>
 #include <QThread>
+#include <mutex>
 
 #include "util/performancetimer.h"
 
@@ -12,24 +13,24 @@ class VSyncThread : public QThread {
     Q_OBJECT
   public:
     enum VSyncMode {
-        ST_TIMER = 0,
-        ST_MESA_VBLANK_MODE_1,
-        ST_SGI_VIDEO_SYNC,
-        ST_OML_SYNC_CONTROL,
-        ST_FREE,
-        ST_COUNT // Dummy Type at last, counting possible types
+        ST_DEFAULT = 0,
+        ST_MESA_VBLANK_MODE_1_DEPRECATED, // 1
+        ST_SGI_VIDEO_SYNC_DEPRECATED,     // 2
+        ST_OML_SYNC_CONTROL_DEPRECATED,   // 3
+        ST_FREE,                          // 4
+        ST_PLL,                           // 5
+        ST_TIMER,                         // 6
+        ST_COUNT                          // Dummy Type at last, counting possible types
     };
 
-    VSyncThread(QObject* pParent);
+    VSyncThread(QObject* pParent, VSyncMode vSyncMode);
     ~VSyncThread();
 
     void run();
 
     bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
-    int toNextSyncMicros();
     void setSyncIntervalTimeMicros(int usSyncTimer);
-    void setVSyncType(int mode);
     int droppedFrames();
     void setSwapWait(int sw);
     int fromTimerToNextSyncMicros(const PerformanceTimer& timer);
@@ -41,13 +42,21 @@ class VSyncThread : public QThread {
     int getSyncIntervalTimeMicros() const {
         return m_syncIntervalTimeMicros;
     }
+    void updatePLL();
+    bool pllInitializing() const;
+    VSyncMode vsyncMode() const {
+        return m_vSyncMode;
+    }
   signals:
+    void vsyncSwapAndRender();
     void vsyncRender();
     void vsyncSwap();
-
   private:
+    void runFree();
+    void runPLL();
+    void runTimer();
+
     bool m_bDoRendering;
-    bool m_vSyncTypeChanged;
     int m_syncIntervalTimeMicros;
     int m_waitToSwapMicros;
     enum VSyncMode m_vSyncMode;
@@ -59,4 +68,14 @@ class VSyncThread : public QThread {
     double m_displayFrameRate;
     int m_vSyncPerRendering;
     mixxx::Duration m_sinceLastSwap;
+    // phase locked loop
+    std::mutex m_pllMutex;
+    PerformanceTimer m_pllTimer;
+    int m_pllInitCnt;
+    bool m_pllPendingUpdate;
+    double m_pllInitSum;
+    double m_pllInitAvg;
+    double m_pllPhaseOut;
+    double m_pllDeltaOut;
+    double m_pllLogging;
 };

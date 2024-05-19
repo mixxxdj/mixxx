@@ -247,12 +247,14 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
-    if (!pPreset || pPreset->isEmpty()) {
+    EffectManifestPointer pManifest;
+    if (pPreset && !pPreset->isEmpty()) {
+        pManifest = m_pBackendManager->getManifest(pPreset);
+    }
+    if (!pManifest) {
         loadEffectInner(nullptr, nullptr, true);
         return;
     }
-    EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-            pPreset->id(), pPreset->backendType());
     loadEffectInner(pManifest, pPreset, true);
 }
 
@@ -280,6 +282,14 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
+    }
+
+    // Don't load an effect into the '---' preset. The preset would remain
+    // selected in WEffectChainPresetSelector and WEffectChainPresetButton and
+    // therefore couldn't be used to clear the chain.
+    // Instead, load an empty, nameless preset, then load the desired effect.
+    if (m_pChain->isEmptyPlaceholderPresetLoaded()) {
+        m_pChain->loadEmptyNamelessPreset();
     }
 
     m_pManifest = pManifest;
@@ -335,6 +345,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     loadParameters();
 
+    m_pControlMetaParameter->setDefaultValue(pManifest->metaknobDefault());
+
     m_pControlLoaded->forceSet(1.0);
 
     if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
@@ -386,6 +398,8 @@ void EffectSlot::unloadEffect() {
     for (auto& parameterList : m_hiddenParameters) {
         parameterList.clear();
     }
+
+    m_pControlMetaParameter->setDefaultValue(0.0);
 
     m_pManifest.clear();
 

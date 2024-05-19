@@ -48,6 +48,11 @@ const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SearchDebouncingTimeoutMillis")};
 
+const ConfigKey mixxx::library::prefs::kSearchBpmFuzzyRangeConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("search_bpm_fuzzy_range")};
+
 const ConfigKey mixxx::library::prefs::kEnableSearchCompletionsConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
@@ -62,6 +67,11 @@ const ConfigKey mixxx::library::prefs::kBpmColumnPrecisionConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("BpmColumnPrecision")};
+
+const ConfigKey mixxx::library::prefs::kApplyPlayedTrackColorConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("ApplyPlayedTrackColor")};
 
 // The "Export" suffix in the key is kept for backward compatibility
 const ConfigKey mixxx::library::prefs::kSyncTrackMetadataConfigKey =
@@ -89,3 +99,13 @@ const ConfigKey mixxx::library::prefs::kCoverArtFetcherQualityConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("CoverArtFetcherQuality")};
+
+const ConfigKey mixxx::library::prefs::kTagFetcherApplyTagsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("TagFetcherApplyTags")};
+
+const ConfigKey mixxx::library::prefs::kTagFetcherApplyCoverConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("TagFetcherApplyCover")};

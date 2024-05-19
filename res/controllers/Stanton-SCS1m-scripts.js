@@ -74,8 +74,8 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
 
     // Connect signals
         // Vu Meters
-    engine.connectControl("[Master]","vu_meter_left","StantonSCS1m.MasterLVu");
-    engine.connectControl("[Master]","vu_meter_right","StantonSCS1m.MasterRVu");
+    engine.connectControl("[Main]", "vu_meter_left", "StantonSCS1m.MasterLVu");
+    engine.connectControl("[Main]", "vu_meter_right", "StantonSCS1m.MasterRVu");
     engine.connectControl("[Channel1]","vu_meter","StantonSCS1m.Channel1Vu");
     engine.connectControl("[Channel2]","vu_meter","StantonSCS1m.Channel2Vu");
 

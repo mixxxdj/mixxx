@@ -416,7 +416,7 @@ class DeckClass {
             } else {
                 this.wheelTouchInertiaTimer = engine.beginTimer(
                     inertiaTime,
-                    this.finishJogPress, 
+                    this.finishJogPress.bind(this),
                     true);
             }
         }
@@ -530,7 +530,7 @@ class DeckClass {
                 engine.scratchDisable(this.number, true);
             } else {
             // Check again soon.
-                this.wheelPressInertiaTimer = engine.beginTimer(20, finishJogPress, true);
+                this.wheelPressInertiaTimer = engine.beginTimer(20, this.finishJogPress.bind(this), true);
             }
         }
     }
@@ -600,7 +600,8 @@ class PadButton {
     }
     outputHotcueCallback() {
         let color;
-        if (engine.getValue(this.deck.channel, "hotcue_" + this.number + "_enabled")) {
+        const status = engine.getValue(this.deck.channel, `hotcue_${  this.number  }_status`);
+        if (status === 1 || status === 2) {
             color = {green: 0, blue: 0x1F};
         } else {
             color = {green: 0, blue: 0};
@@ -651,7 +652,7 @@ class PadButton {
 
         if (padMode === padModes.hotcue) {
             this.connections.push(
-                engine.makeConnection(this.deck.channel, "hotcue_" + this.number + "_enabled", this.outputHotcueCallback.bind(this)));
+                engine.makeConnection(this.deck.channel, `hotcue_${  this.number  }_status`, this.outputHotcueCallback.bind(this)));
         } else if (padMode === padModes.introOutro) {
             this.connections.push(engine.makeConnection(
                 this.deck.channel, introOutroKeys[this.number-1] + "_enabled", this.outputIntroOutroCallback.bind(this)));
@@ -771,7 +772,7 @@ class EffectUnit {
         }
     }
     enableSoftTakeover() {
-        engine.softTakeover(this.group, "!mix", true);
+        engine.softTakeover(this.group, "mix", true);
         for (let i = 0; i < 3; i++) {
             this.params[i].enableSoftTakeover();
         }
@@ -1012,6 +1013,9 @@ class EffectParameter {
 class TraktorS2MK1Class {
     constructor() {
         this.controller = new HIDController();
+        if (engine.getValue("[App]", "num_samplers") < 8) {
+            engine.setValue("[App]", "num_samplers", 8);
+        }
 
         // When true, packets will not be sent to the controller.
         // Used when updating multiple LEDs simultaneously.

@@ -28,13 +28,13 @@ endif()
 
 find_path(JACK_INCLUDE_DIR
   NAMES jack/jack.h
-  PATHS ${PC_JACK_INCLUDE_DIRS}
+  HINTS ${PC_JACK_INCLUDE_DIRS}
   DOC "JACK include directory")
 mark_as_advanced(JACK_INCLUDE_DIR)
 
 find_library(JACK_LIBRARY
   NAMES jack
-  PATHS ${PC_JACK_LIBRARY_DIRS}
+  HINTS ${PC_JACK_LIBRARY_DIRS}
   DOC "JACK library"
 )
 mark_as_advanced(JACK_LIBRARY)

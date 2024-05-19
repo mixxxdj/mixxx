@@ -77,7 +77,7 @@ void WEffectChainPresetSelector::populate() {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
 
-    const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
+    const EffectsBackendManagerPointer pBackendManager = m_pEffectsManager->getBackendManager();
     QStringList effectNames;
     for (int i = 0; i < presetList.size(); i++) {
         auto pChainPreset = presetList.at(i);
@@ -89,7 +89,10 @@ void WEffectChainPresetSelector::populate() {
                 QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
-                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+                EffectManifestPointer pManifest = pBackendManager->getManifest(pEffectPreset);
+                if (pManifest) {
+                    effectNames.append(pManifest->name());
+                }
             }
         }
         if (effectNames.size() > 1) {

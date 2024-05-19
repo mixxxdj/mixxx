@@ -42,6 +42,7 @@ var TraktorS2MK3 = new function() {
     this.vuMeterThresholds = {"vu-18": (1 / 6), "vu-12": (2 / 6), "vu-6": (3 / 6), "vu0": (4 / 6), "vu6": (5 / 6)};
 
     // Sampler callbacks
+    this.samplerCount = 16;
     this.samplerCallbacks = [];
     this.samplerHotcuesRelation = {
         "[Channel1]": {
@@ -53,6 +54,9 @@ var TraktorS2MK3 = new function() {
 };
 
 TraktorS2MK3.init = function(_id) {
+    if (engine.getValue("[App]", "num_samplers") < TraktorS2MK3.samplerCount) {
+        engine.setValue("[App]", "num_samplers", TraktorS2MK3.samplerCount);
+    }
     TraktorS2MK3.registerInputPackets();
     TraktorS2MK3.registerOutputPackets();
     HIDDebug("TraktorS2MK3: Init done!");
@@ -219,8 +223,7 @@ TraktorS2MK3.registerInputPackets = function() {
     //engine.softTakeover("[Master]", "gain", true);
     engine.softTakeover("[Master]", "headMix", true);
     engine.softTakeover("[Master]", "headGain", true);
-
-    for (let i = 1; i <= 16; ++i) {
+    for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
 
@@ -605,7 +608,7 @@ TraktorS2MK3.parameterHandler = function(field) {
 TraktorS2MK3.samplerPregainHandler = function(field) {
     // Map sampler gain knob of all sampler together.
     // Dirty hack, but the best we can do for now.
-    for (let i = 1; i <= 16; ++i) {
+    for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
         engine.setParameter("[Sampler" + i + "]", field.name, field.value / 4095);
     }
 };
@@ -670,19 +673,92 @@ TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
 };
 
 TraktorS2MK3.fxHandler = function(field) {
+    /* We support 8 effects in total by having 2 effects per fx button. *
+     * First press of the button will load the preset at the index of the quick effect preset list *
+     * Second press will load the preset index + 4 *
+     * Arrange your quick effect preset list from 1 to 8 like this: 1/5, 2/6, 3/7, 4/8 */
     if (field.value === 0) {
         return;
     }
 
+    const availableGroups = ["[Channel1]", "[Channel2]"];
+    const fxButtonCount = 4;
+    let targetGroups = [];
     const fxNumber = parseInt(field.id[field.id.length - 1]);
-    const group = "[EffectRack1_EffectUnit" + fxNumber + "]";
+    let noShift = false;
 
-    // Toggle effect unit
-    TraktorS2MK3.fxButtonState[fxNumber] = !TraktorS2MK3.fxButtonState[fxNumber];
+    // Target decks whose shift button is pressed.
+    for (const group of availableGroups) {
+        if (TraktorS2MK3.shiftPressed[group]) { targetGroups.push(group); }
+    }
 
-    engine.setValue(group, "group_[Channel1]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
-    engine.setValue(group, "group_[Channel2]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
-    TraktorS2MK3.outputHandler(TraktorS2MK3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
+    // If no shift button was pressed fall back to target all decks.
+    if (targetGroups.length === 0) {
+        targetGroups = availableGroups;
+        noShift = true;
+    }
+
+    const fxToApply = {};
+    const activeFx = {};
+    // Detect which fx should be enabled
+    for (const group of targetGroups) {
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset") - 1;
+        if (activeFx[group] === fxNumber) {
+            // Pressing again the fx button
+            fxToApply[group] = fxNumber + fxButtonCount;
+        } else if (activeFx[group] === fxNumber + fxButtonCount) {
+            // Already on secondary fx so resetting back to fxNumber
+            fxToApply[group] = fxNumber;
+        } else {
+            // First press of a different fx button
+            fxToApply[group] = fxNumber;
+        }
+    }
+
+    /* When we target both decks - No shift pressed - we want *
+     * to reset fx to same value for both */
+    if (targetGroups.length === 2 && noShift) {
+        const [deck1, deck2] = targetGroups;
+        const activeFxDeck1 = activeFx[deck1];
+        const activeFxDeck2 = activeFx[deck2];
+        const fxToApplyDeck1 = fxToApply[deck1];
+        const fxToApplyDeck2 = fxToApply[deck2];
+
+        // If any of deck has already fx enabled but different value to apply
+        if ((activeFxDeck1 === fxNumber || activeFxDeck2 === fxNumber) && fxToApplyDeck1 !== fxToApplyDeck2) {
+        // find lower value to reset both to the same one
+            const fxToApplyAll = Math.min(fxToApplyDeck1, fxToApplyDeck2);
+            fxToApply[deck1] = fxToApplyAll;
+            fxToApply[deck2] = fxToApplyAll;
+        }
+    }
+
+    // Now apply the new fx value
+    for (const group of targetGroups) {
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group] + 1);
+    }
+};
+
+TraktorS2MK3.fxOutputHandler = function() {
+    const fxButtonCount = 4;
+    const availableGroups = ["[Channel1]", "[Channel2]"];
+
+    const activeFx = {};
+    for (const group of availableGroups) {
+        activeFx[group] = engine.getValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset") - 1;
+        // We want to lit the proper fx button even when we have applied a higher fxNumber
+        if (activeFx[group] > fxButtonCount) { activeFx[group] = activeFx[group] - fxButtonCount; }
+    }
+
+    /* There is no way on the controller to indicate which deck the effect applies *
+     * to, but keeping both lit indicates that different effects are in use.       */
+    for (let fxButton = 1; fxButton <= fxButtonCount; ++fxButton) {
+        let active = false;
+        for (const group of availableGroups) {
+            active = active || activeFx[group] === fxButton;
+        }
+        TraktorS2MK3.outputHandler(active, "[ChannelX]", "fxButton" + fxButton);
+    }
 };
 
 TraktorS2MK3.reverseHandler = function(field) {
@@ -827,13 +903,18 @@ TraktorS2MK3.registerOutputPackets = function() {
     // VuMeter
     this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler);
     this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler);
-    this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler);
-    this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler);
+    this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler.bind(this));
+    this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler.bind(this));
 
     // Sampler callbacks
-    for (let i = 1; i <= 16; ++i) {
-        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler));
-        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", this.samplesOutputHandler));
+    for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
+        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler.bind(this)));
+        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", this.samplesOutputHandler.bind(this)));
+    }
+
+    this.fxCallbacks = [];
+    for (const group of ["[Channel1]", "[Channel2]"]) {
+        this.fxCallbacks.push(engine.makeConnection(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", this.fxOutputHandler));
     }
 
     TraktorS2MK3.lightDeck(false);
@@ -1015,6 +1096,8 @@ TraktorS2MK3.lightDeck = function(switchOff) {
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton2", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", softLight, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
+    // Set FX button LED state according to active quick effects on start-up
+    if (!switchOff) { TraktorS2MK3.fxOutputHandler(); }
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", softLight, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", softLight, false);

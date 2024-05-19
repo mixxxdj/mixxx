@@ -35,6 +35,7 @@
                 <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
+                <Property>titleInfo</Property>
               </TrackProperty>
               <!-- Alternative "TITLE ONLY" display
               <TrackProperty>

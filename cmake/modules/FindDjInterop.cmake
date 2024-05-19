@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -50,13 +50,13 @@ endif()
 
 find_path(DjInterop_INCLUDE_DIR
   NAMES djinterop/djinterop.hpp
-  PATHS ${PC_DjInterop_INCLUDE_DIRS}
+  HINTS ${PC_DjInterop_INCLUDE_DIRS}
   DOC "DjInterop include directory")
 mark_as_advanced(DjInterop_INCLUDE_DIR)
 
 find_library(DjInterop_LIBRARY
   NAMES djinterop
-  PATHS ${PC_DjInterop_LIBRARY_DIRS}
+  HINTS ${PC_DjInterop_LIBRARY_DIRS}
   DOC "DjInterop library"
 )
 mark_as_advanced(DjInterop_LIBRARY)

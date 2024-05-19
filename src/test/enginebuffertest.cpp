@@ -119,6 +119,7 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     ASSERT_NEAR(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")), 1e-10);
 }
 
+#ifdef __RUBBERBAND__
 TEST_F(EngineBufferTest, SlowRubberBand) {
     // At very slow speeds, RubberBand needs to reallocate buffers and since
     // this
@@ -152,6 +153,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
 }
+#endif
 
 TEST_F(EngineBufferTest, ScalerNoTransport) {
     // normally use the Vinyl scaler
@@ -338,6 +340,7 @@ TEST_F(EngineBufferE2ETest, DISABLED_SoundTouchToggleTest) {
             "SoundTouchTestRegular");
 }
 
+#ifdef __RUBBERBAND__
 // DISABLED: This test is too dependent on the rubber band library version.
 TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
    // Test various cases where Rubberband toggles on and off.
@@ -366,6 +369,7 @@ TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
             kProcessBufferSize,
             "RubberbandTestRegular");
 }
+#endif
 
 // DISABLED: This test is too dependent on the sound touch library version.
 // NOTE(uklotzde, 2018-01-10): We have also seen spurious failures on the
@@ -417,6 +421,7 @@ TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
     // on the uses library version
 }
 
+#ifdef __RUBBERBAND__
 TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing issue #8061
@@ -430,6 +435,7 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // Note: we cannot compare a golden buffer here, because the result depends
     // on the uses library version
 }
+#endif
 
 TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
     // Be sure, that the Crossfade buffer is processed only once

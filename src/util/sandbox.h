@@ -5,19 +5,20 @@
 #include <QFileInfo>
 #include <QHash>
 #include <QSharedPointer>
+#include <QtGlobal>
 
 #include "preferences/configobject.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileinfo.h"
 
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
 #include <CoreFoundation/CFURL.h>
 #endif
 
 struct SandboxSecurityToken {
     ~SandboxSecurityToken();
     QString m_path;
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
     SandboxSecurityToken(const QString& path, CFURLRef url);
     CFURLRef m_url;
 #endif
@@ -33,7 +34,7 @@ class Sandbox {
     static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     static QString migrateOldSettings();
 #endif
 
@@ -53,13 +54,9 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-#if defined(__GNUC__) && __cplusplus < 201907L
-#define SECURITY_TOKEN_NODISCARD_RATIONALE
-#else
 #define SECURITY_TOKEN_NODISCARD_RATIONALE                             \
     ("A new security token should be used, e.g. by assigning it to a " \
      "variable, otherwise it will be invalidated immediately.")
-#endif
 
     [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
     openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);

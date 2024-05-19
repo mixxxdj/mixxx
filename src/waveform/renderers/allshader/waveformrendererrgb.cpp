@@ -14,9 +14,10 @@ inline float math_pow2(float x) {
 }
 } // namespace
 
-WaveformRendererRGB::WaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidget)
-        : WaveformRendererSignalBase(waveformWidget) {
+WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::PositionSource type)
+        : WaveformRendererSignalBase(waveformWidget),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode& node) {
@@ -30,9 +31,12 @@ void WaveformRendererRGB::initializeGL() {
 
 void WaveformRendererRGB::paintGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
         return;
     }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
@@ -55,9 +59,9 @@ void WaveformRendererRGB::paintGL() {
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+            m_waveformRenderer->getFirstDisplayedPosition(positionType) * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
+            m_waveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -65,7 +69,8 @@ void WaveformRendererRGB::paintGL() {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    // applyCompensation = false, as we scale to match filtered.all
+    getGains(&allGain, false, &lowGain, &midGain, &highGain);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
@@ -83,7 +88,8 @@ void WaveformRendererRGB::paintGL() {
     const float high_b = static_cast<float>(m_rgbHighColor_b);
 
     // Effective visual frame for x
-    double xVisualFrame = firstVisualFrame;
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
@@ -97,7 +103,7 @@ void WaveformRendererRGB::paintGL() {
     m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio);
+            m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f * devicePixelRatio);
     m_colors.addForRectangle(
             static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
@@ -139,6 +145,8 @@ void WaveformRendererRGB::paintGL() {
         float maxMid = static_cast<float>(u8maxMid);
         float maxHigh = static_cast<float>(u8maxHigh);
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
+        // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+        // float maxAllChn[2]{unscale(u8maxAllChn[0]), unscale(u8maxAllChn[1])};
 
         // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
         // We take the square root to get the magnitude below.
@@ -186,7 +194,7 @@ void WaveformRendererRGB::paintGL() {
         m_vertices.addRectangle(fpos - 0.5f,
                 halfBreadth - heightFactor * maxAllChn[0],
                 fpos + 0.5f,
-                halfBreadth + heightFactor * maxAllChn[1]);
+                m_isSlipRenderer ? halfBreadth : halfBreadth + heightFactor * maxAllChn[1]);
         m_colors.addForRectangle(red, green, blue);
 
         xVisualFrame += visualIncrementPerPixel;

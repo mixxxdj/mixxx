@@ -11,6 +11,7 @@ Variables:
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
 
   <WidgetGroup>
+    <ObjectName>FxUnitMini</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -52,7 +53,7 @@ Variables:
           <Template src="skins:Tango/controls/button_2state_persist.xml">
             <SetVariable name="ObjectName">MixModeButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-            <SetVariable name="Size">30f,18f</SetVariable>
+            <SetVariable name="Size">24f,18f</SetVariable>
             <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
             <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
             <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
@@ -66,7 +67,7 @@ Variables:
               <EffectChainPresetButton>
                 <ObjectName>EffectChainPresetButtonRight</ObjectName>
                 <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-                <Size>18f,18f</Size>
+                <Size>20f,20f</Size>
               </EffectChainPresetButton>
             </Children>
           </WidgetGroup>

@@ -78,6 +78,11 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
+#ifndef __APPLE__
+    /// Update whether the menubar is toggled pressing the Alt key and show/hide
+    /// it accordingly
+    void slotUpdateMenuBarAltKeyConnection();
+#endif
 
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
@@ -102,8 +107,13 @@ class MixxxMainWindow : public QMainWindow {
 
     /// Load skin to a QWidget that we set as the central widget.
     bool loadConfiguredSkin();
+    void tryParseAndSetDefaultStyleSheet();
 
     bool confirmExit();
+#ifndef __APPLE__
+    void alwaysHideMenuBarDlg();
+#endif
+
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
     QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
@@ -115,6 +125,9 @@ class MixxxMainWindow : public QMainWindow {
 
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
+#ifndef __APPLE__
+    Qt::WindowStates m_prevState;
+#endif
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;

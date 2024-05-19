@@ -1,7 +1,7 @@
 #include "engine/controls/bpmcontrol.h"
 
+#include "control/controlencoder.h"
 #include "control/controllinpotmeter.h"
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -67,22 +67,106 @@ BpmControl::BpmControl(const QString& group,
     m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
 
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
-    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
-    connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsFaster,
+
+    m_pAdjustBeatsFaster = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_faster"), false);
+    m_pAdjustBeatsFaster->setKbdRepeatable(true);
+    connect(m_pAdjustBeatsFaster.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotAdjustBeatsFaster,
             Qt::DirectConnection);
-    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group, "beats_adjust_slower"), false);
-    connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsSlower,
+    m_pAdjustBeatsSlower = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_slower"), false);
+    m_pAdjustBeatsSlower->setKbdRepeatable(true);
+    connect(m_pAdjustBeatsSlower.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotAdjustBeatsSlower,
             Qt::DirectConnection);
-    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
-    connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsEarlier,
+
+    m_pTranslateBeatsEarlier = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_earlier"), false);
+    m_pTranslateBeatsEarlier->setKbdRepeatable(true);
+    connect(m_pTranslateBeatsEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsEarlier,
             Qt::DirectConnection);
-    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group, "beats_translate_later"), false);
-    connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsLater,
+    m_pTranslateBeatsLater = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_later"), false);
+    m_pTranslateBeatsLater->setKbdRepeatable(true);
+    connect(m_pTranslateBeatsLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
+    m_pTranslateBeatsMove = new ControlEncoder(ConfigKey(group, "beats_translate_move"), false);
+    connect(m_pTranslateBeatsMove,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsMove,
+            Qt::DirectConnection);
+
+    m_pBeatsHalve = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_halve"), false);
+    connect(m_pBeatsHalve.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::Halve);
+                }
+            });
+    m_pBeatsTwoThirds = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_twothirds"), false);
+    connect(m_pBeatsTwoThirds.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::TwoThirds);
+                }
+            });
+    m_pBeatsThreeFourths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_threefourths"), false);
+    connect(m_pBeatsThreeFourths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
+                }
+            });
+    m_pBeatsFourThirds = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fourthirds"), false);
+    connect(m_pBeatsFourThirds.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FourThirds);
+                }
+            });
+    m_pBeatsThreeHalves = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_threehalves"), false);
+    connect(m_pBeatsThreeHalves.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
+                }
+            });
+    m_pBeatsDouble = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_double"), false);
+    connect(m_pBeatsDouble.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::Double);
+                }
+            });
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -120,10 +204,24 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotTapFilter,
             Qt::DirectConnection);
 
+    m_pBpmLock = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "bpmlock"), false);
+    m_pBpmLock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pBpmLock->connectValueChangeRequest(
+            this,
+            &BpmControl::slotToggleBpmLock,
+            Qt::DirectConnection);
+
+    m_pBeatsUndo = new ControlPushButton(ConfigKey(group, "beats_undo_adjustment"));
+    connect(m_pBeatsUndo,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsUndoAdjustment,
+            Qt::DirectConnection);
+
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
-    m_pSyncEnabled = new ControlProxy(group, "sync_enabled", this);
 }
 
 BpmControl::~BpmControl() {
@@ -132,10 +230,8 @@ BpmControl::~BpmControl() {
     delete m_pButtonTap;
     delete m_pTranslateBeats;
     delete m_pBeatsTranslateMatchAlignment;
-    delete m_pTranslateBeatsEarlier;
-    delete m_pTranslateBeatsLater;
-    delete m_pAdjustBeatsFaster;
-    delete m_pAdjustBeatsSlower;
+    delete m_pTranslateBeatsMove;
+    delete m_pBeatsUndo;
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -183,23 +279,19 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
         return;
     }
-    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        return;
-    }
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats) {
-        const double sampleOffset = frameInfo().sampleRate * -0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
-        if (translatedBeats) {
-            pTrack->trySetBeats(*translatedBeats);
-        }
-    }
+    slotTranslateBeatsMove(-1);
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v <= 0) {
+        return;
+    }
+    slotTranslateBeatsMove(1);
+}
+
+void BpmControl::slotTranslateBeatsMove(double v) {
+    v = std::round(v);
+    if (v == 0) {
         return;
     }
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
@@ -209,13 +301,24 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
-        const double sampleOffset = frameInfo().sampleRate * 0.01;
+        const double sampleOffset = frameInfo().sampleRate * v * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
     }
+}
+
+void BpmControl::slotBeatsUndoAdjustment(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    pTrack->undoBeatsChange();
 }
 
 void BpmControl::slotBpmTap(double v) {
@@ -252,6 +355,22 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
             averageBpm,
             averageBpm + kBpmTabRounding);
     const auto newBeats = pBeats->trySetBpm(averageBpm);
+    if (!newBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*newBeats);
+}
+
+void BpmControl::slotScaleBpm(mixxx::Beats::BpmScale bpmScale) {
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto newBeats = pBeats->tryScale(bpmScale);
     if (!newBeats) {
         return;
     }
@@ -299,9 +418,9 @@ double BpmControl::calcSyncedRate(double userTweak) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     }
     double rate = 1.0;
-    // Don't know what to do if there's no bpm.
-    if (m_pLocalBpm->toBool()) {
-        rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
+    double localBpm = m_pLocalBpm->get();
+    if (localBpm != 0.0) {
+        rate = m_dSyncInstantaneousBpm / localBpm;
     }
 
     // If we are not quantized, or there are no beats, or we're leader,
@@ -347,6 +466,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now we have all we need to calculate the sync adjustment if any.
     double adjustment = calcSyncAdjustment(userTweak != 0.0);
+    // This can be used to detect pitch shift issues with cloned decks
+    // DEBUG_ASSERT(((rate + userTweak) * adjustment) == 1);
     return (rate + userTweak) * adjustment;
 }
 
@@ -754,7 +875,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeatPosition << thisPosition << thisNextBeatPosition;
         }
-        // This happens if dThisPosition is the target position of a requested
+        // This happens if thisPosition is the target position of a requested
         // seek command.  Get new prev and next beats for the calculation.
         getBeatContext(
                 m_pBeats,
@@ -922,7 +1043,9 @@ void BpmControl::slotUpdateEngineBpm(double value) {
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
-                        << value << m_pLocalBpm->get() << dRate;
+                        << value << m_pLocalBpm->get() << dRate << frameInfo().currentPosition;
+        // This can be used to detect pitch shift issues with cloned decks
+        // DEBUG_ASSERT(getGroup() != "[Channel1]" || dRate == 1);
     }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
@@ -963,6 +1086,10 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
     updateLocalBpm();
     resetSyncAdjustment();
+}
+
+void BpmControl::trackBpmLockChanged(bool locked) {
+    m_pBpmLock->setAndConfirm(locked);
 }
 
 void BpmControl::notifySeek(mixxx::audio::FramePos position) {
@@ -1011,6 +1138,17 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     }
 }
 
+void BpmControl::slotToggleBpmLock(double v) {
+    Q_UNUSED(v);
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    bool locked = pTrack->isBpmLocked();
+    pTrack->setBpmLocked(!locked);
+    // The pushbutton is updated in trackBpmLockChanged() via bpmLockChanged() signal.
+}
+
 mixxx::Bpm BpmControl::updateLocalBpm() {
     mixxx::Bpm prevLocalBpm = mixxx::Bpm(m_pLocalBpm->get());
     mixxx::Bpm localBpm;
@@ -1019,16 +1157,16 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     if (pBeats) {
         if (info.currentPosition.isValid() && info.currentPosition != kInitialPlayPosition) {
             localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
-        }
-        if (!localBpm.isValid()) {
-            localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
+            if (!localBpm.isValid()) {
+                localBpm = pBeats->getBpmInRange(
+                        mixxx::audio::kStartFramePos, info.trackEndPosition);
+            }
         }
     }
     if (localBpm != prevLocalBpm) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << localBpm;
         }
-        // FIXME: Should this really update the engine bpm if it's invalid?
         double localBpmValue = mixxx::Bpm::kValueUndefined;
         if (localBpm.isValid()) {
             localBpmValue = localBpm.value();

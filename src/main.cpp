@@ -6,6 +6,7 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
+#include <QtGlobal>
 #include <cstdio>
 #include <stdexcept>
 
@@ -14,11 +15,10 @@
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 #include "qml/qmlapplication.h"
-#else
-#include "mixxxmainwindow.h"
 #endif
+#include "mixxxmainwindow.h"
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
@@ -32,9 +32,7 @@
 namespace {
 
 // Exit codes
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 constexpr int kFatalErrorOnStartupExitCode = 1;
-#endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
@@ -52,15 +50,17 @@ const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
-    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
     CmdlineArgs::Instance().parseForUserFeedback();
 
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+
     int exitCode;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
-    exitCode = pApp->exec();
-#else
+#ifdef MIXXX_USE_QML
+    if (args.isQml()) {
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        exitCode = pApp->exec();
+    } else
+#endif
     {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
@@ -108,7 +108,6 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             exitCode = pApp->exec();
         }
     }
-#endif
     return exitCode;
 }
 
@@ -173,6 +172,11 @@ int main(int argc, char * argv[]) {
             Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 
+#ifdef __LINUX__
+    // Needed by Wayland compositors to set proper app_id and window icon
+    QGuiApplication::setDesktopFileName(QStringLiteral("org.mixxx.Mixxx"));
+#endif
+
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
     // organization name blank.
@@ -204,7 +208,7 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
     // and too early to log errors and give users advises in their system language.
     // Calling this from main.cpp before the QApplication is initialized may cause a crash

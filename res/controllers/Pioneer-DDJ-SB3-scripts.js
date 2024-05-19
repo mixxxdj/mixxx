@@ -254,6 +254,10 @@ PioneerDDJSB3.init = function() {
         "[Channel4]_enabled": 1,
     };
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     PioneerDDJSB3.deck = [];
     PioneerDDJSB3.deck[1] = new PioneerDDJSB3.Deck(1);
     PioneerDDJSB3.deck[2] = new PioneerDDJSB3.Deck(2);

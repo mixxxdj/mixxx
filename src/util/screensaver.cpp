@@ -18,9 +18,14 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #include "util/screensaver.h"
 
 #include <QDebug>
+#include <QtGlobal>
 
-#if defined(__APPLE__)
+#include "util/assert.h"
+
+#if defined(Q_OS_MACOS)
 #  include "util/mac.h"
+#elif defined(Q_OS_IOS)
+#include "util/screensaverios.h"
 #elif defined(_WIN32)
 #  include <windows.h>
 #elif defined(__LINUX__)
@@ -56,8 +61,7 @@ void ScreenSaverHelper::uninhibit()
     }
 }
 
-
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 IOPMAssertionID ScreenSaverHelper::s_systemSleepAssertionID=0;
 IOPMAssertionID ScreenSaverHelper::s_userActivityAssertionID=0;
 
@@ -321,6 +325,25 @@ void ScreenSaverHelper::uninhibitInternal()
     s_enabled = false;
 }
 
+#elif defined(Q_OS_IOS)
+void ScreenSaverHelper::triggerUserActivity() {
+}
+void ScreenSaverHelper::inhibitInternal() {
+    setIdleTimerDisabled(true);
+    s_enabled = true;
+}
+void ScreenSaverHelper::uninhibitInternal() {
+    setIdleTimerDisabled(false);
+    s_enabled = false;
+}
+#elif defined(Q_OS_WASM)
+// Screensavers are not supported
+void ScreenSaverHelper::triggerUserActivity() {
+}
+void ScreenSaverHelper::inhibitInternal() {
+}
+void ScreenSaverHelper::uninhibitInternal() {
+}
 #else
 void ScreenSaverHelper::triggerUserActivity()
 {
@@ -334,7 +357,6 @@ void ScreenSaverHelper::uninhibitInternal()
 {
     DEBUG_ASSERT(!"Screensaver suspending not implemented");
 }
-#endif // Q_OS_MAC
-
+#endif // Q_OS_MACOS
 
 } // namespace mixxx

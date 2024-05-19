@@ -9,6 +9,7 @@
 #include "track/beats.h"
 #include "util/tapfilter.h"
 
+class ControlEncoder;
 class ControlLinPotmeter;
 class ControlPushButton;
 
@@ -93,6 +94,7 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void trackBpmLockChanged(bool locked);
     void notifySeek(mixxx::audio::FramePos position) override;
 
   private slots:
@@ -100,12 +102,15 @@ class BpmControl : public EngineControl {
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
+    void slotTranslateBeatsMove(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
+    void slotToggleBpmLock(double);
+    void slotBeatsUndoAdjustment(double value);
 
   private:
     SyncMode getSyncMode() const {
@@ -116,6 +121,7 @@ class BpmControl : public EngineControl {
     }
     double calcSyncAdjustment(bool userTweakingSync);
     void adjustBeatsBpm(double deltaBpm);
+    void slotScaleBpm(mixxx::Beats::BpmScale bpmScale);
 
     friend class SyncControl;
 
@@ -137,10 +143,21 @@ class BpmControl : public EngineControl {
 
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
-    ControlPushButton* m_pAdjustBeatsFaster;
-    ControlPushButton* m_pAdjustBeatsSlower;
-    ControlPushButton* m_pTranslateBeatsEarlier;
-    ControlPushButton* m_pTranslateBeatsLater;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsFaster;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsSlower;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsEarlier;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
+    ControlEncoder* m_pTranslateBeatsMove;
+    ControlPushButton* m_pBeatsUndo;
+
+    std::unique_ptr<ControlPushButton> m_pBeatsHalve;
+    std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;
+    std::unique_ptr<ControlPushButton> m_pBeatsThreeFourths;
+    std::unique_ptr<ControlPushButton> m_pBeatsFourThirds;
+    std::unique_ptr<ControlPushButton> m_pBeatsThreeHalves;
+    std::unique_ptr<ControlPushButton> m_pBeatsDouble;
+
+    std::unique_ptr<ControlPushButton> m_pBpmLock;
 
     // The current effective BPM of the engine
     ControlLinPotmeter* m_pEngineBpm;
@@ -162,7 +179,6 @@ class BpmControl : public EngineControl {
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
-    ControlProxy* m_pSyncEnabled;
 
     TapFilter m_tapFilter; // threadsafe
 

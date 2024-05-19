@@ -147,7 +147,7 @@ RMX.init = function() {
     engine.setValue(g,"keylock",!engine.getValue(g, "keylock"));
   });
 
-  c.capture("pitch_reset", "press", function(g, e, v) {
+  c.capture("pitch_set_default", "press", function(g, e, v) {
     engine.setValue(g,"rate",0);
   });
 
@@ -336,7 +336,7 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "filterHighKill",    "[Channel1]", "button", 2, 0x20);
   c.add_control(pid, "filterMidKill",     "[Channel1]", "button", 2, 0x40);
   c.add_control(pid, "filterLowKill",     "[Channel1]", "button", 2, 0x80);
-  c.add_control(pid, "pitch_reset",       "[Channel1]", "button", 3, 0x01);
+  c.add_control(pid, "pitch_set_default", "[Channel1]", "button", 3, 0x01);
   c.add_control(pid, "LoadSelectedTrack", "[Channel1]", "button", 3, 0x02);
   c.add_control(pid, "source",            "[Channel1]", "button", 3, 0x04);
   c.add_control(pid, "headphone_cue",     "[Channel1]", "button", 3, 0x08);
@@ -353,7 +353,7 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "keypad5",           "[Channel2]", "button", 4, 0x10);
   c.add_control(pid, "keypad6",           "[Channel2]", "button", 4, 0x20);
   c.add_control(pid, "beatsync",          "[Channel2]", "button", 4, 0x40);
-  c.add_control(pid, "pitch_reset",       "[Channel2]", "button", 4, 0x80);
+  c.add_control(pid, "pitch_set_default", "[Channel2]", "button", 4, 0x80);
   c.add_control(pid, "previous",          "[Channel2]", "button", 5, 0x01);
   c.add_control(pid, "next",              "[Channel2]", "button", 5, 0x02);
   c.add_control(pid, "play",              "[Channel2]", "button", 5, 0x04);
@@ -408,7 +408,7 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "source",        "[Channel1]", "led", 1, 0x10);
   c.add_control(pid, "beatsync",      "[Channel1]", "led", 1, 0x20);
   c.add_control(pid, "beatlock",      "[Channel1]", "led", 1, 0x40);
-  c.add_control(pid, "pitch_reset",   "[Channel1]", "led", 1, 0x80);
+  c.add_control(pid, "pitch_set_default", "[Channel1]", "led", 1, 0x80);
 
   c.add_control(pid, "play",          "[Channel2]", "led", 2, 0x02); // blinking: 2, 0x02
   c.add_control(pid, "cue_default",   "[Channel2]", "led", 2, 0x04); // blinking: 2, 0x04
@@ -416,7 +416,7 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "source",        "[Channel2]", "led", 2, 0x10);
   c.add_control(pid, "beatsync",      "[Channel2]", "led", 2, 0x20); // blinking: 2, 0x20
   c.add_control(pid, "beatlock",      "[Channel2]", "led", 2, 0x80); // blinking: 2, 0x80
-  c.add_control(pid, "pitch_reset",   "[Channel2]", "led", 2, 0x40); // blinking: 2, 0x40
+  c.add_control(pid, "pitch_set_default", "[Channel2]", "led", 2, 0x40); // blinking: 2, 0x40
 
 };
 

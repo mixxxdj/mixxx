@@ -45,6 +45,7 @@ class TrackCollection : public QObject,
 
     QList<mixxx::FileInfo> loadRootDirs(
             bool skipInvalidOrMissing = false) const;
+    QStringList getRootDirStrings() const;
 
     const CrateStorage& crates() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -158,10 +159,9 @@ class TrackCollection : public QObject,
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
 
-    bool addDirectory(const mixxx::FileInfo& rootDir);
-    bool removeDirectory(const mixxx::FileInfo& rootDir);
-
-    void relocateDirectory(const QString& oldDir, const QString& newDir);
+    DirectoryDAO::AddResult addDirectory(const mixxx::FileInfo& rootDir);
+    DirectoryDAO::RemoveResult removeDirectory(const mixxx::FileInfo& rootDir);
+    DirectoryDAO::RelocateResult relocateDirectory(const QString& oldDir, const QString& newDir);
 
     bool saveTrack(Track* pTrack) const;
 
