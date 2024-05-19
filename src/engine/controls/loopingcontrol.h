@@ -168,6 +168,7 @@ class LoopingControl : public EngineControl {
     void restoreLoopInfo();
 
     void clearActiveBeatLoop();
+    void clearLoopInfoAndControls();
     void updateBeatLoopingControls();
     bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
 
@@ -223,6 +224,7 @@ class LoopingControl : public EngineControl {
     QStack<double> m_activeLoopRolls;
     ControlValueAtomic<LoopInfo> m_loopInfo;
     ControlValueAtomic<LoopInfo> m_prevLoopInfo;
+    double m_prevLoopSize;
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
