@@ -184,7 +184,6 @@ void WMainMenuBar::initialize() {
     QString createCrateTitle = tr("Create New &Crate");
     QString createCrateText = tr("Create a new crate");
     auto* pLibraryCreateCrate = new QAction(createCrateTitle, this);
-    // TODO update shortcut in Crates feature ?
     m_pKeyboard->registerMenuBarActionSetShortcut(
             pLibraryCreateCrate,
             ConfigKey("[KeyboardShortcuts]", "LibraryMenu_NewCrate"),
