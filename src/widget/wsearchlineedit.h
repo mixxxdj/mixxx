@@ -68,7 +68,6 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void slotDeleteCurrentItem();
 
   private slots:
-    void slotSetShortcutFocus();
     void slotTextChanged(const QString& text);
     void slotIndexChanged(int index);
 
