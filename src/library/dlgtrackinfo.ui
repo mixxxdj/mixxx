@@ -49,9 +49,8 @@
       </attribute>
       <layout class="QVBoxLayout" name="summary_layout" stretch="1,0,0">
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="metadata_groupBox">
          <layout class="QGridLayout" name="tags_layout" columnstretch="0,10,0,2">
-
           <item row="0" column="0">
            <widget class="QLabel" name="lblTitle">
             <property name="sizePolicy">
@@ -528,7 +527,7 @@
           </item>
 
           <item row="11" column="0" colspan="4">
-           <layout class="QHBoxLayout" name="meatdata_buttons_layout">
+           <layout class="QHBoxLayout" name="metadata_buttons_layout">
             <item>
              <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
               <property name="text">
