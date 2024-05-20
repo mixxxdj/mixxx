@@ -9,7 +9,8 @@
 #include "wmultilinetextedit.h"
 
 WMultiLineTextEdit::WMultiLineTextEdit(QWidget* parent)
-        : QPlainTextEdit(parent) {
+        : QPlainTextEdit(parent),
+          m_upDownChangesFocus(false) {
     // The added viewportMargin is required to ensure the inner
     // content of the text editor does not accidentally overwrite
     // the focus frame of the whole control. The documentMargin is
