@@ -11,8 +11,10 @@ class QWidgets;
 
 WStarRating::WStarRating(QWidget* pParent)
         : WWidget(pParent),
+          m_focusedViaKeyboard(false),
           m_starCount(0),
           m_visualStarRating(m_starCount) {
+    setAttribute(Qt::WA_Hover);
 }
 
 void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
@@ -42,15 +44,51 @@ void WStarRating::slotSetRating(int starCount) {
     emit ratingChangeRequest(starCount);
 }
 
+void WStarRating::focusInEvent(QFocusEvent* event) {
+    m_focusedViaKeyboard = event->reason() == Qt::TabFocusReason ||
+            event->reason() == Qt::BacktabFocusReason ||
+            event->reason() == Qt::ShortcutFocusReason;
+    QWidget::focusInEvent(event);
+}
+
+void WStarRating::focusOutEvent(QFocusEvent* event) {
+    auto shouldUpdateVisual = m_focusedViaKeyboard;
+    m_focusedViaKeyboard = false;
+    QWidget::focusInEvent(event);
+    if (shouldUpdateVisual) {
+        update();
+    }
+}
+
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
 
-    painter.setBrush(option.palette.text());
+    // The default value for State_KeyboardFocusChange is never
+    // reset once set to true for a certain window, so we
+    // implement our own custom version of it instead.
+    if (m_focusedViaKeyboard) {
+        option.state |= QStyle::State_KeyboardFocusChange;
+    } else {
+        option.state &= ~QStyle::State_KeyboardFocusChange;
+    }
+
+    // Center rating horizontally and vertically
+    QRect contentRect(QPoint(0, 0), m_visualStarRating.sizeHint());
+    contentRect.moveCenter(option.rect.center());
+
     painter.drawPrimitive(QStyle::PE_Widget, option);
 
-    m_visualStarRating.paint(&painter, m_contentRect);
+    if (focusPolicy() != Qt::NoFocus &&
+            (option.state & QStyle::State_HasFocus) &&
+            (option.state & QStyle::State_KeyboardFocusChange)) {
+        painter.setBrush(option.palette.highlight().color());
+    } else {
+        painter.setBrush(option.palette.text().color());
+    }
+
+    m_visualStarRating.paint(&painter, contentRect);
 }
 
 void WStarRating::keyPressEvent(QKeyEvent* event) {
@@ -113,8 +151,10 @@ void WStarRating::keyPressEvent(QKeyEvent* event) {
         return;
     }
     }
+    bool shouldUpdateVisual = !m_focusedViaKeyboard;
+    m_focusedViaKeyboard = true;
     newRating = math_clamp(newRating, StarRating::kMinStarCount, m_visualStarRating.maxStarCount());
-    updateVisualRating(newRating);
+    updateVisualRating(newRating, shouldUpdateVisual);
     m_starCount = newRating;
 }
 
@@ -133,8 +173,11 @@ void WStarRating::leaveEvent(QEvent* /*unused*/) {
     resetVisualRating();
 }
 
-void WStarRating::updateVisualRating(int starCount) {
+void WStarRating::updateVisualRating(int starCount, bool forceRepaint) {
     if (starCount == m_visualStarRating.starCount()) {
+        if (forceRepaint) {
+            update();
+        }
         return;
     }
     m_visualStarRating.setStarCount(starCount);
