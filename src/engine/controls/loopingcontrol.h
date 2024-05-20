@@ -73,9 +73,9 @@ class LoopingControl : public EngineControl {
     };
 
     struct LoopInfo {
-        mixxx::audio::FramePos startPosition;
-        mixxx::audio::FramePos endPosition;
-        LoopSeekMode seekMode;
+        mixxx::audio::FramePos startPosition = mixxx::audio::kInvalidFramePos;
+        mixxx::audio::FramePos endPosition = mixxx::audio::kInvalidFramePos;
+        LoopSeekMode seekMode = LoopSeekMode::None;
     };
 
     LoopInfo getLoopInfo() {
@@ -163,7 +163,12 @@ class LoopingControl : public EngineControl {
     void setLoopingEnabled(bool enabled);
     void setLoopInToCurrentPosition();
     void setLoopOutToCurrentPosition();
+
+    void storeLoopInfo();
+    void restoreLoopInfo();
+
     void clearActiveBeatLoop();
+    void clearLoopInfoAndControls();
     void updateBeatLoopingControls();
     bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
 
@@ -218,6 +223,8 @@ class LoopingControl : public EngineControl {
     bool m_bLoopOutPressedWhileLoopDisabled;
     QStack<double> m_activeLoopRolls;
     ControlValueAtomic<LoopInfo> m_loopInfo;
+    ControlValueAtomic<LoopInfo> m_prevLoopInfo;
+    double m_prevLoopSize;
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;

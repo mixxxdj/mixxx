@@ -55,11 +55,8 @@ LoopingControl::LoopingControl(const QString& group,
           m_bAdjustingLoopOut(false),
           m_bAdjustingLoopInOld(false),
           m_bAdjustingLoopOutOld(false),
-          m_bLoopOutPressedWhileLoopDisabled(false) {
-    m_oldLoopInfo = {mixxx::audio::kInvalidFramePos,
-            mixxx::audio::kInvalidFramePos,
-            LoopSeekMode::MovedOut};
-    m_loopInfo.setValue(m_oldLoopInfo);
+          m_bLoopOutPressedWhileLoopDisabled(false),
+          m_prevLoopSize(-1) {
     m_currentPosition.setValue(mixxx::audio::kStartFramePos);
     m_pActiveBeatLoop = nullptr;
     m_pRateControl = nullptr;
@@ -801,14 +798,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
 // Clear the last active loop while saved loop (cue + info) remains untouched
 void LoopingControl::slotLoopRemove() {
     setLoopingEnabled(false);
-    LoopInfo loopInfo = m_loopInfo.getValue();
-    loopInfo.startPosition = mixxx::audio::kInvalidFramePos;
-    loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
-    loopInfo.seekMode = LoopSeekMode::None;
-    m_loopInfo.setValue(loopInfo);
-    m_oldLoopInfo = loopInfo;
-    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
-    m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    clearLoopInfoAndControls();
     // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
     // if the loop is valid, else it is removed.
     // We remove it here right away so the loop is not restored
@@ -824,6 +814,14 @@ void LoopingControl::slotLoopRemove() {
             return;
         }
     }
+}
+
+void LoopingControl::clearLoopInfoAndControls() {
+    LoopInfo loopInfo;
+    m_loopInfo.setValue(loopInfo);
+    m_oldLoopInfo = loopInfo;
+    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
@@ -1283,6 +1281,8 @@ void LoopingControl::slotBeatLoopActivateRoll(
         return;
     }
 
+    storeLoopInfo();
+
     // Disregard existing loops (except beatlooprolls).
     m_pSlipEnabled->set(1);
     slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopRollActive, true, forcedAnchor);
@@ -1320,8 +1320,50 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     }
 
     // Return to the previous beatlooproll if necessary.
+    // Else previous regular beatloop if no rolling loops are active.
     if (!m_activeLoopRolls.empty()) {
         slotBeatLoop(m_activeLoopRolls.top(), m_bLoopRollActive, true);
+    } else {
+        restoreLoopInfo();
+    }
+}
+
+void LoopingControl::storeLoopInfo() {
+    if (m_bLoopRollActive || !m_activeLoopRolls.empty()) {
+        return;
+    }
+
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
+        m_prevLoopInfo.setValue(loopInfo);
+    } else {
+        // If we don't have a valid loop, yet, we store the current beatloop size.
+        // This way this (default) value is available again for `beatloop_activate`
+        // after disaling the (last) rolling loop.
+        // Explicitly clear the last saved loop.
+        m_prevLoopInfo.setValue(LoopInfo{});
+        m_prevLoopSize = m_pCOBeatLoopSize->get();
+    }
+}
+
+void LoopingControl::restoreLoopInfo() {
+    if (m_bLoopRollActive || !m_activeLoopRolls.empty()) {
+        return;
+    }
+
+    LoopInfo prevLoopInfo = m_prevLoopInfo.getValue();
+    if (prevLoopInfo.startPosition.isValid() && prevLoopInfo.endPosition.isValid()) {
+        setLoop(prevLoopInfo.startPosition, prevLoopInfo.endPosition, false);
+        m_prevLoopInfo.setValue(LoopInfo{});
+    } else {
+        // This may happen when there was no loop set when we activated the
+        // rolling loop that triggered storeLoopInfo(). Re-apply the loop size
+        // we stored.
+        clearLoopInfoAndControls();
+        double prevLoopSize = m_prevLoopSize;
+        if (prevLoopSize > 0) {
+            m_pCOBeatLoopSize->setAndConfirm(m_prevLoopSize);
+        }
     }
 }
 
@@ -1659,6 +1701,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
                 m_activeLoopRolls.clear();
             }
         } else {
+            storeLoopInfo();
             m_pSlipEnabled->set(1.0);
             slotBeatLoop(m_pCOBeatLoopSize->get());
             m_bLoopRollActive = true;
@@ -1672,6 +1715,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
             m_bLoopRollActive = false;
             m_activeLoopRolls.clear();
         }
+        restoreLoopInfo();
     }
 }
 
