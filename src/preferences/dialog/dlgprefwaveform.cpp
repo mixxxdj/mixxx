@@ -234,7 +234,7 @@ void DlgPrefWaveform::slotUpdate() {
     int currentOptions = m_pConfig->getValue(
             ConfigKey("[Waveform]", "waveform_options"),
             allshader::WaveformRendererSignalBase::None);
-    WaveformWidgetBackend::Backend backend = m_pConfig->getValue(
+    WaveformWidgetBackend backend = m_pConfig->getValue(
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
             factory->preferredBackend());
     updateWaveformAcceleration(factory->getType(), backend);
@@ -390,7 +390,7 @@ void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
-    WaveformWidgetBackend::Backend backend = WaveformWidgetBackend::None;
+    WaveformWidgetBackend backend = WaveformWidgetBackend::None;
     if (checked) {
         backend =
 #ifdef MIXXX_USE_QOPENGL
@@ -419,7 +419,7 @@ IMPL_SLOT_WAVEFORM_OPTION(HighDetails)
 #endif
 
 void DlgPrefWaveform::updateWaveformAcceleration(
-        WaveformWidgetType::Type type, WaveformWidgetBackend::Backend backend) {
+        WaveformWidgetType::Type type, WaveformWidgetBackend backend) {
     auto* factory = WaveformWidgetFactory::instance();
     int handleIdx = factory->findHandleIndexFromType(type);
 
@@ -445,7 +445,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
     useAccelerationCheckBox->blockSignals(false);
 }
 void DlgPrefWaveform::updateWaveformOption(
-        bool useWaveform, WaveformWidgetBackend::Backend backend, int currentOption) {
+        bool useWaveform, WaveformWidgetBackend backend, int currentOption) {
     splitLeftRightCheckBox->blockSignals(true);
     highDetailsCheckBox->blockSignals(true);
 

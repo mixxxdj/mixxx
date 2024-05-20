@@ -1,30 +1,41 @@
 #pragma once
 
+#include <QFlags>
+#include <array>
+// required for Qt-Macros
+#include <qobjectdefs.h>
+
 class WaveformWidgetType {
   public:
     enum Type {
         // The order must not be changed because the waveforms are referenced
         // from the sorted preferences by a number.
         Empty = 0,
-        Simple,                  // 5  Simple GL
-        Filtered,                // 7  Filtered GLSL
-        HSV,                     // 8  HSV
-        VSyncTest,               // 9  VSync GL
-        RGB,                     // 12 RGB GLSL
-        Stacked,                 // 16 RGB Stacked
-        Count_WaveformWidgetType //    Also used as invalid value
+        Simple = 5,    // 5  Simple GL
+        Filtered = 7,  // 7  Filtered GLSL
+        HSV = 8,       // 8  HSV
+        VSyncTest = 9, // 9  VSync GL
+        RGB = 12,      // 12 RGB GLSL
+        Stacked = 16,  // 16 RGB Stacked
+        Invalid,       // Don't use! Used to indicate invalid/unknown type, as
+                       // Count_WaveformWidgetType used to.
+    };
+    static constexpr std::array kValues = {
+            WaveformWidgetType::Empty,
+            WaveformWidgetType::Simple,
+            WaveformWidgetType::Filtered,
+            WaveformWidgetType::HSV,
+            WaveformWidgetType::VSyncTest,
+            WaveformWidgetType::RGB,
+            WaveformWidgetType::Stacked,
     };
 };
 
-class WaveformWidgetBackend {
-  public:
-    enum Backend {
-        None = 0,
-        GL,
-        GLSL,
+enum class WaveformWidgetBackend : int {
+    None = 0,
+    GL,
+    GLSL,
 #ifdef MIXXX_USE_QOPENGL
-        AllShader,
+    AllShader,
 #endif
-        Count_WaveformWidgetBackend
-    };
 };

@@ -61,9 +61,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void notifyRebootNecessary();
     void updateEnableUntilMark();
     void updateWaveformOption(
-            bool useWaveform, WaveformWidgetBackend::Backend backend, int currentOptions);
+            bool useWaveform, WaveformWidgetBackend backend, int currentOptions);
     void updateWaveformAcceleration(
-            WaveformWidgetType::Type type, WaveformWidgetBackend::Backend backend);
+            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

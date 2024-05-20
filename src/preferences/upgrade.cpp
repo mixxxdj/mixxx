@@ -33,7 +33,7 @@ Upgrade::~Upgrade() {
 namespace {
 // mapping to proactively move users to the new all-shader waveform types
 void upgradeToAllShaders(WaveformWidgetType::Type* waveformType,
-        WaveformWidgetBackend::Backend* waveformBackend) {
+        WaveformWidgetBackend* waveformBackend) {
     if (*waveformBackend == WaveformWidgetBackend::AllShader) {
         return;
     }
@@ -506,7 +506,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (okType && okBackend) {
             upgradeToAllShaders(
                     (WaveformWidgetType::Type*)&waveformType,
-                    (WaveformWidgetBackend::Backend*)&waveformBackend);
+                    (WaveformWidgetBackend*)&waveformBackend);
             config->set(ConfigKey("[Waveform]", "WaveformType"),
                     ConfigValue(waveformType));
             config->set(ConfigKey("[Waveform]", "use_hardware_acceleration"),

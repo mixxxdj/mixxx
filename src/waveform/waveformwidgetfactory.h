@@ -23,7 +23,7 @@ class WaveformWidgetAbstractHandle {
   public:
     WaveformWidgetAbstractHandle();
     WaveformWidgetAbstractHandle(WaveformWidgetType::Type type,
-            QList<WaveformWidgetBackend::Backend> backends
+            QList<WaveformWidgetBackend> backends
 #ifdef MIXXX_USE_QOPENGL
             ,
             int supportedOptions
@@ -38,7 +38,7 @@ class WaveformWidgetAbstractHandle {
     }
 
     WaveformWidgetType::Type getType() const { return m_type;}
-    const QList<WaveformWidgetBackend::Backend>& getBackend() const {
+    const QList<WaveformWidgetBackend>& getBackend() const {
         return m_backends;
     }
     bool supportAcceleration() const {
@@ -58,7 +58,7 @@ class WaveformWidgetAbstractHandle {
         return m_backends.contains(WaveformWidgetBackend::None);
     }
 
-    int supportedOptions(WaveformWidgetBackend::Backend backend) const {
+    int supportedOptions(WaveformWidgetBackend backend) const {
 #ifdef MIXXX_USE_QOPENGL
         return backend == WaveformWidgetBackend::AllShader ? m_supportedOption : 0;
 #else
@@ -70,7 +70,7 @@ class WaveformWidgetAbstractHandle {
 
   private:
     WaveformWidgetType::Type m_type;
-    QList<WaveformWidgetBackend::Backend> m_backends;
+    QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
     int m_supportedOption;
@@ -129,7 +129,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
-    WaveformWidgetBackend::Backend preferredBackend() const;
+    WaveformWidgetBackend preferredBackend() const;
 
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid

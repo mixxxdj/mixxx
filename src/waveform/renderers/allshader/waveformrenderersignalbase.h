@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFlags>
 #include <limits>
 
 #include "util/class.h"
@@ -15,11 +16,12 @@ class WaveformRendererSignalBase;
 class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
                                               public allshader::WaveformRendererAbstract {
   public:
-    enum Options {
-        None = 0,
-        SplitStereoSignal = 0x1,
-        HighDetails = 0x2,
+    enum Option {
+        None = 0b0,
+        SplitStereoSignal = 0b1,
+        HighDetails = 0b10,
     };
+    Q_DECLARE_FLAGS(Options, Option)
 
     static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};
 
