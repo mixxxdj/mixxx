@@ -312,10 +312,6 @@ void DlgTrackInfo::init() {
     pColorPickerMenu->addAction(m_pColorPicker);
     btnColorPicker->setMenu(pColorPickerMenu);
 
-    connect(btnColorPicker,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotColorButtonClicked);
     connect(m_pColorPicker.get(),
             &WColorPickerAction::colorPicked,
             this,
@@ -612,13 +608,6 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
         return;
     }
     mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
-}
-
-void DlgTrackInfo::slotColorButtonClicked() {
-    if (!m_pLoadedTrack) {
-        return;
-    }
-    btnColorPicker->showMenu();
 }
 
 void DlgTrackInfo::trackColorDialogSetColor(const mixxx::RgbColor::optional_t& newColor) {
