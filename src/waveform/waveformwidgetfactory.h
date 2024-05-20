@@ -274,6 +274,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
 
+    // TODO(#13245): Migrate the following methods to smart pointer.
     WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
     WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
     WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
