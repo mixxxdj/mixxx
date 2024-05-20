@@ -11,6 +11,8 @@ class QWidgets;
 
 WStarRating::WStarRating(QWidget* pParent)
         : WWidget(pParent),
+          m_upDownChangesFocus(false),
+          m_focusedViaKeyboard(false),
           m_starCount(0),
           m_visualStarRating(m_starCount) {
 }
@@ -49,7 +51,75 @@ void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
     painter.setBrush(option.palette.text());
     painter.drawPrimitive(QStyle::PE_Widget, option);
 
+    if (focusPolicy() != Qt::NoFocus &&
+            (option.state & QStyle::State_HasFocus) &&
+            (option.state & QStyle::State_KeyboardFocusChange)) {
+        painter.setBrush(option.palette.highlight().color());
+    } else {
+        painter.setBrush(option.palette.text().color());
+    }
+
     m_visualStarRating.paint(&painter, m_contentRect);
+}
+
+void WStarRating::keyPressEvent(QKeyEvent* event) {
+    // Change rating when certain keys are pressed
+    QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+    int newRating = m_visualStarRating.starCount();
+    switch (ke->key()) {
+    case Qt::Key_0:
+    case Qt::Key_1:
+    case Qt::Key_2:
+    case Qt::Key_3:
+    case Qt::Key_4:
+    case Qt::Key_5:
+    case Qt::Key_6:
+    case Qt::Key_7:
+    case Qt::Key_8:
+    case Qt::Key_9: {
+        bool ok = false;
+        int keyInt = ke->text().toInt(&ok);
+        if (ok) {
+            newRating = keyInt;
+        }
+        break;
+    }
+    case Qt::Key_Right:
+    case Qt::Key_Plus: {
+        newRating++;
+        break;
+    }
+    case Qt::Key_Left:
+    case Qt::Key_Minus: {
+        newRating--;
+        break;
+    }
+    case Qt::Key_Up: {
+        if (m_upDownChangesFocus && focusPreviousChild()) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+        return;
+    }
+    case Qt::Key_Down: {
+        if (m_upDownChangesFocus && focusNextChild()) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+        return;
+    }
+    default: {
+        event->ignore();
+        return;
+    }
+    }
+    bool shouldUpdateVisual = !m_focusedViaKeyboard;
+    m_focusedViaKeyboard = true;
+    newRating = math_clamp(newRating, StarRating::kMinStarCount, m_visualStarRating.maxStarCount());
+    updateVisualRating(newRating, shouldUpdateVisual);
+    m_starCount = newRating;
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
