@@ -8,26 +8,6 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 
-#ifdef MIXXX_USE_QOPENGL
-#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
-#define IMPL_SLOT_WAVEFORM_OPTION(opt)                                       \
-    void DlgPrefWaveform::slotSetWaveformOption##opt(bool checked) {         \
-        int currentOption = m_pConfig->getValue(                             \
-                ConfigKey("[Waveform]", "waveform_options"),                 \
-                allshader::WaveformRendererSignalBase::None);                \
-        m_pConfig->setValue(ConfigKey("[Waveform]", "waveform_options"),     \
-                checked ? currentOption |                                    \
-                                allshader::WaveformRendererSignalBase::opt   \
-                        : currentOption ^                                    \
-                                allshader::WaveformRendererSignalBase::opt); \
-        auto type = static_cast<WaveformWidgetType::Type>(                   \
-                waveformTypeComboBox->currentData().toInt());                \
-        auto* factory = WaveformWidgetFactory::instance();                   \
-        factory->setWidgetTypeFromHandle(                                    \
-                factory->findHandleIndexFromType(type), true);               \
-    }
-#endif
-
 namespace {
 constexpr WaveformWidgetType::Type kDefaultWaveform = WaveformWidgetType::RGB;
 } // anonymous namespace
@@ -43,8 +23,8 @@ DlgPrefWaveform::DlgPrefWaveform(
 
     // Waveform overview init
     waveformOverviewComboBox->addItem(tr("Filtered")); // "0"
-    waveformOverviewComboBox->addItem(tr("HSV")); // "1"
-    waveformOverviewComboBox->addItem(tr("RGB")); // "2"
+    waveformOverviewComboBox->addItem(tr("HSV"));      // "1"
+    waveformOverviewComboBox->addItem(tr("RGB"));      // "2"
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -202,6 +182,23 @@ DlgPrefWaveform::DlgPrefWaveform(
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
+}
+
+void DlgPrefWaveform::slotSetWaveformOptions(
+        allshader::WaveformRendererSignalBase::Option option, bool enabled) {
+    int currentOption = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::None);
+    m_pConfig->setValue(ConfigKey("[Waveform]", "waveform_options"),
+            enabled ? currentOption |
+                            option
+                    : currentOption ^
+                            option);
+    auto type = static_cast<WaveformWidgetType::Type>(
+            waveformTypeComboBox->currentData().toInt());
+    auto* factory = WaveformWidgetFactory::instance();
+    factory->setWidgetTypeFromHandle(
+            factory->findHandleIndexFromType(type), true);
 }
 
 void DlgPrefWaveform::slotUpdate() {
@@ -412,11 +409,6 @@ void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
     updateWaveformOption(true, backend, currentOptions);
     updateEnableUntilMark();
 }
-
-#ifdef MIXXX_USE_QOPENGL
-IMPL_SLOT_WAVEFORM_OPTION(SplitStereoSignal)
-IMPL_SLOT_WAVEFORM_OPTION(HighDetails)
-#endif
 
 void DlgPrefWaveform::updateWaveformAcceleration(
         WaveformWidgetType::Type type, WaveformWidgetBackend backend) {

@@ -7,7 +7,11 @@
 #include "preferences/usersettings.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #ifdef MIXXX_USE_QOPENGL
-#define DECL_SLOT_WAVEFORM_OPTION(opt) void slotSetWaveformOption##opt(bool checked)
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#define DECL_SLOT_WAVEFORM_OPTION(opt)                                               \
+    void slotSetWaveformOption##opt(bool checked) {                                  \
+        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::opt, checked); \
+    }
 #endif
 
 class Library;
@@ -33,6 +37,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformEnabled(bool checked);
     void slotSetWaveformAcceleration(bool checked);
 #ifdef MIXXX_USE_QOPENGL
+    void slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option option, bool enabled);
     DECL_SLOT_WAVEFORM_OPTION(SplitStereoSignal);
     DECL_SLOT_WAVEFORM_OPTION(HighDetails);
 #endif
@@ -68,3 +73,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
 };
+
+#ifdef DECL_SLOT_WAVEFORM_OPTION
+#undef DECL_SLOT_WAVEFORM_OPTION
+#endif
