@@ -11,6 +11,7 @@ class QWidgets;
 
 WStarRating::WStarRating(QWidget* pParent)
         : WWidget(pParent),
+          m_upDownChangesFocus(false),
           m_focusedViaKeyboard(false),
           m_starCount(0),
           m_visualStarRating(m_starCount) {
@@ -145,6 +146,22 @@ void WStarRating::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_Minus: {
         newRating--;
         break;
+    }
+    case Qt::Key_Up: {
+        if (m_upDownChangesFocus && focusPreviousChild()) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+        return;
+    }
+    case Qt::Key_Down: {
+        if (m_upDownChangesFocus && focusNextChild()) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+        return;
     }
     default: {
         event->ignore();

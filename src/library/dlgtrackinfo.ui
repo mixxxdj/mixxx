@@ -215,6 +215,9 @@
               <property name="mouseTracking">
                 <bool>true</bool>
               </property>
+              <property name="upDownChangesFocus">
+               <bool>true</bool>
+              </property>
               <property name="focusPolicy">
                 <enum>Qt::StrongFocus</enum>
               </property>
