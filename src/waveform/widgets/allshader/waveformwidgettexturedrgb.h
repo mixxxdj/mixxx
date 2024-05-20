@@ -1,23 +1,24 @@
 #pragma once
 
 #include "util/class.h"
+#include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/widgets/allshader/waveformwidget.h"
 
 class WaveformWidgetFactory;
 
 namespace allshader {
-class SimpleWaveformWidget;
+class WaveformWidgetTexturedRGB;
 }
 
-class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
+class allshader::WaveformWidgetTexturedRGB final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderSimpleWaveform;
+        return WaveformWidgetType::AllShaderTexturedRGB;
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("Simple");
+        return tr("RGB");
     }
     static constexpr bool useOpenGl() {
         return true;
@@ -29,7 +30,7 @@ class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
         return true;
     }
     static constexpr bool useTextureForWaveform() {
-        return false;
+        return true;
     }
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
@@ -40,8 +41,8 @@ class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
     void paintEvent(QPaintEvent* event) override;
 
   private:
-    SimpleWaveformWidget(const QString& group, QWidget* parent);
+    WaveformWidgetTexturedRGB(const QString& group, QWidget* parent);
     friend class ::WaveformWidgetFactory;
 
-    DISALLOW_COPY_AND_ASSIGN(SimpleWaveformWidget);
+    DISALLOW_COPY_AND_ASSIGN(WaveformWidgetTexturedRGB);
 };

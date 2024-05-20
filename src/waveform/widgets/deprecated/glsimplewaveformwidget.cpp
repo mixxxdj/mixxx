@@ -1,23 +1,25 @@
-#include "glrgbwaveformwidget.h"
+#include "glsimplewaveformwidget.h"
 
-#include "moc_glrgbwaveformwidget.cpp"
+#include <QPainter>
+
+#include "moc_glsimplewaveformwidget.cpp"
 #include "util/performancetimer.h"
-#include "waveform/renderers/glwaveformrenderbackground.h"
-#include "waveform/renderers/glwaveformrendererrgb.h"
+#include "waveform/renderers/deprecated/glwaveformrenderbackground.h"
+#include "waveform/renderers/deprecated/glwaveformrenderersimplesignal.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 
-GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
+GLSimpleWaveformWidget::GLSimpleWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
     addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    addRenderer<GLWaveformRendererRGB>();
+    addRenderer<GLWaveformRendererSimpleSignal>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -25,19 +27,18 @@ GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
     m_initSuccess = init();
 }
 
-GLRGBWaveformWidget::~GLRGBWaveformWidget() {
-
+GLSimpleWaveformWidget::~GLSimpleWaveformWidget() {
 }
 
-void GLRGBWaveformWidget::castToQWidget() {
+void GLSimpleWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {
+void GLSimpleWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
-mixxx::Duration GLRGBWaveformWidget::render() {
+mixxx::Duration GLSimpleWaveformWidget::render() {
     PerformanceTimer timer;
     mixxx::Duration t1;
     //mixxx::Duration t2, t3;
@@ -48,6 +49,6 @@ mixxx::Duration GLRGBWaveformWidget::render() {
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();
-    //qDebug() << "GLRGBWaveformWidget" << t1 << t2;
+    //qDebug() << "GLSimpleWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup
 }

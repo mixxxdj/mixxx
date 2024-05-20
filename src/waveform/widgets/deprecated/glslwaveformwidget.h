@@ -1,7 +1,6 @@
 #pragma once
 
-#include "waveform/widgets/glwaveformwidgetabstract.h"
-
+#include "waveform/widgets/deprecated/glwaveformwidgetabstract.h"
 
 class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
@@ -40,6 +39,9 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
+    static inline bool useTextureForWaveform() {
+        return true;
+    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Legacy;
     }
@@ -57,6 +59,9 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
+    static inline bool useTextureForWaveform() {
+        return true;
+    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Legacy;
     }
@@ -82,6 +87,9 @@ class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
         return false;
     }
     static inline bool useOpenGLShaders() {
+        return true;
+    }
+    static inline bool useTextureForWaveform() {
         return true;
     }
     static inline WaveformWidgetCategory category() {

@@ -6,18 +6,18 @@
 class WaveformWidgetFactory;
 
 namespace allshader {
-class SimpleWaveformWidget;
+class RGBStackedWaveformWidget;
 }
 
-class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
+class allshader::RGBStackedWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderSimpleWaveform;
+        return WaveformWidgetType::AllShaderRGBStackedWaveform;
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("Simple");
+        return tr("RGB Stacked");
     }
     static constexpr bool useOpenGl() {
         return true;
@@ -40,8 +40,8 @@ class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
     void paintEvent(QPaintEvent* event) override;
 
   private:
-    SimpleWaveformWidget(const QString& group, QWidget* parent);
+    RGBStackedWaveformWidget(const QString& group, QWidget* parent);
     friend class ::WaveformWidgetFactory;
 
-    DISALLOW_COPY_AND_ASSIGN(SimpleWaveformWidget);
+    DISALLOW_COPY_AND_ASSIGN(RGBStackedWaveformWidget);
 };
