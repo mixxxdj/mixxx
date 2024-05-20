@@ -67,7 +67,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
-    void slotColorButtonClicked();
 
     void slotCoverFound(
             const QObject* pRequester,
