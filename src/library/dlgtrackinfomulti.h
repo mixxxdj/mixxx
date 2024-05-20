@@ -65,7 +65,6 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void init();
     void loadTracksInternal(const QList<TrackPointer>& pTracks);
     void saveTracks();
-    void clear();
 
     void connectTracksChanged();
     void disconnectTracksChanged();

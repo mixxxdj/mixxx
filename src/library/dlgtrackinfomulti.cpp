@@ -290,23 +290,18 @@ void DlgTrackInfoMulti::slotApply() {
 
 void DlgTrackInfoMulti::slotOk() {
     slotApply();
-    clear();
     accept();
 }
 
 void DlgTrackInfoMulti::slotCancel() {
-    clear();
     reject();
 }
 
 void DlgTrackInfoMulti::loadTracks(const QList<TrackPointer>& pTracks) {
-    clear();
-
     if (pTracks.isEmpty()) {
         return;
     }
 
-    m_pLoadedTracks.clear();
     for (const auto& pTrack : pTracks) {
         m_pLoadedTracks.insert(pTrack.get()->getId(), pTrack);
     }
@@ -676,19 +671,6 @@ void DlgTrackInfoMulti::saveTracks() {
     updateFromTracks();
 }
 
-void DlgTrackInfoMulti::clear() {
-    const QSignalBlocker signalBlocker(this);
-
-    disconnectTracksChanged();
-    m_pLoadedTracks.clear();
-    m_trackRecords.clear();
-
-    m_pWStarRating->slotSetRating(0);
-    trackColorDialogSetColorStyleButton(mixxx::RgbColor::nullopt());
-    m_pWCoverArtLabel->loadTrack(TrackPointer());
-    m_pWCoverArtLabel->setCoverArt(CoverInfo(), QPixmap());
-}
-
 void DlgTrackInfoMulti::connectTracksChanged() {
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         connect(pTrack.get(),
@@ -889,15 +871,9 @@ void DlgTrackInfoMulti::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap) {
-    if (pRequester != this) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(!m_pLoadedTracks.isEmpty()) {
-        return;
-    }
-    // TODO Is this check really necessary? Is it possible that tracks
-    // have changed while CoverArtCache was working on our request?
-    if (m_pLoadedTracks.cbegin().value()->getLocation() == coverInfo.trackLocation) {
+    if (pRequester == this &&
+            !m_pLoadedTracks.isEmpty() &&
+            m_pLoadedTracks.cbegin().value()->getLocation() == coverInfo.trackLocation) {
         // Track records have already been updated in slotCoverInfoSelected,
         // now load the image to the label.
         m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
