@@ -21,6 +21,8 @@ class WStarRating : public WWidget {
     void ratingChangeRequest(int starCount);
 
   protected:
+    void focusInEvent(QFocusEvent* e) override;
+    void focusOutEvent(QFocusEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
     void keyPressEvent(QKeyEvent* event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -29,12 +31,14 @@ class WStarRating : public WWidget {
     void fillDebugTooltip(QStringList* debug) override;
 
   private:
+    bool m_focusedViaKeyboard;
+
     int m_starCount;
 
     StarRating m_visualStarRating;
     mutable QRect m_contentRect;
 
-    void updateVisualRating(int starCount);
+    void updateVisualRating(int starCount, bool forceRepaint = false);
     void resetVisualRating() {
         updateVisualRating(m_starCount);
     }
