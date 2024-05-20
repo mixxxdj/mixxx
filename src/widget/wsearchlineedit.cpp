@@ -122,12 +122,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slotClearSearch);
 
-    QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            &WSearchLineEdit::slotSetShortcutFocus);
-
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
@@ -227,9 +221,13 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
             "\n" + tr("For more information see User Manual > Mixxx Library") +
             "\n\n" +
-            tr("Shortcuts") + ":\n" +
+            tr("Shortcuts (Global)") + "\n" +
             tr("Ctrl+F") + ": " +
-            tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Focus (Search in current view)", "Give search bar input focus") + "\n" +
+            tr("Ctrl+Shift+F") + ": " +
+            tr("Focus (Search in \'Tracks\' view)") + "\n" +
+            "\n" +
+            tr("Shortcuts (while focused)") + "\n" +
             tr("Return") + ": " +
             tr("Trigger search before search-as-you-type timeout or"
                "jump to tracks view afterwards") +
@@ -787,10 +785,6 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
     updateClearAndDropdownButton(text);
     triggerSearchDebounced();
     m_saveTimer.start(kSaveTimeoutMillis);
-}
-
-void WSearchLineEdit::slotSetShortcutFocus() {
-    handleSetFocus(Qt::ShortcutFocusReason);
 }
 
 void WSearchLineEdit::handleSetFocus(Qt::FocusReason focusReason) {
