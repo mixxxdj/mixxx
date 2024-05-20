@@ -29,6 +29,9 @@
 #include "waveform/widgets/allshader/hsvwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
+#include "waveform/widgets/allshader/waveformwidgettexturedfiltered.h"
+#include "waveform/widgets/allshader/waveformwidgettexturedrgb.h"
+#include "waveform/widgets/allshader/waveformwidgettexturedstacked.h"
 #else
 #include "waveform/widgets/qthsvwaveformwidget.h"
 #include "waveform/widgets/qtrgbwaveformwidget.h"
@@ -36,12 +39,12 @@
 #include "waveform/widgets/qtvsynctestwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
 #endif
+#include "waveform/widgets/deprecated/glrgbwaveformwidget.h"
+#include "waveform/widgets/deprecated/glsimplewaveformwidget.h"
+#include "waveform/widgets/deprecated/glslwaveformwidget.h"
+#include "waveform/widgets/deprecated/glvsynctestwidget.h"
+#include "waveform/widgets/deprecated/glwaveformwidget.h"
 #include "waveform/widgets/emptywaveformwidget.h"
-#include "waveform/widgets/glrgbwaveformwidget.h"
-#include "waveform/widgets/glsimplewaveformwidget.h"
-#include "waveform/widgets/glslwaveformwidget.h"
-#include "waveform/widgets/glvsynctestwidget.h"
-#include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
@@ -51,6 +54,26 @@
 #include "widget/wwaveformviewer.h"
 
 namespace {
+bool isDeprecated(WaveformWidgetType::Type t) {
+    switch (t) {
+    case WaveformWidgetType::GLRGBWaveform:
+        return true;
+    case WaveformWidgetType::GLSimpleWaveform:
+        return true;
+    case WaveformWidgetType::GLSLFilteredWaveform:
+        return true;
+    case WaveformWidgetType::GLSLRGBWaveform:
+        return true;
+    case WaveformWidgetType::GLSLRGBStackedWaveform:
+        return true;
+    case WaveformWidgetType::GLVSyncTest:
+        return true;
+    case WaveformWidgetType::GLFilteredWaveform:
+        return true;
+    default:
+        return false;
+    }
+}
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     if (pWaveformWidget == nullptr ||
@@ -571,6 +594,14 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     case WaveformWidgetType::Simple:
         return true;
     case WaveformWidgetType::HSV:
+        return true;
+    case WaveformWidgetType::AllShaderRGBStackedWaveform:
+        return true;
+    case WaveformWidgetType::AllShaderTexturedFiltered:
+        return true;
+    case WaveformWidgetType::AllShaderTexturedRGB:
+        return true;
+    case WaveformWidgetType::AllShaderTexturedStacked:
         return true;
     default:
         break;

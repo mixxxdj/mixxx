@@ -1,4 +1,4 @@
-#include "waveform/renderers/glvsynctestrenderer.h"
+#include "waveform/renderers/deprecated/glvsynctestrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "util/performancetimer.h"

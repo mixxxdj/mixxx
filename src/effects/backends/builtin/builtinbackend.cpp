@@ -17,6 +17,7 @@
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
 #include "effects/backends/builtin/autopaneffect.h"
+#include "effects/backends/builtin/compressoreffect.h"
 #include "effects/backends/builtin/distortioneffect.h"
 #include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/glitcheffect.h"
@@ -62,6 +63,7 @@ BuiltInBackend::BuiltInBackend() {
 #endif
     registerEffect<DistortionEffect>();
     registerEffect<GlitchEffect>();
+    registerEffect<CompressorEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(

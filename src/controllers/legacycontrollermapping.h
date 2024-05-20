@@ -35,7 +35,8 @@ class LegacyControllerMapping {
               m_settingsLayout(other.m_settingsLayout.get() != nullptr
                               ? other.m_settingsLayout->clone()
                               : nullptr),
-              m_scripts(other.m_scripts) {
+              m_scripts(other.m_scripts),
+              m_deviceDirection(other.m_deviceDirection) {
     }
     virtual ~LegacyControllerMapping() = default;
 

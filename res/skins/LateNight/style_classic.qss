@@ -1133,7 +1133,12 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #f0bb2b;
+}
   #SkinSettingsNumToggleHeader[displayValue="0"] {
     color: #b9901f;
   }
@@ -1400,7 +1405,7 @@ WPushButton#LibExpand,
 
 /* top-level buttons in transport, fx, micaux and others */
 #BeatgridControls WPushButton[displayValue="0"],
-#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton,
 #PlayCueMini WPushButton[displayValue="0"],
 WPushButton#CueDeck[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
@@ -1448,7 +1453,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #KeyControls WPushButton[pressed="true"],
-#LoopControls WPushButton[value="1"],
+#LoopControls WPushButton[pressed="true"],
 #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
 #EQKillButtonBox WPushButton[displayValue="1"],
@@ -1726,6 +1731,12 @@ WPushButton#Blank[value="4"] {
 #LoopOut {
   image: url(skins:LateNight/classic/buttons/btn__loop_out.svg) no-repeat center center;
 }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__loop_anchor_end.svg) no-repeat center center;
+  }
 
 #JumpForward {
   image: url(skins:LateNight/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
@@ -2145,7 +2156,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
 WLibrarySidebar {

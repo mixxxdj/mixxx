@@ -3,9 +3,9 @@
 
 #include <QDomNode>
 
-#include "waveform/waveform.h"
-#include "waveformwidgetrenderer.h"
 #include "util/math.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)

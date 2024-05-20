@@ -1,9 +1,9 @@
-#include "waveform/renderers/glwaveformrenderersimplesignal.h"
+#include "waveform/renderers/deprecated/glwaveformrenderersimplesignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "util/math.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveformwidgetrenderer.h"
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)

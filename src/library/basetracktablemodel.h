@@ -275,7 +275,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
-    QColor m_playedInactiveColor;
+    QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
 
     ColumnCache m_columnCache;
 

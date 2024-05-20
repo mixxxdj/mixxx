@@ -1232,7 +1232,13 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 WCoverArtMenu {
   color: #c2b3a5;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #c2b3a5;
+}
+
   /* dim ivory / light brown */
   #Deck1 WStarRating, #DeckCompact1 WStarRating,
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
@@ -1596,6 +1602,7 @@ WBeatSpinBox::down-button {
   }
   /* dim buttons in top-level containers */
   #LoopControls WPushButton[displayValue="0"],
+  WPushButton#LoopAnchor[displayValue="1"],
   #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
   WPushButton#SyncLeader[value="0"],
@@ -1686,6 +1693,7 @@ QPushButton#pushButtonAnalyze:checked {
 #SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
+WPushButton#LoopAnchor[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
 #BeatgridControls WPushButton[pressed="true"]/*,
@@ -2099,6 +2107,12 @@ WPushButton#PlayDeck[value="0"] {
   }
   #LoopOut[pressed="true"] {
     image: url(skins:LateNight/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
+  }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_end.svg) no-repeat center center;
   }
 
 #JumpForward {
@@ -2618,7 +2632,9 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
+  /* This is the color used to paint the text of missing tracks. */
+  qproperty-trackMissingColor: #f856e7; /* pink */
 }
 
 /* Table cell in edit mode */

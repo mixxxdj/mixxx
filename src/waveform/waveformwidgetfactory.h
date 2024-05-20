@@ -146,7 +146,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
-
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);

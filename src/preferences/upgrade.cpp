@@ -44,10 +44,23 @@ void upgradeToAllShaders(WaveformWidgetType::Type* waveformType,
     case WWT::VSyncTest:
         // Not supported by AllShader
         return;
-    default:
+    case WWT::Simple:
+        *waveformType = WaveformWidgetType::Simple;
+        break;
+    case WWT::Filtered:
+        *waveformType = WaveformWidgetType::Filtered;
+        break;
+    case WWT::HSV:
+        *waveformType = WaveformWidgetType::HSV;
+        break;
+    case WWT::RGB:
         *waveformType = WaveformWidgetType::RGB;
-        *waveformBackend = WaveformWidgetBackend::AllShader;
+        break;
+    case WWT::Stacked:
+        *waveformType = WaveformWidgetType::Stacked;
+        break;
     }
+    *waveformBackend = WaveformWidgetBackend::AllShader;
 }
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
@@ -453,8 +466,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     // Sandbox isn't setup yet at this point in startup because it relies on
                     // the config settings path and this function is what loads the config
                     // so it's not ready yet.
-                    successful = tc.addDirectory(mixxx::FileInfo(currentFolder));
-
+                    successful =
+                            tc.addDirectory(mixxx::FileInfo(currentFolder)) ==
+                            DirectoryDAO::AddResult::Ok;
+                    ;
                     tc.disconnectDatabase();
                 }
             }

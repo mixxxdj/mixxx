@@ -42,6 +42,7 @@ class BrowseFeature : public LibraryFeature {
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
+    void slotRefreshDirectoryTree();
     void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
@@ -58,6 +59,7 @@ class BrowseFeature : public LibraryFeature {
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
+    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
 
@@ -69,6 +71,7 @@ class BrowseFeature : public LibraryFeature {
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
+    QAction* m_pRefreshDirTreeAction;
 
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
