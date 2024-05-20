@@ -757,7 +757,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::renderSelf() {
-    ScopedTimer t(u"WaveformWidgetFactory::render() %1waveforms",
+    ScopedTimer t(QStringLiteral("WaveformWidgetFactory::render() %1waveforms"),
             static_cast<int>(m_waveformWidgetHolders.size()));
 
     if (!m_skipRender) {
@@ -831,7 +831,7 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swapSelf() {
-    ScopedTimer t(u"WaveformWidgetFactory::swap() %1waveforms",
+    ScopedTimer t(QStringLiteral("WaveformWidgetFactory::swap() %1waveforms"),
             static_cast<int>(m_waveformWidgetHolders.size()));
 
     // Do this in an extra slot to be sure to hit the desired interval
