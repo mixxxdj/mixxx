@@ -18,6 +18,7 @@ class WaveformWidgetAbstract;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;
+class WaveformWidgetInfoBase;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -187,6 +188,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swapSelf();
 
     void evaluateWidgets();
+    QString buildWidgetDisplayNameFromInfo(const WaveformWidgetInfoBase& info) const;
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
