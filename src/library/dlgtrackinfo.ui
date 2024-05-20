@@ -27,7 +27,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="WBasicTabWidget" name="tabWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -1095,6 +1095,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
    <class>WBasicPushButton</class>
    <extends>QPushButton</extends>
    <header>widget/wbasicpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WBasicTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>widget/wbasictabwidget.h</header>
   </customwidget>
   <customwidget>
    <class>WMultiLineTextEdit</class>
