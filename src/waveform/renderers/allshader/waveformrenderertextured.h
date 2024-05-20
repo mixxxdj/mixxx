@@ -7,6 +7,7 @@
 #include "waveform/renderers/allshader/rgbdata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 class QOpenGLFramebufferObject;
 class QOpenGLShaderProgram;
@@ -20,13 +21,12 @@ class allshader::WaveformRendererTextured : public QObject,
                                             public allshader::WaveformRendererSignalBase {
     Q_OBJECT
   public:
-    enum class Type {
-        Filtered,
-        RGB,
-        Stacked, // was RGBFiltered,
-    };
-
-    explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget, Type t);
+    explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
+            WaveformWidgetType::Type t,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play,
+            WaveformRendererSignalBase::Options options =
+                    WaveformRendererSignalBase::None);
     ~WaveformRendererTextured() override;
 
     // override ::WaveformRendererSignalBase
@@ -42,7 +42,7 @@ class allshader::WaveformRendererTextured : public QObject,
     void slotWaveformUpdated();
 
   private:
-    static QString fragShaderForType(Type t);
+    static QString fragShaderForType(WaveformWidgetType::Type t);
     bool loadShaders();
     bool loadTexture();
 
@@ -59,8 +59,10 @@ class allshader::WaveformRendererTextured : public QObject,
     std::unique_ptr<QOpenGLFramebufferObject> m_framebuffer;
 
     // shaders
+    bool m_isSlipRenderer;
+    WaveformRendererSignalBase::Options m_options;
     bool m_shadersValid;
-    Type m_type;
+    WaveformWidgetType::Type m_type;
     const QString m_pFragShader;
     std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
 };

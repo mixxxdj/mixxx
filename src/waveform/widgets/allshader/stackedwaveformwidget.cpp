@@ -1,34 +1,41 @@
-#include "waveform/widgets/allshader/waveformwidgettexturedrgb.h"
+#include "waveform/widgets/allshader/stackedwaveformwidget.h"
 
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
+#include "waveform/renderers/allshader/waveformrendererfiltered.h"
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
-#include "waveform/widgets/allshader/moc_waveformwidgettexturedrgb.cpp"
+#include "waveform/widgets/allshader/moc_stackedwaveformwidget.cpp"
 
 namespace allshader {
 
-WaveformWidgetTexturedRGB::WaveformWidgetTexturedRGB(const QString& group, QWidget* parent)
+StackedWaveformWidget::StackedWaveformWidget(const QString& group,
+        QWidget* parent,
+        WaveformRendererSignalBase::Options options)
         : WaveformWidget(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    addRenderer<WaveformRendererTextured>(WaveformRendererTextured::Type::RGB);
+    if (options & allshader::WaveformRendererSignalBase::HighDetails) {
+        addRenderer<WaveformRendererTextured>(::WaveformWidgetType::Stacked);
+    } else {
+        addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked
+    }
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
     m_initSuccess = init();
 }
 
-void WaveformWidgetTexturedRGB::castToQWidget() {
+void StackedWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void WaveformWidgetTexturedRGB::paintEvent(QPaintEvent* event) {
+void StackedWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 

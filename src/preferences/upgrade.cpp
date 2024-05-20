@@ -53,6 +53,7 @@ void upgradeToAllShaders(WaveformWidgetType::Type* waveformType,
     case WWT::HSV:
         *waveformType = WaveformWidgetType::HSV;
         break;
+    case WWT::Invalid:
     case WWT::RGB:
         *waveformType = WaveformWidgetType::RGB;
         break;

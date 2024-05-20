@@ -6,19 +6,26 @@
 #include "waveform/renderers/allshader/waveformrendererfiltered.h"
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_filteredwaveformwidget.cpp"
 
 namespace allshader {
 
-FilteredWaveformWidget::FilteredWaveformWidget(const QString& group, QWidget* parent)
+FilteredWaveformWidget::FilteredWaveformWidget(const QString& group,
+        QWidget* parent,
+        WaveformRendererSignalBase::Options options)
         : WaveformWidget(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    addRenderer<WaveformRendererFiltered>(false);
+    if (options & allshader::WaveformRendererSignalBase::HighDetails) {
+        addRenderer<WaveformRendererTextured>(::WaveformWidgetType::Filtered);
+    } else {
+        addRenderer<WaveformRendererFiltered>(false);
+    }
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 

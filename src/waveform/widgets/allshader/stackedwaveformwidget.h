@@ -1,19 +1,20 @@
 #pragma once
 
 #include "util/class.h"
+#include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/widgets/allshader/waveformwidget.h"
 
 class WaveformWidgetFactory;
 
 namespace allshader {
-class RGBStackedWaveformWidget;
+class StackedWaveformWidget;
 }
 
-class allshader::RGBStackedWaveformWidget final : public allshader::WaveformWidget {
+class allshader::StackedWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderRGBStackedWaveform;
+        return WaveformWidgetType::Stacked;
     }
 
     static inline QString getWaveformWidgetName() {
@@ -28,11 +29,11 @@ class allshader::RGBStackedWaveformWidget final : public allshader::WaveformWidg
     static constexpr bool useOpenGLShaders() {
         return true;
     }
-    static constexpr bool useTextureForWaveform() {
-        return false;
-    }
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
+    }
+    static constexpr int supportedOptions() {
+        return WaveformRendererSignalBase::HighDetails;
     }
 
   protected:
@@ -40,8 +41,11 @@ class allshader::RGBStackedWaveformWidget final : public allshader::WaveformWidg
     void paintEvent(QPaintEvent* event) override;
 
   private:
-    RGBStackedWaveformWidget(const QString& group, QWidget* parent);
+    StackedWaveformWidget(const QString& group,
+            QWidget* parent,
+            WaveformRendererSignalBase::Options options =
+                    WaveformRendererSignalBase::None);
     friend class ::WaveformWidgetFactory;
 
-    DISALLOW_COPY_AND_ASSIGN(RGBStackedWaveformWidget);
+    DISALLOW_COPY_AND_ASSIGN(StackedWaveformWidget);
 };

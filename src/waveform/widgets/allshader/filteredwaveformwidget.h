@@ -26,14 +26,11 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
     static constexpr bool useOpenGLShaders() {
         return true;
     }
-    static constexpr bool useTextureForWaveform() {
-        return false;
-    }
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
     }
     static constexpr int supportedOptions() {
-        return WaveformRendererSignalBase::None;
+        return WaveformRendererSignalBase::HighDetails;
     }
 
   protected:
@@ -41,7 +38,10 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
     void paintEvent(QPaintEvent* event) override;
 
   private:
-    FilteredWaveformWidget(const QString& group, QWidget* parent);
+    FilteredWaveformWidget(const QString& group,
+            QWidget* parent,
+            WaveformRendererSignalBase::Options options =
+                    WaveformRendererSignalBase::None);
     friend class ::WaveformWidgetFactory;
 
     DISALLOW_COPY_AND_ASSIGN(FilteredWaveformWidget);

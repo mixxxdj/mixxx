@@ -11,14 +11,13 @@
 namespace allshader {
 
 // static
-QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Type t) {
-    using Type = WaveformRendererTextured::Type;
+QString WaveformRendererTextured::fragShaderForType(::WaveformWidgetType::Type t) {
     switch (t) {
-    case Type::Filtered:
+    case ::WaveformWidgetType::Filtered:
         return QLatin1String(":/shaders/filteredsignal.frag");
-    case Type::RGB:
+    case ::WaveformWidgetType::RGB:
         return QLatin1String(":/shaders/rgbsignal.frag");
-    case Type::Stacked:
+    case ::WaveformWidgetType::Stacked:
         return QLatin1String(":/shaders/stackedsignal.frag");
     default:
         break;
@@ -27,12 +26,17 @@ QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Ty
     return QString();
 }
 
-WaveformRendererTextured::WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
-        Type t)
+WaveformRendererTextured::WaveformRendererTextured(
+        WaveformWidgetRenderer* waveformWidget,
+        ::WaveformWidgetType::Type t,
+        ::WaveformRendererAbstract::PositionSource type,
+        WaveformRendererSignalBase::Options options)
         : WaveformRendererSignalBase(waveformWidget),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
+          m_options(options),
           m_shadersValid(false),
           m_type(t),
           m_pFragShader(fragShaderForType(t)) {
@@ -267,6 +271,14 @@ void WaveformRendererTextured::slotWaveformUpdated() {
 }
 
 void WaveformRendererTextured::paintGL() {
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+        return;
+    }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
+
     ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
@@ -305,10 +317,11 @@ void WaveformRendererTextured::paintGL() {
     getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     const auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            m_waveformRenderer->getFirstDisplayedPosition(positionType) * trackSamples /
             audioVisualRatio / 2.0);
     const auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio / 2.0);
+            m_waveformRenderer->getLastDisplayedPosition(positionType) *
+            trackSamples / audioVisualRatio / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;
@@ -352,13 +365,18 @@ void WaveformRendererTextured::paintGL() {
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
+        if (m_type == ::WaveformWidgetType::RGB) {
+            m_frameShaderProgram->setUniformValue("splitStereoSignal",
+                    m_options & WaveformRendererSignalBase::SplitStereoSignal);
+        }
+
         m_frameShaderProgram->setUniformValue("axesColor",
                 QVector4D(static_cast<GLfloat>(m_axesColor_r),
                         static_cast<GLfloat>(m_axesColor_g),
                         static_cast<GLfloat>(m_axesColor_b),
                         static_cast<GLfloat>(m_axesColor_a)));
 
-        if (m_type == Type::Stacked) {
+        if (m_type == ::WaveformWidgetType::Stacked) {
             m_frameShaderProgram->setUniformValue("lowFilteredColor",
                     QVector4D(static_cast<GLfloat>(m_rgbLowFilteredColor_r),
                             static_cast<GLfloat>(m_rgbLowFilteredColor_g),
@@ -375,7 +393,7 @@ void WaveformRendererTextured::paintGL() {
                             static_cast<GLfloat>(m_rgbHighFilteredColor_b),
                             1.0));
         }
-        if (m_type == Type::RGB || m_type == Type::Stacked) {
+        if (m_type == ::WaveformWidgetType::RGB || m_type == ::WaveformWidgetType::Stacked) {
             m_frameShaderProgram->setUniformValue("lowColor",
                     QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
                             static_cast<GLfloat>(m_rgbLowColor_g),

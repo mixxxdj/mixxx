@@ -26,14 +26,12 @@ class allshader::RGBWaveformWidget final : public allshader::WaveformWidget {
     static constexpr bool useOpenGLShaders() {
         return true;
     }
-    static constexpr bool useTextureForWaveform() {
-        return false;
-    }
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
     }
     static constexpr int supportedOptions() {
-        return WaveformRendererSignalBase::SplitStereoSignal;
+        return WaveformRendererSignalBase::SplitStereoSignal |
+                WaveformRendererSignalBase::HighDetails;
     }
 
   protected:
@@ -43,7 +41,7 @@ class allshader::RGBWaveformWidget final : public allshader::WaveformWidget {
   private:
     RGBWaveformWidget(const QString& group,
             QWidget* parent,
-            int options = WaveformRendererSignalBase::None);
+            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::None);
     friend class ::WaveformWidgetFactory;
 
     DISALLOW_COPY_AND_ASSIGN(RGBWaveformWidget);

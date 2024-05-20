@@ -29,9 +29,7 @@
 #include "waveform/widgets/allshader/hsvwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
-#include "waveform/widgets/allshader/waveformwidgettexturedfiltered.h"
-#include "waveform/widgets/allshader/waveformwidgettexturedrgb.h"
-#include "waveform/widgets/allshader/waveformwidgettexturedstacked.h"
+#include "waveform/widgets/allshader/stackedwaveformwidget.h"
 #else
 #include "waveform/widgets/qthsvwaveformwidget.h"
 #include "waveform/widgets/qtrgbwaveformwidget.h"
@@ -54,26 +52,6 @@
 #include "widget/wwaveformviewer.h"
 
 namespace {
-bool isDeprecated(WaveformWidgetType::Type t) {
-    switch (t) {
-    case WaveformWidgetType::GLRGBWaveform:
-        return true;
-    case WaveformWidgetType::GLSimpleWaveform:
-        return true;
-    case WaveformWidgetType::GLSLFilteredWaveform:
-        return true;
-    case WaveformWidgetType::GLSLRGBWaveform:
-        return true;
-    case WaveformWidgetType::GLSLRGBStackedWaveform:
-        return true;
-    case WaveformWidgetType::GLVSyncTest:
-        return true;
-    case WaveformWidgetType::GLFilteredWaveform:
-        return true;
-    default:
-        return false;
-    }
-}
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     if (pWaveformWidget == nullptr ||
@@ -426,7 +404,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
-    m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
+    m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]", "PlayMarkerPosition"),
             WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
     setPlayMarkerPosition(m_playMarkerPosition);
 
@@ -595,13 +573,7 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
         return true;
     case WaveformWidgetType::HSV:
         return true;
-    case WaveformWidgetType::AllShaderRGBStackedWaveform:
-        return true;
-    case WaveformWidgetType::AllShaderTexturedFiltered:
-        return true;
-    case WaveformWidgetType::AllShaderTexturedRGB:
-        return true;
-    case WaveformWidgetType::AllShaderTexturedStacked:
+    case WaveformWidgetType::Stacked:
         return true;
     default:
         break;
@@ -949,7 +921,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             }
         };
 
-        switch(type) {
+        switch (type) {
         case WaveformWidgetType::Empty:
             setWaveformVarsByType.operator()<EmptyWaveformWidget>();
             break;
@@ -1024,6 +996,11 @@ void WaveformWidgetFactory::evaluateWidgets() {
             break;
         case WaveformWidgetType::Stacked:
             setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
+#ifdef MIXXX_USE_QOPENGL
+            setWaveformVarsByType.operator()<allshader::StackedWaveformWidget>();
+            supportedOptions[type] =
+                    allshader::StackedWaveformWidget::supportedOptions();
+#endif
             break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
@@ -1067,8 +1044,12 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
     case WaveformWidgetBackend::GLSL:
         return new GLSLFilteredWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
-    case WaveformWidgetBackend::AllShader:
-        return new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer);
+    case WaveformWidgetBackend::AllShader: {
+        allshader::WaveformRendererSignalBase::Options options =
+                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
+                        allshader::WaveformRendererSignalBase::None);
+        return new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer, options);
+    }
 #else
     case WaveformWidgetBackend::Qt:
         return new QtWaveformWidget(viewer->getGroup(), viewer);
@@ -1115,7 +1096,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
         return new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader: {
-        int options =
+        allshader::WaveformRendererSignalBase::Options options =
                 m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
                         allshader::WaveformRendererSignalBase::None);
         return new allshader::RGBWaveformWidget(viewer->getGroup(), viewer, options);
@@ -1131,7 +1112,28 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer) {
+#ifdef MIXXX_USE_QOPENGL
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    WaveformWidgetBackend backend = m_config->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            preferredBackend());
+    switch (backend) {
+    case WaveformWidgetBackend::GL:
+        return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
+    default: {
+        allshader::WaveformRendererSignalBase::Options options =
+                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
+                        allshader::WaveformRendererSignalBase::None);
+        return new allshader::StackedWaveformWidget(viewer->getGroup(), viewer, options);
+    }
+    }
+#else
     return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
+#endif
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWaveformViewer* viewer) {
@@ -1176,7 +1178,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             type = WaveformWidgetType::Empty;
         }
 
-        switch(type) {
+        switch (type) {
         case WaveformWidgetType::Simple:
             widget = createSimpleWaveformWidget(viewer);
             break;

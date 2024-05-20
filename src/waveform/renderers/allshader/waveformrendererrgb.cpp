@@ -16,7 +16,7 @@ inline float math_pow2(float x) {
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
-        int options)
+        WaveformRendererSignalBase::Options options)
         : WaveformRendererSignalBase(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
