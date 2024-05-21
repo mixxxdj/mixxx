@@ -16,14 +16,14 @@ class WaveformWidgetInfoBase {
     const WaveformWidgetCategory m_category;
 
     WaveformWidgetInfoBase(WaveformWidgetType::Type type,
-            QString name,
+            const QString& name,
             bool useGL,
             bool useGLES,
             bool useGLSL,
             bool highDetail,
             WaveformWidgetCategory category)
             : m_type(type),
-              m_name(std::move(name)),
+              m_name(name),
               m_useGL(useGL),
               m_useGLES(useGLES),
               m_useGLSL(useGLSL),
@@ -54,7 +54,7 @@ template<class T>
 class WaveformWidgetInfo : public WaveformWidgetInfoBase {
   public:
     WaveformWidgetInfo(WaveformWidgetType::Type type,
-            QString name,
+            const QString& name,
             bool useGL,
             bool useGLES,
             bool useGLSL,
