@@ -161,6 +161,10 @@ void MidiOptionsDelegate::commitAndCloseEditor(int index) {
     DEBUG_ASSERT(pItem);
     if (pItem->isCheckable()) {
         pItem->setCheckState(pItem->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked);
+        // TODO Concurrent option scan be selected. Implement a compatibility
+        // matrix and uncheck all options that are incompatible with the last
+        // checked option. Store initial check state for/in each item and
+        // hook up to QStandardItemModel::itemChanged()
     } else {
         // Clear was selected. Uncheck all other items
         for (int row = 0; row < pModel->rowCount() - 1; row++) {
