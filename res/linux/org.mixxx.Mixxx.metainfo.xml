@@ -96,40 +96,23 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-05-08" timestamp="1715202057">
+    <release version="2.5.0" type="development" date="2024-05-08" timestamp="1715148399">
       <description>
  <p>
   Features
  </p>
  <ul>
   <li>
-   BaseExternalLibraryFeature: Add ability to import external playlists as crates
-   #11852
-  </li>
-  <li>
    Logging: Include timestamps in messages by default
    #11861
   </li>
   <li>
-   DlgPrefSound: Fix fetching of sample rate
-   #11951
-   11949
-  </li>
-  <li>
-   SearchQueryParser: Add "OR" search operator
-   #12061
-  </li>
-  <li>
-   MixxxMainWindow: Set window file path to the playing track
+   MacOS: App proxy icon of the playing track to the window title
    #12116
   </li>
   <li>
    add beats_translate_move ControlEncoder
    #12376
-  </li>
-  <li>
-   Playlist feature: add 'Shuffle playlist' sidebar action
-   #12498
   </li>
   <li>
    New built-in effect: Glitch
@@ -173,14 +156,170 @@
    Track menu: Rephrase "Reset" to "Clear"
    #12955
   </li>
+  <li>
+   PreviewDeckN,LoadSelectedTrackAndPlay toggles play/pause if the track is already loaded
+   #12920
+   #9819
+  </li>
+  <li>
+   Added tooltip for expand/collapse samplers button.
+   #13005
+   #12998
+  </li>
+  <li>
+   Add command line option
+   --start-autodj
+   to start Auto DJ immediately after Mixxx start.
+   #13017
+   #10189
+  </li>
+  <li>
+   Allow to edit track title and artist directly within the decks via a delayed double-click
+   #11755
+  </li>
+  <li>
+   Preferences: Fix incorrect reboot required notification on preference updates
+   #13058
+  </li>
+  <li>
+   Effects: Add backend for Audio Unit (AU) plugins on macOS
+   #12112
+  </li>
+  <li>
+   Track menu, Remove from disk: stop and eject all affected decks
+   #13214
+  </li>
+  <li>
+   Require a minimum movement before initiating the drag&amp;drop of tracks
+   #12903
+  </li>
+  <li>
+   Preferences: Add missing spacer in interface preference
+   #13094
+  </li>
+  <li>
+   Preferences: Fix fetching of soundcard sample rate
+   #11951
+   11949
+  </li>
+  <li>
+   Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
+   #13092
+   #10826
+  </li>
+  <li>
+   Search: Add special BPM filters
+   #12072
+   #8191
+  </li>
+  <li>
+   Search: Add "OR" search operator
+   #12061
+   #8881
+  </li>
+  <li>
+   Add load point option 'First hotcue'
+   #12869
+   #12740
+  </li>
+  <li>
+   Toggle the menubar with single Alt key press (auto hide)
+   #11526
+  </li>
+  <li>
+   Computer feature: add sidebar action "Refresh directory tree"
+   #12908
+  </li>
+  <li>
+   Library: Custom color for missing tracks
+   #12895
+  </li>
+  <li>
+   Library: Add feedback to directory operations (add, remove, relink)
+   #12436
+   #10481
+  </li>
+  <li>
+   Library: Add support for scaling BPM by different ratios
+   #12934
+   #9133
+  </li>
+  <li>
+   Library: Add ability to import external playlists as crates
+   #11852
+  </li>
+  <li>
+   Library: Add 'Shuffle playlist' sidebar action
+   #12498
+   #6988
+  </li>
+  <li>
+   Beats: allow undoing the last BPM/beats change
+   #12954
+   #12774
+   #10138
+  </li>
+  <li>
+   Effects: Add Compressor
+   #12523
+  </li>
+  <li>
+   Add beatloop anchor to set and adjust loop from either start or end
+   #12745
+   #13241
+  </li>
+  <li>
+   Handle not supported files when dragging to waveforms and spinnies
+   #13206
+  </li>
+  <li>
+   Add Rate Tap button
+   #12104
+  </li>
+  <li>
+   Store/restore regular loop when toggling rolling loops
+   #12475
+   #8947
+  </li>
+ </ul>
+ <p>
+  Waveforms
+ </p>
+ <ul>
+  <li>
+   SlipMode waveform visual for RGB GLSL
+   #13002
+  </li>
+  <li>
+   Show beats and time until next marker in the waveform
+   #12994
+  </li>
+  <li>
+   Waveforms: don't elide hotcue labels
+   #13219
+   #10722
+  </li>
+  <li>
+   Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
+   #13151
+   #12641
+  </li>
  </ul>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
-   Pioneer DDJ-FLX4: mapping improvements
+   Pioneer DDJ-FLX4: Mapping improvements
    #12842
+  </li>
+  <li>
+   Traktor S4 MK3: Add setting definition for
+   #12995
+  </li>
+  <li>
+   Traktor S4 MK3: Software mixer support and default pad layout customisation
+   #13059
   </li>
  </ul>
  <p>
@@ -199,11 +338,105 @@
    Removed old examples HID keyboard and HID trackpad
    #12977
   </li>
+  <li>
+   Reduce log noise with HID device
+   #13010
+   #13125
+  </li>
+  <li>
+   Allow controller mapping to discard polling
+   #12558
+  </li>
+  <li>
+   Add support for mapping user settings
+   #11300
+   #13046
+   #13057
+   #13045
+  </li>
+  <li>
+   Registering MIDI Input Handlers From Javascript
+   #12781
+   #13089
+  </li>
+  <li>
+   Add Track colour palette cycling controls
+   track_color_next
+   and
+   track_color_prev
+   to library, decks and samplers
+   #13066
+   #12905
+  </li>
+  <li>
+   Add tempo lock control
+   bpmlock
+   to decks and samplers
+   #13041
+   #13038
+   #13199
+  </li>
+  <li>
+   Controller IO table: Fix display text for Action/control delegate
+   #13188
+  </li>
+  <li>
+   Tempo locking controls
+   #13041
+  </li>
+  <li>
+   Support for bulk devices on Windows and Mac
+   #13008
+  </li>
+  <li>
+   Add Track colour palette cycling controls for decks
+   #13066
+  </li>
+  <li>
+   Registering MIDI Input Handlers From Javascript
+   #12781
+   #13089
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Track widgets: set
+   show_track_menu
+   only for main decks
+   #12978
+  </li>
+  <li>
+   Track menu: add star rating
+   #12700
+   #10652
+  </li>
+  <li>
+   Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
+   #13092
+   #10826
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   LateNight: Merge vinyl control toggle and status light
+   #12947
+   #10192
+  </li>
  </ul>
  <p>
   Experimental QML Skin
  </p>
  <ul>
+  <li>
+   Add Experimental QML Skin that can be tested via the --qml command line option
+   #13152
+  </li>
   <li>
    Fix type error in
    Slider.qml
@@ -230,12 +463,14 @@
   <li>
    Add QML interceptor to auto reload on file change
    #12795
+   #12844
   </li>
   <li>
    Add multi-sampling settings for QML
    #12546
    #12794
    #12536
+   #13058
   </li>
   <li>
    Install qml module on Windows
@@ -244,462 +479,19 @@
   <li>
    Add scrolling waveforms
    #3967
+   #13009
   </li>
- </ul>
- <p>
-  Update to Qt6
- </p>
- <ul>
   <li>
-   Qt6 switch
-   #11892
+   fix(QML): handle case where Waveform data is missing
+   #13009
   </li>
   <li>
-   CMakeLists: Default
-   QT6
-   to
-   ON
-   #11934
+   fix: allow missing COs on QML component
+   #13011
   </li>
   <li>
-   Don't include X11Info on QT6
-   #5
-  </li>
-  <li>
-   Build with Qt6 and optionally with QML
-   #11608
-  </li>
-  <li>
-   Qt6: Use constInsert() template
-   #11847
-  </li>
-  <li>
-   Qt6 prepare
-   #11863
-  </li>
-  <li>
-   DlgAbout: Add Qt version to the dialog
-   #11862
-  </li>
-  <li>
-   CMakeLists: Fix
-   QT_TRANSLATION_FILE
-   path for Qt 6
-   #11880
-  </li>
-  <li>
-   LibraryControl: Enable control inputs for Qt 6
-   #11877
-  </li>
-  <li>
-   Disable broken tests and skip ANGLE DLL install on Windows
-   #93
-  </li>
-  <li>
-   Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds
-   #11895
-  </li>
-  <li>
-   WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6)
-   #11870
-  </li>
-  <li>
-   Install libjpeg-turbo::jpeg to fix cover display with Qt6
-   #11922
-  </li>
-  <li>
-   Skins: Remove
-   border: 0px
-   from sidebar item styling
-   #11970
-   #11957
-  </li>
-  <li>
-   Introduce wrapper for non const iterators for erase and insert
-   #12201
-  </li>
-  <li>
-   Skins: Fix checkbox styling on Qt 6
-   #12050
-  </li>
-  <li>
-   Fix Qt6/QML build
-   #12255
-  </li>
-  <li>
-   Fix track color background with Qt6
-   #12380
-  </li>
-  <li>
-   multi-line delegate: fix bg color, Qt6 on Linux
-   #12478
-  </li>
-  <li>
-   Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6"
-   #12342
-  </li>
-  <li>
-   Fix Tango waveform splitter
-   #12939
-  </li>
- </ul>
- <p>
-  Experimental iOs support
- </p>
- <ul>
-  <li>
-   CMakeLists: Support building for iOS
-   #12672
-  </li>
-  <li>
-   ConfigObject: Find resource path on iOS
-   #12687
-  </li>
-  <li>
-   DlgPrefInterface: Disable tooltips on iOS by default
-   #12689
-  </li>
-  <li>
-   SoundManager: Set up
-   AVAudioSession
-   on iOS
-   #12714
-  </li>
-  <li>
-   SoundManager: Use correct PortAudio backend on iOS
-   #12716
-  </li>
-  <li>
-   DesktopHelper: Add openUrl abstraction to support iOS
-   #12698
-  </li>
-  <li>
-   iOS packaging: Add Info.plist, launch screen and app icon
-   #12676
-  </li>
-  <li>
-   CmdlineArgs: Move config directory to a user-accessible location on iOS
-   #12688
-  </li>
-  <li>
-   ScreenSaverHelper: Implement screen lock suspension for iOS
-   #12673
-  </li>
-  <li>
-   DesktopHelper: Cond-compile out process creation on iOS
-   #12674
-  </li>
-  <li>
-   Sandbox: Add basic iOS support
-   #12675
-  </li>
-  <li>
-   VersionStore: Make iOS a recognized platform
-   #12665
-  </li>
-  <li>
-   MixxxApplication: Use QIOSIntegrationPlugin on iOS
-   #12666
-  </li>
-  <li>
-   MacOsVersion: Rename to AppleOsVersion
-   #12662
-  </li>
-  <li>
-   macOS: Add more
-   Q_OS_MACOS
-   cond-compiles where appropriate
-   #12663
-  </li>
- </ul>
- <p>
-  Experimental WebAssembly support
- </p>
- <ul>
-  <li>
-   CMakeLists: Add support for targeting Emscripten/WebAssembly
-   #12918
-  </li>
-  <li>
-   CMakeLists: Emit better errors for exotic target platforms
-   #12910
-  </li>
-  <li>
-   Build: Add
-   PORTMIDI
-   flag for compiling with(out) PortMidi
-   #12913
-  </li>
-  <li>
-   DesktopHelper: Compile out process-spawning on WASM too
-   #12916
-  </li>
-  <li>
-   MixxxApplication: Use
-   QWasmIntegrationPlugin
-   when targeting WebAssembly
-   #12915
-  </li>
-  <li>
-   CMakeLists: Enable asyncify when targeting WASM
-   #12921
-  </li>
-  <li>
-   Resources: Bundle resources for preloading when targeting Emscripten/WASM
-   #12922
-  </li>
-  <li>
-   CMakeLists: Add
-   WASM_ASSERTIONS
-   option
-   #12931
-  </li>
-  <li>
-   VersionStore: Recognize Emscripten/WebAssembly
-   #12940
-  </li>
-  <li>
-   OpenGLWindow: Fix sizing on Wasm by setting
-   Qt::FramelessWindowHint
-   #12945
-  </li>
-  <li>
-   CMakeLists: Require WebGL 2.0 when building for Wasm
-   #12952
-  </li>
- </ul>
- <p>
-  Misc Refactorings
- </p>
- <ul>
-  <li>
-   Add missing
-   &lt;Qt&gt;
-   include in
-   defs.h
-   #11348
-  </li>
-  <li>
-   engine: Minor refactor to prefer simplified ranged-for-loop
-   #11234
-  </li>
-  <li>
-   Delete unused EngineFilter
-   #11559
-  </li>
-  <li>
-   AnalyzerWaveform: Fix commented out code
-   #11561
-  </li>
-  <li>
-   Silence some float conversion warnings by making conversion explicit
-   #6
-  </li>
-  <li>
-   Remove usage of ControlObject::getControl
-   #11643
-  </li>
-  <li>
-   Fixed unnecessary transfer of the ownership before release which returns the pointer itself
-   #11726
-  </li>
-  <li>
-   add
-   ConfigObject::get-/setValue&lt;EnumType&gt;
-   #11883
-  </li>
-  <li>
-   ci: Enable
-   WARNINGS_FATAL
-   on macOS, too
-   #11905
-  </li>
-  <li>
-   Refactor timers (
-   #11807
-   ) 2nd try
-   #11850
-  </li>
-  <li>
-   Use
-   mixxx::audio::ChannelCount
-   type instead of
-   int
-   /
-   unsigned char
-   /etc.
-   #11941
-  </li>
-  <li>
-   refactor(util/timer): cleanup includes
-   #11937
-  </li>
-  <li>
-   Use
-   SampleRate
-   type consistently
-   #11904
-  </li>
-  <li>
-   CMakeLists: Match arbitrary
-   arm64-osx
-   triplets
-   #11933
-  </li>
-  <li>
-   Alex/reduce sample buffer memory usage
-   #11988
-  </li>
-  <li>
-   Fix clazy issues on
-   main
-   #12028
-  </li>
-  <li>
-   Tidy and modernize SampleBuffer
-   #11987
-  </li>
-  <li>
-   Refactor(parented_ptr): make trivially destructible in release mode, delete move operations
-   #11981
-  </li>
-  <li>
-   Labeler: Add more labels to the auto-labeler
-   #12106
-  </li>
-  <li>
-   macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
-   #12101
-  </li>
-  <li>
-   FindPortMidi: Link ALSA in static builds on Linux
-   #12292
-   #12291
-  </li>
-  <li>
-   privat generated ui headers
-   #12060
-   #11407
-  </li>
-  <li>
-   ci: workaround runner-image issue
-   #12233
-  </li>
-  <li>
-   FindLibudev: Link hidapi and libusb with libudev in static builds on Linux
-   #12294
-  </li>
-  <li>
-   FindVorbis: Link ogg in static builds
-   #12297
-  </li>
-  <li>
-   MixxxApplication: Support linking Qt statically on Linux
-   #12284
-  </li>
-  <li>
-   FindSleef: Use OpenMP in static builds
-   #12295
-  </li>
-  <li>
-   Happy New Year 2024!
-   #12486
-  </li>
-  <li>
-   fix/History: remove obsolete placeholder playlists
-   #12494
-  </li>
-  <li>
-   Add missing Taglib dependency
-   #12830
-  </li>
-  <li>
-   fix: typo ;)
-   #12726
-  </li>
-  <li>
-   refactor: Avoid temporary qlist allocation on midi sysex receive
-   #12843
-  </li>
-  <li>
-   SoundSourceMP3: fix unused function warning
-   #12847
-  </li>
-  <li>
-   update libkeyfinder to 2.2.8
-   #12853
-  </li>
-  <li>
-   feat(ci): Add eslint rule prefer-template
-   #12889
-  </li>
-  <li>
-   Labeler: Add
-   qml
-   to labeler config
-   #12911
-  </li>
-  <li>
-   WTrackMenu: Add missing wcoverartlabel.h include
-   #12924
-  </li>
-  <li>
-   Fix clazy complains and naming
-   #12935
-  </li>
-  <li>
-   src/library: Sort files into sub-directories
-   #12956
-  </li>
-  <li>
-   CMakeLists: Fix deduplication trap with
-   --preload-file
-   #12944
-  </li>
-  <li>
-   Add CI runner that allows cleaning up the download server
-   #12957
-  </li>
-  <li>
-   Update to latest vcpkg dependencies
-   #11649
-   #12512
-   #12067
-   #12898
-  </li>
-  <li>
-   GitHub actions updates
-   #11544
-   #11508
-   #11487
-   #11438
-   #11410
-   #11560
-   #11578
-   #11610
-   #11631
-   #11710
-   #11736
-   #11920
-   #11961
-   #12241
-   #12394
-   #12447
-   #12425
-   #12421
-   #12799
-   #12801
-   #12800
-   #12736
-   #12692
-   #12694
-   #12695
-   #12691
-   #12693
-   #12625
-   #12627
-   #12626
-   #12577
+   Initialize CmdlineArgs::m_qml
+   #13152
   </li>
  </ul>
 </description>
@@ -835,7 +627,6 @@
  <ul>
   <li>
    Sidebar: show track count and duration of History playlists
-   #12811
    #13020
    #13019
    #12788
