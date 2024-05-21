@@ -4,10 +4,10 @@
 
 #include <QDir>
 #include <QtDebug>
+#include <memory>
 
 #include "test/mixxxtest.h"
 #include "track/serato/markers2.h"
-#include "util/memory.h"
 
 namespace {
 

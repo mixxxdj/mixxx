@@ -3,7 +3,6 @@
 #include "shaders/rgbshader.h"
 #include "track/track_decl.h"
 #include "util/class.h"
-#include "util/memory.h"
 #include "waveform/renderers/allshader/rgbdata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"

@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <memory>
 
 #include "audio/types.h"
 #include "track/beats.h"
 #include "track/bpm.h"
-#include "util/memory.h"
 
 using namespace mixxx;
 

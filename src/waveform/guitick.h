@@ -1,8 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "control/controlobject.h"
 #include "util/duration.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
 
 /// A helper class that manages the `gui_Tick` COs, that drive updates of the

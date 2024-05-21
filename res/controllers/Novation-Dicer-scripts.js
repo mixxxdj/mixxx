@@ -78,8 +78,6 @@ NovationDicer.init = function (id)
     midi.sendShortMsg(0x9f,0x43,NovationDicer.softOrange);
     midi.sendShortMsg(0x9f,0x44,NovationDicer.softOrange);
     midi.sendShortMsg(0x9f,0x45,NovationDicer.softOrange);
-
-    engine.setValue("[Flanger]", "lfoDepth", 1);    //Crank up the depth so the flanger does something
 }
 
 
@@ -358,11 +356,11 @@ NovationDicer.stutter = function(group)
      }
 }
 
-NovationDicer.flangeEffect = function(channel, control, value, status, group)
+NovationDicer.toggleQuickEffect = function(channel, control, value, status, group)
 {
     if (value)  //Button pressed
     {
-        engine.setValue(group, "flanger", !engine.getValue(group, "flanger"));  //Toggle the flanger
+        script.toggleControl(group, "enabled");
     }
 }
 

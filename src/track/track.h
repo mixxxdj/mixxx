@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QStack>
 #include <QUrl>
+#include <memory>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -15,7 +16,6 @@
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
 

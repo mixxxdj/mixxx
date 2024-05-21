@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-05-01" timestamp="1714573883">
+    <release version="2.5.0" type="development" date="2024-05-08" timestamp="1715202057">
       <description>
  <p>
   Features
@@ -704,7 +704,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-05-01" timestamp="1714573883">
+    <release version="2.4.1" type="stable" date="2024-05-08" timestamp="1715126400">
       <description>
  <p>
   Controller Mappings
@@ -727,6 +727,14 @@
   <li>
    Hercules Inpulse 200: Configure shift-browser knob to scroll the library (quick)
    #12932
+  </li>
+  <li>
+   Nintendo Wii Remote: Fix hid script regarding addOutput
+   #12973
+  </li>
+  <li>
+   Pioneer CDJ: Fix hid script regarding addOutput
+   #12973
   </li>
   <li>
    Pioneer DDJ-FLX4: Add waveform zoom and other mapping improvements
@@ -804,6 +812,7 @@
   <li>
    Animate long press latching of sync button
    #12990
+   #13212
   </li>
   <li>
    Polish fx chain controls
@@ -813,6 +822,11 @@
    Waveforms: draw loop gradient at the correct position
    #13061
    #13060
+  </li>
+  <li>
+   Waveform / spinnies: don't take keyboard focus on click
+   #13174
+   #13211
   </li>
  </ul>
  <p>
@@ -882,6 +896,10 @@
    Library track menu: show Hide action also in Playlist &amp; Crates
    #11901
   </li>
+  <li>
+   iTunes: Obtain FileAccess before accessing iTunes XML
+   #13013
+  </li>
  </ul>
  <p>
   Miscellaneous
@@ -941,6 +959,9 @@
    LV Mix EQ: Fix pops when enabling in effect rack
    #13055
    #13073
+  </li>
+  <li>
+   Fix hid addOutput
   </li>
  </ul>
 </description>

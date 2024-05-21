@@ -1,6 +1,7 @@
+#include <memory>
+
 #include "test/mockedenginebackendtest.h"
 #include "track/beats.h"
-#include "util/memory.h"
 
 class BeatsTranslateTest : public MockedEngineBackendTest {
 };
