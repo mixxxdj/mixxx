@@ -1,20 +1,19 @@
 #pragma once
 
-#include "glwaveformwidgetabstract.h"
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
-class QtVSyncTestWidget : public GLWaveformWidgetAbstract {
+class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    QtVSyncTestWidget(const QString& group, QWidget* parent);
-    virtual ~QtVSyncTestWidget();
+    GLVSyncTestWidget(const QString& group, QWidget* parent);
+    virtual ~GLVSyncTestWidget();
 
     virtual WaveformWidgetType::Type getType() const {
         return WaveformWidgetType::VSyncTest;
     }
 
-    static inline QString getWaveformWidgetName() { return tr("VSyncTest") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGles() { return true; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool useTextureForWaveform() {
         return false;

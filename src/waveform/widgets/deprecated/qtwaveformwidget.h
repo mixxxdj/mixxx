@@ -1,25 +1,22 @@
 #pragma once
 
-#include "waveform/widgets/deprecated/glwaveformwidgetabstract.h"
+#include "glwaveformwidgetabstract.h"
 
-class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
+class QtWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLVSyncTestWidget(const QString& group, QWidget* parent);
-    virtual ~GLVSyncTestWidget();
+    QtWaveformWidget(const QString& group, QWidget* parent);
+    virtual ~QtWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const {
-        return WaveformWidgetType::VSyncTest;
+        return WaveformWidgetType::Filtered;
     }
 
     static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGles() { return false; }
+    static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool useTextureForWaveform() {
-        return false;
-    }
     static inline WaveformWidgetCategory category() {
-        return WaveformWidgetCategory::DeveloperOnly;
+        return WaveformWidgetCategory::Legacy;
     }
 
   protected:

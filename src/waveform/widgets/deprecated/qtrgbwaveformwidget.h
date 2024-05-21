@@ -10,14 +10,9 @@ class QtRGBWaveformWidget : public GLWaveformWidgetAbstract {
     virtual WaveformWidgetType::Type getType() const {
         return WaveformWidgetType::RGB;
     }
-
-    static inline QString getWaveformWidgetName() { return tr("RGB") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool useTextureForWaveform() {
-        return false;
-    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Legacy;
     }

@@ -26,18 +26,8 @@
 #ifdef MIXXX_USE_QOPENGL
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/allshader/waveformwidget.h"
-#else
-#include "waveform/widgets/qthsvwaveformwidget.h"
-#include "waveform/widgets/qtrgbwaveformwidget.h"
-#include "waveform/widgets/qtsimplewaveformwidget.h"
-#include "waveform/widgets/qtvsynctestwidget.h"
-#include "waveform/widgets/qtwaveformwidget.h"
+#include "waveform/widgets/glvsynctestwidget.h"
 #endif
-#include "waveform/widgets/deprecated/glrgbwaveformwidget.h"
-#include "waveform/widgets/deprecated/glsimplewaveformwidget.h"
-#include "waveform/widgets/deprecated/glslwaveformwidget.h"
-#include "waveform/widgets/deprecated/glvsynctestwidget.h"
-#include "waveform/widgets/deprecated/glwaveformwidget.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
@@ -935,72 +925,38 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, waveformWidgetVars<EmptyWaveformWidget>());
             break;
         case WaveformWidgetType::Simple:
-            addHandle(collectedHandles, type, waveformWidgetVars<GLSimpleWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
-#else
-            addHandle(collectedHandles, type, waveformWidgetVars<QtSimpleWaveformWidget>());
 #endif
             break;
         case WaveformWidgetType::Filtered:
-#ifndef __APPLE__
-            // Don't offer the simple renderers on macOS, they do not work with skins
-            // that load GL widgets (spinnies, waveforms) in singletons.
-            // Also excluded in enum WaveformWidgetType
-            // https://bugs.launchpad.net/bugs/1928772
-            addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>();
-#endif
-            addHandle(collectedHandles, type, waveformWidgetVars<GLWaveformWidget>());
-            addHandle(collectedHandles, type, waveformWidgetVars<GLSLFilteredWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
-#else
-            addHandle(collectedHandles, type, waveformWidgetVars<QtWaveformWidget>());
 #endif
+            addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>());
             break;
         case WaveformWidgetType::VSyncTest:
+#ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, waveformWidgetVars<GLVSyncTestWidget>());
-#ifndef MIXXX_USE_QOPENGL
-            addHandle(collectedHandles, type, waveformWidgetVars<QtVSyncTestWidget>());
 #endif
             break;
         case WaveformWidgetType::RGB:
-            addHandle(collectedHandles, type, waveformWidgetVars<GLSLRGBWaveformWidget>());
-            addHandle(collectedHandles, type, waveformWidgetVars<GLSLRGBStackedWaveformWidget>());
-            addHandle(collectedHandles, type, waveformWidgetVars<GLRGBWaveformWidget>());
-#ifndef __APPLE__
-            // Don't offer the simple renderers on macOS, they do not work with skins
-            // that load GL widgets (spinnies, waveforms) in singletons.
-            // Also excluded in enum WaveformWidgetType
-            // https://bugs.launchpad.net/bugs/1928772
-            addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
-#endif
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
-#else
-            addHandle(collectedHandles, type, waveformWidgetVars<QtRGBWaveformWidget>());
 #endif
+            addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
         case WaveformWidgetType::HSV:
-#ifndef __APPLE__
-            // Don't offer the simple renderers on macOS, they do not work with skins
-            // that load GL widgets (spinnies, waveforms) in singletons.
-            // Also excluded in enum WaveformWidgetType
-            // https://bugs.launchpad.net/bugs/1928772
             addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
-#endif
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
-#else
-            addHandle(collectedHandles, type, waveformWidgetVars<QtHSVWaveformWidget>());
 #endif
             break;
         case WaveformWidgetType::Stacked:
-            addHandle(collectedHandles, type, waveformWidgetVars<GLSLRGBStackedWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
@@ -1051,17 +1007,10 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
             preferredBackend());
 
     switch (backend) {
-    case WaveformWidgetBackend::GL:
-        return new GLWaveformWidget(viewer->getGroup(), viewer);
-    case WaveformWidgetBackend::GLSL:
-        return new GLSLFilteredWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader: {
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer);
     }
-#else
-    case WaveformWidgetBackend::Qt:
-        return new QtWaveformWidget(viewer->getGroup(), viewer);
 #endif
     default:
         return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
@@ -1099,16 +1048,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
             preferredBackend());
 
     switch (backend) {
-    case WaveformWidgetBackend::GL:
-        return new GLRGBWaveformWidget(viewer->getGroup(), viewer);
-    case WaveformWidgetBackend::GLSL:
-        return new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer);
-#else
-    case WaveformWidgetBackend::Qt:
-        return new QtRGBWaveformWidget(viewer->getGroup(), viewer);
 #endif
     default:
         return new RGBWaveformWidget(viewer->getGroup(), viewer);
@@ -1127,14 +1069,12 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
             preferredBackend());
     switch (backend) {
-    case WaveformWidgetBackend::GL:
-        return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
-    default:
+    case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
-    }
-#else
-    return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
 #endif
+    default:
+        return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+    }
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWaveformViewer* viewer) {
@@ -1149,16 +1089,11 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
-    case WaveformWidgetBackend::GL:
-        return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
-    default:
+    case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
-#else
-    case WaveformWidgetBackend::Qt:
-        return new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
-    default:
-        return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
 #endif
+    default:
+        return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
 }
 
@@ -1167,7 +1102,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
 #ifdef MIXXX_USE_QOPENGL
     return new GLVSyncTestWidget(viewer->getGroup(), viewer);
 #else
-    return new QtVSyncTest(viewer->getGroup(), viewer);
+    return new EmptyWaveformWidget(viewer->getGroup(), viewer);
 #endif
 }
 
@@ -1198,7 +1133,6 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::Stacked:
             widget = createStackedWaveformWidget(viewer);
             break;
-        //case WaveformWidgetType::EmptyWaveform:
         default:
             widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
             break;

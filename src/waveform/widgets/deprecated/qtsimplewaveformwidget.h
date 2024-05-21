@@ -2,23 +2,19 @@
 
 #include "glwaveformwidgetabstract.h"
 
-class QtWaveformWidget : public GLWaveformWidgetAbstract {
+class QtSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    QtWaveformWidget(const QString& group, QWidget* parent);
-    virtual ~QtWaveformWidget();
+    QtSimpleWaveformWidget(const QString& group, QWidget* parent);
+    virtual ~QtSimpleWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const {
-        return WaveformWidgetType::Filtered;
+        return WaveformWidgetType::Simple;
     }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool useTextureForWaveform() {
-        return false;
-    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Legacy;
     }
