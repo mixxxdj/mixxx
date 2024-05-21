@@ -20,7 +20,7 @@ StackedWaveformWidget::StackedWaveformWidget(const QString& group,
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    if (options & allshader::WaveformRendererSignalBase::HighDetails) {
+    if (options & allshader::WaveformRendererSignalBase::HighDetail) {
         addRenderer<WaveformRendererTextured>(::WaveformWidgetType::Stacked);
     } else {
         addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked

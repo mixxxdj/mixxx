@@ -2189,6 +2189,7 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
+  src/test/waveform_upgrade_test.cpp
   src/util/moc_included_test.cpp
 )
 target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)

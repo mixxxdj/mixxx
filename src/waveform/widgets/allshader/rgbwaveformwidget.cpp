@@ -21,7 +21,7 @@ RGBWaveformWidget::RGBWaveformWidget(const QString& group,
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    if (options & allshader::WaveformRendererSignalBase::HighDetails) {
+    if (options & allshader::WaveformRendererSignalBase::HighDetail) {
         addRenderer<WaveformRendererTextured>(::WaveformWidgetType::RGB,
                 ::WaveformRendererAbstract::Play,
                 options);

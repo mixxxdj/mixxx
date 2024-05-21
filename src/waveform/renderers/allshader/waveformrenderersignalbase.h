@@ -19,7 +19,7 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
     enum Option {
         None = 0b0,
         SplitStereoSignal = 0b1,
-        HighDetails = 0b10,
+        HighDetail = 0b10,
     };
     Q_DECLARE_FLAGS(Options, Option)
 

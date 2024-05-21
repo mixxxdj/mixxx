@@ -703,7 +703,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
      <item row="3" column="2">
-      <widget class="QCheckBox" name="highDetailsCheckBox">
+      <widget class="QCheckBox" name="highDetailCheckBox">
        <property name="text">
         <string>High details</string>
        </property>

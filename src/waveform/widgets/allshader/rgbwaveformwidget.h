@@ -31,7 +31,7 @@ class allshader::RGBWaveformWidget final : public allshader::WaveformWidget {
     }
     static constexpr int supportedOptions() {
         return WaveformRendererSignalBase::SplitStereoSignal |
-                WaveformRendererSignalBase::HighDetails;
+                WaveformRendererSignalBase::HighDetail;
     }
 
   protected:

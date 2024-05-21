@@ -33,7 +33,7 @@ class allshader::StackedWaveformWidget final : public allshader::WaveformWidget 
         return WaveformWidgetCategory::AllShader;
     }
     static constexpr int supportedOptions() {
-        return WaveformRendererSignalBase::HighDetails;
+        return WaveformRendererSignalBase::HighDetail;
     }
 
   protected:

@@ -39,7 +39,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 #ifdef MIXXX_USE_QOPENGL
     void slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option option, bool enabled);
     DECL_SLOT_WAVEFORM_OPTION(SplitStereoSignal);
-    DECL_SLOT_WAVEFORM_OPTION(HighDetails);
+    DECL_SLOT_WAVEFORM_OPTION(HighDetail);
 #endif
     void slotSetWaveformOverviewType(int index);
     void slotSetDefaultZoom(int index);

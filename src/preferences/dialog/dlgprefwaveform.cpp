@@ -113,10 +113,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::clicked,
             this,
             &DlgPrefWaveform::slotSetWaveformOptionSplitStereoSignal);
-    connect(highDetailsCheckBox,
+    connect(highDetailCheckBox,
             &QCheckBox::clicked,
             this,
-            &DlgPrefWaveform::slotSetWaveformOptionHighDetails);
+            &DlgPrefWaveform::slotSetWaveformOptionHighDetail);
     connect(defaultZoomComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -439,7 +439,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
 void DlgPrefWaveform::updateWaveformOption(
         bool useWaveform, WaveformWidgetBackend backend, int currentOption) {
     splitLeftRightCheckBox->blockSignals(true);
-    highDetailsCheckBox->blockSignals(true);
+    highDetailCheckBox->blockSignals(true);
 
 #ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -455,21 +455,21 @@ void DlgPrefWaveform::updateWaveformOption(
     splitLeftRightCheckBox->setEnabled(useWaveform &&
             supportedOption &
                     allshader::WaveformRendererSignalBase::SplitStereoSignal);
-    highDetailsCheckBox->setEnabled(useWaveform &&
+    highDetailCheckBox->setEnabled(useWaveform &&
             supportedOption &
-                    allshader::WaveformRendererSignalBase::HighDetails);
+                    allshader::WaveformRendererSignalBase::HighDetail);
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
             currentOption &
                     allshader::WaveformRendererSignalBase::SplitStereoSignal);
-    highDetailsCheckBox->setChecked(highDetailsCheckBox->isEnabled() &&
-            currentOption & allshader::WaveformRendererSignalBase::HighDetails);
+    highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
+            currentOption & allshader::WaveformRendererSignalBase::HighDetail);
 #else
     splitLeftRightCheckBox->setVisible(false);
-    highDetailsCheckBox->setVisible(false);
+    highDetailCheckBox->setVisible(false);
 #endif
 
     splitLeftRightCheckBox->blockSignals(false);
-    highDetailsCheckBox->blockSignals(false);
+    highDetailCheckBox->blockSignals(false);
 }
 
 void DlgPrefWaveform::updateEnableUntilMark() {
