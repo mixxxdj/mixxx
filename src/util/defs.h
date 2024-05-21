@@ -1,5 +1,4 @@
 #pragma once
-
 #include <Qt>
 
 // Maximum buffer length to each EngineObject::process call.

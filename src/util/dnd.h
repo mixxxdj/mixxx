@@ -42,12 +42,12 @@ class DragAndDropHelper final {
             const QString& sourceIdentifier);
 
     static void handleTrackDragEnterEvent(
-            QDragEnterEvent* event,
+            QDragEnterEvent* pEvent,
             const QString& group,
             UserSettingsPointer pConfig);
 
     static void handleTrackDropEvent(
-            QDropEvent* event,
+            QDropEvent* pEvent,
             TrackDropTarget& target,
             const QString& group,
             UserSettingsPointer pConfig);
