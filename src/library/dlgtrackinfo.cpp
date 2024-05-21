@@ -61,7 +61,7 @@ void DlgTrackInfo::init() {
 
     // Store tag edit widget pointers to allow focusing a specific widgets when
     // this is opened by double-clicking a WTrackProperty label.
-    // Associate with property strings taken from library/dao/trackdao.h
+    // Associate with property strings taken from library/dao/trackdao.cpp
     m_propertyWidgets.insert("artist", txtArtist);
     m_propertyWidgets.insert("title", txtTrackName);
     m_propertyWidgets.insert("titleInfo", txtTrackName);
@@ -75,6 +75,16 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("datetime_added", txtDateAdded);
+    m_propertyWidgets.insert("duration", txtDuration);
+    m_propertyWidgets.insert("timesplayed", txtDateLastPlayed);
+    m_propertyWidgets.insert("last_played_at", txtDateLastPlayed);
+    m_propertyWidgets.insert("filetype", txtType);
+    m_propertyWidgets.insert("bitrate", txtBitrate);
+    m_propertyWidgets.insert("samplerate", txtSamplerate);
+    m_propertyWidgets.insert("replaygain", txtReplayGain);
+    m_propertyWidgets.insert("replaygain_peak", txtReplayGain);
+    m_propertyWidgets.insert("track_locations.location", txtLocation);
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
