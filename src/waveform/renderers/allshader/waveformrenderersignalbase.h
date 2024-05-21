@@ -27,6 +27,10 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
 
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
 
+    virtual bool supportsSlip() const {
+        return false;
+    }
+
     void draw(QPainter* painter, QPaintEvent* event) override {
         Q_UNUSED(painter);
         Q_UNUSED(event);

@@ -10,6 +10,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/widgets/waveformwidgettype.h"
+#include "waveform/widgets/waveformwidgetvars.h"
 
 class WVuMeterLegacy;
 class WVuMeterBase;
@@ -231,9 +232,16 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void renderSelf();
     void swapSelf();
 
+    void addHandle(
+            QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend>>&
+                    collectedHandles,
+            WaveformWidgetType::Type type,
+            const WaveformWidgetVars& vars) const;
     void evaluateWidgets();
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
+    WaveformWidgetAbstract* createAllshaderWaveformWidget(
+            WaveformWidgetType::Type type, WWaveformViewer* viewer);
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 

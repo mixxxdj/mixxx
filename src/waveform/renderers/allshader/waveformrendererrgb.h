@@ -23,6 +23,10 @@ class allshader::WaveformRendererRGB final : public allshader::WaveformRendererS
     void initializeGL() override;
     void paintGL() override;
 
+    bool supportsSlip() const override {
+        return true;
+    }
+
   private:
     mixxx::RGBShader m_shader;
     VertexData m_vertices;

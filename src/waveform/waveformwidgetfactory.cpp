@@ -25,11 +25,7 @@
 #include "waveform/vsyncthread.h"
 #ifdef MIXXX_USE_QOPENGL
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
-#include "waveform/widgets/allshader/filteredwaveformwidget.h"
-#include "waveform/widgets/allshader/hsvwaveformwidget.h"
-#include "waveform/widgets/allshader/rgbwaveformwidget.h"
-#include "waveform/widgets/allshader/simplewaveformwidget.h"
-#include "waveform/widgets/allshader/stackedwaveformwidget.h"
+#include "waveform/widgets/allshader/waveformwidget.h"
 #else
 #include "waveform/widgets/qthsvwaveformwidget.h"
 #include "waveform/widgets/qtrgbwaveformwidget.h"
@@ -865,77 +861,86 @@ void WaveformWidgetFactory::slotFrameSwapped() {
 #endif
 }
 
+void WaveformWidgetFactory::addHandle(
+        QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend>>&
+                collectedHandles,
+        WaveformWidgetType::Type type,
+        const WaveformWidgetVars& vars) const {
+    WaveformWidgetBackend backend = WaveformWidgetBackend::None;
+    bool active = true;
+    if (isOpenGlAvailable()) {
+        if (vars.m_useGLES && !vars.m_useGL) {
+            active = false;
+        } else if (vars.m_useGLSL && !isOpenGlShaderAvailable()) {
+            active = false;
+        }
+    } else if (isOpenGlesAvailable()) {
+        if (vars.m_useGL && !vars.m_useGLES) {
+            active = false;
+        } else if (vars.m_useGLSL && !isOpenGlShaderAvailable()) {
+            active = false;
+        }
+    } else {
+        // No sufficient GL support
+        if (vars.m_useGLES || vars.m_useGL || vars.m_useGLSL) {
+            active = false;
+        }
+    }
+
+    if (vars.m_category == WaveformWidgetCategory::DeveloperOnly &&
+            !CmdlineArgs::Instance().getDeveloper()) {
+        active = false;
+    }
+#ifdef MIXXX_USE_QOPENGL
+    else if (vars.m_category == WaveformWidgetCategory::AllShader) {
+        backend = WaveformWidgetBackend::AllShader;
+    }
+#endif
+    else if (vars.m_category == WaveformWidgetCategory::Legacy && vars.m_useGLSL) {
+        backend = WaveformWidgetBackend::GLSL;
+    } else if (vars.m_category == WaveformWidgetCategory::Legacy) {
+        backend = WaveformWidgetBackend::GL;
+    }
+
+    if (active) {
+        if (collectedHandles.contains(type)) {
+            collectedHandles[type].push_back(backend);
+        } else {
+            collectedHandles.insert(type,
+                    QList<WaveformWidgetBackend>{backend});
+        }
+    }
+}
+
+namespace {
+template<typename WaveformT>
+WaveformWidgetVars waveformWidgetVars() {
+    WaveformWidgetVars result;
+    result.m_useGL = WaveformT::useOpenGl();
+    result.m_useGLES = WaveformT::useOpenGles();
+    result.m_useGLSL = WaveformT::useOpenGLShaders();
+    result.m_category = WaveformT::category();
+
+    return result;
+}
+} // namespace
+
 void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
     QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend>> collectedHandles;
     QHash<WaveformWidgetType::Type, int> supportedOptions;
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
-        // this lambda needs its type specified explicitly,
-        // requiring it to be called with via `.operator()<WaveformT>()`
-        auto setWaveformVarsByType = [&]<typename WaveformT>() {
-            bool useOpenGl = WaveformT::useOpenGl();
-            bool useOpenGles = WaveformT::useOpenGles();
-            bool useOpenGLShaders = WaveformT::useOpenGLShaders();
-            WaveformWidgetCategory category = WaveformT::category();
-            WaveformWidgetBackend backend = WaveformWidgetBackend::None;
-
-            bool active = true;
-            if (isOpenGlAvailable()) {
-                if (useOpenGles && !useOpenGl) {
-                    active = false;
-                } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
-                    active = false;
-                }
-            } else if (isOpenGlesAvailable()) {
-                if (useOpenGl && !useOpenGles) {
-                    active = false;
-                } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
-                    active = false;
-                }
-            } else {
-                // No sufficient GL support
-                if (useOpenGles || useOpenGl || useOpenGLShaders) {
-                    active = false;
-                }
-            }
-
-            if (category == WaveformWidgetCategory::DeveloperOnly &&
-                    !CmdlineArgs::Instance().getDeveloper()) {
-                active = false;
-            }
-#ifdef MIXXX_USE_QOPENGL
-            else if (category == WaveformWidgetCategory::AllShader) {
-                backend = WaveformWidgetBackend::AllShader;
-            }
-#endif
-            else if (category == WaveformWidgetCategory::Legacy && useOpenGLShaders) {
-                backend = WaveformWidgetBackend::GLSL;
-            } else if (category == WaveformWidgetCategory::Legacy) {
-                backend = WaveformWidgetBackend::GL;
-            }
-
-            if (active) {
-                if (collectedHandles.contains(type)) {
-                    collectedHandles[type].push_back(backend);
-                } else {
-                    collectedHandles.insert(type,
-                            QList<WaveformWidgetBackend>{backend});
-                }
-            }
-        };
-
         switch (type) {
         case WaveformWidgetType::Empty:
-            setWaveformVarsByType.operator()<EmptyWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<EmptyWaveformWidget>());
             break;
         case WaveformWidgetType::Simple:
-            setWaveformVarsByType.operator()<GLSimpleWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<GLSimpleWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
-            setWaveformVarsByType.operator()<allshader::SimpleWaveformWidget>();
-            supportedOptions[type] =
-                    allshader::SimpleWaveformWidget::supportedOptions();
+            addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
+            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #else
-            setWaveformVarsByType.operator()<QtSimpleWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<QtSimpleWaveformWidget>());
 #endif
             break;
         case WaveformWidgetType::Filtered:
@@ -944,41 +949,39 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // that load GL widgets (spinnies, waveforms) in singletons.
             // Also excluded in enum WaveformWidgetType
             // https://bugs.launchpad.net/bugs/1928772
-            setWaveformVarsByType.operator()<SoftwareWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>();
 #endif
-            setWaveformVarsByType.operator()<GLWaveformWidget>();
-            setWaveformVarsByType.operator()<GLSLFilteredWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<GLWaveformWidget>());
+            addHandle(collectedHandles, type, waveformWidgetVars<GLSLFilteredWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
-            setWaveformVarsByType.operator()<allshader::FilteredWaveformWidget>();
-            supportedOptions[type] =
-                    allshader::FilteredWaveformWidget::supportedOptions();
+            addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
+            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #else
-            setWaveformVarsByType.operator()<QtWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<QtWaveformWidget>());
 #endif
             break;
         case WaveformWidgetType::VSyncTest:
-            setWaveformVarsByType.operator()<GLVSyncTestWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<GLVSyncTestWidget>());
 #ifndef MIXXX_USE_QOPENGL
-            setWaveformVarsByType.operator()<QtVSyncTestWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<QtVSyncTestWidget>());
 #endif
             break;
         case WaveformWidgetType::RGB:
-            setWaveformVarsByType.operator()<GLSLRGBWaveformWidget>();
-            setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
-            setWaveformVarsByType.operator()<GLRGBWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<GLSLRGBWaveformWidget>());
+            addHandle(collectedHandles, type, waveformWidgetVars<GLSLRGBStackedWaveformWidget>());
+            addHandle(collectedHandles, type, waveformWidgetVars<GLRGBWaveformWidget>());
 #ifndef __APPLE__
             // Don't offer the simple renderers on macOS, they do not work with skins
             // that load GL widgets (spinnies, waveforms) in singletons.
             // Also excluded in enum WaveformWidgetType
             // https://bugs.launchpad.net/bugs/1928772
-            setWaveformVarsByType.operator()<RGBWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
 #endif
 #ifdef MIXXX_USE_QOPENGL
-            setWaveformVarsByType.operator()<allshader::RGBWaveformWidget>();
-            supportedOptions[type] =
-                    allshader::RGBWaveformWidget::supportedOptions();
+            addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
+            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #else
-            setWaveformVarsByType.operator()<QtRGBWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<QtRGBWaveformWidget>());
 #endif
             break;
         case WaveformWidgetType::HSV:
@@ -987,22 +990,20 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // that load GL widgets (spinnies, waveforms) in singletons.
             // Also excluded in enum WaveformWidgetType
             // https://bugs.launchpad.net/bugs/1928772
-            setWaveformVarsByType.operator()<HSVWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
 #endif
 #ifdef MIXXX_USE_QOPENGL
-            setWaveformVarsByType.operator()<allshader::HSVWaveformWidget>();
-            supportedOptions[type] =
-                    allshader::HSVWaveformWidget::supportedOptions();
+            addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
+            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #else
-            setWaveformVarsByType.operator()<QtHSVWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<QtHSVWaveformWidget>());
 #endif
             break;
         case WaveformWidgetType::Stacked:
-            setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<GLSLRGBStackedWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
-            setWaveformVarsByType.operator()<allshader::StackedWaveformWidget>();
-            supportedOptions[type] =
-                    allshader::StackedWaveformWidget::supportedOptions();
+            addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
+            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #endif
             break;
         default:
@@ -1030,6 +1031,14 @@ void WaveformWidgetFactory::evaluateWidgets() {
     }
 }
 
+WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
+        WaveformWidgetType::Type type, WWaveformViewer* viewer) {
+    allshader::WaveformRendererSignalBase::Options options =
+            m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
+                    allshader::WaveformRendererSignalBase::None);
+    return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
+}
+
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
         WWaveformViewer* viewer) {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
@@ -1048,10 +1057,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
         return new GLSLFilteredWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader: {
-        allshader::WaveformRendererSignalBase::Options options =
-                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                        allshader::WaveformRendererSignalBase::None);
-        return new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer, options);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer);
     }
 #else
     case WaveformWidgetBackend::Qt:
@@ -1075,7 +1081,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveform
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
-        return new allshader::HSVWaveformWidget(viewer->getGroup(), viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer);
 #endif
     default:
         return new HSVWaveformWidget(viewer->getGroup(), viewer);
@@ -1098,12 +1104,8 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
     case WaveformWidgetBackend::GLSL:
         return new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
-    case WaveformWidgetBackend::AllShader: {
-        allshader::WaveformRendererSignalBase::Options options =
-                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                        allshader::WaveformRendererSignalBase::None);
-        return new allshader::RGBWaveformWidget(viewer->getGroup(), viewer, options);
-    }
+    case WaveformWidgetBackend::AllShader:
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer);
 #else
     case WaveformWidgetBackend::Qt:
         return new QtRGBWaveformWidget(viewer->getGroup(), viewer);
@@ -1127,12 +1129,8 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
     switch (backend) {
     case WaveformWidgetBackend::GL:
         return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
-    default: {
-        allshader::WaveformRendererSignalBase::Options options =
-                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                        allshader::WaveformRendererSignalBase::None);
-        return new allshader::StackedWaveformWidget(viewer->getGroup(), viewer, options);
-    }
+    default:
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
     }
 #else
     return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
@@ -1154,7 +1152,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
     case WaveformWidgetBackend::GL:
         return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
     default:
-        return new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
 #else
     case WaveformWidgetBackend::Qt:
         return new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
