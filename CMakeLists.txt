@@ -1208,12 +1208,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
-  src/waveform/renderers/deprecated/glslwaveformrenderersignal.cpp
-  src/waveform/renderers/deprecated/glvsynctestrenderer.cpp
-  src/waveform/renderers/deprecated/glwaveformrenderbackground.cpp
-  src/waveform/renderers/deprecated/glwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/deprecated/glwaveformrendererrgb.cpp
-  src/waveform/renderers/deprecated/glwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/glwaveformrenderbackground.cpp
+  src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
@@ -1240,16 +1236,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveformmarklabel.cpp
   src/waveform/waveformwidgetfactory.cpp
   src/waveform/widgets/emptywaveformwidget.cpp
-  src/waveform/widgets/deprecated/glrgbwaveformwidget.cpp
-  src/waveform/widgets/deprecated/glsimplewaveformwidget.cpp
-  src/waveform/widgets/deprecated/glslwaveformwidget.cpp
-  src/waveform/widgets/deprecated/glvsynctestwidget.cpp
-  src/waveform/widgets/deprecated/glwaveformwidget.cpp
-  src/waveform/widgets/deprecated/glwaveformwidgetabstract.cpp
   src/waveform/widgets/hsvwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
+  src/waveform/widgets/glwaveformwidgetabstract.cpp
+  src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
@@ -1541,11 +1533,6 @@ else()
     src/waveform/renderers/qtvsynctestrenderer.cpp
     src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-    src/waveform/widgets/qthsvwaveformwidget.cpp
-    src/waveform/widgets/qtrgbwaveformwidget.cpp
-    src/waveform/widgets/qtsimplewaveformwidget.cpp
-    src/waveform/widgets/qtvsynctestwidget.cpp
-    src/waveform/widgets/qtwaveformwidget.cpp
     src/widget/wglwidgetqglwidget.cpp
   )
 endif()
