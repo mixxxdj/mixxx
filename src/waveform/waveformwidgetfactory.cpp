@@ -1129,17 +1129,17 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
                 widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
                 break;
             }
+        }
+        widget->castToQWidget();
+        if (!widget->isValid()) {
+            qWarning() << "failed to init WafeformWidget" << type << "fall back to \"Empty\"";
+            delete widget;
+            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
             widget->castToQWidget();
             if (!widget->isValid()) {
-                qWarning() << "failed to init WafeformWidget" << type << "fall back to \"Empty\"";
+                qWarning() << "failed to init EmptyWaveformWidget";
                 delete widget;
-                widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
-                widget->castToQWidget();
-                if (!widget->isValid()) {
-                    qWarning() << "failed to init EmptyWaveformWidget";
-                    delete widget;
-                    widget = nullptr;
-                }
+                widget = nullptr;
             }
         }
     }
