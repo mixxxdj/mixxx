@@ -872,8 +872,6 @@ void WaveformWidgetFactory::evaluateWidgets() {
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         // this lambda needs its type specified explicitly,
         // requiring it to be called with via `.operator()<WaveformT>()`
-        collectedHandles.insert(type,
-                QList<WaveformWidgetBackend>());
         auto setWaveformVarsByType = [&]<typename WaveformT>() {
             bool useOpenGl = WaveformT::useOpenGl();
             bool useOpenGles = WaveformT::useOpenGles();
@@ -917,7 +915,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             }
 
             if (active) {
-                collectedHandles[type].push_back(backend);
+                if (collectedHandles.contains(type)) {
+                    collectedHandles[type].push_back(backend);
+                } else {
+                    collectedHandles.insert(type,
+                            QList<WaveformWidgetBackend>{backend});
+                }
             }
         };
 
