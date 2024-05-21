@@ -347,3 +347,22 @@ void WColorPicker::setColorPalette(const ColorPalette& palette) {
 void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     setSelectedColor(color);
 }
+
+void WColorPicker::setInitialFocus() {
+    QGridLayout* pLayout = qobject_cast<QGridLayout*>(layout());
+    VERIFY_OR_DEBUG_ASSERT(pLayout) {
+        qWarning() << "Color Picker has no layout!";
+        return;
+    }
+
+    // Focus the top left button when the color picker
+    // popup is opened, so that keyboard navigation
+    // can be used.
+    auto* topLeftItem = pLayout->itemAtPosition(0, 0);
+    if (topLeftItem) {
+        auto* topLeftWidget = topLeftItem->widget();
+        if (topLeftWidget) {
+            topLeftWidget->setFocus();
+        }
+    }
+}

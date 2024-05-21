@@ -18,6 +18,7 @@ WColorPickerActionMenu::WColorPickerActionMenu(
             &WColorPickerActionMenu::colorPicked);
 
     addAction(m_pColorPickerAction.get());
+    m_pColorPickerAction->setInitialFocus();
 }
 
 void WColorPickerActionMenu::setColorPalette(const ColorPalette& palette) {

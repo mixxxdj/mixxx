@@ -53,6 +53,7 @@ class WColorPicker : public QWidget {
     void resetSelectedColor();
     void setSelectedColor(const mixxx::RgbColor::optional_t& color);
     void setColorPalette(const ColorPalette& palette);
+    void setInitialFocus();
 
   signals:
     void colorPicked(const mixxx::RgbColor::optional_t& color);

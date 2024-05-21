@@ -35,3 +35,7 @@ void WColorPickerAction::setColorPalette(const ColorPalette& palette) {
     }
     pWidget->adjustSize();
 }
+
+void WColorPickerAction::setInitialFocus() {
+    m_pColorPicker->setInitialFocus();
+}
