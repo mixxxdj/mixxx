@@ -15,6 +15,10 @@
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
+
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
@@ -32,6 +36,16 @@ bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     return false;
 }
 
+#ifdef __RUBBERBAND__
+const QString kKeylockMultiThreadedAvailable = QObject::tr(
+        "<p><span style=\"font-weight:600;\">Warning!</span></p><p>Using multi "
+        "threading may result in pitch and tone imperfection, and this is "
+        "mono-incompatible, due to third party limitations.</p>");
+const QString kKeylockMultiThreadedUnavailableMono = QObject::tr(
+        "<i>Multi threading mode is incompatible with mono main mix.</i>");
+const QString kKeylockMultiThreadedUnavailableRubberband = QObject::tr(
+        "<i>Multi threading mode is only available with RubberBand.</i>");
+#endif
 } // namespace
 
 /// Construct a new sound preferences pane. Initializes and populates
@@ -182,6 +196,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::settingChanged);
+#ifdef __RUBBERBAND__
+    connect(keylockMultithreadedComboBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefSound::updateKeylockMultithreading);
+#else
+    keylockMultithreadedComboBox->hide();
+#endif
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
 
@@ -298,6 +320,21 @@ void DlgPrefSound::slotApply() {
         m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
                 ConfigValue(static_cast<int>(keylockEngine)));
 
+#ifdef __RUBBERBAND__
+        bool keylockMultithreading = m_pSettings->getValue(
+                ConfigKey(kAppGroup, "keylock_multithreading"), false);
+        m_pSettings->setValue(ConfigKey(kAppGroup, "keylock_multithreading"),
+                keylockMultithreadedComboBox->isChecked() &&
+                        keylockMultithreadedComboBox->isEnabled());
+        if (keylockMultithreading !=
+                (keylockMultithreadedComboBox->isChecked() &&
+                        keylockMultithreadedComboBox->isEnabled())) {
+            QMessageBox::information(this,
+                    tr("Information"),
+                    tr("Mixxx must be restarted before the multi-threaded "
+                       "RubberBand settings change will take effect."));
+        }
+#endif
         status = m_pSoundManager->setConfig(m_config);
     }
     if (status != SoundDeviceStatus::Ok) {
@@ -487,6 +524,13 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
                 EngineBuffer::getKeylockEngineName(keylockEngine), keylockEngineVariant);
         keylockComboBox->setCurrentIndex(keylockComboBox->count() - 1);
     }
+
+#ifdef __RUBBERBAND__
+    // Default is no multi threading on keylock
+    keylockMultithreadedComboBox->setChecked(m_pSettings->getValue(
+            ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading")),
+            false));
+#endif
 
     // Collect selected I/O channel indices for all non-empty device comboboxes
     // in order to allow auto-selecting free channels when different devices are
@@ -682,6 +726,41 @@ void DlgPrefSound::settingChanged() {
         return; // doesn't count if we're just loading prefs
     }
     m_settingsModified = true;
+
+#ifdef __RUBBERBAND__
+    bool supportedScaler = keylockComboBox->currentData()
+                                   .value<EngineBuffer::KeylockEngine>() !=
+            EngineBuffer::KeylockEngine::SoundTouch;
+    bool monoMix = mainOutputModeComboBox->currentIndex() == 1;
+    keylockMultithreadedComboBox->setEnabled(!monoMix && supportedScaler);
+    keylockMultithreadedComboBox->setToolTip(monoMix
+                    ? kKeylockMultiThreadedUnavailableMono
+                    : (supportedScaler
+                                      ? kKeylockMultiThreadedAvailable
+                                      : kKeylockMultiThreadedUnavailableRubberband));
+}
+
+void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
+    m_settingsModified = true;
+    if (!enabled) {
+        return;
+    }
+    QMessageBox msg;
+    msg.setIcon(QMessageBox::Warning);
+    msg.setWindowTitle(tr("Are you sure?"));
+    msg.setText(
+            tr("<p>Using multi threading may result in <span "
+               "style=\"font-weight:600;\">pitch and tone imperfection</span> "
+               "depending of the platform, leading to mono-incompatibility, "
+               "due to third party limitations. </p><p>Are you sure you wish "
+               "to proceed?</p>"));
+    QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::AcceptRole);
+    QPushButton* pYesBtn = msg.addButton(
+            tr("Yes, I know what I am doing"), QMessageBox::RejectRole);
+    msg.setDefaultButton(pNoBtn);
+    msg.exec();
+    keylockMultithreadedComboBox->setChecked(msg.clickedButton() == pYesBtn);
+#endif
 }
 
 void DlgPrefSound::deviceChanged() {
@@ -828,7 +907,19 @@ void DlgPrefSound::mainEnabledChanged(double value) {
 }
 
 void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
-    m_pMainMonoMixdown->set((double)value);
+    m_pMainMonoMixdown->set(static_cast<double>(value));
+
+#ifdef __RUBBERBAND__
+    bool supportedScaler = keylockComboBox->currentData()
+                                   .value<EngineBuffer::KeylockEngine>() !=
+            EngineBuffer::KeylockEngine::SoundTouch;
+    keylockMultithreadedComboBox->setEnabled(!value && supportedScaler);
+    keylockMultithreadedComboBox->setToolTip(
+            value ? kKeylockMultiThreadedUnavailableMono
+                  : (supportedScaler
+                                    ? kKeylockMultiThreadedAvailable
+                                    : kKeylockMultiThreadedUnavailableRubberband));
+#endif
 }
 
 void DlgPrefSound::mainMonoMixdownChanged(double value) {

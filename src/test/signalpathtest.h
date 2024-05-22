@@ -28,6 +28,9 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 
 using ::testing::Return;
 using ::testing::_;
@@ -141,6 +144,18 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         delete m_pNumDecks;
         PlayerInfo::destroy();
     }
+
+#ifdef __RUBBERBAND__
+    void SetUp() override {
+        RubberBandWorkerPool::createInstance();
+    }
+#endif
+
+#ifdef __RUBBERBAND__
+    void TearDown() override {
+        RubberBandWorkerPool::destroy();
+    }
+#endif
 
     void addDeck(EngineDeck* pDeck) {
         ControlObject::set(ConfigKey(pDeck->getGroup(), "main_mix"), 1.0);
@@ -265,12 +280,17 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest() {
+    void SetUp() override {
+        BaseSignalPathTest::SetUp();
         const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);
         loadTrack(m_pMixerDeck3, pTrack);
+    }
+
+    void TearDown() override {
+        BaseSignalPathTest::TearDown();
     }
 };

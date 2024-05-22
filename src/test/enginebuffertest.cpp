@@ -8,7 +8,6 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "engine/bufferscalers/rubberbandworkerpool.h"
 #include "engine/controls/ratecontrol.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
@@ -424,7 +423,6 @@ TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
 
 #ifdef __RUBBERBAND__
 TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
-    RubberBandWorkerPool::createInstance();
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing issue #8061
     ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
@@ -436,7 +434,6 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     ProcessBuffer();
     // Note: we cannot compare a golden buffer here, because the result depends
     // on the uses library version
-    RubberBandWorkerPool::destroy();
 }
 #endif
 

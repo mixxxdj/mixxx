@@ -2,11 +2,20 @@
 
 #include "engine/bufferscalers/rubberbandworker.h"
 #include "engine/bufferscalers/rubberbandworkerpool.h"
+#include "engine/engine.h"
 #include "util/assert.h"
 
 using RubberBand::RubberBandStretcher;
 
 #define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+
+namespace {
+
+mixxx::audio::ChannelCount getChannelPerWorker() {
+    RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
+    return pPool ? pPool->channelPerWorker() : mixxx::kEngineChannelCount;
+}
+} // namespace
 
 int RubberBandWrapper::getEngineVersion() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
@@ -46,7 +55,7 @@ size_t RubberBandWrapper::retrieve(float* const* output, size_t samples) const {
             size_t thisRet = stretcher->retrieve(output, samples);
             DEBUG_ASSERT(!ret || thisRet == ret);
             ret = qMax(thisRet, ret);
-            output += RubberBandWorker::kChannelPerWorker;
+            output += getChannelPerWorker();
         }
         return ret;
     }
@@ -114,7 +123,7 @@ void RubberBandWrapper::process(const float* const* input, size_t samples, bool 
             } else {
                 workers.insert(pWorker);
             }
-            input += RubberBandWorker::kChannelPerWorker;
+            input += pPool->channelPerWorker();
         }
         for (auto& worker : workers) {
             worker->waitReady();
@@ -135,18 +144,21 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
     // The instance should have been cleared, or not set before
     VERIFY_OR_DEBUG_ASSERT(m_pInstances.size() == 0) {
         m_pInstances.clear();
-    }
-    VERIFY_OR_DEBUG_ASSERT(0 == chCount % RubberBandWorker::kChannelPerWorker) {
+    };
+
+    auto channelPerWorker = getChannelPerWorker();
+    qDebug() << "RubberBandWrapper::setup" << channelPerWorker;
+    VERIFY_OR_DEBUG_ASSERT(0 == chCount % channelPerWorker) {
         m_pInstances.emplace_back(
                 std::make_unique<RubberBand::RubberBandStretcher>(
                         sampleRate, chCount, opt));
         return;
     }
 
-    for (int c = 0; c < chCount; c += RubberBandWorker::kChannelPerWorker) {
+    for (int c = 0; c < chCount; c += channelPerWorker) {
         m_pInstances.emplace_back(
                 std::make_unique<RubberBand::RubberBandStretcher>(
-                        sampleRate, RubberBandWorker::kChannelPerWorker, opt));
+                        sampleRate, channelPerWorker, opt));
     }
 }
 void RubberBandWrapper::setPitchScale(double scale) {

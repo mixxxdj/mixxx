@@ -1,5 +1,7 @@
 #pragma once
 
+#include "audio/types.h"
+#include "preferences/usersettings.h"
 #include "util/singleton.h"
 
 class RubberBandWorker;
@@ -27,11 +29,16 @@ class RubberBandWorkerPool : public Singleton<RubberBandWorkerPool> {
             size_t samples,
             bool final);
 
+    const mixxx::audio::ChannelCount& channelPerWorker() const {
+        return m_channelPerWorker;
+    }
+
   protected:
-    RubberBandWorkerPool();
+    RubberBandWorkerPool(UserSettingsPointer pConfig = nullptr);
 
   private:
     std::vector<std::unique_ptr<RubberBandWorker>> m_workers;
+    mixxx::audio::ChannelCount m_channelPerWorker;
 
     friend class Singleton<RubberBandWorkerPool>;
 };

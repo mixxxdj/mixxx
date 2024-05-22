@@ -16,9 +16,6 @@ class RubberBandWorker : public QThread {
     // Wait for the current job to complete.
     void waitReady();
 
-    static constexpr mixxx::audio::ChannelCount kChannelPerWorker =
-            mixxx::audio::ChannelCount::mono();
-
   protected:
     RubberBandWorker();
 

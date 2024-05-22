@@ -271,7 +271,7 @@ void CoreServices::initialize(QApplication* pApp) {
             pChannelHandleFactory,
             true);
 #ifdef __RUBBERBAND__
-    RubberBandWorkerPool::createInstance();
+    RubberBandWorkerPool::createInstance(pConfig);
 #endif
 
     emit initializationProgressUpdate(30, tr("audio interface"));
