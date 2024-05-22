@@ -31,7 +31,7 @@ class WaveformWidgetType {
     };
 };
 
-enum class WaveformWidgetBackend : int {
+enum class WaveformWidgetBackend {
     None = 0,
     GL,
     GLSL,

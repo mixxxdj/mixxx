@@ -131,6 +131,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
     WaveformWidgetBackend preferredBackend() const;
+    static WaveformWidgetType::Type defaultType() {
+        return WaveformWidgetType::RGB;
+    }
 
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid

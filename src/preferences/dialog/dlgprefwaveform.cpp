@@ -8,10 +8,6 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 
-namespace {
-constexpr WaveformWidgetType::Type kDefaultWaveform = WaveformWidgetType::RGB;
-} // anonymous namespace
-
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -291,14 +287,14 @@ void DlgPrefWaveform::slotResetToDefaults() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
     int defaultIndex = waveformTypeComboBox->findData(
-            kDefaultWaveform);
+            WaveformWidgetFactory::defaultType());
     if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
     auto defaultBackend = factory->preferredBackend();
     useWaveformCheckBox->setChecked(true);
     waveformTypeComboBox->setEnabled(true);
-    updateWaveformAcceleration(kDefaultWaveform, defaultBackend);
+    updateWaveformAcceleration(WaveformWidgetFactory::defaultType(), defaultBackend);
     updateWaveformOption(true, defaultBackend, allshader::WaveformRendererSignalBase::None);
 
     // Restore waveform backend and option setting instantly
@@ -306,7 +302,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
             allshader::WaveformRendererSignalBase::None);
     m_pConfig->setValue(ConfigKey("[Waveform]", "use_hardware_acceleration"),
             defaultBackend);
-    factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(kDefaultWaveform), true);
+    factory->setWidgetTypeFromHandle(
+            factory->findHandleIndexFromType(
+                    WaveformWidgetFactory::defaultType()),
+            true);
 
     allVisualGain->setValue(1.0);
     lowVisualGain->setValue(1.0);

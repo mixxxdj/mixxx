@@ -20,6 +20,7 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
         None = 0b0,
         SplitStereoSignal = 0b1,
         HighDetail = 0b10,
+        All = SplitStereoSignal | HighDetail,
     };
     Q_DECLARE_FLAGS(Options, Option)
 

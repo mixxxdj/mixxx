@@ -5,6 +5,7 @@
 #include <tuple>
 
 // Importing CPP file since testing function in anonymous namespace
+#include "preferences/configobject.h"
 #include "preferences/upgrade.cpp"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
@@ -159,15 +160,15 @@ TEST_F(UpgradeTest, useCorrectWaveformType) {
 
     for (const auto& testCase : testCases) {
         int waveformType = testCase.oldTypeId;
-        WaveformWidgetBackend waveformBackend = WaveformWidgetBackend::None;
-        allshader::WaveformRendererSignalBase::Options options =
-                allshader::WaveformRendererSignalBase::None;
+        int waveformBackend = -1;
+        int waveformOptions = -1;
 
         qDebug() << "Testing upgrade for" << testCase.waveformName;
 
-        upgradeToAllShaders(&waveformType, &waveformBackend, &options);
-        ASSERT_EQ(waveformType, testCase.expectedType);
-        ASSERT_EQ(waveformBackend, testCase.expectedBackend);
+        auto [type, backend, options] = upgradeToAllShaders(
+                waveformType, waveformBackend, waveformOptions);
+        ASSERT_EQ(type, testCase.expectedType);
+        ASSERT_EQ(backend, testCase.expectedBackend);
         ASSERT_EQ(options, testCase.expectedOptions);
     }
 }
