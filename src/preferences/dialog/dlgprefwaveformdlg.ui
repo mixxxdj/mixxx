@@ -237,7 +237,7 @@
      <item row="18" column="1" colspan="2">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
-        <string>This functionality requires waveform acceleration &quot;(GLSL)&quot;.</string>
+        <string>This functionality requires waveform acceleration.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -672,7 +672,7 @@ Select from different types of displays for the waveform, which differ primarily
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
+        <spacer name="waveformSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

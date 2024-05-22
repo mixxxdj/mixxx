@@ -949,7 +949,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // that load GL widgets (spinnies, waveforms) in singletons.
             // Also excluded in enum WaveformWidgetType
             // https://bugs.launchpad.net/bugs/1928772
-            addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>();
+            addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>());
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<GLWaveformWidget>());
             addHandle(collectedHandles, type, waveformWidgetVars<GLSLFilteredWaveformWidget>());

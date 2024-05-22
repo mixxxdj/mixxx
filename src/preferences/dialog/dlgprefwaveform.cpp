@@ -2,6 +2,9 @@
 
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
+#ifdef __APPLE__
+#include "util/cmdlineargs.h"
+#endif
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
@@ -218,6 +221,20 @@ void DlgPrefWaveform::slotUpdate() {
         useAccelerationCheckBox->setEnabled(false);
         useAccelerationCheckBox->setChecked(false);
     }
+
+#ifdef __APPLE__
+    if (!CmdlineArgs::Instance().getDeveloper() &&
+            m_pConfig->getValue(
+                    ConfigKey("[Waveform]", "use_hardware_acceleration"),
+                    factory->preferredBackend()) ==
+                    factory->preferredBackend()) {
+        useAccelerationCheckBox->hide();
+        waveformSpacer->changeSize(0, 20);
+    } else {
+        useAccelerationCheckBox->show();
+        waveformSpacer->changeSize(20, 20);
+    }
+#endif
 
     // The combobox holds a list of [handle name, handle index]
     int currentIndex = waveformTypeComboBox->findData(factory->getType());
