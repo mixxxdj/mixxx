@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QFileSystemWatcher>
+#include <QLocale>
 #include <QMultiHash>
 #include <QObject>
 
@@ -9,27 +11,52 @@
 class ControlObject;
 class QEvent;
 class QKeyEvent;
+class WBaseWidget;
 
 // This class provides handling of keyboard events.
 class KeyboardEventFilter : public QObject {
     Q_OBJECT
   public:
-    KeyboardEventFilter(ConfigObject<ConfigValueKbd> *pKbdConfigObject,
-                        QObject *parent = nullptr, const char* name = nullptr);
+    KeyboardEventFilter(UserSettingsPointer pConfig,
+            QLocale& locale,
+            QObject* parent = nullptr,
+            const char* name = nullptr);
     virtual ~KeyboardEventFilter();
 
     bool eventFilter(QObject* obj, QEvent* e);
 
     // Set the keyboard config object. KeyboardEventFilter does NOT take
     // ownership of pKbdConfigObject.
-    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
-    ConfigObject<ConfigValueKbd>* getKeyboardConfig();
+    std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig();
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
 
-#ifndef __APPLE__
+    void setEnabled(bool enabled);
+    bool isEnabled() {
+        return m_enabled;
+    }
+
+    void registerShortcutWidget(WBaseWidget* pWidget);
+    void updateWidgetShortcuts();
+    void clearWidgets();
+    const QString buildShortcutString(const QString& shortcut, const QString& cmd) const;
+
+    void registerMenuBarActionSetShortcut(
+            QAction* pAction,
+            const ConfigKey& command,
+            const QString& defaultShortcut);
+    void clearMenuBarActions();
+    void updateMenuBarActionShortcuts();
+
+  public slots:
+    void reloadKeyboardConfig();
+
   signals:
+    // We're only the relay here: CoreServices -> this -> WBaseWidget
+    void shortcutsEnabled(bool enabled);
+
+#ifndef __APPLE__
     void altPressedWithoutKeys();
 #endif
 
@@ -46,10 +73,6 @@ class KeyboardEventFilter : public QObject {
         ControlObject* pControl;
     };
 
-#ifndef __APPLE__
-    bool m_altPressedWithoutKey;
-#endif
-
     // Run through list of active keys to see if the pressed key is already active
     // and is not a control that repeats when held.
     bool shouldSkipHeldKey(int keyId) {
@@ -60,10 +83,31 @@ class KeyboardEventFilter : public QObject {
                     return keyDownInfo.keyId == keyId && !keyDownInfo.pControl->getKbdRepeatable();
                 });
     }
+
+    void createKeyboardConfig();
+
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
+
+    UserSettingsPointer m_pConfig;
     // Pointer to keyboard config object
-    ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
+    std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
+    QLocale m_locale;
+#ifndef __APPLE__
+    bool m_altPressedWithoutKey;
+#endif
+    bool m_enabled;
+
+    QFileSystemWatcher m_fileWatcher;
+
+    // Actions in the menu bar
+    // Value pair is the ConfigKey and the default QKeySequence (as QString).
+    QHash<QAction*, std::pair<ConfigKey, QString>> m_menuBarActions;
+
+    // Widgets that have mappable connections, registered by LegacySkinParser
+    // during skin construction.
+    QList<WBaseWidget*> m_widgets;
+
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 };
