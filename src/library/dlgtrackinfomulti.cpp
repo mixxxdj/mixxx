@@ -302,6 +302,9 @@ void DlgTrackInfoMulti::loadTracks(const QList<TrackPointer>& pTracks) {
         return;
     }
 
+    VERIFY_OR_DEBUG_ASSERT(m_pLoadedTracks.isEmpty()) {
+        m_pLoadedTracks.clear();
+    }
     for (const auto& pTrack : pTracks) {
         m_pLoadedTracks.insert(pTrack.get()->getId(), pTrack);
     }
