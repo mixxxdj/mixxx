@@ -132,14 +132,14 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
-    ControlProxy* m_endOfTrackControl;
+    parented_ptr<ControlProxy> m_endOfTrackControl;
     bool m_endOfTrack;
     bool m_bPassthroughEnabled;
-    ControlProxy* m_pRateRatioControl;
-    ControlProxy* m_trackSampleRateControl;
-    ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playpositionControl;
-    ControlProxy* m_pPassthroughControl;
+    parented_ptr<ControlProxy> m_pRateRatioControl;
+    parented_ptr<ControlProxy> m_trackSampleRateControl;
+    parented_ptr<ControlProxy> m_trackSamplesControl;
+    parented_ptr<ControlProxy> m_playpositionControl;
+    parented_ptr<ControlProxy> m_pPassthroughControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -177,7 +177,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_playedOverlayColor;
     QColor m_lowColor;
     int m_dimBrightThreshold;
-    QLabel* m_pPassthroughLabel;
+    parented_ptr<QLabel> m_pPassthroughLabel;
 
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;

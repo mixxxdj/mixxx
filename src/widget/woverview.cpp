@@ -52,26 +52,28 @@ WOverview::WOverview(
           m_b(0.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
+          m_pHoveredMark(nullptr),
           m_scaleFactor(1.0) {
-    m_endOfTrackControl = new ControlProxy(
-            m_group, "end_of_track", this, ControlFlag::NoAssertIfMissing);
+    m_endOfTrackControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
-    m_pRateRatioControl = new ControlProxy(
-            m_group, "rate_ratio", this, ControlFlag::NoAssertIfMissing);
+    m_pRateRatioControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("rate_ratio"), this, ControlFlag::NoAssertIfMissing);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
     m_pRateRatioControl->connectValueChanged(
             this, &WOverview::onRateRatioChange);
-    m_trackSampleRateControl = new ControlProxy(
-            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
-    m_trackSamplesControl = new ControlProxy(m_group, "track_samples", this);
-    m_playpositionControl = new ControlProxy(
-            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
-    m_pPassthroughControl =
-            new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
+    m_trackSampleRateControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("track_samplerate"), this, ControlFlag::NoAssertIfMissing);
+    m_trackSamplesControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("track_samples"), this);
+    m_playpositionControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("playposition"), this, ControlFlag::NoAssertIfMissing);
+    m_pPassthroughControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("passthrough"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
     m_bPassthroughEnabled = m_pPassthroughControl->toBool();
 
-    m_pPassthroughLabel = new QLabel(this);
+    m_pPassthroughLabel = make_parented<QLabel>(this);
 
     setAcceptDrops(true);
 
@@ -165,7 +167,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         child = child.nextSibling();
     }
 
-    DEBUG_ASSERT(m_pPassthroughLabel != nullptr);
+    DEBUG_ASSERT(m_pPassthroughLabel.get() != nullptr);
     m_pPassthroughLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     // Shown on the overview waveform when vinyl passthrough is enabled
     m_pPassthroughLabel->setText(tr("Passthrough"));
@@ -1270,6 +1272,7 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
 void WOverview::dragEnterEvent(QDragEnterEvent* pEvent) {
     DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
+
 void WOverview::dropEvent(QDropEvent* pEvent) {
     DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
