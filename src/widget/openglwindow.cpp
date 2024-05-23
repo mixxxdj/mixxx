@@ -10,7 +10,8 @@
 #include "widget/wglwidget.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
-        : m_pWidget(pWidget) {
+        : m_pWidget(pWidget),
+          m_pTrackDropTarget(nullptr) {
     setFormat(WaveformWidgetFactory::getSurfaceFormat());
     // Prevent this window/widget from getting keyboard focus on click.
     setFlag(Qt::WindowDoesNotAcceptFocus);
@@ -68,19 +69,46 @@ bool OpenGLWindow::event(QEvent* pEv) {
         if (t == QEvent::MouseMove) {
             ToolTipQOpenGL::singleton().start(
                     m_pWidget, dynamic_cast<QMouseEvent*>(pEv)->globalPos());
+            return result;
         }
+
         if (t == QEvent::Leave) {
             ToolTipQOpenGL::singleton().stop();
+            return result;
         }
 
-        if (t == QEvent::DragEnter || t == QEvent::DragMove ||
-                t == QEvent::DragLeave || t == QEvent::Drop) {
-            // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
-            // and even result in a recursive call to this method, so we use our own mechanism.
-            if (m_pWidget->trackDropTarget()) {
-                return m_pWidget->trackDropTarget()->handleDragAndDropEventFromWindow(pEv);
-            }
+        // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
+        // and even result in a recursive call to this method, so we use our own mechanism.
 
+        if (t == QEvent::DragEnter) {
+            DEBUG_ASSERT(!m_pTrackDropTarget);
+            TrackDropTarget* pTrackDropTarget = m_pWidget->trackDropTarget();
+            if (pTrackDropTarget) {
+                bool ret = pTrackDropTarget->handleDragAndDropEventFromWindow(pEv);
+                if (pEv->isAccepted()) {
+                    m_pTrackDropTarget = pTrackDropTarget;
+                }
+                return ret;
+            }
+            pEv->ignore();
+            return false; // clazy:exclude=base-class-event
+        }
+
+        if (t == QEvent::DragMove) {
+            if (m_pTrackDropTarget) {
+                bool ret = m_pTrackDropTarget->handleDragAndDropEventFromWindow(pEv);
+                return ret;
+            }
+            pEv->ignore();
+            return false; // clazy:exclude=base-class-event
+        }
+
+        if (t == QEvent::DragLeave || t == QEvent::Drop) {
+            if (m_pTrackDropTarget) {
+                bool ret = m_pTrackDropTarget->handleDragAndDropEventFromWindow(pEv);
+                m_pTrackDropTarget = nullptr;
+                return ret;
+            }
             pEv->ignore();
             return false; // clazy:exclude=base-class-event
         }
