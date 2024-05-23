@@ -82,6 +82,10 @@ void WStemControlBox::setDisplayed(bool displayed) {
     emit displayedChanged(m_displayed);
 }
 
+void WStemControlBox::slotSelectStem(uint stemIdx) {
+    m_selectedStem = stemIdx;
+}
+
 void WStemControlBox::slotTrackLoaded(TrackPointer track) {
     m_hasStem = false;
     if (!track) {

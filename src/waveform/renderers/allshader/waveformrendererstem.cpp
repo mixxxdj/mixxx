@@ -4,16 +4,13 @@
 #include <QImage>
 #include <QOpenGLTexture>
 
+#include "engine/engine.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbdata.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-
-namespace {
-constexpr int kMaxSupportedStem = 4;
-}
 
 namespace allshader {
 
@@ -33,7 +30,7 @@ void WaveformRendererStem::initializeGL() {
     m_shader.init();
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStem; stemIdx++) {
+    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStem; stemIdx++) {
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(group,
                         QStringLiteral("stem_%1_volume").arg(stemIdx)));
@@ -74,6 +71,8 @@ void WaveformRendererStem::paintGL() {
     if (!waveform->hasStem()) {
         return;
     }
+
+    uint selectedStem = m_waveformRenderer->getSelectedStem();
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
@@ -121,7 +120,8 @@ void WaveformRendererStem::paintGL() {
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
     for (int pos = 0; pos < length; ++pos) {
-        for (int s = 0; s < 4; s++) {
+        for (uint s = 0; s < mixxx::kMaxSupportedStem; s++) {
+            // Two layers, one transparent, one with actual stem volume.
             for (int z = 0; z < 2; z++) {
                 QColor stemColor = stemInfo[s].getColor();
                 float color_r = stemColor.redF(),
@@ -154,7 +154,7 @@ void WaveformRendererStem::paintGL() {
 
                 // Apply the gains
                 if (z) {
-                    max *= m_pStemMute[s]->toBool()
+                    max *= m_pStemMute[s]->toBool() || (selectedStem && selectedStem != s + 1)
                             ? 0.f
                             : static_cast<float>(m_pStemGain[s]->get());
                 }

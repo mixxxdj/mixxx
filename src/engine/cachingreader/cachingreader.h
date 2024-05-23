@@ -116,7 +116,12 @@ class CachingReader : public QObject {
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
-    void newTrack(TrackPointer pTrack);
+    void newTrack(TrackPointer pTrack
+#ifdef __STEM__
+            ,
+            uint stemIdx = 0
+#endif
+    );
 
     void setScheduler(EngineWorkerScheduler* pScheduler) {
         m_worker.setScheduler(pScheduler);

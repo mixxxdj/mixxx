@@ -135,7 +135,12 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play = false);
     /// saves the scroll, selection and current state of the library model
     void saveModelState();
     /// restores the scroll, selection and current state of the library model

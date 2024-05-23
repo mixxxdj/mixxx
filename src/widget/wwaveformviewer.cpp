@@ -341,6 +341,15 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
 #endif
 }
 
+#ifdef __STEM__
+void WWaveformViewer::slotSelectStem(uint stemIdx) {
+    if (m_waveformWidget) {
+        m_waveformWidget->selectStem(stemIdx);
+    }
+    m_stemControlWidget->slotSelectStem(stemIdx);
+}
+#endif
+
 void WWaveformViewer::slotTrackUnloaded(TrackPointer pOldTrack) {
     slotLoadingTrack(pOldTrack, TrackPointer());
 }
