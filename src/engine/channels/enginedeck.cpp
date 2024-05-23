@@ -87,6 +87,14 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
     VERIFY_OR_DEBUG_ASSERT(m_pStemCount) {
         return;
     }
+    if (m_pConfig->getValue(
+                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+        for (int stemIdx = 0; stemIdx < kMaxSupportedStem; stemIdx++) {
+            m_stemGain[stemIdx]->set(1.0);
+            m_stemMute[stemIdx]->set(0.0);
+            ;
+        }
+    }
     if (pNewTrack) {
         int stemCount = pNewTrack->getStemInfo().size();
         m_pStemCount->forceSet(stemCount);
