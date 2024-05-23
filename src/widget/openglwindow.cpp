@@ -69,12 +69,10 @@ bool OpenGLWindow::event(QEvent* pEv) {
         if (t == QEvent::MouseMove) {
             ToolTipQOpenGL::singleton().start(
                     m_pWidget, dynamic_cast<QMouseEvent*>(pEv)->globalPos());
-            return result;
         }
 
         if (t == QEvent::Leave) {
             ToolTipQOpenGL::singleton().stop();
-            return result;
         }
 
         // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
