@@ -448,12 +448,11 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
 
     // The comment tag is special: it's the only one that may have multiple lines,
     // but we can't have a multi-line editor and a combobox at the same time.
-    // TODO(ronso0) Maybe we can, but for now we display all comments in the editor,
-    // separated by dashed lines.
     addValuesToCommentBox(comments);
 
     // Non-editable fields: BPM, bitrate, samplerate, type and directory
     // For BPM, bitrate and samplerate we show a span if we have multiple values.
+    // TODO Add BPM line edit
     if (bpms.size() > 1) {
         QList<double> bpmList = bpms.values();
         std::sort(bpmList.begin(), bpmList.end());
