@@ -74,10 +74,14 @@
 * Store/restore regular loop when toggling rolling loops
   [#12475](https://github.com/mixxxdj/mixxx/pull/12475)
   [#8947](https://github.com/mixxxdj/mixxx/issues/8947)
+* Add type toggle to cue popup [#13215](https://github.com/mixxxdj/mixxx/pull/13215)
+* MIDI Input editor: allow selecting multiple Options [#12348](https://github.com/mixxxdj/mixxx/pull/12348)
 
 ### Waveforms
 
-* SlipMode waveform visual for RGB GLSL [#13002](https://github.com/mixxxdj/mixxx/pull/13002)
+* SlipMode waveform visual for RGB GLSL
+  [#13002](https://github.com/mixxxdj/mixxx/pull/13002)
+  [#13256](https://github.com/mixxxdj/mixxx/pull/13256)
 * Show beats and time until next marker in the waveform [#12994](https://github.com/mixxxdj/mixxx/pull/12994)
 * Waveforms: don't elide hotcue labels
   [#13219](https://github.com/mixxxdj/mixxx/pull/13219)

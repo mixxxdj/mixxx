@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-05-21" timestamp="1716315247">
+    <release version="2.5.0" type="development" date="2024-05-23" timestamp="1716492780">
       <description>
  <p>
   Features
@@ -281,6 +281,14 @@
    #12475
    #8947
   </li>
+  <li>
+   Add type toggle to cue popup
+   #13215
+  </li>
+  <li>
+   MIDI Input editor: allow selecting multiple Options
+   #12348
+  </li>
  </ul>
  <p>
   Waveforms
@@ -289,6 +297,7 @@
   <li>
    SlipMode waveform visual for RGB GLSL
    #13002
+   #13256
   </li>
   <li>
    Show beats and time until next marker in the waveform
