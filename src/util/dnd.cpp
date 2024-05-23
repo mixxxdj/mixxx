@@ -256,38 +256,38 @@ QDrag* DragAndDropHelper::dragTrackLocations(
 
 //static
 void DragAndDropHelper::handleTrackDragEnterEvent(
-        QDragEnterEvent* pEvent,
+        QDragEnterEvent* event,
         const QString& group,
         UserSettingsPointer pConfig) {
     if (allowLoadToPlayer(group, pConfig) &&
-            dragEnterAccept(*pEvent->mimeData(), group, true, false)) {
-        pEvent->acceptProposedAction();
+            dragEnterAccept(*event->mimeData(), group, true, false)) {
+        event->acceptProposedAction();
     } else {
         qDebug() << "Ignoring drag enter event, loading not allowed";
-        pEvent->ignore();
+        event->ignore();
     }
 }
 
 //static
 void DragAndDropHelper::handleTrackDropEvent(
-        QDropEvent* pEvent,
+        QDropEvent* event,
         TrackDropTarget& target,
         const QString& group,
         UserSettingsPointer pConfig) {
     if (allowLoadToPlayer(group, pConfig)) {
-        if (allowDeckCloneAttempt(*pEvent, group)) {
-            pEvent->accept();
-            target.emitCloneDeck(pEvent->mimeData()->text(), group);
+        if (allowDeckCloneAttempt(*event, group)) {
+            event->accept();
+            target.emitCloneDeck(event->mimeData()->text(), group);
             return;
         } else {
             const QList<mixxx::FileInfo> files = dropEventFiles(
-                    *pEvent->mimeData(), group, true, false);
+                    *event->mimeData(), group, true, false);
             if (!files.isEmpty()) {
-                pEvent->accept();
+                event->accept();
                 target.emitTrackDropped(files.at(0).location(), group);
                 return;
             }
         }
     }
-    pEvent->ignore();
+    event->ignore();
 }

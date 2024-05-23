@@ -647,14 +647,14 @@ bool WSpinnyBase::event(QEvent* pEvent) {
     return WGLWidget::event(pEvent);
 }
 
-bool WSpinnyBase::handleDragAndDropEventFromWindow(QEvent* pEvent) {
-    return event(pEvent);
+bool WSpinnyBase::handleDragAndDropEventFromWindow(QEvent* ev) {
+    return event(ev);
 }
 
-void WSpinnyBase::dragEnterEvent(QDragEnterEvent* pEvent) {
-    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
+void WSpinnyBase::dragEnterEvent(QDragEnterEvent* event) {
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
-void WSpinnyBase::dropEvent(QDropEvent* pEvent) {
-    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
+void WSpinnyBase::dropEvent(QDropEvent* event) {
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }
