@@ -227,21 +227,21 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
             "\n" + tr("For more information see User Manual > Mixxx Library") +
             "\n\n" +
-            tr("Shortcuts") + ": \n" +
-            tr("Ctrl+F") + "  " +
+            tr("Shortcuts") + ":\n" +
+            tr("Ctrl+F") + ": " +
             tr("Focus", "Give search bar input focus") + "\n" +
-            tr("Return") + " " +
+            tr("Return") + ": " +
             tr("Trigger search before search-as-you-type timeout or"
                "jump to tracks view afterwards") +
             "\n" +
-            tr("Ctrl+Backspace") + "  " +
+            tr("Ctrl+Backspace") + ": " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
-            tr("Ctrl+Space") + "  " +
+            tr("Ctrl+Space") + ": " +
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
-            tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
-            tr("Esc or Ctrl+Return") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+            tr("Delete or Backspace") + ": " + tr("Delete query from history") + "\n" +
+            tr("Esc or Ctrl+Return") + ": " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
 void WSearchLineEdit::loadQueriesFromConfig() {
