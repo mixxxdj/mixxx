@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include "control/controlobject.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
@@ -21,6 +22,10 @@ DlgPrefWaveform::DlgPrefWaveform(
     waveformOverviewComboBox->addItem(tr("Filtered")); // "0"
     waveformOverviewComboBox->addItem(tr("HSV")); // "1"
     waveformOverviewComboBox->addItem(tr("RGB")); // "2"
+    m_pTypeControl = std::make_unique<ControlObject>(
+            ConfigKey(QStringLiteral("[Waveform]"),
+                    QStringLiteral("WaveformOverviewType")));
+    m_pTypeControl->setReadOnly();
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -205,6 +210,7 @@ void DlgPrefWaveform::slotUpdate() {
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
+    slotSetWaveformOverviewType(overviewType);
 
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
@@ -299,7 +305,7 @@ void DlgPrefWaveform::updateEnableUntilMark() {
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    emit reloadUserInterface();
+    m_pTypeControl->forceSet(index);
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
