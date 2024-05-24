@@ -16,11 +16,11 @@ class WaveformRendererSignalBase;
 class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
                                               public allshader::WaveformRendererAbstract {
   public:
-    enum Option {
+    enum class Option {
         None = 0b0,
         SplitStereoSignal = 0b1,
         HighDetail = 0b10,
-        All = SplitStereoSignal | HighDetail,
+        AllOptionsCombined = SplitStereoSignal | HighDetail,
     };
     Q_DECLARE_FLAGS(Options, Option)
 

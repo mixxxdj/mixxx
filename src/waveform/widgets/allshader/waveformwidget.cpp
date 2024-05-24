@@ -69,19 +69,19 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
     case ::WaveformWidgetType::Simple:
         return addRenderer<WaveformRendererSimple>();
     case ::WaveformWidgetType::RGB:
-        if (options & allshader::WaveformRendererSignalBase::HighDetail) {
+        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
             return addRenderer<WaveformRendererTextured>(type, positionSource, options);
         }
         return addRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
         return addRenderer<WaveformRendererHSV>();
     case ::WaveformWidgetType::Filtered:
-        if (options & allshader::WaveformRendererSignalBase::HighDetail) {
+        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
             return addRenderer<WaveformRendererTextured>(type, positionSource, options);
         }
         return addRenderer<WaveformRendererFiltered>(false);
     case ::WaveformWidgetType::Stacked:
-        if (options & allshader::WaveformRendererSignalBase::HighDetail) {
+        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
             return addRenderer<WaveformRendererTextured>(type, positionSource, options);
         } else {
             return addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked
@@ -146,19 +146,19 @@ void WaveformWidget::leaveEvent(QEvent* pEvent) {
 }
 
 /* static */
-int WaveformWidget::supportedOptions(WaveformWidgetType::Type type) {
+WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
+        WaveformWidgetType::Type type) {
     switch (type) {
     case WaveformWidgetType::Type::RGB:
-        return WaveformRendererSignalBase::SplitStereoSignal |
-                WaveformRendererSignalBase::HighDetail;
+        return WaveformRendererSignalBase::Option::AllOptionsCombined;
     case WaveformWidgetType::Type::Filtered:
-        return WaveformRendererSignalBase::HighDetail;
+        return WaveformRendererSignalBase::Option::HighDetail;
     case WaveformWidgetType::Type::Stacked:
-        return WaveformRendererSignalBase::HighDetail;
+        return WaveformRendererSignalBase::Option::HighDetail;
     default:
         break;
     }
-    return 0;
+    return WaveformRendererSignalBase::Option::None;
 }
 
 /* static */

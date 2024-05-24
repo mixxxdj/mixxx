@@ -9,6 +9,7 @@
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
 
@@ -59,13 +60,14 @@ class WaveformWidgetAbstractHandle {
         return m_backends.contains(WaveformWidgetBackend::None);
     }
 
-    int supportedOptions(WaveformWidgetBackend backend) const {
 #ifdef MIXXX_USE_QOPENGL
-        return backend == WaveformWidgetBackend::AllShader ? m_supportedOption : 0;
-#else
-        return 0;
-#endif
+    allshader::WaveformRendererSignalBase::Options supportedOptions(
+            WaveformWidgetBackend backend) const {
+        return backend == WaveformWidgetBackend::AllShader
+                ? m_supportedOption
+                : allshader::WaveformRendererSignalBase::Option::None;
     }
+#endif
 
     QString getDisplayName() const;
 
@@ -74,7 +76,7 @@ class WaveformWidgetAbstractHandle {
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
-    int m_supportedOption;
+    allshader::WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 
     friend class WaveformWidgetFactory;

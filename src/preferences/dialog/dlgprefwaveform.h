@@ -35,10 +35,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 #ifdef MIXXX_USE_QOPENGL
     void slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option option, bool enabled);
     void slotSetWaveformOptionSplitStereoSignal(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::SplitStereoSignal, checked);
+        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::
+                                       SplitStereoSignal,
+                checked);
     }
     void slotSetWaveformOptionHighDetail(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::HighDetail, checked);
+        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
     void slotSetWaveformOverviewType(int index);
@@ -65,8 +67,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
-    void updateWaveformOption(
-            bool useWaveform, WaveformWidgetBackend backend, int currentOptions);
+    void updateWaveformOption(bool useWaveform,
+            WaveformWidgetBackend backend,
+            allshader::WaveformRendererSignalBase::Options currentOption);
     void updateWaveformAcceleration(
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
 

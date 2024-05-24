@@ -44,12 +44,11 @@ upgradeToAllShaders(int unsafeWaveformType,
     // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
     using WWT = WaveformWidgetType;
 
-    if (static_cast<WaveformWidgetBackend>(unsafeWaveformBackend) ==
-            WaveformWidgetBackend::AllShader) {
+    if (static_cast<int>(WaveformWidgetBackend::AllShader) == unsafeWaveformBackend) {
         allshader::WaveformRendererSignalBase::Options waveformOption =
                 static_cast<allshader::WaveformRendererSignalBase::Options>(
                         unsafeWaveformOption) &
-                allshader::WaveformRendererSignalBase::All;
+                allshader::WaveformRendererSignalBase::Option::AllOptionsCombined;
         switch (unsafeWaveformType) {
         case WWT::Simple:
         case WWT::Filtered:
@@ -69,7 +68,7 @@ upgradeToAllShaders(int unsafeWaveformType,
 
     // Reset the options
     allshader::WaveformRendererSignalBase::Options waveformOption =
-            allshader::WaveformRendererSignalBase::None;
+            allshader::WaveformRendererSignalBase::Option::None;
     WaveformWidgetType::Type waveformType =
             static_cast<WaveformWidgetType::Type>(unsafeWaveformType);
     WaveformWidgetBackend waveformBackend = WaveformWidgetBackend::AllShader;
@@ -98,7 +97,7 @@ upgradeToAllShaders(int unsafeWaveformType,
     // Filtered waveforms
     case WWT::Filtered: // GLSLFilteredWaveform
     case 22:            // AllShaderTexturedFiltered
-        waveformOption = allshader::WaveformRendererSignalBase::HighDetail;
+        waveformOption = allshader::WaveformRendererSignalBase::Option::HighDetail;
         [[fallthrough]];
     case 2:  // SoftwareWaveform
     case 4:  // QtWaveform
@@ -117,7 +116,7 @@ upgradeToAllShaders(int unsafeWaveformType,
     // Stacked waveform
     case 24:           // AllShaderTexturedStacked
     case WWT::Stacked: // GLSLRGBStackedWaveform
-        waveformOption = allshader::WaveformRendererSignalBase::HighDetail;
+        waveformOption = allshader::WaveformRendererSignalBase::Option::HighDetail;
         [[fallthrough]];
     case 26: // AllShaderRGBStackedWaveform
         waveformType = WaveformWidgetType::Stacked;
@@ -128,8 +127,8 @@ upgradeToAllShaders(int unsafeWaveformType,
     case 23: // AllShaderTexturedRGB
     case 12: // GLSLRGBWaveform
         waveformOption = unsafeWaveformType == 18
-                ? allshader::WaveformRendererSignalBase::SplitStereoSignal
-                : allshader::WaveformRendererSignalBase::HighDetail;
+                ? allshader::WaveformRendererSignalBase::Option::SplitStereoSignal
+                : allshader::WaveformRendererSignalBase::Option::HighDetail;
         [[fallthrough]];
     default:
         waveformType = WaveformWidgetFactory::defaultType();

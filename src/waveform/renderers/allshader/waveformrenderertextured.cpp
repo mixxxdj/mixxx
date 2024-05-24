@@ -367,7 +367,7 @@ void WaveformRendererTextured::paintGL() {
 
         if (m_type == ::WaveformWidgetType::RGB) {
             m_frameShaderProgram->setUniformValue("splitStereoSignal",
-                    m_options & WaveformRendererSignalBase::SplitStereoSignal);
+                    m_options & WaveformRendererSignalBase::Option::SplitStereoSignal);
         }
 
         m_frameShaderProgram->setUniformValue("axesColor",

@@ -918,7 +918,9 @@ WaveformWidgetVars waveformWidgetVars() {
 void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
     QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend>> collectedHandles;
-    QHash<WaveformWidgetType::Type, int> supportedOptions;
+    QHash<WaveformWidgetType::Type,
+            allshader::WaveformRendererSignalBase::Options>
+            supportedOptions;
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
         case WaveformWidgetType::Empty:
@@ -981,7 +983,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(type, backends
 #ifdef MIXXX_USE_QOPENGL
                 ,
-                supportedOptions.value(type, allshader::WaveformRendererSignalBase::None)
+                supportedOptions.value(type, allshader::WaveformRendererSignalBase::Option::None)
 #endif
                         ));
     }
@@ -991,7 +993,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
     allshader::WaveformRendererSignalBase::Options options =
             m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                    allshader::WaveformRendererSignalBase::None);
+                    allshader::WaveformRendererSignalBase::Option::None);
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
 

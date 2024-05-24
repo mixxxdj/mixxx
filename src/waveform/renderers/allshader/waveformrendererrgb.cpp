@@ -79,7 +79,7 @@ void WaveformRendererRGB::paintGL() {
 
     const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
-    const bool splitLeftRight = m_options & WaveformRendererSignalBase::SplitStereoSignal;
+    const bool splitLeftRight = m_options & WaveformRendererSignalBase::Option::SplitStereoSignal;
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
     const float mid_r = static_cast<float>(m_rgbMidColor_r);

@@ -15,7 +15,7 @@ class allshader::WaveformRendererRGB final : public allshader::WaveformRendererS
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
-            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::None);
+            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None);
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;
