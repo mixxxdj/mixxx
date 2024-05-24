@@ -176,26 +176,8 @@ void DlgTrackInfoMulti::init() {
 
         connect(pBox,
                 &QComboBox::currentIndexChanged,
-                [this, pBox]() {
-                    pBox->blockSignals(true); // Prevent recursive calls
-                    // If we have multiple values we also added the Clear item.
-                    // If that item has been selected, remove the placeholder in order to have a
-                    // somewhat safe indicator for whether the box has been edited.
-                    // Used in validEditText().
-                    auto data = pBox->currentData(Qt::UserRole);
-                    if (data.isValid() && data.toString() == kClearItem) {
-                        pBox->lineEdit()->setPlaceholderText(QString());
-                        pBox->setCurrentIndex(-1); // This clears the edit text
-                        // Remove the Clear item after use.
-                        pBox->removeItem(pBox->findData(kClearItem));
-                    }
-                    if (pBox == txtKey) {
-                        // Since we've blocked change signals we need to trigger
-                        // the key validation manually.
-                        slotKeyTextChanged();
-                    }
-                    pBox->blockSignals(false);
-                });
+                this,
+                &DlgTrackInfoMulti::slotTagBoxIndexChanged);
     }
     // Note: unlike other tags, comments can be multi-line, though while QComboBox
     // can have multi-line items its Q*Line*Edit is not suitable for editing multi-
@@ -217,24 +199,8 @@ void DlgTrackInfoMulti::init() {
     txtCommentBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     connect(txtCommentBox,
             &QComboBox::currentIndexChanged,
-            [this]() {
-                txtCommentBox->blockSignals(true);
-                txtComment->setPlaceholderText(QString());
-                // If we have multiple value we also added the Clear All item.
-                // If the Clear item has been selected, remove the placeholder
-                // in order to have a safe indicator in validEditText() whether
-                // the box has been edited.
-                auto data = txtCommentBox->currentData(Qt::UserRole);
-                if (data.isValid() && data.toString() == kClearItem) {
-                    txtCommentBox->setCurrentIndex(-1); // This clears the edit text
-                    // Remove the Clear item after use.
-                    txtCommentBox->removeItem(txtCommentBox->findData(kClearItem));
-                    txtComment->clear();
-                } else {
-                    txtComment->setPlainText(txtCommentBox->currentText());
-                }
-                txtCommentBox->blockSignals(false);
-            });
+            this,
+            &DlgTrackInfoMulti::slotCommentBoxIndexChanged);
 
     // Set up key validation, i.e. check manually entered key texts
     // Note: this is also triggered if the popup is opened.
@@ -783,6 +749,56 @@ void DlgTrackInfoMulti::slotTrackChanged(TrackId trackId) {
     if (it != m_pLoadedTracks.constEnd()) {
         updateFromTracks();
     }
+}
+
+void DlgTrackInfoMulti::slotTagBoxIndexChanged() {
+    QComboBox* pBox = qobject_cast<QComboBox*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pBox && pBox != txtCommentBox) {
+        return;
+    }
+
+    pBox->blockSignals(true); // Prevent recursive calls
+    // If we have multiple values we also added the Clear item.
+    // If that item has been selected, remove the placeholder in order to have a
+    // somewhat safe indicator for whether the box has been edited.
+    // Used in validEditText().
+    auto data = pBox->currentData(Qt::UserRole);
+    if (data.isValid() && data.toString() == kClearItem) {
+        pBox->lineEdit()->setPlaceholderText(QString());
+        pBox->setCurrentIndex(-1); // This clears the edit text
+        // Remove the Clear item after use.
+        pBox->removeItem(pBox->findData(kClearItem));
+    }
+    if (pBox == txtKey) {
+        // Since we've blocked change signals we need to trigger
+        // the key validation manually.
+        slotKeyTextChanged();
+    }
+    pBox->blockSignals(false);
+}
+
+void DlgTrackInfoMulti::slotCommentBoxIndexChanged() {
+    QComboBox* pBox = qobject_cast<QComboBox*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pBox && pBox == txtCommentBox) {
+        return;
+    }
+
+    txtCommentBox->blockSignals(true);
+    txtComment->setPlaceholderText(QString());
+    // If we have multiple value we also added the Clear All item.
+    // If the Clear item has been selected, remove the placeholder
+    // in order to have a safe indicator in validEditText() whether
+    // the box has been edited.
+    auto data = txtCommentBox->currentData(Qt::UserRole);
+    if (data.isValid() && data.toString() == kClearItem) {
+        txtCommentBox->setCurrentIndex(-1); // This clears the edit text
+        // Remove the Clear item after use.
+        txtCommentBox->removeItem(txtCommentBox->findData(kClearItem));
+        txtComment->clear();
+    } else {
+        txtComment->setPlainText(txtCommentBox->currentText());
+    }
+    txtCommentBox->blockSignals(false);
 }
 
 void DlgTrackInfoMulti::slotKeyTextChanged() {
