@@ -50,10 +50,11 @@
       <layout class="QVBoxLayout" name="summary_layout">
 
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="tags_groupBox">
          <layout class="QGridLayout" name="tags_layout" columnstretch="0,10,0,2">
           <item row="0" column="0">
-           <widget class="QLabel" name="lblTrackName">
+
+           <widget class="QLabel" name="lblTitle">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -89,8 +90,9 @@
             </property>
            </widget>
           </item>
+
           <item row="0" column="2" rowspan="3" colspan="2">
-           <widget class="QWidget" name="verticalWidgetCover" native="true">
+           <widget class="QWidget" name="coverWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -107,6 +109,7 @@
             </layout>
            </widget>
           </item>
+
           <item row="1" column="0">
            <widget class="QLabel" name="lblArtist">
             <property name="sizePolicy">
@@ -139,6 +142,7 @@
             </property>
            </widget>
           </item>
+
           <item row="2" column="0">
            <widget class="QLabel" name="lblAlbum">
             <property name="sizePolicy">
@@ -171,6 +175,7 @@
             </property>
            </widget>
           </item>
+
           <item row="3" column="0">
            <widget class="QLabel" name="lblAlbumArtist">
             <property name="sizePolicy">
@@ -203,8 +208,9 @@
             </property>
            </widget>
           </item>
+
           <item row="3" column="2" colspan="2">
-           <widget class="QWidget" name="verticalWidgetStars" native="true">
+           <widget class="QWidget" name="starsWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -221,6 +227,7 @@
             </layout>
            </widget>
           </item>
+
           <item row="4" column="0">
            <widget class="QLabel" name="lblComposer">
             <property name="text">
@@ -247,6 +254,7 @@
             </property>
            </widget>
           </item>
+
           <item row="4" column="2">
            <widget class="QLabel" name="lblYear">
             <property name="text">
@@ -267,6 +275,7 @@
             </property>
            </widget>
           </item>
+
           <item row="5" column="0">
            <widget class="QLabel" name="lblGenre">
             <property name="text">
@@ -293,6 +302,7 @@
             </property>
            </widget>
           </item>
+
           <item row="5" column="2">
            <widget class="QLabel" name="lblKey">
             <property name="text">
@@ -319,6 +329,7 @@
             </property>
            </widget>
           </item>
+
           <item row="6" column="0">
            <widget class="QLabel" name="lblGrouping">
             <property name="text">
@@ -345,6 +356,7 @@
             </property>
            </widget>
           </item>
+
           <item row="6" column="2">
            <widget class="QLabel" name="lblTrackNumber">
             <property name="text">
@@ -371,6 +383,7 @@
             </property>
            </widget>
           </item>
+
           <item row="7" column="0">
            <widget class="QLabel" name="lblTrackComment">
             <property name="text">
@@ -404,6 +417,7 @@
             </property>
            </widget>
           </item>
+
           <item row="9" column="1" colspan="3">
            <widget class="QPushButton" name="btnImportMetadataFromFile">
             <property name="text">
@@ -411,6 +425,7 @@
             </property>
            </widget>
           </item>
+
           <item row="10" column="0">
            <widget class="QLabel" name="lblTrackColor">
             <property name="text">
@@ -431,8 +446,9 @@
             </property>
            </widget>
           </item>
+
           <item row="0" column="0">
-           <spacer name="horizontalSpacer_5">
+           <spacer name="spacerColorPicker">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -447,15 +463,16 @@
          </layout>
         </widget>
        </item>
+
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="properties_groupBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <layout class="QGridLayout" name="property_layout" rowstretch="0,0,0,0,0,0" columnstretch="0,1,0,1">
+         <layout class="QGridLayout" name="properties_layout" rowstretch="0,0,0,0,0,0" columnstretch="0,1,0,1">
 
           <item row="0" column="0">
            <widget class="QLabel" name="lblDuration">
@@ -599,7 +616,7 @@
           </item>
 
           <item row="4" column="1" colspan="3">
-           <layout class="QHBoxLayout" name="file_broswer_btn_layout">
+           <layout class="QHBoxLayout" name="file_browser_btn_layout">
             <item>
              <widget class="QPushButton" name="btnOpenFileBrowser">
               <property name="text">
@@ -624,7 +641,7 @@
           </item>
 
           <item row="5" column="1" colspan="3">
-           <spacer name="property_bottom_spacer">
+           <spacer name="properties_bottom_spacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
