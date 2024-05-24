@@ -168,6 +168,11 @@ void DlgTrackInfoMulti::init() {
         pBox->setEditable(true);
         // We allow editing the value but we don't want to add each edit to the item list
         pBox->setInsertPolicy(QComboBox::NoInsert);
+        // Avoid showing scrollbars if not needed. The dialog has at least 17
+        // QLineEdit/QLabel/QPushButton rows + layout spacing + title bar, so
+        // even with very tight Qt themes we can show at least 25 items before
+        // the list gets taller than the dialog.
+        pBox->setMaxVisibleItems(25);
 
         connect(pBox,
                 &QComboBox::currentIndexChanged,
