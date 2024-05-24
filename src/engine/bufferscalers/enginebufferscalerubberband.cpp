@@ -144,7 +144,7 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
     DEBUG_ASSERT(frames_to_read <= MAX_BUFFER_LEN);
     SINT received_frames;
     {
-        ScopedTimer t(u"RubberBand::retrieve");
+        ScopedTimer t(QStringLiteral("RubberBand::retrieve"));
         received_frames = static_cast<SINT>(m_rubberBand.retrieve(
                 m_bufferPtrs.data(), frames_to_read));
     }
@@ -185,7 +185,7 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
             frames);
 
     {
-        ScopedTimer t(u"RubberBand::process");
+        ScopedTimer t(QStringLiteral("RubberBand::process"));
         m_rubberBand.process(m_bufferPtrs.data(),
                 frames,
                 false);
@@ -198,7 +198,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
         return 0.0;
     }
-    ScopedTimer t(u"EngineBufferScaleRubberBand::scaleBuffer");
+    ScopedTimer t(QStringLiteral("EngineBufferScaleRubberBand::scaleBuffer"));
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
         // No actual samples/frames have been read from the
@@ -315,7 +315,7 @@ void EngineBufferScaleRubberBand::reset() {
     while (remaining_padding > 0) {
         const size_t pad_samples = std::min<size_t>(remaining_padding, block_size);
         {
-            ScopedTimer t(u"RubberBand::process");
+            ScopedTimer t(QStringLiteral("RubberBand::process"));
             m_rubberBand.process(m_bufferPtrs.data(), pad_samples, false);
         }
 
