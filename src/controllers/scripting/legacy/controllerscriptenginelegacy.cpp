@@ -367,9 +367,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                     std::make_shared<ControllerRenderingEngine>(screen, &m_engineThreadControl));
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
-                qCWarning(m_logger) << QString(
-                        "Unable to start the screen render for %1.")
-                                               .arg(screen.identifier);
+                qCWarning(m_logger) << "Unable to start the screen render for" << screen.identifier;
                 return false;
             }
 

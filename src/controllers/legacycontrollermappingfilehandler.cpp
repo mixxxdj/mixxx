@@ -86,7 +86,7 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
 }
 
 #ifdef MIXXX_USE_QML
-#define LOG_OF_NOT_OK(FIELD, TYPE)                                             \
+#define LOG_IF_NOT_OK(FIELD, TYPE)                                             \
     if (!ok) {                                                                 \
         kLogger.warning().nospace()                                            \
                 << "Unable to parse the field \"" << FIELD << "\" as " << TYPE \
