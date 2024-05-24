@@ -397,6 +397,11 @@ void Tooltips::addStandardTooltips() {
             << eqKillLatch;
 
     QString tempoDisplay = tr("Displays the tempo of the loaded track in BPM (beats per minute).");
+    // TODO Clarify this refers to 'file BPM', not playback rate?
+    QString bpmTapButton = tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+    QString tempoTapButton =
+            tr("When tapped repeatedly, adjusts the tempo to match the tapped "
+               "BPM.");
     add("visual_bpm")
             << tr("Tempo")
             << tempoDisplay;
@@ -408,7 +413,14 @@ void Tooltips::addStandardTooltips() {
 
     add("bpm_tap")
             << tr("BPM Tap")
-            << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+            << bpmTapButton;
+    add("tempo_tap")
+            << tr("Tempo Tap")
+            << tempoTapButton;
+    add("tempo_tap_bpm_tap")
+            << tr("Rate Tap and BPM Tap")
+            << QString("%1: %2").arg(leftClick, tempoTapButton)
+            << QString("%1: %2").arg(rightClick, bpmTapButton);
 
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
@@ -435,11 +447,26 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust Beatgrid")
             << tr("Adjust beatgrid to match another playing deck.");
 
-    //this is a special case, in some skins we might display a transparent png for bpm_tap on top of visual_bpm
+    add("beats_undo_adjustment")
+            << tr("Revert last BPM/Beatgrid Change")
+            << tr("Revert last BPM/Beatgrid Change of the loaded track.");
+
+    // These are special cases:
+    // in some skins we display a transparent button for tempo_tap and/or bpm_tap
+    // on top of the visual_bpm display.
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
             << tempoDisplay
-            << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+            << bpmTapButton;
+    add("tempo_tap_visual_bpm")
+            << tr("Tempo and Rate Tap")
+            << tempoDisplay
+            << tempoTapButton;
+    add("tempo_tap_bpm_tap_visual_bpm")
+            << tr("Tempo, Rate Tap and BPM Tap")
+            << tempoDisplay
+            << QString("%1: %2").arg(leftClick, tempoTapButton)
+            << QString("%1: %2").arg(rightClick, bpmTapButton);
 
     add("shift_cues_earlier")
             << tr("Shift cues earlier")
@@ -696,17 +723,28 @@ void Tooltips::addStandardTooltips() {
             << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
 
-    add("vinylcontrol_enabled")
-            << tr("Enable Vinyl Control")
-            << tr("When disabled, the track is controlled by Mixxx playback controls.")
-            << tr("When enabled, the track responds to external vinyl control.");
+    QStringList vcStatus;
+    vcStatus << tr("Provides visual feedback for vinyl control status:")
+             << tr("Green for control enabled.")
+             << tr("Blinking yellow for when the needle reaches the end of the "
+                   "record.")
+             << tr("Red for when needle skip has been detected.");
+    QStringList vcEnabled;
+    vcEnabled << tr("Enable Vinyl Control")
+              << tr("When disabled, the track is controlled by Mixxx playback "
+                    "controls.")
+              << tr("When enabled, the track responds to external vinyl "
+                    "control.");
+
+    add("vinylcontrol_enabled") << vcEnabled;
 
     add("vinylcontrol_status")
-            << tr("Vinyl Status")
-            << tr("Provides visual feedback for vinyl control status:")
-            << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Blue for passthrough enabled.");
+            << tr("Vinyl Status") << vcStatus;
+
+    add("vinylcontrol_enabled_status")
+            << vcEnabled
+            << " " // generates a linebreak. \n would result in two linebrekas.
+            << vcStatus;
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
@@ -766,6 +804,11 @@ void Tooltips::addStandardTooltips() {
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
+
+    add("loop_anchor")
+            << tr("Beatloop Anchor")
+            << tr("Define whether the loop is created and adjusted from its "
+                  "staring point or ending point.");
 
     add("beatjump_size")
             << tr("Beatjump/Loop Move Size")

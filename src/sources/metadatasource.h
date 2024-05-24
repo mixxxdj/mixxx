@@ -3,10 +3,10 @@
 #include <QDateTime>
 #include <QFile>
 #include <QImage>
+#include <memory>
 #include <utility>
 
 #include "track/trackmetadata.h"
-#include "util/memory.h"
 
 namespace mixxx {
 

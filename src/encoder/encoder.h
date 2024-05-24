@@ -1,9 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encodersettings.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 class EncoderCallback;

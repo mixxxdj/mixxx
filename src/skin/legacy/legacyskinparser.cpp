@@ -1109,6 +1109,20 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
         }
     }
 
+    // Relay for the label's WTrackMenu (which is created only on demand):
+    // Emitted before/after deleting a track file via that menu
+    // IF that track is in the current view.
+    connect(pTrackProperty,
+            &WTrackProperty::saveCurrentViewState,
+            m_pLibrary,
+            &Library::slotSaveCurrentViewState,
+            Qt::DirectConnection);
+    connect(pTrackProperty,
+            &WTrackProperty::restoreCurrentViewState,
+            m_pLibrary,
+            &Library::slotRestoreCurrentViewState,
+            Qt::DirectConnection);
+
     connect(pPlayer,
             &BaseTrackPlayer::newTrackLoaded,
             pTrackProperty,

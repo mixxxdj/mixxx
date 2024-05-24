@@ -300,16 +300,22 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     if (m_iNoStates == 1) {
         m_bPressed = (dValue == 1.0);
     }
-
+    if (m_pLongPressLatching) {
+        if (dValue == 1.0) {
+            m_pLongPressLatching->start();
+        } else {
+            m_pLongPressLatching->stop();
+        }
+    }
     restyleAndRepaint();
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
-    paintOnDevice(nullptr);
+    paintOnDevice(nullptr, readDisplayValue());
 }
 
-void WPushButton::paintOnDevice(QPaintDevice* pd) {
+void WPushButton::paintOnDevice(QPaintDevice* pd, int idx) {
     QStyleOption option;
     option.initFrom(this);
     std::unique_ptr<QStylePainter> p(pd ? new QStylePainter(pd, this) : new QStylePainter(this));
@@ -333,7 +339,6 @@ void WPushButton::paintOnDevice(QPaintDevice* pd) {
         return;
     }
 
-    int idx = readDisplayValue();
     // Just in case m_iNoStates is somehow different from pixmaps.size().
     if (idx < 0) {
         idx = 0;
@@ -360,7 +365,7 @@ void WPushButton::paintOnDevice(QPaintDevice* pd) {
     }
 
     if (pd == nullptr && m_pLongPressLatching) {
-        m_pLongPressLatching->paint(p.get(), m_clickTimer.remainingTime());
+        m_pLongPressLatching->paint(p.get());
     }
 }
 
@@ -551,12 +556,15 @@ WPushButton::LongPressLatching::LongPressLatching(WPushButton* pButton)
     connect(&m_animTimer, &QTimer::timeout, m_pButton, &WPushButton::updateSlot);
 }
 
-void WPushButton::LongPressLatching::paint(QPainter* p, int remainingTime) {
+void WPushButton::LongPressLatching::paint(QPainter* p) {
     if (m_animTimer.isActive()) {
         // Animate the long press latching by capturing the off state in a pixmap
         // and gradually draw less of it over the duration of the long press latching.
 
-        remainingTime = std::max(0, remainingTime);
+        int remainingTime = std::max(0,
+                ControlPushButtonBehavior::kLongPressLatchingTimeMillis -
+                        static_cast<int>(
+                                m_sinceStart.elapsed().toIntegerMillis()));
 
         if (remainingTime == 0) {
             m_animTimer.stop();
@@ -575,14 +583,19 @@ void WPushButton::LongPressLatching::paint(QPainter* p, int remainingTime) {
 }
 
 void WPushButton::LongPressLatching::start() {
+    if (m_animTimer.isActive()) {
+        // already running
+        return;
+    }
     // Capture pixmap with the off state ...
     m_preLongPressPixmap = QPixmap(static_cast<int>(m_pButton->width() *
                                            m_pButton->devicePixelRatio()),
             static_cast<int>(
                     m_pButton->height() * m_pButton->devicePixelRatio()));
     m_preLongPressPixmap.setDevicePixelRatio(m_pButton->devicePixelRatio());
-    m_pButton->paintOnDevice(&m_preLongPressPixmap);
+    m_pButton->paintOnDevice(&m_preLongPressPixmap, 0);
     // ... and start the long press latching animation
+    m_sinceStart.start();
     m_animTimer.start(1000 / 60);
 }
 

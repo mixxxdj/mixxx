@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
 #include "preferences/colorpalettesettings.h"
@@ -8,7 +10,6 @@
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
-#include "util/memory.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 

@@ -1133,7 +1133,12 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #f0bb2b;
+}
   #SkinSettingsNumToggleHeader[displayValue="0"] {
     color: #b9901f;
   }
@@ -1202,7 +1207,8 @@ WBeatSpinBox, #spinBoxTransition,
 #MainMenu::item,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"], /* off */
+#VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
@@ -1213,7 +1219,9 @@ WBeatSpinBox, #spinBoxTransition,
   color: #d2d2d1;
   }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #PassthroughButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
@@ -1294,7 +1302,7 @@ QPushButton#pushButtonRecording:checked {
     border-image: url(skins:LateNight/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 WPushButton#FxAssignButton1[displayValue="0"],
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #SyncDeck[displayValue="0"],
@@ -1307,7 +1315,9 @@ WEffectSelector:!editable,
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-WPushButton#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"],
+WPushButton#VinylStatus[displayValue="3"],
 WPushButton#FxAssignButton1[displayValue="1"],
 #KeyMatchReset[pressed="true"],
 #GuiToggleButton[displayValue="1"],
@@ -1395,7 +1405,7 @@ WPushButton#LibExpand,
 
 /* top-level buttons in transport, fx, micaux and others */
 #BeatgridControls WPushButton[displayValue="0"],
-#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton,
 #PlayCueMini WPushButton[displayValue="0"],
 WPushButton#CueDeck[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
@@ -1419,7 +1429,8 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 WPushButton#GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 WPushButton#BroadcastButton[displayValue="0"],
-WPushButton#SkinSettingsToggle[displayValue="0"] {
+WPushButton#SkinSettingsToggle[displayValue="0"],
+WCueMenuPopup QPushButton {
   background-color: #262626;
 }
 
@@ -1443,7 +1454,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #KeyControls WPushButton[pressed="true"],
-#LoopControls WPushButton[value="1"],
+#LoopControls WPushButton[pressed="true"],
 #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
 #EQKillButtonBox WPushButton[displayValue="1"],
@@ -1468,6 +1479,7 @@ QPushButton#pushButtonRecording:checked {
 WPushButton#QuickEffectButton[displayValue="1"],
 #FxAssignButton1[displayValue="1"],
 #FxAssignButton2[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #659f08;
 }
@@ -1494,14 +1506,15 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #888;
 }
 
+/* pink for error / warning*/
 #BroadcastButton[displayValue="3"],
-#BroadcastButton[displayValue="4"] {
-  /* pink */
+#BroadcastButton[displayValue="4"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
 /* Golden */
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"], /* blinks when the needle reaches the end of the record */
 #PassthroughButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -1604,7 +1617,14 @@ WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
 #SamplerControlsMini WPushButton,
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"] {
   background-color: transparent;
 }
 
@@ -1712,6 +1732,12 @@ WPushButton#SamplerExpand[displayValue="0"],
 #LoopOut {
   image: url(skins:LateNight/classic/buttons/btn__loop_out.svg) no-repeat center center;
 }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__loop_anchor_end.svg) no-repeat center center;
+  }
 
 #JumpForward {
   image: url(skins:LateNight/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
@@ -2028,9 +2054,8 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {  /*
-  padding: 3px 6px; */
-  qproperty-icon: url(skins:LateNight/classic/buttons/btn__delete.svg);
+#CueDeleteButton,
+#CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
@@ -2038,10 +2063,17 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   height: 42px;
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  /* has no effect
-  padding: 0px; */
+}
+#CueDeleteButton {
+  image: url(skins:LateNight/classic/buttons/btn__delete.svg);
+}
+#CueSavedLoopButton {
+  image: url(skins:LateNight/classic/buttons/btn__loop.svg);
+}
+#CueSavedLoopButton:pressed,
+#CueSavedLoopButton:checked {
+  background-color: #db0000;
+  outline: none;
 }
 
 #CueLabelEdit {
@@ -2131,7 +2163,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
 WLibrarySidebar {

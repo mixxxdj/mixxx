@@ -1232,7 +1232,13 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 WCoverArtMenu {
   color: #c2b3a5;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #c2b3a5;
+}
+
   /* dim ivory / light brown */
   #Deck1 WStarRating, #DeckCompact1 WStarRating,
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
@@ -1360,7 +1366,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
@@ -1378,7 +1384,9 @@ WEffectChainPresetSelector QAbstractScrollArea,
   color: #444;
 }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
 #PassthroughButton[displayValue="1"],
@@ -1451,20 +1459,23 @@ QPushButton#pushButtonRecording:checked {
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
-WPushButton#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #SyncDeck[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
 #LibraryFeatureControls QPushButton:enabled,
-#CueDeleteButton {
+#CueDeleteButton,
+#CueSavedLoopButton {
   outline: none;
   border-width: 2px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
   /*
   WPushButton#BpmTap[displayValue="1"], */
-  WPushButton#VinylButton[displayValue="1"],
+  WPushButton#VinylStatus[displayValue="1"],
+  WPushButton#VinylStatus[displayValue="2"],
+  WPushButton#VinylStatus[displayValue="3"],
   #SyncDeck[displayValue="1"],
   WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
@@ -1484,7 +1495,9 @@ WEffectSelector:!editable,
   QPushButton#pushButtonRecording:checked,
   WEffectSelector:!editable:on,
   #fadeModeCombobox:!editable:on,
-  #CueDeleteButton[pressed="true"] {
+  #CueDeleteButton[pressed="true"],
+  #CueSavedLoopButton[pressed="true"],
+  #CueSavedLoopButton:checked {
     border-width: 2px;
     border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -1592,6 +1605,7 @@ WBeatSpinBox::down-button {
   }
   /* dim buttons in top-level containers */
   #LoopControls WPushButton[displayValue="0"],
+  WPushButton#LoopAnchor[displayValue="1"],
   #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
   WPushButton#SyncLeader[value="0"],
@@ -1632,6 +1646,7 @@ WBeatSpinBox::down-button {
   /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
+  #CueSavedLoopButton,
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
   /* library controls */
@@ -1664,7 +1679,6 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
-#VinylButton[displayValue="1"],
 #PassthroughButton[displayValue="1"],
 #BroadcastButton[displayValue="4"], /* warning */
 QPushButton#pushButtonAutoDJ:checked,
@@ -1683,10 +1697,13 @@ QPushButton#pushButtonAnalyze:checked {
 #SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
+WPushButton#LoopAnchor[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
 #BeatgridControls WPushButton[pressed="true"]/*,
-#CueDeleteButton[pressed="true"]*/ {
+#CueDeleteButton[pressed="true"],
+#CueSavedLoopButton[pressed="true"],
+#CueSavedLoopButton:checked*/ {
   background-color: #7d350d;
   }
 
@@ -1700,6 +1717,7 @@ QPushButton#pushButtonRecording:checked,
 /* Green for Fx toggles, QuickEffect + Fx12 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #438225;
   }
@@ -1711,7 +1729,7 @@ QPushButton#pushButtonRecording:checked,
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"],
+#FxUnit4 #FxToggleButton[displayValue="1"]
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
@@ -1800,7 +1818,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 
 /* Yellow */
 #RecFeedback[displayValue="1"],     /* initialize recording */
-#BroadcastButton[displayValue="1"] {  /* connecting */
+#BroadcastButton[displayValue="1"], /* connecting */
+WPushButton#VinylStatus[displayValue="2"] {  /* blinks when the needle reaches the end of the record */
   background-color: #d09300;
 }
 
@@ -1808,9 +1827,10 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #395579;
 }
 
-/* pink */
-#BroadcastButton[displayValue="3"], /* failure */
-#RecFeedback[displayValue="3"] {
+/* pink for error / failure / warning */
+#BroadcastButton[displayValue="3"],
+#RecFeedback[displayValue="3"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
@@ -1850,7 +1870,14 @@ WPushButton#CrossfaderButton[displayValue="0"],
 WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"] {
   background-color: transparent;
 }
 
@@ -2086,6 +2113,12 @@ WPushButton#PlayDeck[value="0"] {
   }
   #LoopOut[pressed="true"] {
     image: url(skins:LateNight/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
+  }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_end.svg) no-repeat center center;
   }
 
 #JumpForward {
@@ -2485,20 +2518,32 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 /* widgets in cue popup menu */
-WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
+WCueMenuPopup #CueDeleteButton,
+WCueMenuPopup #CueSavedLoopButton {
   width: 24px;
   height: 42px;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
 }
+WCueMenuPopup #CueDeleteButton {
+  /* Note: we can't use qproperty-icon here because it's evauated only once
+     and therefore won't style the checked state */
+  image: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
+}
+  WCueMenuPopup #CueDeleteButton:pressed {
+    background-color: #b24c12;
+    outline: none;
+    image: url(skins:LateNight/palemoon/buttons/btn__delete_active.svg);
+  }
 
-WCueMenuPopup #CueDeleteButton:pressed {
+WCueMenuPopup #CueSavedLoopButton {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
+}
+WCueMenuPopup #CueSavedLoopButton:pressed,
+WCueMenuPopup #CueSavedLoopButton:checked {
   background-color: #b24c12;
   outline: none;
-  /* not applied: */
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__delete_active.svg);
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
 }
+
 WCueMenuPopup #CueLabelEdit {
   /*border: 1px solid #c2b3a5;*/
   border-radius: 0px;
@@ -2605,7 +2650,9 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
+  /* This is the color used to paint the text of missing tracks. */
+  qproperty-trackMissingColor: #f856e7; /* pink */
 }
 
 /* Table cell in edit mode */
