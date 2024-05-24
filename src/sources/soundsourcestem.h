@@ -6,7 +6,7 @@
 
 namespace mixxx {
 
-/// @brief Handle a single stem stem embedded in a stem file
+/// @brief Handle a single stem embedded in a stem file
 class SoundSourceSingleSTEM : public SoundSourceFFmpeg {
   public:
     // streamIdx is the FFmpeg stream id, which may different than stemIdx + 1
