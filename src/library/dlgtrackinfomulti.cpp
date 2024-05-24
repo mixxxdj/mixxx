@@ -173,13 +173,16 @@ void DlgTrackInfoMulti::init() {
                 &QComboBox::currentIndexChanged,
                 [this, pBox]() {
                     pBox->blockSignals(true); // Prevent recursive calls
+                    // If we have multiple values we also added the Clear item.
+                    // If that item has been selected, remove the placeholder in order to have a
+                    // somewhat safe indicator for whether the box has been edited.
+                    // Used in validEditText().
                     auto data = pBox->currentData(Qt::UserRole);
                     if (data.isValid() && data.toString() == kClearItem) {
                         pBox->lineEdit()->setPlaceholderText(QString());
                         pBox->setCurrentIndex(-1); // This clears the edit text
-                        // Remove the Clear item afte use. If required, it's added
-                        // as first item.
-                        pBox->removeItem(0);
+                        // Remove the Clear item after use.
+                        pBox->removeItem(pBox->findData(kClearItem));
                     }
                     if (pBox == txtKey) {
                         // Since we've blocked change signals we need to trigger
@@ -209,7 +212,6 @@ void DlgTrackInfoMulti::init() {
     txtCommentBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     connect(txtCommentBox,
             &QComboBox::currentIndexChanged,
-            this,
             [this]() {
                 txtCommentBox->blockSignals(true);
                 txtComment->setPlaceholderText(QString());
@@ -217,13 +219,11 @@ void DlgTrackInfoMulti::init() {
                 // If the Clear item has been selected, remove the placeholder
                 // in order to have a safe indicator in validEditText() whether
                 // the box has been edited.
-                setItalic(txtComment, false);
                 auto data = txtCommentBox->currentData(Qt::UserRole);
                 if (data.isValid() && data.toString() == kClearItem) {
                     txtCommentBox->setCurrentIndex(-1); // This clears the edit text
-                    // Remove the Clear item afte use. If required, it's added
-                    // as first item.
-                    txtCommentBox->removeItem(0);
+                    // Remove the Clear item after use.
+                    txtCommentBox->removeItem(txtCommentBox->findData(kClearItem));
                     txtComment->clear();
                 } else {
                     txtComment->setPlainText(txtCommentBox->currentText());
