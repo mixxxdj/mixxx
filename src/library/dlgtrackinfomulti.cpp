@@ -171,11 +171,8 @@ void DlgTrackInfoMulti::init() {
 
         connect(pBox,
                 &QComboBox::currentIndexChanged,
-                [pBox]() {
-                    // If we have multiple value we also added the Clear All item.
-                    // If the Clear item has been selected, remove the placeholder
-                    // in order to have a safe indicator in validEditText() whether
-                    // the box has been edited.
+                [this, pBox]() {
+                    pBox->blockSignals(true); // Prevent recursive calls
                     auto data = pBox->currentData(Qt::UserRole);
                     if (data.isValid() && data.toString() == kClearItem) {
                         pBox->lineEdit()->setPlaceholderText(QString());
@@ -184,6 +181,12 @@ void DlgTrackInfoMulti::init() {
                         // as first item.
                         pBox->removeItem(0);
                     }
+                    if (pBox == txtKey) {
+                        // Since we've blocked change signals we need to trigger
+                        // the key validation manually.
+                        slotKeyTextChanged();
+                    }
+                    pBox->blockSignals(false);
                 });
     }
     // Note: unlike other tags, comments can be multi-line, though while QComboBox
@@ -229,6 +232,7 @@ void DlgTrackInfoMulti::init() {
             });
 
     // Set up key validation, i.e. check manually entered key texts
+    // Note: this is also triggered if the popup is opened.
     connect(txtKey->lineEdit(),
             &QLineEdit::editingFinished,
             this,
@@ -503,11 +507,13 @@ void DlgTrackInfoMulti::addValuesToComboBox(QComboBox* pBox, QSet<T>& values, bo
     // Verify that T can be used for pBox->addItem()
     DEBUG_ASSERT(isOrCanConvertToQString(*values.constBegin()));
 
+    pBox->blockSignals(true);
     pBox->clear();
     pBox->lineEdit()->setPlaceholderText(QString());
 
     VERIFY_OR_DEBUG_ASSERT(!values.isEmpty()) {
         pBox->setProperty(kOrigValProp, QString());
+        pBox->blockSignals(false);
         return;
     }
 
@@ -515,20 +521,31 @@ void DlgTrackInfoMulti::addValuesToComboBox(QComboBox* pBox, QSet<T>& values, bo
         pBox->setCurrentText(*values.constBegin());
         pBox->setProperty(kOrigValProp, *values.constBegin());
     } else {
-        // The empty item allows to clear the text for all tracks.
-        pBox->addItem(tr("clear tag for all tracks"), kClearItem);
+        // Remove empty items. For explicit clearing we'll add the Clear item.
+        // QSet doesn't hold duplicates so we need to do this only once.
+        // This doesn't remove items with multiple spaces though.
+        values.remove("");
         pBox->addItems(values.values());
         if (sort) {
             pBox->model()->sort(0);
         }
+        // After sorting add the Clear item to allow to clearing the tag for all tracks.
+        // Nice to have: make the text dim/italic like the placeholder text.
+        pBox->insertItem(0,
+                QIcon(":images/library/ic_library_cross_grey.svg"),
+                QString(),
+                kClearItem);
         pBox->setCurrentIndex(-1);
         // Show '<various>' placeholder.
         // The QComboBox::lineEdit() placeholder actually providex a nice UX:
         // it's displayed with a dim color and it persists until new text is
-        // entered. However, this prevents clearing the text.
+        // entered. However, this prevents clearing the tag by clearing the
+        // current text manually, unless the clear item has been selected
+        // previously (which removes the placeholder).
         pBox->lineEdit()->setPlaceholderText(kVariousText);
         pBox->setProperty(kOrigValProp, kVariousText);
     }
+    pBox->blockSignals(false);
 }
 
 void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
@@ -550,7 +567,10 @@ void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
         txtCommentBox->setEnabled(true);
         // The empty item allows to clear the text for all tracks.
         // Nice to have: make the text italic
-        txtCommentBox->addItem(tr("clear tag for all tracks"), kClearItem);
+        txtCommentBox->addItem(
+                QIcon(":images/library/ic_library_cross_grey.svg"),
+                QString(),
+                kClearItem);
         txtCommentBox->addItems(comments.values());
         txtCommentBox->setCurrentIndex(-1);
         // It would be nice to set the <various> text also for the combobox,
@@ -635,9 +655,15 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refTrackInfo().setYear(year);
         }
         if (!key.isNull()) {
-            static_cast<void>(rec.updateGlobalKeyNormalizeText(
-                    key,
-                    mixxx::track::io::key::USER));
+            if (key.isEmpty()) {
+                // We can't clear the key with updateGlobalKeyNormalizeText()
+                // because that rejects empty strings.
+                rec.resetKeys();
+            } else {
+                static_cast<void>(rec.updateGlobalKeyNormalizeText(
+                        key,
+                        mixxx::track::io::key::USER));
+            }
         }
         if (!num.isNull()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num);
@@ -755,11 +781,21 @@ void DlgTrackInfoMulti::slotTrackChanged(TrackId trackId) {
 }
 
 void DlgTrackInfoMulti::slotKeyTextChanged() {
+    // textChanged() is also emitted when the popup is opened.
+    // No need to validate in that case.
+    if (txtKey->view()->isVisible()) {
+        return;
+    }
+
+    QString newTextInput = txtKey->currentText().trimmed();
     QString newKeyText;
     mixxx::track::io::key::ChromaticKey newKey =
-            KeyUtils::guessKeyFromText(txtKey->currentText().trimmed());
+            KeyUtils::guessKeyFromText(newTextInput);
     if (newKey != mixxx::track::io::key::INVALID) {
         newKeyText = KeyUtils::keyToString(newKey);
+    } else if (newTextInput.isEmpty()) {
+        // Empty text is not a valid key but indicates we want to clear the key.
+        newKeyText = QStringLiteral("");
     }
 
     txtKey->blockSignals(true);
@@ -769,11 +805,11 @@ void DlgTrackInfoMulti::slotKeyTextChanged() {
     } else {
         // Revert if we can't guess a valid key from it.
         if (txtKey->lineEdit()->placeholderText() == kVariousText) {
-            // This is a multi-value box and the key has not been cleared manually.
+            // This is a multi-value box and the key has not yet been cleared manually.
             // Just clear the text to restore <various>.
             txtKey->clearEditText();
         } else {
-            // This is a single-value box.Restore the original key text.
+            // This is a single-value box. Restore the original key text.
             const QString origKeyStr = txtKey->property(kOrigValProp).toString();
             txtKey->setCurrentText(origKeyStr);
         }
