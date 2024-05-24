@@ -123,33 +123,71 @@ const colorCodeToObject = function(colorCode) {
     };
 };
 
+const script = {
+    // ----------------- Mapping script constants ---------------------
 
+    // Common regular expressions
+    samplerRegEx: Object.freeze(/^\[Sampler(\d+)\]$/),
+    channelRegEx: Object.freeze(/^\[Channel(\d+)\]$/),
+    eqRegEx: Object.freeze(/^\[EqualizerRack1_(\[.*\])_Effect1\]$/),
+    quickEffectRegEx: Object.freeze(/^\[QuickEffectRack1_(\[.*\])\]$/),
+    effectUnitRegEx: Object.freeze(/^\[EffectRack1_EffectUnit(\d+)\]$/),
+    individualEffectRegEx: Object.freeze(/^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/),
 
-// @ts-ignore Same identifier for class and instance needed for backward compatibility
-class script {
+    // Library column value, which can be used to interact with the CO for "[Library] sort_column"
+    LIBRARY_COLUMNS: Object.freeze({
+        ARTIST: 1,
+        TITLE: 2,
+        ALBUM: 3,
+        ALBUM_ARTIST: 4,
+        YEAR: 5,
+        GENRE: 6,
+        COMPOSER: 7,
+        GROUPING: 8,
+        TRACK_NUMBER: 9,
+        FILETYPE: 10,
+        NATIVE_LOCATION: 11,
+        COMMENT: 12,
+        DURATION: 13,
+        BITRATE: 14,
+        BPM: 15,
+        REPLAY_GAIN: 16,
+        DATETIME_ADDED: 17,
+        TIMES_PLAYED: 18,
+        RATING: 19,
+        KEY: 20,
+        PREVIEW: 21,
+        COVERART: 22,
+        TRACK_COLOR: 30,
+        LAST_PLAYED: 31,
+    }),
 
     // @deprecated Use script.midiDebug() instead
-    static debug(channel, control, value, status, group) {
+    debug: function(channel, control, value, status, group) {
         console.log("Warning: script.debug() is deprecated. Use script.midiDebug() instead.");
         script.midiDebug(channel, control, value, status, group);
-    }
+    },
+
     // @deprecated Use script.midiPitch() instead
-    static pitch(LSB, MSB, status) {
+    pitch: function(LSB, MSB, status) {
         console.log("Warning: script.pitch() is deprecated. Use script.midiPitch() instead.");
         return script.midiPitch(LSB, MSB, status);
-    }
+    },
+
     // @deprecated Use script.absoluteLin() instead
-    static absoluteSlider(group, key, value, low, high, min, max) {
+    absoluteSlider: function(group, key, value, low, high, min, max) {
         console.log("Warning: script.absoluteSlider() is deprecated. Use engine.setValue(group, key, script.absoluteLin(...)) instead.");
         engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
-    }
-    static midiDebug(channel, control, value, status, group) {
+    },
+
+    midiDebug: function(channel, control, value, status, group) {
         console.log(`Script.midiDebug - channel: 0x${  channel.toString(16)
         } control: 0x${  control.toString(16)  } value: 0x${  value.toString(16)
         } status: 0x${  status.toString(16)  } group: ${  group}`);
-    }
+    },
+
     // Returns the deck number of a "ChannelN" or "SamplerN" group
-    static deckFromGroup(group) {
+    deckFromGroup: function(group) {
         let deck = 0;
         if (group.substring(2, 8) === "hannel") {
             // Extract deck number from the group text
@@ -162,7 +200,8 @@ class script {
             }
         */
         return parseInt(deck);
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.bindConnections
        Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
@@ -172,7 +211,7 @@ class script {
                 controls will be bound to.
        Output:  none
        -------- ------------------------------------------------------ */
-    static bindConnections(group, controlsToFunctions, remove) {
+    bindConnections: function(group, controlsToFunctions, remove) {
         let control;
         remove = (remove === undefined) ? false : remove;
 
@@ -182,16 +221,18 @@ class script {
                 engine.trigger(group, control);
             }
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.toggleControl
        Purpose: Toggles an engine value
        Input:   Group and control names
        Output:  none
        -------- ------------------------------------------------------ */
-    static toggleControl(group, control) {
+    toggleControl: function(group, control) {
         engine.setValue(group, control, !(engine.getValue(group, control)));
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.toggleControl
        Purpose: Triggers an engine value and resets it back to 0 after a delay
@@ -201,13 +242,14 @@ class script {
        Input:   Group and control names, delay in milliseconds (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    static triggerControl(group, control, delay) {
+    triggerControl: function(group, control, delay) {
         if (typeof delay !== "number") {
             delay = 200;
         }
         engine.setValue(group, control, 1);
         engine.beginTimer(delay, () => engine.setValue(group, control, 0), true);
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.absoluteLin
        Purpose: Maps an absolute linear control value to a linear Mixxx control
@@ -217,7 +259,7 @@ class script {
                 (Default knob values are standard MIDI 0..127)
        Output:  MixxxControl value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    static absoluteLin(value, low, high, min, max) {
+    absoluteLin: function(value, low, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -232,7 +274,8 @@ class script {
         } else {
             return ((((high - low) / (max - min)) * (value - min)) + low);
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.absoluteLinInverse
        Purpose: Maps a linear Mixxx control value (like balance: -1..1) to an absolute linear value
@@ -242,7 +285,7 @@ class script {
                 (Default knob values are standard MIDI 0..127)
        Output:  Linear value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    static absoluteLinInverse(value, low, high, min, max) {
+    absoluteLinInverse: function(value, low, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -257,7 +300,8 @@ class script {
         } else {
             return result;
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.absoluteNonLin
        Purpose: Maps an absolute linear control value to a non-linear Mixxx control
@@ -267,7 +311,7 @@ class script {
                 (Default knob values are standard MIDI 0..127)
        Output:  MixxxControl value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    static absoluteNonLin(value, low, mid, high, min, max) {
+    absoluteNonLin: function(value, low, mid, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -282,7 +326,8 @@ class script {
         } else {
             return mid + ((value - center) / (center / (high - mid)));
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.absoluteNonLinInverse
      Purpose: Maps a non-linear Mixxx control to an absolute linear value (inverse of the above function).
@@ -291,7 +336,7 @@ class script {
      bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
      Output: MixxxControl value scaled to output range
      -------- ------------------------------------------------------ */
-    static absoluteNonLinInverse(value, low, mid, high, min, max) {
+    absoluteNonLinInverse: function(value, low, mid, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -316,14 +361,15 @@ class script {
         } else {
             return result;
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.crossfaderCurve
        Purpose: Adjusts the cross-fader's curve using a hardware control
        Input:   Current value of the hardware control, min and max values for that control
        Output:  none
        -------- ------------------------------------------------------ */
-    static crossfaderCurve(value, min, max) {
+    crossfaderCurve: function(value, min, max) {
         if (engine.getValue("[Mixer Profile]", "xFaderMode") === 1) {
             // Constant Power
             engine.setValue("[Mixer Profile]", "xFaderCalibration",
@@ -333,7 +379,8 @@ class script {
             engine.setValue("[Mixer Profile]", "xFaderCurve",
                 script.absoluteLin(value, 1, 2, min, max));
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.posMod
        Purpose: Computes the euclidean modulo of m % n. The result is always
@@ -341,9 +388,10 @@ class script {
        Input:   dividend `a` and divisor `m` for modulo (a % m)
        Output:  positive remainder
        -------- ------------------------------------------------------ */
-    static posMod(a, m) {
+    posMod: function(a, m) {
         return ((a % m) + m) % m;
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.loopMove
        Purpose: Moves the current loop by the specified number of beats (default 1/2)
@@ -353,7 +401,7 @@ class script {
        Input:   MixxxControl group, direction to move, number of beats to move
        Output:  none
        -------- ------------------------------------------------------ */
-    static loopMove(group, direction, numberOfBeats) {
+    loopMove: function(group, direction, numberOfBeats) {
         if (!numberOfBeats || numberOfBeats === 0) { numberOfBeats = 0.5; }
 
         if (direction < 0) {
@@ -361,7 +409,8 @@ class script {
         } else {
             engine.setValue(group, "loop_move", numberOfBeats);
         }
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.midiPitch
        Purpose: Takes the value from a little-endian 14-bit MIDI pitch
@@ -372,7 +421,7 @@ class script {
                 message was not a Pitch message (0xE#)
        -------- ------------------------------------------------------ */
     // TODO: Is this still useful now that MidiController.cpp properly handles these?
-    static midiPitch(LSB, MSB, status) {
+    midiPitch: function(LSB, MSB, status) {
         if ((status & 0xF0) !== 0xE0) { // Mask the upper nybble so we can check the opcode regardless of the channel
             console.log(`Script.midiPitch: Error, not a MIDI pitch (0xEn) message: ${  status}`);
             return false;
@@ -383,7 +432,7 @@ class script {
         const rate = (value - 8192) / 8191;
         //     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
         return rate;
-    }
+    },
     /* -------- ------------------------------------------------------
          script.spinback
        Purpose: wrapper around engine.spinback() that can be directly mapped
@@ -392,7 +441,7 @@ class script {
        Input:   channel, control, value, status, group, factor (optional), start rate (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    static spinback(channel, control, value, status, group, factor, rate) {
+    spinback: function(channel, control, value, status, group, factor, rate) {
         // if brake is called without defined factor and rate, reset to defaults
         if (factor === undefined) {
             factor = 1;
@@ -405,7 +454,8 @@ class script {
         engine.spinback(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
             factor, rate);
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.brake
        Purpose: wrapper around engine.brake() that can be directly mapped
@@ -414,7 +464,7 @@ class script {
        Input:   channel, control, value, status, group, factor (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    static brake(channel, control, value, status, group, factor) {
+    brake: function(channel, control, value, status, group, factor) {
         // if brake is called without factor defined, reset to default
         if (factor === undefined) {
             factor = 1;
@@ -423,7 +473,8 @@ class script {
         engine.brake(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
             factor);
-    }
+    },
+
     /* -------- ------------------------------------------------------
          script.softStart
        Purpose: wrapper around engine.softStart() that can be directly mapped
@@ -433,7 +484,7 @@ class script {
        Input:   channel, control, value, status, group, acceleration factor (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    static softStart(channel, control, value, status, group, factor) {
+    softStart: function(channel, control, value, status, group, factor) {
         // if softStart is called without factor defined, reset to default
         if (factor === undefined) {
             factor = 1;
@@ -443,48 +494,8 @@ class script {
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
             factor);
     }
-}
-// Add class script to the Global JavaScript object
-// @ts-ignore Same identifier for class and instance needed for backward compatibility
-this.script = script;
+};
 
-// ----------------- Mapping constants ---------------------
-
-// Common regular expressions
-script.samplerRegEx = Object.freeze(/^\[Sampler(\d+)\]$/);
-script.channelRegEx = Object.freeze(/^\[Channel(\d+)\]$/);
-script.eqRegEx = Object.freeze(/^\[EqualizerRack1_(\[.*\])_Effect1\]$/);
-script.quickEffectRegEx = Object.freeze(/^\[QuickEffectRack1_(\[.*\])\]$/);
-script.effectUnitRegEx = Object.freeze(/^\[EffectRack1_EffectUnit(\d+)\]$/);
-script.individualEffectRegEx = Object.freeze(/^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/);
-
-// Library column value, which can be used to interact with the CO for "[Library] sort_column"
-script.LIBRARY_COLUMNS = Object.freeze({
-    ARTIST: 1,
-    TITLE: 2,
-    ALBUM: 3,
-    ALBUM_ARTIST: 4,
-    YEAR: 5,
-    GENRE: 6,
-    COMPOSER: 7,
-    GROUPING: 8,
-    TRACK_NUMBER: 9,
-    FILETYPE: 10,
-    NATIVE_LOCATION: 11,
-    COMMENT: 12,
-    DURATION: 13,
-    BITRATE: 14,
-    BPM: 15,
-    REPLAY_GAIN: 16,
-    DATETIME_ADDED: 17,
-    TIMES_PLAYED: 18,
-    RATING: 19,
-    KEY: 20,
-    PREVIEW: 21,
-    COVERART: 22,
-    TRACK_COLOR: 30,
-    LAST_PLAYED: 31,
-});
 
 
 // bpm - Used for tapping the desired BPM for a deck
@@ -508,7 +519,7 @@ class bpm {
        Input:   Mixxx deck to adjust
        Output:  -
        -------- ------------------------------------------------------ */
-    static tapButton(deck) {
+    tapButton(deck) {
         const now = new Date() / 1000; // Current time in seconds
         const tapDelta = now - this.tapTime;
         this.tapTime = now;
