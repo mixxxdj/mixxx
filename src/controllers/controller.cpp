@@ -49,7 +49,7 @@ void Controller::startEngine()
             &ControllerScriptEngineBase::beforeShutdown,
             this,
             &Controller::slotBeforeEngineShutdown);
-    emit engineStarted(m_pScriptEngineLegacy);
+    emit engineStarted(m_pScriptEngineLegacy.get());
 }
 
 void Controller::stopEngine() {

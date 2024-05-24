@@ -40,11 +40,11 @@ const QString kRequiredScriptFile = QStringLiteral("common-controller-scripts.js
 /// of the search directories, the QFileInfo object might point to a
 /// non-existing file.
 QFileInfo findLibraryPath(
-        std::shared_ptr<LegacyControllerMapping> mapping,
+        const LegacyControllerMapping& mapping,
         const QString& dirname,
         const QDir& systemMappingsPath) {
     // Always try to load module directory from the mapping's directory first
-    QFileInfo dir = QFileInfo(mapping->dirPath().absoluteFilePath(dirname));
+    QFileInfo dir = QFileInfo(mapping.dirPath().absoluteFilePath(dirname));
 
     // If the module directory does not exist, try to find it in the fallback dir
     if (!dir.isDir()) {
@@ -100,18 +100,18 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
     bool ok;
     QString identifier = screen.attribute("identifier", "");
     uint targetFps = screen.attribute("targetFps", "30").toUInt(&ok);
-    LOG_OF_NOT_OK("targetFps", "an unsigned integer");
+    LOG_IF_NOT_OK("targetFps", "an unsigned integer");
     uint msaa = screen.attribute("msaa", "1").toUInt(&ok);
-    LOG_OF_NOT_OK("msaa", "an unsigned integer");
+    LOG_IF_NOT_OK("msaa", "an unsigned integer");
     QString pixelFormatName = screen.attribute("pixelType", "RBG");
     QString endianName = screen.attribute("endian", "little");
     bool reversedColor = parseHumanBoolean(
             screen.attribute("reversed", "false").toLower().trimmed(), &ok);
-    LOG_OF_NOT_OK("reversed", "a boolean");
+    LOG_IF_NOT_OK("reversed", "a boolean");
     bool rawData = parseHumanBoolean(screen.attribute("raw", "false").toLower().trimmed(), &ok);
-    LOG_OF_NOT_OK("raw", "a boolean");
+    LOG_IF_NOT_OK("raw", "a boolean");
     uint splashOff = screen.attribute("splashoff", "0").toUInt(&ok);
-    LOG_OF_NOT_OK("splashoff", "an unsigned integer");
+    LOG_IF_NOT_OK("splashoff", "an unsigned integer");
 
     if (!targetFps || targetFps > LegacyControllerMappingFileHandler::kMaxTargetFps) {
         kLogger.warning()
@@ -156,9 +156,9 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
     auto endian = LegacyControllerMappingFileHandler::kEndianFormat.value(endianName);
 
     uint width = screen.attribute("width", "0").toUInt(&ok);
-    LOG_OF_NOT_OK("width", "an unsigned integer");
+    LOG_IF_NOT_OK("width", "an unsigned integer");
     uint height = screen.attribute("height", "0").toUInt(&ok);
-    LOG_OF_NOT_OK("height", "an unsigned integer");
+    LOG_IF_NOT_OK("height", "an unsigned integer");
 
     if (!width || !height) {
         kLogger.warning() << "Invalid screen size. Screen size must have a width "
@@ -433,7 +433,7 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     // Look for additional ones
     while (!qmlLibrary.isNull()) {
         QString libFilename = qmlLibrary.attribute("path", "");
-        QFileInfo path = findLibraryPath(mapping, libFilename, systemMappingsPath);
+        QFileInfo path = findLibraryPath(*mapping, libFilename, systemMappingsPath);
         kLogger.debug() << "Adding QML directory " << libFilename;
         mapping->addModule(path);
         qmlLibrary = qmlLibrary.nextSiblingElement("library");

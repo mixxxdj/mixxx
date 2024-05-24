@@ -66,7 +66,7 @@ class DlgPrefController : public DlgPreferencePage {
 
 #ifdef MIXXX_USE_QML
     // Onboard screen controller.
-    void slotShowPreviewScreens(std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine);
+    void slotShowPreviewScreens(const ControllerScriptEngineLegacy* scriptEngine);
     // Wrapper used on shutdown.
     void slotClearPreviewScreens() {
         slotShowPreviewScreens(nullptr);

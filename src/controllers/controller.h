@@ -64,7 +64,7 @@ class Controller : public QObject {
     void openChanged(bool bOpen);
 
     /// Emitted when the controller has started a new engine.
-    void engineStarted(std::shared_ptr<ControllerScriptEngineLegacy> engine);
+    void engineStarted(const ControllerScriptEngineLegacy* engine);
 
     /// Emitted when the controller has stopped its engine.
     void engineStopped();

@@ -371,6 +371,8 @@ bool ControllerScriptEngineLegacy::initialize() {
                 return false;
             }
 
+            // For testing, do not actually initialize the rendering engine, just check for
+            // compatibility above.
             if (m_bTesting) {
                 continue;
             }
@@ -428,7 +430,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                 std::as_const(m_modules)) {
             auto path = module.dirinfo.absoluteFilePath();
             QDirIterator it(path,
-                    QStringList() << "*.qml",
+                    {"*.qml"},
                     QDir::Files,
                     QDirIterator::Subdirectories);
             while (it.hasNext()) {
@@ -593,8 +595,10 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
 
     auto pScene = loadQMLFile(qmlFile, pScreen);
     if (!pScene) {
-        pScreen->stop();
-        std::move(pScreen)->deleteLater();
+        VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
+                !pScreen->isRunning() || pScreen->stop()) {
+            qCWarning(m_logger) << "Unable to stop the screen";
+        };
         return false;
     }
     const QMetaObject* metaObject = pScene->metaObject();
@@ -607,7 +611,9 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
             &ControllerScriptEngineLegacy::handleScreenFrame);
     m_renderingScreens.insert(screenIdentifier, pScreen);
     m_rootItems.insert(screenIdentifier, pScene);
-    // In case a rendering issue occurs, we need to shutdown the controller.
+    // In case a rendering issue occurs, we need to shutdown the controller
+    // since its only purpose is to render screens. This might not be the case
+    // in the future controller modules
     connect(pScreen.get(),
             &ControllerRenderingEngine::stopping,
             this,

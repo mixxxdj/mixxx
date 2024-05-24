@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <chrono>
+#include <gsl/pointers>
 
 #include "controllers/legacycontrollermapping.h"
 #include "preferences/configobject.h"
@@ -25,7 +26,7 @@ class ControllerRenderingEngine : public QObject {
     Q_OBJECT
   public:
     ControllerRenderingEngine(const LegacyControllerMapping::ScreenInfo& info,
-            ControllerEngineThreadControl* parent);
+            gsl::not_null<ControllerEngineThreadControl*> engineThreadControl);
     // Destructor will wait for the ControllerRenderingEngine's thread to
     // complete. It should be called from the Controller thread.
     ~ControllerRenderingEngine();
@@ -103,6 +104,6 @@ class ControllerRenderingEngine : public QObject {
     // Engine control is owned by ControllerScriptEngineBase. The assumption is
     // made that ControllerScriptEngineBase always outlive
     // ControllerRenderingEngine as it is in charge of stopping and joining the
-    // thread. This may be null if there is no need for thread synchronisation.
-    ControllerEngineThreadControl* m_pEngineThreadControl;
+    // thread.
+    gsl::not_null<ControllerEngineThreadControl*> m_pEngineThreadControl;
 };

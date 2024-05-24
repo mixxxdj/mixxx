@@ -866,7 +866,7 @@ void DlgPrefController::initTableView(QTableView* pTable) {
 
 #ifdef MIXXX_USE_QML
 void DlgPrefController::slotShowPreviewScreens(
-        std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine) {
+        const ControllerScriptEngineLegacy* scriptEngine) {
     QLayoutItem* pItem;
     VERIFY_OR_DEBUG_ASSERT(m_ui.groupBoxScreens->layout()) {
         return;
@@ -893,7 +893,7 @@ void DlgPrefController::slotShowPreviewScreens(
                 new ControllerScreenPreview(m_ui.groupBoxScreens, screen);
         m_ui.groupBoxScreens->layout()->addWidget(pPreviewScreen);
 
-        connect(scriptEngine.get(),
+        connect(scriptEngine,
                 &ControllerScriptEngineLegacy::previewRenderedScreen,
                 pPreviewScreen,
                 &ControllerScreenPreview::updateFrame);
@@ -950,7 +950,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
                     .getControllerPreviewScreens() &&
             pMapping &&
             !pMapping->getInfoScreens().isEmpty()) {
-        slotShowPreviewScreens(m_pController->getScriptEngine());
+        slotShowPreviewScreens(m_pController->getScriptEngine().get());
     } else
 #endif
     {

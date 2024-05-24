@@ -15,6 +15,7 @@
 #ifdef MIXXX_USE_QML
 #include <QQuickItem>
 
+#include "controllers/controllerenginethreadcontrol.h"
 #include "controllers/rendering/controllerrenderingengine.h"
 #endif
 #include "controllers/softtakeover.h"
@@ -662,7 +663,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
 class MockScreenRender : public ControllerRenderingEngine {
   public:
     MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
-            : ControllerRenderingEngine(info, nullptr){};
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
     MOCK_METHOD(void,
             requestSendingFrameData,
             (Controller * controller, const QByteArray& frame),

@@ -39,7 +39,7 @@ using Clock = std::chrono::steady_clock;
 
 ControllerRenderingEngine::ControllerRenderingEngine(
         const LegacyControllerMapping::ScreenInfo& info,
-        ControllerEngineThreadControl* engineThreadControl)
+        gsl::not_null<ControllerEngineThreadControl*> engineThreadControl)
         : QObject(),
           m_screenInfo(info),
           m_GLDataFormat(GL_RGBA),

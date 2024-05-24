@@ -6,6 +6,7 @@
 #include <QDomDocument>
 #include <QTest>
 
+#include "controllers/controllerenginethreadcontrol.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "helpers/log_test.h"
 #include "test/mixxxtest.h"
@@ -28,7 +29,7 @@ class ControllerRenderingEngineTest : public MixxxTest {
 class MockRenderingEngine : public ControllerRenderingEngine {
   public:
     MockRenderingEngine(const LegacyControllerMapping::ScreenInfo& info)
-            : ControllerRenderingEngine(info, nullptr){};
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
 };
 
 TEST_F(ControllerRenderingEngineTest, createValidRendererWithSupportedTypes) {
