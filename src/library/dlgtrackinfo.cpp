@@ -378,10 +378,10 @@ void DlgTrackInfo::replaceTrackRecord(
             mixxx::displayLocalDateTime(
                     mixxx::localDateTimeFromUtc(
                             m_trackRecord.getDateAdded())));
-    txtDateLastPlayed->setText(
-            mixxx::displayLocalDateTime(
-                    mixxx::localDateTimeFromUtc(
-                            m_trackRecord.getPlayCounter().getLastPlayedAt())));
+    auto lastPlayed = m_trackRecord.getPlayCounter().getLastPlayedAt();
+    txtDateLastPlayed->setText(lastPlayed.isValid()
+                    ? mixxx::displayLocalDateTime(mixxx::localDateTimeFromUtc(lastPlayed))
+                    : QStringLiteral("-"));
 
     updateTrackMetadataFields();
 }
