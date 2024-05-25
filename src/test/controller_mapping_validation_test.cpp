@@ -238,6 +238,8 @@ bool lintMappingInfo(const MappingInfo& mapping) {
     return result;
 }
 
+// Create a mapping enumerator for the test, which will be used to get the mappings
+// for the test cases
 std::shared_ptr<LegacyControllerMappingList> createMappingEnumerator() {
     return std::make_shared<LegacyControllerMappingList>();
 }
@@ -245,6 +247,11 @@ std::shared_ptr<LegacyControllerMappingList> createMappingEnumerator() {
 std::string PrintMappingName(const ::testing::TestParamInfo<MappingInfo>& info) {
     auto name = info.param.getName();
     return name.replace(QRegularExpression("[^\\w]+"), "_").toStdString();
+}
+
+// Inhibit the output of the mapping info to avoid spamming the console
+std::ostream& operator<<(std::ostream& os, const MappingInfo&) {
+    return os << "<MappingInfo>";
 }
 
 auto pEnumerator = createMappingEnumerator();
