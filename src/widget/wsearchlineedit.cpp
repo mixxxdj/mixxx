@@ -312,14 +312,11 @@ QString WSearchLineEdit::getSearchText() const {
         DEBUG_ASSERT(!currentText().isNull());
         QString text = currentText();
         QCompleter* pCompleter = completer();
-        if (pCompleter && hasSelectedText()) {
-            if (text.startsWith(pCompleter->completionPrefix()) &&
-                    pCompleter->completionPrefix().size() == lineEdit()->cursorPosition()) {
-                // Search for the entered text until the user has accepted the
-                // completion by pressing Enter or changed/deselected the selected
-                // completion text with Right or Left key
-                return pCompleter->completionPrefix();
-            }
+        if (pCompleter && hasCompletionAvailable()) {
+            // Search for the entered text until the user has accepted the
+            // completion by pressing Enter or changed/deselected the selected
+            // completion text with Right or Left key
+            return pCompleter->completionPrefix();
         }
         return text;
     } else {
@@ -402,7 +399,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
-        if (hasSelectedText()) {
+        if (hasCompletionAvailable()) {
             QComboBox::keyPressEvent(keyEvent);
             slotTriggerSearch();
             return;
@@ -808,4 +805,11 @@ void WSearchLineEdit::slotSetFont(const QFont& font) {
 
 bool WSearchLineEdit::hasSelectedText() const {
     return lineEdit()->hasSelectedText();
+}
+
+bool WSearchLineEdit::hasCompletionAvailable() const {
+    QCompleter* pCompleter = completer();
+    return pCompleter && hasSelectedText() &&
+            lineEdit()->text().startsWith(pCompleter->completionPrefix()) &&
+            pCompleter->completionPrefix().size() == lineEdit()->cursorPosition();
 }
