@@ -159,17 +159,28 @@ bool lintMappingInfo(const MappingInfo& mapping) {
     return result;
 }
 
+// Create a mapping enumerator for the test, which will be used to get the mappings
+// for the test cases
 std::shared_ptr<LegacyControllerMappingList> createMappingEnumerator() {
     return std::make_shared<LegacyControllerMappingList>();
 }
 
+// Inhibit the output of the mapping info to avoid spamming the console
+std::ostream& operator<<(std::ostream& os, const MappingInfo& mapping) {
+    Q_UNUSED(mapping);
+    os << "<MappingInfo>";
+    return os;
+}
+
+// Print the mapping name instead with underscores instead of spaces and special characters
 class PrintMappingName {
   public:
     template<class ParamType>
     std::string operator()(const ::testing::TestParamInfo<ParamType>& info) const {
         // ParamType is MappingInfo
         QString nameCopy = info.param.getName();
-        nameCopy.replace(QRegularExpression("[^\\w\\s]"), "_");
+        static const QRegularExpression regex("[^\\w\\s]");
+        nameCopy.replace(regex, "_");
         std::string testName = nameCopy.replace(" ", "_").toStdString();
         return testName;
     }
