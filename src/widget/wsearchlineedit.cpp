@@ -791,10 +791,21 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {
-    if (hasFocus()) {
+    handleSetFocus(Qt::ShortcutFocusReason);
+}
+
+void WSearchLineEdit::handleSetFocus(Qt::FocusReason focusReason) {
+    if (!hasFocus()) {
+        // selectAll will be called by setFocus - but only if hasFocus
+        // was false previously and focusReason is Tab, Backtab or Shortcut
+        setFocus(focusReason);
+    } else if (focusReason == Qt::TabFocusReason ||
+            focusReason == Qt::BacktabFocusReason ||
+            focusReason == Qt::ShortcutFocusReason) {
+        // If this widget already had focus (which can happen when the user
+        // presses the shortcut key while already in the searchbox),
+        // we need to manually simulate this behavior instead.
         lineEdit()->selectAll();
-    } else {
-        setFocus(Qt::ShortcutFocusReason);
     }
 }
 
