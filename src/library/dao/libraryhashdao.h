@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QHash>
 #include <QString>
-#include <QSqlDatabase>
 
 #include "library/dao/dao.h"
 #include "util/cache.h"

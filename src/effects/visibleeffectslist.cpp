@@ -2,6 +2,8 @@
 
 #include <QDomDocument>
 
+#include "effects/backends/effectmanifest.h"
+#include "effects/backends/effectsbackend.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectxmlelements.h"
 #include "moc_visibleeffectslist.cpp"

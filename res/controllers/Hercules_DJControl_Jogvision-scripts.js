@@ -126,6 +126,10 @@ var DJCJV = {
     "init": function(id) {
         print(id+": initializing...");
 
+        if (engine.getValue("[App]", "num_samplers") < 8) {
+            engine.setValue("[App]", "num_samplers", 8);
+        }
+
         // Prepare some musical constants
         if (CFG.fine.beatHelpSensitivity >= 1) {
             print(id+": WARNING: variable 'CFG.fine.beatHelpSensitivity' is set to a value equal or bigger than 1 ("+CFG.fine.beatHelpSensitivity+"). Setting it exactly to 0.9");
@@ -208,7 +212,7 @@ var DJCJV = {
         }
 
         if (CFG.user.beatHelper === 1) {
-            DJCJV.other.beatHelpTimer = engine.beginTimer(100, "DJCJV.beatHelp");
+            DJCJV.other.beatHelpTimer = engine.beginTimer(100, DJCJV.beatHelp);
         }
 
         // Ask the controller to send all current knob/slider values over MIDI, which will update the corresponding GUI controls in MIXXX.

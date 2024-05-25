@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QWidget>
 #include <memory>
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "preferences/usersettings.h"
@@ -13,6 +11,7 @@
 
 class ControlProxy;
 class ControlObject;
+class QWidget;
 
 namespace {
 constexpr bool kDefaultCloneDeckOnLoad = true;

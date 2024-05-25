@@ -13,15 +13,12 @@
 
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QStringListModel>
-#include <QtConcurrentRun>
-#include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/baseexternaltrackmodel.h"
-#include "library/serato/seratoplaylistmodel.h"
-#include "library/treeitemmodel.h"
 #include "util/parented_ptr.h"
+
+class SeratoPlaylistModel;
+class BaseTrackCache;
 
 class SeratoFeature : public BaseExternalLibraryFeature {
     Q_OBJECT

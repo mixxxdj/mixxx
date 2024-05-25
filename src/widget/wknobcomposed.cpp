@@ -5,7 +5,6 @@
 #include <QTransform>
 
 #include "moc_wknobcomposed.cpp"
-#include "util/duration.h"
 #include "widget/wskincolor.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)

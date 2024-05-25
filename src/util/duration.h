@@ -132,6 +132,7 @@ class DurationDebug : public DurationBase {
 
 // Represents a duration in a type-safe manner. Provides conversion methods to
 // convert between physical units. Durations can be negative.
+/// Deprecated: use `std::chrono::duration` in new code instead
 class Duration : public DurationBase {
   public:
     // Returns a Duration object representing a duration of 'seconds'.

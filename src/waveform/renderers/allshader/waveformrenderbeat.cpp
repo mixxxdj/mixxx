@@ -2,18 +2,18 @@
 
 #include <QDomNode>
 
-#include "control/controlobject.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace allshader {
 
-WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget) {
+WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::PositionSource type)
+        : WaveformRenderer(waveformWidget),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 void WaveformRenderBeat::initializeGL() {
@@ -22,16 +22,19 @@ void WaveformRenderBeat::initializeGL() {
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_color.setNamedColor(context.selectString(node, "BeatColor"));
+    m_color = QColor(context.selectString(node, "BeatColor"));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
 void WaveformRenderBeat::paintGL() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if (!trackInfo) {
+    if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
         return;
     }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
@@ -42,6 +45,8 @@ void WaveformRenderBeat::paintGL() {
     if (alpha == 0) {
         return;
     }
+
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -54,9 +59,9 @@ void WaveformRenderBeat::paintGL() {
     }
 
     const double firstDisplayedPosition =
-            m_waveformRenderer->getFirstDisplayedPosition();
+            m_waveformRenderer->getFirstDisplayedPosition(positionType);
     const double lastDisplayedPosition =
-            m_waveformRenderer->getLastDisplayedPosition();
+            m_waveformRenderer->getLastDisplayedPosition(positionType);
 
     const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             firstDisplayedPosition * trackSamples);
@@ -91,16 +96,18 @@ void WaveformRenderBeat::paintGL() {
             ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
+                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                        beatPosition, positionType);
 
-        xBeatPoint = std::floor(xBeatPoint);
-
-        xBeatPoint -= 0.5;
+        xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_vertices.addRectangle(x1, 0.f, x2, rendererBreadth);
+        m_vertices.addRectangle(x1,
+                0.f,
+                x2,
+                m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth);
     }
 
     DEBUG_ASSERT(reserved == m_vertices.size());

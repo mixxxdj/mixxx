@@ -1,8 +1,5 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-
 #include "mixer/baseplayer.h"
 #include "util/parented_ptr.h"
 
@@ -10,6 +7,7 @@ class ControlProxy;
 class EffectsManager;
 class EngineMixer;
 class SoundManager;
+class QString;
 
 class Microphone : public BasePlayer {
     Q_OBJECT

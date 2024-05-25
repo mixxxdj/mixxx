@@ -7,6 +7,7 @@
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunespathmapping.h"
 #include "library/queryutil.h"
+#include "library/treeitem.h"
 
 std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
     os << "ITunesTrack { "

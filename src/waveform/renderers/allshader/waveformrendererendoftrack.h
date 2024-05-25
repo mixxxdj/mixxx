@@ -8,7 +8,6 @@
 #include "util/performancetimer.h"
 #include "waveform/renderers/allshader/waveformrenderer.h"
 
-class ControlObject;
 class ControlProxy;
 class QDomNode;
 class SkinContext;

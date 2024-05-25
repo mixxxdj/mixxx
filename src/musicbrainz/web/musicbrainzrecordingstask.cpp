@@ -1,11 +1,9 @@
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 
-#include <QMetaMethod>
 #include <QXmlStreamReader>
 
 #include "defs_urls.h"
 #include "moc_musicbrainzrecordingstask.cpp"
-#include "musicbrainz/gzip.h"
 #include "musicbrainz/musicbrainzxml.h"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"

@@ -1,16 +1,17 @@
 #include "track/taglib/trackmetadata_id3v2.h"
 
-#include <taglib/attachedpictureframe.h>
-#include <taglib/commentsframe.h>
-#include <taglib/generalencapsulatedobjectframe.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/unknownframe.h>
+#include <attachedpictureframe.h>
+#include <commentsframe.h>
+#include <generalencapsulatedobjectframe.h>
+#include <textidentificationframe.h>
+#include <unknownframe.h>
 
 #include <array>
 #if defined(__EXTRA_METADATA__)
-#include <taglib/uniquefileidentifierframe.h>
+#include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 

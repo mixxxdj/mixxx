@@ -26,14 +26,20 @@ if(DEFINED APPLE_CODESIGN_IDENTITY AND DEFINED APPLE_CODESIGN_ENTITLEMENTS)
           --entitlements "${APPLE_CODESIGN_ENTITLEMENTS}"
           --sign "${APPLE_CODESIGN_IDENTITY}"
           "${PATH_TO_SIGN}"
+          RESULT_VARIABLE CODESIGN_EXIT_CODE
       )
     else()
+      message(STATUS "Signing bundle with hardened runtime and identity ${APPLE_CODESIGN_IDENTITY}")
       execute_process(COMMAND
           codesign --verbose=4 --deep --force --options runtime
           --entitlements "${APPLE_CODESIGN_ENTITLEMENTS}"
           --sign "${APPLE_CODESIGN_IDENTITY}"
           "${PATH_TO_SIGN}"
+          RESULT_VARIABLE CODESIGN_EXIT_CODE
       )
+    endif()
+    if(NOT CODESIGN_EXIT_CODE EQUAL 0)
+      message(FATAL_ERROR "Signing ${PATH_TO_SIGN} failed")
     endif()
   endforeach()
 else()

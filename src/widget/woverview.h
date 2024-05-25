@@ -1,27 +1,12 @@
-//
-// C++ Interface: woverview
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 #pragma once
 
 #include <QColor>
 #include <QList>
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
-#include "util/color/color.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -32,7 +17,9 @@
 #include "widget/wwidget.h"
 
 class PlayerManager;
-class PainterScope;
+;
+class QDomNode;
+class SkinContext;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
@@ -192,10 +179,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_dimBrightThreshold;
     QLabel* m_pPassthroughLabel;
 
-    // All WaveformMarks
     WaveformMarkSet m_marks;
-    // List of visible WaveformMarks sorted by the order they appear in the track
-    std::map<WaveformMarkSortKey, WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;

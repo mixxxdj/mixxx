@@ -2,11 +2,7 @@
 
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "control/controlproxy.h"
-#include "widget/wskincolor.h"
-#include "track/track.h"
-#include "widget/wwidget.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 
@@ -19,9 +15,12 @@ WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {
 }
 
 void WaveformRendererFilteredSignal::onResize() {
-    m_lowLines.resize(m_waveformRenderer->getLength());
-    m_midLines.resize(m_waveformRenderer->getLength());
-    m_highLines.resize(m_waveformRenderer->getLength());
+    const int devicePixelLength =
+            static_cast<int>(m_waveformRenderer->getLength() *
+                    m_waveformRenderer->getDevicePixelRatio());
+    m_lowLines.resize(devicePixelLength);
+    m_midLines.resize(devicePixelLength);
+    m_highLines.resize(devicePixelLength);
 }
 
 void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
@@ -39,6 +38,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     if (audioVisualRatio <= 0) {
         return;
     }
+
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
@@ -63,8 +64,11 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     painter->resetTransform();
 
     // Rotate if drawing vertical waveforms
+    // and revert devicePixelRatio scaling in x direction.
     if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
+        painter->setTransform(QTransform(0, 1 / devicePixelRatio, 1, 0, 0, 0));
+    } else {
+        painter->setTransform(QTransform(1 / devicePixelRatio, 0, 0, 1, 0, 0));
     }
 
     const double firstVisualIndex =
@@ -74,13 +78,14 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
             m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
             audioVisualRatio;
 
+    const float length = m_waveformRenderer->getLength() * devicePixelRatio;
+
     // Represents the # of waveform data points per horizontal pixel.
-    const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getLength();
+    const double gain = (lastVisualIndex - firstVisualIndex) / length;
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     const float breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = breadth / 2.0f;
@@ -92,14 +97,14 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
         painter->setPen(m_pColors->getAxesColor());
-        painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
+        painter->drawLine(QLineF(0, halfBreadth, length, halfBreadth));
     }
 
     int actualLowLineNumber = 0;
     int actualMidLineNumber = 0;
     int actualHighLineNumber = 0;
 
-    for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
+    for (int x = 0; x < static_cast<int>(length); ++x) {
         // Width of the x position in visual indices.
         const double xSampleWidth = gain * x;
 
@@ -136,7 +141,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;
 
-        // if (x == m_waveformRenderer->getLength() / 2) {
+        // if (x == static_cast<int>(length) / 2) {
         //     qDebug() << "audioVisualRatio" << waveform->getAudioVisualRatio();
         //     qDebug() << "visualSampleRate" << waveform->getVisualSampleRate();
         //     qDebug() << "audioSamplesPerVisualPixel" << waveform->getAudioSamplesPerVisualSample();

@@ -2,8 +2,6 @@
 
 #include <QSpinBox>
 
-#include "controllers/midi/midimessage.h"
-#include "controllers/midi/midiutils.h"
 #include "moc_midichanneldelegate.cpp"
 
 MidiChannelDelegate::MidiChannelDelegate(QObject* pParent)

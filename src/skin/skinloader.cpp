@@ -1,24 +1,18 @@
 #include "skin/skinloader.h"
 
-#include <QApplication>
 #include <QDir>
 #include <QString>
 #include <QtDebug>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "controllers/controllermanager.h"
-#include "effects/effectsmanager.h"
-#include "library/library.h"
 #include "mixer/playermanager.h"
 #include "moc_skinloader.cpp"
-#include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "util/debug.h"
 #include "util/timer.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
 
 namespace mixxx {
 namespace skin {
@@ -114,20 +108,19 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
     DEBUG_ASSERT(!configSkin.isEmpty());
     SkinPointer pSkin = getSkin(configSkin);
     if (pSkin && pSkin->isValid()) {
-        qInfo() << "Loaded skin" << configSkin;
         return pSkin;
     }
-    qWarning() << "Failed to load skin" << configSkin;
+    qWarning() << "Failed to find configured skin" << configSkin;
 
     // Fallback to default skin as last resort
     const QString defaultSkinName = getDefaultSkinName();
     DEBUG_ASSERT(!defaultSkinName.isEmpty());
     pSkin = getSkin(defaultSkinName);
     VERIFY_OR_DEBUG_ASSERT(pSkin && pSkin->isValid()) {
-        qWarning() << "Failed to load default skin" << defaultSkinName;
+        qWarning() << "Can't find default skin" << defaultSkinName;
         return nullptr;
     }
-    qInfo() << "Loaded default skin" << defaultSkinName;
+    qInfo() << "Found default skin" << defaultSkinName;
     return pSkin;
 }
 
@@ -187,6 +180,7 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
     VERIFY_OR_DEBUG_ASSERT(pLoadedSkin != nullptr) {
         qCritical() << "No skin can be loaded, please check your installation.";
     }
+    qInfo() << "Loaded skin" << pSkin->name() << "from" << pSkin->path().filePath();
     return pLoadedSkin;
 }
 
@@ -325,7 +319,7 @@ void SkinLoader::updateDuckingControl() {
         return;
     }
     double atLeastOneMicConfigured = 0.0;
-    for (auto* pMicCon : qAsConst(m_pMicConfiguredControls)) {
+    for (auto* pMicCon : std::as_const(m_pMicConfiguredControls)) {
         if (pMicCon->toBool()) {
             atLeastOneMicConfigured = 1.0;
             break;

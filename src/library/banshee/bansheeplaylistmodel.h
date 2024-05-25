@@ -1,14 +1,9 @@
 #pragma once
 
-#include <QHash>
-#include <QtSql>
-
 #include "library/trackmodel.h"
-#include "library/trackcollection.h"
-#include "library/dao/trackdao.h"
-#include "library/banshee/bansheedbconnection.h"
-#include "library/stardelegate.h"
 #include "library/basesqltablemodel.h"
+
+class BansheeDbConnection;
 
 class BansheePlaylistModel final : public BaseSqlTableModel {
     Q_OBJECT

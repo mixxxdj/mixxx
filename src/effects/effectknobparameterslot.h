@@ -4,15 +4,12 @@
 #include <QString>
 #include <QVariant>
 
-#include "control/controlobject.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
-class ControlObject;
 class ControlPushButton;
 class ControlEffectKnob;
 class SoftTakeover;
-class EffectSlot;
 
 /// Refer to EffectParameterSlotBase for documentation
 class EffectKnobParameterSlot : public EffectParameterSlotBase {

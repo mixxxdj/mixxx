@@ -1,16 +1,15 @@
 #include "encoder/encoderopus.h"
 
-#include <stdlib.h>
-
 #include <QByteArray>
 #include <QMapIterator>
-
 #include <QRandomGenerator>
 #include <QtGlobal>
 
+#include "encoder/encodercallback.h"
 #include "encoder/encoderopussettings.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "util/logger.h"
+#include "util/samplebuffer.h"
 
 namespace {
 // From libjitsi's Opus encoder:

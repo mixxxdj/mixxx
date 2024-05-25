@@ -1,11 +1,11 @@
 #pragma once
 
-#include "waveformrendererabstract.h"
-#include "waveformsignalcolors.h"
 #include "skin/legacy/skincontext.h"
+#include "util/span.h"
+#include "waveformrendererabstract.h"
 
-class ControlObject;
 class ControlProxy;
+class WaveformSignalColors;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
 public:
@@ -21,8 +21,20 @@ public:
   protected:
     void deleteControls();
 
-    void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
-                  float* highGain);
+    void getGains(float* pAllGain,
+            bool applyCompensation,
+            float* pLowGain,
+            float* pMidGain,
+            float* highGain);
+
+    static std::span<float, 256> unscaleTable();
+    inline float unscale(unsigned char value) {
+        // The all and hi components of the waveform data are scaled with pow(value, 2.0f * 0.316f)
+        // (see analyzerwaveform.h). This function can be used to undo that scaling,
+        // but apparently it is intentional.
+        static const auto table = unscaleTable();
+        return table[value];
+    }
 
   protected:
     ControlProxy* m_pEQEnabled;

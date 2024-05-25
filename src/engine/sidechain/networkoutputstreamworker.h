@@ -3,8 +3,10 @@
 #include <QSharedPointer>
 
 #include "audio/types.h"
-#include "util/fifo.h"
 #include "util/types.h"
+
+template<class DataType>
+class FIFO;
 
 /*
  * States:

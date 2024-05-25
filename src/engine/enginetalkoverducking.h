@@ -1,11 +1,10 @@
 #pragma once
 
 #include "engine/enginesidechaincompressor.h"
-#include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 
-class ConfigValue;
 class ControlProxy;
+class ControlPotmeter;
 
 class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
   Q_OBJECT

@@ -2,6 +2,7 @@
 
 #include "effects/backends/builtin/equalizer_util.h"
 #include "effects/defs.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 
 namespace {

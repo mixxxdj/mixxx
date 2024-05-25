@@ -1,22 +1,16 @@
 #pragma once
 
-#include <QDateTime>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QEvent>
-#include <QList>
-
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
-#include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
 
 class ControlProxy;
 class WaveformWidgetAbstract;
-class ControlPotmeter;
+class WCueMenuPopup;
+class QDomNode;
+class SkinContext;
 
 class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT
@@ -32,7 +26,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     }
     void setup(const QDomNode& node, const SkinContext& context);
 
-    bool handleDragAndDropEventFromWindow(QEvent* ev) override;
+    bool handleDragAndDropEventFromWindow(QEvent* pEvent) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
@@ -52,14 +46,12 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:
+    void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 
   private slots:
     void onZoomChange(double zoom);
-    void slotWidgetDead() {
-        m_waveformWidget = nullptr;
-    }
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);

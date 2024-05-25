@@ -1,5 +1,6 @@
 #include "engine/channelmixer.h"
 
+#include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"
 #include "util/timer.h"
 

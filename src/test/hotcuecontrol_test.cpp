@@ -36,6 +36,10 @@ class HotcueControlTest : public BaseSignalPathTest {
         m_pHotcue1EndPosition = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_endposition");
         m_pHotcue1Enabled = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_enabled");
         m_pHotcue1Clear = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_clear");
+        m_pHotcue2Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_activate");
+        m_pHotcue2Enabled = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_enabled");
+        m_pHotcue2Position = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_position");
+        m_pHotcue2EndPosition = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_endposition");
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
     }
 
@@ -110,6 +114,10 @@ class HotcueControlTest : public BaseSignalPathTest {
     std::unique_ptr<ControlProxy> m_pHotcue1EndPosition;
     std::unique_ptr<ControlProxy> m_pHotcue1Enabled;
     std::unique_ptr<ControlProxy> m_pHotcue1Clear;
+    std::unique_ptr<ControlProxy> m_pHotcue2Activate;
+    std::unique_ptr<ControlProxy> m_pHotcue2Enabled;
+    std::unique_ptr<ControlProxy> m_pHotcue2Position;
+    std::unique_ptr<ControlProxy> m_pHotcue2EndPosition;
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
 };
 
@@ -250,7 +258,7 @@ TEST_F(HotcueControlTest, SetCueManual) {
                          .isValid());
 }
 
-TEST_F(HotcueControlTest, SetLoopAuto) {
+TEST_F(HotcueControlTest, SetLoopAutoNoRedundantLoopCue) {
     createAndLoadFakeTrack();
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
@@ -270,6 +278,19 @@ TEST_F(HotcueControlTest, SetLoopAuto) {
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition, m_pHotcue1Position);
     EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pHotcue1EndPosition);
+
+    // Setting another hotcue inside the loop should create a regular hotcue
+    // at the current position, not a redundant loop cue.
+    setCurrentFramePosition(mixxx::audio::FramePos(195));
+    ProcessBuffer();
+
+    m_pHotcue2Activate->set(1);
+    m_pHotcue2Activate->set(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue2Enabled->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(currentFramePosition(), m_pHotcue2Position);
+    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_pHotcue2EndPosition->get())
+                         .isValid());
 }
 
 TEST_F(HotcueControlTest, SetLoopManualWithLoop) {

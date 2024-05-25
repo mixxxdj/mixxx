@@ -1,3 +1,7 @@
+#include "engine/sidechain/shoutconnection.h"
+
+#include <QRegularExpression>
+#include <QTextCodec>
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
@@ -9,13 +13,12 @@
 #include <shoutidjc/shout.h>
 
 #include "broadcast/defs_broadcast.h"
-#include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
-#include "engine/sidechain/shoutconnection.h"
+#include "errordialoghandler.h"
 #include "mixer/playerinfo.h"
 #include "moc_shoutconnection.cpp"
 #include "preferences/usersettings.h"

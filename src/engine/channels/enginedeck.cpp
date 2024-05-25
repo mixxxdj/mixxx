@@ -8,7 +8,6 @@
 #include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "util/sample.h"
-#include "waveform/waveformwidgetfactory.h"
 
 EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
@@ -87,6 +86,10 @@ void EngineDeck::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     m_pBuffer->collectFeatures(pGroupFeatures);
     m_vuMeter.collectFeatures(pGroupFeatures);
     m_pPregain->collectFeatures(pGroupFeatures);
+}
+
+void EngineDeck::postProcessLocalBpm() {
+    m_pBuffer->postProcessLocalBpm();
 }
 
 void EngineDeck::postProcess(const int iBufferSize) {

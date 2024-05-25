@@ -1,6 +1,5 @@
 #include "analyzer/analyzerkey.h"
 
-#include <QVector>
 #include <QtDebug>
 
 #include "analyzer/analyzertrack.h"

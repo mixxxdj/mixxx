@@ -3,7 +3,6 @@
 #include <ebur128.h>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzertrack.h"
 #include "preferences/replaygainsettings.h"
 
 class AnalyzerEbur128 : public Analyzer {

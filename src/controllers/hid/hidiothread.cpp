@@ -2,11 +2,8 @@
 
 #include <hidapi.h>
 
-#include <QTimer>
-
-#include "controllers/defs_controllers.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "moc_hidiothread.cpp"
+#include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
 #include "util/trace.h"

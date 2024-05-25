@@ -2,13 +2,7 @@
 
 #include <memory>
 
-#include "control/controlpushbutton.h"
-#include "preferences/configobject.h"
-#include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
-#include "skin/skincontrols.h"
-#include "soundio/sounddevicestatus.h"
-#include "util/cmdlineargs.h"
 #include "util/timer.h"
 
 class QApplication;
@@ -26,6 +20,8 @@ class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
 class Library;
+class SkinControls;
+class ControlPushButton;
 
 namespace mixxx {
 
@@ -104,6 +100,8 @@ class CoreServices : public QObject {
     std::shared_ptr<ScreensaverManager> getScreensaverManager() const {
         return m_pScreensaverManager;
     }
+
+    std::shared_ptr<QDialog> makeDlgPreferences() const;
 
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);

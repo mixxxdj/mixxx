@@ -1,7 +1,5 @@
 #include "library/proxytrackmodel.h"
 
-#include <QVariant>
-
 #include "library/searchqueryparser.h"
 #include "moc_proxytrackmodel.cpp"
 #include "util/assert.h"
@@ -112,6 +110,17 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     }
     if (m_pTrackModel) {
         m_pTrackModel->removeTracks(translatedList);
+    }
+}
+
+void ProxyTrackModel::copyTracks(const QModelIndexList& indices) const {
+    QModelIndexList translatedList;
+    foreach (QModelIndex index, indices) {
+        QModelIndex indexSource = mapToSource(index);
+        translatedList.append(indexSource);
+    }
+    if (m_pTrackModel) {
+        m_pTrackModel->copyTracks(translatedList);
     }
 }
 

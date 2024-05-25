@@ -3,13 +3,11 @@
 #include <QtDebug>
 
 #include "library/banshee/bansheedbconnection.h"
-#include "library/previewbuttondelegate.h"
+#include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
-#include "library/starrating.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_bansheeplaylistmodel.cpp"
-#include "track/beats.h"
 #include "track/track.h"
 
 #define BANSHEE_TABLE "banshee"

@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "errordialoghandler.h"
+#include "library/basesqltablemodel.h"
 #include "library/parser.h"
 
 namespace {

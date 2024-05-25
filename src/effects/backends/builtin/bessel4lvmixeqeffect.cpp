@@ -1,8 +1,9 @@
 #include "effects/backends/builtin/bessel4lvmixeqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
-#include "util/math.h"
+#include "engine/effects/engineeffectparameter.h"
 
 // static
 QString Bessel4LVMixEQEffect::getId() {

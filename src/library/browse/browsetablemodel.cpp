@@ -1,23 +1,20 @@
 #include "library/browse/browsetablemodel.h"
 
 #include <QMessageBox>
-#include <QMetaType>
 #include <QStringList>
-#include <QTableView>
 #include <QUrl>
-#include <QtConcurrentRun>
-#include <QtSql>
 
-#include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "library/previewbuttondelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_browsetablemodel.cpp"
+#include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "util/clipboard.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -204,12 +201,14 @@ const QList<int>& BrowseTableModel::searchColumns() const {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
-    if (m_pBrowseThread) {
-        if (path.info().hasLocation() && path.info().isDir()) {
-            m_currentDirectory = path.info().location();
-        } else {
-            m_currentDirectory = QString();
-        }
+    VERIFY_OR_DEBUG_ASSERT(m_pBrowseThread) {
+        return;
+    }
+
+    if (path.info().hasLocation() && path.info().isDir()) {
+        m_currentDirectory = path.info().location();
+    } else {
+        m_currentDirectory = QString();
     }
     m_pBrowseThread->executePopulation(std::move(path), this);
 }
@@ -314,6 +313,20 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
 }
 
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
+}
+
+void BrowseTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+
+    // TODO Investigate if we can also implement cut and paste (via QFile
+    // operations) so mixxx could manage files in the filesystem, rather than
+    // having to go switch between mixxx and the system file browser.
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList&) {

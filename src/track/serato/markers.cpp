@@ -640,7 +640,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }

@@ -2,15 +2,17 @@
 
 #include <QDateTime>
 #include <QHash>
-#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
 #include <gsl/pointers>
 #include <map>
+#include <ostream>
 
 #include "library/dao/dao.h"
-#include "library/itunes/itunespathmapping.h"
-#include "library/treeitem.h"
+
+class QSqlDatabase;
+struct ITunesPathMapping;
+class TreeItem;
 
 const int kRootITunesPlaylistId = -1;
 

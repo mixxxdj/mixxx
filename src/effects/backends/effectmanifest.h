@@ -3,7 +3,6 @@
 #include <QList>
 #include <QSharedPointer>
 #include <QString>
-#include <QtDebug>
 
 #include "effects/backends/effectmanifestparameter.h"
 #include "effects/backends/effectsbackend.h"

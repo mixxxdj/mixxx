@@ -7,6 +7,7 @@
 #include "mixer/playermanager.h"
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
+#include "track/track_decl.h"
 
 namespace {
 

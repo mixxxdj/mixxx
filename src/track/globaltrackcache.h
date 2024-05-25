@@ -7,7 +7,6 @@
 #include "track/trackref.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
-#include "util/sandbox.h"
 
 // forward declaration(s)
 class GlobalTrackCache;

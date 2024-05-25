@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "effects/effectsmessenger.h"
-#include "util/assert.h"
+#include "effects/presets/effectparameterpreset.h"
 
 EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
         EffectsMessengerPointer pEffectsMessenger,

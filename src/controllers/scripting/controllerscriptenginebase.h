@@ -1,17 +1,13 @@
 #pragma once
 
-#include <QFileSystemWatcher>
-#include <QJSEngine>
 #include <QJSValue>
 #include <QMessageBox>
 #include <memory>
 
-#include "controllers/legacycontrollermapping.h"
-#include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
 class Controller;
-class EvaluationException;
+class QJSEngine;
 
 /// ControllerScriptEngineBase manages the JavaScript engine for controller scripts.
 /// ControllerScriptModuleEngine implements the current system using JS modules.
@@ -44,6 +40,9 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
+  signals:
+    void beforeShutdown();
+
   protected:
     virtual void shutdown();
 
@@ -67,4 +66,5 @@ class ControllerScriptEngineBase : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
     friend class ColorMapperJSProxy;
+    friend class MidiControllerTest;
 };

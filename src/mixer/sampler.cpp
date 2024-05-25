@@ -1,6 +1,5 @@
 #include "mixer/sampler.h"
 
-#include "control/controlobject.h"
 #include "moc_sampler.cpp"
 
 Sampler::Sampler(PlayerManager* pParent,

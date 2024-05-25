@@ -63,7 +63,7 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
                 << ".wv";
 
         QStringList supportedFileNameSuffixes;
-        for (const auto& fileNameSuffix : qAsConst(availableFileNameSuffixes)) {
+        for (const auto& fileNameSuffix : std::as_const(availableFileNameSuffixes)) {
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
@@ -1067,5 +1067,22 @@ TEST_F(SoundSourceProxyTest, fileSuffixWithDifferingType) {
     for (const auto& [fileSuffix, fileType] : fileSuffixesWithDifferingTypes) {
         EXPECT_EQ(SoundSourceProxy::isFileTypeSupported(fileType),
                 SoundSourceProxy::isFileSuffixSupported(fileSuffix));
+    }
+}
+
+TEST_F(SoundSourceProxyTest, freeModeGarbage) {
+    // Try to load a file with an insane bitrate in the garbage before the real frame.
+    QString filePath = getTestDir().filePath(
+            QStringLiteral("id3-test-data/free_mode_garbage.mp3"));
+    ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+    const auto fileUrl = QUrl::fromLocalFile(filePath);
+    const auto providerRegistrations =
+            SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+    for (const auto& providerRegistration : providerRegistrations) {
+        mixxx::AudioSourcePointer pContReadSource = openAudioSource(
+                filePath,
+                providerRegistration.getProvider());
+        ASSERT_TRUE(pContReadSource != nullptr);
+        break;
     }
 }

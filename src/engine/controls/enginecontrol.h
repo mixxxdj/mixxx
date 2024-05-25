@@ -2,26 +2,31 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QList>
 #include <QObject>
 #include <gsl/pointers>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
 
 class EngineMixer;
 class EngineBuffer;
+struct GroupFeatureState;
 
 constexpr int kNoTrigger = -1;
 static_assert(
         mixxx::audio::FramePos::kLegacyInvalidEnginePosition == kNoTrigger,
         "Invalid engine position value mismatch");
+
+// This value is used to make sure the initial seek after loading a track is
+// not omitted. Therefore this value must be different for 0.0 or any likely
+// value for the main cue
+constexpr auto kInitialPlayPosition =
+        mixxx::audio::FramePos::fromEngineSamplePos(
+                std::numeric_limits<double>::lowest());
 
 /**
  * EngineControl is an abstract base class for objects which implement

@@ -34,7 +34,7 @@ QPushButton#LibraryBPMButton:!checked {
 
 /* Add default icons for cue menu buttons */
 WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(:/images/ic_delete.svg);
+  image: url(:/images/ic_delete.svg);
 }
 
 WColorPicker QPushButton[noColor="true"] {
@@ -143,9 +143,7 @@ QLineEdit QMenu::icon,
 WLibraryTextBrowser QMenu::icon,
 /* - checkbox in Crate name context menu
     "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator,
-/* Column checkboxes in the table header menu */
-WTrackTableViewHeader QMenu::indicator {
+WLibrarySidebar QMenu::indicator {
   /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
                 on the indicator itself.
                 positive margin-right pushes icon to the right...
@@ -155,13 +153,15 @@ WTrackTableViewHeader QMenu::indicator {
 }
 
 /* items in Crate sub menu */
+/* Column checkboxes in the table header menu */
+WTrackTableViewHeader QMenu QCheckBox,
 WTrackMenu QMenu QCheckBox,
 WEffectChainPresetButton QMenu QCheckBox {
   padding: 0.17em 0.6em 0.17em 0.25em;
 }
 
 WLibrarySidebar QMenu::indicator,
-WTrackTableViewHeader QMenu::indicator,
+WTrackTableViewHeader QMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator,
 WEffectChainPresetButton QMenu QCheckBox::indicator {
   width: 0.7em;

@@ -2,9 +2,10 @@
 
 #include <QString>
 #include <QList>
-#include <QUuid>
 
 #include "network/jsonwebtask.h"
+
+class QUuid;
 
 namespace mixxx {
 

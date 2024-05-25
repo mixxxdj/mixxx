@@ -2,7 +2,6 @@
 
 #include <QHash>
 #include <QString>
-#include <QVector>
 
 #include "audio/types.h"
 #include "proto/keys.pb.h"

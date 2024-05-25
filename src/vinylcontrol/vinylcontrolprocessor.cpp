@@ -3,7 +3,6 @@
 #include "control/controlpushbutton.h"
 #include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
-#include "util/event.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"

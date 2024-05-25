@@ -1,8 +1,6 @@
 #include "widget/wlibrarysidebar.h"
 
-#include <QFileInfo>
 #include <QHeaderView>
-#include <QMimeData>
 #include <QUrl>
 #include <QtDebug>
 
@@ -241,12 +239,24 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
     // item is not focused, require second press to perform the desired action.
 
-    // make the selected item the navigation starting point
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (sidebarModel && !selectedIndices.isEmpty()) {
+        QModelIndex index = selectedIndices.at(0);
+        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+            sidebarModel->clear(index);
+            return;
+        }
+        if (event->matches(QKeySequence::Paste)) {
+            sidebarModel->paste(index);
+            return;
+        }
+    }
+
     focusSelectedIndex();
 
     switch (event->key()) {
     case Qt::Key_Return:
-        focusSelectedIndex();
         toggleSelectedItem();
         return;
     case Qt::Key_Down:
@@ -268,6 +278,14 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // we pressed Up, Home or PageUp.
         scrollTo(selIndex);
         emit pressed(selIndex);
+        return;
+    }
+    case Qt::Key_Right: {
+        if (event->modifiers() & Qt::ControlModifier) {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        } else {
+            QTreeView::keyPressEvent(event);
+        }
         return;
     }
     case Qt::Key_Left: {

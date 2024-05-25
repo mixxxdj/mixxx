@@ -1,6 +1,5 @@
 #include "library/trackset/crate/cratefeature.h"
 
-#include <QFileDialog>
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
@@ -13,17 +12,15 @@
 #include "library/library_prefs.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
-#include "library/parserm3u.h"
-#include "library/parserpls.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
+#include "library/trackset/crate/cratesummary.h"
 #include "library/treeitem.h"
 #include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
-#include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -686,8 +683,8 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
     } else {
         // Create a temporary table model since the main one might have another
         // crate selected which is not the crate that received the right-click.
-        QScopedPointer<CrateTableModel> pCrateTableModel(
-                new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+        std::unique_ptr<CrateTableModel> pCrateTableModel =
+                std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
         pCrateTableModel->selectCrate(crateId);
         pCrateTableModel->select();
         pCrateTableModel->addTracks(QModelIndex(), locations);
@@ -811,15 +808,15 @@ void CrateFeature::slotExportPlaylist() {
 
     // Create list of files of the crate
     // Create a new table model since the main one might have an active search.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
     pCrateTableModel->selectCrate(crateId);
     pCrateTableModel->select();
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.get(), useRelativePath);
     } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
-        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.data(), false);
+        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.get(), false);
     } else {
         // populate a list of files of the crate
         QList<QString> playlistItems;
@@ -837,8 +834,8 @@ void CrateFeature::slotExportPlaylist() {
 
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 

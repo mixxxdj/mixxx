@@ -6,15 +6,11 @@
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectchainpreset.h"
 #include "effects/presets/effectchainpresetmanager.h"
 #include "engine/effects/engineeffectchain.h"
-#include "engine/engine.h"
-#include "mixer/playermanager.h"
 #include "moc_effectchain.cpp"
-#include "util/defs.h"
-#include "util/math.h"
 #include "util/sample.h"
-#include "util/xml.h"
 
 EffectChain::EffectChain(const QString& group,
         EffectsManager* pEffectsManager,
@@ -223,6 +219,23 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pChainPreset) {
     setControlLoadedPresetIndex(presetIndex());
 }
 
+bool EffectChain::isEmpty() {
+    for (const auto& pEffectSlot : std::as_const(m_effectSlots)) {
+        if (pEffectSlot->isLoaded()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool EffectChain::isEmptyPlaceholderPresetLoaded() {
+    return isEmpty() && presetName() == kNoEffectString;
+}
+
+void EffectChain::loadEmptyNamelessPreset() {
+    loadChainPreset(m_pChainPresetManager->createEmptyNamelessChainPreset());
+}
+
 void EffectChain::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
@@ -313,7 +326,7 @@ EffectSlotPointer EffectChain::getEffectSlot(unsigned int slotNumber) {
 }
 
 void EffectChain::slotControlClear(double v) {
-    for (EffectSlotPointer pEffectSlot : std::as_const(m_effectSlots)) {
+    for (const auto& pEffectSlot : std::as_const(m_effectSlots)) {
         pEffectSlot->slotClear(v);
     }
 }
@@ -341,8 +354,7 @@ void EffectChain::slotControlChainPresetSelector(double value) {
 }
 
 void EffectChain::slotControlLoadedChainPresetRequest(double value) {
-    // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
-    int index = static_cast<int>(value) - 1;
+    int index = static_cast<int>(value);
     if (index < 0 || index >= numPresets()) {
         return;
     }
@@ -350,9 +362,8 @@ void EffectChain::slotControlLoadedChainPresetRequest(double value) {
     loadChainPreset(presetAtIndex(index));
 }
 
-void EffectChain::setControlLoadedPresetIndex(uint index) {
-    // add 1 to make the ControlObject 1-indexed like other ControlObjects
-    m_pControlLoadedChainPreset->setAndConfirm(index + 1);
+void EffectChain::setControlLoadedPresetIndex(int index) {
+    m_pControlLoadedChainPreset->setAndConfirm(index);
 }
 
 void EffectChain::slotControlNextChainPreset(double value) {
@@ -422,6 +433,9 @@ void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGrou
 }
 
 int EffectChain::presetIndex() const {
+    // 0-indexed, 0 is the empty '---' preset.
+    // This can be -1 if the name is not found in the presets list,
+    // which is default state of standard effect chains.
     return m_pChainPresetManager->presetIndex(m_presetName);
 }
 

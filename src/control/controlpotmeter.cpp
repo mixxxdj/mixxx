@@ -95,6 +95,11 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::decSmallValue);
+    m_controlUp.setKbdRepeatable(true);
+    m_controlUpSmall.setKbdRepeatable(true);
+    m_controlDown.setKbdRepeatable(true);
+    m_controlDownSmall.setKbdRepeatable(true);
+
     connect(&m_controlSetDefault,
             &ControlPushButton::valueChanged,
             this,

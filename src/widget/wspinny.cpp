@@ -1,5 +1,7 @@
 #include "widget/wspinny.h"
 
+#include <QPainter>
+
 #include "moc_wspinny.cpp"
 
 WSpinny::WSpinny(

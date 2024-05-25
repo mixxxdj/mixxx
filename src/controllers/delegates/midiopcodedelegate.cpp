@@ -26,7 +26,7 @@ QWidget* MidiOpCodeDelegate::createEditor(QWidget* parent,
     choices.append(MidiOpCode::ControlChange);
     choices.append(MidiOpCode::PitchBendChange);
 
-    for (const MidiOpCode choice : qAsConst(choices)) {
+    for (const MidiOpCode choice : std::as_const(choices)) {
         pComboBox->addItem(MidiUtils::opCodeToTranslatedString(choice),
                 static_cast<uint8_t>(choice));
     }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QWidget>
-
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefautodjdlg.h"
 #include "preferences/usersettings.h"
+
+class QWidget;
 
 class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     Q_OBJECT

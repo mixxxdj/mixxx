@@ -1,11 +1,10 @@
 #include "widget/wcoverartlabel.h"
 
-#include <QtDebug>
+#include <QContextMenuEvent>
 
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverartlabel.cpp"
-#include "track/track.h"
 #include "widget/wcoverartmenu.h"
 
 namespace {
@@ -50,9 +49,11 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
     }
     if (px.isNull()) {
         m_loadedCover = px;
+        m_fullSizeCover = px;
         setPixmap(m_defaultCover);
     } else {
         m_loadedCover = scaleCoverLabel(this, px);
+        m_fullSizeCover = px;
         setPixmap(m_loadedCover);
     }
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
@@ -84,10 +85,6 @@ void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = pTrack;
 }
 
-void WCoverArtLabel::loadData(const QByteArray& data) {
-    m_Data = data;
-}
-
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
     if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
         return;
@@ -99,8 +96,8 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         } else {
             if (m_loadedCover.isNull()) {
                 return;
-            } else if (!m_pLoadedTrack && !m_Data.isNull()) {
-                m_pDlgFullSize->initFetchedCoverArt(m_Data);
+            } else if (!m_pLoadedTrack && !m_fullSizeCover.isNull()) {
+                m_pDlgFullSize->initFetchedCoverArt(m_fullSizeCover);
             } else {
                 m_pDlgFullSize->init(m_pLoadedTrack);
             }

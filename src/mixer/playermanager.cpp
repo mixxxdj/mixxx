@@ -7,6 +7,8 @@
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemixer.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -85,6 +87,10 @@ T* findFirstStoppedPlayerInList(const QList<T*>& players) {
     return nullptr;
 }
 
+inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
+    return pConfig->getSettingsPath() + QStringLiteral("/samplers.xml");
+}
+
 } // anonymous namespace
 
 //static
@@ -105,15 +111,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pEngine(pEngine),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
-          m_pCONumDecks(new ControlObject(
+          m_pCONumDecks(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_decks")), true, true)),
-          m_pCONumSamplers(new ControlObject(
+          m_pCONumSamplers(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true, true)),
-          m_pCONumPreviewDecks(new ControlObject(
+          m_pCONumPreviewDecks(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), true, true)),
-          m_pCONumMicrophones(new ControlObject(
+          m_pCONumMicrophones(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
-          m_pCONumAuxiliaries(new ControlObject(
+          m_pCONumAuxiliaries(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
@@ -143,8 +149,7 @@ PlayerManager::~PlayerManager() {
 
     const auto locker = lockMutex(&m_mutex);
 
-    m_pSamplerBank->saveSamplerBankToPath(
-        m_pConfig->getSettingsPath() + "/samplers.xml");
+    m_pSamplerBank->saveSamplerBankToPath(getDefaultSamplerPath(m_pConfig));
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -156,12 +161,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
-
-    delete m_pCONumSamplers;
-    delete m_pCONumDecks;
-    delete m_pCONumPreviewDecks;
-    delete m_pCONumMicrophones;
-    delete m_pCONumAuxiliaries;
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();
@@ -341,6 +340,7 @@ void PlayerManager::slotChangeNumSamplers(double v) {
         addSamplerInner();
     }
     m_pCONumSamplers->setAndConfirm(m_samplers.size());
+    emit numberOfSamplersChanged(m_samplers.count());
 }
 
 void PlayerManager::slotChangeNumPreviewDecks(double v) {
@@ -458,8 +458,7 @@ void PlayerManager::addDeckInner() {
 }
 
 void PlayerManager::loadSamplers() {
-    m_pSamplerBank->loadSamplerBankFromPath(
-            m_pConfig->getSettingsPath() + "/samplers.xml");
+    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig));
 }
 
 void PlayerManager::addSampler() {
@@ -671,28 +670,45 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
         return;
     }
 
-    mixxx::Duration elapsed = m_cloneTimer.restart();
-    // If not present in the config, use & set the default value
-    bool cloneOnDoubleTap = m_pConfig->getValue(
-            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
+    bool clone = false;
+    if (isDeckGroup(group)) {
+        mixxx::Duration elapsed = m_cloneTimer.restart();
+        // If not present in the config, use & set the default value
+        bool cloneOnDoubleTap = m_pConfig->getValue(
+                ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
 
-    // If AutoDJ is enabled, prevent it from cloning decks if the same track
-    // is in the AutoDJ queue twice in a row. This can happen when the option to
-    // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
-    // button repeatedly.
-    // AutoDJProcessor is initialized after PlayerManager, so check that the
-    // ControlProxy is pointing to the real ControlObject.
-    if (!m_pAutoDjEnabled) {
-        m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
+        // If AutoDJ is enabled, prevent it from cloning decks if the same track
+        // is in the AutoDJ queue twice in a row. This can happen when the option to
+        // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
+        // button repeatedly.
+        // AutoDJProcessor is initialized after PlayerManager, so check that the
+        // ControlProxy is pointing to the real ControlObject.
+        if (!m_pAutoDjEnabled) {
+            m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
+        }
+        bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
+                (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+
+        if (cloneOnDoubleTap && m_lastLoadedPlayer == group &&
+                elapsed < mixxx::Duration::fromSeconds(0.5) &&
+                !autoDjSkipClone) {
+            // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
+            // so clone another playing deck instead of loading the selected track
+            clone = true;
+        }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
+        }
     }
-    bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
-            (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 
-    if (cloneOnDoubleTap && m_lastLoadedPlayer == group
-        && elapsed < mixxx::Duration::fromSeconds(0.5)
-        && !autoDjSkipClone) {
-        // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
-        // so clone another playing deck instead of loading the selected track
+    if (clone) {
         pPlayer->slotCloneDeck();
     } else {
         pPlayer->slotLoadTrack(pTrack, play);

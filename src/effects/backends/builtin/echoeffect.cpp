@@ -1,7 +1,7 @@
 #include "effects/backends/builtin/echoeffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 #include "util/rampingvalue.h"
 #include "util/sample.h"

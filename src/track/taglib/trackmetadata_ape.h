@@ -1,10 +1,12 @@
 #pragma once
 
-#include <taglib/apetag.h>
+#include <apetag.h>
 
-#include "track/taglib/trackmetadata_common.h"
+class QImage;
 
 namespace mixxx {
+
+class TrackMetadata;
 
 namespace taglib {
 

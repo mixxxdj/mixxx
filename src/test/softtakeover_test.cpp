@@ -1,13 +1,15 @@
+#include "controllers/softtakeover.h"
+
 #include <gtest/gtest.h>
-#include <QtDebug>
+
 #include <QScopedPointer>
+#include <QtDebug>
+#include <memory>
 
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
-#include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
 #include "util/time.h"
 
 namespace {
@@ -560,6 +562,32 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
     EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
     EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+}
+
+TEST_F(SoftTakeoverTest, CatchOutOfBounds) {
+    auto co = std::make_unique<ControlPotmeter>(
+            ConfigKey("[Channel1]", "test_pot"), -250, 250, true);
+
+    co->set(50);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.get());
+
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    // Cross the original value to take over
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(55)));
+
+    // Set value to an out of bounds value
+    co->set(300);
+    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    // Actions in the same direction shall be ignored
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    // actions in the other edirection shall be ignored
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
+    // reaching the lower border should be ignored
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-250)));
+    // reaching the upper border near the out of bounds value should not be ignored.
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(250)));
 }
 
 // For the ignore cases, check that they work correctly with various signed values

@@ -1,7 +1,6 @@
 #pragma once
 #include <QDomElement>
 
-#include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
 #include "effects/presets/effectparameterpreset.h"
 

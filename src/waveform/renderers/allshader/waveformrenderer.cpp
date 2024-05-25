@@ -1,6 +1,6 @@
 #include "waveform/renderers/allshader/waveformrenderer.h"
 
-#include "waveform/widgets/allshader/waveformwidget.h"
+#include "util/assert.h"
 
 namespace allshader {
 

@@ -3,10 +3,10 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
-#include <QTimer>
 #include <QVariant>
 
 class LibraryFeature;
+class QTimer;
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
@@ -47,6 +47,8 @@ class SidebarModel : public QAbstractItemModel {
     }
     QModelIndex getFeatureRootIndex(LibraryFeature* pFeature);
 
+    void clear(const QModelIndex& index);
+    void paste(const QModelIndex& index);
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);

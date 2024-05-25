@@ -176,7 +176,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         if (!image.isNull()) {
             coverInfoRelative.type = CoverInfo::FILE;
             coverInfoRelative.coverLocation = bestInfo->fileName();
-            coverInfoRelative.setImage(image);
+            coverInfoRelative.setImageDigest(image);
         }
     }
 
@@ -191,7 +191,7 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
         CoverInfoRelative coverInfo;
         coverInfo.source = CoverInfo::GUESSED;
         coverInfo.type = CoverInfo::METADATA;
-        coverInfo.setImage(embeddedCover);
+        coverInfo.setImageDigest(embeddedCover);
         DEBUG_ASSERT(coverInfo.coverLocation.isNull());
         return coverInfo;
     }

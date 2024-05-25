@@ -2,7 +2,6 @@
 
 #include "engine/engine.h"
 #include "moc_enginebufferscale.cpp"
-#include "util/defs.h"
 
 EngineBufferScale::EngineBufferScale()
         : m_outputSignal(

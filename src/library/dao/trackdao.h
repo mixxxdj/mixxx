@@ -1,20 +1,17 @@
 #pragma once
 
-#include <QFileInfo>
 #include <QList>
 #include <QObject>
 #include <QSet>
-#include <QSqlDatabase>
 #include <QString>
+#include <memory>
 
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
-#include "util/memory.h"
 
-class FwdSqlQuery;
 class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
@@ -22,7 +19,6 @@ class CueDAO;
 class LibraryHashDAO;
 
 namespace mixxx {
-
 class FileInfo;
 class TrackRecord;
 

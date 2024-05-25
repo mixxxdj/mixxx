@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QThread>
 #include <QWidget>
-#include <QString>
 
 #include "util/performancetimer.h"
+
+class QString;
 
 class LibraryScannerDlg : public QWidget {
     Q_OBJECT

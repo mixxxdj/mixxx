@@ -1,14 +1,12 @@
 #pragma once
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
+
+class EngineFilterBiquad1Low;
+class EngineFilterBiquad1High;
 
 struct FilterGroupState : public EffectState {
     FilterGroupState(const mixxx::EngineParameters& engineParameters);

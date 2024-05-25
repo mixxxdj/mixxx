@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectsmanager.h"
 #include "moc_enginechannel.cpp"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,

@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalerubberband.cpp"
 #include "util/counter.h"

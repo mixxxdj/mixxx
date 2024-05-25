@@ -1,6 +1,5 @@
-#include <QTimer>
-
 #include "waveform/guitick.h"
+
 #include "control/controlobject.h"
 
 namespace {

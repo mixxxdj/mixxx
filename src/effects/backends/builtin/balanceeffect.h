@@ -1,10 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterlinkwitzriley4.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 class BalanceGroupState : public EffectState {

@@ -22,6 +22,9 @@ class LibraryView {
     /// Reimplement if LibraryView should be able to search
     virtual void onSearch(const QString& text) {Q_UNUSED(text);}
 
+    virtual void pasteFromSidebar() {
+    }
+
     /// If applicable, requests that the LibraryView load the selected
     /// track. Does nothing otherwise.
     virtual void activateSelectedTrack() {

@@ -1,9 +1,5 @@
 #include "soundio/sounddevice.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
-
-#include "soundio/soundmanager.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "soundmanagerconfig.h"

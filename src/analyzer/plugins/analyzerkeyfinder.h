@@ -1,8 +1,6 @@
 #pragma once
 #include <keyfinder/keyfinder.h>
 
-#include <QObject>
-
 #include "analyzer/plugins/analyzerplugin.h"
 #include "util/types.h"
 

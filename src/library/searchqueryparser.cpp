@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "library/searchquery.h"
+#include "library/trackcollection.h"
 #include "track/keyutils.h"
 #include "util/assert.h"
 
@@ -82,12 +83,12 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                   << "location"
                   << "crate";
     m_numericFilters << "track"
-                     << "bpm"
                      << "played"
                      << "rating"
                      << "bitrate";
     m_specialFilters << "year"
                      << "key"
+                     << "bpm"
                      << "duration"
                      << "added"
                      << "dateadded"
@@ -115,11 +116,6 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["location"] << "location";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
 
-    m_allFilters.append(m_textFilters);
-    m_allFilters.append(m_numericFilters);
-    m_allFilters.append(m_specialFilters);
-
-    m_fuzzyMatcher = QRegularExpression(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegularExpression(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegularExpression(
             QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
@@ -141,7 +137,8 @@ void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
 }
 
 SearchQueryParser::TextArgumentResult SearchQueryParser::getTextArgument(QString argument,
-        QStringList* tokens) const {
+        QStringList* tokens,
+        bool removeLeadingEqualsSign) const {
     // If the argument is empty, assume the user placed a space after an
     // advanced search command. Consume another token and treat that as the
     // argument.
@@ -152,7 +149,7 @@ SearchQueryParser::TextArgumentResult SearchQueryParser::getTextArgument(QString
         }
     }
     StringMatch mode = StringMatch::Contains;
-    if (argument.startsWith("=")) {
+    if (removeLeadingEqualsSign && argument.startsWith("=")) {
         // strip the '=' from the argument
         argument = argument.mid(1);
         mode = StringMatch::Equals;
@@ -178,13 +175,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         bool negate = token.startsWith(kNegatePrefix);
         std::unique_ptr<QueryNode> pNode;
 
-        const QRegularExpressionMatch fuzzyMatch = m_fuzzyMatcher.match(token);
         const QRegularExpressionMatch textFilterMatch = m_textFilterMatcher.match(token);
         const QRegularExpressionMatch numericFilterMatch = m_numericFilterMatcher.match(token);
         const QRegularExpressionMatch specialFilterMatch = m_specialFilterMatcher.match(token);
-        if (fuzzyMatch.hasMatch()) {
-            // TODO(XXX): implement this feature.
-        } else if (textFilterMatch.hasMatch()) {
+        if (textFilterMatch.hasMatch()) {
             QString field = textFilterMatch.captured(1);
             auto [argument, matchMode] = getTextArgument(textFilterMatch.captured(2), &tokens);
 
@@ -226,10 +220,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
         } else if (specialFilterMatch.hasMatch()) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
+            bool negate = token.startsWith(kNegatePrefix);
             QString field = specialFilterMatch.captured(1);
-            QString argument = getTextArgument(
-                    specialFilterMatch.captured(2), &tokens)
-                                       .argument;
+            auto [argument, matchMode] = getTextArgument(
+                    specialFilterMatch.captured(2), &tokens);
+
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =
@@ -258,6 +253,12 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     field = "datetime_added";
                     pNode = std::make_unique<TextFilterNode>(
                         m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                } else if (field == "bpm") {
+                    if (matchMode == StringMatch::Equals) {
+                        // restore = operator removed by getTextArgument()
+                        argument.prepend('=');
+                    }
+                    pNode = std::make_unique<BpmFilterNode>(argument, fuzzy, negate);
                 }
             }
         } else {

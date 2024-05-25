@@ -1,7 +1,7 @@
 #include "widget/wwidgetgroup.h"
 
+#include <QEvent>
 #include <QLayout>
-#include <QMap>
 #include <QStackedLayout>
 #include <QStylePainter>
 
@@ -9,7 +9,6 @@
 #include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
-#include "widget/wwidget.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
@@ -237,7 +236,6 @@ void WWidgetGroup::setHighlight(int highlight) {
         return;
     }
     m_highlight = highlight;
-    style()->unpolish(this);
     style()->polish(this);
     update();
     emit highlightChanged(m_highlight);

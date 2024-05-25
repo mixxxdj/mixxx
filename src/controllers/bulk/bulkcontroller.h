@@ -5,12 +5,9 @@
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
-#include "util/duration.h"
 
 struct libusb_device_handle;
 struct libusb_context;
-struct libusb_device_descriptor;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
@@ -75,12 +72,15 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short vendor_id;
-    unsigned short product_id;
-    unsigned char in_epaddr;
-    unsigned char out_epaddr;
-    QString manufacturer;
-    QString product;
+    unsigned short m_vendorId;
+    unsigned short m_productId;
+    unsigned char m_inEndpointAddr;
+    unsigned char m_outEndpointAddr;
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    unsigned int m_interfaceNumber;
+#endif
+    QString m_manufacturer;
+    QString m_product;
 
     QString m_sUID;
     BulkReader* m_pReader;

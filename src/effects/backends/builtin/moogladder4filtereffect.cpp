@@ -1,6 +1,8 @@
 #include "effects/backends/builtin/moogladder4filtereffect.h"
 
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefiltermoogladder4.h"
 
 static constexpr double kMinCorner = 0.0003; // 13 Hz @ 44100
 static constexpr double kMaxCorner = 0.5;    // 22050 Hz @ 44100

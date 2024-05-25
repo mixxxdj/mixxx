@@ -4,7 +4,6 @@
 #include <QList>
 #include <QObject>
 #include <QSet>
-#include <QWidget>
 
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
@@ -12,6 +11,7 @@
 
 class ControlProxy;
 class ControlPushButton;
+class QWidget;
 
 namespace mixxx {
 namespace skin {

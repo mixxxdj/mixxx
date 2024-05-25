@@ -1,13 +1,14 @@
 #include "util/safelywritablefile.h"
 
 #include <QFileInfo>
-#include <QThread>
 
 #include "util/assert.h"
 #include "util/logger.h"
 
 #if defined(__WINDOWS__)
 #include <Windows.h>
+
+#include <QThread>
 #endif
 
 namespace mixxx {

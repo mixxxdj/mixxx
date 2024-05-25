@@ -1,11 +1,11 @@
 #pragma once
 
-#include <taglib/aifffile.h>
-#include <taglib/flacfile.h>
-#include <taglib/mp4file.h>
-#include <taglib/mpegfile.h>
-#include <taglib/wavfile.h>
-#include <taglib/wavpackfile.h>
+#include <aifffile.h>
+#include <flacfile.h>
+#include <mp4file.h>
+#include <mpegfile.h>
+#include <wavfile.h>
+#include <wavpackfile.h>
 
 #include <QFile>
 

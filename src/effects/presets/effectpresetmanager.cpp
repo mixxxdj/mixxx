@@ -3,6 +3,7 @@
 #include <QDir>
 
 #include "effects/backends/effectsbackendmanager.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectxmlelements.h"
 #include "util/filename.h"
 

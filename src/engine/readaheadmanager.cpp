@@ -4,7 +4,6 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "util/defs.h"
-#include "util/math.h"
 #include "util/sample.h"
 
 ReadAheadManager::ReadAheadManager()
@@ -118,6 +117,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     // Activate on this trigger if necessary
     if (reachedTrigger) {
         DEBUG_ASSERT(target != kNoTrigger);
+        if (m_pRateControl) {
+            m_pRateControl->notifyWrapAround(loopTriggerPosition, targetPosition);
+        }
+        // TODO probably also useful for hotcue_X_indicator in CueControl::updateIndicators()
 
         // Jump to other end of loop or track.
         m_currentPosition = target;

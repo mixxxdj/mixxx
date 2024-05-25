@@ -8,7 +8,6 @@
 #include <QSlider>
 #include <QSpinBox>
 
-#include "defs_urls.h"
 #include "moc_dlgpreferencepage.cpp"
 
 DlgPreferencePage::DlgPreferencePage(QWidget* pParent)

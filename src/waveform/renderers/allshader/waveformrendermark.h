@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QColor>
-#include <QObject>
 
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
-#include "util/class.h"
-#include "waveform/renderers/allshader/waveformrenderer.h"
-#include "waveform/renderers/waveformmarkset.h"
+#include "util/opengltexture2d.h"
+#include "waveform/renderers/allshader/digitsrenderer.h"
+#include "waveform/renderers/allshader/waveformrendererabstract.h"
+#include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
 class SkinContext;
@@ -17,33 +17,32 @@ namespace allshader {
 class WaveformRenderMark;
 }
 
-class allshader::WaveformRenderMark final : public QObject, public allshader::WaveformRenderer {
-    Q_OBJECT
+class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
+                                      public allshader::WaveformRendererAbstract {
   public:
-    explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRenderMark() override;
+    explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void draw(QPainter* painter, QPaintEvent* event) override {
+        Q_UNUSED(painter);
+        Q_UNUSED(event);
+    }
+
+    allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {
+        return this;
+    }
+
+    bool init() override;
 
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
 
-    // Called when a new track is loaded.
-    void onSetTrack() override;
-
-  public slots:
-    // Called when the loaded track's cues are added, deleted or modified and
-    // when a new track is loaded.
-    // It updates the marks' names and regenerates their image if needed.
-    // This method is used for hotcues.
-    void slotCuesUpdated();
-
   private:
-    void checkCuesUpdated();
+    void updateMarkImage(WaveformMarkPointer pMark) override;
 
-    void generateMarkImage(WaveformMarkPointer pMark, float breadth);
-    void generatePlayPosMarkTexture(float breadth);
+    void updatePlayPosMarkTexture();
 
     void drawTriangle(QPainter* painter,
             const QBrush& fillColor,
@@ -51,14 +50,23 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
             QPointF p2,
             QPointF p3);
 
-    WaveformMarkSet m_marks;
+    void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
+    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
+    void updateUntilMark(double playPosition, double markerPosition);
+    void drawUntilMark(const QMatrix4x4& matrix, float x);
+    float getMaxHeightForText() const;
+
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
-    std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
-    bool m_bCuesUpdates;
+    OpenGLTexture2D m_playPosMarkTexture;
+    DigitsRenderer m_digitsRenderer;
+    int m_beatsUntilMark;
+    double m_timeUntilMark;
+    double m_currentBeatPosition;
+    double m_nextBeatPosition;
+    std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
-    void drawMark(const QRectF& rect, QColor color);
-    void drawTexture(float x, float y, QOpenGLTexture* texture);
+    bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

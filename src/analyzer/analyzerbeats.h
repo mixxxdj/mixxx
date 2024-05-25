@@ -1,21 +1,13 @@
-/* Beat Tracking test via vamp-plugins
- * analyzerbeats.h
- *
- *  Created on: 16/mar/2011
- *      Author: Vittorio Colao
- */
-
 #pragma once
 
 #include <QHash>
 #include <QList>
+#include <memory>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzertrack.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 
 class AnalyzerBeats : public Analyzer {
   public:

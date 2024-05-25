@@ -1,13 +1,14 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/duration.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
-#include "waveform/visualplayposition.h"
+
+class VisualPlayPosition;
 
 namespace {
 
@@ -34,16 +35,18 @@ class DeckVisuals {
     int m_SlowTickCnt;
     bool m_trackLoaded;
 
-    std::unique_ptr<ControlObject> m_pTimeElapsed;
-    std::unique_ptr<ControlObject> m_pTimeRemaining;
-    std::unique_ptr<ControlObject> m_pEndOfTrack;
-    std::unique_ptr<ControlObject> m_pVisualBpm;
-    std::unique_ptr<ControlObject> m_pVisualKey;
+    std::unique_ptr<ControlProxy> m_pPlayButton;
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
 
-    ControlProxy playButton;
-    ControlProxy loopEnabled;
-    ControlProxy engineBpm;
-    ControlProxy engineKey;
+    std::unique_ptr<ControlProxy> m_pEngineBpm;
+    std::unique_ptr<ControlProxy> m_pVisualBpm;
+
+    std::unique_ptr<ControlProxy> m_pEngineKey;
+    std::unique_ptr<ControlProxy> m_pVisualKey;
+
+    std::unique_ptr<ControlProxy> m_pTimeElapsed;
+    std::unique_ptr<ControlProxy> m_pTimeRemaining;
+    std::unique_ptr<ControlProxy> m_pEndOfTrack;
 
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
 };

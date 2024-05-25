@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleExecutable</key>
-    <string>mixxx</string>
+    <string>@MACOS_BUNDLE_NAME@</string>
 
     <key>CFBundleIconFile</key>
     <string>application.icns</string>
@@ -12,13 +12,13 @@
     <string>APPL</string>
 
     <key>CFBundleIdentifier</key>
-    <string>org.mixxx.mixxx</string>
+    <string>@MACOS_BUNDLE_IDENTIFIER@</string>
 
     <key>CFBundleName</key>
-    <string>Mixxx</string>
+    <string>@MACOS_BUNDLE_NAME@</string>
 
     <key>CFBundleDisplayName</key>
-    <string>Mixxx</string>
+    <string>@MACOS_BUNDLE_NAME@</string>
 
     <key>CFBundleVersion</key>
     <string>@MACOS_BUNDLE_VERSION@</string>

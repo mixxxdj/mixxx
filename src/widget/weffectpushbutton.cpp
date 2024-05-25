@@ -1,8 +1,11 @@
 #include "widget/weffectpushbutton.h"
 
 #include <QActionGroup>
-#include <QtDebug>
+#include <QMenu>
+#include <QMouseEvent>
 
+#include "effects/effectparameterslotbase.h"
+#include "effects/presets/effectchainpreset.h"
 #include "moc_weffectpushbutton.cpp"
 #include "widget/effectwidgetutils.h"
 
@@ -23,7 +26,7 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     m_pEffectParameterSlot = EffectWidgetUtils::getButtonParameterSlotFromNode(
             node, context, pEffectSlot);
     if (!m_pEffectParameterSlot) {
-        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
+        SKIN_WARNING(node, context, QStringLiteral("Could not find effect parameter slot"));
         DEBUG_ASSERT(false);
     }
     connect(m_pEffectParameterSlot.data(),
@@ -127,7 +130,7 @@ void WEffectPushButton::parameterUpdated() {
 
     auto* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
-    for (const auto& option : qAsConst(options)) {
+    for (const auto& option : std::as_const(options)) {
         // action is added automatically to actionGroup
         auto* action = new QAction(actionGroup);
         // qDebug() << options[i].first;

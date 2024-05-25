@@ -7,7 +7,6 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
@@ -19,7 +18,6 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
 #ifdef PA_USE_ALSA
@@ -908,10 +906,17 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #endif
         m_bSetThreadPriority = true;
 
-#ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
+
+        // On Emscripten (WebAssembly) denormals-as-zero/flush-as-zero are
+        // neither supported nor configurable. This may lead to degraded
+        // performance compared to other platforms and may be addressed in the
+        // future if/when WebAssembly adds support for DAZ/FTZ. For further
+        // discussion and links see https://github.com/mixxxdj/mixxx/pull/12917
+
+#if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);

@@ -3,7 +3,6 @@
 #include <QVarLengthArray>
 
 #include "audio/types.h"
-#include "effects/engineeffectsmanager.h"
 #include "engine/enginemixer.h"
 #include "util/types.h"
 

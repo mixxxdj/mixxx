@@ -190,10 +190,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }.bind(this), true);
+                    }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -255,10 +255,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
-                        }.bind(this), true);
+                        }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
@@ -298,7 +298,7 @@
             this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
-        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.outKey = "hotcue_" + this.number + "_status";
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
@@ -363,7 +363,12 @@
             return;
         }
         this.volumeByVelocity = options.volumeByVelocity;
-        this.number = options.number;
+        const samNum = options.number;
+        if (engine.getValue("[App]", "num_samplers") < samNum) {
+            console.warn("Mapping tried to connect to non-existent sampler.");
+            engine.setValue("[App]", "num_samplers", samNum);
+        }
+        this.number = samNum;
         this.group = "[Sampler" + this.number + "]";
         Button.call(this, options);
     };

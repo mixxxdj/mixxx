@@ -1,9 +1,7 @@
-#include <QtDebug>
-#include <QStringList>
-#include <QAction>
-
 #include "skin/legacy/skincontext.h"
-#include "util/cmdlineargs.h"
+
+#include <QtDebug>
+
 #include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
@@ -135,14 +133,19 @@ PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
     return PixmapSource();
 }
 
-QDebug SkinContext::logWarning(const char* file, const int line,
-                               const QDomNode& node) const {
-    return qWarning() << QString("%1:%2 SKIN ERROR at %3:%4 <%5>:")
-                             .arg(file, QString::number(line), m_xmlPath,
-                                  QString::number(node.lineNumber()),
-                                  node.nodeName())
-                             .toUtf8()
-                             .constData();
+QDebug SkinContext::logWarning(const char* file,
+        const int line,
+        const QDomNode& node,
+        const QString& message) const {
+    return qWarning() << QString("Skin parsing failed at %1:%2 <%3>: %4 | %5:%6")
+                                 .arg(m_xmlPath,
+                                         QString::number(node.lineNumber()),
+                                         node.nodeName(),
+                                         message,
+                                         file,
+                                         QString::number(line))
+                                 .toUtf8()
+                                 .constData();
 }
 
 int SkinContext::scaleToWidgetSize(QString& size) const {

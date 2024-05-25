@@ -1,16 +1,12 @@
 #pragma once
 
 #include <QColor>
-#include <QTime>
-//#include <QLinearGradient>
 
 #include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "util/performancetimer.h"
 
-class ControlObject;
 class ControlProxy;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {

@@ -1,12 +1,19 @@
 #pragma once
 
-#include "audio/types.h"
-#include "encoder/encodercallback.h"
+#include <memory>
+
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encodersettings.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 #include "util/types.h"
+
+class EncoderCallback;
+
+namespace mixxx {
+namespace audio {
+class SampleRate;
+} // namespace audio
+} // namespace mixxx
 
 class Encoder {
   public:

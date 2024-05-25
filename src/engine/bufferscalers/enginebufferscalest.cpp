@@ -5,10 +5,7 @@
 // Fixes redefinition warnings from SoundTouch.
 #include <soundtouch/SoundTouch.h>
 
-#include "control/controlobject.h"
-#include "engine/engineobject.h"
 #include "engine/readaheadmanager.h"
-#include "track/keyutils.h"
 #include "util/math.h"
 #include "util/sample.h"
 

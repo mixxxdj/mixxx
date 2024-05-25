@@ -13,9 +13,9 @@ class ScreensaverManager : public QObject {
     ScreensaverManager(UserSettingsPointer pConfig, QObject* pParent = nullptr);
     ~ScreensaverManager();
 
-    void setStatus(mixxx::ScreenSaverPreference status);
+    void setStatus(mixxx::preferences::ScreenSaver status);
 
-    mixxx::ScreenSaverPreference status() {
+    mixxx::preferences::ScreenSaver status() {
         return m_inhibitScreensaver;
     }
   public slots:
@@ -23,7 +23,7 @@ class ScreensaverManager : public QObject {
 
   private:
     const UserSettingsPointer m_pConfig;
-    mixxx::ScreenSaverPreference m_inhibitScreensaver;
+    mixxx::preferences::ScreenSaver m_inhibitScreensaver;
 };
 
 } // namespace mixxx

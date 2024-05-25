@@ -2,8 +2,8 @@
 
 #include <QtDebug>
 
+#include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalelinear.cpp"
-#include "track/keyutils.h"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -70,7 +70,7 @@ double EngineBufferScaleLinear::scaleBuffer(
     }
     double rate_add_old = m_dOldRate; // Smoothly interpolate to new playback rate
     double rate_add_new = m_dRate;
-    SINT frames_read = 0;
+    double frames_read = 0;
 
     if (rate_add_new * rate_add_old < 0) {
         // Direction has changed!
@@ -109,8 +109,7 @@ double EngineBufferScaleLinear::scaleBuffer(
         // force a buffer read:
         m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation
-        // TODO() Why we do not swap current and Next?
-        m_dCurrentFrame = 0.0 - m_dCurrentFrame + floor(m_dCurrentFrame);
+        m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
         // second half: rate goes from zero to new rate
@@ -177,7 +176,7 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
 }
 
 // Stretch a specified buffer worth of audio using linear interpolation
-SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
+double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     double rate_old = m_dOldRate;
     const double rate_new = m_dRate;
     const double rate_diff = rate_new - rate_old;
@@ -228,9 +227,8 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     ceil_sample[0] = 0;
     ceil_sample[1] = 0;
 
-    SINT frames_read = 0;
+    double startFrame = m_dNextFrame;
     SINT i = 0;
-    //int screwups_debug = 0;
 
     double rate_add = fabs(rate_old);
     const double rate_delta_abs =
@@ -274,7 +272,7 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
             }
 
             do {
-                SINT old_bufsize = m_bufferIntSize;
+                SINT oldBufferFrames = getOutputSignal().samples2frames(m_bufferIntSize);
                 if (unscaled_frames_needed == 0) {
                     // protection against infinite loop
                     // This may happen due to double precision issues
@@ -292,12 +290,13 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                 // e.g. when reloop_toggle jumps back to loop_in, or when
                 // moving a loop causes the play position to be moved along.
 
-                frames_read += getOutputSignal().samples2frames(m_bufferIntSize);
                 unscaled_frames_needed -= getOutputSignal().samples2frames(m_bufferIntSize);
 
-                // adapt the m_dCurrentFrame the index of the new buffer
-                m_dCurrentFrame -= getOutputSignal().samples2frames(old_bufsize);
-                currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
+                // adapt the frames values that are still relative to the old buffer for the new one
+                m_dCurrentFrame -= oldBufferFrames;
+                startFrame -= oldBufferFrames;
+                currentFrameFloor -= oldBufferFrames;
+
             } while (getOutputSignal().frames2samples(currentFrameFloor) + 3 >= m_bufferIntSize);
 
             // Now that the buffer is up to date, we can get the value of the sample
@@ -334,5 +333,5 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
     SampleUtil::clear(&buf[i], buf_size - i);
 
-    return frames_read;
+    return m_dNextFrame - startFrame;
 }

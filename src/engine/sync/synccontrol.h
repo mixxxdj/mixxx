@@ -5,14 +5,15 @@
 #include <QScopedPointer>
 
 #include "engine/controls/enginecontrol.h"
-#include "engine/sync/enginesync.h"
+#include "engine/sync/syncable.h"
 
-class EngineChannel;
 class BpmControl;
 class RateControl;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
+class EngineChannel;
+class EngineSync;
 
 /// SyncControl is the Sync Lock object for playback decks.
 class SyncControl : public EngineControl, public Syncable {

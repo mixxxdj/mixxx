@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QDomNode>
 #include <QTimer>
 
-#include "effects/effectparameterslotbase.h"
-#include "skin/legacy/skincontext.h"
+#include "effects/defs.h"
 #include "widget/wlabel.h"
 
 class EffectsManager;
@@ -17,6 +15,7 @@ class WEffectParameterNameBase : public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override = 0;
 
     void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
     QSize sizeHint() const override;

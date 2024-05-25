@@ -2,12 +2,9 @@
 
 #include <QDir>
 #include <QFile>
-#include <QMessageBox>
-#include <QUrl>
 #include <QtDebug>
 
 #include "errordialoghandler.h"
-#include "library/parser.h"
 
 namespace {
 

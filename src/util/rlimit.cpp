@@ -3,7 +3,6 @@
 #ifdef __LINUX__
 
 extern "C" {
-    #include <sys/time.h>
     #include <sys/resource.h>
 }
 

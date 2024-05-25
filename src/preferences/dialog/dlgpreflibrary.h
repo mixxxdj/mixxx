@@ -2,13 +2,16 @@
 
 #include <QFont>
 #include <QStandardItemModel>
-#include <QWidget>
 #include <memory>
 
 #include "library/library_decl.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
+
+class QWidget;
+class ControlProxy;
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
@@ -61,11 +64,12 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotSelectFont();
     void slotSyncTrackMetadataToggled();
     void slotSearchDebouncingTimeoutMillisChanged(int);
+    void slotBpmRangeSelected(int index);
     void slotBpmColumnPrecisionChanged(int bpmPrecision);
     void slotSeratoMetadataExportClicked(bool);
 
   private:
-    void initializeDirList();
+    void populateDirList();
     void setLibraryFont(const QFont& font);
     void updateSearchLineEditHistoryOptions();
     void setSeratoMetadataEnabled(bool shouldSyncTrackMetadata);
@@ -76,4 +80,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
+    // Listen to rate range changes in order to update the fuzzy BPM range
+    parented_ptr<ControlProxy> m_pRateRangeDeck1;
 };

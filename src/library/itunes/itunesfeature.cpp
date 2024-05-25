@@ -2,11 +2,9 @@
 
 #include <QAction>
 #include <QFileDialog>
-#include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
-#include <QUrl>
-#include <QXmlStreamReader>
+#include <QtConcurrent>
 #include <QtDebug>
 #include <memory>
 #include <utility>
@@ -17,11 +15,11 @@
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
-#include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunesplaylistmodel.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
+#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
@@ -371,8 +369,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         QMessageBox::warning(
                 nullptr,
                 tr("Error Loading iTunes Library"),
-                tr("There was an error loading your iTunes library. Some of "
-                   "your iTunes tracks or playlists may not have loaded."));
+                tr("There was an error loading your iTunes library. Check the logs for details."));
     }
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("iTunes");

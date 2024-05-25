@@ -5,9 +5,6 @@
 #include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
 
-class ControlPushButton;
-class ControlProxy;
-
 class PotmeterControls : public QObject {
     Q_OBJECT
   public:

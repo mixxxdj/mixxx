@@ -1,7 +1,6 @@
 #include "library/itunes/itunesxmlimporter.h"
 
 #include <QDateTime>
-#include <QSqlQuery>
 #include <QString>
 #include <QUrl>
 #include <memory>
@@ -11,15 +10,10 @@
 #include "library/itunes/itunesfeature.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
-#include "library/queryutil.h"
-#include "library/treeitemmodel.h"
+#include "library/treeitem.h"
+#include "util/fileaccess.h"
+#include "util/fileinfo.h"
 #include "util/lcs.h"
-
-#ifdef __SQLITE3__
-#include <sqlite3.h>
-#else                        // __SQLITE3__
-#define SQLITE_CONSTRAINT 19 // Abort due to constraint violation
-#endif                       // __SQLITE3__
 
 namespace {
 
@@ -73,8 +67,12 @@ ITunesImport ITunesXMLImporter::importLibrary() {
     ITunesImport iTunesImport;
     bool isMusicFolderLocatedAfterTracks = false;
 
+    // In sandboxed builds we have to obtain an access token
+    auto access = mixxx::FileAccess(mixxx::FileInfo(m_xmlFilePath));
+
     if (!m_xmlFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open iTunes music collection XML at " << m_xmlFilePath;
+        qWarning() << "Could not open iTunes music collection XML at " << m_xmlFilePath
+                   << ":" << m_xmlFile.errorString();
         return iTunesImport;
     }
 

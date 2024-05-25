@@ -2,8 +2,8 @@
 
 #include <QApplication>
 #include <QFileDialog>
-#include <QPushButton>
 #include <QStandardPaths>
+#include <QtGlobal>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -22,16 +22,18 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+#include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "util/clipboard.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
-#include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
@@ -60,6 +62,7 @@ namespace {
 const mixxx::Logger kLogger("CoreServices");
 constexpr int kMicrophoneCount = 4;
 constexpr int kAuxiliaryCount = 4;
+constexpr int kSamplerCount = 4;
 
 #define CLEAR_AND_CHECK_DELETED(x) clearHelper(x, #x);
 
@@ -178,7 +181,7 @@ CoreServices::~CoreServices() {
 }
 
 void CoreServices::initializeSettings() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
     // and too early to log errors and give users advises in their system language.
     // Calling this from main.cpp before the QApplication is initialized may cause a crash
@@ -304,10 +307,11 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     m_pPlayerManager->addConfiguredDecks();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
+
+    for (int i = 0; i < kSamplerCount; ++i) {
+        m_pPlayerManager->addSampler();
+    }
+
     m_pPlayerManager->addPreviewDeck();
 
     m_pEffectsManager->setup();
@@ -332,6 +336,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
+    Clipboard::createInstance();
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
             this,
@@ -352,7 +357,7 @@ void CoreServices::initialize(QApplication* pApp) {
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
 
-    bool hasChanged_MusicDir = false;
+    bool musicDirAdded = false;
 
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
@@ -366,10 +371,9 @@ void CoreServices::initialize(QApplication* pApp) {
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
                         QStandardPaths::MusicLocation));
-        if (!fd.isEmpty()) {
-            // adds Folder to database.
-            m_pLibrary->slotRequestAddDir(fd);
-            hasChanged_MusicDir = true;
+        // request to add directory to database.
+        if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
+            musicDirAdded = true;
         }
     }
 
@@ -420,7 +424,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
-    if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
+    if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }
 
@@ -527,6 +531,21 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
+std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+    // Note: We return here the base class pointer to make the coreservices.h usable
+    // in test classes where header included from dlgpreferences.h are not accessible.
+    std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
+            getScreensaverManager(),
+            nullptr,
+            getSoundManager(),
+            getControllerManager(),
+            getVinylControlManager(),
+            getEffectsManager(),
+            getSettingsManager(),
+            getLibrary());
+    return pDlgPreferences;
+}
+
 void CoreServices::finalize() {
     VERIFY_OR_DEBUG_ASSERT(m_isInitialized) {
         qDebug() << "Skipping CoreServices finalization because it was never initialized.";
@@ -562,16 +581,13 @@ void CoreServices::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    Clipboard::destroy();
+
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     // The player manager has to be deleted before the library to ensure
     // that all modified track metadata of loaded tracks is saved.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     CLEAR_AND_CHECK_DELETED(m_pPlayerManager);
-
-    // Destroy PlayerInfo explicitly to release the track
-    // pointers of tracks that were still loaded in decks
-    // or samplers when PlayerManager was destroyed!
-    PlayerInfo::destroy();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
@@ -592,6 +608,13 @@ void CoreServices::finalize() {
     // EngineMixer depends on Config and m_pEffectsManager.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMixer";
     CLEAR_AND_CHECK_DELETED(m_pEngine);
+
+    // Destroy PlayerInfo explicitly to release the track
+    // pointers of tracks that were still loaded in decks
+    // or samplers when PlayerManager was destroyed!
+    // Do this after deleting EngineMixer which makes use of
+    // PlayerInfo in EngineRecord.
+    PlayerInfo::destroy();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     CLEAR_AND_CHECK_DELETED(m_pEffectsManager);

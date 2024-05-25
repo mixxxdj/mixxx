@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QAction>
 #include <QPointer>
-#include <QSqlTableModel>
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class Library;
+class QAction;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -37,7 +36,6 @@ class SetlogFeature : public BasePlaylistFeature {
 
   protected:
     QModelIndex constructChildModel(int selectedId);
-    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
 
   private slots:
@@ -62,8 +60,6 @@ class SetlogFeature : public BasePlaylistFeature {
 
     int m_currentPlaylistId;
     int m_yearNodeId;
-
-    QPointer<WLibrary> m_libraryWidget;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
 };

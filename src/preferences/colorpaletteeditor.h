@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QComboBox>
 #include <QDialog>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QTableView>
 
 #include "preferences/colorpaletteeditormodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
+
+class QLineEdit;
+class QPushButton;
+class QTableView;
+class QItemSelection;
 
 // Widget for viewing, adding, editing and removing color palettes that can be
 // used for track/hotcue colors. Used by the Edit buttons in DlgPrefColors.

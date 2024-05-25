@@ -1,7 +1,5 @@
 #include "sources/soundsourcemodplug.h"
 
-#include <stdlib.h>
-
 #include <QFile>
 
 #include "audio/streaminfo.h"

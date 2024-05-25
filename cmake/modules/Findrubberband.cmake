@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -50,13 +50,13 @@ endif()
 
 find_path(rubberband_INCLUDE_DIR
   NAMES rubberband/RubberBandStretcher.h
-  PATHS ${PC_rubberband_INCLUDE_DIRS}
+  HINTS ${PC_rubberband_INCLUDE_DIRS}
   DOC "rubberband include directory")
 mark_as_advanced(rubberband_INCLUDE_DIR)
 
 find_library(rubberband_LIBRARY
   NAMES rubberband rubberband-library rubberband-dll
-  PATHS ${PC_rubberband_LIBRARY_DIRS}
+  HINTS ${PC_rubberband_LIBRARY_DIRS}
   DOC "rubberband library"
 )
 mark_as_advanced(rubberband_LIBRARY)
@@ -99,10 +99,9 @@ if(rubberband_FOUND)
       endif()
       find_package(Sleef)
       if (Sleef_FOUND)
-        find_library(sleefdft_path sleefdft REQUIRED)
         set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
           Sleef::sleef
-          ${sleefdft_path}
+          Sleef::sleefdft
         )
       endif()
     endif()

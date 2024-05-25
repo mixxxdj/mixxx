@@ -9,26 +9,26 @@ ScreensaverManager::ScreensaverManager(UserSettingsPointer pConfig, QObject* pPa
         : QObject(pParent), m_pConfig(pConfig) {
     m_inhibitScreensaver =
             pConfig->getValue(ConfigKey("[Config]", "InhibitScreensaver"),
-                    mixxx::ScreenSaverPreference::PREVENT_ON);
+                    mixxx::preferences::ScreenSaver::On);
     pConfig->setValue(ConfigKey("[Config]", "InhibitScreensaver"), m_inhibitScreensaver);
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
+    if (m_inhibitScreensaver == mixxx::preferences::ScreenSaver::On) {
         mixxx::ScreenSaverHelper::inhibit();
     }
 }
 
 ScreensaverManager::~ScreensaverManager() {
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
+    if (m_inhibitScreensaver != mixxx::preferences::ScreenSaver::Off) {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 }
 
-void ScreensaverManager::setStatus(mixxx::ScreenSaverPreference newInhibit) {
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
+void ScreensaverManager::setStatus(mixxx::preferences::ScreenSaver newInhibit) {
+    if (m_inhibitScreensaver != mixxx::preferences::ScreenSaver::Off) {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
-    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON ||
-            (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
+    if (newInhibit == mixxx::preferences::ScreenSaver::On ||
+            (newInhibit == mixxx::preferences::ScreenSaver::OnPlay &&
                     PlayerInfo::instance().getCurrentPlayingDeck() != -1)) {
         mixxx::ScreenSaverHelper::inhibit();
     }
@@ -37,7 +37,7 @@ void ScreensaverManager::setStatus(mixxx::ScreenSaverPreference newInhibit) {
 }
 
 void ScreensaverManager::slotCurrentPlayingDeckChanged(int deck) {
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
+    if (m_inhibitScreensaver != mixxx::preferences::ScreenSaver::OnPlay) {
         return;
     }
     if (deck == -1) {

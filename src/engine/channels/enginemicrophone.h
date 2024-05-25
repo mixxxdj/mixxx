@@ -2,14 +2,9 @@
 
 #include <QScopedPointer>
 
-#include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/enginevumeter.h"
-#include "util/circularbuffer.h"
-
 #include "soundio/soundmanagerutil.h"
 
-class EngineEffectsManager;
 class ControlAudioTaperPot;
 
 // EngineMicrophone is an EngineChannel that implements a mixing source whose
@@ -26,9 +21,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     // Called by EngineMixer whenever is requesting a new buffer of audio.
     void process(CSAMPLE* pOutput, const int iBufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
-    void postProcess(const int iBufferSize) override {
-        Q_UNUSED(iBufferSize)
-    }
 
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the callback thread of

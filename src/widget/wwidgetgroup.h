@@ -1,17 +1,14 @@
 #pragma once
 
-#include <QDomNode>
 #include <QFrame>
-#include <QPaintEvent>
 #include <QPixmap>
-#include <QResizeEvent>
 #include <QString>
 #include <QWidget>
-#include <QEvent>
 
 #include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
 
+class QDomNode;
 class SkinContext;
 
 class WWidgetGroup : public QFrame, public WBaseWidget {

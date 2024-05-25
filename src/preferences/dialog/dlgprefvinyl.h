@@ -1,17 +1,17 @@
 #pragma once
 
-#include <QSpinBox>
-#include <QWidget>
 #include <memory>
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
 #include "preferences/usersettings.h"
-#include "vinylcontrol/vinylcontrolsignalwidget.h"
 
 class ControlProxy;
 class PollingControlProxy;
 class VinylControlManager;
+class QSpinBox;
+class QWidget;
+class VinylControlSignalWidget;
 
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT

@@ -10,16 +10,9 @@
 // Based on C Source from R. Lindner published at public domain
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
-#include <memory.h>
-#include <stdio.h>
-
-#include <QDebug>
-
 #include "audio/types.h"
 #include "engine/engineobject.h"
-#include "util/math.h"
 #include "util/sample.h"
-#include "util/timer.h"
 
 namespace {
 

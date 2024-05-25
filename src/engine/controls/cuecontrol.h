@@ -6,7 +6,6 @@
 #include <QAtomicPointer>
 #include <QList>
 
-#include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
@@ -20,6 +19,7 @@
 class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
+class ControlProxy;
 
 enum class CueMode {
     Mixxx,
@@ -35,6 +35,7 @@ enum class SeekOnLoadMode {
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
     IntroStart = 3, // Use intro start cue point
+    FirstHotcue = 4,
 };
 
 /// Used for requesting a specific hotcue type when activating/setting a
@@ -138,7 +139,6 @@ class HotcueControl : public QObject {
     void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcueColorChangeRequest(double newColor);
-    void slotHotcueColorChanged(double newColor);
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v, HotcueSetMode mode);
@@ -152,7 +152,6 @@ class HotcueControl : public QObject {
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pHotcue, double newEndPosition);
-    void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
   private:

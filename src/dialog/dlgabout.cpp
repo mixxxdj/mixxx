@@ -1,12 +1,13 @@
 #include "dialog/dlgabout.h"
 
-#include <QDesktopServices>
+#include <QDebug>
 #include <QFile>
 #include <QLocale>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
 #include "util/color/color.h"
+#include "util/desktophelper.h"
 #include "util/versionstore.h"
 
 DlgAbout::DlgAbout()
@@ -48,100 +49,83 @@ DlgAbout::DlgAbout()
     thisReleaseDevelopers
             << "RJ Skerry-Ryan"
             << "Owen Williams"
-            << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
-            << "S. Brandt"
-            << "Uwe Klotz"
             << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
             << "Jan Holthuis"
-            << "Nikolaus Einhauser";
+            << "Nikolaus Einhauser"
+            << "Ferran Pujol Camins"
+            << "J&ouml;rg Wartenberg"
+            << "Fredrik Wieczerkowski"
+            << "Maarten de Boer";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
     // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
-            << "Tuukka Pasanen"
+            << "Uwe Klotz"
             << "Nino MP"
-            << "Ferran Pujol Camins"
-            << "Josep Maria Antol&iacute;n Segura"
+            << "D&aacute;vid Szak&aacute;llas"
             << "Daniel Poelzleithner"
-            << "St&eacute;phane Lepin"
             << "luzpaz"
-            << "Bernd Binder"
-            << "Pradyuman"
-            << "Nik Martin"
-            << "Kerrick Staley"
-            << "Raphael Graf"
-            << "Nik Martin"
-            << "YunQiang Su"
+            << "Kshitij Gupta"
             << "Sebastian Hasler"
             << "Philip Gottschling"
-            << "Melissa"
-            << "Ned Haughton"
             << "Adam Szmigin"
-            << "Cristiano Lacerda"
-            << "Sergey Ukolov"
-            << "Ketan Lambat"
             << "Evan Dekker"
-            << "Edward Kigwana"
-            << "Simon Harst"
             << "Harshit Maurya"
             << "Janek Fischer"
-            << "St&eacute;phane Lepin"
-            << "J&eacute;r&ocirc;me Blanchi"
-            << "Chris Hills"
-            << "David Lowenfels"
-            << "Matthieu Bouron"
-            << "Nathan Korth"
+            << "Matthias Beyer"
             << "Kristiyan Katsarov"
-            << "J&ouml;rg Wartenberg"
             << "Sanskar Bajpai"
-            << "Edward Millen"
-            << "Frank Breitling"
             << "Christian"
             << "Geraldo Nascimento"
-            << "Albert Aparicio"
-            << "Pierre Le Gall"
-            << "David Baker"
-            << "Justin Kourie"
-            << "Waylon Robertson"
-            << "Al Hadebe"
             << "Javier Vilarroig"
-            << "Ball&oacute; Gy&ouml;rgy"
-            << "Pino Toscano"
-            << "Alexander Horner"
-            << "Michael Ehlen"
-            << "Alice Midori"
-            << "h67ma"
+            << "Allen Wittenauer"
+            << "Raphael Bigal"
+            << "Filok"
             << "tcoyvwac"
+            << "Gary Tunstall"
             << "Tobias Oszlanyi (OsZ)"
-            << "Fredrik Wieczerkowski"
             << "Viktor Gal"
             << "Maty&aacute;&scaron; Bobek"
             << "Mr. Rincewind"
             << "Stefan N&uuml;rnberger"
             << "motific"
             << "Fatih Emre YILDIZ"
-            << "Vincent Duez-Dellac"
+            << "Neil Naveen"
             << "Javier Vilalta"
             << "David Chocholat&yacute;"
             << "Fabian Wolter"
             << "Matteo Gheza"
             << "Michael Bacarella"
-            << "Somesh Metri"
-            << "Maarten de Boer"
-            << "Doteya"
-            << "olafklingt"
             << "Bilal Ahmed Karbelkar"
             << "Alice Psykose"
             << "Jakob Leifhelm"
             << "Florian Goth"
             << "Chase Durand"
+            << "Antoine Colombier"
             << "John Last"
-            << "Robbert van der Helm";
+            << "Jakub Kopa&nacute;ko"
+            << "Saksham Hans"
+            << "Robbert van der Helm"
+            << "Andrew Burns"
+            << "Michael Wigard"
+            << "Alexandre Bique"
+            << "Milkii Brewster"
+            << "djantti"
+            << "Eugene Erokhin"
+            << "Ben Duval"
+            << "Nicolau Leal Werneck"
+            << "David Guglielmi"
+            << "Chris H. Meyer"
+            << "Daniel Fernandes"
+            << "Gr&eacute;goire Locqueville"
+            << "grizeldi"
+            << "codingspiderfox"
+            << "Ashnidh Khandelwal";
 
     QStringList specialThanks;
     specialThanks
@@ -190,7 +174,10 @@ DlgAbout::DlgAbout()
             << "Ilkka Tuohela"
             << "Max Linke"
             << "Marcos Cardinot"
-            << "Nicu Badescu";
+            << "Nicu Badescu"
+            << "Uwe Klotz"
+            << "Sean Pappalardo"
+            << "S. Brandt";
 
     QStringList pastContributors;
     pastContributors
@@ -320,7 +307,6 @@ DlgAbout::DlgAbout()
             << "Russ Mannex"
             << "Brendan Austin"
             << "Lorenz Drescher"
-            << "David Guglielmi"
             << "James Atwill"
             << "Alex Barker"
             << "Jean Claveau"
@@ -355,12 +341,49 @@ DlgAbout::DlgAbout()
             << "Nico Schl&ouml;mer"
             << "Joan Marc&egrave; i Igual"
             << "Stefan Weber"
-            << "Kshitij Gupta"
             << "Matthew Nicholson"
             << "Jamie Gifford"
             << "Sebastian Reu&szlig;e"
             << "Pawe&#322; Goli&#324;ski"
-            << "beenisss";
+            << "beenisss"
+            << "Tuukka Pasanen"
+            << "Josep Maria Antol&iacute;n Segura"
+            << "St&eacute;phane Lepin"
+            << "Bernd Binder"
+            << "Pradyuman"
+            << "Nik Martin"
+            << "Kerrick Staley"
+            << "Raphael Graf"
+            << "YunQiang Su"
+            << "Melissa"
+            << "Ned Haughton"
+            << "Cristiano Lacerda"
+            << "Ketan Lambat"
+            << "Edward Kigwana"
+            << "Simon Harst"
+            << "J&eacute;r&ocirc;me Blanchi"
+            << "Chris Hills"
+            << "David Lowenfels"
+            << "Matthieu Bouron"
+            << "Nathan Korth"
+            << "Edward Millen"
+            << "Frank Breitling"
+            << "Albert Aparicio"
+            << "Pierre Le Gall"
+            << "David Baker"
+            << "Justin Kourie"
+            << "Waylon Robertson"
+            << "Al Hadebe"
+            << "Ball&oacute; Gy&ouml;rgy"
+            << "Pino Toscano"
+            << "Alexander Horner"
+            << "Michael Ehlen"
+            << "Alice Midori"
+            << "h67ma"
+            << "Vincent Duez-Dellac"
+            << "Somesh Metri"
+            << "Doteya"
+            << "olafklingt";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
@@ -395,7 +418,7 @@ DlgAbout::DlgAbout()
     }
     btnDonate->setText(tr("Donate"));
     connect(btnDonate, &QPushButton::clicked, this, [] {
-        QDesktopServices::openUrl(QUrl(MIXXX_DONATE_URL));
+        mixxx::DesktopHelper::openUrl(QUrl(MIXXX_DONATE_URL));
     });
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);

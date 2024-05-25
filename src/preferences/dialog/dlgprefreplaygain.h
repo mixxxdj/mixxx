@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QButtonGroup>
-#include <QWidget>
 
 #include "control/pollingcontrolproxy.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
 #include "preferences/replaygainsettings.h"
+
+class QWidget;
 
 class DlgPrefReplayGain: public DlgPreferencePage,
                          public Ui::DlgPrefReplayGainDlg {

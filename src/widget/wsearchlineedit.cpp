@@ -4,11 +4,12 @@
 #include <QApplication>
 #include <QCompleter>
 #include <QFont>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QShortcut>
 #include <QSizePolicy>
 #include <QStringLiteral>
-#include <QStyle>
+#include <QToolButton>
 
 #include "moc_wsearchlineedit.cpp"
 #include "preferences/configobject.h"
@@ -17,7 +18,6 @@
 #include "util/logger.h"
 #include "util/parented_ptr.h"
 #include "wskincolor.h"
-#include "wwidget.h"
 
 #define ENABLE_TRACE_LOG false
 

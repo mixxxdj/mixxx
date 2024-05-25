@@ -6,10 +6,8 @@
 
 #include "library/banshee/bansheedbconnection.h"
 #include "library/banshee/bansheeplaylistmodel.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/dao/settingsdao.h"
 #include "library/library.h"
-#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
 #include "moc_bansheefeature.cpp"
 #include "track/track.h"
 

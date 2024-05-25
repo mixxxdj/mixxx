@@ -11,7 +11,6 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
-class ConfigKey;
 class ControlProxy;
 
 class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {

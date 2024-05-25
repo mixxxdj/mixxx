@@ -4,16 +4,14 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <algorithm>
 #include <djinterop/djinterop.hpp>
-#include <string>
 
 #include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_dlglibraryexport.cpp"
@@ -35,7 +33,7 @@ void populateCrates(
     pListWidget->clear();
     while (crates.populateNext(&crate)) {
         auto pItem = std::make_unique<QListWidgetItem>(crate.getName());
-        pItem->setData(Qt::UserRole, crate.getId().value());
+        pItem->setData(Qt::UserRole, crate.getId().toVariant());
         pListWidget->addItem(pItem.release());
     }
 }
@@ -153,8 +151,8 @@ void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
     m_pCratesList->setEnabled(true);
     for (auto i = 0; i < m_pCratesList->count(); ++i) {
         auto* pItem = m_pCratesList->item(i);
-        const auto currCrateId = pItem->data(Qt::UserRole).toInt();
-        if (currCrateId == crateId->value()) {
+        const auto currCrateId = CrateId(pItem->data(Qt::UserRole));
+        if (currCrateId == crateId) {
             m_pCratesList->setCurrentItem(pItem);
             return;
         }
@@ -210,7 +208,7 @@ void DlgLibraryExport::exportRequested() {
     if (m_pCratesList->isEnabled()) {
         const auto selectedItems = m_pCratesList->selectedItems();
         for (auto* pItem : selectedItems) {
-            CrateId id{pItem->data(Qt::UserRole).value<int>()};
+            CrateId id{pItem->data(Qt::UserRole)};
             pRequest->crateIdsToExport.insert(id);
         }
     }

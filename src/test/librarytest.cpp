@@ -1,5 +1,6 @@
 #include "test/librarytest.h"
 
+#include "library/coverartcache.h"
 #include "library/library_prefs.h"
 #include "track/track.h"
 
@@ -33,6 +34,7 @@ LibraryTest::LibraryTest()
         : MixxxDbTest(kInMemoryDbConnection),
           m_pTrackCollectionManager(newTrackCollectionManager(config(), dbConnectionPooler())),
           m_keyNotationCO(mixxx::library::prefs::kKeyNotationConfigKey) {
+    CoverArtCache::createInstance();
 }
 
 TrackPointer LibraryTest::getOrAddTrackByLocation(

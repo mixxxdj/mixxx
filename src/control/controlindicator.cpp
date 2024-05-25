@@ -2,7 +2,6 @@
 
 #include "control/controlproxy.h"
 #include "moc_controlindicator.cpp"
-#include "util/math.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");

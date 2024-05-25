@@ -1,12 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
-#include "effects/effectsmanager.h"
+#include "effects/defs.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmixerdlg.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
+
+class QComboBox;
+class QWidget;
+class EffectsManager;
 
 class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT
@@ -62,7 +68,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     void setUpMainEQ();
     void updateMainEQ();
-    void storeMainEQ();
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getDeckEqManifests() const;
@@ -109,6 +114,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqBypass;
 
     bool m_initializing;
+    bool m_updatingMainEQ;
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;

@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/tstring.h>
+#include <textidentificationframe.h>
+#include <tstring.h>
 
 #include <QDir>
 #include <QtDebug>
+#include <memory>
 
 #include "test/mixxxtest.h"
 #include "track/serato/markers.h"
-#include "util/memory.h"
 
 namespace {
 

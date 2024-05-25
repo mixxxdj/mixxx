@@ -8,11 +8,9 @@
 #include "mixer/playermanager.h"
 #include "moc_vinylcontrolmanager.cpp"
 #include "soundio/soundmanager.h"
-#include "util/timer.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
-#include "vinylcontrol/vinylcontrolxwax.h"
 
 namespace {
 const QRegularExpression kChannelRegex(QStringLiteral("\\[Channel([1-9]\\d*)\\]"));

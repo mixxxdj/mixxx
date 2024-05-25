@@ -1,9 +1,7 @@
 #pragma once
 
 #include <QMap>
-#include <QWidget>
 #include <memory>
-#include <optional>
 
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -11,11 +9,8 @@
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
 
-class ControlProxy;
-class ControlPotmeter;
-class PlayerManager;
-class MixxxMainWindow;
 class ControlObject;
+class QWidget;
 
 namespace mixxx {
 class ScreensaverManager;
@@ -49,7 +44,8 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   signals:
     void reloadUserInterface();
-    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+    void menuBarAutoHideChanged();
+    void tooltipModeChanged(mixxx::preferences::Tooltips tooltipMode);
 
   private:
     void notifyRebootNecessary();
@@ -73,9 +69,10 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_colorScheme;
     QString m_colorSchemeOnUpdate;
     QString m_localeOnUpdate;
-    mixxx::TooltipsPreference m_tooltipMode;
+    mixxx::preferences::MultiSamplingMode m_multiSampling;
+    mixxx::preferences::Tooltips m_tooltipMode;
     double m_dScaleFactor;
     double m_minScaleFactor;
     double m_dDevicePixelRatio;
-    mixxx::ScreenSaverPreference m_screensaverMode;
+    mixxx::preferences::ScreenSaver m_screensaverMode;
 };

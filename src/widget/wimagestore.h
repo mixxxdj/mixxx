@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QHash>
-#include <QImage>
 #include <QSharedPointer>
-#include <unordered_map>
+#include <memory>
 
-#include "skin/legacy/imgsource.h"
 #include "skin/legacy/pixmapsource.h"
-#include "util/memory.h"
+
+class QImage;
+class ImgSource;
 
 class WImageStore {
   public:

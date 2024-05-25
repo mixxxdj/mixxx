@@ -4,11 +4,11 @@
 
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
-#include "util/sandbox.h"
 
 namespace mixxx {
 
 class FileAccess;
+class FileInfo;
 
 } // namespace mixxx
 

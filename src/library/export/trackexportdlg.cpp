@@ -1,6 +1,5 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
 #include <QMessageBox>
 
 #include "moc_trackexportdlg.cpp"

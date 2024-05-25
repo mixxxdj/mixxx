@@ -15,12 +15,11 @@ class TrackRefTest : public testing::Test {
     // if only the default constructor is used. This workaround was
     // needed for LLVM version 7.0.2 (clang-700.1.81).
     TrackRefTest()
-      : m_tempFile("TrackRefTest.tmp"),
-        m_tempFileDir(QDir::tempPath()),
-        m_tempFileName(m_tempFile.fileName()),
-        m_tempFileInfo(m_tempFileDir, m_tempFileName),
-        m_validTrackId(123),
-        m_invalidTrackId() {
+            : m_tempFile("TrackRefTest.tmp"),
+              m_tempFileDir(QDir::tempPath()),
+              m_tempFileName(m_tempFile.fileName()),
+              m_tempFileInfo(m_tempFileDir, m_tempFileName),
+              m_validTrackId(QVariant(123)) {
     }
 
     virtual void SetUp() {

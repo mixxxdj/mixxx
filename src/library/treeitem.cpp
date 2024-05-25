@@ -78,7 +78,7 @@ void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
     }
     DEBUG_ASSERT(!m_pFeature);
     m_pFeature = pFeature;
-    for (auto* pChild : qAsConst(m_children)) {
+    for (auto* pChild : std::as_const(m_children)) {
         pChild->initFeatureRecursively(pFeature);
     }
 }

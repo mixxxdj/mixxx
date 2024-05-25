@@ -1,6 +1,7 @@
 #include "soundio/soundmanagerconfig.h"
 
 #include <QRegularExpression>
+#include <QtGlobal>
 
 #include "audio/types.h"
 #include "soundio/sounddevice.h"
@@ -180,7 +181,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             bool dupe(false);
-            for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
+            for (const AudioOutput& otherOut : std::as_const(m_outputs)) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
@@ -203,7 +204,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             bool dupe(false);
-            for (const AudioInput& otherIn : qAsConst(m_inputs)) {
+            for (const AudioInput& otherIn : std::as_const(m_inputs)) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;
@@ -495,7 +496,9 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;
             }
 #endif
-#ifdef __APPLE__
+#ifdef Q_OS_IOS
+            m_api = MIXXX_PORTAUDIO_IOSAUDIO_STRING;
+#elif defined(Q_OS_MACOS)
             m_api = MIXXX_PORTAUDIO_COREAUDIO_STRING;
 #endif
         }

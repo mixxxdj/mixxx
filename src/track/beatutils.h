@@ -3,9 +3,7 @@
 #include <QVector>
 
 #include "audio/frame.h"
-#include "audio/types.h"
 #include "track/bpm.h"
-#include "util/math.h"
 
 class BeatUtils {
   public:

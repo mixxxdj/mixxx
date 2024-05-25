@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QDomNode>
-#include <QEvent>
 #include <QScrollArea>
 
-#include "preferences/usersettings.h"
-#include "skin/legacy/skincontext.h"
 #include "widget/wbasewidget.h"
+
+class QDomNode;
+class SkinContext;
 
 /// Creates a QScrollArea. The QT default is to show scrollbars if needed.
 class WScrollable : public QScrollArea, public WBaseWidget {

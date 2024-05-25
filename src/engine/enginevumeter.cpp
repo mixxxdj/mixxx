@@ -1,8 +1,6 @@
 #include "engine/enginevumeter.h"
 
 #include "audio/types.h"
-#include "control/controlpotmeter.h"
-#include "control/controlproxy.h"
 #include "moc_enginevumeter.cpp"
 #include "util/sample.h"
 

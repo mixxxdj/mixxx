@@ -1,7 +1,9 @@
 #include "effects/backends/builtin/graphiceqeffect.h"
 
 #include "audio/types.h"
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 
 namespace {
 constexpr double kQ = 1.2247449;

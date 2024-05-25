@@ -9,7 +9,6 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-#include "engine/engine.h"
 #include "library/dao/analysisdao.h"
 #include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
@@ -18,7 +17,6 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
-#include "util/timer.h"
 
 namespace {
 
