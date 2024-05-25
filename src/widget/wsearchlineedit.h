@@ -37,6 +37,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
+    void handleSetFocus(Qt::FocusReason focusReason);
+
   protected:
     void resizeEvent(QResizeEvent*) override;
     void focusInEvent(QFocusEvent*) override;
@@ -47,7 +49,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
   signals:
     void search(const QString& text);
-    FocusWidget setLibraryFocus(FocusWidget newFocusWidget);
+    FocusWidget setLibraryFocus(FocusWidget newFocusWidget,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
 
   public slots:
     void slotSetFont(const QFont& font);
