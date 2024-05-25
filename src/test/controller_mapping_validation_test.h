@@ -136,12 +136,40 @@ class FakeController : public Controller {
     std::shared_ptr<LegacyHidControllerMapping> m_pHidMapping;
 };
 
-class LegacyControllerMappingValidationTest : public MixxxTest {
+class LegacyControllerMappingValidationTest : public ::testing::TestWithParam<MappingInfo> {
   protected:
-    void SetUp() override;
+    bool testLoadMapping(const MappingInfo& mapping, const QDir& systemMappingsPath);
 
-    bool testLoadMapping(const MappingInfo& mapping);
+    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
+};
 
+class LegacyControllerMappingList {
+  public:
+    LegacyControllerMappingList() {
+        QList<QString> possiblePaths = {
+                QDir::currentPath() + "/res/controllers",
+                QDir::currentPath() + "/../res/controllers",
+                QDir::currentPath() + "/../../res/controllers"};
+
+        for (const QString& path : possiblePaths) {
+            if (QDir(path).exists()) {
+                m_mappingPath = QDir(path);
+                break;
+            }
+        }
+
+        m_pEnumerator.reset(new MappingInfoEnumerator(
+                QList<QString>{m_mappingPath.absolutePath()}));
+    };
+    QDir getMappingPath() {
+        return m_mappingPath;
+    }
+
+    MappingInfoEnumerator* getMappingEnumerator() {
+        return m_pEnumerator.data();
+    }
+
+  protected:
     QDir m_mappingPath;
     QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
 };
