@@ -2799,7 +2799,10 @@ if(BUILD_TESTING)
   endif()
 
   add_executable(mixxx-test ${src-mixxx-test})
-  target_compile_definitions(mixxx-test PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res")
+  target_compile_definitions(
+    mixxx-test
+    PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
+  )
 
   if(QML)
     target_sources(
@@ -2825,11 +2828,12 @@ if(BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
   enable_testing()
-  gtest_add_tests(
-    TARGET mixxx-test
+  gtest_discover_tests(
+    mixxx-test
     EXTRA_ARGS --logLevel info
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     TEST_LIST testsuite
+    DISCOVERY_MODE PRE_TEST
   )
 
   if(NOT WIN32)
