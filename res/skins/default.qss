@@ -167,3 +167,13 @@ WEffectChainPresetButton QMenu QCheckBox::indicator {
   width: 0.7em;
   height: 0.7em;
 }
+
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  image: url(:/images/ic_magnifier.svg);
+  /* Since this indicator doesn't have a border in the official skins,
+   we increase the size a bit in order to make appear as big as the
+   checkboxes, which also aligns the text with the other checkbox texts.
+   0.8em should work fine for a reasonable range of font sizes. */
+  width: 0.8em;
+  height: 0.8em;
+}

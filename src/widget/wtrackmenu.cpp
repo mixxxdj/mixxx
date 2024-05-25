@@ -224,6 +224,10 @@ void WTrackMenu::createMenus() {
                 &QMenu::aboutToShow,
                 this,
                 [this] {
+                    // TODO When accidentally leaving the menu and reopening it,
+                    // the previous check states are cleared.
+                    // Clear in closeEvent() only? And create actions on aboutToShow
+                    // only if it's empty?
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {

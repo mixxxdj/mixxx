@@ -5,6 +5,7 @@
 #include "util/parented_ptr.h"
 
 class Track;
+class QWidgetAction;
 
 class WSearchRelatedTracksMenu : public QMenu {
     Q_OBJECT
@@ -35,5 +36,5 @@ class WSearchRelatedTracksMenu : public QMenu {
             const QString& actionTextPrefix,
             const QString& elidableTextSuffix) const;
 
-    parented_ptr<QAction> m_pSearchAction;
+    parented_ptr<QWidgetAction> m_pSearchAction;
 };

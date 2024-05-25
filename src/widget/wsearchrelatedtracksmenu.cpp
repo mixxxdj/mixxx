@@ -94,6 +94,9 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
             &QAction::triggered,
             this,
             [this, searchQuery]() {
+                // TODO Call combineQueriesTriggerSearch() so we can check multiple
+                // actions and press return on the last selected action without
+                // having to go to the Search button?
                 emit triggerSearch(searchQuery);
             });
     addAction(pAction.get());
@@ -353,11 +356,23 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
 
     addSeparator();
 
-    m_pSearchAction = make_parented<QAction>(tr("&Search selected"), this);
+    // Make the Search button a checkbox to simplify setting an icon via qss.
+    // This is not possible with a QAction, and tedious with a QPushButton.
+    auto pCheckBox = make_parented<QCheckBox>(tr("&Search selected"), this);
+    pCheckBox->setObjectName("SearchSelectedAction");
+    m_pSearchAction = make_parented<QWidgetAction>(this);
+    m_pSearchAction->setDefaultWidget(pCheckBox.get());
     addAction(m_pSearchAction.get());
-    m_pSearchAction.get()->setDisabled(true);
+    m_pSearchAction->setDisabled(true);
+
+    // This is for Enter/Return key
     connect(m_pSearchAction.get(),
             &QAction::triggered,
+            this,
+            &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
+    // This is for click and Space key
+    connect(pCheckBox.get(),
+            &QCheckBox::clicked,
             this,
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
 }
