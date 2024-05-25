@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QRegularExpression>
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
@@ -130,8 +131,6 @@ void deleteTrack(Track* pTrack) {
 #endif
 
 void LegacyControllerMappingValidationTest::SetUp() {
-    m_mappingPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
-    m_pEnumerator.reset(new MappingInfoEnumerator(QList<QString>{m_mappingPath.absolutePath()}));
 #ifdef MIXXX_USE_QML
     // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
     // but it does a lot of local disk / settings setup.
@@ -192,14 +191,14 @@ void LegacyControllerMappingValidationTest::TearDown() {
 bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& mapping) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(mapping.getPath()), m_mappingPath);
+                    QFileInfo(mapping.getPath()), QDir(RESOURCE_FOLDER"/controllers"));
     if (!pMapping) {
         return false;
     }
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
+    bool result = controller.applyMapping(getTestDir().filePath(RESOURCE_FOLDER));
     controller.stopEngine();
     return result;
 }
@@ -239,39 +238,56 @@ bool lintMappingInfo(const MappingInfo& mapping) {
     return result;
 }
 
-TEST_F(LegacyControllerMappingValidationTest, MidiMappingsValid) {
-    foreach (const MappingInfo& mapping,
-            m_pEnumerator->getMappingsByExtension(MIDI_MAPPING_EXTENSION)) {
-        qDebug() << "Validating " << mapping.getPath();
-        std::string errorDescription = "Error while validating " + mapping.getPath().toStdString();
-        EXPECT_TRUE(mapping.isValid()) << errorDescription;
-        EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-        EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
-    }
+std::shared_ptr<LegacyControllerMappingList> createMappingEnumerator() {
+    return std::make_shared<LegacyControllerMappingList>();
+}
+
+std::string PrintMappingName(const ::testing::TestParamInfo<MappingInfo>& info) {
+    auto name = info.param.getName();
+    return name.replace(QRegularExpression("[^\\w]+"), "_").toStdString();
+}
+
+auto pEnumerator = createMappingEnumerator();
+
+TEST_P(LegacyControllerMappingValidationTest, ValidateMappingXML) {
+    const MappingInfo& mapping = GetParam();
+    qDebug() << "ValidateMappingXML " << mapping.getPath();
+    std::string errorDescription = "Error while validating XML file " +
+            mapping.getPath().toStdString();
+    EXPECT_TRUE(mapping.isValid()) << errorDescription;
+    EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
+}
+
+TEST_P(LegacyControllerMappingValidationTest, LoadMapping) {
+    const MappingInfo& mapping = GetParam();
+    qDebug() << "LoadMapping " << mapping.getPath();
+    std::string errorDescription = "Error while loading " + mapping.getPath().toStdString();
+    EXPECT_TRUE(mapping.isValid()) << errorDescription;
+    EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
 }
 
 #ifdef __HID__
-TEST_F(LegacyControllerMappingValidationTest, HidMappingsValid) {
-    foreach (const MappingInfo& mapping,
-            m_pEnumerator->getMappingsByExtension(HID_MAPPING_EXTENSION)) {
-        qDebug() << "Validating" << mapping.getPath();
-        std::string errorDescription = "Error while validating " + mapping.getPath().toStdString();
-        EXPECT_TRUE(mapping.isValid()) << errorDescription;
-        EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-        EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
-    }
-}
+INSTANTIATE_TEST_SUITE_P(HidMappingsValid,
+        LegacyControllerMappingValidationTest,
+        ::testing::ValuesIn(
+                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
+                        HID_MAPPING_EXTENSION)),
+        PrintMappingName);
 #endif
 
+INSTANTIATE_TEST_SUITE_P(MidiMappingsValid,
+        LegacyControllerMappingValidationTest,
+        ::testing::ValuesIn(
+                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
+                        MIDI_MAPPING_EXTENSION)),
+        PrintMappingName);
+
+
 #ifdef __BULK__
-TEST_F(LegacyControllerMappingValidationTest, BulkMappingsValid) {
-    foreach (const MappingInfo& mapping,
-            m_pEnumerator->getMappingsByExtension(BULK_MAPPING_EXTENSION)) {
-        qDebug() << "Validating" << mapping.getPath();
-        std::string errorDescription = "Error while validating " + mapping.getPath().toStdString();
-        EXPECT_TRUE(mapping.isValid()) << errorDescription;
-        EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-        EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
-    }
-}
+INSTANTIATE_TEST_SUITE_P(BulkMappingsValid,
+        LegacyControllerMappingValidationTest,
+        ::testing::ValuesIn(
+                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
+                        BULK_MAPPING_EXTENSION)),
+        PrintMappingName);
 #endif

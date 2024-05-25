@@ -214,7 +214,10 @@ class PlayerManager;
 
 // We can't inherit from LibraryTest because that creates a key_notation control object that is also
 // created by the Library object itself. The duplicated CO creation causes a debug assert.
-class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourceProviderRegistration {
+class LegacyControllerMappingValidationTest
+        : public MixxxDbTest,
+          SoundSourceProviderRegistration,
+          public ::testing::WithParamInterface<MappingInfo> {
   public:
     LegacyControllerMappingValidationTest()
             : MixxxDbTest(true) {
@@ -242,7 +245,24 @@ class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourcePro
 #endif
 
     bool testLoadMapping(const MappingInfo& mapping);
+};
 
+class LegacyControllerMappingList {
+  public:
+    LegacyControllerMappingList() {
+        m_mappingPath = QDir(RESOURCE_FOLDER"/controllers");
+        m_pEnumerator.reset(new MappingInfoEnumerator(
+                QList<QString>{RESOURCE_FOLDER"/controllers"}));
+    };
+    QDir getMappingPath() {
+        return m_mappingPath;
+    }
+
+    MappingInfoEnumerator* getMappingEnumerator() {
+        return m_pEnumerator.data();
+    }
+
+  protected:
     QDir m_mappingPath;
     QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
 };
