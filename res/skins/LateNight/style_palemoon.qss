@@ -3143,7 +3143,7 @@ QPlainTextEdit QMenu::item:disabled {
       image: url(skins:LateNight/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
-    WLibrarySidebar QMenu::indicator:checked,
+  WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   #LibraryPlayedCheckbox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
@@ -3154,15 +3154,7 @@ QPlainTextEdit QMenu::item:disabled {
   WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skins:LateNight/palemoon/buttons/btn__effect_selected.svg);
-    width: 13px;
-    height: 13px;
     margin-left: 6px;
-  }
-  /* disabled menu item and checkbox */
-  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    background-color: #222;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
     image: url(skins:LateNight/palemoon/buttons/btn__lib_checkmark_grey.svg);
