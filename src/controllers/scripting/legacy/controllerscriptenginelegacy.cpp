@@ -876,10 +876,8 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         return nullptr;
     }
 
-    std::unique_ptr<QQmlComponent>
-            qmlComponent =
-                    std::make_unique<QQmlComponent>(
-                            std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine).get());
+    QQmlComponent qmlComponent = QQmlComponent(
+            std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine).get());
 
     QFile scene = QFile(qmlScript.file.absoluteFilePath());
     if (!scene.exists()) {
@@ -891,22 +889,22 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     QDir dir(m_resourcePath + "/qml/");
 
     scene.open(QIODevice::ReadOnly);
-    qmlComponent->setData(scene.readAll(),
+    qmlComponent.setData(scene.readAll(),
             // Obfuscate the scene filename to make it appear in the QML folder.
             // This allows a smooth integration with QML components.
             QUrl::fromLocalFile(
                     dir.absoluteFilePath(qmlScript.file.fileName())));
     scene.close();
 
-    while (qmlComponent->isLoading()) {
+    while (qmlComponent.isLoading()) {
         qCDebug(m_logger) << "Waiting for component "
                           << qmlScript.file.absoluteFilePath()
-                          << " to be ready: " << qmlComponent->progress();
+                          << " to be ready: " << qmlComponent.progress();
         QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 500);
     }
 
-    if (qmlComponent->isError()) {
-        const QList<QQmlError> errorList = qmlComponent->errors();
+    if (qmlComponent.isError()) {
+        const QList<QQmlError> errorList = qmlComponent.errors();
         for (const QQmlError& error : errorList) {
             qCWarning(m_logger) << "Unable to load the QML scene:" << error.url()
                                 << "at line" << error.line() << ", error: " << error;
@@ -915,15 +913,15 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         return nullptr;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(qmlComponent->isReady()) {
+    VERIFY_OR_DEBUG_ASSERT(qmlComponent.isReady()) {
         qCWarning(m_logger) << "QMLComponent isn't ready although synchronous load was requested.";
         return nullptr;
     }
 
-    QObject* pRootObject = qmlComponent->createWithInitialProperties(
+    QObject* pRootObject = qmlComponent.createWithInitialProperties(
             QVariantMap{{"screenId", pScreen->info().identifier}});
-    if (qmlComponent->isError()) {
-        const QList<QQmlError> errorList = qmlComponent->errors();
+    if (qmlComponent.isError()) {
+        const QList<QQmlError> errorList = qmlComponent.errors();
         for (const QQmlError& error : errorList) {
             qCWarning(m_logger) << error.url() << error.line() << error;
         }
