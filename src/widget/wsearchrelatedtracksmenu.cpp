@@ -54,8 +54,8 @@ QString extractCalendarYearNumberFromReleaseDate(
 } // namespace
 
 WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
-        QWidget* parent)
-        : QMenu(tr("Search related Tracks"), parent) {
+        QWidget* pParent)
+        : QMenu(tr("Search related Tracks"), pParent) {
 }
 
 void WSearchRelatedTracksMenu::addTriggerSearchAction(
@@ -377,30 +377,30 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
 }
 
-bool WSearchRelatedTracksMenu::eventFilter(QObject* obj, QEvent* e) {
+bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
     if (e->type() == QEvent::MouseButtonPress) {
         // Clicking any spot in the checkbox that is not inside the indicator's
         // 'click' rectangle triggers the search, ignoring other checked boxes.
         // Clicks on the indicator are passed on to the event filter, hence
         // toggling the checkbox happens as usual.
-        QCheckBox* box = qobject_cast<QCheckBox*>(obj);
-        if (box) {
-            QMouseEvent* me = static_cast<QMouseEvent*>(e);
-            VERIFY_OR_DEBUG_ASSERT(me) {
+        QCheckBox* pBox = qobject_cast<QCheckBox*>(pObj);
+        if (pBox) {
+            QMouseEvent* pMe = static_cast<QMouseEvent*>(e);
+            VERIFY_OR_DEBUG_ASSERT(pMe) {
                 return true;
             }
             QStyleOptionButton option;
-            option.initFrom(box);
-            auto pStyle = box->style();
+            option.initFrom(pBox);
+            auto* pStyle = pBox->style();
             if (!pStyle) {
                 return true;
             }
             const QRect indicatorClickRect = pStyle->subElementRect(QStyle::SE_CheckBoxClickRect,
                     &option,
-                    box);
-            if (!indicatorClickRect.contains(me->pos())) {
+                    pBox);
+            if (!indicatorClickRect.contains(pMe->pos())) {
                 // Text ('border' ractangle) was clicked, trigger the search.
-                const QString query = box->property("query").toString();
+                const QString query = pBox->property("query").toString();
                 emit triggerSearch(query);
                 // Note that this click will not emit QAction::triggered like
                 // when pressing Return on a selected action, hence we need to
@@ -408,18 +408,18 @@ bool WSearchRelatedTracksMenu::eventFilter(QObject* obj, QEvent* e) {
             }
         }
     }
-    return QObject::eventFilter(obj, e);
+    return QObject::eventFilter(pObj, e);
 }
 
 void WSearchRelatedTracksMenu::updateSearchButton() {
-    // Enable the Search button if at least one box is checked.
+    // Enable the Search button if at least opChildbox is checked.
     VERIFY_OR_DEBUG_ASSERT(m_pSearchAction) {
         return;
     }
     m_pSearchAction->setDisabled(true);
-    for (const auto* child : std::as_const(children())) {
-        const auto* box = qobject_cast<const QCheckBox*>(child);
-        if (box && box->isChecked()) {
+    for (const auto* pChild : std::as_const(children())) {
+        const auto* pBox = qobject_cast<const QCheckBox*>(pChild);
+        if (pBox && pBox->isChecked()) {
             m_pSearchAction->setEnabled(true);
             return;
         }
@@ -429,10 +429,13 @@ void WSearchRelatedTracksMenu::updateSearchButton() {
 void WSearchRelatedTracksMenu::combineQueriesTriggerSearch() {
     // collect queries of all checked checkboxes
     QStringList queries;
-    for (const auto* child : std::as_const(children())) {
-        const auto* box = qobject_cast<const QCheckBox*>(child);
-        if (box && box->isChecked()) {
-            QString query = box->property("query").toString();
+    for (const auto* pChild : std::as_const(children())) {
+        if (pChild == m_pSearchAction) {
+            continue;
+        }
+        const auto* pBox = qobject_cast<const QCheckBox*>(pChild);
+        if (pBox && pBox->isChecked()) {
+            QString query = pBox->property("query").toString();
             if (!query.isEmpty()) {
                 queries.append(query);
             }
@@ -441,7 +444,7 @@ void WSearchRelatedTracksMenu::combineQueriesTriggerSearch() {
     if (queries.isEmpty()) {
         return;
     } else {
-        QString queryCombo = queries.join(QStringLiteral(" "));
+        QString queryCombo = queries.join(QChar(' '));
         emit triggerSearch(queryCombo);
     }
 }

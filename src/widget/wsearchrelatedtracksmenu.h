@@ -11,12 +11,12 @@ class WSearchRelatedTracksMenu : public QMenu {
     Q_OBJECT
   public:
     explicit WSearchRelatedTracksMenu(
-            QWidget* parent = nullptr);
+            QWidget* pParent = nullptr);
     ~WSearchRelatedTracksMenu() override = default;
 
     void addActionsForTrack(
             const Track& track);
-    bool eventFilter(QObject* obj, QEvent* e) override;
+    bool eventFilter(QObject* pObj, QEvent* e) override;
 
   signals:
     void triggerSearch(
