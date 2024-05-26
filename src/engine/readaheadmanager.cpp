@@ -186,6 +186,11 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                         m_pCrossFadeBuffer,
                         crossFadeSamples);
             }
+        } else {
+            SampleUtil::applyRampingGain(pOutput,
+                    CSAMPLE_GAIN_ONE,
+                    CSAMPLE_GAIN_ZERO,
+                    samples_from_reader);
         }
     }
 
