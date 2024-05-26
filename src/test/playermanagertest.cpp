@@ -97,6 +97,10 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
     }
 
+    void TearDown() override {
+        CoverArtCache::destroy();
+    }
+
     ~PlayerManagerTest() {
         m_pSoundManager.reset();
         m_pPlayerManager.reset();

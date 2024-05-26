@@ -205,7 +205,7 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.5.0)
+project(mixxx VERSION 2.6.0)
 enable_language(C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
@@ -933,6 +933,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtagfetcher.ui
   src/library/dlgtrackinfo.cpp
   src/library/dlgtrackinfo.ui
+  src/library/dlgtrackinfomulti.cpp
+  src/library/dlgtrackinfomulti.ui
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
@@ -1334,7 +1336,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 set(MIXXX_COMMON_PRECOMPILED_HEADER
   src/util/assert.h
 )
-target_precompile_headers(mixxx-lib PUBLIC
+set(MIXXX_LIB_PRECOMPILED_HEADER
   src/audio/frame.h
   src/audio/signalinfo.h
   src/audio/streaminfo.h
@@ -1489,7 +1491,6 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/workerthread.h
   src/util/workerthreadscheduler.h
   src/util/xml.h
-  ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
 if (NOT QML)
   target_sources(mixxx-lib PRIVATE
@@ -2196,34 +2197,12 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
   src/util/moc_included_test.cpp
 )
-target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
 
 find_package(benchmark)
 target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
-
-# Test Suite
-include(CTest)
-include(GoogleTest)
-enable_testing()
-gtest_discover_tests(
-  mixxx-test
-  EXTRA_ARGS --logLevel info
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-  TEST_LIST testsuite
-  DISCOVERY_MODE PRE_TEST)
-
-# Benchmarking
-add_custom_target(mixxx-benchmark
-  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMENT "Mixxx Benchmarks"
-  VERBATIM
-)
-add_dependencies(mixxx-benchmark mixxx-test)
 
 #
 # Resources
@@ -2371,7 +2350,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.20.2)
+  set(LIBDJINTEROP_VERSION 0.21.0)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2407,7 +2386,7 @@ if(ENGINEPRIME)
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=3024b8b49bc0bd673a7f032e7da7b73ce61144951e810683ec89650fedd45b85
+      URL_HASH SHA256=160d4e09b25e859816a6b664058e7c6bc5cd889adeb188a9721c2b65d2133641
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -3478,6 +3457,47 @@ if(FFMPEG)
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
+# STEM file support
+default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+if (STEM)
+  if(NOT FFMPEG)
+    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
+  target_compile_definitions(mixxx-test PUBLIC __STEM__)
+  target_sources(mixxx-test PUBLIC
+    src/test/stemtest.cpp
+    src/test/steminfotest.cpp
+  )
+  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourcestem.cpp
+    src/track/steminfoimporter.cpp
+    src/track/steminfo.cpp
+  )
+endif()
+
+# Test Suite
+include(CTest)
+include(GoogleTest)
+enable_testing()
+gtest_discover_tests(
+  mixxx-test
+  EXTRA_ARGS --logLevel info
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+  TEST_LIST testsuite
+  DISCOVERY_MODE PRE_TEST)
+
+# Benchmarking
+add_custom_target(mixxx-benchmark
+  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMENT "Mixxx Benchmarks"
+  VERBATIM
+)
+add_dependencies(mixxx-benchmark mixxx-test)
+
 # Google PerfTools
 option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
@@ -3585,8 +3605,8 @@ if(OPUS)
     src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
-  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile)
-  target_link_libraries(mixxx-lib PRIVATE Opus::Opus)
+  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
+  target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
 endif()
 
 # MAD MP3 Decoder
@@ -3787,6 +3807,12 @@ if(WAVPACK)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
+
+target_precompile_headers(mixxx-lib PUBLIC
+  ${MIXXX_LIB_PRECOMPILED_HEADER}
+  ${MIXXX_COMMON_PRECOMPILED_HEADER}
+)
+target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
