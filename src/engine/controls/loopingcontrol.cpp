@@ -1255,11 +1255,15 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (pBeats) {
         m_pBeats = pBeats;
         m_trueTrackBeats = true;
-    } else {
+    } else if (m_pTrack) {
+        // no beats, use fake beats so we can use seconds as beat unit
         m_pBeats = getFake60BpmBeats();
         m_trueTrackBeats = false;
+    } else {
+        // no track, no beats
+        m_pBeats = pBeats;
+        m_trueTrackBeats = false;
     }
-    // TODO All "if (m_pBeats)" checks are now obsolete actually...
     LoopInfo loopInfo = m_loopInfo.getValue();
     if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
         double loaded_loop_size = findBeatloopSizeForLoop(
