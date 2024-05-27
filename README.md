@@ -26,6 +26,7 @@ Have a bug or feature request? [File a bug on Github][fileabug].
 
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
+Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
 
@@ -36,10 +37,18 @@ source code and navigate to it:
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies and set up the build environment (on Windows,
-macOS and Debian/Ubuntu, you can do that by running
-`tools\windows_buildenv.bat`, `source tools/macos_buildenv.sh setup` or `source
-tools/debian_buildenv.sh setup` respectively), then run:
+Fetch the required dependencies and set up the build environment by running the
+corresponding command for your operating system:
+
+| OS | Command |
+| -- | ------- |
+| Windows | `tools\windows_buildenv.bat` |
+| macOS | `source tools/macos_buildenv.sh setup` |
+| Debian/Ubuntu | `tools/debian_buildenv.sh setup` |
+| Fedora | `tools/rpm_buildenv.sh setup` |
+| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) |
+
+To build Mixxx, run
 
     $ mkdir build
     $ cd build

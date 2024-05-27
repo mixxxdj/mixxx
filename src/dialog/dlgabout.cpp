@@ -1,13 +1,13 @@
 #include "dialog/dlgabout.h"
 
 #include <QDebug>
-#include <QDesktopServices>
 #include <QFile>
 #include <QLocale>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
 #include "util/color/color.h"
+#include "util/desktophelper.h"
 #include "util/versionstore.h"
 
 DlgAbout::DlgAbout()
@@ -22,6 +22,7 @@ DlgAbout::DlgAbout()
     version_label->setText(VersionStore::applicationName() +
             QStringLiteral(" ") + VersionStore::version());
     git_version_label->setText(VersionStore::gitVersion());
+    qt_version_label->setText(VersionStore::qtVersion());
     platform_label->setText(VersionStore::platform());
     QLocale locale;
     date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
@@ -49,7 +50,6 @@ DlgAbout::DlgAbout()
             << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Daniel Sch&uuml;rmann"
-            << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
             << "Jan Holthuis"
@@ -64,6 +64,7 @@ DlgAbout::DlgAbout()
     // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
+            << "Be"
             << "Uwe Klotz"
             << "Nino MP"
             << "D&aacute;vid Szak&aacute;llas"
@@ -107,13 +108,29 @@ DlgAbout::DlgAbout()
             << "Chase Durand"
             << "Antoine Colombier"
             << "John Last"
+            << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
             << "Robbert van der Helm"
             << "Andrew Burns"
             << "Michael Wigard"
+            << "Alexandre Bique"
+            << "Milkii Brewster"
             << "djantti"
             << "Eugene Erokhin"
-            << "Ben Duval";
+            << "Ben Duval"
+            << "Nicolau Leal Werneck"
+            << "David Guglielmi"
+            << "Chris H. Meyer"
+            << "Daniel Fernandes"
+            << "Gr&eacute;goire Locqueville"
+            << "grizeldi"
+            << "codingspiderfox"
+            << "Ashnidh Khandelwal"
+            << "Sergey"
+            << "Raphael Quast"
+            << "Christophe Henry"
+            << "Lukas Waslowski"
+            << "Marcin Cie&#x15B;lak"; // &#x15B; = &sacute; in HTML 5.0
 
     QStringList specialThanks;
     specialThanks
@@ -295,7 +312,6 @@ DlgAbout::DlgAbout()
             << "Russ Mannex"
             << "Brendan Austin"
             << "Lorenz Drescher"
-            << "David Guglielmi"
             << "James Atwill"
             << "Alex Barker"
             << "Jean Claveau"
@@ -407,7 +423,7 @@ DlgAbout::DlgAbout()
     }
     btnDonate->setText(tr("Donate"));
     connect(btnDonate, &QPushButton::clicked, this, [] {
-        QDesktopServices::openUrl(QUrl(MIXXX_DONATE_URL));
+        mixxx::DesktopHelper::openUrl(QUrl(MIXXX_DONATE_URL));
     });
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);

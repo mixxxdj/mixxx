@@ -2,9 +2,10 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QTextStreamFunction>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QTextStreamFunction>
+#include <chrono>
 
 #include "util/assert.h"
 
@@ -131,6 +132,7 @@ class DurationDebug : public DurationBase {
 
 // Represents a duration in a type-safe manner. Provides conversion methods to
 // convert between physical units. Durations can be negative.
+/// Deprecated: use `std::chrono::duration` in new code instead
 class Duration : public DurationBase {
   public:
     // Returns a Duration object representing a duration of 'seconds'.
@@ -152,6 +154,14 @@ class Duration : public DurationBase {
     // Returns a Duration object representing a duration of 'nanos'.
     static constexpr Duration fromNanos(qint64 nanos) {
         return Duration(nanos);
+    }
+
+    static constexpr Duration fromStdDuration(std::chrono::nanoseconds duration) {
+        return Duration::fromNanos(duration.count());
+    }
+
+    constexpr std::chrono::nanoseconds toStdDuration() {
+        return std::chrono::nanoseconds(m_durationNanos);
     }
 
     static constexpr Duration empty() {

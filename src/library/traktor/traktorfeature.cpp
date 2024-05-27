@@ -10,7 +10,7 @@
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
+#include "library/missing_hidden/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -224,7 +224,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     mixxx::FileInfo fileInfo(file);
     QFile traktor_file(file);
     if (!Sandbox::askForAccess(&fileInfo) || !traktor_file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Cannot open Traktor music collection";
+        qDebug() << "Cannot open Traktor music collection: " << traktor_file.errorString();
         return nullptr;
     }
     QXmlStreamReader xml(&traktor_file);

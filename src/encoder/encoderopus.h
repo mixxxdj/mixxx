@@ -6,11 +6,11 @@
 #include <QMap>
 #include <QString>
 #include <QVector>
+#include <memory>
 
 #include "audio/types.h"
 #include "encoder/encoder.h"
 #include "util/fifo.h"
-#include "util/memory.h"
 
 class EncoderCallback;
 class EncoderSettings;

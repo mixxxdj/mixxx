@@ -15,21 +15,23 @@ const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
 EngineDelay::EngineDelay(const ConfigKey& delayControl, bool bPersist)
-        : m_iDelayPos(0),
+        : m_delayBuffer(kiMaxDelay),
+          m_iDelayPos(0),
           m_iDelay(0) {
-    m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
-    SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
+    m_delayBuffer.clear();
     m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, bPersist);
     m_pDelayPot->setDefaultValue(0);
-    connect(m_pDelayPot, &ControlObject::valueChanged, this,
-            &EngineDelay::slotDelayChanged, Qt::DirectConnection);
+    connect(m_pDelayPot,
+            &ControlObject::valueChanged,
+            this,
+            &EngineDelay::slotDelayChanged,
+            Qt::DirectConnection);
 
     m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
     m_pSampleRate->connectValueChanged(this, &EngineDelay::slotDelayChanged, Qt::DirectConnection);
 }
 
 EngineDelay::~EngineDelay() {
-    SampleUtil::free(m_pDelayBuffer);
     delete m_pDelayPot;
 }
 
@@ -44,12 +46,11 @@ void EngineDelay::slotDelayChanged() {
     }
     if (m_iDelay <= 0) {
         // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay
-        SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
+        m_delayBuffer.clear();
     }
 }
 
-
-void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
+void EngineDelay::process(CSAMPLE* pInputOutput, const int iBufferSize) {
     if (m_iDelay > 0) {
         // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
         // From a mathematical point of view, this addition can be removed. Anyway,
@@ -67,11 +68,11 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
 
         for (int i = 0; i < iBufferSize; ++i) {
             // put sample into delay buffer:
-            m_pDelayBuffer[m_iDelayPos] = pInOut[i];
+            m_delayBuffer[m_iDelayPos] = pInputOutput[i];
             m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;
 
             // Take delayed sample from delay buffer and copy it to dest buffer:
-            pInOut[i] = m_pDelayBuffer[iDelaySourcePos];
+            pInputOutput[i] = m_delayBuffer[iDelaySourcePos];
             iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
         }
     }

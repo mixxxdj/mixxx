@@ -237,12 +237,61 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // BPM / Beatgrid
     QMenu* pBpmMenu = addSubmenu(tr("BPM / Beatgrid"));
-    addDeckAndSamplerControl("bpm", tr("BPM"), tr("BPM"), pBpmMenu, true);
-    addDeckAndSamplerControl("bpm_up", tr("BPM +1"), tr("Increase BPM by 1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_down", tr("BPM -1"), tr("Decrease BPM by 1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_up_small", tr("BPM +0.1"), tr("Increase BPM by 0.1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_down_small", tr("BPM -0.1"), tr("Decrease BPM by 0.1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_tap", tr("BPM Tap"), tr("BPM tap button"), pBpmMenu);
+    addDeckAndSamplerControl("bpm",
+            tr("BPM"),
+            tr("BPM"),
+            pBpmMenu,
+            true);
+    addDeckAndSamplerControl("bpm_up",
+            tr("BPM +1"),
+            tr("Increase BPM by 1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_down",
+            tr("BPM -1"),
+            tr("Decrease BPM by 1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_up_small",
+            tr("BPM +0.1"),
+            tr("Increase BPM by 0.1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_down_small",
+            tr("BPM -0.1"),
+            tr("Decrease BPM by 0.1"),
+            pBpmMenu);
+    pBpmMenu->addSeparator();
+    addDeckAndSamplerControl("beats_set_halve",
+            tr("Halve BPM"),
+            tr("Multiply current BPM by 0.5"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_twothirds",
+            tr("2/3 BPM"),
+            tr("Multiply current BPM by 0.666"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_threefourths",
+            tr("3/4 BPM"),
+            tr("Multiply current BPM by 0.75"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_fourthirds",
+            tr("4/3 BPM"),
+            tr("Multiply current BPM by 1.333"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_threehalves",
+            tr("3/2 BPM"),
+            tr("Multiply current BPM by 1.5"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_double",
+            tr("Double BPM"),
+            tr("Multiply current BPM by 2"),
+            pBpmMenu);
+    pBpmMenu->addSeparator();
+    addDeckAndSamplerControl("bpm_tap",
+            tr("BPM Tap"),
+            tr("BPM tap button"),
+            pBpmMenu);
+    addDeckAndSamplerControl("tempo_tap",
+            tr("Tempo Tap"),
+            tr("Tempo tap button"),
+            pBpmMenu);
     pBpmMenu->addSeparator();
     addDeckAndSamplerControl("beats_adjust_faster",
             tr("Adjust Beatgrid Faster +.01"),
@@ -260,6 +309,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Move Beatgrid Later"),
             tr("Adjust the beatgrid to the right"),
             pBpmMenu);
+    addDeckAndSamplerControl("beats_translate_move",
+            tr("Move Beatgrid"),
+            tr("Adjust the beatgrid to the left or right"),
+            pBpmMenu);
     addDeckControl("beats_translate_curpos",
             tr("Adjust Beatgrid"),
             tr("Align beatgrid to current position"),
@@ -267,6 +320,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("beats_translate_match_alignment",
             tr("Adjust Beatgrid - Match Alignment"),
             tr("Adjust beatgrid to match another playing deck."),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpmlock",
+            tr("Toggle the BPM/beatgrid lock"),
+            tr("Toggle the BPM/beatgrid lock"),
+            pBpmMenu);
+    addDeckControl("beats_undo_adjustment",
+            tr("Revert last BPM/Beatgrid Change"),
+            tr("Revert last BPM/Beatgrid Change of the loaded track."),
             pBpmMenu);
     pBpmMenu->addSeparator();
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), pBpmMenu);
@@ -586,10 +647,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString beatloopRollActivateDescription =
             tr("Create a rolling beat loop of selected beat size") + noBeatsSeconds;
     QString beatLoopTitle = tr("Loop %1 Beats");
+    QString reverseBeatLoopTitle = tr("Loop %1 Beats set from its end point");
     QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
+    QString reverseBeatLoopRollTitle = tr("Loop Roll %1 Beats set from its end point");
     QString beatLoopDescription = tr("Create %1-beat loop");
+    QString reverseBeatLoopDescription = tr(
+            "Create %1-beat loop with the current play position as loop end");
     QString beatLoopRollDescription =
             tr("Create temporary %1-beat loop roll") + noBeatsSeconds;
+    QString reverseBeatLoopRollDescription =
+            tr("Create temporary %1-beat loop roll with the current play "
+               "position as loop end") +
+            noBeatsSeconds;
 
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 
@@ -620,6 +689,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 beatLoopDescription.arg(humanBeats),
                 pLoopActivateMenu);
     }
+    for (double beats : beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatloop_r%1_toggle").arg(beats),
+                reverseBeatLoopTitle.arg(humanBeats),
+                reverseBeatLoopDescription.arg(humanBeats),
+                pLoopActivateMenu);
+    }
     pLoopMenu->addSeparator();
 
     addDeckControl("beatlooproll_activate",
@@ -632,6 +708,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         addDeckControl(QString("beatlooproll_%1_activate").arg(beats),
                 beatLoopRollTitle.arg(humanBeats),
                 beatLoopRollDescription.arg(humanBeats),
+                pLooprollActivateMenu);
+    }
+    for (double beats : beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatlooproll_r%1_activate").arg(beats),
+                reverseBeatLoopRollTitle.arg(humanBeats),
+                reverseBeatLoopRollDescription.arg(humanBeats),
                 pLooprollActivateMenu);
     }
     pLoopMenu->addSeparator();
@@ -676,6 +759,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Jump backward by the selected number of beats, or if a loop is "
                "enabled, move the loop backward by the selected number of "
                "beats"),
+            pBeatJumpMenu);
+    addDeckControl("loop_anchor",
+            tr("Beat Jump"),
+            tr("Indicate which loop marker remain static when adjusting the "
+               "size or is inherited from the current position"),
             pBeatJumpMenu);
     pBeatJumpMenu->addSeparator();
 
@@ -839,6 +927,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addLibraryControl("clear_search",
             tr("Clear search"),
             tr("Clears the search query"),
+            pLibraryMenu);
+
+    // Color selection
+    addLibraryControl("track_color_next",
+            tr("Select Next Color Available"),
+            tr("Select the next color in the color palette"
+               " for the first selected track"),
+            pLibraryMenu);
+    addLibraryControl("track_color_prev",
+            tr("Select Previous Color Available"),
+            tr("Select the previous color in the color palette"
+               " for the first selected track"),
             pLibraryMenu);
 
     pLibraryMenu->addSeparator();
@@ -1392,6 +1492,20 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndPreviewDeckControl("stars_down",
             tr("Star Rating Down"),
             tr("Decrease the track rating by one star"),
+            pGuiMenu);
+
+    // Controls to change a deck's loaded track color
+    addDeckAndPreviewDeckControl("track_color_next",
+            tr("Select Next Color Available"),
+            tr("Select the next color in the color palette for the loaded track."),
+            pGuiMenu);
+    addDeckAndPreviewDeckControl("track_color_prev",
+            tr("Select Previous Color Available"),
+            tr("Select previous color in the color palette for the loaded track."),
+            pGuiMenu);
+    addDeckAndPreviewDeckControl("track_color_selector",
+            tr("Navigate Through Track Colors"),
+            tr("Select either next or previous color in the palette for the loaded track."),
             pGuiMenu);
 
     // Misc. controls

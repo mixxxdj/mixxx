@@ -88,6 +88,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WTrackPropertyEditor,
 QLineEdit QMenu,
 WCoverArtMenu,
 QLabel#labelRecPrefix,
@@ -244,6 +245,7 @@ WBeatSpinBox,
 #BpmTextSmall,
 #FxUnitLabel,
 #SamplerTitle,
+WTrackPropertyEditor,
 WTime,
 WRecordingDuration {
   font-size: 16px;
@@ -300,6 +302,11 @@ WTrackTableViewHeader::item {
     padding: 0 0.15em;
   }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  border: 0px;
+}
 
 #HotcueButton {
   /* ronso0
@@ -445,6 +452,13 @@ WSpinny { /*
 }
 #RateSliderBoxCompactSync {
   margin-left: 5px;
+}
+
+WTrackProperty,
+WTrackProperty[selected="false"] {
+  background-color: transparent;
+  border: 0px solid transparent;
+  border-radius: 1px;
 }
 /************** Decks  ********************************************************/
 

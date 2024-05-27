@@ -25,7 +25,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
             const QString& rootViewName,
-            const QString& iconName);
+            const QString& iconName,
+            const QString& countsDurationTableName,
+            bool keepHiddenTracks = false);
     ~BasePlaylistFeature() override = default;
 
     TreeItemModel* sidebarModel() const override;
@@ -80,13 +82,12 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
-    virtual QString fetchPlaylistLabel(int playlistId) = 0;
 
     /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
-    int playlistIdFromIndex(const QModelIndex& index);
+    int playlistIdFromIndex(const QModelIndex& index) const;
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
@@ -98,6 +99,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    QPointer<WLibrary> m_pLibraryWidget;
 
     QAction* m_pCreatePlaylistAction;
     QAction* m_pDeletePlaylistAction;
@@ -115,6 +117,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
+    const QString m_countsDurationTableName;
 
   private slots:
     void slotTrackSelected(TrackId trackId);
@@ -125,6 +128,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
+    QString fetchPlaylistLabel(int playlistId);
 
     TrackId m_selectedTrackId;
+
+    const bool m_keepHiddenTracks;
 };

@@ -113,7 +113,7 @@
             </Connection>
           </PushButton>
 
-          <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
           <!-- Super/Mix knobs when parameters are visible -->
           <WidgetGroup>
@@ -123,7 +123,7 @@
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>min,max</SizePolicy>
                 <Children>
                   <Template src="skin:left_2state_button.xml">
                     <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
@@ -145,10 +145,11 @@
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup><Size>0min,8me</Size></WidgetGroup>
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>0me,34f</Size>
                 <Children>
                   <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
                   <EffectChainPresetButton>
@@ -178,6 +179,7 @@
 
                 </Children>
               </WidgetGroup>
+
             </Children>
             <Connection>
               <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>

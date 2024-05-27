@@ -73,7 +73,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
 void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
-    unsigned int numChannels = 0;
+    mixxx::audio::ChannelCount numChannels;
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
@@ -87,12 +87,12 @@ void DlgPrefSoundItem::deviceChanged(int index) {
             }
         }
     }
-    if (numChannels == 0) {
+    if (!numChannels.isValid()) {
         goto emitAndReturn;
     } else {
-        unsigned char minChannelsForType =
+        mixxx::audio::ChannelCount minChannelsForType =
                 AudioPath::minChannelsForType(m_type);
-        unsigned char maxChannelsForType =
+        mixxx::audio::ChannelCount maxChannelsForType =
                 AudioPath::maxChannelsForType(m_type);
 
         channelComboBox->blockSignals(true);
@@ -194,7 +194,7 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     QPoint channelData = channelComboBox->itemData(
         channelComboBox->currentIndex()).toPoint();
     int channelBase = channelData.x();
-    int channelCount = channelData.y();
+    const auto channelCount = mixxx::audio::ChannelCount(channelData.y());
 
     // check config for occupied channels of this device
     // auto-select next free channel (pair)
@@ -282,7 +282,7 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
 
 /// Checks that a given device can act as a source/input for our type.
 int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice& device) const {
-    unsigned char needed(AudioPath::minChannelsForType(m_type));
+    const auto needed = AudioPath::minChannelsForType(m_type);
 
     if (m_isInput) {
         return device.getNumInputChannels() >= needed;

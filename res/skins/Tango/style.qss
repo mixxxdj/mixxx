@@ -62,6 +62,8 @@ WEffectChainPresetSelector QAbstractScrollArea,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 WSearchLineEdit QAbstractScrollArea,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 /* With 'Ubuntu' font the header section titles would always be top-aligned... */
@@ -433,7 +435,6 @@ WWidgetGroup {
   image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background-color: #0f0f0f;
     image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 
@@ -790,8 +791,15 @@ WLabel#TrackComment {
   #PlayPositionMini {
     padding: 0px 1px 0px 0px;
     }
-    #PlayPosition:hover, #PlayPositionMini:hover {
+    #PlayPosition:hover,
+    #PlayPositionMini:hover,
+    WTrackProperty:hover,
+    WTrackProperty:hover[selected="false"],
+    WTrackProperty[selected="true"] {
       border: 1px solid #ccc;
+    }
+    WTrackProperty:hover[selected="true"] {
+      border: 1px solid #fff;
     }
   #TrackTitleMini {
     padding: 0px 0px 0px 1px;
@@ -1596,7 +1604,8 @@ decks, samplers, mic, aux, fx */
 #FxUnitMixerRight,
 #FxUnitMixerLeft_mini,
 #FxUnitMixerRight_mini {
-  qproperty-layoutAlignment: 'AlignHCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+/*  qproperty-layoutAlignment: 'AlignHCenter';*/
   background-color: #333;
   }
 #FxUnitMixerLeft,
@@ -1809,7 +1818,6 @@ decks, samplers, mic, aux, fx */
     image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
     }
     WEffectChainPresetButton:hover {
-      background-color: #151515;
       image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
     }
     WEffectChainPresetButton::menu-indicator {
@@ -2305,6 +2313,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -2456,7 +2465,8 @@ WTrackMenu QMenu QCheckBox::indicator {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {
+#CueDeleteButton,
+#CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   tall button, about the same height as cue number + label edit box */
@@ -2465,10 +2475,20 @@ WTrackMenu QMenu QCheckBox::indicator {
   border: 1px solid #666;
   background-color: #333;
   border-radius: 2px;
-  qproperty-icon: url(skin:/../Tango/buttons/btn_delete.svg);
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-}
+  }
+  #CueDeleteButton {
+    /* Note: we can't use qproperty-icon here because it's evauated only once
+       and therefore won't style the checked state */
+    image: url(skin:/../Tango/buttons/btn_delete.svg);
+  }
+  #CueSavedLoopButton:!checked {
+    image: url(skin:/../Tango/buttons/btn_loop_beatjump_off.svg);
+  }
+  #CueSavedLoopButton:checked {
+    border: 1px solid #666;
+    background-color: #ff7b00;
+    image: url(skin:/../Tango/buttons/btn_loop_beatjump_on_black.svg);
+  }
 #CueLabelEdit {
   border: 1px solid #ff6600;
   border-radius: 0px;
@@ -2568,7 +2588,6 @@ WLibraryTextBrowser,
 WLibrarySidebar {
   border: 2px solid #585858;
   /* font-weight: normal; */
-  color: #9e9e9e;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
   /* In selected library rows this sets the color of
@@ -2579,10 +2598,29 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #555;
 }
+WTrackTableView,
+WLibraryTextBrowser,
+WLibrarySidebar,
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  color: #9e9e9e;
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #9e9e9e;
+}
+
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryPlayedCheckbox::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
 
 /* selected table row */
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #fff;
   background-color: #555;
 }
@@ -2602,18 +2640,31 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
-    border: 1px solid #555;
+    border-width: 1px;
+    border-style: solid;
+  }
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    border-color: #555;
   }
 
 WLibrarySidebar {
@@ -2627,6 +2678,7 @@ WLibrarySidebar {
   Shift WSearchLineEdit instead */
   margin: 0px;
   }
+  WTrackPropertyEditor,
   WTrackTableView:focus,
   WLibrarySidebar:focus,
   WTrackTableView:focus,
@@ -3029,10 +3081,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   #LibraryBPMButton::indicator:unchecked {
     image: url(skin:/../Tango/buttons/btn_lib_bpm_unlocked.svg);
     }
-  /* BPM value */
-  #LibraryBPMButton::item {
-    color: #cfcfcf;
-    }
 
 #LibraryBPMSpinBox {
   padding: 0px;
@@ -3085,10 +3133,10 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     }*/
 
   /* checkbox in library "Played" column */
-  WTrackTableView::indicator:checked {
+  #LibraryPlayedCheckbox::indicator:checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox_checked.svg);
     }
-  WTrackTableView::indicator:unchecked {
+  #LibraryPlayedCheckbox::indicator:unchecked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox.svg);
     }
 
@@ -3163,11 +3211,8 @@ WRateRange {
 }
 
 #RateDisplayTopPrefix,
-#RateDisplayTopRate {
-    qproperty-alignment: 'AlignHCenter | AlignTop';
-}
-
 #RateDisplayBottomPrefix,
+#RateDisplayTopRate,
 #RateDisplayBottomRate {
-    qproperty-alignment: 'AlignHCenter | AlignBottom';
+    qproperty-alignment: 'AlignHCenter';
 }

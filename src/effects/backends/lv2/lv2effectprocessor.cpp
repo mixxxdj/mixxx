@@ -9,10 +9,10 @@ LV2EffectProcessor::LV2EffectProcessor(LV2EffectManifestPointer pManifest)
           m_pPlugin(pManifest->getPlugin()),
           m_audioPortIndices(pManifest->getAudioPortIndices()),
           m_controlPortIndices(pManifest->getControlPortIndices()) {
-    m_inputL = new float[MAX_BUFFER_LEN];
-    m_inputR = new float[MAX_BUFFER_LEN];
-    m_outputL = new float[MAX_BUFFER_LEN];
-    m_outputR = new float[MAX_BUFFER_LEN];
+    m_inputL = new float[kMaxEngineSamples];
+    m_inputR = new float[kMaxEngineSamples];
+    m_outputL = new float[kMaxEngineSamples];
+    m_outputR = new float[kMaxEngineSamples];
 }
 
 void LV2EffectProcessor::loadEngineEffectParameters(

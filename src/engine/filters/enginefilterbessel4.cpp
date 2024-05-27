@@ -9,13 +9,13 @@ constexpr char kFidSpecBandPassBessel4[] = "BpBe4";
 constexpr char kFidSpecHighPassBessel4[] = "HpBe4";
 } // namespace
 
-EngineFilterBessel4Low::EngineFilterBessel4Low(int sampleRate,
-                                               double freqCorner1) {
+EngineFilterBessel4Low::EngineFilterBessel4Low(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterBessel4Low::setFrequencyCorners(int sampleRate,
-                                                 double freqCorner1) {
+void EngineFilterBessel4Low::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     // Copy the old coefficients into m_oldCoef
     setCoefs(kFidSpecLowPassBessel4, sizeof(kFidSpecLowPassBessel4), sampleRate, freqCorner1);
 }
@@ -64,15 +64,15 @@ int EngineFilterBessel4Low::setFrequencyCornersForIntDelay(
     return iDelay;
 }
 
-EngineFilterBessel4Band::EngineFilterBessel4Band(int sampleRate,
-                                                 double freqCorner1,
-                                                 double freqCorner2) {
+EngineFilterBessel4Band::EngineFilterBessel4Band(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1,
+        double freqCorner2) {
     setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
 }
 
-void EngineFilterBessel4Band::setFrequencyCorners(int sampleRate,
-                                                  double freqCorner1,
-                                                  double freqCorner2) {
+void EngineFilterBessel4Band::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1,
+        double freqCorner2) {
     setCoefs(kFidSpecBandPassBessel4,
             sizeof(kFidSpecBandPassBessel4),
             sampleRate,
@@ -80,13 +80,12 @@ void EngineFilterBessel4Band::setFrequencyCorners(int sampleRate,
             freqCorner2);
 }
 
-
-EngineFilterBessel4High::EngineFilterBessel4High(int sampleRate,
-                                                 double freqCorner1) {
+EngineFilterBessel4High::EngineFilterBessel4High(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterBessel4High::setFrequencyCorners(int sampleRate,
-                                                  double freqCorner1) {
+void EngineFilterBessel4High::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setCoefs(kFidSpecHighPassBessel4, sizeof(kFidSpecHighPassBessel4), sampleRate, freqCorner1);
 }

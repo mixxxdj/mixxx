@@ -4,7 +4,7 @@
     <SizePolicy>min,max</SizePolicy>
     <Children>
 
-      <WidgetStack currentpage="[Skin],sampler_row_current">
+      <WidgetStack currentpage="[Skin],sampler_rows">
         <NextControl>[Deere],sampler_bank_next</NextControl>
         <PrevControl>[Deere],sampler_bank_prev</PrevControl>
         <Children>

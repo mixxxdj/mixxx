@@ -7,6 +7,7 @@
 #include <QMetaType>
 #include <QReadWriteLock>
 #include <QString>
+#include <type_traits>
 
 #include "util/assert.h"
 #include "util/compatibility/qhash.h"
@@ -155,6 +156,12 @@ template <class ValueType> class ConfigObject {
     // values. ResultType is serialized to string on a per-type basis.
     template <class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
+    template<class EnumType>
+        requires std::is_enum_v<EnumType>
+    // we need to take value as const ref otherwise the overload is ambiguous
+    void setValue(const ConfigKey& key, const EnumType& value) {
+        setValue<int>(key, static_cast<int>(value));
+    };
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns ResultType().
@@ -171,6 +178,12 @@ template <class ValueType> class ConfigObject {
     template <class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
+    template<typename EnumType>
+        requires std::is_enum_v<EnumType>
+    EnumType getValue(const ConfigKey& key, const EnumType& default_value) const {
+        // we need to take default_value as const ref otherwise the overload is ambiguous
+        return static_cast<EnumType>(getValue<int>(key, static_cast<int>(default_value)));
+    }
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 

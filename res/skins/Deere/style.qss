@@ -225,11 +225,23 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #006596;
 }
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #d2d2d2;
+}
+
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryPlayedCheckbox::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
 
 /* Selected rows in Tree and Tracks table */
 WTrackTableView::item:selected,
 WLibrarySidebar::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #D6D6D6;
   background-color: #006596;
 }
@@ -247,11 +259,14 @@ WTrackTableView,
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #D6D6D6;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #D6D6D6;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
 }
 
 WTrackTableView:focus,
@@ -268,19 +283,25 @@ WLibraryTextBrowser {
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 WBeatSpinBox,
+/* Track label inline editor */
+WTrackPropertyEditor,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
+}
+WLibrary QLineEdit,
+WTrackPropertyEditor,
+#LibraryBPMSpinBox {
   border: 1px solid #006596;
 }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:unchecked {
+#LibraryPlayedCheckbox::indicator:unchecked {
   image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
 }
-WTrackTableView::indicator:checked {
+#LibraryPlayedCheckbox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
 }
 
@@ -833,6 +854,7 @@ WPushButton,
 WKey,
 WTime,
 WTrackProperty,
+WTrackPropertyEditor,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
@@ -1088,15 +1110,21 @@ WBeatSpinBox,
 }
 
 /* Start editable widgets in decks */
+/* emphasize editable widgets on hover */
 #BpmKeyEditRowCollapsed:hover,
 #BpmKeyEditRowExpanded:hover,
 #PositionGutter:hover,
 #PlayPositionTextSmall:hover,
-#StarratingGutter:hover {
-  /* emphasize editable widgets on hover */
-  border: 1px solid #FF6600;
+#StarratingGutter:hover,
+WTrackProperty:hover {
   background-color: rgba(255, 102, 0, 128);
-}
+  }
+  #BpmKeyEditRowCollapsed:hover,
+  #BpmKeyEditRowExpanded:hover,
+  WTrackProperty[selected="true"] {
+    border: 1px solid #FF6600;
+  }
+
 #BpmKeyEditRowCollapsed {
   qproperty-layoutAlignment: 'AlignCenter';
   /* emphasize active widget */
@@ -1583,6 +1611,11 @@ WStarRating {
   font-size: 15px;
 }
 
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
+  font-size: 15px;
+}
+
 #SampleDecksContainer {
 }
 
@@ -1994,6 +2027,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -2353,8 +2387,24 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   outline: none;
 }
 
-#CueDeleteButton:hover {
+#CueSavedLoopButton {
+/* tall button, about the same height as cue number + label edit box */
+  width: 28px;
+  height: 46px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  qproperty-icon: url(skin:/../Deere/icon/ic_loop_48px.svg);
+  background-color: #3B3B3B;
+  border-radius: 2px;
+  outline: none;
+}
+
+#CueDeleteButton:hover, #CueSavedLoopButton:hover {
   background-color: #4B4B4B;
+}
+
+#CueSavedLoopButton:checked {
+  background-color: #006596;
 }
 
 WRateRange {

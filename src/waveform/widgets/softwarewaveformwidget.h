@@ -15,6 +15,9 @@ class SoftwareWaveformWidget : public NonGLWaveformWidgetAbstract {
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
+    static inline bool useTextureForWaveform() {
+        return false;
+    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Software;
     }

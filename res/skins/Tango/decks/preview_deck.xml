@@ -61,7 +61,7 @@ Variables:
                     <TooltipId>text</TooltipId>
                     <Size>1me,17f</Size>
                     <Group><Variable name="group"/></Group>
-                    <Property>titleInfo</Property>
+                    <Property>info</Property>
                     <Elide>right</Elide>
                   </TrackProperty>
                 </Children>

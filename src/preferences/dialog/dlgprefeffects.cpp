@@ -243,17 +243,17 @@ void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selec
     }
 
     for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        EffectManifestPointer pManifest;
         if (i < pChainPreset->effectPresets().size()) {
             EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
             if (!pEffectPreset->isEmpty()) {
-                QString displayName =
-                        m_pBackendManager->getDisplayNameForEffectPreset(
-                                pEffectPreset);
-                // Code uses 0-indexed numbers; users see 1 indexed numbers
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
-            } else {
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
+                pManifest = m_pBackendManager->getManifest(pEffectPreset);
             }
+        }
+        if (pManifest) {
+            QString displayName = pManifest->name();
+            // Code uses 0-indexed numbers; users see 1 indexed numbers
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
         } else {
             m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
         }

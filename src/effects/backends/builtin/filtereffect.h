@@ -12,7 +12,7 @@ struct FilterGroupState : public EffectState {
     FilterGroupState(const mixxx::EngineParameters& engineParameters);
     ~FilterGroupState() override;
 
-    void setFilters(int sampleRate, double lowFreq, double highFreq);
+    void setFilters(mixxx::audio::SampleRate sampleRate, double lowFreq, double highFreq);
 
     mixxx::SampleBuffer m_buffer;
     EngineFilterBiquad1Low* m_pLowFilter;

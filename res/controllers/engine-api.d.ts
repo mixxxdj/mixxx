@@ -24,6 +24,16 @@ declare interface ScriptConnection {
 /** ControllerScriptInterfaceLegacy */
 
 declare namespace engine {
+    type SettingValue = string | number | boolean;
+    /**
+     * Gets the value of a controller setting
+     * The value is either set in the preferences dialog,
+     * or got restored from file.
+     * @param name Name of the setting (as specified in the XML file of the mapping)
+     * @returns Value of the setting, or undefined in failure case
+     */
+    function getSetting(name: string): SettingValue | undefined;
+
     /**
      * Gets the control value
      *

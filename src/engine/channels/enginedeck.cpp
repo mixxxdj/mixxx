@@ -75,8 +75,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
                 m_pEffectsManager->getMainHandle(),
                 pOut,
                 iBufferSize,
-                // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                static_cast<unsigned int>(m_sampleRate.get()));
+                mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
     }
 
     // Update VU meter

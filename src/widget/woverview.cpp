@@ -431,13 +431,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -498,13 +498,13 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -548,7 +548,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
-                    m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+                    m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
 #else
@@ -577,7 +577,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
 
 void WOverview::paintEvent(QPaintEvent* pEvent) {
     Q_UNUSED(pEvent);
-    ScopedTimer t("WOverview::paintEvent");
+    ScopedTimer t(u"WOverview::paintEvent");
 
     QPainter painter(this);
     painter.fillRect(rect(), m_backgroundColor);
@@ -864,7 +864,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         if (rect.isValid()) {
             QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5);
+            loopColor.setAlphaF(0.5f);
             pPainter->fillRect(rect, loopColor);
         }
 
@@ -1053,7 +1053,11 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     shadowFont.setWeight(99);
+#else
+    shadowFont.setWeight(QFont::Black);
+#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
@@ -1209,7 +1213,7 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    m_lowColor.setAlphaF(0.5);
+    m_lowColor.setAlphaF(0.5f);
     QPen lowColorPen(
             QBrush(m_lowColor), 1.25 * m_scaleFactor, Qt::SolidLine, Qt::RoundCap);
     pPainter->setPen(lowColorPen);

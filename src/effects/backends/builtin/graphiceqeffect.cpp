@@ -1,10 +1,13 @@
 #include "effects/backends/builtin/graphiceqeffect.h"
 
+#include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 
-#define Q 1.2247449
+namespace {
+constexpr double kQ = 1.2247449;
+} // namespace
 
 // static
 QString GraphicEQEffect::getId() {
@@ -94,12 +97,18 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState(
     m_centerFrequencies[7] = 9828;
 
     // Initialize the filters with default parameters
-    m_low = new EngineFilterBiquad1LowShelving(44100, m_centerFrequencies[0], Q);
-    m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], Q);
+    m_low = new EngineFilterBiquad1LowShelving(
+            engineParameters.sampleRate(),
+            m_centerFrequencies[0],
+            kQ);
+    m_high = new EngineFilterBiquad1HighShelving(
+            engineParameters.sampleRate(),
+            m_centerFrequencies[7],
+            kQ);
     for (int i = 1; i < 7; i++) {
-        m_bands.append(new EngineFilterBiquad1Peaking(44100,
+        m_bands.append(new EngineFilterBiquad1Peaking(engineParameters.sampleRate(),
                 m_centerFrequencies[i],
-                Q));
+                kQ));
     }
 }
 
@@ -116,11 +125,11 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
     }
 }
 
-void GraphicEQEffectGroupState::setFilters(int sampleRate) {
-    m_low->setFrequencyCorners(sampleRate, m_centerFrequencies[0], Q, m_oldLow);
-    m_high->setFrequencyCorners(sampleRate, m_centerFrequencies[7], Q, m_oldHigh);
+void GraphicEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
+    m_low->setFrequencyCorners(sampleRate, m_centerFrequencies[0], kQ, m_oldLow);
+    m_high->setFrequencyCorners(sampleRate, m_centerFrequencies[7], kQ, m_oldHigh);
     for (int i = 0; i < 6; i++) {
-        m_bands[i]->setFrequencyCorners(sampleRate, m_centerFrequencies[i + 1], Q, m_oldMid[i]);
+        m_bands[i]->setFrequencyCorners(sampleRate, m_centerFrequencies[i + 1], kQ, m_oldMid[i]);
     }
 }
 
@@ -172,20 +181,20 @@ void GraphicEQEffect::processChannel(
     if (fLow != pState->m_oldLow) {
         pState->m_low->setFrequencyCorners(engineParameters.sampleRate(),
                 pState->m_centerFrequencies[0],
-                Q,
+                kQ,
                 fLow);
     }
     if (fHigh != pState->m_oldHigh) {
         pState->m_high->setFrequencyCorners(engineParameters.sampleRate(),
                 pState->m_centerFrequencies[7],
-                Q,
+                kQ,
                 fHigh);
     }
     for (int i = 0; i < 6; i++) {
         if (fMid[i] != pState->m_oldMid[i]) {
             pState->m_bands[i]->setFrequencyCorners(engineParameters.sampleRate(),
                     pState->m_centerFrequencies[i + 1],
-                    Q,
+                    kQ,
                     fMid[i]);
         }
     }

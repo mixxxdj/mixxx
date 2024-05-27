@@ -612,7 +612,7 @@ DenonMC6000MK2.Sampler.prototype.connectControls = function() {
 DenonMC6000MK2.OldDeck = function(number, midiChannel) {
     this.number = number;
     this.group = "[Channel" + number + "]";
-    this.filterGroup = "[QuickEffectRack1_" + this.group + "_Effect1]";
+    this.filterGroup = "[QuickEffectRack1_" + this.group + "]";
     this.midiChannel = midiChannel;
     this.jogTouchState = false;
     DenonMC6000MK2.oldDecksByGroup[this.group] = this;
@@ -912,7 +912,7 @@ DenonMC6000MK2.OldDeck.prototype.spinJog = function(jogDelta) {
 DenonMC6000MK2.OldDeck.prototype.applyFilter = function() {
     var side = DenonMC6000MK2.getOldSideByGroup(this.group);
     engine.setValue(this.filterGroup, "enabled", side.filterEnabled);
-    engine.setParameter(this.filterGroup, "meta", side.filterParam);
+    engine.setParameter(this.filterGroup, "super1", side.filterParam);
 };
 
 /* Loops */
