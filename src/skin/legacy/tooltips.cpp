@@ -786,7 +786,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Loop Double")
             << tr("Doubles the current loop's length by moving the end marker.");
 
-    QString noBeatsSeconds = tr(" If track has no beats the unit is seconds.");
+    QString noBeatsSeconds = tr("If the track has no beats the unit is seconds.");
 
     add("beatloop_size")
             << tr("Beatloop Size")
@@ -804,6 +804,7 @@ void Tooltips::addStandardTooltips() {
     add("beatloop_activate")
             << tr("Beatloop")
             << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
+            << noBeatsSeconds
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");

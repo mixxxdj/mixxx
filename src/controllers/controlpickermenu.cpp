@@ -639,7 +639,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* pLoopMenu = addSubmenu(tr("Looping"));
     // add beatloop_activate and beatlooproll_activate to both the
     // Loop and Beat-Loop menus to make sure users can find them.
-    QString noBeatsSeconds = tr(" (if track has no beats the unit is seconds)");
+    QString noBeatsSeconds = QChar('(') +
+            tr("if the track has no beats the unit is seconds") + QChar(')');
     QString beatloopActivateTitle = tr("Loop Selected Beats");
     QString beatloopActivateDescription =
             tr("Create a beat loop of selected beat size") + noBeatsSeconds;
