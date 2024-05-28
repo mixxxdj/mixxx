@@ -1377,7 +1377,7 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/track/tracknumbers.h
   src/track/trackrecord.h
   src/track/trackref.h
-  src/util/always_false.h
+  src/util/always_false_v.h
   src/util/alphabetafilter.h
   src/util/battery/battery.h
   src/util/cache.h
