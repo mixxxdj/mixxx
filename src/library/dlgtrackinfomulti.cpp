@@ -189,7 +189,7 @@ void DlgTrackInfoMulti::init() {
     // This also requires some special handling in saveTracks().
     txtCommentBox->setInsertPolicy(QComboBox::NoInsert);
     // We create a view in order to enable word-wrap.
-    auto pView = new QListView();
+    auto* pView = new QListView();
     pView->setWordWrap(true);
     // Even though we enabled word-wrap, and even if we'd set the view's max width,
     // the view (actually its container) would still expand wider than that for
