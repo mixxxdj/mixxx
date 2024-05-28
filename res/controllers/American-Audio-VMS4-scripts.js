@@ -17,6 +17,56 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+// ----------------- Object definitions --------------------------
+
+
+
+var ButtonState = {"released": 0x00, "pressed": 0x7F};
+
+var LedState = {"off": 0x00, "on": 0x7F};
+
+// Controller
+
+var Controller = function() {
+    this.group = "[Master]";
+    this.Buttons = [];
+};
+
+Controller.prototype.addButton = function(buttonName, button, eventHandler) {
+    if (eventHandler) {
+        /* eslint @typescript-eslint/no-this-alias: "off" */
+        const executionEnvironment = this;
+        const handler = function(value) {
+            button.state = value;
+            executionEnvironment[eventHandler](value);
+        };
+        button.handler = handler;
+    }
+    this.Buttons[buttonName] = button;
+};
+
+// Button
+
+var Button = function(controlId) {
+    this.controlId = controlId;
+    this.state = ButtonState.released;
+};
+Button.prototype.handleEvent = function(value) {
+    this.handler(value);
+};
+
+// Deck
+
+var Deck = function(deckNumber, group) {
+    this.deckNumber = deckNumber;
+    this.group = group;
+    this.Buttons = [];
+};
+Deck.prototype.addButton = Controller.prototype.addButton;
+
+// ----------------- END Object definitions ----------------------
+
 VMS4 = new Controller();
 
 VMS4.RateRanges = [0.08, 0.10, 0.30, 1.00];

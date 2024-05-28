@@ -13,12 +13,6 @@
     "colorCodeToObject": "readonly",
     "colorCodeFromObject": "readonly",
     "script": "readonly",
-    "bpm": "readonly",
-    "ButtonState": "readonly",
-    "LedState": "readonly",
-    "Controller": "readonly",
-    "Button": "readonly",
-    "Control": "readonly",
-    "Deck": "readonly"
+    "bpm": "readonly"
   }
 }
