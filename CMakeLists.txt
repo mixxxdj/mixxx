@@ -2510,7 +2510,7 @@ target_link_libraries(mixxx-lib PRIVATE mp3lame::mp3lame)
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
-  lib/kaitai/kaitaistream.cpp
+  lib/kaitai/kaitai/kaitaistream.cpp
 )
 target_include_directories(Kaitai SYSTEM PUBLIC lib/kaitai)
 target_compile_definitions(Kaitai PRIVATE KS_STR_ENCODING_NONE)
