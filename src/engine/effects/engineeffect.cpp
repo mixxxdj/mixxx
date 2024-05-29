@@ -199,17 +199,19 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
             if (effectiveEffectEnableState == EffectEnableState::Disabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade out (fade to dry signal)
-                SampleUtil::linearCrossfadeStereoBuffersOut(
+                SampleUtil::linearCrossfadeBuffersOut(
                         pOutput,
                         pInput,
-                        numSamples);
+                        numSamples,
+                        mixxx::kEngineChannelOutputCount);
             } else if (effectiveEffectEnableState == EffectEnableState::Enabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade in (fade to wet signal)
-                SampleUtil::linearCrossfadeStereoBuffersIn(
+                SampleUtil::linearCrossfadeBuffersOut(
                         pOutput,
                         pInput,
-                        numSamples);
+                        numSamples,
+                        mixxx::kEngineChannelOutputCount);
             }
         }
     }

@@ -185,30 +185,11 @@ SINT ReadAheadManager::getNextSamples(double dRate,
             }
 
             // do crossfade from the current buffer into the new loop beginning
-            if (samples_from_reader != 0) { // avoid division by zero
-                switch (channelCount) {
-                case mixxx::audio::ChannelCount::stereo():
-                    SampleUtil::linearCrossfadeStereoBuffersOut(
-                            pOutput + crossFadeStart,
-                            m_pCrossFadeBuffer,
-                            crossFadeSamples);
-                    break;
-                case mixxx::audio::ChannelCount::stem():
-                    SampleUtil::linearCrossfadeStemBuffersOut(
-                            pOutput + crossFadeStart,
-                            m_pCrossFadeBuffer,
-                            crossFadeSamples);
-                    break;
-                default:
-                    // Fallback to unoptimised function
-                    SampleUtil::linearCrossfadeUnaryBuffersOut(
-                            pOutput + crossFadeStart,
-                            m_pCrossFadeBuffer,
-                            crossFadeSamples,
-                            channelCount);
-                    break;
-                }
-            }
+            SampleUtil::linearCrossfadeBuffersOut(
+                    pOutput + SampleUtil::ceilPlayPosToFrameStart(crossFadeStart, channelCount),
+                    m_pCrossFadeBuffer,
+                    crossFadeSamples,
+                    channelCount);
         }
     }
 

@@ -11,6 +11,7 @@
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
 #include "audio/types.h"
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/sample.h"
 
@@ -118,10 +119,11 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             CSAMPLE* M_RESTRICT pOutput,
             const int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
-        SampleUtil::linearCrossfadeStereoBuffersOut(
+        SampleUtil::linearCrossfadeBuffersOut(
                 pOutput, // fade out filtered
                 pIn,     // fade in dry
-                iBufferSize);
+                iBufferSize,
+                mixxx::kEngineChannelOutputCount);
         initBuffers();
     }
 

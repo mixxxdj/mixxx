@@ -382,7 +382,7 @@ TEST_F(SampleUtilTest, copyReverseStereo) {
         source[i] = i * 0.1f;
     }
 
-    SampleUtil::copyReverseStereo(destination, source, 10);
+    SampleUtil::copyReverse(destination, source, 10, mixxx::audio::ChannelCount::stereo());
 
     // check if right channel remains at odd index
     EXPECT_FLOAT_EQ(destination[0], 0.8f);
@@ -405,7 +405,7 @@ TEST_F(SampleUtilTest, copyReverseStem) {
         source[i] = i * 0.1f;
     }
 
-    SampleUtil::copyReverseStem(destination, source, 16);
+    SampleUtil::copyReverse(destination, source, 16, mixxx::audio::ChannelCount::stem());
 
     // check if multi channel remains in the same order
     EXPECT_FLOAT_EQ(destination[0], 0.8f);

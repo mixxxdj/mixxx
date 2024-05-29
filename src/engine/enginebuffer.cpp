@@ -1123,21 +1123,8 @@ void EngineBuffer::processTrackLocked(
         if (m_bCrossfadeReady) {
             // Bring pOutput with the new parameters in and fade out the old one,
             // stored with the old parameters in m_pCrossfadeBuffer
-            switch (m_channelCount) {
-            case mixxx::audio::ChannelCount::stereo():
-                SampleUtil::linearCrossfadeStereoBuffersIn(
-                        pOutput, m_pCrossfadeBuffer, iBufferSize);
-                break;
-            case mixxx::audio::ChannelCount::stem():
-                SampleUtil::linearCrossfadeStemBuffersIn(
-                        pOutput, m_pCrossfadeBuffer, iBufferSize);
-                break;
-            default:
-                // Fallback to unoptimised function
-                SampleUtil::linearCrossfadeUnaryBuffersIn(
-                        pOutput, m_pCrossfadeBuffer, iBufferSize, m_channelCount);
-                break;
-            }
+            SampleUtil::linearCrossfadeBuffersIn(
+                    pOutput, m_pCrossfadeBuffer, iBufferSize, m_channelCount);
         }
         // Note: we do not fade here if we pass the end or the start of
         // the track in reverse direction

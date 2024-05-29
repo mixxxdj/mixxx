@@ -117,28 +117,12 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
                         m_bufferedSampleFrames.frameIndexRange().start(),
                 channelCount);
         const SINT sampleCount = frames2samples(copyableFrameIndexRange.length(), channelCount);
-        switch (channelCount) {
-        case mixxx::audio::ChannelCount::stereo():
-            SampleUtil::copyReverseStereo(
-                    reverseSampleBuffer - dstSampleOffset - sampleCount,
-                    m_bufferedSampleFrames.readableData(srcSampleOffset),
-                    sampleCount);
-            break;
-        case mixxx::audio::ChannelCount::stem():
-            SampleUtil::copyReverseStem(
-                    reverseSampleBuffer - dstSampleOffset - sampleCount,
-                    m_bufferedSampleFrames.readableData(srcSampleOffset),
-                    sampleCount);
-            break;
-        default:
-            // Fallback to unoptimised function
-            SampleUtil::copyReverseUnary(
-                    reverseSampleBuffer - dstSampleOffset - sampleCount,
-                    m_bufferedSampleFrames.readableData(srcSampleOffset),
-                    sampleCount,
-                    channelCount);
-            break;
-        }
+
+        SampleUtil::copyReverse(
+                reverseSampleBuffer - dstSampleOffset - sampleCount,
+                m_bufferedSampleFrames.readableData(srcSampleOffset),
+                sampleCount,
+                channelCount);
     }
     return copyableFrameIndexRange;
 }

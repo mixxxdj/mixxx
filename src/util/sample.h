@@ -282,21 +282,22 @@ class SampleUtil {
 
     /// Crossfade two buffers together. All the buffers must be the same length.
     /// pDest is in one version the Out and in the other version the In buffer.
+    static void linearCrossfadeBuffersOut(
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples, int channelCount);
+    static void linearCrossfadeBuffersIn(
+            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples, int channelCount);
+
+  private:
     static void linearCrossfadeStereoBuffersOut(
             CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
     static void linearCrossfadeStemBuffersOut(
             CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
-    // Generic version used for unoptimised multi channel count
-    static void linearCrossfadeUnaryBuffersOut(
-            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples, int channelCount);
     static void linearCrossfadeStereoBuffersIn(
             CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
     static void linearCrossfadeStemBuffersIn(
             CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
-    // Generic version used for unoptimised multi channel count
-    static void linearCrossfadeUnaryBuffersIn(
-            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples, int channelCount);
 
+  public:
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
@@ -354,14 +355,7 @@ class SampleUtil {
     static void reverse(CSAMPLE* pBuffer, SINT numSamples);
 
     // copy pSrc to pDest and reverses stereo sample order (backward)
-    static void copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
-            const CSAMPLE* M_RESTRICT pSrc,
-            SINT numSamples);
-    static void copyReverseStem(CSAMPLE* M_RESTRICT pDest,
-            const CSAMPLE* M_RESTRICT pSrc,
-            SINT numSamples);
-    // Generic version used for unoptimised multi channel count
-    static void copyReverseUnary(CSAMPLE* M_RESTRICT pDest,
+    static void copyReverse(CSAMPLE* M_RESTRICT pDest,
             const CSAMPLE* M_RESTRICT pSrc,
             SINT numSamples,
             int channelCount);

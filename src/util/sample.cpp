@@ -632,21 +632,39 @@ void SampleUtil::linearCrossfadeStemBuffersOut(
 }
 
 // static
-void SampleUtil::linearCrossfadeUnaryBuffersOut(
+void SampleUtil::linearCrossfadeBuffersOut(
         CSAMPLE* pDestSrcFadeOut,
         const CSAMPLE* pSrcFadeIn,
         SINT numSamples,
         int channelCount) {
-    DEBUG_ASSERT(numSamples % channelCount == 0);
-    int numFrame = numSamples / channelCount;
-    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / channelCount);
-    for (int chIdx = 0; chIdx < channelCount; chIdx++) {
-        for (int i = 0; i < numFrame; ++i) {
-            const CSAMPLE_GAIN cross_mix = cross_inc * i;
-            pDestSrcFadeOut[i * channelCount + chIdx] *= (CSAMPLE_GAIN_ONE - cross_mix);
-            pDestSrcFadeOut[i * channelCount + chIdx] +=
-                    pSrcFadeIn[i * channelCount + chIdx] * cross_mix;
+    switch (channelCount) {
+    case mixxx::audio::ChannelCount::stereo():
+        return SampleUtil::linearCrossfadeStereoBuffersOut(
+                pDestSrcFadeOut,
+                pSrcFadeIn,
+                numSamples);
+    case mixxx::audio::ChannelCount::stem():
+        return SampleUtil::linearCrossfadeStemBuffersOut(
+                pDestSrcFadeOut,
+                pSrcFadeIn,
+                numSamples);
+    default:
+        // Fallback to unoptimised function
+        {
+            DEBUG_ASSERT(numSamples % channelCount == 0);
+            int numFrame = numSamples / channelCount;
+            const CSAMPLE_GAIN cross_inc =
+                    CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / channelCount);
+            for (int chIdx = 0; chIdx < channelCount; chIdx++) {
+                for (int i = 0; i < numFrame; ++i) {
+                    const CSAMPLE_GAIN cross_mix = cross_inc * i;
+                    pDestSrcFadeOut[i * channelCount + chIdx] *= (CSAMPLE_GAIN_ONE - cross_mix);
+                    pDestSrcFadeOut[i * channelCount + chIdx] +=
+                            pSrcFadeIn[i * channelCount + chIdx] * cross_mix;
+                }
+            }
         }
+        break;
     }
 }
 
@@ -729,21 +747,39 @@ void SampleUtil::linearCrossfadeStemBuffersIn(
 }
 
 // static
-void SampleUtil::linearCrossfadeUnaryBuffersIn(
+void SampleUtil::linearCrossfadeBuffersIn(
         CSAMPLE* pDestSrcFadeIn,
         const CSAMPLE* pSrcFadeOut,
         SINT numSamples,
         int channelCount) {
-    int numFrame = numSamples / channelCount;
-    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / channelCount);
-    for (int chIdx = 0; chIdx < channelCount; chIdx++) {
-        for (int i = 0; i < numFrame; ++i) {
-            const CSAMPLE_GAIN cross_mix = cross_inc * i;
-            pDestSrcFadeIn[i * channelCount + chIdx] *= cross_mix;
-            pDestSrcFadeIn[i * channelCount + chIdx] +=
-                    pSrcFadeOut[i * channelCount + chIdx] *
-                    (CSAMPLE_GAIN_ONE - cross_mix);
+    switch (channelCount) {
+    case mixxx::audio::ChannelCount::stereo():
+        return SampleUtil::linearCrossfadeStereoBuffersIn(
+                pDestSrcFadeIn,
+                pSrcFadeOut,
+                numSamples);
+    case mixxx::audio::ChannelCount::stem():
+        return SampleUtil::linearCrossfadeStemBuffersIn(
+                pDestSrcFadeIn,
+                pSrcFadeOut,
+                numSamples);
+    default:
+        // Fallback to unoptimised function
+        {
+            int numFrame = numSamples / channelCount;
+            const CSAMPLE_GAIN cross_inc =
+                    CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / channelCount);
+            for (int chIdx = 0; chIdx < channelCount; chIdx++) {
+                for (int i = 0; i < numFrame; ++i) {
+                    const CSAMPLE_GAIN cross_mix = cross_inc * i;
+                    pDestSrcFadeIn[i * channelCount + chIdx] *= cross_mix;
+                    pDestSrcFadeIn[i * channelCount + chIdx] +=
+                            pSrcFadeOut[i * channelCount + chIdx] *
+                            (CSAMPLE_GAIN_ONE - cross_mix);
+                }
+            }
         }
+        break;
     }
 }
 
@@ -826,6 +862,7 @@ void SampleUtil::stripMultiToStereo(
         mixxx::audio::ChannelCount numChannels) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
+    // note: LOOP VECTORIZED
     for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
         pBuffer[i * 2 + 1] = pBuffer[i * numChannels + 1];
@@ -840,6 +877,7 @@ void SampleUtil::copyMultiToStereo(
         mixxx::audio::ChannelCount numChannels) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
+    // note: LOOP VECTORIZED
     for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
@@ -860,44 +898,16 @@ void SampleUtil::reverse(CSAMPLE* pBuffer, SINT numSamples) {
 }
 
 // static
-void SampleUtil::copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
-        const CSAMPLE* M_RESTRICT pSrc,
-        SINT numSamples) {
-    for (SINT j = 0; j < numSamples / 2; ++j) {
-        const int endpos = (numSamples - 1) - j * 2;
-        pDest[j * 2] = pSrc[endpos - 1];
-        pDest[j * 2 + 1] = pSrc[endpos];
-    }
-}
-
-// static
-void SampleUtil::copyReverseStem(CSAMPLE* M_RESTRICT pDest,
-        const CSAMPLE* M_RESTRICT pSrc,
-        SINT numSamples) {
-    DEBUG_ASSERT(0 == numSamples % 8);
-    for (SINT frameIdx = 0; frameIdx < numSamples / 8; ++frameIdx) {
-        const int endpos = (numSamples - 1) - frameIdx * 8;
-        pDest[frameIdx * 8] = pSrc[endpos - 7];
-        pDest[frameIdx * 8 + 1] = pSrc[endpos - 6];
-        pDest[frameIdx * 8 + 2] = pSrc[endpos - 5];
-        pDest[frameIdx * 8 + 3] = pSrc[endpos - 4];
-        pDest[frameIdx * 8 + 4] = pSrc[endpos - 3];
-        pDest[frameIdx * 8 + 5] = pSrc[endpos - 2];
-        pDest[frameIdx * 8 + 6] = pSrc[endpos - 1];
-        pDest[frameIdx * 8 + 7] = pSrc[endpos];
-    }
-}
-
-// static
-void SampleUtil::copyReverseUnary(CSAMPLE* M_RESTRICT pDest,
+void SampleUtil::copyReverse(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         SINT numSamples,
         int channelCount) {
     DEBUG_ASSERT(numSamples % channelCount == 0);
     for (SINT frameIdx = 0; frameIdx < numSamples / channelCount; ++frameIdx) {
         const int endpos = (numSamples - 1) - frameIdx * channelCount;
+        // note: LOOP VECTORIZED
         for (int chIdx = 0; chIdx < channelCount; chIdx++) {
-            pDest[frameIdx * channelCount + chIdx] = pSrc[endpos - channelCount - chIdx + 1];
+            pDest[frameIdx * channelCount + chIdx] = pSrc[endpos - channelCount + chIdx + 1];
         }
     }
 }
