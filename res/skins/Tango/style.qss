@@ -2463,6 +2463,14 @@ WTrackMenu QMenu QCheckBox::indicator {
   WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
     image: url(skin:/../Tango/buttons/btn_lib_checkmark_indeterminate_grey.svg);
   }
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  border: 0px;
+  background-color: transparent;
+  image: url(skin:/../Tango/buttons/btn_search.svg);
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    image: url(skin:/../Tango/buttons/btn_search_disabled.svg);
+  }
 
 /* widgets in cue popup menu */
 #CueDeleteButton,

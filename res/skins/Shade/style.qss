@@ -397,6 +397,13 @@ WEffectSelector QAbstractScrollArea,
     border-width: 1px;
     border-style: solid;
   }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator,
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    border: 0px;
+    background-color: transparent;
+    image: url(skin:/btn/btn_search_menu.svg);
+    margin-left: 2px;
+  }
 
 #EffectSelectorGroup[highlight="1"] {
   border: 1px solid #52f864;

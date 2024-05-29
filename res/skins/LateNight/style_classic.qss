@@ -2656,16 +2656,8 @@ QPlainTextEdit QMenu::item:disabled {
     WEffectSelector::indicator:checked,
     WEffectChainPresetSelector::indicator:checked,
     #fadeModeCombobox::indicator:checked {
-      width: 13px;
-      height: 13px;
       margin-left: 8px;
     }
-  /* disabled menu item and checkbox */
-  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    background-color: #222;
-  }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
     image: url(skins:LateNight/classic/buttons/btn__lib_checkmark_grey.svg);
   }

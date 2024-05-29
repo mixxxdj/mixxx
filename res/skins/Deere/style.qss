@@ -2294,6 +2294,10 @@ WTrackMenu QMenu QCheckBox::indicator {
   /* remove OS focus indicator */
   outline: none;
 }
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  border: 0px;
+  background-color: transparent;
+}
 
 QLineEdit QMenu::icon:selected,
 QPlainTextEdit QMenu::icon:selected,
