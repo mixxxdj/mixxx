@@ -117,7 +117,7 @@ const colorCodeToObject = function(colorCode) {
     };
 };
 
-const script = {
+const script = Object.freeze({
     // ----------------- Mapping script constants ---------------------
 
     // Common regular expressions
@@ -488,7 +488,7 @@ const script = {
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
             factor);
     }
-};
+});
 
 
 
