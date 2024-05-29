@@ -496,7 +496,7 @@ const script = {
 
 
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
-class bpm {
+class bpmClass {
     constructor() {
         this.tapTime = 0.0;
         this.previousTapDelta = 0.0;
@@ -560,6 +560,5 @@ class bpm {
             fRateScale * engine.getValue(group, "rate_dir"));
     }
 }
-// Add class bpm to the Global JavaScript object
-// @ts-ignore Same identifier for class and instance needed for backward compatibility
-this.bpm = bpm;
+// Add instance bpm of bpmClass to the Global JavaScript object
+this.bpm = new bpmClass();
