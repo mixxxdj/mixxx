@@ -185,7 +185,7 @@ void DlgPrefKey::fastAnalysisEnabled(int i) {
     slotUpdate();
 }
 
-void DlgPrefKey::reanalyzeEnabled(int i){
+void DlgPrefKey::reanalyzeEnabled(int i) {
     m_bReanalyzeEnabled = static_cast<bool>(i);
     slotUpdate();
 }
