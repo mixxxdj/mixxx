@@ -239,10 +239,3 @@ void EffectKnobParameterSlot::syncSofttakeover() {
 double EffectKnobParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
-
-std::optional<double> EffectKnobParameterSlot::neutralPointOnScale() const {
-    if (m_pManifestParameter) {
-        return m_pManifestParameter->neutralPointOnScale();
-    }
-    return std::nullopt;
-}

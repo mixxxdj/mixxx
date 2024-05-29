@@ -51,8 +51,11 @@ class EffectParameterSlotBase : public QObject {
 
     virtual void setParameter(double value) = 0;
 
-    virtual std::optional<double> neutralPointOnScale() const {
-        return std::nullopt;
+    std::optional<double> neutralPointOnScale() const {
+        if (m_pManifestParameter == nullptr) {
+            return std::nullopt;
+        }
+        return m_pManifestParameter->neutralPointOnScale();
     }
 
   signals:

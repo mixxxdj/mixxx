@@ -39,8 +39,6 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
 
     void setParameter(double value) override;
 
-    std::optional<double> neutralPointOnScale() const override;
-
   private slots:
     // Solely for handling control changes
     void slotLinkTypeChanging(double v);
