@@ -57,6 +57,10 @@ void DlgPrefAutoDJ::slotUpdate() {
                     ConfigKey("[Auto DJ]", "EnableRandomQueue"))
                     ? Qt::Checked
                     : Qt::Unchecked);
+
+    // Re-center the crossfader instantly when AutoDJ is disabled
+    CenterXfaderCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "center_xfader_when_disabling"), false));
 }
 
 void DlgPrefAutoDJ::slotApply() {
@@ -74,6 +78,9 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(
             ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),
             RandomQueueMinimumSpinBox->value());
+
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "center_xfader_when_disabling"),
+            CenterXfaderCheckBox->isChecked());
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -88,6 +95,8 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     RandomQueueCheckBox->setEnabled(true);
     RandomQueueMinimumSpinBox->setEnabled(false);
     RandomQueueMinimumSpinBox->setValue(5);
+
+    CenterXfaderCheckBox->setChecked(false);
 }
 
 void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {
