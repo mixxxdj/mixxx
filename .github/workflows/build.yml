@@ -93,7 +93,7 @@ jobs:
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DBULK=OFF
+              -DBULK=ON
               -DFFMPEG=OFF
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
@@ -131,7 +131,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.1.6
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -481,10 +481,12 @@ jobs:
     needs: build
     # Always run this job, even if one or more jobs from the `build` jobs
     # fail to allow partial updates of the manifest.
-    if: always()
+    # Don't run it on forks that do not have access to our external
+    # infrastructure, though.
+    if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 0
 

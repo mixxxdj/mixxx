@@ -135,7 +135,8 @@ BaseTrackTableModel::BaseTrackTableModel(
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity),
-          m_playedInactiveColor(QColor::fromRgb(WTrackTableView::kDefaultPlayedInactiveColorHex)) {
+          m_trackPlayedColor(QColor(WTrackTableView::kDefaultTrackPlayedColor)),
+          m_trackMissingColor(QColor(WTrackTableView::kDefaultTrackMissingColor)) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::forceModelUpdate,
             this,
@@ -461,12 +462,20 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     m_backgroundColorOpacity = pTableView->getBackgroundColorOpacity();
     // This is the color used for the text of played tracks.
     // data() uses this to compose the ForegroundRole QBrush if 'played' is checked.
-    m_playedInactiveColor = pTableView->getPlayedInactiveColor();
+    m_trackPlayedColor = pTableView->getTrackPlayedColor();
     connect(pTableView,
-            &WTrackTableView::playedInactiveColorChanged,
+            &WTrackTableView::trackPlayedColorChanged,
             this,
             [this](QColor col) {
-                m_playedInactiveColor = col;
+                m_trackPlayedColor = col;
+            });
+    // Same for the 'missing' color
+    m_trackMissingColor = pTableView->getTrackMissingColor();
+    connect(pTableView,
+            &WTrackTableView::trackMissingColorChanged,
+            this,
+            [this](QColor col) {
+                m_trackMissingColor = col;
             });
     if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pTableView);
@@ -522,15 +531,32 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
         bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
-    } else if (role == Qt::ForegroundRole && s_bApplyPlayedTrackColor) {
-        // Custom text color for played tracks
-        auto playedRaw = rawSiblingValue(
+    } else if (role == Qt::ForegroundRole) {
+        // Custom text color for missing tracks
+        // Visible in playlists, crates and Missing feature.
+        // Check this first so played, missing tracks (unlikely case, but possible)
+        // get the 'missing' color.
+        // Note: this is not helpful in Tracks -> Missing, so override it with
+        // the regular track color (WTrackTableView { color: #xxx; }) like this:
+        // #DlgMissing WTrackTableView { qproperty-trackMissingColor: #xxx; }
+        auto missingRaw = rawSiblingValue(
                 index,
-                ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
-        if (!playedRaw.isNull() &&
-                playedRaw.canConvert<bool>() &&
-                playedRaw.toBool()) {
-            return QVariant::fromValue(m_playedInactiveColor);
+                ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED);
+        if (!missingRaw.isNull() &&
+                missingRaw.canConvert<bool>() &&
+                missingRaw.toBool()) {
+            return QVariant::fromValue(m_trackMissingColor);
+        }
+        if (s_bApplyPlayedTrackColor) {
+            // Custom text color for played tracks
+            auto playedRaw = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
+            if (!playedRaw.isNull() &&
+                    playedRaw.canConvert<bool>() &&
+                    playedRaw.toBool()) {
+                return QVariant::fromValue(m_trackPlayedColor);
+            }
         }
     }
 
@@ -700,7 +726,7 @@ QVariant BaseTrackTableModel::roleValue(
             // Same value as for Qt::DisplayRole (see below)
             break;
         }
-        M_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
     // NOTE: for export we need to fall through to Qt::DisplayRole,
     // so do not add any other role cases here, or the export
     // will be empty

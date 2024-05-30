@@ -38,6 +38,11 @@ const KeyboardColors = [
     LedColors.white,
 ];
 
+// Constant used to define custom default pad layout
+const DefaultPadLayoutHotcue = "hotcue";
+const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
+const DefaultPadLayoutKeyboard = "keyboard";
+
 /*
  * USER CONFIGURABLE SETTINGS
  * Change settings in the preferences
@@ -137,6 +142,14 @@ const TightnessFactor = engine.getSetting("tightnessFactor") || 0.5;
 // This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
 const MaxWheelForce = engine.getSetting("maxWheelForce") || 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
 
+// Map the mixer potentiometers to different components of the software mixer in Mixxx, on top of the physical control of the hardware
+// mixer embedded in the S4 Mk3. This is useful if you are not using certain S4 Mk3 outputs.
+const SoftwareMixerMain = !!engine.getSetting("softwareMixerMain");
+const SoftwareMixerBooth = !!engine.getSetting("softwareMixerBooth");
+const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
+
+// Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
+const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
@@ -1143,6 +1156,42 @@ class Mixer extends ComponentContainer {
                 }
             },
         });
+
+        if (SoftwareMixerMain) {
+            this.master = new Pot({
+                group: "[Master]",
+                inKey: "gain",
+                inByte: 22,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+        if (SoftwareMixerBooth) {
+            this.booth = new Pot({
+                group: "[Master]",
+                inKey: "booth_gain",
+                inByte: 24,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+        if (SoftwareMixerHeadphone) {
+            this.cue = new Pot({
+                group: "[Master]",
+                inKey: "headMix",
+                inByte: 28,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+
+            this.pflGain = new Pot({
+                group: "[Master]",
+                inKey: "headGain",
+                inByte: 26,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
 
         for (const component of this) {
             if (component.inReport === undefined) {
@@ -2213,8 +2262,24 @@ class S4Mk3Deck extends Deck {
             samplerPage: 3,
             keyboard: 5,
         };
-        switchPadLayer(this, defaultPadLayer);
-        this.currentPadLayer = this.padLayers.defaultLayer;
+        switch (DefaultPadLayout) {
+        case DefaultPadLayoutHotcue:
+            switchPadLayer(this, hotcuePage2);
+            this.currentPadLayer = this.padLayers.hotcuePage2;
+            break;
+        case DefaultPadLayoutSamplerBeatloop:
+            switchPadLayer(this, samplerOrBeatloopRollPage);
+            this.currentPadLayer = this.padLayers.samplerPage;
+            break;
+        case DefaultPadLayoutKeyboard:
+            switchPadLayer(this, this.keyboard);
+            this.currentPadLayer = this.padLayers.keyboard;
+            break;
+        default:
+            switchPadLayer(this, defaultPadLayer);
+            this.currentPadLayer = this.padLayers.defaultLayer;
+            break;
+        }
 
         this.hotcuePadModeButton = new Button({
             deck: this,

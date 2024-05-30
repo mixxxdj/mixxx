@@ -18,6 +18,7 @@
 
 class DlgTagFetcher;
 class DlgTrackInfo;
+class DlgTrackInfoMulti;
 //class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
 class Library;
@@ -150,6 +151,7 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
+    void slotUndoBeatsChange();
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -188,6 +190,7 @@ class WTrackMenu : public QMenu {
     QList<TrackRef> getTrackRefs() const;
 
     TrackPointer getFirstTrackPointer() const;
+    TrackPointerList getTrackPointers() const;
 
     std::unique_ptr<mixxx::TrackPointerIterator> newTrackPointerIterator() const;
 
@@ -226,6 +229,7 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
+    bool canUndoBeatsChange() const;
 
     /// Get the common rating of all selected tracks.
     /// Return 0 if ratings differ.
@@ -311,6 +315,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
+    QAction* m_pBpmUndoAction{};
 
     // Track rating and color
     WStarRatingAction* m_pStarRatingAction{};
@@ -345,6 +350,7 @@ class WTrackMenu : public QMenu {
     PollingControlProxy m_pNumPreviewDecks;
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
+    std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {

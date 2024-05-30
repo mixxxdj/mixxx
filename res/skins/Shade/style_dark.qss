@@ -150,6 +150,9 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #8a8a8a;
 }
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #b79d00;
+}
 #CueLabelEdit {
   background-color: #3F3041;
 }
@@ -205,7 +208,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #ccc;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */

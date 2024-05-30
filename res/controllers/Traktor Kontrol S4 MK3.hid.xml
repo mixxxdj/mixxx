@@ -6,7 +6,7 @@
         <description>HID Mapping for Traktor Kontrol S4 MK3</description>
         <manual>native_instruments_traktor_kontrol_s4_mk3</manual>
         <devices>
-            <product protocol="hid" vendor_id="0x17cc" product_id="0x1720" usage_page="0xff01" usage="0x1" interface_number="0x4" />
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1720" usage_page="0xff01" usage="0x0" interface_number="0x3" />
         </devices>
     </info>
     <settings>
@@ -56,7 +56,7 @@
                     label="Deck C">
                     <value label="Aqua">aqua</value>
                     <value label="Azalea">azalea</value>
-                    <value label="Blue" default="true">blue</value>
+                    <value label="Blue">blue</value>
                     <value label="Celeste">celeste</value>
                     <value label="Fuscia">fuscia</value>
                     <value label="Green">green</value>
@@ -131,7 +131,7 @@
                 label="Tempo fader low soft takeover color">
                 <value label="Aqua">aqua</value>
                 <value label="Azalea">azalea</value>
-                <value label="Blue" default="true">blue</value>
+                <value label="Blue">blue</value>
                 <value label="Celeste">celeste</value>
                 <value label="Fuscia">fuscia</value>
                 <value label="Green">green</value>
@@ -191,12 +191,54 @@
                 </description>
             </option>
             <option
+                variable="defaultPadLayout"
+                type="enum"
+                label="Default Pad Layout">
+                <value label="Intro/Outro + 4 hotcues" default="true">default</value>
+                <value label="Hotcues">hotcue</value>
+                <value label="Sampler or beatloop">samplerBeatloop</value>
+                <value label="Keyboard">keyboard</value>
+                <description>
+                    Define the default layout used for the pads.
+                </description>
+            </option>
+        </group>
+
+        <group label="Mixer">
+            <option
                 variable="mixerControlsMicAuxOnShift"
                 type="boolean"
                 default="true"
                 label="Shift to mix microphones or auxiliary lines">
                 <description>
                     When shifting decks, the mixer controls microphones or auxiliary lines. If both a microphone and an auxiliary are configured on the same channel, the mixer will prioritize controlling the auxiliary.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerMain"
+                type="boolean"
+                default="false"
+                label="Main gain is handled by the Mixxx built-in mixer">
+                <description>
+                    When enabled, the master potentiometer on top right column of the mixer will drive both the main gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could result in undesired clipping if enabled when using the hardware audio outputs.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerBooth"
+                type="boolean"
+                default="false"
+                label="Booth gain is handled by the Mixxx built-in mixer">
+                <description>
+                    When enabled, the booth potentiometer on right column of the mixer will drive both the booth gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could result in undesired clipping if enabled when using the hardware audio outputs.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerHeadphone"
+                type="boolean"
+                default="false"
+                label="Headphone gain and cue mix is handled by the Mixxx built-in mixer">
+                <description>
+                    When enabled, the headphone volume and cue potentiometers on bottom right column of the mixer will drive both the headphone controls of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could create undesirable clipping if enabled when using the hardware audio outputs.
                 </description>
             </option>
         </group>

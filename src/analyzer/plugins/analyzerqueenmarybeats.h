@@ -1,12 +1,11 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
+#include <memory>
+#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
-#include "util/memory.h"
 
 class DetectionFunction;
 

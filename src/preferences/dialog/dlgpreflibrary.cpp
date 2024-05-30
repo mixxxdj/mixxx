@@ -42,18 +42,6 @@ DlgPrefLibrary::DlgPrefLibrary(
                   QStringLiteral("[Channel1]"), QStringLiteral("rateRange"), this)) {
     setupUi(this);
 
-    connect(this,
-            &DlgPrefLibrary::requestAddDir,
-            m_pLibrary.get(),
-            &Library::slotRequestAddDir);
-    connect(this,
-            &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary.get(),
-            &Library::slotRequestRemoveDir);
-    connect(this,
-            &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary.get(),
-            &Library::slotRequestRelocateDir);
     connect(pushButton_add_dir,
             &QPushButton::clicked,
             this,
@@ -406,9 +394,10 @@ void DlgPrefLibrary::slotAddDir() {
         this, tr("Choose a music directory"),
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
-        emit requestAddDir(fd);
-        slotUpdate();
-        m_bAddedDirectory = true;
+        if (m_pLibrary->requestAddDir(fd)) {
+            populateDirList();
+            m_bAddedDirectory = true;
+        }
     }
 }
 
@@ -464,8 +453,9 @@ void DlgPrefLibrary::slotRemoveDir() {
         removalType = LibraryRemovalType::KeepTracks;
     }
 
-    emit requestRemoveDir(fd, removalType);
-    slotUpdate();
+    if (m_pLibrary->requestRemoveDir(fd, removalType)) {
+        populateDirList();
+    }
 }
 
 void DlgPrefLibrary::slotRelocateDir() {
@@ -486,9 +476,8 @@ void DlgPrefLibrary::slotRelocateDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Relink music directory to new location"), startDir);
 
-    if (!fd.isEmpty()) {
-        emit requestRelocateDir(currentFd, fd);
-        slotUpdate();
+    if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
+        populateDirList();
     }
 }
 

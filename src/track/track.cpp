@@ -8,6 +8,7 @@
 #include "sources/metadatasource.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/time.h"
 
 namespace {
 
@@ -55,6 +56,11 @@ inline mixxx::Bpm getBeatsPointerBpm(
     return pBeats->getBpmInRange(mixxx::audio::kStartFramePos, trackEndPosition);
 }
 
+constexpr int kMaxBeatsUndoStack = 10;
+// The minimum time that has to pass between beat changes to consider them 'separate'.
+// Used to filter actions done in quick succession.
+constexpr int kQuickBeatChangeDeltaMillis = 800;
+
 } // anonymous namespace
 
 // Don't change this string without an entry in the CHANGELOG!
@@ -83,7 +89,8 @@ Track::Track(
           m_fileAccess(std::move(fileAccess)),
           m_record(trackId),
           m_bDirty(false),
-          m_bMarkedForMetadataExport(false) {
+          m_bMarkedForMetadataExport(false),
+          m_undoingBeatsChange(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -93,6 +100,7 @@ Track::Track(
                 << "->"
                 << numberOfInstancesBefore + 1;
     }
+    m_beatChangeTimer.start();
 }
 
 Track::~Track() {
@@ -429,6 +437,22 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     if (m_pBeats == pBeats) {
         return false;
     }
+    // Don't add null beats to the undo stack. Happens when beats are deserialized,
+    // e.g. when opening the track menu.
+    // Don't add beats to stack which we're about to undo.
+    if (!m_undoingBeatsChange && m_pBeats != nullptr) {
+        if (m_pBeatsUndoStack.size() >= kMaxBeatsUndoStack) {
+            m_pBeatsUndoStack.removeFirst();
+        }
+
+        // If changes done in quick succession, e.g. quick beats_translate_later,
+        // we only store the beats from before the first quick action.
+        mixxx::Duration elapsed = m_beatChangeTimer.restart();
+        if (elapsed > mixxx::Duration::fromMillis(kQuickBeatChangeDeltaMillis)) {
+            m_pBeatsUndoStack.push(m_pBeats);
+        }
+    }
+
     m_pBeats = std::move(pBeats);
     m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;
@@ -470,6 +494,18 @@ bool Track::trySetBeatsMarkDirtyAndUnlock(
 mixxx::BeatsPointer Track::getBeats() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_pBeats;
+}
+
+void Track::undoBeatsChange() {
+    if (!canUndoBeatsChange()) {
+        return;
+    }
+
+    auto locked = lockMutex(&m_qMutex);
+    m_undoingBeatsChange = true;
+    const auto pPrevBeats = m_pBeatsUndoStack.pop();
+    trySetBeats(pPrevBeats);
+    m_undoingBeatsChange = false;
 }
 
 void Track::afterBeatsAndBpmUpdated(

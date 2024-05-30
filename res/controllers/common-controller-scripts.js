@@ -156,6 +156,56 @@ const script = Object.freeze({
         LAST_PLAYED: 31,
     }),
 
+    /**
+     * Discriminates whether an object was created using the `{}` synthax.
+     *
+     * Returns true when was an object was created using the `{}` synthax.
+     * False if the object is an instance of a class like Date or Proxy or an Array.
+     *
+     * isSimpleObject({}) // true
+     * isSimpleObject(null) // false
+     * isSimpleObject(undefined) // false
+     * isSimpleObject(new Date) // false
+     * isSimpleObject(new (class {})()) // false
+     * @param {any} obj Object to test
+     * @returns {boolean} true if obj was created using the `{}` or `new Object()` synthax, false otherwise
+     */
+    isSimpleObject: function(obj) {
+        return obj !== null && typeof obj === "object" && obj.constructor.name === "Object";
+    },
+
+
+    /**
+     * Deeply merges 2 objects (Arrays and Objects only, not Map for instance).
+     * @param target {object | Array} Object to merge source into
+     * @param source {object | Array} Object to merge into source
+     */
+    deepMerge: function(target, source) {
+        if (target === source || target === undefined || target === null || source === undefined || source === null) {
+            return;
+        }
+
+        if (Array.isArray(target) && Array.isArray(source)) {
+            const objTarget = target.reduce((acc, val, idx) => Object.assign(acc, {[idx]: val}), {});
+            const objSource = source.reduce((acc, val, idx) => Object.assign(acc, {[idx]: val}), {});
+            script.deepMerge(objTarget, objSource);
+            target.length = 0;
+            target.push(...Object.values(objTarget));
+        } else if (script.isSimpleObject(target) && script.isSimpleObject(source)) {
+            Object.keys(source).forEach(key => {
+                if (
+                    Array.isArray(target[key]) && Array.isArray(source[key]) ||
+                    script.isSimpleObject(target[key]) && script.isSimpleObject(source[key])
+                ) {
+                    script.deepMerge(target[key], source[key]);
+                } else if (source[key] !== undefined && source[key] !== null) {
+                    Object.assign(target, {[key]: source[key]});
+                }
+            });
+        }
+    },
+
+
     // @deprecated Use script.midiDebug() instead
     debug: function(channel, control, value, status, group) {
         console.log("Warning: script.debug() is deprecated. Use script.midiDebug() instead.");

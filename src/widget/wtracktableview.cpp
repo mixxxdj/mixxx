@@ -51,7 +51,8 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_backgroundColorOpacity(backgroundColorOpacity),
           // Default color for the focus border of TableItemDelegates
           m_focusBorderColor(Qt::white),
-          m_playedInactiveColor(QColor::fromRgb(kDefaultPlayedInactiveColorHex)),
+          m_trackPlayedColor(QColor(kDefaultTrackPlayedColor)),
+          m_trackMissingColor(QColor(kDefaultTrackMissingColor)),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
@@ -523,6 +524,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     // Update track indices in context menu
     QModelIndexList indices = getSelectedRows();
+    // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi?
+    // They could then focus the respective edit field.
     m_pTrackMenu->loadTrackModelIndices(indices);
 
     saveCurrentIndex();
@@ -1036,7 +1039,7 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
         // Return invokes the double-click action.
-        // Ctrl+Return opens track properties dialog.
+        // Ctrl+Return opens the track properties dialog.
         // Ignore it if any cell editor is open.
         // Note: we use kPropertiesShortcutKey/~Mofifier here and in
         // in WTrackMenu to display the shortcut.
@@ -1047,10 +1050,10 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             slotMouseDoubleClicked(currentIndex());
         } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
             QModelIndexList indices = getSelectedRows();
-            if (indices.length() == 1) {
-                m_pTrackMenu->loadTrackModelIndices(indices);
-                m_pTrackMenu->slotShowDlgTrackInfo();
-            }
+            // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi
+            // can focus the respective edit field.
+            m_pTrackMenu->loadTrackModelIndices(indices);
+            m_pTrackMenu->slotShowDlgTrackInfo();
         }
         return;
     }

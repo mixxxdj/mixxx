@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>661</width>
-    <height>1203</height>
+    <height>1522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -124,22 +124,22 @@
      <layout class="QGridLayout" name="gridLayout_metadata">
       <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_sync_track_metadata">
-        <property name="text">
-         <string>Synchronize library track metadata from/to file tags</string>
-        </property>
         <property name="toolTip">
          <string>Automatically write modified track metadata from the library into file tags and reimport metadata from updated file tags into the library</string>
+        </property>
+        <property name="text">
+         <string>Synchronize library track metadata from/to file tags</string>
         </property>
        </widget>
       </item>
 
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBox_serato_metadata_export">
-        <property name="text">
-         <string>Synchronize Serato track metadata from/to file tags (experimental)</string>
-        </property>
         <property name="toolTip">
          <string>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</string>
+        </property>
+        <property name="text">
+         <string>Synchronize Serato track metadata from/to file tags (experimental)</string>
         </property>
        </widget>
       </item>
@@ -276,11 +276,10 @@
        </widget>
       </item>
       <item row="9" column="1" colspan="2">
-       <widget class="QSpinBox" name="spinbox_bpm_precision">
-       </widget>
+       <widget class="QSpinBox" name="spinbox_bpm_precision"/>
       </item>
 
-      <item row="8" column="0" colspan="3">
+      <item row="10" column="0" colspan="3">
        <widget class="QCheckBox" name="checkbox_played_track_color">
         <property name="text">
          <string>Grey out played tracks</string>
@@ -347,13 +346,12 @@
        </widget>
       </item>
       <item row="3" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBox_search_bpm_fuzzy_range">
-       </widget>
+       <widget class="QComboBox" name="comboBox_search_bpm_fuzzy_range"/>
       </item>
       <item row="4" column="0" colspan="3">
        <widget class="QLabel" name="label_searchBpmFuzzyRangeInfo">
         <property name="text">
-         <string>This range will be used for the 'fuzzy' BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu > Search related Tracks</string>
+         <string>This range will be used for the 'fuzzy' BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu &gt; Search related Tracks</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -504,11 +502,11 @@
         <property name="text">
          <string>All external libraries shown are write protected.</string>
         </property>
-        <property name="topMargin">
-         <number>10</number>
-        </property>
         <property name="wordWrap">
          <bool>true</bool>
+        </property>
+        <property name="topMargin" stdset="0">
+         <number>10</number>
         </property>
        </widget>
       </item>
@@ -545,19 +543,20 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>Note: ">1200 px" can fetch up to very large cover arts.</string>
+         <string>Note: &quot;&gt;1200 px&quot; can fetch up to very large cover arts.</string>
         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QRadioButton" name="radioButton_cover_art_fetcher_highest">
         <property name="text">
-         <string>>1200 px (if available)</string>
+         <string>&gt;1200 px (if available)</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -567,6 +566,7 @@
          <string>1200 px (if available)</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -576,6 +576,7 @@
          <string>500 px</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -585,6 +586,7 @@
          <string>250 px</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -611,7 +613,7 @@
       <item>
        <widget class="QLabel" name="label_settingsManualLink">
         <property name="text">
-         <string></string>
+         <string/>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

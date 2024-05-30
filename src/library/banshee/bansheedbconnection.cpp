@@ -41,7 +41,7 @@ bool BansheeDbConnection::open(const QString& databaseFile) {
 
 int BansheeDbConnection::getSchemaVersion() {
     QSqlQuery query(m_database);
-    query.prepare("SELECT Value FROM CoreConfiguration WHERE Key = \"DatabaseVersion\"");
+    query.prepare("SELECT Value FROM CoreConfiguration WHERE Key = 'DatabaseVersion'");
 
     if (query.exec()) {
         if (query.next()) {

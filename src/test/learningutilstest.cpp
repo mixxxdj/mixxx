@@ -1,10 +1,11 @@
 #include <stdint.h>
 
+#include <memory>
+
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
 
 std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {
     stream << mapping.key.key << static_cast<uint16_t>(mapping.options);
