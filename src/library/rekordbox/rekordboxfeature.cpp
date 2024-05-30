@@ -1,6 +1,8 @@
 #include "library/rekordbox/rekordboxfeature.h"
 
 #include <mp3guessenc.h>
+#include <rekordbox_anlz.h>
+#include <rekordbox_pdb.h>
 
 #include <QMap>
 #include <QMessageBox>
@@ -13,8 +15,6 @@
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
-#include "library/rekordbox/kaitaistructs/rekordbox_anlz.h"
-#include "library/rekordbox/kaitaistructs/rekordbox_pdb.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
