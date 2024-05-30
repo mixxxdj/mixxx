@@ -244,7 +244,7 @@ class EngineBuffer : public EngineObject {
             TrackPointer pTrack,
             mixxx::audio::SampleRate trackSampleRate,
             mixxx::audio::ChannelCount trackChannelCount,
-            double trackNumSamples);
+            mixxx::audio::FramePos trackNumFrame);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);
     // Fired when passthrough mode is enabled or disabled.

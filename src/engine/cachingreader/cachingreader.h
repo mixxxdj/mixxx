@@ -128,7 +128,7 @@ class CachingReader : public QObject {
     void trackLoaded(TrackPointer pTrack,
             mixxx::audio::SampleRate trackSampleRate,
             mixxx::audio::ChannelCount trackChannelCount,
-            double trackNumSamples);
+            mixxx::audio::FramePos trackNumFrame);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

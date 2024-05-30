@@ -50,11 +50,11 @@ SINT ReadAheadManager::getNextSamples(double dRate,
     // can read in one shot.
     const mixxx::audio::FramePos loopTriggerPosition =
             m_pLoopingControl->nextTrigger(in_reverse,
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    mixxx::audio::FramePos::fromSamplePosMaybeInvalid(
                             m_currentPosition, channelCount),
                     &targetPosition);
-    const double loop_trigger = loopTriggerPosition.toEngineSamplePosMaybeInvalid(channelCount);
-    const double target = targetPosition.toEngineSamplePosMaybeInvalid(channelCount);
+    const double loop_trigger = loopTriggerPosition.toSamplePosMaybeInvalid(channelCount);
+    const double target = targetPosition.toSamplePosMaybeInvalid(channelCount);
 
     SINT preloop_samples = 0;
     double samplesToLoopTrigger = 0.0;
@@ -159,7 +159,7 @@ SINT ReadAheadManager::getNextSamples(double dRate,
             crossFadeSamples -= crossFadeStart;
         } else {
             int trackSamples = static_cast<int>(
-                    m_pLoopingControl->getTrackFrame().toEngineSamplePos(
+                    m_pLoopingControl->getTrackFrame().toSamplePos(
                             channelCount));
             if (loop_read_position > trackSamples) {
                 // looping in reverse overlapping post-roll without samples
@@ -291,7 +291,7 @@ double ReadAheadManager::getFilePlaypositionFromLog(
         if (shouldNotifySeek) {
             if (m_pRateControl) {
                 const auto seekPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePos(
+                        mixxx::audio::FramePos::fromSamplePos(
                                 entry.virtualPlaypositionStart, channelCount);
                 m_pRateControl->notifySeek(seekPosition);
             }
@@ -316,8 +316,8 @@ mixxx::audio::FramePos ReadAheadManager::getFilePlaypositionFromLog(
         mixxx::audio::FrameDiff_t numConsumedFrames,
         mixxx::audio::ChannelCount channelCount) {
     const double positionSamples =
-            getFilePlaypositionFromLog(currentPosition.toEngineSamplePos(channelCount),
+            getFilePlaypositionFromLog(currentPosition.toSamplePos(channelCount),
                     numConsumedFrames * channelCount,
                     channelCount);
-    return mixxx::audio::FramePos::fromEngineSamplePos(positionSamples, channelCount);
+    return mixxx::audio::FramePos::fromSamplePos(positionSamples, channelCount);
 }

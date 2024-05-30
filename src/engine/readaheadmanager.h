@@ -126,7 +126,7 @@ class ReadAheadManager {
     LoopingControl* m_pLoopingControl;
     RateControl* m_pRateControl;
     std::list<ReadLogEntry> m_readAheadLog;
-    double m_currentPosition;
+    double m_currentPosition; // In absolute samples
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
     bool m_cacheMissHappened;

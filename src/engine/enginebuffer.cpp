@@ -452,7 +452,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
         // (Must be called only once per callback)
         m_pScale->scaleBuffer(m_pCrossfadeBuffer, iBufferSize);
         // Restore the original position that was lost due to scaleBuffer() above
-        m_pReadAheadManager->notifySeek(m_playPos.toEngineSamplePos(m_channelCount));
+        m_pReadAheadManager->notifySeek(m_playPos.toSamplePos(m_channelCount));
         m_bCrossfadeReady = true;
      }
 }
@@ -471,7 +471,7 @@ void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
         // this also sets m_pReadAheadManager to newpos
         readToCrossfadeBuffer(m_iLastBufferSize);
     } else {
-        m_pReadAheadManager->notifySeek(m_playPos.toEngineSamplePos(m_channelCount));
+        m_pReadAheadManager->notifySeek(m_playPos.toSamplePos(m_channelCount));
     }
     m_pScale->clear();
 
@@ -520,18 +520,18 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     if (bPlay) {
         m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(
-            pTrack,
+    slotTrackLoaded(pTrack,
             pTrack->getSampleRate(),
             pTrack->getChannels(),
-            pTrack->getSampleRate() * pTrack->getDuration());
+            mixxx::audio::FramePos::fromEngineSamplePos(
+                    pTrack->getSampleRate() * pTrack->getDuration()));
 }
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         mixxx::audio::SampleRate trackSampleRate,
         mixxx::audio::ChannelCount trackChannelCount,
-        double trackNumSamples) {
+        mixxx::audio::FramePos trackNumFrame) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
     }
@@ -547,22 +547,18 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         // The sample count is indicated downmix. This means that for stem
         // track, we only consider the track in stereo, as it is perceived by
         // the user on deck output
-        double channelCount = m_channelCount.toDouble();
         VERIFY_OR_DEBUG_ASSERT(m_channelCount % mixxx::audio::ChannelCount::stereo() == 0) {
             // Make it stereo for the frame calculation
-            channelCount -= 1;
-            kLogger.warning() << "Uneven number of channel in the track is not supported";
+            kLogger.warning() << "Odd number of channel in the track is not supported";
         };
-        m_pTrackSamples->set(trackNumSamples /
-                (channelCount / mixxx::audio::ChannelCount::stereo().toDouble()));
     } else {
         // The EngineBuffer only works with stereo channels. If the track is
         // mono, it will be passed through the AudioSourceStereoProxy. See
         // CachingReaderChunk::bufferSampleFrames
         m_channelCount = mixxx::audio::ChannelCount::stereo();
-        m_pTrackSamples->set(trackNumSamples);
     }
 
+    m_pTrackSamples->set(trackNumFrame.toEngineSamplePos());
     m_pTrackSampleRate->set(trackSampleRate.toDouble());
     m_pTrackLoaded->forceSet(1);
 
@@ -1501,7 +1497,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
             fFractionalPlaypos,
             speed * m_baserate_old,
             static_cast<int>(iBufferSize) /
-                    m_trackEndPositionOld.toEngineSamplePos(mixxx::kEngineChannelOutputCount),
+                    m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
             m_slipModeState,
@@ -1588,12 +1584,11 @@ double EngineBuffer::getVisualPlayPos() const {
 
 mixxx::audio::FramePos EngineBuffer::getTrackEndPosition() const {
     return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-            m_pTrackSamples->get(), mixxx::audio::ChannelCount::stereo());
+            m_pTrackSamples->get());
 }
 
 void EngineBuffer::setTrackEndPosition(mixxx::audio::FramePos position) {
-    m_pTrackSamples->set(position.toEngineSamplePosMaybeInvalid(
-            mixxx::audio::ChannelCount::stereo()));
+    m_pTrackSamples->set(position.toEngineSamplePosMaybeInvalid());
 }
 
 double EngineBuffer::getUserOffset() const {

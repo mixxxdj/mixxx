@@ -118,7 +118,7 @@ class CachingReaderWorker : public EngineWorker {
     void trackLoaded(TrackPointer pTrack,
             mixxx::audio::SampleRate sampleRate,
             mixxx::audio::ChannelCount channelCount,
-            double numSamples);
+            mixxx::audio::FramePos numFrame);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

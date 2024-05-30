@@ -30,10 +30,6 @@ public:
           SINT frames, mixxx::audio::ChannelCount channelCount) noexcept {
       return frames * channelCount;
   }
-  static constexpr double dFrames2samples(
-          SINT frames, mixxx::audio::ChannelCount channelCount) noexcept {
-      return static_cast<double>(frames) * channelCount;
-  }
     // Converts samples to frames
   static SINT samples2frames(SINT samples, mixxx::audio::ChannelCount channelCount) {
       DEBUG_ASSERT(0 == (samples % channelCount));

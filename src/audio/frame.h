@@ -35,19 +35,26 @@ class FramePos final {
     /// Return a `FramePos` from a given engine sample position. To catch
     /// "invalid" positions (e.g. when parsing values from control objects),
     /// use `FramePos::fromEngineSamplePosMaybeInvalid` instead.
-    static constexpr FramePos fromEngineSamplePos(double engineSamplePos,
-            mixxx::audio::ChannelCount channelCount =
-                    mixxx::kEngineChannelOutputCount) {
-        return FramePos(engineSamplePos / channelCount);
+    static constexpr FramePos fromEngineSamplePos(double engineSamplePos) {
+        return FramePos(engineSamplePos / mixxx::kEngineChannelOutputCount);
+    }
+
+    static constexpr FramePos fromSamplePos(double samplePos,
+            mixxx::audio::ChannelCount channelCount) {
+        return FramePos(static_cast<double>(samplePos) / channelCount);
+    }
+
+    static constexpr FramePos fromSamplePos(double samplePos,
+            mixxx::audio::SignalInfo signalInfo) {
+        return FramePos(static_cast<double>(samplePos) / signalInfo.getChannelCount());
     }
 
     /// Return an engine sample position. The `FramePos` is expected to be
     /// valid. If invalid positions are possible (e.g. for control object
     /// values), use `FramePos::toEngineSamplePosMaybeInvalid` instead.
-    double toEngineSamplePos(mixxx::audio::ChannelCount channelCount =
-                                     mixxx::kEngineChannelOutputCount) const {
+    double toEngineSamplePos() const {
         DEBUG_ASSERT(isValid());
-        double engineSamplePos = value() * channelCount;
+        double engineSamplePos = value() * mixxx::kEngineChannelOutputCount;
         // In the rare but possible instance that the position is valid but
         // the engine sample position is exactly -1.0, we nudge the position
         // because otherwise fromEngineSamplePosMaybeInvalid() will think
@@ -58,6 +65,10 @@ class FramePos final {
         return engineSamplePos;
     }
 
+    double toSamplePos(mixxx::audio::ChannelCount channelCount) const {
+        DEBUG_ASSERT(isValid());
+        return value() * channelCount;
+    }
     /// Return a `FramePos` from a given engine sample position. Sample
     /// positions that equal `kLegacyInvalidEnginePosition` are considered
     /// invalid and result in an invalid `FramePos` instead.
@@ -66,14 +77,19 @@ class FramePos final {
     /// for compatibility with our control objects and legacy parts of the code
     /// base. Using a different code path based on the output of `isValid()` is
     /// preferable.
-    static constexpr FramePos fromEngineSamplePosMaybeInvalid(
-            double engineSamplePos,
-            mixxx::audio::ChannelCount channelCount =
-                    mixxx::kEngineChannelOutputCount) {
+    static constexpr FramePos fromEngineSamplePosMaybeInvalid(double engineSamplePos) {
         if (engineSamplePos == kLegacyInvalidEnginePosition) {
             return {};
         }
-        return fromEngineSamplePos(engineSamplePos, channelCount);
+        return fromEngineSamplePos(engineSamplePos);
+    }
+
+    static constexpr FramePos fromSamplePosMaybeInvalid(
+            double samplePos, mixxx::audio::ChannelCount channelCount) {
+        if (samplePos == kLegacyInvalidEnginePosition) {
+            return {};
+        }
+        return fromSamplePos(samplePos, channelCount);
     }
 
     /// Return an engine sample position. If the `FramePos` is invalid,
@@ -83,13 +99,18 @@ class FramePos final {
     /// for compatibility with our control objects and legacy parts of the code
     /// base. Using a different code path based on the output of `isValid()` is
     /// preferable.
-    double toEngineSamplePosMaybeInvalid(
-            mixxx::audio::ChannelCount channelCount =
-                    mixxx::kEngineChannelOutputCount) const {
+    double toEngineSamplePosMaybeInvalid() const {
         if (!isValid()) {
             return kLegacyInvalidEnginePosition;
         }
-        return toEngineSamplePos(channelCount);
+        return toEngineSamplePos();
+    }
+
+    double toSamplePosMaybeInvalid(mixxx::audio::ChannelCount channelCount) const {
+        if (!isValid()) {
+            return kLegacyInvalidEnginePosition;
+        }
+        return toSamplePos(channelCount);
     }
 
     /// Return true if the frame position is valid. Any finite value is

@@ -248,16 +248,6 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Emit that the track is loaded.
-    mixxx::audio::ChannelCount chCount = m_pAudioSource->getSignalInfo().getChannelCount();
-    if (chCount % 2 != 0) {
-        // The engine only support a multiple of stereo channel. If there in an
-        // uneven number of channel, we default to stereo as the frame will be
-        // read through the AudioSourceStereoProxy otherwise
-        chCount = mixxx::audio::ChannelCount::stereo();
-    }
-    const double sampleCount =
-            CachingReaderChunk::dFrames2samples(m_pAudioSource->frameLength(),
-                    chCount);
 
     // This code is a workaround until we have found a better solution to
     // verify and correct offsets.
@@ -275,7 +265,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             pTrack,
             m_pAudioSource->getSignalInfo().getSampleRate(),
             m_pAudioSource->getSignalInfo().getChannelCount(),
-            sampleCount);
+            mixxx::audio::FramePos(m_pAudioSource->frameLength()));
 }
 
 void CachingReaderWorker::quitWait() {
