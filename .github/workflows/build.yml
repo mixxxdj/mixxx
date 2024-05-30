@@ -481,7 +481,9 @@ jobs:
     needs: build
     # Always run this job, even if one or more jobs from the `build` jobs
     # fail to allow partial updates of the manifest.
-    if: always()
+    # Don't run it on forks that do not have access to our external
+    # infrastructure, though.
+    if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4.1.6
