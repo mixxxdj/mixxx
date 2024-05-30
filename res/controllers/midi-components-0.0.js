@@ -31,7 +31,7 @@
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -661,7 +661,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            script.deepMerge(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -735,9 +735,7 @@
     const JogWheelBasic = function(options) {
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
-
-        if (!_.isInteger(this.deck)) {
+        if (!Number.isInteger(this.deck)) {
             console.warn("missing scratch deck");
             return;
         }
@@ -745,18 +743,18 @@
             console.warn("invalid deck number: " + this.deck);
             return;
         }
-        if (!_.isInteger(this.wheelResolution)) {
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
         if (this.group === undefined) {
