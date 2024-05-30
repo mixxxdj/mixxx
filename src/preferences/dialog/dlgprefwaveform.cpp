@@ -1,12 +1,20 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
+#include "mixer/playermanager.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
+
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+const QString kZoomDefaultValueKey = QStringLiteral("waveform_zoom");
+} // namespace
 
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
@@ -14,8 +22,19 @@ DlgPrefWaveform::DlgPrefWaveform(
         std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_pNumDecks(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_decks"), this)),
+          m_pNumSamplers(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_samplers"), this)),
+          m_numConfiguredDecks(0),
+          m_numConfiguredSamplers(0) {
     setupUi(this);
+
+    m_pNumDecks->connectValueChanged(this, &DlgPrefWaveform::slotNumDecksChanged);
+    slotNumDecksChanged(m_pNumDecks->get());
+    m_pNumSamplers->connectValueChanged(this, &DlgPrefWaveform::slotNumSamplersChanged);
+    slotNumSamplersChanged(m_pNumSamplers->get());
 
     // Waveform overview init
     waveformOverviewComboBox->addItem(tr("Filtered")); // "0"
@@ -240,8 +259,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     midVisualGain->setValue(1.0);
     highVisualGain->setValue(1.0);
 
-    // Default zoom level is 3 in WaveformWidgetFactory.
-    defaultZoomComboBox->setCurrentIndex(3 + 1);
+    defaultZoomComboBox->setCurrentIndex(
+            static_cast<int>(WaveformWidgetRenderer::s_waveformDefaultZoom) - 1);
 
     synchronizeZoomCheckBox->setChecked(true);
 
@@ -265,6 +284,35 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
+}
+
+void DlgPrefWaveform::slotNumDecksChanged(double new_count) {
+    int numdecks = static_cast<int>(new_count);
+    if (numdecks <= m_numConfiguredDecks) {
+        // TODO(owilliams): If we implement deck deletion, shrink the size of configured decks.
+        return;
+    }
+
+    for (int i = m_numConfiguredDecks; i < numdecks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+        m_playerGroups.append(group);
+    }
+
+    m_numConfiguredDecks = numdecks;
+}
+
+void DlgPrefWaveform::slotNumSamplersChanged(double new_count) {
+    int numsamplers = static_cast<int>(new_count);
+    if (numsamplers <= m_numConfiguredSamplers) {
+        return;
+    }
+
+    for (int i = m_numConfiguredSamplers; i < numsamplers; ++i) {
+        QString group = PlayerManager::groupForSampler(i);
+        m_playerGroups.append(group);
+    }
+
+    m_numConfiguredSamplers = numsamplers;
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -304,6 +352,11 @@ void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
     WaveformWidgetFactory::instance()->setDefaultZoom(index + 1);
+    for (const auto& group : std::as_const(m_playerGroups)) {
+        ControlObject* pControl = ControlObject::getControl(group, kZoomDefaultValueKey);
+        DEBUG_ASSERT(pControl);
+        pControl->setDefaultValue(index + 1);
+    }
 }
 
 void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
