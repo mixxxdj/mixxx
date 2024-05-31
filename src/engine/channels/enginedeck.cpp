@@ -142,9 +142,11 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
         GroupFeatureState featureState;
         collectFeatures(&featureState);
         for (int stemIdx = 0; stemIdx < stemCount;
-                stemIdx ++) {
+                stemIdx++) {
             int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
-            float gain = m_stemMute[stemIdx]->toBool() ? 0.0f : static_cast<float>(m_stemGain[stemIdx]->get());
+            float gain = m_stemMute[stemIdx]->toBool()
+                    ? 0.0f
+                    : static_cast<float>(m_stemGain[stemIdx]->get());
             SampleUtil::copyMultiToStereo(
                     pOut,
                     pIn,

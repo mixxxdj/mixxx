@@ -175,26 +175,16 @@
                     <EffectUnitGroup>[QuickEffectRack1_<Variable name="StemFxGroup"/>]</EffectUnitGroup>
                   </EffectChainPresetSelector>
                   <WidgetGroup>
-                    <Size>14f,9f</Size>
+                    <Size>32f,28f</Size>
                     <Children>
-                      <PushButton>
-                        <TooltipId>QuickEffectRack_enabled</TooltipId>
-                        <ObjectName>QuickEffectDot</ObjectName>
-                        <Pos>4,0</Pos>
-                        <Size>9f,9f</Size>
-                        <NumberStates>2</NumberStates>
-                        <RightClickIsPushButton>false</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                        </State>
-                        <Connection>
-                          <ConfigKey>[QuickEffectRack1_<Variable name="StemFxGroup"/>],enabled</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skins:LateNight/controls/button_2state.xml">
+                        <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+                        <SetVariable name="ObjectName">FxToggleButton</SetVariable>
+                        <SetVariable name="BtnSize">square</SetVariable>
+                        <SetVariable name="Size">28f,28f</SetVariable>
+                        <SetVariable name="Pos">4,0</SetVariable>
+                        <SetVariable name="ConfigKey">[QuickEffectRack1_<Variable name="StemFxGroup"/>],enabled</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
                   <KnobComposed>
