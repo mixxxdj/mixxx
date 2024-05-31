@@ -1,8 +1,7 @@
 #pragma once
 
-#include <rubberband/RubberBandStretcher.h>
-
 #include "audio/types.h"
+#include "engine/bufferscalers/rubberbandtask.h"
 
 /// RubberBandWrapper is a wrapper around RubberBand::RubberBandStretcher which
 /// allows to distribute signal stretching over multiple instance, but interface
@@ -11,7 +10,7 @@ class RubberBandWrapper {
   public:
     int getEngineVersion() const;
     void setTimeRatio(double ratio);
-    size_t getSamplesRequired() const;
+    std::size_t getSamplesRequired() const;
     int available() const;
     size_t retrieve(float* const* output, size_t samples) const;
     size_t getInputIncrement() const;
@@ -31,5 +30,6 @@ class RubberBandWrapper {
     bool isValid() const;
 
   private:
-    std::vector<std::unique_ptr<RubberBand::RubberBandStretcher>> m_pInstances;
+    // copy constructor of RubberBand::RubberBandStretcher is implicitly deleted.
+    std::vector<std::unique_ptr<RubberBandTask>> m_pInstances;
 };

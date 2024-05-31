@@ -3246,7 +3246,7 @@ if(RUBBERBAND)
     src/effects/backends/builtin/pitchshifteffect.cpp
     src/engine/bufferscalers/enginebufferscalerubberband.cpp
     src/engine/bufferscalers/rubberbandwrapper.cpp
-    src/engine/bufferscalers/rubberbandworker.cpp
+    src/engine/bufferscalers/rubberbandtask.cpp
     src/engine/bufferscalers/rubberbandworkerpool.cpp
   )
 endif()

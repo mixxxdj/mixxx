@@ -145,17 +145,17 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         PlayerInfo::destroy();
     }
 
-#ifdef __RUBBERBAND__
     void SetUp() override {
-        RubberBandWorkerPool::createInstance();
-    }
-#endif
-
 #ifdef __RUBBERBAND__
-    void TearDown() override {
-        RubberBandWorkerPool::destroy();
-    }
+        RubberBandWorkerPool::createInstance();
 #endif
+    }
+
+    void TearDown() override {
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::destroy();
+#endif
+    }
 
     void addDeck(EngineDeck* pDeck) {
         ControlObject::set(ConfigKey(pDeck->getGroup(), "main_mix"), 1.0);
