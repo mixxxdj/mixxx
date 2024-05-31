@@ -70,6 +70,10 @@ void WaveformRendererStem::paintGL() {
     if (data == nullptr) {
         return;
     }
+    // If this waveform doesn't contain stem data, skip the rendering
+    if (!waveform->hasStem()) {
+        return;
+    }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
