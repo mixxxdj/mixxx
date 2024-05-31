@@ -2,20 +2,19 @@
 
 #include "glwaveformwidgetabstract.h"
 
-class QtHSVWaveformWidget : public GLWaveformWidgetAbstract {
+class QtSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    virtual ~QtHSVWaveformWidget();
+    QtSimpleWaveformWidget(const QString& group, QWidget* parent);
+    virtual ~QtSimpleWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtHSVWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Simple;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("HSV") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool useTextureForWaveform() {
-        return false;
-    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Legacy;
     }
@@ -26,6 +25,5 @@ class QtHSVWaveformWidget : public GLWaveformWidgetAbstract {
     virtual mixxx::Duration render();
 
   private:
-    QtHSVWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };

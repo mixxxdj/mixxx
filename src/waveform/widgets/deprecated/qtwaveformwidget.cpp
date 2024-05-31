@@ -41,14 +41,14 @@ void QtWaveformWidget::paintEvent(QPaintEvent* event) {
 mixxx::Duration QtWaveformWidget::render() {
     PerformanceTimer timer;
     mixxx::Duration t1;
-    //mixxx::Duration t2;
+    // mixxx::Duration t2;
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(paintDevice());
     t1 = timer.restart();
     draw(&painter, nullptr);
-    //t2 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2;
+    // t2 = timer.restart();
+    // qDebug() << "GLVSyncTestWidget "<< t1 << t2;
     return t1; // return timer for painter setup
 }

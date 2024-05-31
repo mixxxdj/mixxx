@@ -1210,12 +1210,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
-  src/waveform/renderers/deprecated/glslwaveformrenderersignal.cpp
-  src/waveform/renderers/deprecated/glvsynctestrenderer.cpp
-  src/waveform/renderers/deprecated/glwaveformrenderbackground.cpp
-  src/waveform/renderers/deprecated/glwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/deprecated/glwaveformrendererrgb.cpp
-  src/waveform/renderers/deprecated/glwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/glwaveformrenderbackground.cpp
+  src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
@@ -1242,16 +1238,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveformmarklabel.cpp
   src/waveform/waveformwidgetfactory.cpp
   src/waveform/widgets/emptywaveformwidget.cpp
-  src/waveform/widgets/deprecated/glrgbwaveformwidget.cpp
-  src/waveform/widgets/deprecated/glsimplewaveformwidget.cpp
-  src/waveform/widgets/deprecated/glslwaveformwidget.cpp
-  src/waveform/widgets/deprecated/glvsynctestwidget.cpp
-  src/waveform/widgets/deprecated/glwaveformwidget.cpp
-  src/waveform/widgets/deprecated/glwaveformwidgetabstract.cpp
   src/waveform/widgets/hsvwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
+  src/waveform/widgets/glwaveformwidgetabstract.cpp
+  src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
@@ -1524,7 +1516,6 @@ if(QOPENGL)
     src/waveform/renderers/allshader/waveformrendererslipmode.cpp
     src/waveform/renderers/allshader/waveformrendererfiltered.cpp
     src/waveform/renderers/allshader/waveformrendererhsv.cpp
-    src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
     src/waveform/renderers/allshader/waveformrendererpreroll.cpp
     src/waveform/renderers/allshader/waveformrendererrgb.cpp
     src/waveform/renderers/allshader/waveformrenderertextured.cpp
@@ -1532,16 +1523,7 @@ if(QOPENGL)
     src/waveform/renderers/allshader/waveformrenderersimple.cpp
     src/waveform/renderers/allshader/waveformrendermark.cpp
     src/waveform/renderers/allshader/waveformrendermarkrange.cpp
-    src/waveform/widgets/allshader/filteredwaveformwidget.cpp
-    src/waveform/widgets/allshader/hsvwaveformwidget.cpp
-    src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
-    src/waveform/widgets/allshader/rgbwaveformwidget.cpp
-    src/waveform/widgets/allshader/rgbstackedwaveformwidget.cpp
-    src/waveform/widgets/allshader/simplewaveformwidget.cpp
     src/waveform/widgets/allshader/waveformwidget.cpp
-    src/waveform/widgets/allshader/waveformwidgettexturedfiltered.cpp
-    src/waveform/widgets/allshader/waveformwidgettexturedrgb.cpp
-    src/waveform/widgets/allshader/waveformwidgettexturedstacked.cpp
     src/widget/openglwindow.cpp
     src/widget/tooltipqopengl.cpp
     src/widget/wglwidgetqopengl.cpp
@@ -1554,11 +1536,6 @@ else()
     src/waveform/renderers/qtvsynctestrenderer.cpp
     src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-    src/waveform/widgets/qthsvwaveformwidget.cpp
-    src/waveform/widgets/qtrgbwaveformwidget.cpp
-    src/waveform/widgets/qtsimplewaveformwidget.cpp
-    src/waveform/widgets/qtvsynctestwidget.cpp
-    src/waveform/widgets/qtwaveformwidget.cpp
     src/widget/wglwidgetqglwidget.cpp
   )
 endif()
@@ -2197,6 +2174,7 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
+  src/test/waveform_upgrade_test.cpp
   src/util/moc_included_test.cpp
 )
 find_package(GTest CONFIG REQUIRED)

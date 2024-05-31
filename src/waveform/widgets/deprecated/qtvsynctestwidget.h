@@ -8,15 +8,13 @@ class QtVSyncTestWidget : public GLWaveformWidgetAbstract {
     QtVSyncTestWidget(const QString& group, QWidget* parent);
     virtual ~QtVSyncTestWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtVSyncTest; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::VSyncTest;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("VSyncTest") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool useTextureForWaveform() {
-        return false;
-    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::DeveloperOnly;
     }

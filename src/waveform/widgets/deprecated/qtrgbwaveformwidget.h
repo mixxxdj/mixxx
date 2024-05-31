@@ -7,15 +7,12 @@ class QtRGBWaveformWidget : public GLWaveformWidgetAbstract {
   public:
     virtual ~QtRGBWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtRGBWaveform; }
-
-    static inline QString getWaveformWidgetName() { return tr("RGB") + " - Qt"; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::RGB;
+    }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool useTextureForWaveform() {
-        return false;
-    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Legacy;
     }

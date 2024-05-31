@@ -1,11 +1,11 @@
-#include "waveform/widgets/deprecated/glvsynctestwidget.h"
+#include "waveform/widgets/glvsynctestwidget.h"
 
 #include <QPainter>
 
 #include "moc_glvsynctestwidget.cpp"
 #include "util/performancetimer.h"
-#include "waveform/renderers/deprecated/glvsynctestrenderer.h"
-#include "waveform/renderers/deprecated/glwaveformrenderbackground.h"
+#include "waveform/renderers/glvsynctestrenderer.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {

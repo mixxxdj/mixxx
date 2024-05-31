@@ -33,9 +33,10 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
     GLSLFilteredWaveformWidget(const QString& group, QWidget* parent);
     ~GLSLFilteredWaveformWidget() override = default;
 
-    WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLFilteredWaveform; }
+    WaveformWidgetType::Type getType() const override {
+        return WaveformWidgetType::Filtered;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
@@ -53,7 +54,9 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     GLSLRGBWaveformWidget(const QString& group, QWidget* parent);
     ~GLSLRGBWaveformWidget() override = default;
 
-    WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLRGBWaveform; }
+    WaveformWidgetType::Type getType() const override {
+        return WaveformWidgetType::RGB;
+    }
 
     static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return true; }
@@ -74,7 +77,7 @@ class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
     ~GLSLRGBStackedWaveformWidget() override = default;
 
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::GLSLRGBStackedWaveform;
+        return WaveformWidgetType::Stacked;
     }
 
     static inline QString getWaveformWidgetName() {

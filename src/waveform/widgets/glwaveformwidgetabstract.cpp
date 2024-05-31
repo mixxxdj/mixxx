@@ -1,4 +1,4 @@
-#include "waveform/widgets/deprecated/glwaveformwidgetabstract.h"
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
 #include <QApplication>
 #include <QWheelEvent>

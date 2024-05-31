@@ -303,7 +303,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 #endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type
-        if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
+        if (m_waveformWidget->getType() == WaveformWidgetType::Empty) {
             return;
         }
         connect(this,
