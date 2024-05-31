@@ -2387,8 +2387,24 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   outline: none;
 }
 
-#CueDeleteButton:hover {
+#CueSavedLoopButton {
+/* tall button, about the same height as cue number + label edit box */
+  width: 28px;
+  height: 46px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  qproperty-icon: url(skin:/../Deere/icon/ic_loop_48px.svg);
+  background-color: #3B3B3B;
+  border-radius: 2px;
+  outline: none;
+}
+
+#CueDeleteButton:hover, #CueSavedLoopButton:hover {
   background-color: #4B4B4B;
+}
+
+#CueSavedLoopButton:checked {
+  background-color: #006596;
 }
 
 WRateRange {

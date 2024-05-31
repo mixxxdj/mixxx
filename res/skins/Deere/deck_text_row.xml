@@ -258,7 +258,7 @@
                               </Template>
 
                               <PushButton>
-                                <TooltipId>bpm_tap</TooltipId>
+                                <TooltipId>tempo_tap_bpm_tap</TooltipId>
                                 <MinimumSize>30,20</MinimumSize>
                                 <MaximumSize>60,30</MaximumSize>
                                 <SizePolicy>me,me</SizePolicy>
@@ -268,9 +268,11 @@
                                   <Text>TAP</Text>
                                 </State>
                                 <Connection>
+                                  <ConfigKey><Variable name="group"/>,tempo_tap</ConfigKey>
+                                </Connection>
+                                <Connection>
                                   <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
-                                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                  <ButtonState>LeftButton</ButtonState>
+                                  <ButtonState>RightButton</ButtonState>
                                 </Connection>
                               </PushButton>
                             </Children>

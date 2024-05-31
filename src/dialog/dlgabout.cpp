@@ -50,7 +50,6 @@ DlgAbout::DlgAbout()
             << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Daniel Sch&uuml;rmann"
-            << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
             << "Jan Holthuis"
@@ -65,6 +64,7 @@ DlgAbout::DlgAbout()
     // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
+            << "Be"
             << "Uwe Klotz"
             << "Nino MP"
             << "D&aacute;vid Szak&aacute;llas"
@@ -125,7 +125,12 @@ DlgAbout::DlgAbout()
             << "Gr&eacute;goire Locqueville"
             << "grizeldi"
             << "codingspiderfox"
-            << "Ashnidh Khandelwal";
+            << "Ashnidh Khandelwal"
+            << "Sergey"
+            << "Raphael Quast"
+            << "Christophe Henry"
+            << "Lukas Waslowski"
+            << "Marcin Cie&#x15B;lak"; // &#x15B; = &sacute; in HTML 5.0
 
     QStringList specialThanks;
     specialThanks

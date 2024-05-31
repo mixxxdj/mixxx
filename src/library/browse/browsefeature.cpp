@@ -5,6 +5,7 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QStringList>
+#include <memory>
 
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
@@ -12,7 +13,6 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_browsefeature.cpp"
-#include "util/memory.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"

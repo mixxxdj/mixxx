@@ -165,7 +165,7 @@ void WVuMeterLegacy::showEvent(QShowEvent* e) {
 }
 
 void WVuMeterLegacy::paintEvent(QPaintEvent* /*unused*/) {
-    ScopedTimer t(u"WVuMeterLegacy::paintEvent");
+    ScopedTimer t(QStringLiteral("WVuMeterLegacy::paintEvent"));
 
     QPainter p(this);
 

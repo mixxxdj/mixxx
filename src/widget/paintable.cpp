@@ -7,9 +7,9 @@
 #include <QString>
 #include <QSvgRenderer>
 #include <QtDebug>
+#include <memory>
 
 #include "util/math.h"
-#include "util/memory.h"
 #include "util/painterscope.h"
 #include "widget/wpixmapstore.h"
 

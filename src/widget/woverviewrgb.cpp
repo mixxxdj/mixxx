@@ -17,7 +17,7 @@ WOverviewRGB::WOverviewRGB(
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {
-    ScopedTimer t(u"WOverviewRGB::drawNextPixmapPart");
+    ScopedTimer t(QStringLiteral("WOverviewRGB::drawNextPixmapPart"));
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 

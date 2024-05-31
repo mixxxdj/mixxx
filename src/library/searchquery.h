@@ -5,13 +5,13 @@
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "proto/keys.pb.h"
 #include "track/track_decl.h"
 #include "util/assert.h"
-#include "util/memory.h"
 
 class CrateStorage;
 class TrackId;

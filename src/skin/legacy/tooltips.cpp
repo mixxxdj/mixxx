@@ -397,6 +397,11 @@ void Tooltips::addStandardTooltips() {
             << eqKillLatch;
 
     QString tempoDisplay = tr("Displays the tempo of the loaded track in BPM (beats per minute).");
+    // TODO Clarify this refers to 'file BPM', not playback rate?
+    QString bpmTapButton = tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+    QString tempoTapButton =
+            tr("When tapped repeatedly, adjusts the tempo to match the tapped "
+               "BPM.");
     add("visual_bpm")
             << tr("Tempo")
             << tempoDisplay;
@@ -408,7 +413,14 @@ void Tooltips::addStandardTooltips() {
 
     add("bpm_tap")
             << tr("BPM Tap")
-            << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+            << bpmTapButton;
+    add("tempo_tap")
+            << tr("Tempo Tap")
+            << tempoTapButton;
+    add("tempo_tap_bpm_tap")
+            << tr("Rate Tap and BPM Tap")
+            << QString("%1: %2").arg(leftClick, tempoTapButton)
+            << QString("%1: %2").arg(rightClick, bpmTapButton);
 
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
@@ -439,11 +451,22 @@ void Tooltips::addStandardTooltips() {
             << tr("Revert last BPM/Beatgrid Change")
             << tr("Revert last BPM/Beatgrid Change of the loaded track.");
 
-    //this is a special case, in some skins we might display a transparent png for bpm_tap on top of visual_bpm
+    // These are special cases:
+    // in some skins we display a transparent button for tempo_tap and/or bpm_tap
+    // on top of the visual_bpm display.
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
             << tempoDisplay
-            << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+            << bpmTapButton;
+    add("tempo_tap_visual_bpm")
+            << tr("Tempo and Rate Tap")
+            << tempoDisplay
+            << tempoTapButton;
+    add("tempo_tap_bpm_tap_visual_bpm")
+            << tr("Tempo, Rate Tap and BPM Tap")
+            << tempoDisplay
+            << QString("%1: %2").arg(leftClick, tempoTapButton)
+            << QString("%1: %2").arg(rightClick, bpmTapButton);
 
     add("shift_cues_earlier")
             << tr("Shift cues earlier")
@@ -781,6 +804,11 @@ void Tooltips::addStandardTooltips() {
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
+
+    add("loop_anchor")
+            << tr("Beatloop Anchor")
+            << tr("Define whether the loop is created and adjusted from its "
+                  "staring point or ending point.");
 
     add("beatjump_size")
             << tr("Beatjump/Loop Move Size")

@@ -4,9 +4,9 @@
 #include <QList>
 #include <QString>
 #include <QVariant>
+#include <memory>
 
 #include "util/assert.h"
-#include "util/memory.h"
 
 class LibraryFeature;
 

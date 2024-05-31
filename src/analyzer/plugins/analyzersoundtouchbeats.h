@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "analyzer/plugins/analyzerplugin.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 namespace soundtouch {

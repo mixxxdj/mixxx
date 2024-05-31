@@ -131,7 +131,7 @@ QString SkinLoader::getDefaultSkinName() const {
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         QSet<ControlObject*>* pSkinCreatedControls,
         mixxx::CoreServices* pCoreServices) {
-    ScopedTimer timer(u"SkinLoader::loadConfiguredSkin");
+    ScopedTimer timer(QStringLiteral("SkinLoader::loadConfiguredSkin"));
     SkinPointer pSkin = getConfiguredSkin();
 
     // If we don't have a skin then fail. This makes sense here, because the
