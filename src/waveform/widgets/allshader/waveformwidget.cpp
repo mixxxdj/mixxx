@@ -32,7 +32,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 
-    #ifdef __STEM__
+#ifdef __STEM__
     // The following two renderers work in tandem: if the rendered waveform is
     // for a stem track, WaveformRendererSignalBase will skip rendering and let
     // WaveformRendererStem do the rendering, and vice-versa.
@@ -51,7 +51,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         // The following renderer will add an overlay waveform if a slip is in progress
         addRenderer<WaveformRendererSlipMode>();
         addRenderer<WaveformRendererPreroll>(::WaveformRendererAbstract::Slip);
-        #ifdef __STEM__
+#ifdef __STEM__
         addRenderer<WaveformRendererStem>(::WaveformRendererAbstract::Slip);
 #endif
         addWaveformSignalRenderer(type, options, ::WaveformRendererAbstract::Slip);

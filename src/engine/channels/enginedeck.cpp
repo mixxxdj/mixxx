@@ -124,13 +124,16 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
     const CSAMPLE* pIn = m_stemBuffer.data();
     for (int i = 0; i < iBufferSize; i += mixxx::kEngineChannelOutputCount) {
         for (int stemIdx = 0; stemIdx < stemCount;
-                stemIdx ++) {
+                stemIdx++) {
             if (m_stemMute[stemIdx]->toBool()) {
                 continue;
             }
             float gain = static_cast<float>(m_stemGain[stemIdx]->get());
             pOut[i] += pIn[stemCount * i + mixxx::kEngineChannelOutputCount * stemIdx] * gain;
-            pOut[i + 1] += pIn[stemCount * i + mixxx::kEngineChannelOutputCount * stemIdx + 1] * gain;
+            pOut[i + 1] +=
+                    pIn[stemCount * i +
+                            mixxx::kEngineChannelOutputCount * stemIdx + 1] *
+                    gain;
         }
     }
     // TODO(XXX): process stem DSP
