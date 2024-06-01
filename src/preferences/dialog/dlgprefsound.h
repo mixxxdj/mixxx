@@ -70,6 +70,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void settingChanged();
     void deviceChanged();
     void deviceChannelsChanged();
+    void configuredDeviceNotFound();
     void queryClicked();
 
   private:
