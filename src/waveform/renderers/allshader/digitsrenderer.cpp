@@ -95,7 +95,7 @@ void allshader::DigitsRenderer::updateTexture(
     do {
         // At small sizes, we need to limit the pen width, to avoid drawing artifacts.
         // (The factor 0.25 was found with trial and error)
-        const int maxPenWidth = 1 + std::lroundf(fontPointSize * 0.25f);
+        const int maxPenWidth = 1 + std::lround(fontPointSize * 0.25f);
         // The pen width is twice the outline size
         m_penWidth = std::min(maxPenWidth, OUTLINE_SIZE * 2);
 
@@ -134,8 +134,10 @@ void allshader::DigitsRenderer::updateTexture(
     totalTextWidth += (space * 2 + 1) * NUM_CHARS;
     totalTextWidth = std::ceil(totalTextWidth);
 
-    QImage image(std::lroundf(totalTextWidth * devicePixelRatio),
-            std::lroundf(m_height * devicePixelRatio),
+    const qreal y = maxTextHeight + space - 0.5;
+
+    QImage image(std::lround(totalTextWidth * devicePixelRatio),
+            std::lround(m_height * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(Qt::transparent);
@@ -154,7 +156,7 @@ void allshader::DigitsRenderer::updateTexture(
         QPainterPath path;
         for (int i = 0; i < NUM_CHARS; i++) {
             const QString text(indexToChar(i));
-            path.addText(QPointF(x + space + 0.5, maxTextHeight + space + 0.5), font, text);
+            path.addText(QPointF(x + space + 0.5, y), font, text);
             x += metrics.horizontalAdvance(text) + space + space + 1;
         }
         painter.drawPath(path);
@@ -188,7 +190,7 @@ void allshader::DigitsRenderer::updateTexture(
         QPainterPath path;
         for (int i = 0; i < NUM_CHARS; i++) {
             const QString text(indexToChar(i));
-            path.addText(QPointF(x + space + 0.5, maxTextHeight + space + 0.5), font, text);
+            path.addText(QPointF(x + space + 0.5, y), font, text);
             // position and width of character at index i in the texture
             m_offset[i] = static_cast<float>(x / totalTextWidth);
             const auto xp = x;
