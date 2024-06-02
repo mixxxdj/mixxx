@@ -94,8 +94,8 @@ void allshader::DigitsRenderer::updateTexture(
     bool retry = false;
     do {
         // At small sizes, we need to limit the pen width, to avoid drawing artifacts.
-        // (The factor 0.2 was found with trial and error)
-        const int maxPenWidth = 1 + std::lroundf(fontPointSize * 0.2f);
+        // (The factor 0.25 was found with trial and error)
+        const int maxPenWidth = 1 + std::lroundf(fontPointSize * 0.25f);
         // The pen width is twice the outline size
         m_penWidth = std::min(maxPenWidth, OUTLINE_SIZE * 2);
 
