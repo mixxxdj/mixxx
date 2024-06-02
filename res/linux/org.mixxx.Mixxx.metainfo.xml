@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-05-23" timestamp="1716492780">
+    <release version="2.5.0" type="development" date="2024-05-30" timestamp="1717062605">
       <description>
  <p>
   Features
@@ -225,6 +225,7 @@
   <li>
    Toggle the menubar with single Alt key press (auto hide)
    #11526
+   #13301
   </li>
   <li>
    Computer feature: add sidebar action "Refresh directory tree"
@@ -269,10 +270,6 @@
    #13241
   </li>
   <li>
-   Handle not supported files when dragging to waveforms and spinnies
-   #13206
-  </li>
-  <li>
    Add Rate Tap button
    #12104
   </li>
@@ -288,6 +285,11 @@
   <li>
    MIDI Input editor: allow selecting multiple Options
    #12348
+  </li>
+  <li>
+   Looping/Beatjump: use seconds if track has no beats
+   #12961
+   #11124
   </li>
  </ul>
  <p>
@@ -406,6 +408,10 @@
    #12781
    #13089
   </li>
+  <li>
+   Drop lodash dependency in ComponentJS
+   #12779
+  </li>
  </ul>
  <p>
   Library
@@ -427,6 +433,17 @@
    #13092
    #10826
   </li>
+  <li>
+   Add multi-track property editor / batch tag editor
+   #12548
+   #9023
+   #13299
+  </li>
+  <li>
+   Search related Tracks: add checkboxes + Search button
+   #12213
+   #12211
+  </li>
  </ul>
  <p>
   Skins
@@ -436,6 +453,11 @@
    LateNight: Merge vinyl control toggle and status light
    #12947
    #10192
+  </li>
+  <li>
+   add WEffectMetaKnob, draws arc from default meta position
+   #12638
+   #12634
   </li>
  </ul>
  <p>

@@ -48,7 +48,9 @@
 * Add load point option 'First hotcue'
   [#12869](https://github.com/mixxxdj/mixxx/pull/12869)
   [#12740](https://github.com/mixxxdj/mixxx/issues/12740)
-* Toggle the menubar with single Alt key press (auto hide) [#11526](https://github.com/mixxxdj/mixxx/pull/11526)
+* Toggle the menubar with single Alt key press (auto hide)
+  [#11526](https://github.com/mixxxdj/mixxx/pull/11526)
+  [#13301](https://github.com/mixxxdj/mixxx/pull/13301)
 * Computer feature: add sidebar action "Refresh directory tree" [#12908](https://github.com/mixxxdj/mixxx/pull/12908)
 * Library: Custom color for missing tracks [#12895](https://github.com/mixxxdj/mixxx/pull/12895)
 * Library: Add feedback to directory operations (add, remove, relink)
@@ -68,14 +70,15 @@
 * Add beatloop anchor to set and adjust loop from either start or end
   [#12745](https://github.com/mixxxdj/mixxx/pull/12745)
   [#13241](https://github.com/mixxxdj/mixxx/pull/13241)
-* Handle not supported files when dragging to waveforms and spinnies
-  [#13206](https://github.com/mixxxdj/mixxx/issues/13206)
 * Add Rate Tap button [#12104](https://github.com/mixxxdj/mixxx/pull/12104)
 * Store/restore regular loop when toggling rolling loops
   [#12475](https://github.com/mixxxdj/mixxx/pull/12475)
   [#8947](https://github.com/mixxxdj/mixxx/issues/8947)
 * Add type toggle to cue popup [#13215](https://github.com/mixxxdj/mixxx/pull/13215)
 * MIDI Input editor: allow selecting multiple Options [#12348](https://github.com/mixxxdj/mixxx/pull/12348)
+* Looping/Beatjump: use seconds if track has no beats
+  [#12961](https://github.com/mixxxdj/mixxx/pull/12961)
+  [#11124](https://github.com/mixxxdj/mixxx/issues/11124)
 
 ### Waveforms
 
@@ -127,6 +130,7 @@
 * Registering MIDI Input Handlers From Javascript
   [#12781](https://github.com/mixxxdj/mixxx/pull/12781)
   [#13089](https://github.com/mixxxdj/mixxx/pull/13089)
+* Drop lodash dependency in ComponentJS [#12779](https://github.com/mixxxdj/mixxx/pull/12779)
 
 ### Library
 
@@ -137,12 +141,22 @@
 * Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
   [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
   [#10826](https://github.com/mixxxdj/mixxx/issues/10826)
+* Add multi-track property editor / batch tag editor
+  [#12548](https://github.com/mixxxdj/mixxx/pull/12548)
+  [#9023](https://github.com/mixxxdj/mixxx/issues/9023)
+  [#13299](https://github.com/mixxxdj/mixxx/pull/13299)
+* Search related Tracks: add checkboxes + Search button
+  [#12213](https://github.com/mixxxdj/mixxx/pull/12213)
+  [#12211](https://github.com/mixxxdj/mixxx/issues/12211)
 
 ### Skins
 
 * LateNight: Merge vinyl control toggle and status light
   [#12947](https://github.com/mixxxdj/mixxx/pull/12947)
   [#10192](https://github.com/mixxxdj/mixxx/issues/10192)
+* add WEffectMetaKnob, draws arc from default meta position
+  [#12638](https://github.com/mixxxdj/mixxx/pull/12638)
+  [#12634](https://github.com/mixxxdj/mixxx/issues/12634)
 
 ### Experimental QML Skin
 
@@ -276,12 +290,14 @@
 * Code Style: Add branches around single line blocks. [#13097](https://github.com/mixxxdj/mixxx/pull/13097)
 * fix: add missing member in copy ctor [#13229](https://github.com/mixxxdj/mixxx/pull/13229)
 * Refactor/preferences enums [#12798](https://github.com/mixxxdj/mixxx/pull/12798)
+* GitHub CI: Skip the manifest update job on forks [#13278](https://github.com/mixxxdj/mixxx/pull/13278)
 * Update to latest vcpkg dependencies
   [#11649](https://github.com/mixxxdj/mixxx/pull/11649)
   [#12512](https://github.com/mixxxdj/mixxx/pull/12512)
   [#12067](https://github.com/mixxxdj/mixxx/pull/12067)
   [#12898](https://github.com/mixxxdj/mixxx/pull/12898)
   [#13155](https://github.com/mixxxdj/mixxx/pull/13155)
+  [#13289](https://github.com/mixxxdj/mixxx/pull/13289)
 * GitHub actions updates
   [#11544](https://github.com/mixxxdj/mixxx/pull/11544)
   [#11508](https://github.com/mixxxdj/mixxx/pull/11508)
