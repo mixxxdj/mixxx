@@ -2299,8 +2299,6 @@ WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
   background-color: transparent;
 }
 
-QLineEdit QMenu::icon:selected,
-QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
 WTrackTableViewHeader QMenu QCheckBox::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
@@ -2310,6 +2308,7 @@ WTrackMenu QMenu QCheckBox::indicator:selected {
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
+WLibraryTextBrowser QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
