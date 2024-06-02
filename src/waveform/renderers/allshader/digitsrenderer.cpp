@@ -95,14 +95,14 @@ void allshader::DigitsRenderer::updateTexture(
     do {
         // At small sizes, we need to limit the pen width, to avoid drawing artifacts.
         // (The factor 0.2 was found with trial and error)
-        const int maxPenWidth = 1 + static_cast<int>(std::ceil(fontPointSize * 0.2f));
+        const int maxPenWidth = 1 + std::lroundf(fontPointSize * 0.2f);
         // The pen width is twice the outline size
         m_penWidth = std::min(maxPenWidth, OUTLINE_SIZE * 2);
 
         space = static_cast<qreal>(m_penWidth) / 2;
         font.setPointSizeF(fontPointSize);
 
-        const qreal maxHeightWithoutSpace = std::floor(maxHeight) - space - space;
+        const qreal maxHeightWithoutSpace = std::floor(maxHeight) - space * 2 - 1;
 
         metrics = QFontMetricsF{font};
 
@@ -119,6 +119,8 @@ void allshader::DigitsRenderer::updateTexture(
             // We need to adjust the font size to fit in the maxHeight.
             // Only do this once.
             fontPointSize *= static_cast<float>(maxHeightWithoutSpace / maxTextHeight);
+            // Avoid becoming unreadable
+            fontPointSize = std::max(10.f, fontPointSize);
             m_adjustedFontPointSize = fontPointSize;
             retry = true;
         } else {
@@ -126,14 +128,14 @@ void allshader::DigitsRenderer::updateTexture(
         }
     } while (retry);
 
-    m_height = std::min(static_cast<float>(std::ceil(maxTextHeight + space + space)), maxHeight);
+    m_height = static_cast<float>(std::ceil(maxTextHeight) + space * 2 + 1);
 
     // Space around the digits
-    totalTextWidth += space * 2 * NUM_CHARS;
+    totalTextWidth += (space * 2 + 1) * NUM_CHARS;
     totalTextWidth = std::ceil(totalTextWidth);
 
-    QImage image(static_cast<int>(totalTextWidth * devicePixelRatio),
-            static_cast<int>(m_height * devicePixelRatio),
+    QImage image(std::lroundf(totalTextWidth * devicePixelRatio),
+            std::lroundf(m_height * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(Qt::transparent);
@@ -152,8 +154,8 @@ void allshader::DigitsRenderer::updateTexture(
         QPainterPath path;
         for (int i = 0; i < NUM_CHARS; i++) {
             const QString text(indexToChar(i));
-            path.addText(QPointF(x + space, maxTextHeight + space), font, text);
-            x += metrics.horizontalAdvance(text) + space + space;
+            path.addText(QPointF(x + space + 0.5, maxTextHeight + space + 0.5), font, text);
+            x += metrics.horizontalAdvance(text) + space + space + 1;
         }
         painter.drawPath(path);
     }
@@ -186,11 +188,12 @@ void allshader::DigitsRenderer::updateTexture(
         QPainterPath path;
         for (int i = 0; i < NUM_CHARS; i++) {
             const QString text(indexToChar(i));
-            path.addText(QPointF(x + space, maxTextHeight + space), font, text);
+            path.addText(QPointF(x + space + 0.5, maxTextHeight + space + 0.5), font, text);
             // position and width of character at index i in the texture
             m_offset[i] = static_cast<float>(x / totalTextWidth);
-            m_width[i] = static_cast<float>(metrics.horizontalAdvance(text) + space + space);
-            x += metrics.horizontalAdvance(text) + space + space;
+            const auto xp = x;
+            x += metrics.horizontalAdvance(text) + space + space + 1;
+            m_width[i] = static_cast<float>(x - xp);
         }
         painter.drawPath(path);
         m_offset[NUM_CHARS] = 1.f;
