@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.4.2](https://github.com/mixxxdj/mixxx/milestone/43?closed=1) (unreleased)
+
+### Controller Mappings
+
+* Korg Kaoss DJ: Update script [#12683](https://github.com/mixxxdj/mixxx/pull/12683)
+* Novation Dicer: Remove flanger mapping with quickeffect toggle
+  [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
+  [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
+* Numark PartyMix: Fix EQ (script binding) display name [#13255](https://github.com/mixxxdj/mixxx/pull/13255)
+
+### Fixes
+
+* Handle not supported files when dragging to waveforms and spinnies
+  [#13208](https://github.com/mixxxdj/mixxx/pull/13208)
+  [#13271](https://github.com/mixxxdj/mixxx/pull/13271)
+  [#13275](https://github.com/mixxxdj/mixxx/pull/13275)
+* Fix Sqlite 3.45 buils by using only single quotes for SQL strings
+  [#13247](https://github.com/mixxxdj/mixxx/pull/13247)
+  [#13257](https://github.com/mixxxdj/mixxx/pull/13257)
+* LateNight: Use default colors for sampler overviews (like main decks) [#13274](https://github.com/mixxxdj/mixxx/pull/13274)
+* Update build environment with libdjinterop 0.21.0 [#13288](https://github.com/mixxxdj/mixxx/pull/13288)
+
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
 ### Controller Mappings
