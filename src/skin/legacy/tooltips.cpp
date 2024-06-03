@@ -451,6 +451,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Revert last BPM/Beatgrid Change")
             << tr("Revert last BPM/Beatgrid Change of the loaded track.");
 
+    add("bpmlock")
+            << tr("Toggle the BPM/beatgrid lock")
+            << tr("Toggle the BPM/beatgrid lock");
+
     // These are special cases:
     // in some skins we display a transparent button for tempo_tap and/or bpm_tap
     // on top of the visual_bpm display.
