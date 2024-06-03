@@ -228,7 +228,7 @@ void ControllerRenderingEngine::finish() {
 }
 
 void ControllerRenderingEngine::renderFrame() {
-    ScopedTimer t(u"ControllerRenderingEngine::renderFrame");
+    ScopedTimer t(QStringLiteral("ControllerRenderingEngine::renderFrame"));
     if (!m_isValid) {
         DEBUG_ASSERT(!"Trying to render frame on an invalid engine");
         return;
@@ -240,7 +240,7 @@ void ControllerRenderingEngine::renderFrame() {
             "Couldn't make the GLContext current to the OffscreenSurface.");
 
     if (!m_fbo) {
-        ScopedTimer t(u"ControllerRenderingEngine::renderFrame::initFBO");
+        ScopedTimer t(QStringLiteral("ControllerRenderingEngine::renderFrame::initFBO"));
         VERIFY_OR_TERMINATE(
                 QOpenGLFramebufferObject::hasOpenGLFramebufferObjects(),
                 "OpenGL doesn't support FBO");
@@ -276,7 +276,7 @@ void ControllerRenderingEngine::renderFrame() {
     m_renderControl->polishItems();
 
     {
-        ScopedTimer t(u"ControllerRenderingEngine::renderFrame::sync");
+        ScopedTimer t(QStringLiteral("ControllerRenderingEngine::renderFrame::sync"));
         VERIFY_OR_DEBUG_ASSERT(m_renderControl->sync()) {
             kLogger.warning() << "Couldn't sync the render control. Scene may be stuck";
         };
@@ -309,7 +309,7 @@ void ControllerRenderingEngine::renderFrame() {
         kLogger.debug() << "Retrieved a previously unhandled GL error: " << glError;
     }
     {
-        ScopedTimer t(u"ControllerRenderingEngine::renderFrame::glReadPixels");
+        ScopedTimer t(QStringLiteral("ControllerRenderingEngine::renderFrame::glReadPixels"));
         m_context->functions()->glReadPixels(0,
                 0,
                 m_screenInfo.size.width(),
@@ -341,7 +341,7 @@ bool ControllerRenderingEngine::stop() {
 
 void ControllerRenderingEngine::send(Controller* controller, const QByteArray& frame) {
     DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
-    ScopedTimer t(u"ControllerRenderingEngine::send");
+    ScopedTimer t(QStringLiteral("ControllerRenderingEngine::send"));
     if (!frame.isEmpty()) {
         controller->sendBytes(frame);
     }
