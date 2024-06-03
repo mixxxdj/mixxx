@@ -96,29 +96,8 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-05-30" timestamp="1717062605">
+    <release version="2.5.0" type="development" date="2024-06-03" timestamp="1717443221">
       <description>
- <p>
-  Features
- </p>
- <ul>
-  <li>
-   Logging: Include timestamps in messages by default
-   #11861
-  </li>
-  <li>
-   PreviewDeckN,LoadSelectedTrackAndPlay toggles play/pause if the track is already loaded
-   #12920
-   #9819
-  </li>
-  <li>
-   Add command line option
-   --start-autodj
-   to start Auto DJ immediately after Mixxx start.
-   #13017
-   #10189
-  </li>
- </ul>
  <p>
   Waveforms
  </p>
@@ -202,6 +181,22 @@
   <li>
    MacOS: App proxy icon of the playing track to the window title
    #12116
+  </li>
+  <li>
+   PreviewDeckN,LoadSelectedTrackAndPlay toggles play/pause if the track is already loaded
+   #12920
+   #9819
+  </li>
+  <li>
+   Add command line option
+   --start-autodj
+   to start Auto DJ immediately after Mixxx start.
+   #13017
+   #10189
+  </li>
+  <li>
+   Logging: Include timestamps in messages by default
+   #11861
   </li>
  </ul>
  <p>

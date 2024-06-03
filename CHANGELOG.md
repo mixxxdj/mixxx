@@ -2,16 +2,6 @@
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (Unreleased)
 
-### Features
-
-* Logging: Include timestamps in messages by default [#11861](https://github.com/mixxxdj/mixxx/pull/11861)
-* PreviewDeckN,LoadSelectedTrackAndPlay toggles play/pause if the track is already loaded
-  [#12920](https://github.com/mixxxdj/mixxx/pull/12920)
-  [#9819](https://github.com/mixxxdj/mixxx/issues/9819)
-* Add command line option `--start-autodj` to start Auto DJ immediately after Mixxx start.
-  [#13017](https://github.com/mixxxdj/mixxx/pull/13017)
-  [#10189](https://github.com/mixxxdj/mixxx/issues/10189)
-
 ### Waveforms
 
 * SlipMode waveform visual for RGB GLSL
@@ -49,6 +39,13 @@
   [#10192](https://github.com/mixxxdj/mixxx/issues/10192)
 * Track label widgets: set `show_track_menu` only for main decks [#12978](https://github.com/mixxxdj/mixxx/pull/12978)
 * MacOS: App proxy icon of the playing track to the window title [#12116](https://github.com/mixxxdj/mixxx/pull/12116)
+* PreviewDeckN,LoadSelectedTrackAndPlay toggles play/pause if the track is already loaded
+  [#12920](https://github.com/mixxxdj/mixxx/pull/12920)
+  [#9819](https://github.com/mixxxdj/mixxx/issues/9819)
+* Add command line option `--start-autodj` to start Auto DJ immediately after Mixxx start.
+  [#13017](https://github.com/mixxxdj/mixxx/pull/13017)
+  [#10189](https://github.com/mixxxdj/mixxx/issues/10189)
+* Logging: Include timestamps in messages by default [#11861](https://github.com/mixxxdj/mixxx/pull/11861)
 
 ### Engine
 
