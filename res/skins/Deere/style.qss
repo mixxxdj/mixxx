@@ -1677,7 +1677,8 @@ WWidgetGroup {
  *******************************************************************************/
 
 WPushButton,
-WEffectChainPresetButton {
+WEffectChainPresetButton,
+#BpmLockToggle[value="1"] {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1687,7 +1688,8 @@ WEffectChainPresetButton {
 
 WPushButton:hover,
 #PlayToggle:hover,
-WEffectChainPresetButton:hover {
+WEffectChainPresetButton:hover,
+#BpmLockToggle[value="1"]:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;

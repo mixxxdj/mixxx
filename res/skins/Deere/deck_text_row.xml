@@ -76,7 +76,7 @@
                   <WidgetGroup>
                     <ObjectName>BpmKeyEditRowExpanded</ObjectName>
                     <Layout>horizontal</Layout>
-                    <Size>142f,-1me</Size>
+                    <Size>164f,-1me</Size>
                     <Children>
 
                       <WidgetGroup>
@@ -195,6 +195,31 @@
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
+
+                      <!-- Can't use left_2state_button.xml since that emits on press & release -->
+                      <PushButton>
+                        <TooltipId>bpmlock</TooltipId>
+                        <ObjectName>BpmLockToggle</ObjectName>
+                        <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+                        <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+                        <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed scalemode="STRETCH_ASPECT">icon/ic_bpm_unlocked_48px.svg</Pressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_bpm_unlocked_48px.svg</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed scalemode="STRETCH_ASPECT">icon/ic_bpm_locked_48px.svg</Pressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_bpm_locked_48px.svg</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,bpmlock</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
                     </Children>
                     <Connection>
                       <ConfigKey>[Skin],show_beatgrid_controls</ConfigKey>
