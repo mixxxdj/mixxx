@@ -18,6 +18,9 @@ class ControllerOutputMappingTableModel;
 class ControlPickerMenu;
 class DlgControllerLearning;
 class MappingInfoEnumerator;
+#ifdef MIXXX_USE_QML
+class ControllerScriptEngineLegacy;
+#endif
 
 /// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
@@ -60,6 +63,15 @@ class DlgPrefController : public DlgPreferencePage {
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
     void enableWizardAndIOTabs(bool enable);
+
+#ifdef MIXXX_USE_QML
+    // Onboard screen controller.
+    void slotShowPreviewScreens(const ControllerScriptEngineLegacy* scriptEngine);
+    // Wrapper used on shutdown.
+    void slotClearPreviewScreens() {
+        slotShowPreviewScreens(nullptr);
+    }
+#endif
 
     // Input mappings
     void addInputMapping();

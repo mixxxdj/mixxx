@@ -1494,6 +1494,13 @@ if (NOT QML)
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
   )
+else()
+  target_sources(mixxx-lib PRIVATE
+    # The following source depends of QML being available but aren't part of the new QML UI
+    src/controllers/rendering/controllerrenderingengine.cpp
+    src/controllers/controllerenginethreadcontrol.cpp
+    src/controllers/controllerscreenpreview.cpp
+  )
 endif()
 if(QOPENGL)
   target_sources(mixxx-lib PRIVATE
@@ -2176,7 +2183,14 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
   src/test/waveform_upgrade_test.cpp
   src/util/moc_included_test.cpp
+  src/test/helpers/log_test.cpp
 )
+if (QML)
+  target_sources(mixxx-test PRIVATE
+    src/test/controller_mapping_file_handler_test.cpp
+    src/test/controllerrenderingengine_test.cpp
+  )
+endif()
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)

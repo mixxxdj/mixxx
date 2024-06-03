@@ -94,6 +94,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DOPTIMIZE=off \
             -DQT6=ON \
+            -DQML=ON \
             -DCOVERAGE=ON \
             -DWARNINGS_FATAL=OFF \
             -DDEBUG_ASSERTIONS_FATAL=OFF \
