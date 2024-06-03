@@ -117,13 +117,15 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotTranslateBeatsMove,
             Qt::DirectConnection);
-    m_pBeatsSetMarker = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_marker"), false);
+    m_pBeatsSetMarker = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_marker"), false);
     connect(m_pBeatsSetMarker.get(),
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotBeatsSetMarker,
             Qt::DirectConnection);
-    m_pBeatsRemoveMarker = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_remove_marker"), false);
+    m_pBeatsRemoveMarker = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_remove_marker"), false);
     connect(m_pBeatsRemoveMarker.get(),
             &ControlObject::valueChanged,
             this,
