@@ -33,14 +33,14 @@ void RubberBandWrapper::setTimeRatio(double ratio) {
 }
 size_t RubberBandWrapper::getSamplesRequired() const {
     size_t require = 0;
-    for (auto& stretcher : m_pInstances) {
+    for (const auto& stretcher : m_pInstances) {
         require = qMax(require, stretcher->getSamplesRequired());
     }
     return require;
 }
 int RubberBandWrapper::available() const {
     int available = std::numeric_limits<int>::max();
-    for (auto& stretcher : m_pInstances) {
+    for (const auto& stretcher : m_pInstances) {
         available = qMin(available, stretcher->available());
     }
     return available == std::numeric_limits<int>::max() ? 0 : available;
@@ -49,14 +49,19 @@ size_t RubberBandWrapper::retrieve(float* const* output, size_t samples) const {
     if (m_pInstances.size() == 1) {
         return m_pInstances[0]->retrieve(output, samples);
     } else {
-        size_t ret = 0;
+        // ensure we don't fetch more samples than we really have available.
+        samples = std::min(static_cast<size_t>(available()), samples);
         for (const auto& stretcher : m_pInstances) {
-            size_t thisRet = stretcher->retrieve(output, samples);
-            DEBUG_ASSERT(!ret || thisRet == ret);
-            ret = qMax(thisRet, ret);
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+            size_t numSamplesRequested =
+#endif
+                    stretcher->retrieve(output, samples);
+            // there is something very wrong if we got a different of amount
+            // of samples than we requested
+            DEBUG_ASSERT(numSamplesRequested == samples);
             output += getChannelPerWorker();
         }
-        return ret;
+        return samples;
     }
 }
 size_t RubberBandWrapper::getInputIncrement() const {
@@ -151,6 +156,7 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
         return;
     }
 
+    m_pInstances.reserve(chCount / channelPerWorker);
     for (int c = 0; c < chCount; c += channelPerWorker) {
         m_pInstances.emplace_back(
                 std::make_unique<RubberBandTask>(

@@ -11,8 +11,6 @@
 // can be distributed stretching job
 class RubberBandWorkerPool : public QThreadPool, public Singleton<RubberBandWorkerPool> {
   public:
-    ~RubberBandWorkerPool();
-
     const mixxx::audio::ChannelCount& channelPerWorker() const {
         return m_channelPerWorker;
     }

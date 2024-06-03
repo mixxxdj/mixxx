@@ -14,10 +14,10 @@ RubberBandWorkerPool::RubberBandWorkerPool(UserSettingsPointer pConfig)
     m_channelPerWorker = multiThreadedOnStereo
             ? mixxx::audio::ChannelCount::mono()
             : mixxx::audio::ChannelCount::stereo();
-    DEBUG_ASSERT(0 == mixxx::kEngineChannelCount % m_channelPerWorker);
+    DEBUG_ASSERT(mixxx::kEngineChannelCount % m_channelPerWorker == 0);
 
     setThreadPriority(QThread::HighPriority);
-    setMaxThreadCount(mixxx::kEngineChannelCount / m_channelPerWorker);
+    setMaxThreadCount(mixxx::kEngineChannelCount / m_channelPerWorker - 1);
 
     // We allocate one runner less than the total of maximum supported channel,
     // so the engine thread will also perform a stretching operation, instead of
@@ -26,8 +26,4 @@ RubberBandWorkerPool::RubberBandWorkerPool(UserSettingsPointer pConfig)
     for (int w = 0; w < maxThreadCount(); w++) {
         reserveThread();
     }
-}
-
-RubberBandWorkerPool::~RubberBandWorkerPool() {
-    waitForDone();
 }
