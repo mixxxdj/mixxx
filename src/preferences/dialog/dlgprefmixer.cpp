@@ -470,7 +470,6 @@ void DlgPrefMixer::slotResetToDefaults() {
 
     setDefaultShelves();
     comboBoxMainEq->setCurrentIndex(0); // '---' no EQ
-    slotApply();
 }
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {

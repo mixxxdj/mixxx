@@ -162,9 +162,7 @@ void DlgPrefKey::slotResetToDefaults() {
         radioNotationOpenKey->setChecked(true);
         notation_type = KeyUtils::KeyNotation::OpenKey;
     }
-    setNotation(notation_type);
-
-    slotUpdate();
+    setNotation(notation_type); // calls slotUpdate()
 }
 
 void DlgPrefKey::pluginSelected(int i) {
@@ -185,7 +183,7 @@ void DlgPrefKey::fastAnalysisEnabled(int i) {
     slotUpdate();
 }
 
-void DlgPrefKey::reanalyzeEnabled(int i){
+void DlgPrefKey::reanalyzeEnabled(int i) {
     m_bReanalyzeEnabled = static_cast<bool>(i);
     slotUpdate();
 }
