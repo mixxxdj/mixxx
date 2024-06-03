@@ -78,6 +78,8 @@
                     <Layout>horizontal</Layout>
                     <Size>164f,-1me</Size>
                     <Children>
+                      <SetVariable name="CoverName">BeatEditCover</SetVariable>
+                      <SetVariable name="cover_control"><Variable name="group"/>,bpmlock</SetVariable>
 
                       <WidgetGroup>
                         <ObjectName>HotcueShiftButtons</ObjectName>
@@ -116,7 +118,7 @@
                         </Connection>
                       </WidgetGroup>
 
-                      <Template src="skin:left_right_1state_button.xml">
+                      <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                         <SetVariable name="ObjectName">BeatsAdjustFasterButton</SetVariable>
                         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -128,7 +130,7 @@
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_faster</SetVariable>
                       </Template>
 
-                      <Template src="skin:left_right_1state_button.xml">
+                      <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                         <SetVariable name="ObjectName">BeatsAdjustSlowerButton</SetVariable>
                         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -140,7 +142,7 @@
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_slower</SetVariable>
                       </Template>
 
-                      <Template src="skin:left_right_1state_button.xml">
+                      <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateEarlierButton</SetVariable>
                         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -152,7 +154,7 @@
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_earlier</SetVariable>
                       </Template>
 
-                      <Template src="skin:left_right_1state_button.xml">
+                      <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateLaterButton</SetVariable>
                         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -164,7 +166,7 @@
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
                       </Template>
 
-                      <Template src="skin:left_right_1state_button.xml">
+                      <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
                         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -177,24 +179,16 @@
                         <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
                       </Template>
 
-                      <PushButton>
-                        <TooltipId>tempo_tap_bpm_tap</TooltipId>
-                        <MinimumSize>30,20</MinimumSize>
-                        <MaximumSize>60,30</MaximumSize>
-                        <SizePolicy>me,me</SizePolicy>
-                        <NumberStates>1</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Text>TAP</Text>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,tempo_tap</ConfigKey>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:left_right_1state_button_optional.xml">
+                        <SetVariable name="TooltipId">tempo_tap_bpm_tap</SetVariable>
+                        <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
+                        <SetVariable name="MinimumSize">30,22</SetVariable>
+                        <SetVariable name="MaximumSize">60,22</SetVariable>
+                        <SetVariable name="SizePolicy">me,me</SetVariable>
+                        <SetVariable name="state_0_text">TAP</SetVariable>
+                        <SetVariable name="left_connection_control"><Variable name="group"/>,tempo_tap</SetVariable>
+                        <SetVariable name="right_connection_control"><Variable name="group"/>,bpm_tap</SetVariable>
+                      </Template>
 
                       <!-- Can't use left_2state_button.xml since that emits on press & release -->
                       <PushButton>

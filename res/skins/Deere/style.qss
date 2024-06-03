@@ -1156,6 +1156,10 @@ WTrackProperty:hover {
   qproperty-layoutSpacing: 2;
 }
 
+#BeatEditCover {
+  background-color: rgba(51, 51, 51, 120);
+}
+
 /* This defines the width of the key/cents display per selected notation. */
 #KeyLabelExpander[highlight="0"],  /* Invalid */
 #KeyLabelExpander[highlight="1"],  /* Custom */
