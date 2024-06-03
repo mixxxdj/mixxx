@@ -7,7 +7,9 @@
 * SlipMode waveform visual for RGB GLSL
   [#13002](https://github.com/mixxxdj/mixxx/pull/13002)
   [#13256](https://github.com/mixxxdj/mixxx/pull/13256)
-* Show beats and time until next marker in the waveform [#12994](https://github.com/mixxxdj/mixxx/pull/12994)
+* Show beats and time until next marker in the waveform
+  [#12994](https://github.com/mixxxdj/mixxx/pull/12994)
+  [#13311](https://github.com/mixxxdj/mixxx/pull/13311)
 * Waveforms: don't elide hotcue labels
   [#13219](https://github.com/mixxxdj/mixxx/pull/13219)
   [#10722](https://github.com/mixxxdj/mixxx/issues/10722)
@@ -46,6 +48,10 @@
   [#13017](https://github.com/mixxxdj/mixxx/pull/13017)
   [#10189](https://github.com/mixxxdj/mixxx/issues/10189)
 * Logging: Include timestamps in messages by default [#11861](https://github.com/mixxxdj/mixxx/pull/11861)
+* LateNight, Deere, Tango: Deactivate beatgrid edit controls if BPM is locked
+  [#13320](https://github.com/mixxxdj/mixxx/pull/13320)
+  [#13323](https://github.com/mixxxdj/mixxx/pull/13323)
+  [#13325](https://github.com/mixxxdj/mixxx/pull/13325)
 
 ### Engine
 
@@ -77,6 +83,9 @@
 * Add Compressor effect [#12523](https://github.com/mixxxdj/mixxx/pull/12523)
 * add Glitch effect [#11329](https://github.com/mixxxdj/mixxx/pull/11329)
 * Add backend for Audio Unit (AU) plugins on macOS [#12112](https://github.com/mixxxdj/mixxx/pull/12112)
+* Effect Meta knob: Draw arc from default meta position
+  [#12638](https://github.com/mixxxdj/mixxx/pull/12638)
+  [#12634](https://github.com/mixxxdj/mixxx/issues/12634)
 
 ### Library
 
@@ -91,10 +100,12 @@
 * Search: Add "OR" search operator
   [#12061](https://github.com/mixxxdj/mixxx/pull/12061)
   [#8881](https://github.com/mixxxdj/mixxx/issues/8881)
+* Search: add 'type' filter
+  [#13338](https://github.com/mixxxdj/mixxx/issues/13338)
 * Search related Tracks menu: Allow to use multiple filters at once
   [#12213](https://github.com/mixxxdj/mixxx/pull/12213)
   [#12211](https://github.com/mixxxdj/mixxx/issues/12211)
-  * Add multi-track property editor / batch tag editor
+* Add multi-track property editor / batch tag editor
   [#12548](https://github.com/mixxxdj/mixxx/pull/12548)
   [#9023](https://github.com/mixxxdj/mixxx/issues/9023)
   [#13299](https://github.com/mixxxdj/mixxx/pull/13299)
@@ -124,6 +135,7 @@
 * Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
   [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
   [#10826](https://github.com/mixxxdj/mixxx/issues/10826)
+* Library control: make use of WLibrary::getCurrentTrackTableView() [#13335](https://github.com/mixxxdj/mixxx/pull/13335)
 
 ### Preferences
 
@@ -134,6 +146,7 @@
   [#12740](https://github.com/mixxxdj/mixxx/issues/12740)
 * MIDI Input editor: allow selecting multiple Options [#12348](https://github.com/mixxxdj/mixxx/pull/12348)
 * Fix incorrect reboot required notification on preference updates [#13058](https://github.com/mixxxdj/mixxx/pull/13058)
+* Apply changes only after pressing Apply in color preferences [#13302](https://github.com/mixxxdj/mixxx/pull/13302)
 
 ### Controller Mappings
 
@@ -164,6 +177,8 @@
 * Registering MIDI Input Handlers From Javascript
   [#12781](https://github.com/mixxxdj/mixxx/pull/12781)
   [#13089](https://github.com/mixxxdj/mixxx/pull/13089)
+* Drop lodash dependency in ComponentJS
+  [#12779](https://github.com/mixxxdj/mixxx/pull/12779)
 
 ### Experimental QML Skin
 
@@ -219,7 +234,8 @@
   [#13033](https://github.com/mixxxdj/mixxx/issues/13033)
 * Fix ambiguous overload error due to native qDebug impl for std::optional
   [#12981](https://github.com/mixxxdj/mixxx/issues/12981)
-* Fix 'selected click' bug [#12488](https://github.com/mixxxdj/mixxx/pull/12488)
+* Workaround for Qt6 'selected click' bug [#12488](https://github.com/mixxxdj/mixxx/pull/12488)
+* Fix menu icon position [#12216](https://github.com/mixxxdj/mixxx/pull/12216)
 
 ### Experimental iOs support
 

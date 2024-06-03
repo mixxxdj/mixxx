@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-06-03" timestamp="1717443221">
+    <release version="2.5.0" type="development" date="2024-06-03" timestamp="1717443751">
       <description>
  <p>
   Waveforms
@@ -110,6 +110,7 @@
   <li>
    Show beats and time until next marker in the waveform
    #12994
+   #13311
   </li>
   <li>
    Waveforms: don't elide hotcue labels
@@ -198,6 +199,12 @@
    Logging: Include timestamps in messages by default
    #11861
   </li>
+  <li>
+   LateNight, Deere, Tango: Deactivate beatgrid edit controls if BPM is locked
+   #13320
+   #13323
+   #13325
+  </li>
  </ul>
  <p>
   Engine
@@ -267,6 +274,11 @@
    Add backend for Audio Unit (AU) plugins on macOS
    #12112
   </li>
+  <li>
+   Effect Meta knob: Draw arc from default meta position
+   #12638
+   #12634
+  </li>
  </ul>
  <p>
   Library
@@ -294,6 +306,10 @@
    Search: Add "OR" search operator
    #12061
    #8881
+  </li>
+  <li>
+   Search: add 'type' filter
+   #13338
   </li>
   <li>
    Search related Tracks menu: Allow to use multiple filters at once
@@ -367,6 +383,10 @@
    #13092
    #10826
   </li>
+  <li>
+   Library control: make use of WLibrary::getCurrentTrackTableView()
+   #13335
+  </li>
  </ul>
  <p>
   Preferences
@@ -393,6 +413,10 @@
   <li>
    Fix incorrect reboot required notification on preference updates
    #13058
+  </li>
+  <li>
+   Apply changes only after pressing Apply in color preferences
+   #13302
   </li>
  </ul>
  <p>
@@ -465,6 +489,10 @@
    Registering MIDI Input Handlers From Javascript
    #12781
    #13089
+  </li>
+  <li>
+   Drop lodash dependency in ComponentJS
+   #12779
   </li>
  </ul>
  <p>
@@ -641,8 +669,12 @@
    #12981
   </li>
   <li>
-   Fix 'selected click' bug
+   Workaround for Qt6 'selected click' bug
    #12488
+  </li>
+  <li>
+   Fix menu icon position
+   #12216
   </li>
  </ul>
  <p>
