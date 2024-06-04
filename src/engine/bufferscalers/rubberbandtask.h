@@ -2,9 +2,8 @@
 
 #include <rubberband/RubberBandStretcher.h>
 
-#include <QMutex>
 #include <QRunnable>
-#include <QWaitCondition>
+#include <QSemaphore>
 #include <atomic>
 
 #include "audio/types.h"
@@ -33,11 +32,8 @@ class RubberBandTask : public RubberBandStretcher, public QRunnable {
     void run();
 
   private:
-    // Used to schedule the thread
-    QMutex m_waitLock;
-    QWaitCondition m_waitCondition;
     // Whether or not the scheduled job as completed
-    bool m_completed;
+    QSemaphore m_completedSema;
 
     const float* const* m_input;
     size_t m_samples;

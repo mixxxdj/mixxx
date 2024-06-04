@@ -8,7 +8,7 @@ RubberBandTask::RubberBandTask(
         size_t sampleRate, size_t channels, Options options)
         : RubberBand::RubberBandStretcher(sampleRate, channels, options),
           QRunnable(),
-          m_completed(false),
+          m_completedSema(0),
           m_input(nullptr),
           m_samples(0),
           m_isFinal(false) {
@@ -18,31 +18,25 @@ RubberBandTask::RubberBandTask(
 void RubberBandTask::set(const float* const* input,
         size_t samples,
         bool isFinal) {
-    auto locker = lockMutex(&m_waitLock);
-    m_completed = false;
+    DEBUG_ASSERT(m_completedSema.available() == 0);
     m_input = input;
     m_samples = samples;
     m_isFinal = isFinal;
 }
 
 void RubberBandTask::waitReady() {
-    auto locker = lockMutex(&m_waitLock);
     VERIFY_OR_DEBUG_ASSERT(m_input && m_samples) {
         return;
     };
-    while (!m_completed) {
-        m_waitCondition.wait(&m_waitLock);
-    }
+    m_completedSema.acquire();
 }
 
 void RubberBandTask::run() {
-    auto locker = lockMutex(&m_waitLock);
-    VERIFY_OR_DEBUG_ASSERT(!m_completed && m_input && m_samples) {
+    VERIFY_OR_DEBUG_ASSERT(m_completedSema.available() == 0 && m_input && m_samples) {
         return;
     };
     process(m_input,
             m_samples,
             m_isFinal);
-    m_completed = true;
-    m_waitCondition.wakeOne();
+    m_completedSema.release();
 }
