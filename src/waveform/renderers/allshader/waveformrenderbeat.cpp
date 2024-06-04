@@ -18,12 +18,20 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
 
 void WaveformRenderBeat::initializeGL() {
     WaveformRenderer::initializeGL();
-    m_shader.init();
+    m_beatShader.init();
+    m_downbeatShader.init();
+    m_markerbeatShader.init();
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_color = QColor(context.selectString(node, "BeatColor"));
-    m_color = WSkinColor::getCorrectColor(m_color).toRgb();
+    m_beatColor = QColor(context.selectString(node, "BeatColor"));
+    m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
+
+    m_downbeatColor.setNamedColor(context.selectString(node, "DownbeatColor"));
+    m_downbeatColor = WSkinColor::getCorrectColor(m_downbeatColor).toRgb();
+
+    m_markerbeatColor.setNamedColor(context.selectString(node, "MarkerbeatColor"));
+    m_markerbeatColor = WSkinColor::getCorrectColor(m_markerbeatColor).toRgb();
 }
 
 void WaveformRenderBeat::paintGL() {
@@ -51,7 +59,9 @@ void WaveformRenderBeat::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_color.setAlphaF(alpha / 100.0f);
+    m_beatColor.setAlphaF(alpha / 100.0f);
+    m_downbeatColor.setAlphaF(alpha / 100.0);
+    m_markerbeatColor.setAlphaF(alpha / 100.0);
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
@@ -80,16 +90,28 @@ void WaveformRenderBeat::paintGL() {
     // Note that we could also use
     //   int numBearsInRange = trackBeats->numBeatsInRange(startPosition, endPosition);
     // for this, but there have been reports of that method failing with a DEBUG_ASSERT.
-    int numBeatsInRange = 0;
+    int numBeatsInRange = 0, numDownbeatsInRange = 0, numMarkerbeatsInRange = 0;
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
             ++it) {
-        numBeatsInRange++;
+        if (it.isMarker()) {
+            numMarkerbeatsInRange++;
+        } else if (it.isDownbeat()) {
+            numDownbeatsInRange++;
+        } else {
+            numBeatsInRange++;
+        }
     }
 
-    const int reserved = numBeatsInRange * numVerticesPerLine;
-    m_vertices.clear();
-    m_vertices.reserve(reserved);
+    const int reservedBeat = numBeatsInRange * numVerticesPerLine,
+              reservedDownbeat = numDownbeatsInRange * numVerticesPerLine,
+              reservedMarkerbeat = numMarkerbeatsInRange * numVerticesPerLine;
+    m_beatVertices.clear();
+    m_downbeatVertices.clear();
+    m_markerbeatVertices.clear();
+    m_beatVertices.reserve(reservedBeat);
+    m_downbeatVertices.reserve(reservedDownbeat);
+    m_markerbeatVertices.reserve(reservedMarkerbeat);
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -104,33 +126,85 @@ void WaveformRenderBeat::paintGL() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_vertices.addRectangle(x1,
+        auto& vertices = it.isMarker()
+                ? m_markerbeatVertices
+                : (it.isDownbeat() ? m_downbeatVertices : m_beatVertices);
+        vertices.addRectangle(x1,
                 0.f,
                 x2,
                 m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth);
     }
 
-    DEBUG_ASSERT(reserved == m_vertices.size());
+    DEBUG_ASSERT(reservedBeat == m_beatVertices.size());
+    DEBUG_ASSERT(reservedDownbeat == m_downbeatVertices.size());
+    DEBUG_ASSERT(reservedMarkerbeat == m_markerbeatVertices.size());
+    {
+        // Draw the regular beat grid
+        const int positionLocation = m_beatShader.positionLocation();
+        const int matrixLocation = m_beatShader.matrixLocation();
+        const int colorLocation = m_beatShader.colorLocation();
 
-    const int positionLocation = m_shader.positionLocation();
-    const int matrixLocation = m_shader.matrixLocation();
-    const int colorLocation = m_shader.colorLocation();
+        m_beatShader.bind();
+        m_beatShader.enableAttributeArray(positionLocation);
 
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
+        const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
+        m_beatShader.setAttributeArray(
+                positionLocation, GL_FLOAT, m_beatVertices.constData(), 2);
 
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
+        m_beatShader.setUniformValue(matrixLocation, matrix);
+        m_beatShader.setUniformValue(colorLocation, m_beatColor);
 
-    m_shader.setUniformValue(matrixLocation, matrix);
-    m_shader.setUniformValue(colorLocation, m_color);
+        glDrawArrays(GL_TRIANGLES, 0, m_beatVertices.size());
 
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+        m_beatShader.disableAttributeArray(positionLocation);
+        m_beatShader.release();
+    }
 
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.release();
+    {
+        // Draw the down beat grid
+        const int positionLocation = m_downbeatShader.positionLocation();
+        const int matrixLocation = m_downbeatShader.matrixLocation();
+        const int colorLocation = m_downbeatShader.colorLocation();
+
+        m_downbeatShader.bind();
+        m_downbeatShader.enableAttributeArray(positionLocation);
+
+        const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
+
+        m_downbeatShader.setAttributeArray(
+                positionLocation, GL_FLOAT, m_downbeatVertices.constData(), 2);
+
+        m_downbeatShader.setUniformValue(matrixLocation, matrix);
+        m_downbeatShader.setUniformValue(colorLocation, m_downbeatColor);
+
+        glDrawArrays(GL_TRIANGLES, 0, m_downbeatVertices.size());
+
+        m_downbeatShader.disableAttributeArray(positionLocation);
+        m_downbeatShader.release();
+    }
+    {
+        // Draw the marker beat grid
+        const int positionLocation = m_markerbeatShader.positionLocation();
+        const int matrixLocation = m_markerbeatShader.matrixLocation();
+        const int colorLocation = m_markerbeatShader.colorLocation();
+
+        m_markerbeatShader.bind();
+        m_markerbeatShader.enableAttributeArray(positionLocation);
+
+        const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
+
+        m_markerbeatShader.setAttributeArray(
+                positionLocation, GL_FLOAT, m_markerbeatVertices.constData(), 2);
+
+        m_markerbeatShader.setUniformValue(matrixLocation, matrix);
+        m_markerbeatShader.setUniformValue(colorLocation, m_markerbeatColor);
+
+        glDrawArrays(GL_TRIANGLES, 0, m_markerbeatVertices.size());
+
+        m_markerbeatShader.disableAttributeArray(positionLocation);
+        m_markerbeatShader.release();
+    }
 }
 
 } // namespace allshader

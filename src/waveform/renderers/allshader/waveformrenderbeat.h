@@ -25,9 +25,15 @@ class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
     void initializeGL() override;
 
   private:
-    mixxx::UnicolorShader m_shader;
-    QColor m_color;
-    VertexData m_vertices;
+    mixxx::UnicolorShader m_beatShader;
+    mixxx::UnicolorShader m_downbeatShader;
+    mixxx::UnicolorShader m_markerbeatShader;
+    QColor m_beatColor;
+    QColor m_downbeatColor;
+    QColor m_markerbeatColor;
+    VertexData m_beatVertices;
+    VertexData m_downbeatVertices;
+    VertexData m_markerbeatVertices;
 
     bool m_isSlipRenderer;
 
