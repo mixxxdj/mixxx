@@ -14,6 +14,9 @@ Variables:
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+  <SetVariable name="CoverConfigKey"><Variable name="group"/>,bpmlock</SetVariable>
+  <SetVariable name="CoverName">BeatEditCover</SetVariable>
+
   <WidgetGroup>
     <ObjectName>WaveformContainer<Variable name="chanNum"/></ObjectName>
     <Layout>horizontal</Layout>
@@ -139,16 +142,26 @@ Variables:
             <SizePolicy>f,f</SizePolicy>
             <Children>
 
+
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Size>f,f</Size>
                 <Children>
-                  <Template src="skins:Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right_optional.xml">
                     <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                     <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
-                    <SetVariable name="Size">24f,49f</SetVariable>
+                    <SetVariable name="Size">24f,24f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+                  <Template src="skins:Tango/controls/button_2state.xml">
+                    <SetVariable name="TooltipId">bpmlock</SetVariable>
+                    <SetVariable name="ObjectName">BpmLock</SetVariable>
+                    <SetVariable name="Size">24f,24f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,bpmlock</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -159,7 +172,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
-                  <Template src="skins:Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatgridEarlier</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -168,7 +181,7 @@ Variables:
 
                   <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
-                  <Template src="skins:Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatgridFaster</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -183,7 +196,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
-                  <Template src="skins:Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatgridLater</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -192,7 +205,7 @@ Variables:
 
                   <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
-                  <Template src="skins:Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatgridSlower</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
