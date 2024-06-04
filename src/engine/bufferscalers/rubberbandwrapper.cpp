@@ -3,6 +3,7 @@
 #include "engine/bufferscalers/rubberbandworkerpool.h"
 #include "engine/engine.h"
 #include "util/assert.h"
+#include "util/sample.h"
 
 using RubberBand::RubberBandStretcher;
 
@@ -45,20 +46,31 @@ int RubberBandWrapper::available() const {
     }
     return available == std::numeric_limits<int>::max() ? 0 : available;
 }
-size_t RubberBandWrapper::retrieve(float* const* output, size_t samples) const {
+size_t RubberBandWrapper::retrieve(
+        float* const* output, size_t samples, SINT channelBufferSize) const {
+    // ensure we don't fetch more samples than we really have available.
+    samples = std::min(static_cast<size_t>(available()), samples);
+    VERIFY_OR_DEBUG_ASSERT(samples <= static_cast<size_t>(channelBufferSize)) {
+        samples = channelBufferSize;
+    }
     if (m_pInstances.size() == 1) {
         return m_pInstances[0]->retrieve(output, samples);
     } else {
-        // ensure we don't fetch more samples than we really have available.
-        samples = std::min(static_cast<size_t>(available()), samples);
         for (const auto& stretcher : m_pInstances) {
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-            size_t numSamplesRequested =
-#endif
+            size_t numSamplesRetrieved =
                     stretcher->retrieve(output, samples);
             // there is something very wrong if we got a different of amount
             // of samples than we requested
-            DEBUG_ASSERT(numSamplesRequested == samples);
+            // We clear the buffer to limit the damage, but the signal
+            // interruption will still create undesirable audio artefacts.
+            VERIFY_OR_DEBUG_ASSERT(numSamplesRetrieved == samples) {
+                if (samples > numSamplesRetrieved) {
+                    for (int ch = 0; ch < getChannelPerWorker(); ch++) {
+                        SampleUtil::clear(output[ch] + numSamplesRetrieved,
+                                samples - numSamplesRetrieved);
+                    }
+                }
+            }
             output += getChannelPerWorker();
         }
         return samples;
@@ -66,19 +78,19 @@ size_t RubberBandWrapper::retrieve(float* const* output, size_t samples) const {
 }
 size_t RubberBandWrapper::getInputIncrement() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return -1;
+        return {};
     }
     return m_pInstances[0]->getInputIncrement();
 }
 size_t RubberBandWrapper::getLatency() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return -1;
+        return {};
     }
     return m_pInstances[0]->getLatency();
 }
 double RubberBandWrapper::getPitchScale() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return -1;
+        return {};
     }
     return m_pInstances[0]->getPitchScale();
 }
@@ -87,7 +99,7 @@ double RubberBandWrapper::getPitchScale() const {
 // for how these two functions were implemented within librubberband itself
 size_t RubberBandWrapper::getPreferredStartPad() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return -1;
+        return {};
     }
 #if RUBBERBANDV3
     return m_pInstances[0]->getPreferredStartPad();
@@ -101,7 +113,7 @@ size_t RubberBandWrapper::getPreferredStartPad() const {
 }
 size_t RubberBandWrapper::getStartDelay() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return -1;
+        return {};
     }
 #if RUBBERBANDV3
     return m_pInstances[0]->getStartDelay();
@@ -121,11 +133,16 @@ void RubberBandWrapper::process(const float* const* input, size_t samples, bool 
         RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
         for (auto& pInstance : m_pInstances) {
             pInstance->set(input, samples, isFinal);
+            // We try to get the stretching job ran by the RBPool if there is a
+            // worker slot available
             if (!pPool->tryStart(pInstance.get())) {
+                // Otherwise, it means the main thread should take care of the stretching
                 pInstance->run();
             }
             input += pPool->channelPerWorker();
         }
+        // We always perform a wait, even for task that were ran in the main
+        // thread, so it resets the semaphore
         for (auto& pInstance : m_pInstances) {
             pInstance->waitReady();
         }
@@ -150,6 +167,10 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
     auto channelPerWorker = getChannelPerWorker();
     qDebug() << "RubberBandWrapper::setup" << channelPerWorker;
     VERIFY_OR_DEBUG_ASSERT(0 == chCount % channelPerWorker) {
+        // If we have an uneven number of channel, which we can't evenly
+        // distribute across the RubberBandPool workers, we fallback to using a
+        // single instance to limit the audio impefection that may come from
+        // using RB withg different parameters.
         m_pInstances.emplace_back(
                 std::make_unique<RubberBandTask>(
                         sampleRate, chCount, opt));

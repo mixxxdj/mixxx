@@ -12,7 +12,7 @@ class RubberBandWrapper {
     void setTimeRatio(double ratio);
     std::size_t getSamplesRequired() const;
     int available() const;
-    size_t retrieve(float* const* output, size_t samples) const;
+    size_t retrieve(float* const* output, size_t samples, SINT channelBufferSize) const;
     size_t getInputIncrement() const;
     size_t getLatency() const;
     double getPitchScale() const;

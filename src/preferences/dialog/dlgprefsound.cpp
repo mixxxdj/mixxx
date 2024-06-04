@@ -37,14 +37,23 @@ bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
 }
 
 #ifdef __RUBBERBAND__
-const QString kKeylockMultiThreadedAvailable = QObject::tr(
-        "<p><span style=\"font-weight:600;\">Warning!</span></p><p>Using multi "
-        "threading may result in pitch and tone imperfection, and this is "
-        "mono-incompatible, due to third party limitations.</p>");
-const QString kKeylockMultiThreadedUnavailableMono = QObject::tr(
-        "<i>Multi threading mode is incompatible with mono main mix.</i>");
-const QString kKeylockMultiThreadedUnavailableRubberband = QObject::tr(
-        "<i>Multi threading mode is only available with RubberBand.</i>");
+const QString kKeylockMultiThreadedAvailable =
+        QStringLiteral("<p><span style=\"font-weight:600;\">") +
+        QObject::tr("Warning!") + QStringLiteral("</span></p><p>") +
+        QObject::tr(
+                "Using multi "
+                "threading may result in pitch and tone imperfection, and this "
+                "is "
+                "mono-incompatible, due to third party limitations.") +
+        QStringLiteral("</p>");
+const QString kKeylockMultiThreadedUnavailableMono = QStringLiteral("<i>") +
+        QObject::tr(
+                "Multi threading mode is incompatible with mono main mix.") +
+        QStringLiteral("</i>");
+const QString kKeylockMultiThreadedUnavailableRubberband =
+        QStringLiteral("<i>") +
+        QObject::tr("Multi threading mode is only available with RubberBand.") +
+        QStringLiteral("</i>");
 #endif
 } // namespace
 

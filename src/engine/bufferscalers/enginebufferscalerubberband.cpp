@@ -136,17 +136,14 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
     VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
         return 0;
     }
-    const SINT frames_available = m_rubberBand.available();
     // NOTE: If we still need to throw away padding, then we can also
     //       immediately read those frames in addition to the frames we actually
     //       need for the output
-    const SINT frames_to_read = math_min(frames_available, frames + m_remainingPaddingInOutput);
-    DEBUG_ASSERT(frames_to_read <= MAX_BUFFER_LEN);
     SINT received_frames;
     {
         ScopedTimer t(QStringLiteral("RubberBand::retrieve"));
         received_frames = static_cast<SINT>(m_rubberBand.retrieve(
-                m_bufferPtrs.data(), frames_to_read));
+                m_bufferPtrs.data(), frames + m_remainingPaddingInOutput, m_buffers[0].size()));
     }
     SINT frame_offset = 0;
 
