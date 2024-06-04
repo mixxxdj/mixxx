@@ -328,7 +328,8 @@ void EffectsManager::saveEffectsXml() {
                     quickEffectChainPresets,
                     standardEffectChainPresets,
                     outputChainPreset});
-    m_pVisibleEffectsList->saveEffectsXml(&doc);
+
+    m_pVisibleEffectsList->saveEffectsXml(&doc, m_pBackendManager);
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     if (!settingsPath.exists()) {
