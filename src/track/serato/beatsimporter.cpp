@@ -56,7 +56,8 @@ BeatsPointer SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
                           "of beats till next marker exceeds int range!";
             return nullptr;
         }
-        markers.push_back(BeatMarker{position.toLowerFrameBoundary(), beatsTillNextMarker});
+        // FIXME what do we do?
+        // markers.push_back(BeatMarker{position.toLowerFrameBoundary(), beatsTillNextMarker});
     }
 
     const auto lastMarkerPosition = audio::FramePos(

@@ -26,8 +26,8 @@ const auto kConstTempoBeats = Beats(
 // Create beats with 8 beats at 120 BPM, then 16 beats at 60 Bpm, followed by 120 BPM.
 const auto kNonConstTempoBeats = Beats(
         std::vector<BeatMarker>{
-                BeatMarker{kStartPosition, 8},
-                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2, 16},
+                BeatMarker{kStartPosition, (60 * kSampleRate) / 120},
+                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2, (60 * kSampleRate) / 60},
         },
         kStartPosition + 8 * kSampleRate.value() / 2 + 16 * kSampleRate.value(),
         kBpm,
@@ -435,15 +435,15 @@ TEST(BeatsTest, NonConstTempoFromBeatPositions) {
     ASSERT_EQ(3, markers.size());
 
     EXPECT_DOUBLE_EQ(kStartPosition.value(), markers[0].position().value());
-    EXPECT_EQ(8, markers[0].beatsTillNextMarker());
+    EXPECT_EQ(8, markers[0].beatsTillNextMarker(markers[1].position()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 8 * beatLengthFrames).value(),
             markers[1].position().value());
-    EXPECT_EQ(16, markers[1].beatsTillNextMarker());
+    EXPECT_EQ(16, markers[1].beatsTillNextMarker(markers[2].position()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 40 * beatLengthFrames).value(),
             markers[2].position().value());
-    EXPECT_EQ(16, markers[2].beatsTillNextMarker());
+    EXPECT_EQ(16, markers[2].beatsTillNextMarker(beatPositions.last()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 48 * beatLengthFrames).value(),
             pBeats->getLastMarkerPosition().value());

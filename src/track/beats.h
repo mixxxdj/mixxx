@@ -24,11 +24,11 @@ typedef std::shared_ptr<const Beats> BeatsPointer;
 /// A beat marker is denotes the border of a tempo section inside a track.
 class BeatMarker {
   public:
-    BeatMarker(mixxx::audio::FramePos position, int beatsTillNextMarker)
-            : m_position(position), m_beatsTillNextMarker(beatsTillNextMarker) {
+    BeatMarker(mixxx::audio::FramePos position, mixxx::audio::FrameDiff_t beatLength)
+            : m_position(position), m_beatLength(beatLength) {
         DEBUG_ASSERT(m_position.isValid());
         DEBUG_ASSERT(!m_position.isFractional());
-        DEBUG_ASSERT(m_beatsTillNextMarker > 0);
+        DEBUG_ASSERT(m_beatLength > 0);
     }
 
     /// Return the position of this beat marker.
@@ -41,8 +41,8 @@ class BeatMarker {
     /// The length of an individual beat can be calculated by subtracting the
     /// marker positions and dividing the result by the return value of this
     /// function.
-    int beatsTillNextMarker() const {
-        return m_beatsTillNextMarker;
+    int beatsTillNextMarker(mixxx::audio::FramePos nextMarkerPosition) const {
+        return static_cast<int>(std::ceil(nextMarkerPosition - m_position) / m_beatLength);
     }
 
     /// Returns the number of beats per bar.
@@ -53,15 +53,20 @@ class BeatMarker {
         // TODO: Add support for different time signatures.
         return 4;
     }
+    /// Returns the length of a beat in frame
+    ///
+    mixxx::audio::FrameDiff_t beatsLength() const {
+        return m_beatLength;
+    }
 
   private:
     mixxx::audio::FramePos m_position;
-    int m_beatsTillNextMarker;
+    mixxx::audio::FrameDiff_t m_beatLength;
 };
 
 inline bool operator==(const BeatMarker& lhs, const BeatMarker& rhs) {
     return (lhs.position() == rhs.position() &&
-            lhs.beatsTillNextMarker() == rhs.beatsTillNextMarker());
+            lhs.beatsLength() == rhs.beatsLength());
 }
 
 inline bool operator!=(const BeatMarker& lhs, const BeatMarker& rhs) {
@@ -311,8 +316,10 @@ class Beats : private std::enable_shared_from_this<Beats> {
     };
 
     enum class TempoAdjustment {
-        Faster,
-        Slower,
+        Faster = 0b01,
+        Slower = 0b10,
+        MuchFaster = 0b100 | Faster,
+        MuchSlower = 0b100 | Slower,
     };
 
     /// Returns false if the beats implementation supports non-const beats.
@@ -438,7 +445,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     //
     /// Returns a pointer to the modified beats object, or `nullopt` on
     /// failure.
-    std::optional<BeatsPointer> tryTranslate(audio::FrameDiff_t offset) const;
+    std::optional<BeatsPointer> tryTranslate(
+            audio::FramePos currentFrame, audio::FrameDiff_t offset) const;
 
     /// Scale the position of every beat in the song by `scale`.
     //
