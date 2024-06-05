@@ -15,7 +15,13 @@ constexpr int kBlinkingPeriodMillis = 1600;
 constexpr float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
 
 // Used as default outline color in case no value is provided in the theme
-constexpr QColor kDefaultColor = QColor(224, 224, 224);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+constexpr
+#else
+const
+#endif
+        QColor kDefaultColor = QColor(224, 224, 224);
 
 } // anonymous namespace
 
