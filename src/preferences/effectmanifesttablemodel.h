@@ -33,12 +33,14 @@ class EffectManifestTableModel : public QAbstractTableModel {
     // These functions are required for drag and drop.
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    // Set defaults so we can call it with mime data only for inserting
+    // an effect at the end
     bool dropMimeData(
             const QMimeData* data,
-            Qt::DropAction action,
-            int row,
-            int column,
-            const QModelIndex& parent) override;
+            Qt::DropAction action = Qt::MoveAction,
+            int row = -1,
+            int column = -1,
+            const QModelIndex& parent = QModelIndex()) override;
     QStringList mimeTypes() const override;
     Qt::DropActions supportedDropActions() const override;
     bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
