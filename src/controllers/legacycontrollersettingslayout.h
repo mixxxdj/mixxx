@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
 
