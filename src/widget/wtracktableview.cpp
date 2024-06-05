@@ -1007,6 +1007,7 @@ void WTrackTableView::activateSelectedTrack() {
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
     auto indices = selectionModel()->selectedRows();
     if (indices.isEmpty()) {
+        qWarning() << "  ! indices empty";
         return;
     }
     bool allowLoadTrackIntoPlayingDeck = false;
@@ -1032,6 +1033,7 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
         // TODO(XXX): Check for other than just the first preview deck.
         if (group != "[PreviewDeck1]" &&
                 ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            qWarning() << "  ! not allowed to load to this deck, might be playing";
             return;
         }
     }
@@ -1040,6 +1042,7 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     TrackPointer pTrack;
     if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
+        qWarning() << "  > emit loadTrackToPlayer, deck:" << group;
         emit loadTrackToPlayer(pTrack, group, play);
     }
 }

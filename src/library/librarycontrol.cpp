@@ -537,11 +537,13 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
 
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
     if (!m_pLibraryWidget) {
+        qWarning() << "  ! no WLibrary widget";
         return;
     }
 
     LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
     if (!pActiveView) {
+        qWarning() << "  ! no active view";
         return;
     }
     pActiveView->loadSelectedTrackToGroup(group, play);
