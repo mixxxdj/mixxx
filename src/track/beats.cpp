@@ -38,7 +38,8 @@ int calculateBeatsTillNextMarker(const mixxx::Beats::ConstIterator& it,
     const double numBeatsDouble = std::fabs(nextMarkerPosition - *it) / it.beatLengthFrames();
     const int numBeatsInt = static_cast<int>(std::round(numBeatsDouble));
 
-    return roundBeatCountToFullBar(numBeatsInt, it.beatsPerBar());
+    return numBeatsInt;
+    // return roundBeatCountToFullBar(numBeatsInt, it.beatsPerBar());
 }
 
 bool isBeatMarkerLessThanFramePos(const mixxx::BeatMarker& marker,
@@ -120,6 +121,8 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
         m_it++;
     }
     updateValue();
+    // qDebug() << "Beats::ConstIterator" << origValue << m_value <<
+    // m_beatOffset << m_beats->m_lastMarkerPosition << n;
     DEBUG_ASSERT(m_value > origValue);
     return *this;
 }
@@ -772,10 +775,10 @@ std::optional<BeatsPointer> Beats::tryAdjustTempo(
         const auto marker = *markerIt;
         const int adjustedBeatsTillNextMarker = marker.beatsTillNextMarker() +
                 ((adjustment == TempoAdjustment::Faster)
-                                ? marker.beatsPerBar()
-                                : -marker.beatsPerBar());
+                                ? 1
+                                : -1);
 
-        if (adjustedBeatsTillNextMarker < marker.beatsPerBar()) {
+        if (adjustedBeatsTillNextMarker < 1) {
             qWarning() << "Beats: Tempo adjustment would result in a marker "
                           "with less than the minimum beats in one bar!";
             return std::nullopt;
@@ -797,6 +800,7 @@ std::optional<BeatsPointer> Beats::trySetMarker(audio::FramePos position) const 
             position,
             isBeatMarkerLessThanFramePos);
 
+    DEBUG_ASSERT(!m_lastMarkerPosition.isFractional());
     auto lastMarkerPosition = m_lastMarkerPosition;
     if (markerIt == markers.end()) {
         const int numBeats = calculateBeatsTillNextMarker(
@@ -835,8 +839,9 @@ std::optional<BeatsPointer> Beats::trySetMarker(audio::FramePos position) const 
     } else {
         markerIt--;
 
+        const auto positionIt = iteratorClosestTo(position);
         const int numBeats = calculateBeatsTillNextMarker(
-                iteratorClosestTo(position), markerIt->position());
+                positionIt, markerIt->position());
         if (numBeats == 0) {
             // The new marker would be too close to the existing marker, so we
             // need to move the existing marker instead.
@@ -858,7 +863,7 @@ std::optional<BeatsPointer> Beats::trySetMarker(audio::FramePos position) const 
                     marker.beatsTillNextMarker() - numBeats);
 
             // Now we can insert new beat marker at the desired position.
-            markers.emplace(markerIt, position.toLowerFrameBoundary(), numBeats);
+            markers.emplace(markerIt + 1, position.toLowerFrameBoundary(), numBeats);
         }
     }
 
