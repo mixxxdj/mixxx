@@ -188,11 +188,12 @@
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_adjust_faster</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_adjust_much_faster</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats earlier & faster -->
@@ -208,13 +209,14 @@
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_adjust_slower</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_adjust_much_slower</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->

@@ -148,7 +148,9 @@ class BpmControl : public EngineControl {
     // The average bpm around the current playposition;
     std::unique_ptr<ControlObject> m_pLocalBpm;
     std::unique_ptr<ControlPushButton> m_pAdjustBeatsFaster;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsMuchFaster;
     std::unique_ptr<ControlPushButton> m_pAdjustBeatsSlower;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsMuchSlower;
     std::unique_ptr<ControlPushButton> m_pTranslateBeatsEarlier;
     std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
     std::unique_ptr<ControlEncoder> m_pTranslateBeatsMove;
@@ -193,6 +195,8 @@ class BpmControl : public EngineControl {
     // used in the engine thread only
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
+
+    QTimer m_repeatOperation;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;

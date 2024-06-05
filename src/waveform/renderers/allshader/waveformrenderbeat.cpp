@@ -73,9 +73,12 @@ void WaveformRenderBeat::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_beatColor.setAlphaF(alpha / 100.0f);
-    m_downbeatColor.setAlphaF(alpha / 100.0);
-    m_markerbeatColor.setAlphaF(alpha / 100.0);
+    QColor beatColor = m_beatColor,
+           downbeatColor = m_downbeatColor,
+           markerbeatColor = m_markerbeatColor;
+    beatColor.setAlphaF(alpha / 100.0f * beatColor.alphaF());
+    downbeatColor.setAlphaF(alpha / 100.0 * downbeatColor.alphaF());
+    markerbeatColor.setAlphaF(alpha / 100.0 * markerbeatColor.alphaF());
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
