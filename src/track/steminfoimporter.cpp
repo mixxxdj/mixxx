@@ -76,7 +76,7 @@ uint32_t seekTillAtom(QIODevice* reader,
         const QStringList& path,
         uint32_t boxSize = 0,
         uint32_t pathIdx = 0) {
-    if (path.size() == pathIdx) {
+    if (static_cast<uint32_t>(path.size()) == pathIdx) {
         return boxSize;
     }
 
