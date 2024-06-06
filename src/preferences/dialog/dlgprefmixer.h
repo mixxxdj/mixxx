@@ -33,7 +33,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotNumDecksChanged(double numDecks);
     void slotEQEffectSelectionChanged(int effectIndex);
     void slotQuickEffectSelectionChanged(int effectIndex);
-    void slotQuickEffectChangedOnDeck(const QString& group, const QString& presetName);
     void slotEqOnlyToggled(bool checked);
     void slotSingleEqToggled(bool checked);
     void slotEqAutoResetToggled(bool checked);
@@ -115,6 +114,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     bool m_initializing;
     bool m_updatingMainEQ;
+    bool m_applyingDeckEQs;
+    bool m_applyingQuickEffects;
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;
