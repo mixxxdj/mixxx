@@ -206,12 +206,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             this,
             &DlgPrefSound::settingChanged);
 #ifdef __RUBBERBAND__
-    connect(keylockMultithreadedComboBox,
+    connect(keylockMultithreadedCheckBox,
             &QCheckBox::clicked,
             this,
             &DlgPrefSound::updateKeylockMultithreading);
 #else
-    keylockMultithreadedComboBox->hide();
+    keylockMultithreadedCheckBox->hide();
 #endif
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
@@ -333,15 +333,15 @@ void DlgPrefSound::slotApply() {
         bool keylockMultithreading = m_pSettings->getValue(
                 ConfigKey(kAppGroup, "keylock_multithreading"), false);
         m_pSettings->setValue(ConfigKey(kAppGroup, "keylock_multithreading"),
-                keylockMultithreadedComboBox->isChecked() &&
-                        keylockMultithreadedComboBox->isEnabled());
+                keylockMultithreadedCheckBox->isChecked() &&
+                        keylockMultithreadedCheckBox->isEnabled());
         if (keylockMultithreading !=
-                (keylockMultithreadedComboBox->isChecked() &&
-                        keylockMultithreadedComboBox->isEnabled())) {
+                (keylockMultithreadedCheckBox->isChecked() &&
+                        keylockMultithreadedCheckBox->isEnabled())) {
             QMessageBox::information(this,
                     tr("Information"),
                     tr("Mixxx must be restarted before the multi-threaded "
-                       "RubberBand settings change will take effect."));
+                       "RubberBand setting change will take effect."));
         }
 #endif
         status = m_pSoundManager->setConfig(m_config);
@@ -536,7 +536,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
 
 #ifdef __RUBBERBAND__
     // Default is no multi threading on keylock
-    keylockMultithreadedComboBox->setChecked(m_pSettings->getValue(
+    keylockMultithreadedCheckBox->setChecked(m_pSettings->getValue(
             ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading")),
             false));
 #endif
@@ -741,8 +741,8 @@ void DlgPrefSound::settingChanged() {
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
     bool monoMix = mainOutputModeComboBox->currentIndex() == 1;
-    keylockMultithreadedComboBox->setEnabled(!monoMix && supportedScaler);
-    keylockMultithreadedComboBox->setToolTip(monoMix
+    keylockMultithreadedCheckBox->setEnabled(!monoMix && supportedScaler);
+    keylockMultithreadedCheckBox->setToolTip(monoMix
                     ? kKeylockMultiThreadedUnavailableMono
                     : (supportedScaler
                                       ? kKeylockMultiThreadedAvailable
@@ -757,18 +757,18 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
     QMessageBox msg;
     msg.setIcon(QMessageBox::Warning);
     msg.setWindowTitle(tr("Are you sure?"));
-    msg.setText(
-            tr("<p>Using multi threading may result in <span "
-               "style=\"font-weight:600;\">pitch and tone imperfection</span> "
-               "depending of the platform, leading to mono-incompatibility, "
-               "due to third party limitations. </p><p>Are you sure you wish "
-               "to proceed?</p>"));
+    msg.setText(QStringLiteral("<p>%1</p><p>%2</p>")
+                        .arg(tr("Using multi threading result in a loss of "
+                                "mono compatibility and a diffuse stereo "
+                                "image. It is not recommended during "
+                                "broadcasting or recording."),
+                                tr("Are you sure you wish to proceed?")));
     QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::AcceptRole);
     QPushButton* pYesBtn = msg.addButton(
             tr("Yes, I know what I am doing"), QMessageBox::RejectRole);
     msg.setDefaultButton(pNoBtn);
     msg.exec();
-    keylockMultithreadedComboBox->setChecked(msg.clickedButton() == pYesBtn);
+    keylockMultithreadedCheckBox->setChecked(msg.clickedButton() == pYesBtn);
 #endif
 }
 
@@ -922,8 +922,8 @@ void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
     bool supportedScaler = keylockComboBox->currentData()
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
-    keylockMultithreadedComboBox->setEnabled(!value && supportedScaler);
-    keylockMultithreadedComboBox->setToolTip(
+    keylockMultithreadedCheckBox->setEnabled(!value && supportedScaler);
+    keylockMultithreadedCheckBox->setToolTip(
             value ? kKeylockMultiThreadedUnavailableMono
                   : (supportedScaler
                                     ? kKeylockMultiThreadedAvailable

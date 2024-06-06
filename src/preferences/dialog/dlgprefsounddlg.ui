@@ -224,7 +224,7 @@
         <widget class="QComboBox" name="keylockComboBox"/>
        </item>
        <item>
-        <widget class="QCheckBox" name="keylockMultithreadedComboBox">
+        <widget class="QCheckBox" name="keylockMultithreadedCheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
