@@ -655,7 +655,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     }
 
     // TODO: Refactor this to a `std::bit_cast` once we drop support for older
-    // compilers that don't support it (e.g. Clang/libc++ on macOS 11)
+    // compilers that don't support it (e.g. older than Xcode 14.3/macOS 13)
     QByteArray input(reinterpret_cast<const char*>(frame.constBits()), frame.sizeInBytes());
     const TransformScreenFrameFunction& transformMethod =
             m_transformScreenFrameFunctions[screenInfo.identifier];
