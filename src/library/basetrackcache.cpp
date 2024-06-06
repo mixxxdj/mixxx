@@ -22,7 +22,6 @@ QList<int> columnNamesToIndices(const QStringList& columnNames, const ColumnCach
         if (index < 0) {
             continue;
         }
-        qDebug() << "columnNameToIndex" << columnName << "=>" << index;
         indices.append(index);
     }
     return indices;
