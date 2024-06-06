@@ -7,13 +7,6 @@
 #include <QQuickWindow>
 #include <QtEndian>
 #include <algorithm>
-#include <version>
-
-// Prevent conflict with methods called 'emit' in <execution> source
-#pragma push_macro("emit")
-#undef emit
-#include <execution>
-#pragma pop_macro("emit")
 #endif
 
 #include "control/controlobject.h"
@@ -325,10 +318,6 @@ void ControllerScriptEngineLegacy::setScriptFiles(
 
 #ifdef MIXXX_USE_QML
     setQMLMode(std::any_of(
-#ifndef _LIBCPP_VERSION // Still experimental in Clang's libc++ as of June 2024:
-                        // https://github.com/llvm/llvm-project/issues/65125
-            std::execution::par_unseq,
-#endif
             m_scriptFiles.cbegin(),
             m_scriptFiles.cend(),
             [](const auto& scriptFileInfo) {
