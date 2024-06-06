@@ -435,10 +435,20 @@ void Tooltips::addStandardTooltips() {
             << tr("When tapped, decrease the BPM of the region around the "
                   "current play position by a small amount.");
 
+    add("beats_adjust_much_slower")
+            << tr("Adjust BPM Down")
+            << tr("When tapped, decrease the BPM of the region around the "
+                  "current play position by a large amount.");
+
     add("beats_adjust_faster")
             << tr("Adjust BPM Up")
             << tr("When tapped, increases the BPM of the region around the "
                   "current play position by a small amount.");
+
+    add("beats_adjust_much_faster")
+            << tr("Adjust BPM Up")
+            << tr("When tapped, increases the BPM of the region around the "
+                  "current play position by a large amount.");
 
     add("beats_translate_earlier")
             << tr("Adjust Beats Earlier")

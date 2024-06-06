@@ -38,9 +38,9 @@ class BeatMarker {
 
     /// Returns the number of beats between this marker and the next one.
     ///
-    /// The length of an individual beat can be calculated by subtracting the
-    /// marker positions and dividing the result by the return value of this
-    /// function.
+    /// Note that the beat count is rounded up, which means that there may be a
+    /// fraction of a beat and that the different between the current marker
+    /// position in the next may not match with the beat count and beat length
     int beatsTillNextMarker(mixxx::audio::FramePos nextMarkerPosition) const {
         return static_cast<int>(std::ceil(nextMarkerPosition - m_position) / m_beatLength);
     }
@@ -318,6 +318,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     enum class TempoAdjustment {
         Faster = 0b01,
         Slower = 0b10,
+        // The following variant are used to indicate wider adjustment requests
         MuchFaster = 0b100 | Faster,
         MuchSlower = 0b100 | Slower,
     };
@@ -439,14 +440,14 @@ class Beats : private std::enable_shared_from_this<Beats> {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    /// Translate all beats in the song by `offset` frames. Beats that lie
-    /// before the start of the track or after the end of the track are *not*
-    /// removed.
+    /// Translate all beats in the song by `offset` frames, or beats in the
+    /// marker pointed by currentFrame. Beats that lie before the start of the
+    /// track or after the end of the track are *not* removed.
     //
     /// Returns a pointer to the modified beats object, or `nullopt` on
     /// failure.
     std::optional<BeatsPointer> tryTranslate(
-            audio::FramePos currentFrame, audio::FrameDiff_t offset) const;
+            audio::FrameDiff_t offset, audio::FramePos currentFrame = audio::FramePos()) const;
 
     /// Scale the position of every beat in the song by `scale`.
     //

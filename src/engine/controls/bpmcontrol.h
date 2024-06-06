@@ -129,6 +129,9 @@ class BpmControl : public EngineControl {
     void adjustBeatsBpm(double deltaBpm);
     void slotScaleBpm(mixxx::Beats::BpmScale bpmScale);
 
+    void clearActionRepeater();
+    void activateActionRepeater(const std::function<void()>& = nullptr);
+
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer

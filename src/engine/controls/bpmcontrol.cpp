@@ -22,11 +22,8 @@ constexpr double kBpmRangeMax = 200.0;
 constexpr double kBpmRangeStep = 1.0;
 constexpr double kBpmRangeSmallStep = 0.1;
 
-constexpr double kBpmAdjustMin = kBpmRangeMin;
-constexpr double kBpmAdjustStep = 0.01;
-constexpr double kBpmAdjustLargeStep = 1.00;
-constexpr double kBpmAdjustRepeatIntervalMs = 50;
-constexpr double kBpmAdjustTimeBeforeRepeatMs = 500;
+constexpr int kBpmAdjustRepeatIntervalMs = 50;
+constexpr int kBpmAdjustTimeBeforeRepeatMs = 500;
 constexpr double kBpmTapRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
@@ -299,9 +296,15 @@ mixxx::Bpm BpmControl::getBpm() const {
     return mixxx::Bpm(m_pEngineBpm->get());
 }
 
-void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v <= 0) {
-        m_repeatOperation.stop();
+void BpmControl::clearActionRepeater() {
+    m_repeatOperation.stop();
+    m_repeatOperation.disconnect();
+    return;
+}
+
+void BpmControl::activateActionRepeater(const std::function<void()>& callback) {
+    VERIFY_OR_DEBUG_ASSERT(callback) {
+        clearActionRepeater();
         return;
     }
 
@@ -309,10 +312,15 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
         m_repeatOperation.setInterval(kBpmAdjustRepeatIntervalMs);
     } else {
         m_repeatOperation.disconnect();
-        connect(&m_repeatOperation, &QTimer::timeout, this, [this, v]() {
-            slotAdjustBeatsFaster(v);
-        });
+        connect(&m_repeatOperation, &QTimer::timeout, this, callback);
         m_repeatOperation.start(kBpmAdjustTimeBeforeRepeatMs);
+    }
+}
+
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v <= 0) {
+        clearActionRepeater();
+        return;
     }
 
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
@@ -323,6 +331,10 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
     if (!pBeats) {
         return;
     }
+
+    activateActionRepeater([this, v]() {
+        slotAdjustBeatsFaster(v);
+    });
 
     const auto adjustedBeats =
             pBeats->tryAdjustTempo(frameInfo().currentPosition,
@@ -335,18 +347,8 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v <= 0) {
-        m_repeatOperation.stop();
+        clearActionRepeater();
         return;
-    }
-
-    if (m_repeatOperation.isActive()) {
-        m_repeatOperation.setInterval(kBpmAdjustRepeatIntervalMs);
-    } else {
-        m_repeatOperation.disconnect();
-        connect(&m_repeatOperation, &QTimer::timeout, this, [this, v]() {
-            slotAdjustBeatsSlower(v);
-        });
-        m_repeatOperation.start(kBpmAdjustTimeBeforeRepeatMs);
     }
 
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
@@ -357,6 +359,10 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
     if (!pBeats) {
         return;
     }
+
+    activateActionRepeater([this, v]() {
+        slotAdjustBeatsSlower(v);
+    });
 
     const auto adjustedBeats =
             pBeats->tryAdjustTempo(frameInfo().currentPosition,
@@ -369,37 +375,25 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
-        m_repeatOperation.stop();
+        clearActionRepeater();
         return;
     }
 
-    if (m_repeatOperation.isActive()) {
-        m_repeatOperation.setInterval(kBpmAdjustRepeatIntervalMs);
-    } else {
-        m_repeatOperation.disconnect();
-        connect(&m_repeatOperation, &QTimer::timeout, this, [this]() {
-            slotTranslateBeatsEarlier(1);
-        });
-        m_repeatOperation.start(kBpmAdjustTimeBeforeRepeatMs);
-    }
+    activateActionRepeater([this]() {
+        slotTranslateBeatsEarlier(1);
+    });
     slotTranslateBeatsMove(-1);
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v <= 0) {
-        m_repeatOperation.stop();
+        clearActionRepeater();
         return;
     }
 
-    if (m_repeatOperation.isActive()) {
-        m_repeatOperation.setInterval(kBpmAdjustRepeatIntervalMs);
-    } else {
-        m_repeatOperation.disconnect();
-        connect(&m_repeatOperation, &QTimer::timeout, this, [this]() {
-            slotTranslateBeatsLater(1);
-        });
-        m_repeatOperation.start(kBpmAdjustTimeBeforeRepeatMs);
-    }
+    activateActionRepeater([this]() {
+        slotTranslateBeatsLater(1);
+    });
     slotTranslateBeatsMove(1);
 }
 
@@ -417,7 +411,7 @@ void BpmControl::slotTranslateBeatsMove(double v) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
         const double sampleOffset = frameInfo().sampleRate * v * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        const auto translatedBeats = pBeats->tryTranslate(frameInfo().currentPosition, frameOffset);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset, frameInfo().currentPosition);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
@@ -1284,7 +1278,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         const auto currentPosition = frameInfo().currentPosition.toLowerFrameBoundary();
         const auto closestBeat = pBeats->findClosestBeat(currentPosition);
         const mixxx::audio::FrameDiff_t frameOffset = currentPosition - closestBeat;
-        const auto translatedBeats = pBeats->tryTranslate(currentPosition, frameOffset);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset, currentPosition);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
@@ -1306,7 +1300,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         const mixxx::audio::FrameDiff_t frameOffset = -getPhaseOffset(frameInfo().currentPosition);
-        const auto translatedBeats = pBeats->tryTranslate(mixxx::audio::FramePos(), frameOffset);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
