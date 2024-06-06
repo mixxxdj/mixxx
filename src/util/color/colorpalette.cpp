@@ -40,6 +40,7 @@ mixxx::RgbColor::optional_t ColorPalette::previousColor(mixxx::RgbColor::optiona
 
 mixxx::RgbColor::optional_t ColorPalette::getNthColor(
         mixxx::RgbColor::optional_t color, int steps) const {
+    // TODO : Use rem_euclid modulo function instead of a loop
     while (steps) {
         if (steps > 0) {
             color = nextColor(color);
