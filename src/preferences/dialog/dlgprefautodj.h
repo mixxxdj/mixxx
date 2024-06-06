@@ -24,6 +24,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotSetRandomQueueMin(int);
     void slotConsiderRepeatPlaylistState(bool);
     void slotToggleRandomQueue(int buttonState);
+    void slotToggleXFaderCenterResetState(int buttonState);	
 
   private:
     UserSettingsPointer m_pConfig;

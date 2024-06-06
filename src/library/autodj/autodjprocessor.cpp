@@ -578,6 +578,9 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         for (const auto& pDeck : std::as_const(m_decks)) {
             pDeck->disconnect(this);
         }
+		if (m_pConfig->getValueString(ConfigKey("[Auto DJ]", "XFaderCenterResetState")) != "0") {
+			m_pCOCrossfader->set(0);
+		}		
         emitAutoDJStateChanged(m_eState);
     }
     return ADJ_OK;

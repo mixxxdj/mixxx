@@ -39,6 +39,9 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     // Auto DJ random enqueue
     RandomQueueCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "EnableRandomQueue"), false));
+    // Auto DJ XFaderCenterResetState
+    XFaderCenterResetStateCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "XFaderCenterResetState"), true));						
     // 5-arbitrary
     RandomQueueMinimumSpinBox->setValue(
             m_pConfig->getValue(
@@ -57,6 +60,10 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             &QCheckBox::stateChanged,
             this,
             &DlgPrefAutoDJ::slotToggleRandomQueue);
+    connect(XFaderCenterResetStateCheckBox,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefAutoDJ::slotToggleXFaderCenterResetState);						
     connect(RandomQueueMinimumSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
@@ -87,6 +94,10 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), false));
+
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "XFaderCenterResetState"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "XFaderCenterResetState"), false));										
 }
 
 void DlgPrefAutoDJ::slotCancel() {
@@ -103,6 +114,9 @@ void DlgPrefAutoDJ::slotCancel() {
     RequeueIgnoreCheckBox->setChecked(
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
+XFaderCenterResetStateCheckBox->setChecked(
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "XFaderCenterResetState"), false));										
     RequeueIgnoreTimeEdit->setEnabled(
             RequeueIgnoreCheckBox->checkState() == Qt::Checked);
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"),
@@ -142,6 +156,7 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), false);
     RandomQueueMinimumSpinBox->setEnabled(false);
     RandomQueueCheckBox->setEnabled(true);
+    XFaderCenterResetStateCheckBox->setChecked(false);		
 }
 
 void DlgPrefAutoDJ::slotSetMinimumAvailable(int a_iValue) {
@@ -184,5 +199,11 @@ void DlgPrefAutoDJ::slotToggleRandomQueue(int buttonState) {
     // Toggle the option to select minimum tracks
     RandomQueueMinimumSpinBox->setEnabled(enable);
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
+            enable);
+}
+
+void DlgPrefAutoDJ::slotToggleXFaderCenterResetState(int buttonState) {
+    bool enable = buttonState == Qt::Checked;
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "XFaderCenterResetState"),
             enable);
 }
