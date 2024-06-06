@@ -1,8 +1,8 @@
 #pragma once
 
-#include <GL/gl.h>
-
 #include <QObject>
+#include <QOpenGLContext>
+#include <QOpenGLFramebufferObject>
 #include <chrono>
 #include <gsl/pointers>
 
