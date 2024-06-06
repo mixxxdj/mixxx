@@ -17,6 +17,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wtracktableview.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
@@ -577,64 +578,53 @@ void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool pla
         return;
     }
 
-    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-    if (!pActiveView) {
-        return;
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->loadSelectedTrackToGroup(group, play);
     }
-    pActiveView->loadSelectedTrackToGroup(group, play);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->activateSelectedTrack();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->activateSelectedTrack();
     }
 }
 
 void LibraryControl::slotAutoDjAddTop(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->slotAddToAutoDJTop();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->addToAutoDJTop();
     }
 }
 
 void LibraryControl::slotAutoDjAddBottom(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->slotAddToAutoDJBottom();
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->addToAutoDJBottom();
     }
 }
 
 void LibraryControl::slotAutoDjAddReplace(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->slotAddToAutoDJReplace();
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->addToAutoDJReplace();
     }
 }
 
@@ -651,17 +641,15 @@ void LibraryControl::slotSelectPrevTrack(double v) {
 }
 
 void LibraryControl::slotSelectTrack(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v == 0) {
         return;
     }
 
-    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-    if (!pActiveView) {
-        return;
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        int i = (int)v;
+        pTrackTableView->moveSelection(i);
     }
-
-    int i = (int)v;
-    pActiveView->moveSelection(i);
 }
 
 void LibraryControl::slotMoveUp(double v) {
@@ -982,9 +970,13 @@ void LibraryControl::slotGoToItem(double v) {
             m_pSidebarWidget->toggleSelectedItem();
         }
         return;
-    case FocusWidget::TracksTable:
-        m_pLibraryWidget->getActiveView()->activateSelectedTrack();
+    case FocusWidget::TracksTable: {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (pTrackTableView) {
+            pTrackTableView->activateSelectedTrack();
+        }
         return;
+    }
     case FocusWidget::Dialog: {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
@@ -1060,29 +1052,23 @@ void LibraryControl::slotDecrementFontSize(double v) {
 }
 
 void LibraryControl::slotTrackColorPrev(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->assignPreviousTrackColor();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->assignPreviousTrackColor();
     }
 }
 
 void LibraryControl::slotTrackColorNext(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->assignNextTrackColor();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->assignNextTrackColor();
     }
 }
