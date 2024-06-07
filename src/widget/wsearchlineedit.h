@@ -36,6 +36,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     ~WSearchLineEdit();
 
     void setup(const QDomNode& node, const SkinContext& context);
+    void setupToolTip(const QString& searchInCurrentViewShortcut,
+            const QString& searchInAllTracksShortcut);
 
     void handleSetFocus(Qt::FocusReason focusReason);
 

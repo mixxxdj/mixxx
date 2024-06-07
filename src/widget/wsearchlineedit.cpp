@@ -212,15 +212,18 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
             tr("Clear the search bar input field"));
+}
 
+void WSearchLineEdit::setupToolTip(const QString& searchInCurrentViewShortcut,
+        const QString& searchInAllTracksShortcut) {
     setBaseTooltip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for.") + " " +
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990.") +
             "\n" + tr("See User Manual > Mixxx Library for more information.") +
-            "\n\n" + tr("Ctrl+F") + ": " +
+            "\n\n" + searchInCurrentViewShortcut + ": " +
             tr("Focus/Select All (Search in current view)",
                     "Give search bar input focus") +
-            "\n" + tr("Ctrl+Shift+F") + ": " +
+            "\n" + searchInAllTracksShortcut + ": " +
             tr("Focus/Select All (Search in \'Tracks\' library view)") +
             "\n\n" + tr("Additional Shortcuts When Focused:") + "\n" +
             tr("Return") + ": " +
