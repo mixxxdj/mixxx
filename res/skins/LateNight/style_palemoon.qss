@@ -2379,6 +2379,19 @@ WPushButton#PlayDeck[value="0"] {
       image: url(skin:../LateNight/palemoon/buttons/btn__beats_remove_marker_active.svg) no-repeat center center;
     }
 
+  #BeatsIncreaseBarLength[displayValue="0"] {
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_increase_bar_length.svg) no-repeat center center;
+    }
+    #BeatsIncreaseBarLength[pressed="true"] {
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_increase_bar_length_active.svg) no-repeat center center;
+    }
+  #BeatsDecreaseBarLength[displayValue="0"] {
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_decrease_bar_length.svg) no-repeat center center;
+    }
+    #BeatsDecreaseBarLength[pressed="true"] {
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_decrease_bar_length_active.svg) no-repeat center center;
+    }
+
   #BeatsEarlier {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_earlier.svg) no-repeat center center;
     }

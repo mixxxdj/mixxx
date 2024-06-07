@@ -13,6 +13,7 @@ namespace {
 
 constexpr auto kBpm = Bpm(120.0);
 constexpr auto kSampleRate = audio::SampleRate(48000);
+constexpr auto kBeatsPerBar = 4;
 constexpr auto kStartPosition = audio::FramePos(400);
 const auto kEndPosition = kStartPosition + 24 * kSampleRate.value();
 constexpr double kMaxBeatError = 1e-9;
@@ -20,17 +21,22 @@ constexpr double kMaxBeatError = 1e-9;
 const auto kConstTempoBeats = Beats(
         kStartPosition,
         kBpm,
+        kBeatsPerBar,
         kSampleRate,
         QString());
 
 // Create beats with 8 beats at 120 BPM, then 16 beats at 60 Bpm, followed by 120 BPM.
 const auto kNonConstTempoBeats = Beats(
         std::vector<BeatMarker>{
-                BeatMarker{kStartPosition, (60 * kSampleRate) / 120},
-                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2, (60 * kSampleRate) / 60},
+                BeatMarker{
+                        kStartPosition, (60 * kSampleRate) / 120, kBeatsPerBar},
+                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2,
+                        (60 * kSampleRate) / 60,
+                        kBeatsPerBar},
         },
         kStartPosition + 8 * kSampleRate.value() / 2 + 16 * kSampleRate.value(),
         kBpm,
+        kBeatsPerBar,
         kSampleRate,
         QString());
 
@@ -535,6 +541,51 @@ TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
     kConstTempoBeats.findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_NEAR(previousBeat.value(), foundPrevBeat.value(), kMaxBeatError);
     EXPECT_NEAR(nextBeat.value(), foundNextBeat.value(), kMaxBeatError);
+}
+
+TEST(BeatsTest, MultipleBeatsPerBar) {
+    const auto tempoBeats = Beats(
+            std::vector<BeatMarker>{
+                    BeatMarker{kStartPosition, (60 * kSampleRate) / 120, 4},
+                    BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2,
+                            (60 * kSampleRate) / 60,
+                            3},
+            },
+            kStartPosition + 8 * kSampleRate.value() / 2 +
+                    16 * kSampleRate.value(),
+            kBpm,
+            2,
+            kSampleRate,
+            QString());
+
+    ASSERT_EQ(tempoBeats.iteratorFrom(kStartPosition).beatsPerBar(), 4);
+    ASSERT_EQ(
+            tempoBeats
+                    .iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2)
+                    .beatsPerBar(),
+            3);
+    ASSERT_EQ(tempoBeats.iteratorFrom(mixxx::audio::FramePos(0)).beatsPerBar(), 4);
+    ASSERT_EQ(
+            tempoBeats
+                    .iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2 +
+                            16 * kSampleRate.value())
+                    .beatsPerBar(),
+            2);
+
+    const QByteArray byteArray = tempoBeats.toByteArray();
+
+    auto pBeats = Beats::fromByteArray(
+            kSampleRate, BEAT_MAP_VERSION, QString(), byteArray);
+    ASSERT_NE(nullptr, pBeats);
+
+    ASSERT_EQ(pBeats->iteratorFrom(kStartPosition).beatsPerBar(), 4);
+    ASSERT_EQ(pBeats->iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2).beatsPerBar(), 3);
+    ASSERT_EQ(pBeats->iteratorFrom(mixxx::audio::FramePos(0)).beatsPerBar(), 4);
+    ASSERT_EQ(
+            pBeats->iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2 +
+                          16 * kSampleRate.value())
+                    .beatsPerBar(),
+            2);
 }
 
 } // namespace

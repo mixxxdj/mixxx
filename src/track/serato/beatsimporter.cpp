@@ -3,6 +3,7 @@
 #include "track/serato/tags.h"
 
 namespace mixxx {
+constexpr int kDefaultBeatPerBar = 4;
 
 SeratoBeatsImporter::SeratoBeatsImporter()
         : BeatsImporter(),
@@ -69,7 +70,9 @@ BeatsPointer SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
 
         DEBUG_ASSERT(position < nextPosition);
 
-        markers.push_back(BeatMarker{position, (nextPosition - position) / beatsTillNextMarker});
+        markers.push_back(BeatMarker{position,
+                (nextPosition - position) / beatsTillNextMarker,
+                kDefaultBeatPerBar});
         pMarker = pNextMarker;
     }
 
@@ -85,6 +88,7 @@ BeatsPointer SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
             signalInfo.getSampleRate(),
             std::move(markers),
             lastMarkerPosition.toLowerFrameBoundary(),
+            kDefaultBeatPerBar,
             lastMarkerBpm);
 }
 

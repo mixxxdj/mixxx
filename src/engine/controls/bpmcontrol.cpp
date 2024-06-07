@@ -153,6 +153,20 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotBeatsRemoveMarker,
             Qt::DirectConnection);
+    m_pBeatsBarCountUp = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_increase_bar_length"), false);
+    connect(m_pBeatsBarCountUp.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsBarCountUp,
+            Qt::DirectConnection);
+    m_pBeatsBarCountDown = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_decrease_bar_length"), false);
+    connect(m_pBeatsBarCountDown.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsBarCountDown,
+            Qt::DirectConnection);
 
     m_pBeatsHalve = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_halve"), false);
     connect(m_pBeatsHalve.get(),
@@ -448,6 +462,42 @@ void BpmControl::slotBeatsSetMarker(double v) {
     }
 }
 
+void BpmControl::slotBeatsBarCountUp(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->tryAdjustMarkerBarCount(frameInfo().currentPosition, 1);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
+}
+void BpmControl::slotBeatsBarCountDown(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->tryAdjustMarkerBarCount(frameInfo().currentPosition, -1);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
+}
 void BpmControl::slotBeatsRemoveMarker(double v) {
     if (v <= 0) {
         return;

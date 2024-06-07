@@ -430,6 +430,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Remove Beat Marker")
             << tr("Remove the beat marker at the current play position.");
 
+    add("beats_increase_bar_length")
+            << tr("Adjust the bar length")
+            << tr("Increment by one the bar length of the current marker.");
+
+    add("beats_decrease_bar_length")
+            << tr("Adjust the bar length")
+            << tr("Decrement by one the bar length of the current marker.");
+
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
             << tr("When tapped, decrease the BPM of the region around the "

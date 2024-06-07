@@ -24,11 +24,12 @@ typedef std::shared_ptr<const Beats> BeatsPointer;
 /// A beat marker is denotes the border of a tempo section inside a track.
 class BeatMarker {
   public:
-    BeatMarker(mixxx::audio::FramePos position, mixxx::audio::FrameDiff_t beatLength)
-            : m_position(position), m_beatLength(beatLength) {
+    BeatMarker(mixxx::audio::FramePos position, mixxx::audio::FrameDiff_t beatLength, int barLength)
+            : m_position(position), m_beatLength(beatLength), m_beatsPerBar(barLength) {
         DEBUG_ASSERT(m_position.isValid());
         DEBUG_ASSERT(!m_position.isFractional());
         DEBUG_ASSERT(m_beatLength > 0);
+        DEBUG_ASSERT(m_beatsPerBar >= 2 && m_beatsPerBar <= 32);
     }
 
     /// Return the position of this beat marker.
@@ -45,16 +46,14 @@ class BeatMarker {
         return static_cast<int>(std::ceil(nextMarkerPosition - m_position) / m_beatLength);
     }
 
-    /// Returns the number of beats per bar.
-    ///
-    /// Note: Currently always returns 4, as time signatures other than 4/4
-    /// are not supported yet.
+    /// Returns the number of beats per bar..
     int beatsPerBar() const {
-        // TODO: Add support for different time signatures.
-        return 4;
+        return m_beatsPerBar;
+    }
+    void setBeatsPerBar(int beatsPerBar) {
+        m_beatsPerBar = beatsPerBar;
     }
     /// Returns the length of a beat in frame
-    ///
     mixxx::audio::FrameDiff_t beatsLength() const {
         return m_beatLength;
     }
@@ -62,6 +61,7 @@ class BeatMarker {
   private:
     mixxx::audio::FramePos m_position;
     mixxx::audio::FrameDiff_t m_beatLength;
+    int m_beatsPerBar;
 };
 
 inline bool operator==(const BeatMarker& lhs, const BeatMarker& rhs) {
@@ -185,6 +185,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
             return !(lhs == rhs);
         }
 
+        friend bool operator<(const ConstIterator& lhs, const ConstIterator& rhs) {
+            return lhs.m_beats == rhs.m_beats &&
+                    (lhs.m_it < rhs.m_it ||
+                            (lhs.m_it == rhs.m_it &&
+                                    lhs.m_beatOffset < rhs.m_beatOffset));
+        }
+
       private:
         void updateValue();
 
@@ -198,26 +205,30 @@ class Beats : private std::enable_shared_from_this<Beats> {
     Beats(std::vector<BeatMarker> markers,
             mixxx::audio::FramePos lastMarkerPosition,
             mixxx::Bpm lastMarkerBpm,
+            int lastMarkerBeatPerLength,
             mixxx::audio::SampleRate sampleRate,
             const QString& subVersion)
             : m_markers(std::move(markers)),
               m_lastMarkerPosition(lastMarkerPosition),
+              m_lastBeatsPerBar(lastMarkerBeatPerLength),
               m_lastMarkerBpm(lastMarkerBpm),
               m_sampleRate(sampleRate),
               m_subVersion(subVersion) {
         DEBUG_ASSERT(m_lastMarkerPosition.isValid());
         DEBUG_ASSERT(!m_lastMarkerPosition.isFractional());
         DEBUG_ASSERT(m_lastMarkerBpm.isValid());
-        DEBUG_ASSERT(m_sampleRate.isValid());
+        DEBUG_ASSERT(lastMarkerBeatPerLength > 0);
     }
 
     Beats(mixxx::audio::FramePos lastMarkerPosition,
             mixxx::Bpm lastMarkerBpm,
+            int lastMarkerBeatPerLength,
             mixxx::audio::SampleRate sampleRate,
             const QString& subVersion)
             : Beats(std::vector<BeatMarker>(),
                       lastMarkerPosition,
                       lastMarkerBpm,
+                      lastMarkerBeatPerLength,
                       sampleRate,
                       subVersion) {
     }
@@ -303,6 +314,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
             audio::SampleRate sampleRate,
             const std::vector<BeatMarker>& beatMarker,
             const audio::FramePos lastMarkerPosition,
+            int lastMarkerBeatPerLength,
             const Bpm lastMarkerBpm,
             const QString& subVersion = QString());
 
@@ -483,6 +495,10 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// failure.
     std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const;
 
+    /// Adjust the current marker's bar count
+    std::optional<BeatsPointer> tryAdjustMarkerBarCount(
+            audio::FramePos position, int adjustment) const;
+
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
     ///
@@ -504,16 +520,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
     mixxx::audio::FrameDiff_t lastBeatLengthFrames() const;
 
     /// Returns the number of beats per bar of the last marker.
-    ///
-    /// Note: Currently always returns 4, as time signatures other than 4/4
-    /// are not supported yet.
     int lastBeatsPerBar() const {
-        // TODO: Add support for different time signatures.
-        return 4;
+        return m_lastBeatsPerBar;
     }
 
     std::vector<BeatMarker> m_markers;
     mixxx::audio::FramePos m_lastMarkerPosition;
+    int m_lastBeatsPerBar;
     mixxx::Bpm m_lastMarkerBpm;
     mixxx::audio::SampleRate m_sampleRate;
 

@@ -117,6 +117,8 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslateMatchAlignment(double);
     void slotToggleBpmLock(double);
     void slotBeatsUndoAdjustment(double value);
+    void slotBeatsBarCountUp(double);
+    void slotBeatsBarCountDown(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -160,6 +162,8 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pBeatsUndo;
     std::unique_ptr<ControlPushButton> m_pBeatsSetMarker;
     std::unique_ptr<ControlPushButton> m_pBeatsRemoveMarker;
+    std::unique_ptr<ControlPushButton> m_pBeatsBarCountUp;
+    std::unique_ptr<ControlPushButton> m_pBeatsBarCountDown;
 
     std::unique_ptr<ControlPushButton> m_pBeatsHalve;
     std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;
