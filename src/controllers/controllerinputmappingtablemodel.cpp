@@ -204,7 +204,11 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_OPCODE:
                 return MidiUtils::opCodeValue(MidiUtils::opCodeFromStatus(mapping.key.status));
             case MIDI_COLUMN_CONTROL:
+                if (MidiUtils::isMessageTwoBytes(mapping.key.status)) {
                 return mapping.key.control;
+                } else {
+                return QVariant();
+                }
             case MIDI_COLUMN_OPTIONS:
                 // UserRole is used for sorting.
                 if (role == Qt::UserRole) {
