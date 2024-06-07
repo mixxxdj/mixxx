@@ -217,10 +217,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     setPalette(pal);
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
-            tr("Clear the search bar input field") + "\n\n" +
-
-            tr("Shortcut") + ": \n" +
-            tr("Ctrl+Backspace"));
+            tr("Clear the search bar input field"));
 
     setBaseTooltip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
@@ -234,8 +231,6 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Trigger search before search-as-you-type timeout or"
                "jump to tracks view afterwards") +
             "\n" +
-            tr("Ctrl+Backspace") + ": " +
-            tr("Clear input", "Clear the search bar input field") + "\n" +
             tr("Ctrl+Space") + ": " +
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
