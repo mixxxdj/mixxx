@@ -25,6 +25,55 @@ class DummyParser : public Parser {
 
 class PlaylistTest : public testing::Test {};
 
+TEST_F(PlaylistTest, IsPlaylistFilenameSupported) {
+    EXPECT_TRUE(ParserCsv::isPlaylistFilenameSupported("test.csv"));
+    EXPECT_FALSE(ParserCsv::isPlaylistFilenameSupported("test.mp3"));
+}
+
+TEST_F(PlaylistTest, ParseAllLocations) {
+    QTemporaryFile csvFile;
+    ASSERT_TRUE(csvFile.open());
+    csvFile.write("Location,OtherData\n");
+    csvFile.write("/path/to/file1,/other/data\n");
+    csvFile.write("/path/to/file2,/other/data\n");
+    csvFile.close();
+
+    QList<QString> locations = ParserCsv::parseAllLocations(csvFile.fileName());
+
+    EXPECT_EQ(locations.size(), 2);
+    EXPECT_EQ(locations[0], "/path/to/file1");
+    EXPECT_EQ(locations[1], "/path/to/file2");
+}
+
+TEST_F(PlaylistTest, ParseEmptyFile) {
+    QTemporaryFile csvFile;
+    ASSERT_TRUE(csvFile.open());
+    csvFile.close();
+
+    const QList<QString> entries = ParserCsv().parseAllLocations(csvFile.fileName());
+
+    // Check that the entries list is empty
+    EXPECT_TRUE(entries.isEmpty());
+}
+
+TEST_F(PlaylistTest, ParseWithLocationColumn) {
+    QTemporaryFile csvFile;
+    ASSERT_TRUE(csvFile.open());
+    csvFile.write("#,Location\n");
+    csvFile.write("1,/path/to/file1\n");
+    csvFile.write("2,/path/to/file2\n");
+    csvFile.close();
+
+    const QList<QString> entries = ParserCsv().parseAllLocations(csvFile.fileName());
+
+    // Check the size of the entries list
+    EXPECT_EQ(entries.size(), 2);
+
+    // Check the contents of the entries list
+    EXPECT_EQ(entries[0], "/path/to/file1");
+    EXPECT_EQ(entries[1], "/path/to/file2");
+}
+
 TEST_F(PlaylistTest, Normalize) {
     DummyParser parser;
 
