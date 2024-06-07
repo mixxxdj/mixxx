@@ -10,7 +10,7 @@
 namespace {
 constexpr double kdMaxDelayPot = 500;
 const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
-        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
+        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelOutputCount);
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 

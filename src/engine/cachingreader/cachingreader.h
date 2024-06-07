@@ -82,7 +82,8 @@ class CachingReader : public QObject {
   public:
     // Construct a CachingReader with the given group.
     CachingReader(const QString& group,
-            UserSettingsPointer _config);
+            UserSettingsPointer _config,
+            mixxx::audio::ChannelCount maxSupportedChannel);
     ~CachingReader() override;
 
     void process();
@@ -100,7 +101,11 @@ class CachingReader : public QObject {
     // buffer. It always writes numSamples to the buffer and otherwise
     // returns ReadResult::UNAVAILABLE.
     // It support reading stereo samples in reverse (backward) order.
-    virtual ReadResult read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer);
+    virtual ReadResult read(SINT startSample,
+            SINT numSamples,
+            bool reverse,
+            CSAMPLE* buffer,
+            mixxx::audio::ChannelCount channelCount);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
@@ -122,7 +127,8 @@ class CachingReader : public QObject {
     void trackLoading();
     void trackLoaded(TrackPointer pTrack,
             mixxx::audio::SampleRate trackSampleRate,
-            double trackNumSamples);
+            mixxx::audio::ChannelCount trackChannelCount,
+            mixxx::audio::FramePos trackNumFrame);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

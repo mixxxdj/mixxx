@@ -842,7 +842,7 @@ mixxx::audio::SampleRate Track::getSampleRate() const {
     return m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
 }
 
-int Track::getChannels() const {
+mixxx::audio::ChannelCount Track::getChannels() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getStreamInfo().getSignalInfo().getChannelCount();
 }

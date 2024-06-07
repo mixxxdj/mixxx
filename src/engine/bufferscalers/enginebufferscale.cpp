@@ -2,11 +2,12 @@
 
 #include "engine/engine.h"
 #include "moc_enginebufferscale.cpp"
+#include "soundio/soundmanagerconfig.h"
 
 EngineBufferScale::EngineBufferScale()
         : m_outputSignal(
                   mixxx::audio::SignalInfo(
-                          mixxx::kEngineChannelCount,
+                          mixxx::kEngineChannelOutputCount,
                           mixxx::audio::SampleRate())),
           m_dBaseRate(1.0),
           m_bSpeedAffectsPitch(false),
@@ -16,12 +17,22 @@ EngineBufferScale::EngineBufferScale()
     DEBUG_ASSERT(!m_outputSignal.isValid());
 }
 
-void EngineBufferScale::setSampleRate(
-        mixxx::audio::SampleRate sampleRate) {
+void EngineBufferScale::setOutputSignal(
+        mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount) {
     DEBUG_ASSERT(sampleRate.isValid());
+    DEBUG_ASSERT(channelCount.isValid());
+    bool changed = false;
     if (sampleRate != m_outputSignal.getSampleRate()) {
         m_outputSignal.setSampleRate(sampleRate);
-        onSampleRateChanged();
+        changed = true;
+    }
+    if (channelCount != m_outputSignal.getChannelCount()) {
+        m_outputSignal.setChannelCount(channelCount);
+        changed = true;
+    }
+    if (changed) {
+        onOutputSignalChanged();
     }
     DEBUG_ASSERT(m_outputSignal.isValid());
 }

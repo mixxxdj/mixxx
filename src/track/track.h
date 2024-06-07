@@ -111,7 +111,7 @@ class Track : public QObject {
     QString getType() const;
 
     // Get number of channels
-    int getChannels() const;
+    mixxx::audio::ChannelCount getChannels() const;
 
     mixxx::audio::SampleRate getSampleRate() const;
 
@@ -338,7 +338,13 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_stemInfo;
     }
-    // Setter is only available internally. See setStemInfosWhileLocked
+    // Setter is only available internally. See setStemPointsWhileLocked
+
+    bool hasStem() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return !m_stemInfo.isEmpty();
+    }
 #endif
 
     enum class ImportStatus {

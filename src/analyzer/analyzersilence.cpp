@@ -41,6 +41,7 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
 
 bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(frameLength);
@@ -52,6 +53,7 @@ bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
     m_framesProcessed = 0;
     m_signalStart = -1;
     m_signalEnd = -1;
+    m_channelCount = channelCount;
 
     return true;
 }
@@ -74,17 +76,37 @@ SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
 // static
 bool AnalyzerSilence::verifyFirstSound(
         std::span<const CSAMPLE> samples,
-        mixxx::audio::FramePos firstSoundFrame) {
+        mixxx::audio::FramePos firstSoundFrame,
+        mixxx::audio::ChannelCount channelCount) {
     const SINT firstSoundSample = findFirstSoundInChunk(samples);
     if (firstSoundSample < static_cast<SINT>(samples.size())) {
-        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample)
+        return mixxx::audio::FramePos::fromSamplePos(firstSoundSample, channelCount)
                        .toLowerFrameBoundary() == firstSoundFrame.toLowerFrameBoundary();
     }
     return false;
 }
 
 bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
-    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, count);
+    SINT numFrames = count / m_channelCount;
+
+    const CSAMPLE* pSilenceInput = pIn;
+    CSAMPLE* pMixedChannel = nullptr;
+
+    if (m_channelCount > mixxx::kAnalysisChannels) {
+        // If we have multi channel file (a stem file), we mix all the stems
+        // together in a stereo channel
+        count = numFrames * mixxx::kAnalysisChannels;
+        pMixedChannel = SampleUtil::alloc(count);
+        SampleUtil::clear(pMixedChannel, count);
+
+        VERIFY_OR_DEBUG_ASSERT(pMixedChannel) {
+            return false;
+        }
+        SampleUtil::mixMultichannelToStereo(pMixedChannel, pIn, numFrames, m_channelCount);
+        pSilenceInput = pMixedChannel;
+    }
+
+    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pSilenceInput, count);
     if (m_signalStart < 0) {
         const SINT firstSoundSample = findFirstSoundInChunk(samples);
         if (firstSoundSample < count) {

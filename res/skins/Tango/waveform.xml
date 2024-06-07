@@ -121,6 +121,85 @@ Variables:
           - if you change from a skin which supports more hotcues than buttons are in the current skin
           (and has them activated)
         -->
+        <StemControl alignment="left">
+          <MinimumSize>248me,68m</MinimumSize>
+          <Stem>
+            <MinimumSize>240,17</MinimumSize>
+            <MaximumSize>240,34</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Label>
+                <ObjectName>stem_label</ObjectName>
+                <SizePolicy>e,max</SizePolicy>
+              </Label>
+              <KnobComposed>
+                <Pos>0,0</Pos>
+                <MinimumSize>20,17</MinimumSize>
+                <MaximumSize>40,34</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="StemGroup"/>,stem_<Variable name="StemIdx"/>_volume</ConfigKey>
+                </Connection>
+              </KnobComposed>
+              <EffectChainPresetSelector>
+                <ObjectName>QuickEffectSelectorLeft</ObjectName>
+                <MinimumSize>40,17</MinimumSize>
+                <MaximumSize>70,28</MaximumSize>
+                <SizePolicy>me,e</SizePolicy>
+                <EffectUnitGroup>[QuickEffectRack1_<Variable name="StemFxGroup"/>]</EffectUnitGroup>
+              </EffectChainPresetSelector>
+              <WidgetGroup>
+                <Size>21f,18f</Size>
+                <Children>
+                  <PushButton>
+                    <ObjectName>QuickFXButton</ObjectName>
+                    <Size>18f,18f</Size>
+                    <Pos>3,0</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed scalemode="STRETCH">buttons/btn_.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">buttons/btn_.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed scalemode="STRETCH">buttons/btn_.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">buttons/btn_.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[QuickEffectRack1_<Variable name="StemFxGroup"/>],enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+              <KnobComposed>
+                <TooltipId>QuickEffectRack_super1</TooltipId>
+                <Pos>0,0</Pos>
+                <MinimumSize>20,17</MinimumSize>
+                <MaximumSize>40,34</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <Connection>
+                  <ConfigKey>[QuickEffectRack1_<Variable name="StemFxGroup"/>],super1</ConfigKey>
+                </Connection>
+              </KnobComposed>
+            </Children>
+          </Stem>
+          <Connection>
+            <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
+            <BindProperty>displayed</BindProperty>
+          </Connection>
+        </StemControl>
       </Visual>
 
       <WidgetGroup><!-- Transparent container for beatgrid buttons -->

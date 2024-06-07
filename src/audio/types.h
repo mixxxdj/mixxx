@@ -80,12 +80,24 @@ class ChannelCount {
         return ChannelCount(valueFromInt(value));
     }
 
+    static ChannelCount fromDouble(double value) {
+        const auto channelCount = ChannelCount(static_cast<value_t>(value));
+        // The channel count should always be an integer value
+        // and this conversion is supposed to be lossless.
+        DEBUG_ASSERT(channelCount.toDouble() == value);
+        return channelCount;
+    }
+
     static constexpr ChannelCount mono() {
         return ChannelCount(static_cast<value_t>(1));
     }
 
     static constexpr ChannelCount stereo() {
         return ChannelCount(static_cast<value_t>(2));
+    }
+
+    static constexpr ChannelCount stem() {
+        return ChannelCount(static_cast<value_t>(8)); // 4 stereo channels
     }
 
     explicit constexpr ChannelCount(
@@ -113,6 +125,11 @@ class ChannelCount {
     }
     /*implicit*/ constexpr operator value_t() const {
         return value();
+    }
+
+    // Helper cast for COs
+    constexpr double toDouble() const {
+        return static_cast<double>(value());
     }
 
   private:

@@ -24,7 +24,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                              double* pPitchRatio) override;
 
   private:
-    void onSampleRateChanged() override {}
+    void onOutputSignalChanged() override;
 
     double do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
@@ -36,7 +36,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     CSAMPLE* m_bufferInt;
     SINT m_bufferIntSize;
 
-    CSAMPLE m_floorSampleOld[2];
+    std::vector<CSAMPLE> m_floorSampleOld;
 
     bool m_bClear;
     double m_dRate;

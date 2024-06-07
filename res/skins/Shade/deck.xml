@@ -16,7 +16,7 @@
         <Children>
           <WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->
             <ObjectName>DeckLeft</ObjectName>
-            <Size>0e,165f</Size>
+            <Size>0e,175f</Size>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->

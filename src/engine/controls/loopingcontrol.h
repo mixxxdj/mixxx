@@ -103,7 +103,7 @@ class LoopingControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
-    double getTrackSamples() const;
+    mixxx::audio::FramePos getTrackFrame() const;
 
   signals:
     void loopReset();

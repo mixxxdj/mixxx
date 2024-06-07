@@ -25,6 +25,7 @@ class AnalyzerGain : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer tio) override;
@@ -34,5 +35,6 @@ class AnalyzerGain : public Analyzer {
     ReplayGainSettings m_rgSettings;
     std::vector<CSAMPLE> m_pLeftTempBuffer;
     std::vector<CSAMPLE> m_pRightTempBuffer;
+    mixxx::audio::ChannelCount m_channelCount;
     ReplayGain* m_pReplayGain;
 };

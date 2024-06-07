@@ -538,9 +538,9 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
     return mixxx::audio::kInvalidFramePos;
 }
 
-double LoopingControl::getTrackSamples() const {
+mixxx::audio::FramePos LoopingControl::getTrackFrame() const {
     const FrameInfo info = frameInfo();
-    return info.trackEndPosition.toEngineSamplePos();
+    return info.trackEndPosition;
 }
 
 void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {

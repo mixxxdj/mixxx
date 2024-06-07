@@ -39,22 +39,16 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
 }
 
 struct WaveformStride {
-    WaveformStride(double samples, double averageSamples)
+    WaveformStride(double samples, double averageSamples, int stemCount)
             : m_position(0),
+              m_stemCount(stemCount),
               m_length(samples),
               m_averageLength(averageSamples),
               m_averagePosition(0),
               m_averageDivisor(0),
               m_postScaleConversion(static_cast<float>(
                       std::numeric_limits<unsigned char>::max())) {
-        for (int i = 0; i < ChannelCount; ++i) {
-            m_overallData[i] = 0.0f;
-            m_averageOverallData[i] = 0.0f;
-            for (int f = 0; f < FilterCount; ++f) {
-                m_filteredData[i][f] = 0.0f;
-                m_averageFilteredData[i][f] = 0.0f;
-            }
-        }
+        reset();
     }
 
     inline void reset() {
@@ -66,6 +60,9 @@ struct WaveformStride {
             for (int f = 0; f < FilterCount; ++f) {
                 m_filteredData[i][f] = 0.0f;
                 m_averageFilteredData[i][f] = 0.0f;
+            }
+            for (int s = 0; s < m_stemCount; ++s) {
+                m_stemData[i][s] = 0.0f;
             }
         }
     }
@@ -81,14 +78,23 @@ struct WaveformStride {
                     m_postScaleConversion * scaleSignal(m_filteredData[i][Mid], Mid) + 0.5));
             datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
                     m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
+            for (int s = 0; s < m_stemCount; s++) {
+                datum.stems[s] = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_stemData[i][s]) + 0.5));
+            }
         }
         m_averageDivisor++;
+        // Reset the stride counters
         for (int i = 0; i < ChannelCount; ++i) {
             m_averageOverallData[i] += m_overallData[i];
             m_overallData[i] = 0.0f;
             for (int f = 0; f < FilterCount; ++f) {
                 m_averageFilteredData[i][f] += m_filteredData[i][f];
                 m_filteredData[i][f] = 0.0f;
+            }
+            for (int s = 0; s < m_stemCount; ++s) {
+                // No average for stem (yet?)
+                m_stemData[i][s] = 0.0f;
             }
         }
     }
@@ -131,6 +137,7 @@ struct WaveformStride {
     }
 
     int m_position;
+    int m_stemCount;
     double m_length;
     double m_averageLength;
     int m_averagePosition;
@@ -138,6 +145,7 @@ struct WaveformStride {
 
     float m_overallData[ChannelCount];
     float m_filteredData[ChannelCount][FilterCount];
+    float m_stemData[ChannelCount][4];
 
     float m_averageOverallData[ChannelCount];
     float m_averageFilteredData[ChannelCount][FilterCount];
@@ -154,6 +162,7 @@ class AnalyzerWaveform : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* buffer, SINT count) override;
     void storeResults(TrackPointer tio) override;
@@ -180,6 +189,7 @@ class AnalyzerWaveform : public Analyzer {
 
     int m_currentStride;
     int m_currentSummaryStride;
+    mixxx::audio::ChannelCount m_channelCount;
 
     EngineFilterIIRBase* m_filter[FilterCount];
     std::vector<float> m_buffers[FilterCount];

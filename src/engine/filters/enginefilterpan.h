@@ -122,7 +122,7 @@ class EngineFilterPan : public EngineObjectConstIn {
     int m_leftDelayFrames;
     int m_oldLeftDelayFrames;
     int m_delayFrame;
-    CSAMPLE m_buf[SIZE * mixxx::kEngineChannelCount];
+    CSAMPLE m_buf[SIZE * mixxx::kEngineChannelOutputCount];
     bool m_doRamping;
     bool m_doStart;
 };

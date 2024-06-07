@@ -19,7 +19,7 @@ mixxx::Logger kLogger("CachingReader");
 constexpr SINT kDefaultHintFrames = 1024;
 
 // With CachingReaderChunk::kFrames = 8192 each chunk consumes
-// 8192 frames * 2 channels/frame * 4-bytes per sample = 65 kB.
+// 8192 frames * 2 channels/frame * 4-bytes per sample = 65 kB for stereo frame.
 //
 //     80 chunks ->  5120 KB =  5 MB
 //
@@ -38,7 +38,8 @@ constexpr SINT kNumberOfCachedChunksInMemory = 80;
 } // anonymous namespace
 
 CachingReader::CachingReader(const QString& group,
-        UserSettingsPointer config)
+        UserSettingsPointer config,
+        mixxx::audio::ChannelCount maxSupportedChannel)
         : m_pConfig(config),
           // Limit the number of in-flight requests to the worker. This should
           // prevent to overload the worker when it is not able to fetch those
@@ -57,8 +58,12 @@ CachingReader::CachingReader(const QString& group,
           m_state(STATE_IDLE),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
-          m_sampleBuffer(CachingReaderChunk::kSamples * kNumberOfCachedChunksInMemory),
-          m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusUpdateFIFO) {
+          m_sampleBuffer(CachingReaderChunk::kFrames * maxSupportedChannel *
+                  kNumberOfCachedChunksInMemory),
+          m_worker(group,
+                  &m_chunkReadRequestFIFO,
+                  &m_readerStatusUpdateFIFO,
+                  maxSupportedChannel) {
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
@@ -68,8 +73,8 @@ CachingReader::CachingReader(const QString& group,
                 new CachingReaderChunkForOwner(
                         mixxx::SampleBuffer::WritableSlice(
                                 m_sampleBuffer,
-                                CachingReaderChunk::kSamples * i,
-                                CachingReaderChunk::kSamples));
+                                CachingReaderChunk::kFrames * maxSupportedChannel * i,
+                                CachingReaderChunk::kFrames * maxSupportedChannel));
         m_chunks.push_back(c);
         m_freeChunks.push_back(c);
     }
@@ -287,17 +292,21 @@ void CachingReader::process() {
     }
 }
 
-CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
+CachingReader::ReadResult CachingReader::read(SINT startSample,
+        SINT numSamples,
+        bool reverse,
+        CSAMPLE* buffer,
+        mixxx::audio::ChannelCount channelCount) {
     // Check for bad inputs
     // Refuse to read from an invalid position
-    VERIFY_OR_DEBUG_ASSERT(startSample % CachingReaderChunk::kChannels == 0) {
+    VERIFY_OR_DEBUG_ASSERT(startSample % channelCount == 0) {
         kLogger.critical()
                 << "Invalid arguments for read():"
                 << "startSample =" << startSample;
         return ReadResult::UNAVAILABLE;
     }
     // Refuse to read from an invalid number of samples
-    VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
+    VERIFY_OR_DEBUG_ASSERT(numSamples % channelCount == 0) {
         kLogger.critical()
                 << "Invalid arguments for read():"
                 << "numSamples =" << numSamples;
@@ -344,8 +353,8 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
 
     auto remainingFrameIndexRange =
             mixxx::IndexRange::forward(
-                    CachingReaderChunk::samples2frames(sample),
-                    CachingReaderChunk::samples2frames(numSamples));
+                    CachingReaderChunk::samples2frames(sample, channelCount),
+                    CachingReaderChunk::samples2frames(numSamples, channelCount));
     DEBUG_ASSERT(!remainingFrameIndexRange.empty());
 
     auto result = ReadResult::AVAILABLE;
@@ -370,7 +379,8 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                         << m_readableFrameIndexRange.start();
             }
             const SINT prerollFrames = prerollFrameIndexRange.length();
-            const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
+            const SINT prerollSamples = CachingReaderChunk::frames2samples(
+                    prerollFrames, channelCount);
             DEBUG_ASSERT(samplesRemaining >= prerollSamples);
             if (reverse) {
                 SampleUtil::clear(&buffer[samplesRemaining - prerollSamples], prerollSamples);
@@ -436,11 +446,13 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                         bufferedFrameIndexRange =
                                 pChunk->readBufferedSampleFramesReverse(
                                         &buffer[samplesRemaining],
+                                        channelCount,
                                         remainingFrameIndexRange);
                     } else {
                         bufferedFrameIndexRange =
                                 pChunk->readBufferedSampleFrames(
                                         buffer,
+                                        channelCount,
                                         remainingFrameIndexRange);
                     }
                 } else {
@@ -482,7 +494,8 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                             << "Inserting"
                             << paddingFrameIndexRange.length()
                             << "frames of silence for unreadable audio data";
-                    SINT paddingSamples = CachingReaderChunk::frames2samples(paddingFrameIndexRange.length());
+                    SINT paddingSamples = CachingReaderChunk::frames2samples(
+                            paddingFrameIndexRange.length(), channelCount);
                     DEBUG_ASSERT(samplesRemaining >= paddingSamples);
                     if (reverse) {
                         SampleUtil::clear(&buffer[samplesRemaining - paddingSamples], paddingSamples);
@@ -494,8 +507,8 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                     remainingFrameIndexRange.shrinkFront(paddingFrameIndexRange.length());
                     result = ReadResult::PARTIALLY_AVAILABLE;
                 }
-                const SINT chunkSamples =
-                        CachingReaderChunk::frames2samples(bufferedFrameIndexRange.length());
+                const SINT chunkSamples = CachingReaderChunk::frames2samples(
+                        bufferedFrameIndexRange.length(), channelCount);
                 DEBUG_ASSERT(chunkSamples > 0);
                 if (!reverse) {
                     buffer += chunkSamples;

@@ -65,9 +65,9 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.
-        MixxxMainWindow mainWindow(pCoreServices);
+        MixxxMainWindow* mainWindow = MixxxMainWindow::createInstance(pCoreServices);
         pApp->processEvents();
-        pApp->installEventFilter(&mainWindow);
+        pApp->installEventFilter(mainWindow);
 
 #if defined(__WINDOWS__)
         WindowsEventHandler winEventHandler;
@@ -76,7 +76,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 
         QObject::connect(pCoreServices.get(),
                 &mixxx::CoreServices::initializationProgressUpdate,
-                &mainWindow,
+                mainWindow,
                 &MixxxMainWindow::initializationProgressUpdate);
 
         // The size of cached pixmaps increases with the square of devicePixelRatio
@@ -89,9 +89,9 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 #ifdef MIXXX_USE_QOPENGL
         // Will call initialize when the initial wglwidget's
         // qopenglwindow has been exposed
-        mainWindow.initializeQOpenGL();
+        mainWindow->initializeQOpenGL();
 #else
-        mainWindow.initialize();
+        mainWindow->initialize();
 #endif
 
         pCoreServices->getControllerManager()->setUpDevices();
@@ -102,11 +102,12 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             exitCode = kFatalErrorOnStartupExitCode;
         } else {
             qDebug() << "Displaying main window";
-            mainWindow.show();
+            mainWindow->show();
 
             qDebug() << "Running Mixxx";
             exitCode = pApp->exec();
         }
+        MixxxMainWindow::destroy();
     }
     return exitCode;
 }

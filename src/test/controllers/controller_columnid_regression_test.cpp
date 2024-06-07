@@ -57,7 +57,10 @@ QHash<QString, TrackModel::SortColumnId>
 TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo("res/controllers/Traktor Kontrol S4 MK3.hid.xml"), QDir());
+                    QFileInfo(getTestDir().filePath(
+                            "../../res/controllers/Traktor Kontrol S4 "
+                            "MK3.hid.xml")),
+                    QDir());
     EXPECT_TRUE(pMapping);
     auto settings = pMapping->getSettings();
     EXPECT_TRUE(!settings.isEmpty());
