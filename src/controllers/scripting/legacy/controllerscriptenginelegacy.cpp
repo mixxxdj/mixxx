@@ -7,12 +7,6 @@
 #include <QQuickWindow>
 #include <QtEndian>
 #include <algorithm>
-
-// Prevent conflict with methods called 'emit' in <execution> source
-#pragma push_macro("emit")
-#undef emit
-#include <execution>
-#pragma pop_macro("emit")
 #endif
 
 #include "control/controlobject.h"
@@ -323,7 +317,7 @@ void ControllerScriptEngineLegacy::setScriptFiles(
     m_scriptFiles = scripts;
 
 #ifdef MIXXX_USE_QML
-    setQMLMode(std::any_of(std::execution::par_unseq,
+    setQMLMode(std::any_of(
             m_scriptFiles.cbegin(),
             m_scriptFiles.cend(),
             [](const auto& scriptFileInfo) {
@@ -660,7 +654,9 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         emit previewRenderedScreen(screenInfo, screenDebug);
     }
 
-    QByteArray input(std::bit_cast<const char*>(frame.constBits()), frame.sizeInBytes());
+    // TODO: Refactor this to a `std::bit_cast` once we drop support for older
+    // compilers that don't support it (e.g. older than Xcode 14.3/macOS 13)
+    QByteArray input(reinterpret_cast<const char*>(frame.constBits()), frame.sizeInBytes());
     const TransformScreenFrameFunction& transformMethod =
             m_transformScreenFrameFunctions[screenInfo.identifier];
 
