@@ -221,7 +221,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                     const auto* const ppJSValue =
                             std::get_if<std::shared_ptr<QJSValue>>(
                                     &mapping.control);
-                    if (ppJSValue) {
+                    if (ppJSValue && *ppJSValue) {
                     return QVariant::fromValue((*ppJSValue)->toString());
                     }
                     return QVariant();
