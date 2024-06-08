@@ -9,6 +9,7 @@
   [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
   [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
 * Numark PartyMix: Fix EQ (script binding) display name [#13255](https://github.com/mixxxdj/mixxx/pull/13255)
+* Sony SIXAXIS: Fix mapping [#13319](https://github.com/mixxxdj/mixxx/pull/13319)
 
 ### Fixes
 
@@ -16,11 +17,17 @@
   [#13208](https://github.com/mixxxdj/mixxx/pull/13208)
   [#13271](https://github.com/mixxxdj/mixxx/pull/13271)
   [#13275](https://github.com/mixxxdj/mixxx/pull/13275)
-* Fix Sqlite 3.45 buils by using only single quotes for SQL strings
+* Fix Sqlite 3.45 builds by using only single quotes for SQL strings
   [#13247](https://github.com/mixxxdj/mixxx/pull/13247)
   [#13257](https://github.com/mixxxdj/mixxx/pull/13257)
 * LateNight: Use default colors for sampler overviews (like main decks) [#13274](https://github.com/mixxxdj/mixxx/pull/13274)
+* Library: Allow to drop files to decks with unsupported or no file extensions
+  [#13209](https://github.com/mixxxdj/mixxx/pull/13209)
+  [#13204](https://github.com/mixxxdj/mixxx/issues/13204)
 * Update build environment with libdjinterop 0.21.0 [#13288](https://github.com/mixxxdj/mixxx/pull/13288)
+* Move to GitHub workflow runner macos-12
+  [#13296](https://github.com/mixxxdj/mixxx/pull/13296)
+  [#13248](https://github.com/mixxxdj/mixxx/issues/13248)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 

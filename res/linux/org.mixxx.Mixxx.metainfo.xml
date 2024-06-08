@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.2" type="development" date="2024-05-28" timestamp="1716929681">
+    <release version="2.4.2" type="development" date="2024-06-02" timestamp="1717326111">
       <description>
  <p>
   Controller Mappings
@@ -115,6 +115,10 @@
    Numark PartyMix: Fix EQ (script binding) display name
    #13255
   </li>
+  <li>
+   Sony SIXAXIS: Fix mapping
+   #13319
+  </li>
  </ul>
  <p>
   Fixes
@@ -127,7 +131,7 @@
    #13275
   </li>
   <li>
-   Fix Sqlite 3.45 buils by using only single quotes for SQL strings
+   Fix Sqlite 3.45 builds by using only single quotes for SQL strings
    #13247
    #13257
   </li>
@@ -136,8 +140,18 @@
    #13274
   </li>
   <li>
+   Library: Allow to drop files to decks with unsupported or no file extensions
+   #13209
+   #13204
+  </li>
+  <li>
    Update build environment with libdjinterop 0.21.0
    #13288
+  </li>
+  <li>
+   Move to GitHub workflow runner macos-12
+   #13296
+   #13248
   </li>
  </ul>
 </description>
