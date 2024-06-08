@@ -418,7 +418,7 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
-void WTrackTableView::assignPreviousTrackColor() {
+void WTrackTableView::selectTrackColor(int steps) {
     QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
@@ -431,33 +431,15 @@ void WTrackTableView::assignPreviousTrackColor() {
 
     QModelIndex index = indices.at(0);
     TrackPointer pTrack = trackModel->getTrack(index);
-    if (pTrack) {
-        ColorPaletteSettings colorPaletteSettings(m_pConfig);
-        ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
-        mixxx::RgbColor::optional_t color = pTrack->getColor();
-        pTrack->setColor(colorPalette.previousColor(color));
-    }
-}
-
-void WTrackTableView::assignNextTrackColor() {
-    QModelIndexList indices = getSelectedRows();
-    if (indices.isEmpty()) {
+    if (!pTrack) {
         return;
     }
 
-    TrackModel* trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    mixxx::RgbColor::optional_t color = pTrack->getColor();
 
-    QModelIndex index = indices.at(0);
-    TrackPointer pTrack = trackModel->getTrack(index);
-    if (pTrack) {
-        ColorPaletteSettings colorPaletteSettings(m_pConfig);
-        ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
-        mixxx::RgbColor::optional_t color = pTrack->getColor();
-        pTrack->setColor(colorPalette.nextColor(color));
-    }
+    pTrack->setColor(colorPalette.getNthColor(color, steps));
 }
 
 void WTrackTableView::slotPurge() {
