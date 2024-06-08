@@ -55,6 +55,58 @@ TEST_F(PlaylistTest, ParseEmptyFile) {
     // Check that the entries list is empty
     EXPECT_TRUE(entries.isEmpty());
 }
+TEST_F(PlaylistTest, ParseWithDifferentLocationColumnNamesAndFormats) {
+    // Test with different location column named "Dateiname" instead of "Location"
+    QStringList paths = {
+            "C:\\path\\to\\file1",
+            "%USERPROFILE%\\Music\\file2",
+            "Music\\file3",
+            "C:/path/to/file4",
+            "/path/to/file5",
+            "$HOME/Music/file6",
+            "Music/file7",
+            "\"Michael Jackson\"",
+            "Michael Jackson"};
+
+    for (const QString& path : paths) {
+        QTemporaryFile csvFile;
+        ASSERT_TRUE(csvFile.open());
+        csvFile.write("Dateiname,OtherData\n");
+        csvFile.write(path.toUtf8() + ",other-data\n");
+        csvFile.close();
+
+        const QList<QString> entries = ParserCsv().parseAllLocations(csvFile.fileName());
+
+        // Check the contents of the entries list
+#ifdef Q_OS_WIN
+        // Note, that $HOME is not expanded on Windows, but legal path syntax
+        if (path == "\"Michael Jackson\"" || path == "Michael Jackson") {
+            // Check that the entries list is empty for invalid path syntax
+            EXPECT_TRUE(entries.isEmpty());
+        } else {
+            // Check the size of the entries list
+            EXPECT_EQ(entries.size(), 1);
+            if (!entries.isEmpty()) {
+                EXPECT_EQ(entries[0], path);
+            }
+        }
+#else
+        if (path == "C:\\path\\to\\file1" ||
+                path == "%USERPROFILE%\\Music\\file2" ||
+                path == "Music\\file3" || path == "\"Michael Jackson\"" ||
+                path == "Michael Jackson") {
+            // Check that the entries list is empty for invalid path syntax
+            EXPECT_TRUE(entries.isEmpty());
+        } else {
+            // Check the size of the entries list
+            EXPECT_EQ(entries.size(), 1);
+            if (!entries.isEmpty()) {
+                EXPECT_EQ(entries[0], path);
+            }
+        }
+#endif
+    }
+}
 
 TEST_F(PlaylistTest, ParseWithLocationColumn) {
     QTemporaryFile csvFile;
