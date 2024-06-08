@@ -48,7 +48,7 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
                         auto predicate) -> std::optional<std::size_t> {
             const auto it = std::find_if(std::begin(tokens_list), std::end(tokens_list), predicate);
             return (it != std::end(tokens_list))
-                    ? std::distance(std::begin(tokens_list), it)
+                    ? static_cast<std::size_t>(std::distance(std::begin(tokens_list), it))
                     : std::optional<std::size_t>{};
         };
         if (!tokens.isEmpty()) {
@@ -63,8 +63,12 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
             }
             if (locationColumnIndex.has_value()) {
                 for (int row = 1; row < tokens.size(); ++row) {
-                    if (locationColumnIndex < tokens[row].size()) {
-                        locations.append(tokens[row][static_cast<int>(*locationColumnIndex)]);
+                    if (locationColumnIndex.has_value() &&
+                            locationColumnIndex.value() <
+                                    static_cast<std::size_t>(
+                                            tokens[row].size())) {
+                        locations.append(tokens[row][static_cast<int>(
+                                locationColumnIndex.value())]);
                     }
                 }
             } else {
