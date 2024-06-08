@@ -96,6 +96,66 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.4.2" type="development" date="2024-06-02" timestamp="1717326111">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Korg Kaoss DJ: Update script
+   #12683
+  </li>
+  <li>
+   Novation Dicer: Remove flanger mapping with quickeffect toggle
+   #13196
+   #13134
+  </li>
+  <li>
+   Numark PartyMix: Fix EQ (script binding) display name
+   #13255
+  </li>
+  <li>
+   Sony SIXAXIS: Fix mapping
+   #13319
+  </li>
+ </ul>
+ <p>
+  Fixes
+ </p>
+ <ul>
+  <li>
+   Handle not supported files when dragging to waveforms and spinnies
+   #13208
+   #13271
+   #13275
+  </li>
+  <li>
+   Fix Sqlite 3.45 builds by using only single quotes for SQL strings
+   #13247
+   #13257
+  </li>
+  <li>
+   LateNight: Use default colors for sampler overviews (like main decks)
+   #13274
+  </li>
+  <li>
+   Library: Allow to drop files to decks with unsupported or no file extensions
+   #13209
+   #13204
+  </li>
+  <li>
+   Update build environment with libdjinterop 0.21.0
+   #13288
+  </li>
+  <li>
+   Move to GitHub workflow runner macos-12
+   #13296
+   #13248
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.4.1" type="stable" date="2024-05-08" timestamp="1715126400">
       <description>
  <p>
