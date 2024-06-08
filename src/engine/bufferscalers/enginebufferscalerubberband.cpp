@@ -7,7 +7,9 @@
 #include "util/counter.h"
 #include "util/defs.h"
 #include "util/math.h"
+#include "util/mutex.h"
 #include "util/sample.h"
+#include "util/timer.h"
 
 using RubberBand::RubberBandStretcher;
 
@@ -55,7 +57,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
 
     if (pitchScale > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setPitchScale" << *pitch << pitchScale;
-        m_pRubberBand->setPitchScale(pitchScale);
+        m_rubberBand.setPitchScale(pitchScale);
     }
 
     // RubberBand handles checking for whether the change in timeRatio is a
@@ -65,20 +67,20 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     double timeRatioInverse = base_rate * speed_abs;
     if (timeRatioInverse > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setTimeRatio" << 1 / timeRatioInverse;
-        m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
+        m_rubberBand.setTimeRatio(1.0 / timeRatioInverse);
     }
 
     if (runningEngineVersion() == 2) {
-        if (m_pRubberBand->getInputIncrement() == 0) {
+        if (m_rubberBand.getInputIncrement() == 0) {
             qWarning() << "EngineBufferScaleRubberBand inputIncrement is 0."
                        << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
                        << "our workaround. Taking evasive action."
                        << "Please file an issue on https://github.com/mixxxdj/mixxx/issues";
 
             // This is much slower than the minimum seek speed workaround above.
-            while (m_pRubberBand->getInputIncrement() == 0) {
+            while (m_rubberBand.getInputIncrement() == 0) {
                 timeRatioInverse += 0.001;
-                m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
+                m_rubberBand.setTimeRatio(1.0 / timeRatioInverse);
             }
             speed_abs = timeRatioInverse / base_rate;
             *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
@@ -94,8 +96,8 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
     // TODO: Resetting the sample rate will cause internal
     // memory allocations that may block the real-time thread.
     // When is this function actually invoked??
+    m_rubberBand.clear();
     if (!getOutputSignal().isValid()) {
-        m_pRubberBand.reset();
         return;
     }
     RubberBandStretcher::Options rubberbandOptions =
@@ -110,19 +112,19 @@ void EngineBufferScaleRubberBand::onSampleRateChanged() {
     }
 #endif
 
-    m_pRubberBand = std::make_unique<RubberBandStretcher>(
+    m_rubberBand.setup(
             getOutputSignal().getSampleRate(),
             getOutputSignal().getChannelCount(),
             rubberbandOptions);
     // Setting the time ratio to a very high value will cause RubberBand
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.
-    m_pRubberBand->setTimeRatio(2.0);
-    m_pRubberBand->setTimeRatio(1.0);
+    m_rubberBand.setTimeRatio(2.0);
+    m_rubberBand.setTimeRatio(1.0);
 }
 
 void EngineBufferScaleRubberBand::clear() {
-    VERIFY_OR_DEBUG_ASSERT(m_pRubberBand) {
+    VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
         return;
     }
     reset();
@@ -131,14 +133,18 @@ void EngineBufferScaleRubberBand::clear() {
 SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         CSAMPLE* pBuffer,
         SINT frames) {
-    const SINT frames_available = m_pRubberBand->available();
+    VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
+        return 0;
+    }
     // NOTE: If we still need to throw away padding, then we can also
     //       immediately read those frames in addition to the frames we actually
     //       need for the output
-    const SINT frames_to_read = math_min(frames_available, frames + m_remainingPaddingInOutput);
-    DEBUG_ASSERT(frames_to_read <= m_buffers[0].size());
-    SINT received_frames = static_cast<SINT>(m_pRubberBand->retrieve(
-            m_bufferPtrs.data(), frames_to_read));
+    SINT received_frames;
+    {
+        ScopedTimer t(QStringLiteral("RubberBand::retrieve"));
+        received_frames = static_cast<SINT>(m_rubberBand.retrieve(
+                m_bufferPtrs.data(), frames + m_remainingPaddingInOutput, m_buffers[0].size()));
+    }
     SINT frame_offset = 0;
 
     // As explained below in `reset()`, the first time this is called we need to
@@ -164,6 +170,9 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
         const CSAMPLE* pBuffer,
         SINT frames) {
+    VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
+        return;
+    }
     DEBUG_ASSERT(frames <= static_cast<SINT>(m_buffers[0].size()));
 
     SampleUtil::deinterleaveBuffer(
@@ -172,14 +181,21 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
             pBuffer,
             frames);
 
-    m_pRubberBand->process(m_bufferPtrs.data(),
-            frames,
-            false);
+    {
+        ScopedTimer t(QStringLiteral("RubberBand::process"));
+        m_rubberBand.process(m_bufferPtrs.data(),
+                frames,
+                false);
+    }
 }
 
 double EngineBufferScaleRubberBand::scaleBuffer(
         CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
+    VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
+        return 0.0;
+    }
+    ScopedTimer t(QStringLiteral("EngineBufferScaleRubberBand::scaleBuffer"));
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
         // No actual samples/frames have been read from the
@@ -206,7 +222,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         read += getOutputSignal().frames2samples(received_frames);
 
         const SINT next_block_frames_required =
-                static_cast<SINT>(m_pRubberBand->getSamplesRequired());
+                static_cast<SINT>(m_rubberBand.getSamplesRequired());
         if (remaining_frames > 0 && next_block_frames_required > 0) {
             // The requested setting becomes effective after all previous frames have been processed
             m_effectiveRate = m_dBaseRate * m_dTempoRatio;
@@ -266,44 +282,20 @@ void EngineBufferScaleRubberBand::useEngineFiner(bool enable) {
     }
 }
 
-// See
-// https://github.com/breakfastquay/rubberband/commit/72654b04ea4f0707e214377515119e933efbdd6c
-// for how these two functions were implemented within librubberband itself
 size_t EngineBufferScaleRubberBand::getPreferredStartPad() const {
-#if RUBBERBANDV3
-    return m_pRubberBand->getPreferredStartPad();
-#else
-    // `getPreferredStartPad()` returns `window_size / 2`, while with
-    // `getLatency()` both time stretching engines return `window_size / 2 /
-    // pitch_scale`
-    return static_cast<size_t>(std::ceil(
-            m_pRubberBand->getLatency() * m_pRubberBand->getPitchScale()));
-#endif
+    return m_rubberBand.getPreferredStartPad();
 }
 
 size_t EngineBufferScaleRubberBand::getStartDelay() const {
-#if RUBBERBANDV3
-    return m_pRubberBand->getStartDelay();
-#else
-    // In newer Rubber Band versions `getLatency()` is a deprecated alias for
-    // `getStartDelay()`, so they should behave the same. In the commit linked
-    // above the behavior was different for the R3 stretcher, but that was only
-    // during the initial betas of Rubberband 3.0 so we shouldn't have to worry
-    // about that.
-    return m_pRubberBand->getLatency();
-#endif
+    return m_rubberBand.getStartDelay();
 }
 
 int EngineBufferScaleRubberBand::runningEngineVersion() {
-#if RUBBERBANDV3
-    return m_pRubberBand->getEngineVersion();
-#else
-    return 2;
-#endif
+    return m_rubberBand.getEngineVersion();
 }
 
 void EngineBufferScaleRubberBand::reset() {
-    m_pRubberBand->reset();
+    m_rubberBand.reset();
 
     // As mentioned in the docs (https://breakfastquay.com/rubberband/code-doc/)
     // and FAQ (https://breakfastquay.com/rubberband/integration.html#faqs), you
@@ -319,7 +311,10 @@ void EngineBufferScaleRubberBand::reset() {
     std::fill_n(m_buffers[1].span().begin(), block_size, 0.0f);
     while (remaining_padding > 0) {
         const size_t pad_samples = std::min<size_t>(remaining_padding, block_size);
-        m_pRubberBand->process(m_bufferPtrs.data(), pad_samples, false);
+        {
+            ScopedTimer t(QStringLiteral("RubberBand::process"));
+            m_rubberBand.process(m_bufferPtrs.data(), pad_samples, false);
+        }
 
         remaining_padding -= pad_samples;
     }

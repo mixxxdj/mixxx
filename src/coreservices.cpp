@@ -14,6 +14,9 @@
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemixer.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -281,6 +284,9 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);
+#ifdef __RUBBERBAND__
+    RubberBandWorkerPool::createInstance(pConfig);
+#endif
 
     emit initializationProgressUpdate(30, tr("audio interface"));
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
@@ -659,6 +665,9 @@ void CoreServices::finalize() {
     // EngineMixer depends on Config and m_pEffectsManager.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMixer";
     CLEAR_AND_CHECK_DELETED(m_pEngine);
+#ifdef __RUBBERBAND__
+    RubberBandWorkerPool::destroy();
+#endif
 
     // Destroy PlayerInfo explicitly to release the track
     // pointers of tracks that were still loaded in decks
