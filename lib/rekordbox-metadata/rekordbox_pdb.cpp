@@ -1,7 +1,6 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 #include "rekordbox_pdb.h"
-
 #include "kaitai/exceptions.h"
 
 rekordbox_pdb_t::rekordbox_pdb_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, rekordbox_pdb_t* p__root) : kaitai::kstruct(p__io) {
@@ -20,14 +19,9 @@ void rekordbox_pdb_t::_read() {
     m_sequence = m__io->read_u4le();
     m_gap = m__io->read_bytes(4);
     if (!(gap() == std::string("\x00\x00\x00\x00", 4))) {
-        throw kaitai::validation_not_equal_error<std::string>(
-                std::string("\x00\x00\x00\x00", 4),
-                gap(),
-                _io(),
-                std::string("/seq/6"));
+        throw kaitai::validation_not_equal_error<std::string>(std::string("\x00\x00\x00\x00", 4), gap(), _io(), std::string("/seq/6"));
     }
-    m_tables = std::unique_ptr<std::vector<std::unique_ptr<table_t>>>(
-            new std::vector<std::unique_ptr<table_t>>());
+    m_tables = std::unique_ptr<std::vector<std::unique_ptr<table_t>>>(new std::vector<std::unique_ptr<table_t>>());
     const int l_tables = num_tables();
     for (int i = 0; i < l_tables; i++) {
         m_tables->push_back(std::move(std::unique_ptr<table_t>(new table_t(m__io, this, m__root))));
@@ -51,19 +45,15 @@ void rekordbox_pdb_t::device_sql_string_t::_read() {
     m_length_and_kind = m__io->read_u1();
     switch (length_and_kind()) {
     case 64: {
-        m_body = std::unique_ptr<device_sql_long_ascii_t>(
-                new device_sql_long_ascii_t(m__io, this, m__root));
+        m_body = std::unique_ptr<device_sql_long_ascii_t>(new device_sql_long_ascii_t(m__io, this, m__root));
         break;
     }
     case 144: {
-        m_body = std::unique_ptr<device_sql_long_utf16le_t>(
-                new device_sql_long_utf16le_t(m__io, this, m__root));
+        m_body = std::unique_ptr<device_sql_long_utf16le_t>(new device_sql_long_utf16le_t(m__io, this, m__root));
         break;
     }
     default: {
-        m_body = std::unique_ptr<device_sql_short_ascii_t>(
-                new device_sql_short_ascii_t(
-                        length_and_kind(), m__io, this, m__root));
+        m_body = std::unique_ptr<device_sql_short_ascii_t>(new device_sql_short_ascii_t(length_and_kind(), m__io, this, m__root));
         break;
     }
     }
@@ -76,11 +66,7 @@ rekordbox_pdb_t::device_sql_string_t::~device_sql_string_t() {
 void rekordbox_pdb_t::device_sql_string_t::_clean_up() {
 }
 
-rekordbox_pdb_t::history_playlist_row_t::history_playlist_row_t(
-        kaitai::kstream* p__io,
-        rekordbox_pdb_t::row_ref_t* p__parent,
-        rekordbox_pdb_t* p__root)
-        : kaitai::kstruct(p__io) {
+rekordbox_pdb_t::history_playlist_row_t::history_playlist_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent, rekordbox_pdb_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
     m_name = nullptr;
@@ -152,12 +138,7 @@ rekordbox_pdb_t::color_row_t::~color_row_t() {
 void rekordbox_pdb_t::color_row_t::_clean_up() {
 }
 
-rekordbox_pdb_t::device_sql_short_ascii_t::device_sql_short_ascii_t(
-        uint8_t p_length_and_kind,
-        kaitai::kstream* p__io,
-        rekordbox_pdb_t::device_sql_string_t* p__parent,
-        rekordbox_pdb_t* p__root)
-        : kaitai::kstruct(p__io) {
+rekordbox_pdb_t::device_sql_short_ascii_t::device_sql_short_ascii_t(uint8_t p_length_and_kind, kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent, rekordbox_pdb_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
     m_length_and_kind = p_length_and_kind;
@@ -239,11 +220,7 @@ rekordbox_pdb_t::page_t::page_t(kaitai::kstream* p__io, rekordbox_pdb_t::page_re
 void rekordbox_pdb_t::page_t::_read() {
     m_gap = m__io->read_bytes(4);
     if (!(gap() == std::string("\x00\x00\x00\x00", 4))) {
-        throw kaitai::validation_not_equal_error<std::string>(
-                std::string("\x00\x00\x00\x00", 4),
-                gap(),
-                _io(),
-                std::string("/types/page/seq/0"));
+        throw kaitai::validation_not_equal_error<std::string>(std::string("\x00\x00\x00\x00", 4), gap(), _io(), std::string("/types/page/seq/0"));
     }
     m_page_index = m__io->read_u4le();
     m_type = static_cast<rekordbox_pdb_t::page_type_t>(m__io->read_u4le());
@@ -300,13 +277,10 @@ std::vector<std::unique_ptr<rekordbox_pdb_t::row_group_t>>* rekordbox_pdb_t::pag
     n_row_groups = true;
     if (is_data_page()) {
         n_row_groups = false;
-        m_row_groups =
-                std::unique_ptr<std::vector<std::unique_ptr<row_group_t>>>(
-                        new std::vector<std::unique_ptr<row_group_t>>());
+        m_row_groups = std::unique_ptr<std::vector<std::unique_ptr<row_group_t>>>(new std::vector<std::unique_ptr<row_group_t>>());
         const int l_row_groups = num_row_groups();
         for (int i = 0; i < l_row_groups; i++) {
-            m_row_groups->push_back(std::move(std::unique_ptr<row_group_t>(
-                    new row_group_t(i, m__io, this, m__root))));
+            m_row_groups->push_back(std::move(std::unique_ptr<row_group_t>(new row_group_t(i, m__io, this, m__root))));
         }
         f_row_groups = true;
     }
@@ -376,15 +350,10 @@ uint16_t rekordbox_pdb_t::row_group_t::row_present_flags() {
 std::vector<std::unique_ptr<rekordbox_pdb_t::row_ref_t>>* rekordbox_pdb_t::row_group_t::rows() {
     if (f_rows)
         return m_rows.get();
-    m_rows = std::unique_ptr<std::vector<std::unique_ptr<row_ref_t>>>(
-            new std::vector<std::unique_ptr<row_ref_t>>());
-    const int l_rows = ((group_index() < (_parent()->num_row_groups() - 1))
-                    ? (16)
-                    : ((kaitai::kstream::mod((_parent()->num_rows() - 1), 16) +
-                              1)));
+    m_rows = std::unique_ptr<std::vector<std::unique_ptr<row_ref_t>>>(new std::vector<std::unique_ptr<row_ref_t>>());
+    const int l_rows = 16;
     for (int i = 0; i < l_rows; i++) {
-        m_rows->push_back(std::move(std::unique_ptr<row_ref_t>(
-                new row_ref_t(i, m__io, this, m__root))));
+        m_rows->push_back(std::move(std::unique_ptr<row_ref_t>(new row_ref_t(i, m__io, this, m__root))));
     }
     f_rows = true;
     return m_rows.get();
@@ -409,11 +378,7 @@ rekordbox_pdb_t::genre_row_t::~genre_row_t() {
 void rekordbox_pdb_t::genre_row_t::_clean_up() {
 }
 
-rekordbox_pdb_t::history_entry_row_t::history_entry_row_t(
-        kaitai::kstream* p__io,
-        rekordbox_pdb_t::row_ref_t* p__parent,
-        rekordbox_pdb_t* p__root)
-        : kaitai::kstruct(p__io) {
+rekordbox_pdb_t::history_entry_row_t::history_entry_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent, rekordbox_pdb_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
     _read();
@@ -702,8 +667,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_8.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(18)));
-    m_unknown_string_8 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_8 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_8 = true;
     return m_unknown_string_8.get();
@@ -714,8 +678,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_6.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(9)));
-    m_unknown_string_6 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_6 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_6 = true;
     return m_unknown_string_6.get();
@@ -726,8 +689,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::analyze_date
         return m_analyze_date.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(15)));
-    m_analyze_date = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_analyze_date = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_analyze_date = true;
     return m_analyze_date.get();
@@ -738,8 +700,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::file_path() 
         return m_file_path.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(20)));
-    m_file_path = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_file_path = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_file_path = true;
     return m_file_path.get();
@@ -750,8 +711,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::date_added()
         return m_date_added.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(10)));
-    m_date_added = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_date_added = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_date_added = true;
     return m_date_added.get();
@@ -762,8 +722,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_3.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(3)));
-    m_unknown_string_3 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_3 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_3 = true;
     return m_unknown_string_3.get();
@@ -785,8 +744,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::kuvo_public(
         return m_kuvo_public.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(6)));
-    m_kuvo_public = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_kuvo_public = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_kuvo_public = true;
     return m_kuvo_public.get();
@@ -797,8 +755,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::mix_name() {
         return m_mix_name.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(12)));
-    m_mix_name = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_mix_name = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_mix_name = true;
     return m_mix_name.get();
@@ -809,8 +766,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_5.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(8)));
-    m_unknown_string_5 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_5 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_5 = true;
     return m_unknown_string_5.get();
@@ -821,8 +777,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_4.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(4)));
-    m_unknown_string_4 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_4 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_4 = true;
     return m_unknown_string_4.get();
@@ -844,8 +799,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_2.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(2)));
-    m_unknown_string_2 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_2 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_2 = true;
     return m_unknown_string_2.get();
@@ -867,8 +821,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
         return m_unknown_string_7.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(13)));
-    m_unknown_string_7 = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_unknown_string_7 = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_unknown_string_7 = true;
     return m_unknown_string_7.get();
@@ -879,8 +832,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::filename() {
         return m_filename.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(19)));
-    m_filename = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_filename = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_filename = true;
     return m_filename.get();
@@ -891,8 +843,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::analyze_path
         return m_analyze_path.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(14)));
-    m_analyze_path = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_analyze_path = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_analyze_path = true;
     return m_analyze_path.get();
@@ -914,8 +865,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::release_date
         return m_release_date.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(11)));
-    m_release_date = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_release_date = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_release_date = true;
     return m_release_date.get();
@@ -926,8 +876,7 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::autoload_hot
         return m_autoload_hot_cues.get();
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(7)));
-    m_autoload_hot_cues = std::unique_ptr<device_sql_string_t>(
-            new device_sql_string_t(m__io, this, m__root));
+    m_autoload_hot_cues = std::unique_ptr<device_sql_string_t>(new device_sql_string_t(m__io, this, m__root));
     m__io->seek(_pos);
     f_autoload_hot_cues = true;
     return m_autoload_hot_cues.get();
@@ -1002,11 +951,7 @@ rekordbox_pdb_t::label_row_t::~label_row_t() {
 void rekordbox_pdb_t::label_row_t::_clean_up() {
 }
 
-rekordbox_pdb_t::device_sql_long_utf16le_t::device_sql_long_utf16le_t(
-        kaitai::kstream* p__io,
-        rekordbox_pdb_t::device_sql_string_t* p__parent,
-        rekordbox_pdb_t* p__root)
-        : kaitai::kstruct(p__io) {
+rekordbox_pdb_t::device_sql_long_utf16le_t::device_sql_long_utf16le_t(kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent, rekordbox_pdb_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
     _read();
@@ -1015,8 +960,7 @@ rekordbox_pdb_t::device_sql_long_utf16le_t::device_sql_long_utf16le_t(
 void rekordbox_pdb_t::device_sql_long_utf16le_t::_read() {
     m_length = m__io->read_u2le();
     m__unnamed1 = m__io->read_u1();
-    m_text = kaitai::kstream::bytes_to_str(
-            m__io->read_bytes((length() - 4)), std::string("UTF-16LE"));
+    m_text = kaitai::kstream::bytes_to_str(m__io->read_bytes((length() - 4)), std::string("UTF-16LE"));
 }
 
 rekordbox_pdb_t::device_sql_long_utf16le_t::~device_sql_long_utf16le_t() {
@@ -1112,8 +1056,7 @@ kaitai::kstruct* rekordbox_pdb_t::row_ref_t::body() {
         switch (_parent()->_parent()->type()) {
         case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_TREE: {
             n_body = false;
-            m_body = std::unique_ptr<playlist_tree_row_t>(
-                    new playlist_tree_row_t(m__io, this, m__root));
+            m_body = std::unique_ptr<playlist_tree_row_t>(new playlist_tree_row_t(m__io, this, m__root));
             break;
         }
         case rekordbox_pdb_t::PAGE_TYPE_KEYS: {
@@ -1138,8 +1081,7 @@ kaitai::kstruct* rekordbox_pdb_t::row_ref_t::body() {
         }
         case rekordbox_pdb_t::PAGE_TYPE_HISTORY_PLAYLISTS: {
             n_body = false;
-            m_body = std::unique_ptr<history_playlist_row_t>(
-                    new history_playlist_row_t(m__io, this, m__root));
+            m_body = std::unique_ptr<history_playlist_row_t>(new history_playlist_row_t(m__io, this, m__root));
             break;
         }
         case rekordbox_pdb_t::PAGE_TYPE_ARTWORK: {
@@ -1149,8 +1091,7 @@ kaitai::kstruct* rekordbox_pdb_t::row_ref_t::body() {
         }
         case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES: {
             n_body = false;
-            m_body = std::unique_ptr<playlist_entry_row_t>(
-                    new playlist_entry_row_t(m__io, this, m__root));
+            m_body = std::unique_ptr<playlist_entry_row_t>(new playlist_entry_row_t(m__io, this, m__root));
             break;
         }
         case rekordbox_pdb_t::PAGE_TYPE_LABELS: {
@@ -1165,8 +1106,7 @@ kaitai::kstruct* rekordbox_pdb_t::row_ref_t::body() {
         }
         case rekordbox_pdb_t::PAGE_TYPE_HISTORY_ENTRIES: {
             n_body = false;
-            m_body = std::unique_ptr<history_entry_row_t>(
-                    new history_entry_row_t(m__io, this, m__root));
+            m_body = std::unique_ptr<history_entry_row_t>(new history_entry_row_t(m__io, this, m__root));
             break;
         }
         case rekordbox_pdb_t::PAGE_TYPE_COLORS: {

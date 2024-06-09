@@ -286,7 +286,7 @@ types:
       rows:
         type: row_ref(_index)
         repeat: expr
-        repeat-expr: '(group_index < (_parent.num_row_groups - 1)) ? 16 : ((_parent.num_rows - 1) % 16 + 1)'
+        repeat-expr: 16
         doc: |
           The row offsets in this group.
 
