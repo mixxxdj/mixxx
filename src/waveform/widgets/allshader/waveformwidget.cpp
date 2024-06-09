@@ -35,7 +35,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
             addWaveformSignalRenderer(
                     type, options, ::WaveformRendererAbstract::Play);
 
-    addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderBeat>(::WaveformRendererAbstract::Play, options);
     addRenderer<WaveformRenderMark>();
 
     // if the signal renderer supports slip, we add it again, now for slip, together with the
@@ -45,7 +45,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         addRenderer<WaveformRendererSlipMode>();
         addRenderer<WaveformRendererPreroll>(::WaveformRendererAbstract::Slip);
         addWaveformSignalRenderer(type, options, ::WaveformRendererAbstract::Slip);
-        addRenderer<WaveformRenderBeat>(::WaveformRendererAbstract::Slip);
+        addRenderer<WaveformRenderBeat>(::WaveformRendererAbstract::Slip, options);
         addRenderer<WaveformRenderMark>(::WaveformRendererAbstract::Slip);
     }
 
@@ -148,17 +148,20 @@ void WaveformWidget::leaveEvent(QEvent* pEvent) {
 /* static */
 WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
         WaveformWidgetType::Type type) {
+    WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None;
     switch (type) {
     case WaveformWidgetType::Type::RGB:
         return WaveformRendererSignalBase::Option::AllOptionsCombined;
     case WaveformWidgetType::Type::Filtered:
-        return WaveformRendererSignalBase::Option::HighDetail;
+        return options | WaveformRendererSignalBase::Option::HighDetail |
+                WaveformRendererSignalBase::Option::AdvancedBeatGrid;
     case WaveformWidgetType::Type::Stacked:
-        return WaveformRendererSignalBase::Option::HighDetail;
+        return options | WaveformRendererSignalBase::Option::HighDetail |
+                WaveformRendererSignalBase::Option::AdvancedBeatGrid;
     default:
         break;
     }
-    return WaveformRendererSignalBase::Option::None;
+    return options;
 }
 
 /* static */

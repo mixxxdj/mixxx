@@ -165,7 +165,9 @@
       <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
 
       <SetVariable name="AxesColor">#999</SetVariable>
-      <SetVariable name="BeatColor">#999</SetVariable>
+      <SetVariable name="BeatColor">#80999999</SetVariable>
+      <SetVariable name="DownbeatColor">#ffBBBBBB</SetVariable>
+      <SetVariable name="MarkerbeatColor">#7b0606</SetVariable>
       <SetVariable name="PlayPosColor">#00c6ff</SetVariable>
       <SetVariable name="CueColor">#ff7a01</SetVariable>
       <SetVariable name="LoopColor">#00b400</SetVariable>
