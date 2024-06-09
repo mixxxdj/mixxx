@@ -67,8 +67,13 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
                 // and other rows might contain paths to existing files
                 locationColumnIndex = detect_location_column(tokens[1],
                         [&](auto i) {
-                            return (i.contains(QDir::separator()) || i.contains(QChar('/')));
+#ifdef Q_OS_WIN
+                            return (i.contains(QChar('\\')) || i.contains(QChar('/')));
                         });
+#else
+                            return i.contains(QChar('/'));
+                        });
+#endif
             }
             if (locationColumnIndex.has_value()) {
                 for (int row = 1; row < tokens.size(); ++row) {
