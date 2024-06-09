@@ -176,9 +176,7 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
     m_dNextFrame = 0;
     int chCount = getOutputSignal().getChannelCount();
     if (read_samples > chCount - 1) {
-        for (int chIdx = 0; chIdx < chCount; chIdx++) {
-            m_floorSampleOld[chIdx] = buf[read_samples - chCount + chIdx];
-        }
+        SampleUtil::copy(m_floorSampleOld.data(), &buf[read_samples - chCount], chCount);
     }
     return read_samples;
 }
