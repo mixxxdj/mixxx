@@ -37,7 +37,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager* pReadAheadManager)
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     // Initialize the internal buffers to prevent re-allocations
     // in the real-time thread.
-    onOutputSignalChanged();
+    onSignalChanged();
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
@@ -89,7 +89,7 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     // changed direction. I removed it because this is handled by EngineBuffer.
 }
 
-void EngineBufferScaleST::onOutputSignalChanged() {
+void EngineBufferScaleST::onSignalChanged() {
     int backBufferSize = kBackBufferFrameSize * getOutputSignal().getChannelCount();
     if (m_bufferBack.size() == backBufferSize) {
         m_bufferBack.clear();

@@ -25,7 +25,7 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
           m_useEngineFiner(false) {
     // Initialize the internal buffers to prevent re-allocations
     // in the real-time thread.
-    onOutputSignalChanged();
+    onSignalChanged();
 }
 
 void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
@@ -92,7 +92,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     m_dPitchRatio = *pPitchRatio;
 }
 
-void EngineBufferScaleRubberBand::onOutputSignalChanged() {
+void EngineBufferScaleRubberBand::onSignalChanged() {
     // TODO: Resetting the sample rate will cause internal
     // memory allocations that may block the real-time thread.
     // When is this function actually invoked??
@@ -200,10 +200,20 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         break;
     default: {
         int chCount = getOutputSignal().getChannelCount();
+        // The buffers samples are ordered as following
+        //  m_buffers#1 = 11..
+        //  m_buffers#2 = 22..
+        //  m_buffers#3 = 33..
+        //  m_buffers#4 = 44..
+        //  m_buffers#X = XX..
+        // And need to be reordered as following in pBuffer
+        //  1234..X1234...X...
+        //
+        // Because of the unanticipated number of buffer and channel, we cannot
+        // use any SampleUtil in this case
         for (SINT frameIdx = 0; frameIdx < frames; ++frameIdx) {
             for (int channel = 0; channel < chCount; channel++) {
-                m_buffers[channel].data()[frameIdx] =
-                        pBuffer[frameIdx * chCount + channel];
+                pBuffer[frameIdx * chCount + channel] = m_buffers[channel].data()[frameIdx];
             }
         }
     } break;
@@ -243,10 +253,21 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
         break;
     default: {
         int chCount = getOutputSignal().getChannelCount();
-        for (SINT i = 0; i < frames; ++i) {
+        // The sampler are ordered as following in pBuffer
+        //    1234..X1234...X...
+        // And need to be reordered as following
+        // m_buffers#1 = 11..
+        // m_buffers#2 = 22..
+        // m_buffers#3 = 33..
+        // m_buffers#4 = 44..
+        // m_buffers#X = XX..
+        //
+        // Because of the unanticipated number of buffer and channel, we cannot
+        // use any SampleUtil in this case
+        for (SINT frameIdx = 0; frameIdx < frames; ++frameIdx) {
             for (int channel = 0; channel < chCount; channel++) {
-                m_buffers[channel].data()[i] =
-                        pBuffer[i * chCount + channel];
+                m_buffers[channel].data()[frameIdx] =
+                        pBuffer[frameIdx * chCount + channel];
             }
         }
     } break;
@@ -346,7 +367,7 @@ bool EngineBufferScaleRubberBand::isEngineFinerAvailable() {
 void EngineBufferScaleRubberBand::useEngineFiner(bool enable) {
     if (isEngineFinerAvailable()) {
         m_useEngineFiner = enable;
-        onOutputSignalChanged();
+        onSignalChanged();
     }
 }
 

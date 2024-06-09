@@ -42,7 +42,7 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
 
   private:
     // Reset RubberBand library with new audio signal
-    void onOutputSignalChanged() override;
+    void onSignalChanged() override;
 
     /// Calls `m_pRubberBand->getPreferredStartPad()`, with backwards
     /// compatibility for older librubberband versions.

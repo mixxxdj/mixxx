@@ -17,7 +17,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
       m_dOldRate(1.0),
       m_dCurrentFrame(0.0),
       m_dNextFrame(0.0) {
-    onOutputSignalChanged();
+    onSignalChanged();
     SampleUtil::clear(m_bufferInt, kiLinearScaleReadAheadLength);
 }
 
@@ -25,7 +25,7 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear() {
     SampleUtil::free(m_bufferInt);
 }
 
-void EngineBufferScaleLinear::onOutputSignalChanged() {
+void EngineBufferScaleLinear::onSignalChanged() {
     m_floorSampleOld.resize(getOutputSignal().getChannelCount());
     std::fill(m_floorSampleOld.begin(), m_floorSampleOld.end(), 0.0);
 }
@@ -44,7 +44,7 @@ void EngineBufferScaleLinear::clear() {
     // Clear out buffer and saved sample data
     m_bufferIntSize = 0;
     m_dNextFrame = 0;
-    onOutputSignalChanged();
+    onSignalChanged();
 }
 
 // laurent de soras - punked from musicdsp.org (mad props)

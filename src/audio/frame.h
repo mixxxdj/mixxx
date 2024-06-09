@@ -45,7 +45,7 @@ class FramePos final {
     }
 
     static constexpr FramePos fromSamplePos(double samplePos,
-            mixxx::audio::SignalInfo signalInfo) {
+            const mixxx::audio::SignalInfo& signalInfo) {
         return FramePos(static_cast<double>(samplePos) / signalInfo.getChannelCount());
     }
 

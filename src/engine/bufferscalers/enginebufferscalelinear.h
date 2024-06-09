@@ -24,7 +24,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                              double* pPitchRatio) override;
 
   private:
-    void onOutputSignalChanged() override;
+    void onSignalChanged() override;
 
     double do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);

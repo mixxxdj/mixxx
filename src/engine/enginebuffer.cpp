@@ -900,8 +900,8 @@ void EngineBuffer::processTrackLocked(
     // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
-    int outputBufferSize = iBufferSize,
-        stereoPairCount = m_channelCount / mixxx::audio::ChannelCount::stereo();
+    int outputBufferSize = iBufferSize;
+    int stereoPairCount = m_channelCount / mixxx::audio::ChannelCount::stereo();
     // The speed is calculated out of the buffer size for the stereo channel
     // output, after mixing multi channel (stem) together
     if (stereoPairCount > 1) {
@@ -1194,10 +1194,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
-    m_pScaleLinear->setOutputSignal(m_sampleRate, m_channelCount);
-    m_pScaleST->setOutputSignal(m_sampleRate, m_channelCount);
+    m_pScaleLinear->setSignal(m_sampleRate, m_channelCount);
+    m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__
-    m_pScaleRB->setOutputSignal(m_sampleRate, m_channelCount);
+    m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
 #endif
 
     bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;

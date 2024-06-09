@@ -5,7 +5,7 @@
 #include "soundio/soundmanagerconfig.h"
 
 EngineBufferScale::EngineBufferScale()
-        : m_outputSignal(
+        : m_signal(
                   mixxx::audio::SignalInfo(
                           mixxx::kEngineChannelOutputCount,
                           mixxx::audio::SampleRate())),
@@ -14,25 +14,25 @@ EngineBufferScale::EngineBufferScale()
           m_dTempoRatio(1.0),
           m_dPitchRatio(1.0),
           m_effectiveRate(1.0) {
-    DEBUG_ASSERT(!m_outputSignal.isValid());
+    DEBUG_ASSERT(!m_signal.isValid());
 }
 
-void EngineBufferScale::setOutputSignal(
+void EngineBufferScale::setSignal(
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::ChannelCount channelCount) {
     DEBUG_ASSERT(sampleRate.isValid());
     DEBUG_ASSERT(channelCount.isValid());
     bool changed = false;
-    if (sampleRate != m_outputSignal.getSampleRate()) {
-        m_outputSignal.setSampleRate(sampleRate);
+    if (sampleRate != m_signal.getSampleRate()) {
+        m_signal.setSampleRate(sampleRate);
         changed = true;
     }
-    if (channelCount != m_outputSignal.getChannelCount()) {
-        m_outputSignal.setChannelCount(channelCount);
+    if (channelCount != m_signal.getChannelCount()) {
+        m_signal.setChannelCount(channelCount);
         changed = true;
     }
     if (changed) {
-        onOutputSignalChanged();
+        onSignalChanged();
     }
-    DEBUG_ASSERT(m_outputSignal.isValid());
+    DEBUG_ASSERT(m_signal.isValid());
 }

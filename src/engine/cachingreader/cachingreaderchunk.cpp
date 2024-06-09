@@ -53,7 +53,7 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
                     mixxx::audio::ChannelCount::stereo() !=
             0) {
         // This happens if the audio source only contain a mono channel, or an
-        // uneven number of channel
+        // odd number of channel
         mixxx::AudioSourceStereoProxy audioSourceProxy(
                 pAudioSource,
                 tempOutputBuffer);
