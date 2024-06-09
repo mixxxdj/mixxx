@@ -421,7 +421,7 @@ void EngineBufferScaleRubberBand::reset() {
     size_t remaining_padding = getPreferredStartPad();
     const size_t block_size = std::min<size_t>(remaining_padding, m_buffers[0].size());
     for (auto& buffer : m_buffers) {
-        std::fill_n(buffer.span().begin(), block_size, 0.0f);
+        buffer.clear();
     }
     while (remaining_padding > 0) {
         const size_t pad_samples = std::min<size_t>(remaining_padding, block_size);
