@@ -39,11 +39,29 @@ class BeatMarker {
 
     /// Returns the number of beats between this marker and the next one.
     ///
-    /// Note that the beat count is rounded up, which means that there may be a
+    /// Note that the beat count is truncated, which means that there may be a
     /// fraction of a beat and that the different between the current marker
     /// position in the next may not match with the beat count and beat length
-    int beatsTillNextMarker(mixxx::audio::FramePos nextMarkerPosition) const {
-        return static_cast<int>(std::ceil(nextMarkerPosition - m_position) / m_beatLength);
+    double beatsTillNextMarker(mixxx::audio::FramePos nextMarkerPosition) const {
+        return (nextMarkerPosition - m_position) / m_beatLength;
+    }
+
+    /// Returns the number of beats between this marker and the next one.
+    ///
+    /// Note that the beat count is truncated, which means that there may be a
+    /// fraction of a beat and that the different between the current marker
+    /// position in the next may not match with the beat count and beat length
+    int upperBoundBeatsTillNextMarker(mixxx::audio::FramePos nextMarkerPosition) const {
+        return static_cast<int>(std::ceil((nextMarkerPosition - m_position) / m_beatLength));
+    }
+
+    /// Returns the number of beats between this marker and the next one.
+    ///
+    /// Note that the beat count is truncated, which means that there may be a
+    /// fraction of a beat and that the different between the current marker
+    /// position in the next may not match with the beat count and beat length
+    int lowerBoundBeatsTillNextMarker(mixxx::audio::FramePos nextMarkerPosition) const {
+        return static_cast<int>(std::floor((nextMarkerPosition - m_position) / m_beatLength));
     }
 
     /// Returns the number of beats per bar..

@@ -108,7 +108,7 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
                 (nextMarker != m_beats->m_markers.cend())
                 ? nextMarker->position()
                 : m_beats->m_lastMarkerPosition;
-        const auto beatsTillNextMarker = m_it->beatsTillNextMarker(nextMarkerPosition);
+        const auto beatsTillNextMarker = m_it->upperBoundBeatsTillNextMarker(nextMarkerPosition);
         if (m_beatOffset < beatsTillNextMarker) {
             break;
         }
@@ -165,7 +165,7 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
                 ? m_it->position()
                 : m_beats->m_lastMarkerPosition;
         m_it--;
-        m_beatOffset += m_it->beatsTillNextMarker(currentMarkerPosition);
+        m_beatOffset += m_it->upperBoundBeatsTillNextMarker(currentMarkerPosition);
     }
     updateValue();
     DEBUG_ASSERT(m_value < origValue);
@@ -191,7 +191,7 @@ Beats::ConstIterator::difference_type Beats::ConstIterator::operator-(
                 (nextMarker != m_beats->m_markers.cend())
                 ? nextMarker->position()
                 : m_beats->m_lastMarkerPosition;
-        result += it->beatsTillNextMarker(nextMarkerPosition);
+        result += it->upperBoundBeatsTillNextMarker(nextMarkerPosition);
         it++;
     }
     DEBUG_ASSERT(it == other.m_it);
@@ -227,6 +227,10 @@ bool isDoubleBeat(const QVector<audio::FramePos>& beatPositions, int beatIdx) {
         return true;
     }
     return false;
+}
+
+double effectiveHundredthBpm(double beatLength, mixxx::audio::SampleRate sampleRate) {
+    return std::round(60 * sampleRate / beatLength * 100);
 }
 
 // static
@@ -283,8 +287,11 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
             previousBeatLengthFrames = beatLengthFrames;
         }
         if (
-                // If the beath length difference is less than a frame...
-                std::fabs(previousBeatLengthFrames - beatLengthFrames) < 1.0 &&
+                // If the BPM difference is less than 0.01 BPM...
+                std::fabs(effectiveHundredthBpm(
+                                  previousBeatLengthFrames, sampleRate) -
+                        effectiveHundredthBpm(beatLengthFrames, sampleRate)) <
+                        1.0 &&
                 // ...and we are not at an "opening" double beat
                 (isBeatCounting || !isDoubleBeat(beatPositions, i))) {
             //.. we assume the current beat is part of the same marker
@@ -319,15 +326,15 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
     // marker and thus we don't need to store this position as this will
     // automatically be generated at serialisation, and the opening double beat,
     // where the relevant marker is has already been store in the main loop
-    // above Here is an illustartion of the that usecase
+    // above Here is an illustration of the that usecase
     //
     //                             track end
     //    ...--------------------------|
     //        |   |   |   |   |   ||   |   |   ||
     //       beat               Marker      Double beat
     // from marker n-1        with dbeat     end marker
-    //                            /\
-    //      last relevant marker --|
+    //                            |
+    //     last relevant marker --|
     if (!markers.empty() && !isDoubleBeat(beatPositions, beatPositions.size() - 1)) {
         markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(),
                 previousBeatLengthFrames,
@@ -490,7 +497,7 @@ QByteArray Beats::toBeatMapByteArray() const {
             closingDoubleBeat =
                     (position + (it.beatLengthFrames() * currentBeatsPerBar))
                             .toLowerFrameBoundary();
-        } else if (position >= closingDoubleBeat) {
+        } else if (closingDoubleBeat.isValid() && position >= closingDoubleBeat) {
             // Closing double beat should be strictly equal to the current beat
             // position, otherwise something is going wrong.
             qDebug() << "Closing double beat for bar of size"
@@ -597,7 +604,10 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     } else {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
-    DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
+    // Due to precision error, it happens that `it` and `position` are equal,
+    // but `it` is slightly behind `position` so we use epsilon to prevent false alarm
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > position ||
+            std::fabs(*it - position) < kEpsilon);
     DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
     return it;
 }
@@ -798,15 +808,14 @@ std::optional<BeatsPointer> Beats::tryTranslate(
             // previous marker as markerIt points to the marker directly after
             // our position
             markerIt--;
-        } else {
-            const auto marker = *markerIt;
-            const auto translatedPosition = marker.position() + offsetFrames;
-            markerIt = markers.erase(markerIt);
-            markerIt = markers.emplace(markerIt,
-                    translatedPosition.toLowerFrameBoundary(),
-                    marker.beatsLength(),
-                    marker.beatsPerBar());
         }
+        const auto marker = *markerIt;
+        const auto translatedPosition = marker.position() + offsetFrames;
+        markerIt = markers.erase(markerIt);
+        markerIt = markers.emplace(markerIt,
+                translatedPosition.toLowerFrameBoundary(),
+                marker.beatsLength(),
+                marker.beatsPerBar());
     }
 
     return BeatsPointer(new Beats(markers,
@@ -1070,9 +1079,8 @@ std::optional<BeatsPointer> Beats::tryRemoveMarker(audio::FramePos position) con
     } else {
         auto markerIt = std::lower_bound(markers.begin(),
                 markers.end(),
-                position,
+                findClosestBeat(position),
                 isBeatMarkerLessThanFramePos);
-
         // At this point we already checked that the search position is on a
         // marker and that it is not at the last marker. This means that
         // `markerIt` should point to a marker in any case.

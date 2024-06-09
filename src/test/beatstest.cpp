@@ -543,6 +543,56 @@ TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
     EXPECT_NEAR(nextBeat.value(), foundNextBeat.value(), kMaxBeatError);
 }
 
+TEST(BeatsTest, FractionalBeats) {
+    auto secondMarkerPosition = kStartPosition + 4 * (60 * kSampleRate) / 120 + 4800;
+    auto lastMarkerPosition = kStartPosition + 4 * kSampleRate.value() / 2 +
+            4 * kSampleRate.value() - 4800;
+
+    // This is what the beat grid looks like (|| == marker, >/< track start/end)
+    // >.||....|....|....|....|.||........|........|........|.......<||
+    const auto tempoBeats = Beats(
+            std::vector<BeatMarker>{
+                    BeatMarker{kStartPosition, (60 * kSampleRate) / 120, 4},
+                    BeatMarker{secondMarkerPosition, (60 * kSampleRate) / 60, 4},
+            },
+            lastMarkerPosition,
+            kBpm,
+            4,
+            kSampleRate,
+            QString());
+
+    auto it = tempoBeats.cfirstmarker();
+    EXPECT_EQ(*it, kStartPosition);
+    EXPECT_EQ(*(++it), kStartPosition + 24000);
+    EXPECT_EQ(*(++it), kStartPosition + 48000);
+    EXPECT_EQ(*(++it), kStartPosition + 72000);
+    EXPECT_EQ(*(++it), kStartPosition + 96000);
+    EXPECT_EQ(*(++it), secondMarkerPosition);
+    EXPECT_EQ(*(++it), secondMarkerPosition + 48000);
+    EXPECT_EQ(*(++it), secondMarkerPosition + 96000);
+    EXPECT_EQ(*(++it), secondMarkerPosition + 144000);
+    EXPECT_EQ(*(++it), lastMarkerPosition);
+    EXPECT_EQ(it, tempoBeats.clastmarker());
+    EXPECT_EQ(*(--it), secondMarkerPosition + 144000);
+    EXPECT_EQ(*(--it), secondMarkerPosition + 96000);
+    EXPECT_EQ(*(--it), secondMarkerPosition + 48000);
+    EXPECT_EQ(*(--it), secondMarkerPosition);
+    EXPECT_EQ(*(--it), kStartPosition + 96000);
+    EXPECT_EQ(*(--it), kStartPosition + 72000);
+    EXPECT_EQ(*(--it), kStartPosition + 48000);
+    EXPECT_EQ(*(--it), kStartPosition + 24000);
+    EXPECT_EQ(*(--it), kStartPosition);
+    EXPECT_EQ(it, tempoBeats.cfirstmarker());
+
+    EXPECT_EQ(*tempoBeats.iteratorFrom(mixxx::audio::FramePos(-1)), kStartPosition);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 24000), kStartPosition + 24000);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 24001), kStartPosition + 48000);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 96000), kStartPosition + 96000);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 96001), secondMarkerPosition);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(secondMarkerPosition - 1), secondMarkerPosition);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(secondMarkerPosition + 1), secondMarkerPosition + 48000);
+}
+
 TEST(BeatsTest, MultipleBeatsPerBar) {
     const auto tempoBeats = Beats(
             std::vector<BeatMarker>{
