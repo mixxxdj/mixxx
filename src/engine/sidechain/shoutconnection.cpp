@@ -52,7 +52,7 @@ const mixxx::Logger kLogger("ShoutConnection");
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         UserSettingsPointer pConfig)
         : m_pTextCodec(nullptr),
-          m_pMetaData(),
+          m_pMetaDataTrack(),
           m_pShout(nullptr),
           m_pShoutMetaData(nullptr),
           m_iMetaDataLife(0),
@@ -64,7 +64,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_mainSamplerate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_broadcastEnabled(BROADCAST_PREF_KEY, "enabled"),
           m_custom_metadata(false),
-          m_firstCall(false),
+          m_firstCall(true),
           m_format_is_mp3(false),
           m_format_is_ov(false),
           m_format_is_opus(false),
@@ -221,7 +221,6 @@ void ShoutConnection::updateFromPreferences() {
     }
 
     QString serverType = m_pProfile->getServertype();
-
     QString host = m_pProfile->getHost();
     int start = host.indexOf(QLatin1String("//"));
     if (start == -1) {
@@ -521,11 +520,11 @@ bool ShoutConnection::processConnect() {
     m_iMetaDataLife = 31337;
     // clear metadata, to make sure the first track is not skipped
     // because it was sent via an previous connection (see metaDataHasChanged)
-    if(m_pMetaData) {
-        m_pMetaData.reset();
+    if (m_pMetaDataTrack) {
+        m_pMetaDataTrack.reset();
     }
-    // If static metadata is available, we only need to send metadata one time
-    m_firstCall = false;
+    // If static metadata is available, we only need to send metadata once
+    m_firstCall = true;
 
     while (m_iShoutFailures < kMaxShoutFailures) {
         shout_close(m_pShout);
@@ -535,10 +534,9 @@ bool ShoutConnection::processConnect() {
             setState(NETWORKSTREAMWORKER_STATE_CONNECTED);
         }
 
-        if ((m_iShoutStatus == SHOUTERR_BUSY) ||
-            (m_iShoutStatus == SHOUTERR_CONNECTED) ||
-            (m_iShoutStatus == SHOUTERR_SUCCESS))
-        {
+        if (m_iShoutStatus == SHOUTERR_BUSY ||
+                m_iShoutStatus == SHOUTERR_CONNECTED ||
+                m_iShoutStatus == SHOUTERR_SUCCESS) {
             break;
         }
 
@@ -677,7 +675,7 @@ void ShoutConnection::write(const unsigned char* header, const unsigned char* bo
         }
     }
 
-    if(!writeSingle(body, bodyLen)) {
+    if (!writeSingle(body, bodyLen)) {
         return;
     }
 
@@ -690,6 +688,7 @@ void ShoutConnection::write(const unsigned char* header, const unsigned char* bo
         }
     }
 }
+
 // These are not used for streaming, but the interface requires them
 int ShoutConnection::tell() {
     if (!m_pShout) {
@@ -697,11 +696,13 @@ int ShoutConnection::tell() {
     }
     return -1;
 }
+
 // These are not used for streaming, but the interface requires them
 void ShoutConnection::seek(int pos) {
     Q_UNUSED(pos)
     return;
 }
+
 // These are not used for streaming, but the interface requires them
 int ShoutConnection::filelen() {
     return 0;
@@ -765,7 +766,7 @@ void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 bool ShoutConnection::metaDataHasChanged() {
-    TrackPointer pTrack;
+    TrackPointer pPlayingTrack;
 
     // TODO(rryan): This is latency and buffer size dependent. Should be based
     // on time.
@@ -776,22 +777,22 @@ bool ShoutConnection::metaDataHasChanged() {
 
     m_iMetaDataLife = 0;
 
-    pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack) {
+    pPlayingTrack = PlayerInfo::instance().getCurrentPlayingTrack();
+    if (!pPlayingTrack) {
         return false;
     }
 
-    if (m_pMetaData) {
-        if (!pTrack->getId().isValid() || !m_pMetaData->getId().isValid()) {
-            if ((pTrack->getArtist() == m_pMetaData->getArtist()) &&
-                (pTrack->getTitle() == m_pMetaData->getArtist())) {
+    if (m_pMetaDataTrack) {
+        if (!pPlayingTrack->getId().isValid() || !m_pMetaDataTrack->getId().isValid()) {
+            if ((pPlayingTrack->getArtist() == m_pMetaDataTrack->getArtist()) &&
+                    (pPlayingTrack->getTitle() == m_pMetaDataTrack->getArtist())) {
                 return false;
             }
-        } else if (pTrack->getId() == m_pMetaData->getId()) {
+        } else if (pPlayingTrack->getId() == m_pMetaDataTrack->getId()) {
             return false;
         }
     }
-    m_pMetaData = pTrack;
+    m_pMetaDataTrack = pPlayingTrack;
     return true;
 }
 
@@ -806,26 +807,23 @@ void ShoutConnection::updateMetaData() {
         return;
     }
 
-    /**
-     * If track has changed and static metadata is disabled
-     * Send new metadata to broadcast!
-     * This works only for MP3 streams properly as stated in comments, see shout.h
-     * WARNING: Changing OGG metadata dynamically by using shout_set_metadata
-     * will cause stream interruptions to listeners
-     *
-     * Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
-     * This was done in EncoderVorbis previously and caused interruptions on track change as well
-     * which sounds awful to listeners.
-     * To conclude: Only write OGG metadata one time, i.e., if static metadata is used.
-     */
+    // If track has changed and static metadata is disabled
+    // Send new metadata to broadcast!
+    // This works only for MP3 streams properly as stated in comments, see shout.h
+    // WARNING: Changing OGG metadata dynamically by using shout_set_metadata
+    // will cause stream interruptions to listeners
+    //
+    // Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
+    // This was done in EncoderVorbis previously and caused interruptions on track change as well
+    // which sounds awful to listeners.
+    // To conclude: Only write OGG metadata one time, i.e., if static metadata is used.
 
     // If we use either MP3 streaming, AAC streaming or OGG streaming with dynamic update of
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_format_is_aac || m_ogg_dynamic_update)) {
-        if (m_pMetaData != nullptr) {
-
-            QString artist = m_pMetaData->getArtist();
-            QString title = m_pMetaData->getTitle();
+        if (m_pMetaDataTrack) {
+            QString artist = m_pMetaDataTrack->getArtist();
+            QString title = m_pMetaDataTrack->getTitle();
 
             // shoutcast uses only "song" as field for "artist - title".
             // icecast2 supports separate fields for "artist" and "title",
@@ -881,53 +879,57 @@ void ShoutConnection::updateMetaData() {
         }
     } else {
         // Otherwise we might use static metadata
-        // If we use static metadata, we only need to call the following line once
-        if (m_custom_metadata && !m_firstCall) {
-
+        // If we use static metadata, we only need to call this only once
+        if (m_custom_metadata && m_firstCall) {
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
             	setFunctionCode(12);
                 insertMetaData("artist", encodeString(m_customArtist).constData());
                 insertMetaData("title", encodeString(m_customTitle).constData());
             } else {
-                QByteArray baCustomSong = encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
+                const QByteArray baCustomSong = encodeString(
+                        m_customArtist.isEmpty()
+                                ? m_customTitle
+                                : m_customArtist + " - " + m_customTitle);
                 insertMetaData("song", baCustomSong.constData());
             }
 
             setFunctionCode(13);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
-            m_firstCall = true;
+            m_firstCall = false;
         }
     }
 }
 
 void ShoutConnection::errorDialog(const QString& text, const QString& detailedError) {
     qWarning() << "Streaming error: " << detailedError;
-    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-    props->setType(DLG_WARNING);
-    props->setTitle(tr("Connection error"));
-    props->setText(tr("One of the Live Broadcasting connections raised this error:<br>"
-            "<b>Error with connection '%1':</b><br>")
-            .arg(profile()->getProfileName()) + text);
-    props->setDetails(detailedError);
-    props->setKey(detailedError);   // To prevent multiple windows for the same error
-    props->setDefaultButton(QMessageBox::Close);
-    props->setModal(false);
-    ErrorDialogHandler::instance()->requestErrorDialog(props);
+    ErrorDialogProperties* pProps = ErrorDialogHandler::instance()->newDialogProperties();
+    pProps->setType(DLG_WARNING);
+    pProps->setTitle(tr("Connection error"));
+    pProps->setText(tr("One of the Live Broadcasting connections raised this error:<br>"
+                       "<b>Error with connection '%1':</b><br>")
+                            .arg(profile()->getProfileName()) +
+            text);
+    pProps->setDetails(detailedError);
+    pProps->setKey(detailedError); // To prevent multiple windows for the same error
+    pProps->setDefaultButton(QMessageBox::Close);
+    pProps->setModal(false);
+    ErrorDialogHandler::instance()->requestErrorDialog(pProps);
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
 void ShoutConnection::infoDialog(const QString& text, const QString& detailedInfo) {
-    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-    props->setType(DLG_INFO);
-    props->setTitle(tr("Connection message"));
-    props->setText(tr("<b>Message from Live Broadcasting connection '%1':</b><br>")
-            .arg(profile()->getProfileName()) + text);
-    props->setDetails(detailedInfo);
-    props->setKey(text + detailedInfo);
-    props->setDefaultButton(QMessageBox::Close);
-    props->setModal(false);
-    ErrorDialogHandler::instance()->requestErrorDialog(props);
+    ErrorDialogProperties* pProps = ErrorDialogHandler::instance()->newDialogProperties();
+    pProps->setType(DLG_INFO);
+    pProps->setTitle(tr("Connection message"));
+    pProps->setText(tr("<b>Message from Live Broadcasting connection '%1':</b><br>")
+                            .arg(profile()->getProfileName()) +
+            text);
+    pProps->setDetails(detailedInfo);
+    pProps->setKey(text + detailedInfo);
+    pProps->setDefaultButton(QMessageBox::Close);
+    pProps->setModal(false);
+    ErrorDialogHandler::instance()->requestErrorDialog(pProps);
 }
 
 bool ShoutConnection::waitForRetry() {
@@ -1040,12 +1042,12 @@ void ShoutConnection::run() {
 
         setFunctionCode(1);
         incRunCount();
-        if(!m_readSema.tryAcquire(1, 1000)) {
+        if (!m_readSema.tryAcquire(1, 1000)) {
             continue;
         }
 
         int readAvailable = m_pOutputFifo->readAvailable();
-        if (readAvailable) {
+        if (readAvailable > 0) {
             setFunctionCode(3);
             CSAMPLE* dataPtr1;
             ring_buffer_size_t size1;
