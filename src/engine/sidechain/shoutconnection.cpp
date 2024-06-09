@@ -160,7 +160,7 @@ void ShoutConnection::applySettings() {
     }
 }
 
-QByteArray ShoutConnection::encodeString(const QString& string) {
+const QByteArray ShoutConnection::encodeString(const QString& string) const {
     if (m_pTextCodec) {
         return m_pTextCodec->fromUnicode(string);
     }
@@ -206,9 +206,9 @@ void ShoutConnection::updateFromPreferences() {
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
 
-    QString codec = m_pProfile->getMetadataCharset();
+    const QString codec = m_pProfile->getMetadataCharset();
     if (!codec.isEmpty()) {
-        QByteArray baCodec = codec.toLatin1();
+        const QByteArray baCodec = codec.toLatin1();
         m_pTextCodec = QTextCodec::codecForName(baCodec);
         if (!m_pTextCodec) {
             kLogger.warning()
@@ -220,7 +220,7 @@ void ShoutConnection::updateFromPreferences() {
         }
     }
 
-    QString serverType = m_pProfile->getServertype();
+    const QString serverType = m_pProfile->getServertype();
     QString host = m_pProfile->getHost();
     int start = host.indexOf(QLatin1String("//"));
     if (start == -1) {
@@ -242,26 +242,26 @@ void ShoutConnection::updateFromPreferences() {
         serverUrl.setPath(mountPoint);
     }
 
-    QString login = m_pProfile->getLogin();
+    const QString login = m_pProfile->getLogin();
     if (!login.isEmpty()) {
         serverUrl.setUserName(login);
     }
 
     kLogger.debug() << "Using server URL:" << serverUrl;
 
-    QByteArray baPassword = m_pProfile->getPassword().toLatin1();
-    QByteArray baFormat = m_pProfile->getFormat().toLatin1();
+    const QByteArray baPassword = m_pProfile->getPassword().toLatin1();
+    const QByteArray baFormat = m_pProfile->getFormat().toLatin1();
     int iBitrate = m_pProfile->getBitrate();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
-    QByteArray baStreamName = encodeString(m_pProfile->getStreamName());
-    QByteArray baStreamWebsite = encodeString(m_pProfile->getStreamWebsite());
-    QByteArray baStreamDesc = encodeString(m_pProfile->getStreamDesc());
-    QByteArray baStreamGenre = encodeString(m_pProfile->getStreamGenre());
-    QByteArray baStreamIRC = encodeString(m_pProfile->getStreamIRC());
-    QByteArray baStreamAIM = encodeString(m_pProfile->getStreamAIM());
-    QByteArray baStreamICQ = encodeString(m_pProfile->getStreamICQ());
+    const QByteArray baStreamName = encodeString(m_pProfile->getStreamName());
+    const QByteArray baStreamWebsite = encodeString(m_pProfile->getStreamWebsite());
+    const QByteArray baStreamDesc = encodeString(m_pProfile->getStreamDesc());
+    const QByteArray baStreamGenre = encodeString(m_pProfile->getStreamGenre());
+    const QByteArray baStreamIRC = encodeString(m_pProfile->getStreamIRC());
+    const QByteArray baStreamAIM = encodeString(m_pProfile->getStreamAIM());
+    const QByteArray baStreamICQ = encodeString(m_pProfile->getStreamICQ());
 
     // Whether the stream is public.
     bool streamPublic = m_pProfile->getStreamPublic();
@@ -822,9 +822,6 @@ void ShoutConnection::updateMetaData() {
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_format_is_aac || m_ogg_dynamic_update)) {
         if (m_pMetaDataTrack) {
-            QString artist = m_pMetaDataTrack->getArtist();
-            QString title = m_pMetaDataTrack->getTitle();
-
             // shoutcast uses only "song" as field for "artist - title".
             // icecast2 supports separate fields for "artist" and "title",
             // which will get displayed accordingly if the streamingformat and
@@ -835,6 +832,8 @@ void ShoutConnection::updateMetaData() {
             // setting both fields for MP3, tested players do not show anything different.
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
+            const QString artist = m_pMetaDataTrack->getArtist();
+            const QString title = m_pMetaDataTrack->getTitle();
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
             	setFunctionCode(9);
             	insertMetaData("artist", encodeString(artist).constData());
@@ -867,7 +866,7 @@ void ShoutConnection::updateMetaData() {
                     }
                 } while (replaceIndex != -1);
 
-                QByteArray baSong = encodeString(metadataFinal);
+                const QByteArray baSong = encodeString(metadataFinal);
                 setFunctionCode(10);
                 insertMetaData("song",  baSong.constData());
             }
@@ -960,7 +959,6 @@ bool ShoutConnection::waitForRetry() {
 }
 
 void ShoutConnection::tryReconnect() {
-    QString originalErrorStr = m_lastErrorStr;
     setStatus(BroadcastProfile::STATUS_FAILURE);
 
     processDisconnect();
@@ -978,6 +976,7 @@ void ShoutConnection::tryReconnect() {
         } else {
             errorText = tr("Lost connection to streaming server.");
         }
+        const QString originalErrorStr = m_lastErrorStr;
         errorDialog(errorText,
                     originalErrorStr + "\n" +
                     m_lastErrorStr + "\n" +
