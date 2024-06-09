@@ -14,6 +14,9 @@
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemixer.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -28,6 +31,20 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 #include "skin/skincontrols.h"
+#ifdef MIXXX_USE_QML
+#include <QQuickWindow>
+#include <QSGRendererInterface>
+
+#include "controllers/scripting/controllerscriptenginebase.h"
+#include "qml/qmlconfigproxy.h"
+#include "qml/qmlcontrolproxy.h"
+#include "qml/qmldlgpreferencesproxy.h"
+#include "qml/qmleffectslotproxy.h"
+#include "qml/qmleffectsmanagerproxy.h"
+#include "qml/qmllibraryproxy.h"
+#include "qml/qmlplayermanagerproxy.h"
+#include "qml/qmlplayerproxy.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/clipboard.h"
@@ -113,7 +130,7 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
           m_isInitialized(false) {
     m_runtime_timer.start();
     mixxx::Time::start();
-    ScopedTimer t(u"CoreServices::CoreServices");
+    ScopedTimer t(QStringLiteral("CoreServices::CoreServices"));
     // All this here is running without without start up screen
     // Defer long initializations to CoreServices::initialize() which is
     // called after the GUI is initialized
@@ -213,7 +230,7 @@ void CoreServices::initialize(QApplication* pApp) {
         return;
     }
 
-    ScopedTimer t(u"CoreServices::initialize");
+    ScopedTimer t(QStringLiteral("CoreServices::initialize"));
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
@@ -267,6 +284,9 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);
+#ifdef __RUBBERBAND__
+    RubberBandWorkerPool::createInstance(pConfig);
+#endif
 
     emit initializationProgressUpdate(30, tr("audio interface"));
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
@@ -448,6 +468,33 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     m_isInitialized = true;
+
+#ifdef MIXXX_USE_QML
+    initializeQMLSingletons();
+}
+
+void CoreServices::initializeQMLSingletons() {
+    // Any uncreateable non-singleton types registered here require
+    // arguments that we don't want to expose to QML directly. Instead, they
+    // can be retrieved by member properties or methods from the singleton
+    // types.
+    //
+    // The alternative would be to register their *arguments* in the QML
+    // system, which would improve nothing, or we had to expose them as
+    // singletons to that they can be accessed by components instantiated by
+    // QML, which would also be suboptimal.
+    mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(getEffectsManager());
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
+    mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+
+    ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
+
+    // Currently, it is required to enforce QQuickWindow RHI backend to use
+    // OpenGL on all platforms to allow offscreen rendering to function as
+    // expected
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
 }
 
 void CoreServices::initializeKeyboard() {
@@ -555,6 +602,16 @@ void CoreServices::finalize() {
     Timer t("CoreServices::~CoreServices");
     t.start();
 
+#ifdef MIXXX_USE_QML
+    // Delete all the QML singletons in order to prevent controller leaks
+    mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
+    mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+
+    ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+#endif
+
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
     m_pTrackCollectionManager->stopLibraryScan();
@@ -608,6 +665,9 @@ void CoreServices::finalize() {
     // EngineMixer depends on Config and m_pEffectsManager.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMixer";
     CLEAR_AND_CHECK_DELETED(m_pEngine);
+#ifdef __RUBBERBAND__
+    RubberBandWorkerPool::destroy();
+#endif
 
     // Destroy PlayerInfo explicitly to release the track
     // pointers of tracks that were still loaded in decks

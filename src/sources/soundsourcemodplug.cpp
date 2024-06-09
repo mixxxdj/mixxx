@@ -118,7 +118,7 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
-    ScopedTimer t(u"SoundSourceModPlug::open()");
+    ScopedTimer t(QStringLiteral("SoundSourceModPlug::open()"));
 
     // read module file to byte array
     const QString fileName(getLocalFileName());

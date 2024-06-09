@@ -281,7 +281,7 @@ void EngineMixer::processChannels(int iBufferSize) {
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
-    // ScopedTimer timer(u"EngineMixer::processChannels");
+    // ScopedTimer timer(QStringLiteral("EngineMixer::processChannels"));
     EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the main channel which
     // should be processed first

@@ -37,7 +37,7 @@ void AnalyzerGain::cleanup() {
 }
 
 bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT count) {
-    ScopedTimer t(u"AnalyzerGain::process()");
+    ScopedTimer t(QStringLiteral("AnalyzerGain::process()"));
 
     SINT numFrames = count / mixxx::kAnalysisChannels;
     if (numFrames > static_cast<SINT>(m_pLeftTempBuffer.size())) {

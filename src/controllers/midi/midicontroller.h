@@ -81,7 +81,7 @@ class MidiController : public Controller {
     void slotBeforeEngineShutdown() override;
 
   private slots:
-    bool applyMapping() override;
+    bool applyMapping(const QString& resourcePath) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();

@@ -49,7 +49,7 @@ bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return false;
     }
-    ScopedTimer t(u"AnalyzerEbur128::processSamples()");
+    ScopedTimer t(QStringLiteral("AnalyzerEbur128::processSamples()"));
     size_t frames = count / mixxx::kAnalysisChannels;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {

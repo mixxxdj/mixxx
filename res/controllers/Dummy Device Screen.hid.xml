@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Dummy Device (Screens)</name>
+        <author>A. Colombier</author>
+        <description>Dummy device screens</description>
+        <devices>
+            <product protocol="hid" vendor_id="0xdead" product_id="0xbeaf" />
+        </devices>
+    </info>
+    <controller id="DummyDevice">
+        <screens>
+            <screen identifier="main" width="480" height="360" targetFps="20" pixelType="RBGA" splashoff="500" />
+            <screen identifier="jog" width="128" height="128" targetFps="5" pixelType="RBGA" />
+        </screens>
+        <scriptfiles>
+            <file filename="DummyDeviceDefaultScreen.qml" />
+        </scriptfiles>
+        <qmllibraries>
+        </qmllibraries>
+    </controller>
+</MixxxControllerPreset>
