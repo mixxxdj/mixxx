@@ -10,12 +10,7 @@ ControlPushButton::ControlPushButton(const ConfigKey& key, bool bPersist, double
         : ControlObject(key, false, false, bPersist, defaultValue),
           m_buttonMode(PUSH),
           m_iNoStates(2) {
-    if (m_pControl) {
-        m_pControl->setBehavior(
-                new ControlPushButtonBehavior(
-                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                        m_iNoStates));
-    }
+    setBehavior();
 }
 
 ControlPushButton::~ControlPushButton() {
@@ -25,22 +20,22 @@ ControlPushButton::~ControlPushButton() {
 void ControlPushButton::setButtonMode(enum ButtonMode mode) {
     //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
     m_buttonMode = mode;
+    setBehavior();
+}
 
+void ControlPushButton::setStates(int num_states) {
+    if (m_iNoStates != num_states) {
+        m_iNoStates = num_states;
+        setBehavior();
+    }
+}
+
+// private
+void ControlPushButton::setBehavior() {
     if (m_pControl) {
         m_pControl->setBehavior(
                 new ControlPushButtonBehavior(
                         static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
                         m_iNoStates));
-    }
-}
-
-void ControlPushButton::setStates(int num_states) {
-    m_iNoStates = num_states;
-
-    if (m_pControl) {
-            m_pControl->setBehavior(
-                    new ControlPushButtonBehavior(
-                            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                            m_iNoStates));
     }
 }

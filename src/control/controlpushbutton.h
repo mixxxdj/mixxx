@@ -62,6 +62,8 @@ class ControlPushButton : public ControlObject {
     void setStates(int num_states);
 
   private:
+    void setBehavior();
+
     enum ButtonMode m_buttonMode;
     int m_iNoStates;
 };
