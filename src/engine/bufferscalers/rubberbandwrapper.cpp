@@ -14,8 +14,21 @@ namespace {
 /// The function is used to compute the best number of channel per RB task,
 /// depending of the number of channels and available worker. This allows
 /// hardware if will less than 8 core to adjust the task distribution in the
-/// most optimum way. The following table provide the expected number of channel
-/// per task when using multi threading globally.
+/// most optimum way.
+///
+/// The following table provide the expected number of channel per task with
+/// stereo processing (the default behaviour)
+///
+///  | NbOfCore | Stereo | Stem |
+///  |----------|--------|------|
+///  | 1        | 2      | 8    |
+///  | 2        | 2      | 4    |
+///  | 3        | 2      | 2    |
+///  | 4        | 2      | 2    |
+///
+/// The following table provide the expected number of channel per task when the
+/// user has explicitly requested stereo channel to be processed as mono
+/// channels.
 ///
 ///  | NbOfCore | Stereo | Stem |
 ///  |----------|--------|------|

@@ -37,17 +37,21 @@ bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
 }
 
 #ifdef __RUBBERBAND__
-const QString kKeylockMultiThreadedAvailable =
-        QStringLiteral("<p><span style=\"font-weight:600;\">") +
+const QString kKeylockMultiThreadedAvailable = QStringLiteral("<p>") +
+        QObject::tr(
+                "Distribute stereo channels into mono channels processed in "
+                "parallel.") +
+        QStringLiteral("</p><p><span style=\"font-weight:600;\">") +
         QObject::tr("Warning!") + QStringLiteral("</span></p><p>") +
         QObject::tr(
-                "Using multi "
-                "threading may result in pitch and tone imperfection, and this "
+                "Processing stereo signal as mono channel "
+                "may result in pitch and tone imperfection, and this "
                 "is "
                 "mono-incompatible, due to third party limitations.") +
-        QStringLiteral("\n") +
+        QStringLiteral("</p><p>") +
         QObject::tr(
-                "When disabled, multi threading will still be used on stem track if possible.") +
+                "Note that stem tracks will always be processed in parallel, "
+                "as individual stereo channels.") +
         QStringLiteral("</p>");
 const QString kKeylockMultiThreadedUnavailableMono = QStringLiteral("<i>") +
         QObject::tr(
@@ -308,6 +312,7 @@ void DlgPrefSound::slotUpdate() {
     // for a prefs rewrite -- bkgood
     m_bSkipConfigClear = true;
     loadSettings();
+    settingChanged();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
     m_settingsModified = false;
@@ -760,12 +765,14 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
     QMessageBox msg;
     msg.setIcon(QMessageBox::Warning);
     msg.setWindowTitle(tr("Are you sure?"));
-    msg.setText(QStringLiteral("<p>%1</p><p>%2</p>")
-                        .arg(tr("Using multi threading result in a loss of "
-                                "mono compatibility and a diffuse stereo "
-                                "image. It is not recommended during "
-                                "broadcasting or recording."),
-                                tr("Are you sure you wish to proceed?")));
+    msg.setText(
+            QStringLiteral("<p>%1</p><p>%2</p>")
+                    .arg(tr("Distribute stereo channels into mono channels for "
+                            "parallel processing will result in a loss of "
+                            "mono compatibility and a diffuse stereo "
+                            "image. It is not recommended during "
+                            "broadcasting or recording."),
+                            tr("Are you sure you wish to proceed?")));
     QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::AcceptRole);
     QPushButton* pYesBtn = msg.addButton(
             tr("Yes, I know what I am doing"), QMessageBox::RejectRole);
