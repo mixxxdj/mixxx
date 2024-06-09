@@ -64,7 +64,7 @@ FileType stringToEnumFileType(
     };
 
     // This table is aligned with detectByExtension() in fileref.cpp
-    constexpr std::array lookupTable = {
+    constexpr static std::array lookupTable = {
             TypePair{"mp3"_L1, FileType::MPEG},
             TypePair{"mp2"_L1, FileType::MPEG},
             TypePair{"aac"_L1, FileType::MPEG},
