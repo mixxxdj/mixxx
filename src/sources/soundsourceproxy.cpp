@@ -284,7 +284,10 @@ bool SoundSourceProxy::isUrlSupported(const QUrl& url) {
 
 // static
 bool SoundSourceProxy::isFileSupported(const mixxx::FileInfo& fileInfo) {
-    return isFileNameSupported(fileInfo.fileName());
+    const QString fileType =
+            mixxx::SoundSource::getTypeFromFile(fileInfo.asQFileInfo());
+    qDebug() << "isFileSupported" << fileType;
+    return isFileTypeSupported(fileType);
 }
 
 // static
