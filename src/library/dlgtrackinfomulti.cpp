@@ -175,7 +175,7 @@ void DlgTrackInfoMulti::init() {
         pBox->setMaxVisibleItems(25);
 
         connect(pBox,
-                &QComboBox::currentIndexChanged,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgTrackInfoMulti::slotTagBoxIndexChanged);
     }
@@ -198,7 +198,7 @@ void DlgTrackInfoMulti::init() {
     txtCommentBox->setView(pView);
     txtCommentBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     connect(txtCommentBox,
-            &QComboBox::currentIndexChanged,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgTrackInfoMulti::slotCommentBoxIndexChanged);
 

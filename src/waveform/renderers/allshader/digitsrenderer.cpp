@@ -8,6 +8,7 @@
 #include <QOpenGLTexture>
 #include <QPainter>
 #include <QPainterPath>
+#include <cmath>
 
 #include "./util/assert.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"

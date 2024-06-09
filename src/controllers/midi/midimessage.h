@@ -8,6 +8,7 @@
 #include <QUuid>
 #include <QtDebug>
 #include <cstdint>
+#include <memory>
 #include <variant>
 
 #include "preferences/usersettings.h"
