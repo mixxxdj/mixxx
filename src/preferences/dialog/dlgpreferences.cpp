@@ -429,6 +429,9 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     case QDialogButtonBox::AcceptRole:
         // Same as Apply but close the dialog
         emit applyPreferences();
+        // TODO Unfortunately this will accept() even if DlgPrefSound threw a warning
+        // due to inaccessible device(s) or inapplicable samplerate.
+        // https://github.com/mixxxdj/mixxx/issues/6077
         accept();
         break;
     case QDialogButtonBox::RejectRole:
