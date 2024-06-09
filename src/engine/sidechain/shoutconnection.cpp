@@ -160,7 +160,7 @@ void ShoutConnection::applySettings() {
     }
 }
 
-const QByteArray ShoutConnection::encodeString(const QString& string) const {
+const QByteArray ShoutConnection::encodeString(const QString& string) {
     if (m_pTextCodec) {
         return m_pTextCodec->fromUnicode(string);
     }
@@ -766,7 +766,9 @@ void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 bool ShoutConnection::metaDataHasChanged() {
-    TrackPointer pPlayingTrack;
+    if (m_custom_metadata) {
+        return m_firstCall;
+    }
 
     // TODO(rryan): This is latency and buffer size dependent. Should be based
     // on time.
@@ -777,7 +779,7 @@ bool ShoutConnection::metaDataHasChanged() {
 
     m_iMetaDataLife = 0;
 
-    pPlayingTrack = PlayerInfo::instance().getCurrentPlayingTrack();
+    TrackPointer pPlayingTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if (!pPlayingTrack) {
         return false;
     }
@@ -835,9 +837,9 @@ void ShoutConnection::updateMetaData() {
             const QString artist = m_pMetaDataTrack->getArtist();
             const QString title = m_pMetaDataTrack->getTitle();
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-            	setFunctionCode(9);
-            	insertMetaData("artist", encodeString(artist).constData());
-            	insertMetaData("title", encodeString(title).constData());
+                setFunctionCode(9);
+                insertMetaData("artist", encodeString(artist).constData());
+                insertMetaData("title", encodeString(title).constData());
             } else {
                 // we are going to take the metadata format and replace all
                 // the references to $title and $artist by doing a single
@@ -882,7 +884,7 @@ void ShoutConnection::updateMetaData() {
         if (m_custom_metadata && m_firstCall) {
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-            	setFunctionCode(12);
+                setFunctionCode(12);
                 insertMetaData("artist", encodeString(m_customArtist).constData());
                 insertMetaData("title", encodeString(m_customTitle).constData());
             } else {

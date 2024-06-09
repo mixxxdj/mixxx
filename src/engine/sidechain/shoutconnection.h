@@ -102,7 +102,7 @@ class ShoutConnection
 
     bool writeSingle(const unsigned char *data, size_t len);
 
-    const QByteArray encodeString(const QString& string) const;
+    const QByteArray encodeString(const QString& string);
 
     bool waitForRetry();
 
