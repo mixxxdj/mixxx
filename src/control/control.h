@@ -183,7 +183,28 @@ class ControlDoublePrivate : public QObject {
 
     const ConfigKey m_key;
 
+    QSharedPointer<ControlNumericBehavior> m_pBehavior;
+
+    // User-visible, i18n name for what the control is.
+    QString m_name;
+
+    // User-visible, i18n description for what the control does.
+    QString m_description;
+
+    // The control value.
+    ControlValueAtomic<double> m_value;
+    // The default control value.
+    ControlValueAtomic<double> m_defaultValue;
+
     QAtomicPointer<ControlObject> m_pCreatorCO;
+
+    QString m_trackKey;
+
+    // Whether to track value changes with the stats framework.
+    int m_trackType;
+    int m_trackFlags;
+    bool m_bTrack;
+    bool m_confirmRequired;
 
     // Whether the control should persist in the Mixxx user configuration. The
     // value is loaded from configuration when the control is created and
@@ -193,28 +214,10 @@ class ControlDoublePrivate : public QObject {
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
 
-    // Whether to track value changes with the stats framework.
-    bool m_bTrack;
-    QString m_trackKey;
-    int m_trackType;
-    int m_trackFlags;
-    bool m_confirmRequired;
-
-    // User-visible, i18n name for what the control is.
-    QString m_name;
-
-    // User-visible, i18n description for what the control does.
-    QString m_description;
 
     // If true, this control will be issued repeatedly if the keyboard key is held.
     bool m_kbdRepeatable;
 
-    // The control value.
-    ControlValueAtomic<double> m_value;
-    // The default control value.
-    ControlValueAtomic<double> m_defaultValue;
-
-    QSharedPointer<ControlNumericBehavior> m_pBehavior;
 };
 
 /// The constant ControlDoublePrivate version is used as dummy for default
