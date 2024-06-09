@@ -837,6 +837,10 @@ void ShoutConnection::updateMetaData() {
             const QString artist = m_pMetaDataTrack->getArtist();
             const QString title = m_pMetaDataTrack->getTitle();
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                kLogger.info() << "Updating metadata for"
+                               << profile()->getProfileName()
+                               << ": artist:" << m_customArtist
+                               << "| title:" << m_customTitle;
                 setFunctionCode(9);
                 insertMetaData("artist", encodeString(artist).constData());
                 insertMetaData("title", encodeString(title).constData());
@@ -868,6 +872,9 @@ void ShoutConnection::updateMetaData() {
                     }
                 } while (replaceIndex != -1);
 
+                kLogger.info() << "Updating metadata for"
+                               << profile()->getProfileName()
+                               << ": song:" << metadataFinal;
                 const QByteArray baSong = encodeString(metadataFinal);
                 setFunctionCode(10);
                 insertMetaData("song",  baSong.constData());
@@ -884,14 +891,22 @@ void ShoutConnection::updateMetaData() {
         if (m_custom_metadata && m_firstCall) {
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                kLogger.info() << "Updating static metadata for"
+                               << profile()->getProfileName()
+                               << ": artist:" << m_customArtist
+                               << "| title:" << m_customTitle;
                 setFunctionCode(12);
                 insertMetaData("artist", encodeString(m_customArtist).constData());
                 insertMetaData("title", encodeString(m_customTitle).constData());
             } else {
-                const QByteArray baCustomSong = encodeString(
-                        m_customArtist.isEmpty()
-                                ? m_customTitle
-                                : m_customArtist + " - " + m_customTitle);
+                const QString songStr = m_customArtist.isEmpty()
+                        ? m_customTitle
+                        : m_customArtist + " - " + m_customTitle;
+                kLogger.info()
+                        << "Updating static metadata for"
+                        << profile()->getProfileName()
+                        << ": song:" << songStr;
+                const QByteArray baCustomSong = encodeString(songStr);
                 insertMetaData("song", baCustomSong.constData());
             }
 
