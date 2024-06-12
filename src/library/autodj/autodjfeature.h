@@ -51,6 +51,7 @@ class AutoDJFeature : public LibraryFeature {
   public slots:
     void activate() override;
 
+    void onRightClick(const QPoint& globalPos) override;
     // Temporary, until WCrateTableView can be written.
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
@@ -78,6 +79,7 @@ class AutoDJFeature : public LibraryFeature {
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
 
+    parented_ptr<QAction> m_pClearQueueAction;
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
     parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
@@ -85,6 +87,7 @@ class AutoDJFeature : public LibraryFeature {
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:
+    void slotClearQueue();
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(CrateId crateId);
     // Implements the context-menu item.
