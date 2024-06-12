@@ -80,22 +80,18 @@ class AutoDJFeature : public LibraryFeature {
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
-    QAction* m_pRemoveCrateFromAutoDj;
+    parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(CrateId crateId);
-
     // Implements the context-menu item.
     void slotRemoveCrateFromAutoDj();
-
     void slotCrateChanged(CrateId crateId);
-
     // Adds a random track from all loaded crates to the auto-DJ queue.
     void slotAddRandomTrack();
-
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);

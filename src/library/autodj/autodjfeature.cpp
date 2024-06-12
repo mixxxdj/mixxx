@@ -96,15 +96,15 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
-    connect(m_pRemoveCrateFromAutoDj,
+    m_pRemoveCrateFromAutoDjAction =
+            make_parented<QAction>(tr("Remove Crate as Track Source"), this);
+    connect(m_pRemoveCrateFromAutoDjAction.get(),
             &QAction::triggered,
             this,
             &AutoDJFeature::slotRemoveCrateFromAutoDj);
 }
 
 AutoDJFeature::~AutoDJFeature() {
-    delete m_pRemoveCrateFromAutoDj;
     delete m_pAutoDJProcessor;
 }
 
@@ -198,7 +198,7 @@ void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
-    CrateId crateId(m_pRemoveCrateFromAutoDj->data());
+    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data());
     DEBUG_ASSERT(crateId.isValid());
     m_pTrackCollection->updateAutoDjCrate(crateId, false);
 }
@@ -319,8 +319,8 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     } else {
         // A crate child item was right-clicked.
         // Bring up the context menu.
-        m_pRemoveCrateFromAutoDj->setData(pClickedItem->getData()); // the selected CrateId
-        menu.addAction(m_pRemoveCrateFromAutoDj);
+        m_pRemoveCrateFromAutoDjAction->setData(pClickedItem->getData()); // the selected CrateId
+        menu.addAction(m_pRemoveCrateFromAutoDjAction);
         menu.exec(globalPos);
     }
 }
