@@ -1260,6 +1260,17 @@ bool MixxxMainWindow::confirmExit() {
         }
     }
 
+    // Some dialogs like DlgTrackInfo, DlgTagFetcher and DlgAbout are
+    // constructed without parent to avoid inheriting their parents' stylesheets.
+    // Though, this way (if they're still visible) they also block destrcution
+    // the main widget and thereby block shutdown.
+    // Just close them.
+    for (auto* pWid : QApplication::topLevelWidgets()) {
+        if (pWid->isVisible() && qobject_cast<QDialog*>(pWid)) {
+            pWid->close();
+        }
+    }
+
     return true;
 }
 
