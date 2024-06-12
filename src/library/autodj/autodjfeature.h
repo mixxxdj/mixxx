@@ -34,6 +34,7 @@ class AutoDJFeature : public LibraryFeature {
 
     void clear() override;
     void paste() override;
+    void deleteItem(const QModelIndex& index) override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
@@ -67,6 +68,7 @@ class AutoDJFeature : public LibraryFeature {
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
+    void removeCrateFromAutoDj(CrateId crateId = CrateId());
 
     // The "Crates" tree-item under the "Auto DJ" tree-item.
     TreeItem* m_pCratesTreeItem;
