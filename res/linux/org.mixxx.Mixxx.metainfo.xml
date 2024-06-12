@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-06-12" timestamp="1718193546">
+    <release version="2.5.0" type="development" date="2024-07-14" timestamp="1720986809">
       <description>
  <p>
   Waveforms
@@ -804,6 +804,18 @@
    macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
    #12101
   </li>
+  <li>
+   Drop support for macOS versions earlier than 11
+  </li>
+  <li>
+   Drop support for Windows versions earlier than Windows 10 build 1809
+  </li>
+  <li>
+   Drop support for Ubuntu versions earlier than 22.04
+  </li>
+  <li>
+   Require a C++20 compiler
+  </li>
  </ul>
  <p>
   Misc Refactorings
@@ -1047,7 +1059,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.2" type="development" date="2024-06-12" timestamp="1718193546">
+    <release version="2.4.2" type="development" date="2024-07-14" timestamp="1720986809">
       <description>
  <p>
   Controller Mappings
