@@ -15,6 +15,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/clipboard.h"
+#include "util/defs.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -95,6 +96,11 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &AutoDJFeature::slotCrateChanged);
 
     m_pClearQueueAction = make_parented<QAction>(tr("Clear Auto DJ Queue"), this);
+    const auto removeKeySequence =
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
+    m_pClearQueueAction->setShortcut(removeKeySequence);
     connect(m_pClearQueueAction.get(),
             &QAction::triggered,
             this,
@@ -103,6 +109,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     // from, the auto-DJ queue.
     m_pRemoveCrateFromAutoDjAction =
             make_parented<QAction>(tr("Remove Crate as Track Source"), this);
+    m_pRemoveCrateFromAutoDjAction->setShortcut(removeKeySequence);
     connect(m_pRemoveCrateFromAutoDjAction.get(),
             &QAction::triggered,
             this,
@@ -184,6 +191,23 @@ void AutoDJFeature::paste() {
     emit pasteFromSidebar();
 }
 
+// Called by SidebarModel
+void AutoDJFeature::deleteItem(const QModelIndex& index) {
+    TreeItem* pSelectedItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pSelectedItem || pSelectedItem == m_pCratesTreeItem) {
+            return;
+    }
+    CrateId crateId(pSelectedItem->getData());
+    removeCrateFromAutoDj(crateId);
+}
+
+// Called by deleteItem and slotRemoveCrateFromAutoDj()
+void AutoDJFeature::removeCrateFromAutoDj(CrateId crateId) {
+    DEBUG_ASSERT(crateId.isValid());
+    // TODO Confirm dialog?
+    m_pTrackCollection->updateAutoDjCrate(crateId, false);
+}
+
 bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
@@ -215,9 +239,8 @@ void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
-    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data());
-    DEBUG_ASSERT(crateId.isValid());
-    m_pTrackCollection->updateAutoDjCrate(crateId, false);
+    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data().value<CrateId>());
+    removeCrateFromAutoDj(crateId);
 }
 
 void AutoDJFeature::slotCrateChanged(CrateId crateId) {
