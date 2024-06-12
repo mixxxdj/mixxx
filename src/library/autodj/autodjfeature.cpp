@@ -94,6 +94,11 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &AutoDJFeature::slotCrateChanged);
 
+    m_pClearQueueAction = make_parented<QAction>(tr("Clear Auto DJ Queue"), this);
+    connect(m_pClearQueueAction.get(),
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotClearQueue);
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
     m_pRemoveCrateFromAutoDjAction =
@@ -164,7 +169,14 @@ void AutoDJFeature::activate() {
 }
 
 void AutoDJFeature::clear() {
-    m_playlistDao.clearAutoDJQueue();
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirmation Clear"),
+            tr("Do you really want to clear the Auto DJ queue?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn == QMessageBox::Yes) {
+            m_playlistDao.clearAutoDJQueue();
+    }
 }
 
 void AutoDJFeature::paste() {
@@ -190,6 +202,10 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
 bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
+void AutoDJFeature::slotClearQueue() {
+    clear();
 }
 
 // Add a crate to the auto-DJ queue.
@@ -292,6 +308,12 @@ void AutoDJFeature::constructCrateChildModel() {
         m_pCratesTreeItem->appendChild(crate.getName(), crate.getId().toVariant());
         m_crateList.append(crate);
     }
+}
+
+void AutoDJFeature::onRightClick(const QPoint& globalPos) {
+    QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pClearQueueAction.get());
+    menu.exec(globalPos);
 }
 
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
