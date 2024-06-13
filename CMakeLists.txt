@@ -2422,6 +2422,48 @@ if(ENGINEPRIME)
   target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
 endif()
 
+# Spleeter
+option(SPLEETER "Spleeter stem separation" OFF)
+if(SPLEETER)
+  find_package(Spleeter)
+  if(Spleeter_Found)
+    message(STATUS "Linking dynamically to existing installation of spleeter")
+    target_link_libraries(mixxx-lib PUBLIC spleeter::Split)
+  else()
+      # Fetch spleeter sources from GitHub and build them statically.
+      message(STATUS "Linking statically to spleeter fetched from GitHub")
+      set(Spleeter_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/spleeter-install")
+      ExternalProject_Add(spleeter
+        GIT_REPOSITORY git@github.com:gvne/spleeterpp.git
+        GIT_TAG tags/v0.2.1
+        GIT_SHALLOW TRUE
+        INSTALL_DIR "${Spleeter_INSTALL_DIR}"
+        CMAKE_ARGS
+          -Dspleeter_enable_tests=OFF
+          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+          -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        EXCLUDE_FROM_ALL TRUE
+      )
+
+      # This is a bit of a hack to make sure that the include directory
+      # actually exists when configuring the build.  ExternalProject_Add() will
+      # create it at compile time, but CMake already checks that all
+      # directories passed to target_include_directories() exist during
+      # configuration and will throw an error if not.
+      file(MAKE_DIRECTORY "${Spleeter_INSTALL_DIR}/include")
+
+      # Assemble a library based on the external project.
+      add_library(mixxx-spleeter STATIC IMPORTED)
+      add_dependencies(mixxx-spleeter spleeter)
+      set_target_properties(mixxx-spleeter
+        PROPERTIES
+          IMPORTED_LOCATION "${Spleeter_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}spleeter${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          INTERFACE_INCLUDE_DIRECTORIES "${Spleeter_INSTALL_DIR}/include"
+      )
+      target_link_libraries(mixxx-lib PUBLIC mixxx-spleeter)
+  endif()
+endif()
+
 # Ebur128
 find_package(Ebur128 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Ebur128::Ebur128)
