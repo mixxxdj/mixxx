@@ -17,7 +17,6 @@
 #include "widget/wwidget.h"
 
 class PlayerManager;
-;
 class QDomNode;
 class SkinContext;
 

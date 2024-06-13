@@ -603,7 +603,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
 
 void WOverview::paintEvent(QPaintEvent* pEvent) {
     Q_UNUSED(pEvent);
-    ScopedTimer t(u"WOverview::paintEvent");
+    ScopedTimer t(QStringLiteral("WOverview::paintEvent"));
 
     QPainter painter(this);
     painter.fillRect(rect(), m_backgroundColor);
@@ -1238,8 +1238,6 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 }
 
 bool WOverview::drawNextPixmapPart() {
-    ScopedTimer t(u"WOverview::drawNextPixmapPartHSV");
-
     ConstWaveformPointer pWaveform = getWaveform();
     if (!pWaveform) {
         return false;
@@ -1314,7 +1312,7 @@ void WOverview::drawNextPixmapPartHSV(QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         const int nextCompletion) {
     DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-    ScopedTimer t(u"WOverview::drawNextPixmapPartHSV");
+    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
 
     // Get HSV of low color.
     float h, s, v;
@@ -1382,7 +1380,7 @@ void WOverview::drawNextPixmapPartLMH(QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         const int nextCompletion) {
     DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-    ScopedTimer t(u"WOverview::drawNextPixmapPartLMH");
+    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartLMH"));
 
     QColor lowColor = m_signalColors.getLowColor();
     QPen lowColorPen(QBrush(lowColor), 1);
@@ -1444,7 +1442,7 @@ void WOverview::drawNextPixmapPartRGB(QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         const int nextCompletion) {
     DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-    ScopedTimer t(u"WOverview::drawNextPixmapPartRGB");
+    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
 
     QColor color;
 
