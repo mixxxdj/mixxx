@@ -1412,6 +1412,10 @@ mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
     return queuedSeek.position;
 }
 
+double calculateSamplePosition(double position, double sampleRate) {
+    return position * sampleRate;
+}
+
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     if (!m_playPos.isValid() ||
             !m_trackSampleRateOld.isValid() ||
