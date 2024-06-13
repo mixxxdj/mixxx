@@ -8,14 +8,8 @@
 
 
 // static
-QHash<QString, std::weak_ptr<QImage>> WImageStore::m_dictionary;
-QSharedPointer<ImgSource> WImageStore::m_loader
-        = QSharedPointer<ImgSource>(new ImgLoader());
-
-// static
-QImage* WImageStore::getImageNoCache(const QString& fileName, double scaleFactor) {
-    return getImageNoCache(PixmapSource(fileName), scaleFactor);
-}
+QHash<QString, std::shared_ptr<QImage>> WImageStore::m_dictionary;
+QSharedPointer<ImgSource> WImageStore::m_loader = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
 std::shared_ptr<QImage> WImageStore::getImage(const QString& fileName, double scaleFactor) {
@@ -30,70 +24,57 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
     // Search for Image in list
     QString key = source.getId() + QString::number(scaleFactor);
 
-    QHash<QString, std::weak_ptr<QImage>>::iterator it = m_dictionary.find(key);
+    auto it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
-        //qDebug() << "WImageStore returning cached Image for:" << source.getPath();
-        return it.value().lock();
+        return it.value();
     }
 
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    auto pLoadedImage = std::shared_ptr<QImage>(getImageNoCache(source, scaleFactor), &deleteImage);
+    auto pLoadedImage = std::make_shared<QImage>(*getImageNoCache(source, scaleFactor));
 
-    if (!pLoadedImage) {
+    if (!pLoadedImage || pLoadedImage->isNull()) {
+        qDebug() << "WImageStore couldn't load:" << source.getPath();
         return nullptr;
     }
 
-    if (pLoadedImage->isNull()) {
-        qDebug() << "WImageStore couldn't load:" << source.getPath() << (pLoadedImage == nullptr);
-        return nullptr;
-    }
-
-    m_dictionary.insert(key, pLoadedImage);
+    m_dictionary[key] = pLoadedImage;
     return pLoadedImage;
 }
 
 // static
-QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFactor) {
+std::unique_ptr<QImage> WImageStore::getImageNoCache(
+        const PixmapSource& source, double scaleFactor) {
     if (source.isSVG()) {
         QSvgRenderer renderer;
+        std::unique_ptr<QImage> pImage;
 
-        if (!source.getSvgSourceData().isEmpty()) {
-            // Call here the different overload for svg content
-            if (!renderer.load(source.getSvgSourceData())) {
-                // The above line already logs a warning
-                return nullptr;
-            }
-        } else if (!source.getPath().isEmpty()) {
-            if (!renderer.load(source.getPath())) {
-                // The above line already logs a warning
-                return nullptr;
-            }
-        } else {
-            return nullptr;
+        // Attempt to load from SVG source data if available
+        if (!source.getSvgSourceData().isEmpty() && renderer.load(source.getSvgSourceData())) {
+            pImage = std::make_unique<QImage>(
+                    renderer.defaultSize() * scaleFactor,
+                    QImage::Format_ARGB32);
+        }
+        // If loading from source data fails or isn't available, try loading from path
+        else if (renderer.load(source.getPath())) {
+            pImage = std::make_unique<QImage>(
+                    renderer.defaultSize() * scaleFactor,
+                    QImage::Format_ARGB32);
         }
 
-        auto* pImage = new QImage(renderer.defaultSize() * scaleFactor,
-                QImage::Format_ARGB32);
-        pImage->fill(0x00000000);  // Transparent black.
-        QPainter painter(pImage);
-        renderer.render(&painter);
-        return pImage;
+        // If an image was successfully created, render the SVG into it
+        if (pImage) {
+            pImage->fill(Qt::transparent);
+            QPainter painter(pImage.get());
+            renderer.render(&painter);
+            return pImage;
+        }
     } else {
-        return m_loader->getImage(source.getPath(), scaleFactor);
+        // For non-SVG, delegate to the loader
+        return std::unique_ptr<QImage>(m_loader->getImage(source.getPath(), scaleFactor));
     }
-}
-
-// static
-void WImageStore::deleteImage(QImage* p) {
-    QMutableHashIterator<QString, std::weak_ptr<QImage>> it(m_dictionary);
-    while (it.hasNext()) {
-        if(it.next().value().expired()) {
-            it.remove();
-        }
-    }
-    delete p;
+    return nullptr;
 }
 
 // static
