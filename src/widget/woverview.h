@@ -32,6 +32,13 @@ class WOverview : public WWidget, public TrackDropTarget {
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
 
+    enum class Type {
+        Filtered,
+        HSV,
+        RGB,
+    };
+    Q_ENUM(Type);
+
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
@@ -66,7 +73,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
 
-    void slotTypeChanged(double v);
+    void slotTypeControlChanged(double v);
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -133,7 +140,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
-    int m_type;
+    Type m_type;
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;
