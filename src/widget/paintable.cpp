@@ -53,7 +53,12 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         : m_drawMode(mode),
           m_source(source) {
     if (!source.isSVG()) {
-        m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
+            auto pPixmap = WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor);
+            if (!pPixmap) {
+                qWarning() << "Failed to load pixmap from path:" << source.getPath();
+                return;
+            }
+            m_pPixmap.reset(pPixmap.release());
     } else {
         auto pSvg = std::make_unique<QSvgRenderer>();
         if (!source.getSvgSourceData().isEmpty()) {

@@ -24,7 +24,9 @@ class WPixmapStore {
             const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
-    static QPixmap* getPixmapNoCache(const QString& fileName, double scaleFactor);
+    static std::unique_ptr<QPixmap> getPixmapNoCache(
+            const QString& fileName,
+            double scaleFactor);
     static void setLoader(QSharedPointer<ImgSource> ld);
     static void correctImageColors(QImage* p);
     static bool willCorrectColors();
