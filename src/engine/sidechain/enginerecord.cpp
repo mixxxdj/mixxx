@@ -248,6 +248,9 @@ void EngineRecord::writeCueLine() {
     m_cueFile.write(QString("    PERFORMER \"%1\"\n")
                             .arg(m_pCurrentTrack->getArtist())
                             .toUtf8());
+    m_cueFile.write(QString("    FILE \"%1\"\n")
+                            .arg(m_pCurrentTrack->getLocation())
+                            .toUtf8());
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
