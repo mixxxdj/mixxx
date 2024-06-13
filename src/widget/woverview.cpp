@@ -1238,21 +1238,7 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 }
 
 bool WOverview::drawNextPixmapPart() {
-    if (m_type == 0) {
-        return drawNextPixmapPartLMH();
-    } else if (m_type == 1) {
-        return drawNextPixmapPartHSV();
-    } else {
-        return drawNextPixmapPartRGB();
-    }
-}
-
-bool WOverview::drawNextPixmapPartHSV() {
     ScopedTimer t(u"WOverview::drawNextPixmapPartHSV");
-
-    // qDebug() << "WOverview::drawNextPixmapPart()";
-
-    int currentCompletion;
 
     ConstWaveformPointer pWaveform = getWaveform();
     if (!pWaveform) {
@@ -1304,6 +1290,32 @@ bool WOverview::drawNextPixmapPartHSV() {
     QPainter painter(&m_waveformSourceImage);
     painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
+    if (m_type == 0) {
+        drawNextPixmapPartLMH(&painter, pWaveform, nextCompletion);
+    } else if (m_type == 1) {
+        drawNextPixmapPartHSV(&painter, pWaveform, nextCompletion);
+    } else {
+        drawNextPixmapPartRGB(&painter, pWaveform, nextCompletion);
+    }
+
+    m_waveformImageScaled = QImage();
+    m_diffGain = 0;
+
+    // Test if the complete waveform is done
+    if (m_actualCompletion >= dataSize - 2) {
+        m_pixmapDone = true;
+        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
+    }
+
+    return true;
+}
+
+void WOverview::drawNextPixmapPartHSV(QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        const int nextCompletion) {
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
+    ScopedTimer t(u"WOverview::drawNextPixmapPartHSV");
+
     // Get HSV of low color.
     float h, s, v;
     getHsvF(m_signalColors.getLowColor(), &h, &s, &v);
@@ -1316,7 +1328,8 @@ bool WOverview::drawNextPixmapPartHSV() {
     unsigned char maxMid[2] = {0, 0};
     unsigned char maxAll[2] = {0, 0};
 
-    for (currentCompletion = m_actualCompletion;
+    int currentCompletion = 0;
+    for (int currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
         maxAll[0] = pWaveform->getAll(currentCompletion);
@@ -1346,14 +1359,13 @@ bool WOverview::drawNextPixmapPartHSV() {
             // Set color
             color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
-            painter.setPen(color);
-            painter.drawLine(QPoint(currentCompletion / 2, -maxAll[0]),
+            pPainter->setPen(color);
+            pPainter->drawLine(QPoint(currentCompletion / 2, -maxAll[0]),
                     QPoint(currentCompletion / 2, maxAll[1]));
         }
     }
 
     // Evaluate waveform ratio peak
-
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
@@ -1364,74 +1376,13 @@ bool WOverview::drawNextPixmapPartHSV() {
     }
 
     m_actualCompletion = nextCompletion;
-    m_waveformImageScaled = QImage();
-    m_diffGain = 0;
-
-    // Test if the complete waveform is done
-    if (m_actualCompletion >= dataSize - 2) {
-        m_pixmapDone = true;
-        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
-    }
-
-    return true;
 }
 
-bool WOverview::drawNextPixmapPartLMH() {
-    ScopedTimer t(u"WOverview::drawNextPixmapPartLMH");
-
-    // qDebug() << "WOverview::drawNextPixmapPart()";
-
-    int currentCompletion;
-
-    ConstWaveformPointer pWaveform = getWaveform();
-    if (!pWaveform) {
-        return false;
-    }
-
-    const int dataSize = pWaveform->getDataSize();
-    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
-    const double trackSamples = getTrackSamples();
-    if (dataSize <= 0 || audioVisualRatio <= 0 || trackSamples <= 0) {
-        return false;
-    }
-
-    if (m_waveformSourceImage.isNull()) {
-        // Waveform pixmap twice the height of the viewport to be scalable
-        // by total_gain
-        // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(
-                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
-                2 * 255,
-                QImage::Format_ARGB32_Premultiplied);
-        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
-        if (dataSize / 2 != m_waveformSourceImage.width()) {
-            qWarning() << "Track duration has changed since last analysis"
-                       << m_waveformSourceImage.width() << "!=" << dataSize / 2;
-        }
-    }
+void WOverview::drawNextPixmapPartLMH(QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        const int nextCompletion) {
     DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-
-    // Always multiple of 2
-    const int waveformCompletion = pWaveform->getCompletion();
-    // Test if there is some new to draw (at least of pixel width)
-    const int completionIncrement = waveformCompletion - m_actualCompletion;
-
-    int visiblePixelIncrement = completionIncrement * length() / dataSize;
-    if (waveformCompletion < (dataSize - 2) &&
-            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
-        return false;
-    }
-
-    const int nextCompletion = m_actualCompletion + completionIncrement;
-
-    // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
-    //          << nextCompletion
-    //          << "m_actualCompletion:" << m_actualCompletion
-    //          << "waveformCompletion:" << waveformCompletion
-    //          << "completionIncrement:" << completionIncrement;
-
-    QPainter painter(&m_waveformSourceImage);
-    painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
+    ScopedTimer t(u"WOverview::drawNextPixmapPartLMH");
 
     QColor lowColor = m_signalColors.getLowColor();
     QPen lowColorPen(QBrush(lowColor), 1);
@@ -1442,14 +1393,15 @@ bool WOverview::drawNextPixmapPartLMH() {
     QColor highColor = m_signalColors.getHighColor();
     QPen highColorPen(QBrush(highColor), 1);
 
+    int currentCompletion = 0;
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
         unsigned char lowNeg = pWaveform->getLow(currentCompletion);
         unsigned char lowPos = pWaveform->getLow(currentCompletion + 1);
         if (lowPos || lowNeg) {
-            painter.setPen(lowColorPen);
-            painter.drawLine(QPoint(currentCompletion / 2, -lowNeg),
+            pPainter->setPen(lowColorPen);
+            pPainter->drawLine(QPoint(currentCompletion / 2, -lowNeg),
                     QPoint(currentCompletion / 2, lowPos));
         }
     }
@@ -1457,9 +1409,9 @@ bool WOverview::drawNextPixmapPartLMH() {
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
-        painter.setPen(midColorPen);
-        painter.drawLine(QPoint(currentCompletion / 2,
-                                 -pWaveform->getMid(currentCompletion)),
+        pPainter->setPen(midColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -pWaveform->getMid(currentCompletion)),
                 QPoint(currentCompletion / 2,
                         pWaveform->getMid(currentCompletion + 1)));
     }
@@ -1467,9 +1419,9 @@ bool WOverview::drawNextPixmapPartLMH() {
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
-        painter.setPen(highColorPen);
-        painter.drawLine(QPoint(currentCompletion / 2,
-                                 -pWaveform->getHigh(currentCompletion)),
+        pPainter->setPen(highColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -pWaveform->getHigh(currentCompletion)),
                 QPoint(currentCompletion / 2,
                         pWaveform->getHigh(currentCompletion + 1)));
     }
@@ -1486,74 +1438,13 @@ bool WOverview::drawNextPixmapPartLMH() {
     }
 
     m_actualCompletion = nextCompletion;
-    m_waveformImageScaled = QImage();
-    m_diffGain = 0;
-
-    // Test if the complete waveform is done
-    if (m_actualCompletion >= dataSize - 2) {
-        m_pixmapDone = true;
-        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
-    }
-
-    return true;
 }
 
-bool WOverview::drawNextPixmapPartRGB() {
-    ScopedTimer t(u"WOverview::drawNextPixmapPartRGB");
-
-    // qDebug() << "WOverview::drawNextPixmapPart()";
-
-    int currentCompletion;
-
-    ConstWaveformPointer pWaveform = getWaveform();
-    if (!pWaveform) {
-        return false;
-    }
-
-    const int dataSize = pWaveform->getDataSize();
-    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
-    const double trackSamples = getTrackSamples();
-    if (dataSize <= 0 || audioVisualRatio <= 0 || trackSamples <= 0) {
-        return false;
-    }
-
-    if (m_waveformSourceImage.isNull()) {
-        // Waveform pixmap twice the height of the viewport to be scalable
-        // by total_gain
-        // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(
-                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
-                2 * 255,
-                QImage::Format_ARGB32_Premultiplied);
-        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
-        if (dataSize / 2 != m_waveformSourceImage.width()) {
-            qWarning() << "Track duration has changed since last analysis"
-                       << m_waveformSourceImage.width() << "!=" << dataSize / 2;
-        }
-    }
+void WOverview::drawNextPixmapPartRGB(QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        const int nextCompletion) {
     DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-
-    // Always multiple of 2
-    const int waveformCompletion = pWaveform->getCompletion();
-    // Test if there is some new to draw (at least of pixel width)
-    const int completionIncrement = waveformCompletion - m_actualCompletion;
-
-    int visiblePixelIncrement = completionIncrement * length() / dataSize;
-    if (waveformCompletion < (dataSize - 2) &&
-            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
-        return false;
-    }
-
-    const int nextCompletion = m_actualCompletion + completionIncrement;
-
-    // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
-    //          << nextCompletion
-    //          << "m_actualCompletion:" << m_actualCompletion
-    //          << "waveformCompletion:" << waveformCompletion
-    //          << "completionIncrement:" << completionIncrement;
-
-    QPainter painter(&m_waveformSourceImage);
-    painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
+    ScopedTimer t(u"WOverview::drawNextPixmapPartRGB");
 
     QColor color;
 
@@ -1566,6 +1457,7 @@ bool WOverview::drawNextPixmapPartRGB() {
     float highColor_r, highColor_g, highColor_b;
     getRgbF(m_signalColors.getRgbHighColor(), &highColor_r, &highColor_g, &highColor_b);
 
+    int currentCompletion = 0;
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
@@ -1586,8 +1478,8 @@ bool WOverview::drawNextPixmapPartRGB() {
         float max = math_max3(red, green, blue);
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
-            painter.setPen(color);
-            painter.drawLine(QPointF(currentCompletion / 2, -left),
+            pPainter->setPen(color);
+            pPainter->drawLine(QPointF(currentCompletion / 2, -left),
                     QPointF(currentCompletion / 2, 0));
         }
 
@@ -1605,8 +1497,8 @@ bool WOverview::drawNextPixmapPartRGB() {
         max = math_max3(red, green, blue);
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
-            painter.setPen(color);
-            painter.drawLine(QPointF(currentCompletion / 2, 0),
+            pPainter->setPen(color);
+            pPainter->drawLine(QPointF(currentCompletion / 2, 0),
                     QPointF(currentCompletion / 2, right));
         }
     }
@@ -1622,16 +1514,6 @@ bool WOverview::drawNextPixmapPartRGB() {
     }
 
     m_actualCompletion = nextCompletion;
-    m_waveformImageScaled = QImage();
-    m_diffGain = 0;
-
-    // Test if the complete waveform is done
-    if (m_actualCompletion >= dataSize - 2) {
-        m_pixmapDone = true;
-        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
-    }
-
-    return true;
 }
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {

@@ -73,9 +73,15 @@ class WOverview : public WWidget, public TrackDropTarget {
     // Append the waveform overview pixmap according to available data
     // in waveform
     bool drawNextPixmapPart();
-    bool drawNextPixmapPartHSV();
-    bool drawNextPixmapPartLMH();
-    bool drawNextPixmapPartRGB();
+    void drawNextPixmapPartHSV(QPainter* pPainter,
+            ConstWaveformPointer pWaveform,
+            const int nextCompletion);
+    void drawNextPixmapPartLMH(QPainter* pPainter,
+            ConstWaveformPointer pWaveform,
+            const int nextCompletion);
+    void drawNextPixmapPartRGB(QPainter* pPainter,
+            ConstWaveformPointer pWaveform,
+            const int nextCompletion);
 
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
