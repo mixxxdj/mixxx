@@ -169,8 +169,8 @@ NumarkScratch.XfaderContainer = function() {
             break;
         case 0x7F:  // Picnic Bench/Fast Cut
             engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
-            engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 1);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 999.6);
             break;
         }
     };
