@@ -331,6 +331,19 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
+mixxx::Duration PlaylistTableModel::getTotalDuration() {
+    double durationTotal = 0.0;
+    const int durationColumnIndex = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    int numOfTracks = rowCount();
+    for (int i = 0; i < numOfTracks; i++) {
+        durationTotal += index(i, durationColumnIndex)
+                                 .data(Qt::EditRole)
+                                 .toDouble();
+    }
+
+    return mixxx::Duration::fromSeconds(durationTotal);
+}
+
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
     if (indices.isEmpty()) {
         return mixxx::Duration::empty();
@@ -411,5 +424,6 @@ QString PlaylistTableModel::modelKey(bool noSearch) const {
 void PlaylistTableModel::playlistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.
+        emit playlistTracksChanged();
     }
 }
