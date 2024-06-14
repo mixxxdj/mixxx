@@ -58,9 +58,7 @@
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/woverviewhsv.h"
-#include "widget/woverviewlmh.h"
-#include "widget/woverviewrgb.h"
+#include "widget/woverview.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wpushbutton.h"
 #include "widget/wraterange.h"
@@ -984,17 +982,8 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
         return nullptr;
     }
 
-    WOverview* overviewWidget = nullptr;
-
-    // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
-    int type = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformOverviewType"), 2);
-    if (type == 0) {
-        overviewWidget = new WOverviewLMH(group, m_pPlayerManager, m_pConfig, m_pParent);
-    } else if (type == 1) {
-        overviewWidget = new WOverviewHSV(group, m_pPlayerManager, m_pConfig, m_pParent);
-    } else {
-        overviewWidget = new WOverviewRGB(group, m_pPlayerManager, m_pConfig, m_pParent);
-    }
+    WOverview* overviewWidget =
+            new WOverview(group, m_pPlayerManager, m_pConfig, m_pParent);
 
     connect(overviewWidget,
             &WOverview::trackDropped,
