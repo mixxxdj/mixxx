@@ -31,6 +31,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
+
      <widget class="QWidget" name="chainPresetsTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
@@ -230,6 +231,7 @@
        </item>
       </layout>
      </widget>
+
      <widget class="QWidget" name="visibleEffectsTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
@@ -243,7 +245,7 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <layout class="QGridLayout" name="effectsTablesGridLayout">
-         <item row="0" column="0" colspan="2">
+         <item row="0" column="0" colspan="3">
           <widget class="QLabel" name="effectsTablesHeaderLabel">
            <property name="text">
             <string>Drag and drop to rearrange lists and show or hide effects.</string>
@@ -266,7 +268,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="1" column="2">
           <widget class="QLabel" name="hiddenEffectsTableLabel">
            <property name="font">
             <font>
@@ -282,13 +284,95 @@
            </property>
           </widget>
          </item>
+
          <item row="2" column="0">
           <widget class="QTableView" name="visibleEffectsTableView"/>
          </item>
+
          <item row="2" column="1">
+          <layout class="QVBoxLayout" name="moveButtonslayout">
+           <item>
+            <spacer name="hideShowVSpacerTop">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="fixedSize">
+              <size>
+               <width>20</width>
+               <height>60</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+
+           <item>
+            <widget class="QPushButton" name="hideButton">
+             <property name="text">
+              <string>❯</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="fixedSize">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <widget class="QPushButton" name="unhideButton">
+             <property name="text">
+              <string>❮</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="fixedSize">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <spacer name="hideShowVSpacerBottom">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+
+          </layout>
+         </item>
+
+         <item row="2" column="2">
           <widget class="QTableView" name="hiddenEffectsTableView"/>
          </item>
-         <item row="3" column="0" colspan="2">
+
+         <item row="3" column="0" colspan="3">
           <widget class="QGroupBox" name="groupBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -469,6 +553,7 @@
      </widget>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupMetaKnobOption">
      <property name="title">
@@ -498,12 +583,15 @@
      </layout>
     </widget>
    </item>
+
   </layout>
  </widget>
  <tabstops>
   <tabstop>chainListView</tabstop>
   <tabstop>quickEffectListView</tabstop>
   <tabstop>visibleEffectsTableView</tabstop>
+  <tabstop>hideButton</tabstop>
+  <tabstop>unhideButton</tabstop>
   <tabstop>hiddenEffectsTableView</tabstop>
   <tabstop>chainPresetImportButton</tabstop>
   <tabstop>chainPresetExportButton</tabstop>
