@@ -19,6 +19,7 @@
 #include "mixer/playermanager.h"
 #include "moc_enginemixer.cpp"
 #include "preferences/usersettings.h"
+#include "util/cpupinning.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
@@ -49,7 +50,9 @@ EngineMixer::EngineMixer(
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
-          m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
+          m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")),
+          m_cpuId(CmdlineArgs::Instance().getEngineCpuId()),
+          m_cpuSet(CmdlineArgs::Instance().getEngineCpuSet()) {
     pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
     pEffectsManager->registerOutputChannel(m_mainHandle);
@@ -268,6 +271,18 @@ const CSAMPLE* EngineMixer::getHeadphoneBuffer() const {
 
 const CSAMPLE* EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.data();
+}
+
+void EngineMixer::finishStartup() {
+    QThread::currentThread()->setObjectName("Engine");
+#ifdef __LINUX__
+    if (!m_cpuSet.isNull() && !m_cpuSet.isEmpty()) {
+        mixxx::CpuPinning::moveThreadToCpuset(m_cpuSet);
+    }
+#endif
+    if (m_cpuId != -1) {
+        mixxx::CpuPinning::pinThreadToCpu(m_cpuId);
+    }
 }
 
 void EngineMixer::processChannels(int iBufferSize) {
