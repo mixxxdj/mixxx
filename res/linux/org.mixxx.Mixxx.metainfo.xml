@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2024-06-03" timestamp="1717443751">
+    <release version="2.6.0" type="development" date="2024-06-12" timestamp="1718193546">
       <description>
  <p>
   Waveforms
@@ -153,7 +153,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.0" type="development" date="2024-06-03" timestamp="1717443751">
+    <release version="2.5.0" type="development" date="2024-06-12" timestamp="1718193546">
       <description>
  <p>
   Waveforms
@@ -1104,7 +1104,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.2" type="development" date="2024-06-03" timestamp="1717443751">
+    <release version="2.4.2" type="development" date="2024-06-12" timestamp="1718193546">
       <description>
  <p>
   Controller Mappings
@@ -1122,6 +1122,10 @@
   <li>
    Numark PartyMix: Fix EQ (script binding) display name
    #13255
+  </li>
+  <li>
+   Numark Scratch: Add initial mapping
+   #4834
   </li>
   <li>
    Sony SIXAXIS: Fix mapping
@@ -1160,6 +1164,36 @@
    Move to GitHub workflow runner macos-12
    #13296
    #13248
+  </li>
+  <li>
+   Recording: with empty config, save default split size immediately
+   #13304
+  </li>
+  <li>
+   Allow to drop files with supported MIME type regardless off the file extensions
+   #13209
+   #13204
+  </li>
+  <li>
+   Add support for Ubuntu Oracular Oriole and remove Lunar Lobster
+   #13348
+  </li>
+  <li>
+   Recordbox: Fix string decoding issues
+   #13293
+   #13291
+  </li>
+  <li>
+   Mixer preferences: Don't update EQs/QuickEffects while applying
+   #13333
+  </li>
+  <li>
+   Hardware preferences: Fix UX when applying config with missing/busy devices
+   #13312
+  </li>
+  <li>
+   Fix minor 64 bit CPU performance issue
+   #13355
   </li>
  </ul>
 </description>

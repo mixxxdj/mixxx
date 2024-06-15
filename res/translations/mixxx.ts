@@ -3831,12 +3831,12 @@ trace    - Above + Profiling messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="414"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="415"/>
         <source>Official Website</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="424"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="425"/>
         <source>Donate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7222,108 +7222,108 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="147"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="150"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="216"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="219"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="217"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="220"/>
         <source>Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="226"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="229"/>
         <source>Stereo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="227"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="230"/>
         <source>Mono</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="246"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="249"/>
         <source>To enable Realtime scheduling (currently disabled), see the %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="260"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="263"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="264"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="267"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="618"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="621"/>
         <source>2048 frames/period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="624"/>
         <source>4096 frames/period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="870"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="883"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="873"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="886"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="877"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="887"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="890"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="900"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="882"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="895"/>
         <source>Configured latency has changed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="883"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="896"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="243"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="246"/>
         <source>Realtime scheduling is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="143"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="146"/>
         <source>Main output only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="145"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="148"/>
         <source>Main and booth outputs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="643"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="644"/>
         <source>%1 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="305"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="302"/>
         <source>Configuration error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11177,7 +11177,7 @@ Fully right: end of the effect period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="188"/>
         <source>Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11187,22 +11187,22 @@ Fully right: end of the effect period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="145"/>
+        <location filename="../../src/library/parsercsv.cpp" line="163"/>
         <location filename="../../src/library/parserm3u.cpp" line="150"/>
         <location filename="../../src/library/parserpls.cpp" line="86"/>
         <source>Playlist Export Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="146"/>
-        <location filename="../../src/library/parsercsv.cpp" line="237"/>
+        <location filename="../../src/library/parsercsv.cpp" line="164"/>
+        <location filename="../../src/library/parsercsv.cpp" line="255"/>
         <location filename="../../src/library/parserm3u.cpp" line="151"/>
         <location filename="../../src/library/parserpls.cpp" line="87"/>
         <source>Could not create file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="236"/>
+        <location filename="../../src/library/parsercsv.cpp" line="254"/>
         <source>Readable text Export Failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11575,54 +11575,54 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1381"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1460"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1634"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1344"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1423"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1597"/>
         <source>Rekordbox</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1478"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1441"/>
         <source>Playlists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1477"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1440"/>
         <source>Folders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1461"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1424"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1480"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1443"/>
         <source>Hot cues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1482"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1445"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1485"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1448"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1479"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1442"/>
         <source>Beatgrids</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1481"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1444"/>
         <source>Memory cues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1511"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1474"/>
         <source>(loading) Rekordbox</source>
         <translation type="unfinished"></translation>
     </message>

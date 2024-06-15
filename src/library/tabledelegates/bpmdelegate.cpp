@@ -108,7 +108,9 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
             textColor = option.palette.color(QPalette::Normal, QPalette::Text);
         }
     }
-    if (textColor.isValid()) {
+
+    if (textColor.isValid() && textColor != m_cachedTextColor) {
+        m_cachedTextColor = textColor;
         m_pCheckBox->setStyleSheet(QStringLiteral(
                 "#LibraryBPMButton::item { color: %1; }")
                                            .arg(textColor.name(QColor::HexRgb)));

@@ -160,17 +160,11 @@ DlgPreferences::DlgPreferences(
 
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
-        DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
         addPageWidget(PreferencesPage(
-                              pWaveformPage,
+                              new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
                 tr("Waveforms"),
                 "ic_preferences_waveforms.svg");
-        connect(pWaveformPage,
-                &DlgPrefWaveform::reloadUserInterface,
-                this,
-                &DlgPreferences::reloadUserInterface,
-                Qt::DirectConnection);
     }
 
     addPageWidget(PreferencesPage(

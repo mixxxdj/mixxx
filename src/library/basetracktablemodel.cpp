@@ -790,6 +790,9 @@ QVariant BaseTrackTableModel::roleValue(
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
+            // TODO: This is a hot code path, executed very often while library scrolling,
+            // and localDateTimeFromUtc is time consuming, probably because,
+            // we pass around QDateTime with a wrong time zone set
             QDateTime dt = mixxx::localDateTimeFromUtc(rawValue.toDateTime());
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
                 // localized text date: "Wednesday, May 20, 1998 03:40:13 AM CEST"
@@ -820,6 +823,9 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
+            // TODO: This is a hot code path, executed very often while library scrolling,
+            // and localDateTimeFromUtc is time consuming, probably because,
+            // we pass around QDateTime with a wrong time zone set
             QDateTime dt = mixxx::localDateTimeFromUtc(lastPlayedAt);
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
                 return dt;

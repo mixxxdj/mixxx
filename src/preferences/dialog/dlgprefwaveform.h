@@ -10,6 +10,7 @@
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #endif
 
+class ControlObject;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
@@ -59,8 +60,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkShowTime(bool checked);
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
-  signals:
-    void reloadUserInterface();
 
   private:
     void initWaveformControl();
@@ -72,6 +71,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
             allshader::WaveformRendererSignalBase::Options currentOption);
     void updateWaveformAcceleration(
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+
+    std::unique_ptr<ControlObject> m_pTypeControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

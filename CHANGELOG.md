@@ -398,6 +398,7 @@
   [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
   [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
 * Numark PartyMix: Fix EQ (script binding) display name [#13255](https://github.com/mixxxdj/mixxx/pull/13255)
+* Numark Scratch: Add initial mapping [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
 * Sony SIXAXIS: Fix mapping [#13319](https://github.com/mixxxdj/mixxx/pull/13319)
 
 ### Fixes
@@ -417,6 +418,20 @@
 * Move to GitHub workflow runner macos-12
   [#13296](https://github.com/mixxxdj/mixxx/pull/13296)
   [#13248](https://github.com/mixxxdj/mixxx/issues/13248)
+* Recording: with empty config, save default split size immediately
+  [#13304](https://github.com/mixxxdj/mixxx/pull/13304)
+* Allow to drop files with supported MIME type regardless off the file extensions
+  [#13209](https://github.com/mixxxdj/mixxx/pull/13209)
+  [#13204](https://github.com/mixxxdj/mixxx/issues/13204)
+* Add support for Ubuntu Oracular Oriole and remove Lunar Lobster
+  [#13348](https://github.com/mixxxdj/mixxx/pull/13348)
+* Recordbox: Fix string decoding issues
+  [#13293](https://github.com/mixxxdj/mixxx/pull/13293)
+  [#13291](https://github.com/mixxxdj/mixxx/issues/13291)
+* Mixer preferences: Don't update EQs/QuickEffects while applying [#13333](https://github.com/mixxxdj/mixxx/pull/13333)
+* Hardware preferences: Fix UX when applying config with missing/busy devices
+  [#13312](https://github.com/mixxxdj/mixxx/pull/13312)
+* Fix minor 64 bit CPU performance issue [#13355](https://github.com/mixxxdj/mixxx/pull/13355)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
