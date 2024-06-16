@@ -65,27 +65,30 @@ allshader::WaveformRendererSignalBase*
 WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
         WaveformRendererSignalBase::Options options,
         ::WaveformRendererAbstract::PositionSource positionSource) {
+#ifndef QT_OPENGL_ES_2
+    if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
+        switch (type) {
+        case ::WaveformWidgetType::RGB:
+        case ::WaveformWidgetType::Filtered:
+        case ::WaveformWidgetType::Stacked:
+            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
+        default:
+            break;
+        }
+    }
+#endif
+
     switch (type) {
     case ::WaveformWidgetType::Simple:
         return addRenderer<WaveformRendererSimple>();
     case ::WaveformWidgetType::RGB:
-        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
-            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
-        }
         return addRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
         return addRenderer<WaveformRendererHSV>();
     case ::WaveformWidgetType::Filtered:
-        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
-            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
-        }
         return addRenderer<WaveformRendererFiltered>(false);
     case ::WaveformWidgetType::Stacked:
-        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
-            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
-        } else {
-            return addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked
-        }
+        return addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked
     default:
         break;
     }
