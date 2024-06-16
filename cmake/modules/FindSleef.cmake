@@ -61,10 +61,28 @@ find_library(Sleef_LIBRARY
   PATHS ${PC_Sleef_LIBRARY_DIRS})
 mark_as_advanced(Sleef_LIBRARY)
 
-find_library(SleefDFT_LIBRARY
-  NAMES sleefdft
-  PATHS ${PC_Sleef_LIBRARY_DIRS})
-mark_as_advanced(SleefDFT_LIBRARY)
+foreach(_component ${Sleef_FIND_COMPONENTS})
+  find_library(Sleef_${_component}_LIBRARY
+    NAMES sleef${_component}
+    PATHS ${PC_Sleef_LIBRARY_DIRS})
+  mark_as_advanced(Sleef_${_component}_LIBRARY)
+  set(ADDITIONAL_REQUIRED_VARS ${ADDITIONAL_REQUIRED_VARS} Sleef_${_component}_LIBRARY)
+
+  if(Sleef_${_component}_LIBRARY)
+    set(Sleef_${_component}_FOUND TRUE)
+    if(NOT TARGET Sleef::${_component})
+      add_library(Sleef::${_component} UNKNOWN IMPORTED)
+      set_target_properties(Sleef::${_component}
+        PROPERTIES
+          IMPORTED_LOCATION "${Sleef_${_component}_LIBRARY}"
+          INTERFACE_COMPILE_OPTIONS "${PC_Sleef_CFLAGS_OTHER}"
+          INTERFACE_INCLUDE_DIRECTORIES "${Sleef_INCLUDE_DIR}"
+      )
+    endif()
+  else()
+    set(Sleef_${_component}_FOUND FALSE)
+  endif()
+endforeach()
 
 if(DEFINED PC_Sleef_VERSION AND NOT PC_Sleef_VERSION STREQUAL "")
   set(Sleef_VERSION "${PC_Sleef_VERSION}")
@@ -99,7 +117,7 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Sleef
-  REQUIRED_VARS Sleef_INCLUDE_DIR Sleef_LIBRARY
+  REQUIRED_VARS Sleef_INCLUDE_DIR Sleef_LIBRARY ${ADDITIONAL_REQUIRED_VARS}
   VERSION_VAR Sleef_VERSION)
 
 if(Sleef_FOUND)
@@ -107,24 +125,16 @@ if(Sleef_FOUND)
   set(Sleef_INCLUDE_DIRS "${Sleef_INCLUDE_DIR}")
   set(Sleef_DEFINITIONS ${PC_Sleef_CFLAGS_OTHER})
 
-  if(SleefDFT_LIBRARY AND NOT TARGET Sleef::sleefdft)
-    add_library(Sleef::sleefdft UNKNOWN IMPORTED)
-    set_target_properties(Sleef::sleefdft
-      PROPERTIES
-        IMPORTED_LOCATION "${SleefDFT_LIBRARY}"
-        INTERFACE_COMPILE_OPTIONS "${PC_Sleef_CFLAGS_OTHER}"
-        INTERFACE_INCLUDE_DIRECTORIES "${Sleef_INCLUDE_DIR}"
-    )
-
-    is_static_library(SleefDFT_IS_STATIC Sleef::sleefdft)
-    if(SleefDFT_IS_STATIC)
-      set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+  if(Sleef_dft_FOUND)
+    is_static_library(Sleef_dft_IS_STATIC Sleef::dft)
+    if(Sleef_dft_IS_STATIC)
+      set_property(TARGET Sleef::dft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
         Sleef::sleef
       )
 
       find_package(OpenMP)
       if(OpenMP_CXX_FOUND)
-        set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        set_property(TARGET Sleef::dft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
           OpenMP::OpenMP_CXX
         )
       endif()
