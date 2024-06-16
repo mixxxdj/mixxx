@@ -49,12 +49,28 @@ ControllerRenderingEngine::ControllerRenderingEngine(
     switch (m_screenInfo.pixelFormat) {
     case QImage::Format_RGB16:
         m_GLDataFormat = GL_RGB;
-        m_GLDataType = m_screenInfo.reversedColor
-                ? GL_UNSIGNED_SHORT_5_6_5_REV
-                : GL_UNSIGNED_SHORT_5_6_5;
+        if (m_screenInfo.reversedColor) {
+#ifdef QT_OPENGL_ES_2
+            m_isValid = false;
+            kLogger.critical() << "Reversed RGB16 format is not supported in OpenGL ES";
+#else
+            m_GLDataType = GL_UNSIGNED_SHORT_5_6_5_REV;
+#endif
+        } else {
+            m_GLDataType = GL_UNSIGNED_SHORT_5_6_5;
+        }
         break;
     case QImage::Format_RGB888:
-        m_GLDataFormat = m_screenInfo.reversedColor ? GL_BGR : GL_RGB;
+        if (m_screenInfo.reversedColor) {
+#ifdef QT_OPENGL_ES_2
+            m_isValid = false;
+            kLogger.critical() << "Reversed RGB8 format is not supported in OpenGL ES";
+#else
+            m_GLDataFormat = GL_BGR;
+#endif
+        } else {
+            m_GLDataFormat = GL_RGB;
+        }
         m_GLDataType = GL_UNSIGNED_BYTE;
         break;
     case QImage::Format_RGBA8888:
@@ -63,10 +79,10 @@ ControllerRenderingEngine::ControllerRenderingEngine(
         break;
     default:
         m_isValid = false;
-        DEBUG_ASSERT(!"Unsupported format");
     }
 
     if (!m_isValid) {
+        DEBUG_ASSERT(!"Unsupported format");
         return;
     }
 
@@ -295,7 +311,14 @@ void ControllerRenderingEngine::renderFrame() {
     glError = m_context->functions()->glGetError();
     VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError: " << glError);
     if (static_cast<std::endian>(m_screenInfo.endian) != std::endian::native) {
+#ifdef QT_OPENGL_ES_2
+        kLogger.critical()
+                << "Screen endianness mismatches native endianness, but OpenGL "
+                   "ES does not let us specify a reverse pixel store order. "
+                   "This will likely lead to invalid colors.";
+#else
         m_context->functions()->glPixelStorei(GL_PACK_SWAP_BYTES, GL_TRUE);
+#endif
     }
     glError = m_context->functions()->glGetError();
     VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError: " << glError);
