@@ -56,7 +56,16 @@ WOverview::WOverview(
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
           m_pHoveredMark(nullptr),
-          m_scaleFactor(1.0) {
+          m_scaleFactor(1.0),
+          m_trackSampleRateControl(
+                  m_group,
+                  QStringLiteral("track_samplerate")),
+          m_trackSamplesControl(
+                  m_group,
+                  QStringLiteral("track_samples")),
+          m_playpositionControl(
+                  m_group,
+                  QStringLiteral("playposition")) {
     m_endOfTrackControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
@@ -65,13 +74,6 @@ WOverview::WOverview(
     // Needed to recalculate range durations when rate slider is moved without the deck playing
     m_pRateRatioControl->connectValueChanged(
             this, &WOverview::onRateRatioChange);
-    // TODO(xxx) Use PollingControlProxy where possible
-    m_trackSampleRateControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("track_samplerate"), this, ControlFlag::NoAssertIfMissing);
-    m_trackSamplesControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("track_samples"), this);
-    m_playpositionControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("playposition"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("passthrough"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
@@ -1002,7 +1004,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
             double markSamples = pMark->getSamplePosition();
             double trackSamples = getTrackSamples();
-            double currentPositionSamples = m_playpositionControl->get() * trackSamples;
+            double currentPositionSamples = m_playpositionControl.get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
@@ -1122,7 +1124,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         qreal timePositionTillEnd = samplePositionToSeconds(
                 (1 - widgetPositionFraction) * trackSamples);
         qreal timeDistance = samplePositionToSeconds(
-                (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
+                (widgetPositionFraction - m_playpositionControl.get()) * trackSamples);
 
         QString timeText = mixxx::Duration::formatTime(timePosition) + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
@@ -1543,7 +1545,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 
 double WOverview::samplePositionToSeconds(double sample) {
     double trackTime = sample /
-            (m_trackSampleRateControl->get() * mixxx::kEngineChannelCount);
+            (m_trackSampleRateControl.get() * mixxx::kEngineChannelCount);
     return trackTime / m_pRateRatioControl->get();
 }
 
