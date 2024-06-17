@@ -151,17 +151,26 @@ void WaveformWidget::leaveEvent(QEvent* pEvent) {
 /* static */
 WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
         WaveformWidgetType::Type type) {
+    WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None;
     switch (type) {
     case WaveformWidgetType::Type::RGB:
-        return WaveformRendererSignalBase::Option::AllOptionsCombined;
+        options = WaveformRendererSignalBase::Option::AllOptionsCombined;
+        break;
     case WaveformWidgetType::Type::Filtered:
-        return WaveformRendererSignalBase::Option::HighDetail;
+        options = WaveformRendererSignalBase::Option::HighDetail;
+        break;
     case WaveformWidgetType::Type::Stacked:
-        return WaveformRendererSignalBase::Option::HighDetail;
+        options = WaveformRendererSignalBase::Option::HighDetail;
+        break;
     default:
         break;
     }
-    return WaveformRendererSignalBase::Option::None;
+#ifdef QT_OPENGL_ES_2
+    // High detail (textured) waveforms are not supported on OpenGL ES.
+    // See https://github.com/mixxxdj/mixxx/issues/13385
+    options &= ~WaveformRendererSignalBase::Options(WaveformRendererSignalBase::Option::HighDetail);
+#endif
+    return options;
 }
 
 /* static */
