@@ -24,6 +24,7 @@ Variables:
         <Size><Variable name="Size"/></Size>
         <Connection>
           <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
           <ConfigKey><Variable name="CoverConfigKey"/></ConfigKey>
         </Connection>
       </Label>
