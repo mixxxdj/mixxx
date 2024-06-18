@@ -1135,6 +1135,7 @@ WTrackProperty:hover {
   border: 1px solid #FF6600;
   border-right: 0px;
   color: #D6D6D6;
+  qproperty-layoutSpacing: 2;
 }
 
 #BpmKeyEditTrigger {
