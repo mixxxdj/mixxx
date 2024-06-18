@@ -1670,7 +1670,9 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
 }
 
 void AutoDJProcessor::playlistFirstTrackChanged() {
-    qDebug() << this << "playlistFirstTrackChanged";
+    if constexpr (sDebug) {
+        qDebug() << this << "playlistFirstTrackChanged";
+    }
     if (m_eState != ADJ_DISABLED) {
         DeckAttributes* pLeftDeck = getLeftDeck();
         DeckAttributes* pRightDeck = getRightDeck();
