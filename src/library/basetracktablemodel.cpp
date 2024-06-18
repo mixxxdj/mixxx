@@ -9,6 +9,7 @@
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
+#include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
 #include "library/tabledelegates/playcountdelegate.h"
@@ -121,7 +122,7 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
 }
 
-//static
+// static
 QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
 }
@@ -506,6 +507,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 this,
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+        return new KeyDelegate(pTableView);
     }
     return nullptr;
 }
