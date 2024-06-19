@@ -65,27 +65,30 @@ allshader::WaveformRendererSignalBase*
 WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
         WaveformRendererSignalBase::Options options,
         ::WaveformRendererAbstract::PositionSource positionSource) {
+#ifndef QT_OPENGL_ES_2
+    if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
+        switch (type) {
+        case ::WaveformWidgetType::RGB:
+        case ::WaveformWidgetType::Filtered:
+        case ::WaveformWidgetType::Stacked:
+            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
+        default:
+            break;
+        }
+    }
+#endif
+
     switch (type) {
     case ::WaveformWidgetType::Simple:
         return addRenderer<WaveformRendererSimple>();
     case ::WaveformWidgetType::RGB:
-        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
-            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
-        }
         return addRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
         return addRenderer<WaveformRendererHSV>();
     case ::WaveformWidgetType::Filtered:
-        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
-            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
-        }
         return addRenderer<WaveformRendererFiltered>(false);
     case ::WaveformWidgetType::Stacked:
-        if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
-            return addRenderer<WaveformRendererTextured>(type, positionSource, options);
-        } else {
-            return addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked
-        }
+        return addRenderer<WaveformRendererFiltered>(true); // true for RGB Stacked
     default:
         break;
     }
@@ -148,17 +151,26 @@ void WaveformWidget::leaveEvent(QEvent* pEvent) {
 /* static */
 WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
         WaveformWidgetType::Type type) {
+    WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None;
     switch (type) {
     case WaveformWidgetType::Type::RGB:
-        return WaveformRendererSignalBase::Option::AllOptionsCombined;
+        options = WaveformRendererSignalBase::Option::AllOptionsCombined;
+        break;
     case WaveformWidgetType::Type::Filtered:
-        return WaveformRendererSignalBase::Option::HighDetail;
+        options = WaveformRendererSignalBase::Option::HighDetail;
+        break;
     case WaveformWidgetType::Type::Stacked:
-        return WaveformRendererSignalBase::Option::HighDetail;
+        options = WaveformRendererSignalBase::Option::HighDetail;
+        break;
     default:
         break;
     }
-    return WaveformRendererSignalBase::Option::None;
+#ifdef QT_OPENGL_ES_2
+    // High detail (textured) waveforms are not supported on OpenGL ES.
+    // See https://github.com/mixxxdj/mixxx/issues/13385
+    options &= ~WaveformRendererSignalBase::Options(WaveformRendererSignalBase::Option::HighDetail);
+#endif
+    return options;
 }
 
 /* static */
