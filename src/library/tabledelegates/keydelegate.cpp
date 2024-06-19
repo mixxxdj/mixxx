@@ -40,14 +40,16 @@ void KeyDelegate::paintItem(
                 qcolor);
     }
 
+    const int rectWidth = 10; // 2px left padding + 4px width + 4px right padding
+
     QString elidedText = option.fontMetrics.elidedText(
             index.data().toString(),
             Qt::ElideLeft,
-            columnWidth(index) - 8); // Subtracting total width of the rectangle
+            columnWidth(index) - rectWidth);
 
-    painter->drawText(option.rect.x() + 8,
+    painter->drawText(option.rect.x() + rectWidth,
             option.rect.y(),
-            option.rect.width() - 8,
+            option.rect.width() - rectWidth,
             option.rect.height(),
             Qt::AlignVCenter,
             elidedText);
