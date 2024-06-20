@@ -43,8 +43,7 @@ const ConfigKey kVScrollBarPosConfigKey{
 WTrackTableView::WTrackTableView(QWidget* pParent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        double backgroundColorOpacity,
-        bool sorting)
+        double backgroundColorOpacity)
         : WLibraryTableView(pParent, pConfig),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
@@ -53,7 +52,6 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_focusBorderColor(Qt::white),
           m_trackPlayedColor(QColor(kDefaultTrackPlayedColor)),
           m_trackMissingColor(QColor(kDefaultTrackMissingColor)),
-          m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Connect slots and signals to make the world go 'round.
@@ -175,6 +173,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pModel, bool restoreSta
     VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }
+
+    m_sorting = pTrackModel->hasCapabilities(TrackModel::Capability::Sorting);
 
     // If the model has not changed there's no need to exchange the headers
     // which would cause a small GUI freeze
@@ -666,14 +666,14 @@ void WTrackTableView::dropEvent(QDropEvent* pEvent) {
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
     if (!pTrackModel) {
-        event->ignore();
+        pEvent->ignore();
         return;
     }
 
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model available";
-        event->ignore();
+        pEvent->ignore();
         return;
     }
 
@@ -1063,7 +1063,7 @@ void WTrackTableView::keyPressEvent(QKeyEvent* pEvent) {
         }
         if (pEvent->modifiers().testFlag(Qt::NoModifier)) {
             slotMouseDoubleClicked(currentIndex());
-        } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
+        } else if ((pEvent->modifiers() & kPropertiesShortcutModifier)) {
             const QModelIndexList indices = getSelectedRows();
             if (indices.isEmpty()) {
                 return;
