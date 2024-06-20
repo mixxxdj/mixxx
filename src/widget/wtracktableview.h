@@ -26,8 +26,7 @@ class WTrackTableView : public WLibraryTableView {
             QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent* pEvent) override;
     void onSearch(const QString& text) override;
