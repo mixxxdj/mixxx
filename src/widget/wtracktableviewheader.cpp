@@ -205,6 +205,19 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         }
     }
 
+    m_menu.addSeparator();
+
+    // Only show the shuffle action in models that allow sorting.
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting)) {
+        auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), &m_menu);
+        connect(pShuffleAction,
+                &QAction::triggered,
+                this,
+                &WTrackTableViewHeader::shuffle,
+                /*signal-to-signal*/ Qt::DirectConnection);
+        m_menu.addAction(pShuffleAction);
+    }
+
     // Safety check against someone getting stuck with all columns hidden
     // (produces an empty library table). Just re-show them all.
     if (hiddenCount() == columns) {
