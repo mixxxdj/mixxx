@@ -275,6 +275,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pModel, bool restoreSta
                 this,
                 &WTrackTableView::slotSortingChanged,
                 Qt::AutoConnection);
+        connect(pHeader,
+                &WTrackTableViewHeader::shuffle,
+                this,
+                &WTrackTableView::slotRandomSorting);
 
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
@@ -1634,6 +1638,15 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     if (sortingChanged) {
         applySortingIfVisible();
     }
+}
+
+void WTrackTableView::slotRandomSorting() {
+    // There's no need to remove the shuffle feature of the Preview column
+    // (and replace it with a dedicated randomize slot to BaseSqltableModel),
+    // so we simply abuse that column.
+    auto previewCol = TrackModel::SortColumnId::Preview;
+    m_pSortColumn->set(static_cast<int>(previewCol));
+    applySortingIfVisible();
 }
 
 bool WTrackTableView::hasFocus() const {
