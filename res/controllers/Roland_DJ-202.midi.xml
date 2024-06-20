@@ -2,16 +2,16 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1.0+">
     <info>
         <name>Roland DJ-202</name>
-        <author>Silvio Ankermann (Lykos153), Sebastian Reuße (eigengrau) and René Kraus (upCASE), Jhade Williamson (evoixmr), BSDguy389, Claude AI</author>
+        <author>Silvio Ankermann (Lykos153), Sebastian Reuße (eigengrau) and René Kraus (upCASE), Jhade Williamson (evoixmr), Sébastien Guyot (BSDguy389)</author>
         <description>4-deck mapping for Roland DJ-202 controller</description>
         <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=11664</forums>
         <wiki>https://mixxx.org/wiki/doku.php/roland_dj-202</wiki>
     </info>
     <controller id="DJ-202">
         <scriptfiles>
-            <file functionprefix="" filename="lodash.mixxx.js"/>
-            <file functionprefix="" filename="midi-components-0.0.js"/>
-            <file functionprefix="DJ202" filename="Roland_DJ-202-scripts.js"/>
+            <file filename="lodash.mixxx.js" functionprefix=""/>
+            <file filename="midi-components-0.0.js" functionprefix=""/>
+            <file filename="Roland_DJ-202-scripts.js" functionprefix="DJ202"/>
         </scriptfiles>
         <controls>
             <control>
