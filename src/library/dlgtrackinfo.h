@@ -80,6 +80,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QModelIndex getPrevNextTrack(bool next);
     void loadNextTrack();
     void loadPrevTrack();
+    void refocusCurrentWidget();
     void loadTrackInternal(const TrackPointer& pTrack);
     void reloadTrackBeats(const Track& track);
     void trackColorDialogSetColor(const mixxx::RgbColor::optional_t& color);

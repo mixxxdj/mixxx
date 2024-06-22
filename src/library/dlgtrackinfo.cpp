@@ -347,6 +347,7 @@ void DlgTrackInfo::loadNextTrack() {
     auto nextRow = getPrevNextTrack(true);
     if (nextRow.isValid()) {
         loadTrack(nextRow);
+        refocusCurrentWidget();
         emit next();
     }
 }
@@ -355,7 +356,23 @@ void DlgTrackInfo::loadPrevTrack() {
     auto prevRow = getPrevNextTrack(false);
     if (prevRow.isValid()) {
         loadTrack(prevRow);
+        refocusCurrentWidget();
         emit previous();
+    }
+}
+
+/// Simulate moving the focus out of and then back into the currently
+/// focused widget to trigger behaviors like the "Select all on focus"
+/// for QLineEdit.
+///
+/// This is done when moving to the previous/next track, because,
+/// logically, the user has moved to a new dialog, even though we
+/// reuse the current dialog instance internally.
+void DlgTrackInfo::refocusCurrentWidget() {
+    QWidget* focusedWidget = QApplication::focusWidget();
+    if (focusedWidget && isAncestorOf(focusedWidget)) {
+        focusedWidget->clearFocus();
+        focusedWidget->setFocus(Qt::ShortcutFocusReason);
     }
 }
 
