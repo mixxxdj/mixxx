@@ -17,6 +17,7 @@
         <Hotcue><Variable name="number"/></Hotcue>
         <NumberStates>3</NumberStates>
         <DimBrightThreshold><Variable name="DimBrightThresholdHotcueBtn"/></DimBrightThreshold>
+        <DndRectMargin><Variable name="DndRectMarginHotcueBtn"/></DndRectMargin>
         <State>
           <Number>0</Number>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square.svg</Unpressed>

@@ -237,6 +237,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
 void WPushButton::setStates(int iStates) {
     m_bHovered = false;
     m_bPressed = false;
+    m_dragging = false;
     m_iNoStates = iStates;
     m_elideMode = Qt::ElideNone;
     m_activeTouchButton = Qt::NoButton;
@@ -440,7 +441,9 @@ bool WPushButton::event(QEvent* e) {
         m_bHovered = true;
         restyleAndRepaint();
     } else if (e->type() == QEvent::Leave) {
-        if (m_bPressed) {
+        // Leave might occur sporadically while dragging (swapping) a WHotcueButton.
+        // Don't release in that case.
+        if (m_bPressed && !m_dragging) {
             // A Leave event is send instead of a mouseReleaseEvent()
             // fake it to get not stuck in pressed state
             QMouseEvent mouseEvent = QMouseEvent(
@@ -473,6 +476,8 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
+    // Note. when changing any of these actions, also take care of
+    // WHotcueButton::release()
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -499,7 +504,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function,
-        // due the leak of visual feedback we do not allow a toggle
+        // due the lack of visual feedback we do not allow a toggle
         // function
         m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH
