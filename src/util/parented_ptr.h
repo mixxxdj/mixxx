@@ -55,6 +55,15 @@ class parented_ptr final {
         return this;
     };
 
+    /// Replace the managed object.
+    /// The reset() form is useful when the destruction has side-effects
+    /// (closing a widget for instance) and you need those side effects to
+    /// happen independently from the parent.
+    void reset(parented_ptr<T> ptr = {}) noexcept {
+        delete m_ptr;
+        m_ptr = ptr.m_ptr;
+    };
+
     // If U* is convertible to T* then parented_ptr<U> is convertible to parented_ptr<T>
     template<
             typename U,
