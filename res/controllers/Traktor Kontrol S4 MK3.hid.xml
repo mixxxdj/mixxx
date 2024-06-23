@@ -589,19 +589,6 @@
                 </option>
 
             </row>
-
-            <option
-                variable="wheelSpeedSample"
-                type="integer"
-                min="2"
-                max="80"
-                step="2"
-                default="5"
-                label="Speed sample">
-                <description>
-                    Define how many wheel ticks are sampled to compute the speed. Higher values will give smoother speeds at the expense of responsiveness.
-                </description>
-            </option>
             <option
                 variable="baseRevolutionsPerMinute"
                 type="enum"
@@ -616,21 +603,19 @@
                 variable="useMotors"
                 type="boolean"
                 default="false"
-                label="Use beta Haptic Drive features (BETA)">
+                label="Allow Mixxx to interact with jog wheel motors (BETA)">
                 <description>
                     This will defines whether or not Mixxx is allowed to interact with the motors. &lt;br /&gt;&lt;b&gt;WARNING&lt;/b&gt;: while interacting with motors should be harmless for your device, it could cause excess wear and tear.
                 </description>
             </option>
+
             <option
-                variable="turnTableSpeedSample"
-                type="integer"
-                min="2"
-                max="80"
-                step="2"
-                default="40"
-                label="Turntable speed sample">
+                variable="cueHapticFeedback"
+                type="boolean"
+                default="true"
+                label="Emit haptic feedback when the platter goes over the main cue">
                 <description>
-                    Define how many wheel ticks are sampled to compute the speed when using the motor. This is helpful to mitigate the delay that occurs in communication as well as Mixxx's built-in 20ms latency. Higher values will give smoother speeds at the expense of responsiveness.
+                    This will emit a haptic feedback on the platter while scratching over the main cue point.
                 </description>
             </option>
 
