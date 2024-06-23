@@ -1,15 +1,21 @@
 #include "widget/whotcuebutton.h"
 
+#include <QDrag>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 #include <QMouseEvent>
 
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
 #include "track/track.h"
+#include "util/dnd.h"
 #include "widget/controlwidgetconnection.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-} // namespace
+const QString kMimeTextDelimiter = QStringLiteral("\n");
+} // anonymous namespace
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
@@ -21,6 +27,7 @@ WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
           m_bCueColorDimmed(false),
           m_bCueColorIsLight(false),
           m_bCueColorIsDark(false) {
+    setAcceptDrops(true);
 }
 
 void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
@@ -45,6 +52,15 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     m_hoverCueColor = context.selectBool(node, QStringLiteral("Hover"), false);
+
+    // For dnd/swapping hotcues we use the rendered widget pixmap as dnd cursor.
+    // Unfortnately the margin that constraints the bg color is not considered,
+    // so we shrink the rect by custom margins.
+    okay = false;
+    int dndMargin = context.selectInt(node, QStringLiteral("DndRectMargin"), &okay);
+    if (okay && dndMargin > 0) {
+        m_dndRectMargins = QMargins(dndMargin, dndMargin, dndMargin, dndMargin);
+    }
 
     m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), this);
     ColorPaletteSettings colorPaletteSettings(context.getConfig());
@@ -90,8 +106,8 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     }
 }
 
-void WHotcueButton::mousePressEvent(QMouseEvent* e) {
-    const bool rightClick = e->button() == Qt::RightButton;
+void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
+    const bool rightClick = pEvent->button() == Qt::RightButton;
     if (rightClick) {
         if (isPressed()) {
             // Discard right clicks when already left clicked.
@@ -117,7 +133,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
             if (!pHotCue) {
                 return;
             }
-            if (e->modifiers().testFlag(Qt::ShiftModifier)) {
+            if (pEvent->modifiers().testFlag(Qt::ShiftModifier)) {
                 pTrack->removeCue(pHotCue);
                 return;
             }
@@ -129,16 +145,95 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
     }
 
     // Pass all other press events to the base class.
-    WPushButton::mousePressEvent(e);
+    WPushButton::mousePressEvent(pEvent);
 }
 
-void WHotcueButton::mouseReleaseEvent(QMouseEvent* e) {
-    const bool rightClick = e->button() == Qt::RightButton;
+void WHotcueButton::mouseReleaseEvent(QMouseEvent* pEvent) {
+    const bool rightClick = pEvent->button() == Qt::RightButton;
     if (rightClick) {
         // Don't handle stray release events
         return;
     }
-    WPushButton::mouseReleaseEvent(e);
+    WPushButton::mouseReleaseEvent(pEvent);
+}
+
+void WHotcueButton::mouseMoveEvent(QMouseEvent* pEvent) {
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
+    if (!pTrack) {
+        return;
+    }
+    // Only allow moving set hotcues to empty or set slots.
+    // Note that Track::swapHotcues() allows both directions.
+    if (m_hotcue == Cue::kNoHotCue) {
+        return;
+    }
+
+    if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+        QDrag* pDrag = new QDrag(this);
+        QMimeData* mimeData = new QMimeData;
+        mimeData->setText(mimeTextIdentifier() + kMimeTextDelimiter + QString::number(m_hotcue));
+        pDrag->setMimeData(mimeData);
+        // Use the currently rendered button as dnd cursor.
+        const QPixmap currLook = grab(rect().marginsRemoved(m_dndRectMargins));
+        pDrag->setDragCursor(currLook, Qt::MoveAction);
+        // Release this button after failed or successful drop.
+        // This prevents both the preview and the pressed state from getting stuck.
+        connect(pDrag,
+                &QDrag::destroyed,
+                this,
+                &WHotcueButton::release);
+        pDrag->exec();
+    }
+}
+
+void WHotcueButton::dragEnterEvent(QDragEnterEvent* pEvent) {
+    if (pEvent->source() == this) {
+        pEvent->ignore();
+        return;
+    }
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
+    if (!pTrack) {
+        pEvent->ignore();
+        return;
+    }
+    const QString& mimeText = pEvent->mimeData()->text();
+    QStringList mimeTextLines = mimeText.split(kMimeTextDelimiter);
+    if (mimeTextLines.size() != 2 || mimeTextLines.at(0) != mimeTextIdentifier()) {
+        pEvent->ignore();
+        return;
+    }
+    bool okay = false;
+    int otherCueNum = mimeTextLines.at(1).toInt(&okay);
+    if (okay && otherCueNum != m_hotcue) {
+        pEvent->acceptProposedAction();
+    }
+}
+
+void WHotcueButton::dropEvent(QDropEvent* pEvent) {
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
+    if (!pTrack) {
+        return;
+    }
+    const QString& mimeText = pEvent->mimeData()->text();
+    QStringList mimeTextLines = mimeText.split(kMimeTextDelimiter);
+    int otherCueNum = mimeTextLines.at(1).toInt();
+    pTrack->swapHotcues(otherCueNum, m_hotcue);
+    // Alternative way to release drag source button:
+    // WHotcueButton* srcBtn = qobject_cast<WHotcueButton*>(pEvent->source());
+    // DEBUG_ASSERT(srcBtn);
+    // srcBtn->release();
+}
+
+const QString WHotcueButton::mimeTextIdentifier() const {
+    return QStringLiteral("hotcue_") + m_group;
+}
+
+void WHotcueButton::release() {
+    // Actions from WPushButton::mouseReleaseEvent()
+    // TODO Create a QMouseVent and call mouseReleaseEvent instead of this hack?
+    setControlParameterLeftUp(0);
+    m_bPressed = false;
+    restyleAndRepaint();
 }
 
 ConfigKey WHotcueButton::createConfigKey(const QString& name) {

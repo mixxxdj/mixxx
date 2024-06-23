@@ -473,6 +473,8 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
+    // Note. when changing any of these actions, also take care of
+    // WHotcueButton::release()
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -499,7 +501,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function,
-        // due the leak of visual feedback we do not allow a toggle
+        // due the lack of visual feedback we do not allow a toggle
         // function
         m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH
