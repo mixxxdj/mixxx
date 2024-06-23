@@ -17,7 +17,7 @@ namespace {
 /// most optimum way.
 ///
 /// The following table provide the expected number of channel per task with
-/// stereo processing (the default behaviour)
+/// stereo processing for a given number of CPU core (the default behaviour)
 ///
 ///  | NbOfCore | Stereo | Stem |
 ///  |----------|--------|------|
@@ -28,7 +28,7 @@ namespace {
 ///
 /// The following table provide the expected number of channel per task when the
 /// user has explicitly requested stereo channel to be processed as mono
-/// channels.
+/// channels for a given number of CPU core.
 ///
 ///  | NbOfCore | Stereo | Stem |
 ///  |----------|--------|------|

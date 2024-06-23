@@ -55,11 +55,11 @@ const QString kKeylockMultiThreadedAvailable = QStringLiteral("<p>") +
         QStringLiteral("</p>");
 const QString kKeylockMultiThreadedUnavailableMono = QStringLiteral("<i>") +
         QObject::tr(
-                "Multi threading mode is incompatible with mono main mix.") +
+                "Dual threading mode is incompatible with mono main mix.") +
         QStringLiteral("</i>");
 const QString kKeylockMultiThreadedUnavailableRubberband =
         QStringLiteral("<i>") +
-        QObject::tr("Multi threading mode is only available with RubberBand.") +
+        QObject::tr("Dual threading mode is only available with RubberBand.") +
         QStringLiteral("</i>");
 #endif
 } // namespace
@@ -213,12 +213,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             this,
             &DlgPrefSound::settingChanged);
 #ifdef __RUBBERBAND__
-    connect(keylockMultithreadedCheckBox,
+    connect(keylockDualthreadedCheckBox,
             &QCheckBox::clicked,
             this,
             &DlgPrefSound::updateKeylockMultithreading);
 #else
-    keylockMultithreadedCheckBox->hide();
+    keylockDualthreadedCheckBox->hide();
 #endif
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
@@ -341,11 +341,11 @@ void DlgPrefSound::slotApply() {
         bool keylockMultithreading = m_pSettings->getValue(
                 ConfigKey(kAppGroup, "keylock_multithreading"), false);
         m_pSettings->setValue(ConfigKey(kAppGroup, "keylock_multithreading"),
-                keylockMultithreadedCheckBox->isChecked() &&
-                        keylockMultithreadedCheckBox->isEnabled());
+                keylockDualthreadedCheckBox->isChecked() &&
+                        keylockDualthreadedCheckBox->isEnabled());
         if (keylockMultithreading !=
-                (keylockMultithreadedCheckBox->isChecked() &&
-                        keylockMultithreadedCheckBox->isEnabled())) {
+                (keylockDualthreadedCheckBox->isChecked() &&
+                        keylockDualthreadedCheckBox->isEnabled())) {
             QMessageBox::information(this,
                     tr("Information"),
                     tr("Mixxx must be restarted before the multi-threaded "
@@ -544,7 +544,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
 
 #ifdef __RUBBERBAND__
     // Default is no multi threading on keylock
-    keylockMultithreadedCheckBox->setChecked(m_pSettings->getValue(
+    keylockDualthreadedCheckBox->setChecked(m_pSettings->getValue(
             ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading")),
             false));
 #endif
@@ -749,8 +749,8 @@ void DlgPrefSound::settingChanged() {
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
     bool monoMix = mainOutputModeComboBox->currentIndex() == 1;
-    keylockMultithreadedCheckBox->setEnabled(!monoMix && supportedScaler);
-    keylockMultithreadedCheckBox->setToolTip(monoMix
+    keylockDualthreadedCheckBox->setEnabled(!monoMix && supportedScaler);
+    keylockDualthreadedCheckBox->setToolTip(monoMix
                     ? kKeylockMultiThreadedUnavailableMono
                     : (supportedScaler
                                       ? kKeylockMultiThreadedAvailable
@@ -778,7 +778,7 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
             tr("Yes, I know what I am doing"), QMessageBox::RejectRole);
     msg.setDefaultButton(pNoBtn);
     msg.exec();
-    keylockMultithreadedCheckBox->setChecked(msg.clickedButton() == pYesBtn);
+    keylockDualthreadedCheckBox->setChecked(msg.clickedButton() == pYesBtn);
 #endif
 }
 
@@ -932,8 +932,8 @@ void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
     bool supportedScaler = keylockComboBox->currentData()
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
-    keylockMultithreadedCheckBox->setEnabled(!value && supportedScaler);
-    keylockMultithreadedCheckBox->setToolTip(
+    keylockDualthreadedCheckBox->setEnabled(!value && supportedScaler);
+    keylockDualthreadedCheckBox->setToolTip(
             value ? kKeylockMultiThreadedUnavailableMono
                   : (supportedScaler
                                     ? kKeylockMultiThreadedAvailable
