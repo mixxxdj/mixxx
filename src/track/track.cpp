@@ -1103,6 +1103,52 @@ void Track::removeCuesOfType(mixxx::CueType type) {
     }
 }
 
+void Track::swapHotcues(int a, int b) {
+    VERIFY_OR_DEBUG_ASSERT(a != b) {
+        qWarning() << "Track::swapHotcues rejected," << a << "==" << b;
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(a > Cue::kNoHotCue || b > Cue::kNoHotCue) {
+        qWarning() << "Track::swapHotcues rejected, both a and b are kNoHotCue";
+        return;
+    }
+    auto locked = lockMutex(&m_qMutex);
+    qWarning() << "     Track::swapHotcues" << a << "and" << b;
+    CuePointer pCueA;
+    CuePointer pCueB;
+    for (CuePointer& pCue : m_cuePoints) {
+        if (pCueA && pCueB) {
+            qWarning() << "     > found both, break";
+            break;
+        }
+        if (pCue->getType() != mixxx::CueType::HotCue) {
+            continue;
+        }
+        if (pCue->getHotCue() == a) {
+            qWarning() << "     > found a" << a;
+            pCueA = pCue;
+            continue;
+        }
+        if (pCue->getHotCue() == to) {
+            qWarning() << "     > found b" << b;
+            pCueB = pCue;
+            continue;
+        }
+    }
+    if (!pCueA && !pCueB) {
+        return;
+    }
+    if (pCueA) {
+        qWarning() << "     >> move" << a << "to" << b;
+        pCueA->setHotCue(b);
+    }
+    if (pCueB) {
+        qWarning() << "     >> move" << b << "to" << a;
+        pCueB->setHotCue(a);
+    }
+    emit cuesUpdated();
+}
+
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
