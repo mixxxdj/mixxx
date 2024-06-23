@@ -1103,6 +1103,44 @@ void Track::removeCuesOfType(mixxx::CueType type) {
     }
 }
 
+void Track::swapHotcues(int from, int to) {
+    auto locked = lockMutex(&m_qMutex);
+    qWarning() << "     Track: swapHotcues" << from << "to" << to;
+    CuePointer pCueA;
+    CuePointer pCueB;
+    for (const CuePointer& pCue : m_cuePoints) {
+        if (pCueA && pCueB) {
+            qWarning() << "     > found both, break";
+            break;
+        }
+        if (pCue->getType() != mixxx::CueType::HotCue) {
+            continue;
+        }
+        if (pCue->getHotCue() == from) {
+            qWarning() << "     > found FROM" << from;
+            pCueA = pCue;
+            continue;
+        }
+        if (pCue->getHotCue() == to) {
+            qWarning() << "     > found TO" << to;
+            pCueB = pCue;
+            continue;
+        }
+    }
+    if (!pCueA && !pCueB) {
+        return;
+    }
+    if (pCueA) {
+        qWarning() << "     >> move" << from << "to" << to;
+        pCueA->setHotCue(to);
+    }
+    if (pCueB) {
+        qWarning() << "     >> move" << to << "to" << from;
+        pCueB->setHotCue(from);
+    }
+    emit cuesUpdated();
+}
+
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
