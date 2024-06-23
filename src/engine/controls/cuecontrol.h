@@ -198,7 +198,7 @@ class CueControl : public EngineControl {
 
     void process(const double dRate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize) override;
+            const std::size_t bufferSize) override;
 
     void notifySeek(mixxx::audio::FramePos position) override;
 

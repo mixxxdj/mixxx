@@ -136,19 +136,23 @@ CueControl::~CueControl() {
     qDeleteAll(m_hotcueControls);
 }
 
-void CueControl::process(const double,
+void CueControl::process(const double rate,
         mixxx::audio::FramePos currentPosition,
-        const int) {
+        const std::size_t bufferSize) {
+    Q_UNUSED(rate);
+    Q_UNUSED(bufferSize);
     for (const auto& pCue : std::as_const(m_hotcueControls)) {
         if (pCue->getStatus() != HotcueControl::Status::Active ||
-                pCue->getCue()->getType() != mixxx::CueType::Jump) {
+                pCue->getCue()->getType() != mixxx::CueType::Jump ||
+                !pCue->getEndPosition().isValid()) {
             continue;
         }
-        if (pCue->getPosition() > m_lastProcessedPosition &&
-                pCue->getPosition() <= currentPosition) {
-            auto delta = pCue->getPosition() - currentPosition;
-            seekAbs(pCue->getEndPosition() + delta);
-            if (pCue->getEndPosition() < pCue->getPosition()) {
+        // Saved jumps store the position to jump from as their end position
+        if (pCue->getEndPosition() > m_lastProcessedPosition &&
+                pCue->getEndPosition() <= currentPosition) {
+            auto delta = pCue->getEndPosition() - currentPosition;
+            seekAbs(pCue->getPosition() + delta);
+            if (pCue->getPosition() < pCue->getEndPosition()) {
                 // If the saved jump is backward, we make the cue idle so it
                 // prevent creating a fake loop
                 pCue->setStatus(HotcueControl::Status::Set);
@@ -971,6 +975,13 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         } else {
             color = colorFromConfig(ConfigKey("[Controls]", "LoopDefaultColorIndex"));
         }
+    } else if (cueType == mixxx::CueType::Jump) {
+        ConfigKey autoJumpColorsKey("[Controls]", "auto_jump_colors");
+        if (getConfig()->getValue(autoJumpColorsKey, false)) {
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
+        } else {
+            color = colorFromConfig(ConfigKey("[Controls]", "jump_default_color_index"));
+        }
     } else {
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
         if (getConfig()->getValue(autoHotcueColorsKey, false)) {
@@ -1163,7 +1174,6 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                     }
                     break;
                 case mixxx::CueType::Jump:
-                    // TODO if playposition is past endPos, rewind, otherwise activate
                     if (pControl->getStatus() != HotcueControl::Status::Active) {
                         pControl->setStatus(HotcueControl::Status::Active);
                     } else {

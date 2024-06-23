@@ -80,6 +80,9 @@ class WCueMenuPopup : public QWidget {
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
+    void updateTypeAndColorIfDefault(mixxx::CueType newType);
+
+    UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     PollingControlProxy m_pBeatLoopSize;
     PollingControlProxy m_pBeatJumpSize;

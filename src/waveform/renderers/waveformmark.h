@@ -1,9 +1,12 @@
 #pragma once
 #include <QDomNode>
+#include <QHash>
 #include <QImage>
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
+#include "engine/controls/cuecontrol.h"
 #include "track/cue.h"
 #include "waveform/waveformmarklabel.h"
 
@@ -72,10 +75,10 @@ class WaveformMark {
                 // loop or jump anymore. This happens when the user changes the cue
                 // type. However, we persist the end position if the user wants
                 // to restore the cue to a saved loop
-                (m_pTypeCO &&
-                        static_cast<mixxx::CueType>(m_pTypeCO->get()) !=
+                (m_typeCO.valid() &&
+                        static_cast<mixxx::CueType>(m_typeCO.get()) !=
                                 mixxx::CueType::Loop &&
-                        static_cast<mixxx::CueType>(m_pTypeCO->get()) !=
+                        static_cast<mixxx::CueType>(m_typeCO.get()) !=
                                 mixxx::CueType::Jump)) {
             return Cue::kNoPosition;
         }
@@ -94,6 +97,21 @@ class WaveformMark {
             return true;
         }
         return m_pVisibleCO->toBool();
+    }
+    // A cue is always considered active if it isn't a saved loop or a saved jump
+    bool isActive() const {
+        return (!m_typeCO.valid() || !m_statusCO.valid() ||
+                (static_cast<mixxx::CueType>(m_typeCO.get()) !=
+                                mixxx::CueType::Loop &&
+                        static_cast<mixxx::CueType>(m_typeCO.get()) !=
+                                mixxx::CueType::Jump) ||
+                static_cast<HotcueControl::Status>(m_statusCO.get()) ==
+                        HotcueControl::Status::Active);
+    }
+    bool fillRange() const {
+        return (!m_typeCO.valid() ||
+                static_cast<mixxx::CueType>(m_typeCO.get()) ==
+                        mixxx::CueType::Loop);
     }
     bool isShowUntilNext() const {
         return m_showUntilNext;
@@ -126,14 +144,25 @@ class WaveformMark {
         return m_labelColor;
     }
 
+    double opacity() const {
+        return isActive() ? m_enabledOpacity : m_disabledOpacity;
+    }
+
     void setNeedsImageUpdate() {
         if (m_pGraphics) {
             m_pGraphics->m_obsolete = true;
+        }
+        if (m_pEndGraphics) {
+            m_pEndGraphics->m_obsolete = true;
         }
     }
 
     bool needsImageUpdate() const {
         return !m_pGraphics || m_pGraphics->m_obsolete;
+    }
+
+    bool needsEndImageUpdate() const {
+        return !m_pEndGraphics || m_pEndGraphics->m_obsolete;
     }
 
     void setBreadth(float breadth) {
@@ -156,12 +185,17 @@ class WaveformMark {
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
     QImage generateImage(float devicePixelRatio);
+    QImage generateEndImage(float devicePixelRatio);
 
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
     QString m_iconPath;
+    QString m_endIconPath;
+
+    double m_enabledOpacity;
+    double m_disabledOpacity;
 
     float m_linePosition;
     float m_offset;
@@ -177,10 +211,12 @@ class WaveformMark {
   private:
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
-    std::unique_ptr<ControlProxy> m_pTypeCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+    PollingControlProxy m_typeCO;
+    PollingControlProxy m_statusCO;
 
     std::unique_ptr<Graphics> m_pGraphics;
+    std::unique_ptr<Graphics> m_pEndGraphics;
 
     int m_iPriority;
     int m_iHotCue;
