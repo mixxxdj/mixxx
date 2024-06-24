@@ -48,10 +48,6 @@ const QString kKeylockMultiThreadedAvailable = QStringLiteral("<p>") +
                 "may result in pitch and tone imperfection, and this "
                 "is "
                 "mono-incompatible, due to third party limitations.") +
-        QStringLiteral("</p><p>") +
-        QObject::tr(
-                "Note that stem tracks will always be processed in parallel, "
-                "as individual stereo channels.") +
         QStringLiteral("</p>");
 const QString kKeylockMultiThreadedUnavailableMono = QStringLiteral("<i>") +
         QObject::tr(
