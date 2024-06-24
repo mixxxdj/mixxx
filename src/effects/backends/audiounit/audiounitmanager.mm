@@ -49,8 +49,16 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
 
 void AudioUnitManager::instantiateAudioUnitAsync(
         AVAudioUnitComponent* _Nonnull component, bool inProcess) {
-    auto options = inProcess ? kAudioComponentInstantiation_LoadInProcess
-                             : kAudioComponentInstantiation_LoadOutOfProcess;
+    auto options = kAudioComponentInstantiation_LoadOutOfProcess;
+
+    if (inProcess) {
+#ifdef Q_OS_IOS
+        qWarning() << "In-process Audio Unit instantiation is unavailable on "
+                      "iOS, using out-of-process instantiation instead";
+#else
+        options = kAudioComponentInstantiation_LoadInProcess;
+#endif
+    }
 
     // Instantiate the audio unit asynchronously.
     qDebug() << "Instantiating Audio Unit" << m_name << "asynchronously";

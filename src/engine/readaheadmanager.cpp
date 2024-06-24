@@ -98,7 +98,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         // Previous read was a cache miss, but now we got something back.
         // Apply ramping gain, because the last buffer has unwanted silence
         // and new samples without fading are causing a pop.
-        SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
+        SampleUtil::applyRampingGain(pOutput,
+                CSAMPLE_GAIN_ZERO,
+                CSAMPLE_GAIN_ONE,
+                samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
         m_cacheMissHappened = false;
     }
@@ -186,6 +189,12 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                         m_pCrossFadeBuffer,
                         crossFadeSamples);
             }
+        } else {
+            // No samples for crossfading, ramp to zero
+            SampleUtil::applyRampingGain(pOutput,
+                    CSAMPLE_GAIN_ONE,
+                    CSAMPLE_GAIN_ZERO,
+                    samples_from_reader);
         }
     }
 
