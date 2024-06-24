@@ -582,43 +582,23 @@ void SampleUtil::linearCrossfadeStemBuffersOut(
         SINT numSamples) {
     // M_RESTRICT unoptimizes the function for some reason.
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / 8);
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < numSamples / 8; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8] += pSrcFadeIn[i * 8] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 1] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 1] += pSrcFadeIn[i * 8 + 1] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 2] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 2] += pSrcFadeIn[i * 8 + 2] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 3] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 3] += pSrcFadeIn[i * 8 + 3] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 4] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 4] += pSrcFadeIn[i * 8 + 4] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 5] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 5] += pSrcFadeIn[i * 8 + 5] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 6] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 6] += pSrcFadeIn[i * 8 + 6] * cross_mix;
-    }
-    for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 8 + 7] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8 + 7] += pSrcFadeIn[i * 8 + 7] * cross_mix;
     }
