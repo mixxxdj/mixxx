@@ -49,6 +49,11 @@ DlgPrefWaveform::DlgPrefWaveform(
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
+    m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
+            ConfigKey(QStringLiteral("[Waveform]"),
+                    QStringLiteral("DrawOverviewMinuteMarkers")));
+    m_pOverviewMinuteMarkersControl->setReadOnly();
+
     // Populate untilMark options
     untilMarkAlignComboBox->addItem(tr("Top"));
     untilMarkAlignComboBox->addItem(tr("Center"));
@@ -146,6 +151,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetNormalizeOverview);
+    connect(overviewMinuteMarkersCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
             this,
@@ -271,6 +280,11 @@ void DlgPrefWaveform::slotUpdate() {
     }
     slotSetWaveformOverviewType(overviewType);
 
+    bool drawOverviewMinuteMarkers = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "DrawOverviewMinuteMarkers"), true);
+    overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
+    m_pOverviewMinuteMarkersControl->forceSet(drawOverviewMinuteMarkers);
+
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
     enableWaveformGenerationWithAnalysis->setChecked(
@@ -328,6 +342,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
+
+    // Show minute markers.
+    overviewMinuteMarkersCheckBox->setChecked(true);
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
@@ -531,6 +548,11 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+}
+
+void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
+    m_pConfig->setValue(ConfigKey("[Waveform]", "DrawOverviewMinuteMarkers"), draw);
+    m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
