@@ -555,6 +555,7 @@ void MixxxMainWindow::initializeWindow() {
 
 #ifndef __APPLE__
 void MixxxMainWindow::alwaysHideMenuBarDlg() {
+    // Don't show the dialog if the user unchecked "Ask me again"
     if (!m_pCoreServices->getSettings()->getValue<bool>(
                 kMenuBarHintConfigKey, true)) {
         return;
@@ -956,6 +957,7 @@ void MixxxMainWindow::connectMenuBar() {
 #endif
 }
 
+/// Enable/disable listening to Alt key press for toggling the menubar.
 #ifndef __APPLE__
 void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     if (!m_pCoreServices->getKeyboardEventFilter() || !m_pMenuBar) {
@@ -963,6 +965,7 @@ void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     }
 
     if (m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false)) {
+        // with Qt::UniqueConnection we don't need to check whether we're already connected
         connect(m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
                 m_pMenuBar,
@@ -1238,7 +1241,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     return m_pCentralWidget != nullptr;
 }
 
-// Try to load default styles that can be overridden by skins
+/// Try to load default styles that can be overridden by skins
 void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
     QFile file(resPath + "/skins/default.qss");
@@ -1251,6 +1254,7 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     }
 }
 
+/// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
         // always show tooltips in the preferences window
@@ -1307,12 +1311,21 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
                 QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
                 createMenuBar();
                 connectMenuBar();
-                // With a global menu we didn't show the menubar auto-hide dialog
-                // during (windowed) startup, so ask now.
+            }
+#endif
+
+#ifndef __APPLE__
+#ifdef __LINUX__
+            // Only show the dialog if we are able to have the menubar in the
+            // main window, only then we're able to hide it.
+            if (!m_supportsGlobalMenuBar || isFullScreenNow)
+#endif
+            {
                 alwaysHideMenuBarDlg();
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif
+
             // This will toggle the Fullscreen checkbox and hide the menubar if
             // we go fullscreen.
             // Skip this during startup or the launchimage will be shifted

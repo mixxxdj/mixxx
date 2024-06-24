@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2024-05-28" timestamp="1716925493">
+    <release version="2.6.0" type="development" date="2024-06-12" timestamp="1718193546">
       <description>
  <p>
   Waveforms
@@ -153,75 +153,97 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.0" type="development" date="2024-05-28" timestamp="1716925493">
+    <release version="2.5.0" type="development" date="2024-06-12" timestamp="1718193546">
       <description>
  <p>
-  Features
+  Waveforms
  </p>
  <ul>
   <li>
-   Logging: Include timestamps in messages by default
-   #11861
+   SlipMode waveform visual for RGB GLSL
+   #13002
+   #13256
   </li>
   <li>
-   MacOS: App proxy icon of the playing track to the window title
-   #12116
+   Show beats and time until next marker in the waveform
+   #12994
+   #13311
   </li>
   <li>
-   add beats_translate_move ControlEncoder
-   #12376
+   Waveforms: don't elide hotcue labels
+   #13219
+   #10722
   </li>
   <li>
-   New built-in effect: Glitch
-   #11329
+   Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
+   #13151
+   #12641
+  </li>
+ </ul>
+ <p>
+  Skins / Interface
+ </p>
+ <ul>
+  <li>
+   Toggle the menubar with single Alt key press (auto hide)
+   #11526
+   #13301
   </li>
   <li>
    Fullscreen toggle rework
    #11566
   </li>
   <li>
-   Playlists: Update of playlist labels after adding tracks
-   #12866
-   #12761
+   Allow to edit track title and artist directly within the decks via a delayed double-click
+   #11755
   </li>
   <li>
-   Tracks: Custom text color for played tracks (qss)
-   #12744
-   #5911
-   #12912
+   Require a minimum movement before initiating the drag&amp;drop of tracks
+   #12903
   </li>
   <li>
-   History: Show track count and duration in sidebar
-   #12811
-   #12788
+   Add type toggle to cue popup
+   #13215
   </li>
   <li>
-   fixes around cratetablemodel, remove tracks + don't allow pasting tracks into locked playlists/crates or History
-   #12926
+   add WEffectMetaKnob, draws arc from default meta position
+   #12638
+   #12634
   </li>
   <li>
-   Tootips: Improve
+   Handle not supported files when dragging to waveforms and spinnies
+   #13206
+  </li>
+  <li>
+   Improve
    rate_up/down
    tooltips, pitch vs. speed
    #12590
   </li>
   <li>
-   Shortkeys for track list management
-   #12020
+   Add tooltip for expand/collapse samplers button
+   #13005
+   #12998
   </li>
   <li>
-   Track menu: Rephrase "Reset" to "Clear"
-   #12955
+   LateNight: Merge vinyl control toggle and status light
+   #12947
+   #10192
+  </li>
+  <li>
+   Track label widgets: set
+   show_track_menu
+   only for main decks
+   #12978
+  </li>
+  <li>
+   MacOS: App proxy icon of the playing track to the window title
+   #12116
   </li>
   <li>
    PreviewDeckN,LoadSelectedTrackAndPlay toggles play/pause if the track is already loaded
    #12920
    #9819
-  </li>
-  <li>
-   Added tooltip for expand/collapse samplers button.
-   #13005
-   #12998
   </li>
   <li>
    Add command line option
@@ -231,33 +253,101 @@
    #10189
   </li>
   <li>
-   Allow to edit track title and artist directly within the decks via a delayed double-click
-   #11755
+   Logging: Include timestamps in messages by default
+   #11861
   </li>
   <li>
-   Preferences: Fix incorrect reboot required notification on preference updates
-   #13058
+   LateNight, Deere, Tango: Deactivate beatgrid edit controls if BPM is locked
+   #13320
+   #13323
+   #13325
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   Beats: allow undoing the last BPM/beats change
+   #12954
+   #12774
+   #10138
   </li>
   <li>
-   Effects: Add backend for Audio Unit (AU) plugins on macOS
+   Add beatloop anchor to set and adjust loop from either start or end
+   #12745
+   #13241
+  </li>
+  <li>
+   Add Rate Tap button
+   #12104
+  </li>
+  <li>
+   Store/restore regular loop when toggling rolling loops
+   #12475
+   #8947
+  </li>
+  <li>
+   Add
+   beats_translate_move
+   ControlEncoder
+   #12376
+  </li>
+  <li>
+   Looping/Beatjump: use seconds if track has no beats
+   #12961
+   #11124
+  </li>
+  <li>
+   Add Track colour palette cycling controls
+   track_color_next
+   and
+   track_color_prev
+   to library, decks and samplers
+   #13066
+   #12905
+  </li>
+  <li>
+   Add Tempo locking controls
+   #13041
+   #13041
+   #13038
+   #13199
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   Add Compressor effect
+   #12523
+  </li>
+  <li>
+   add Glitch effect
+   #11329
+  </li>
+  <li>
+   Add backend for Audio Unit (AU) plugins on macOS
    #12112
   </li>
   <li>
-   Track menu, Remove from disk: stop and eject all affected decks
-   #13214
+   Effect Meta knob: Draw arc from default meta position
+   #12638
+   #12634
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Shortkeys Cut, Copy, Paste for track list management
+   #12020
   </li>
   <li>
-   Require a minimum movement before initiating the drag&amp;drop of tracks
-   #12903
-  </li>
-  <li>
-   Preferences: Add missing spacer in interface preference
-   #13094
-  </li>
-  <li>
-   Preferences: Fix fetching of soundcard sample rate
-   #11951
-   11949
+   Track menu: Rephrase "Reset" to "Clear"
+   #12955
   </li>
   <li>
    Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
@@ -275,13 +365,19 @@
    #8881
   </li>
   <li>
-   Add load point option 'First hotcue'
-   #12869
-   #12740
+   Search: add 'type' filter
+   #13338
   </li>
   <li>
-   Toggle the menubar with single Alt key press (auto hide)
-   #11526
+   Search related Tracks menu: Allow to use multiple filters at once
+   #12213
+   #12211
+  </li>
+  <li>
+   Add multi-track property editor / batch tag editor
+   #12548
+   #9023
+   #13299
   </li>
   <li>
    Computer feature: add sidebar action "Refresh directory tree"
@@ -311,64 +407,73 @@
    #6988
   </li>
   <li>
-   Beats: allow undoing the last BPM/beats change
-   #12954
-   #12774
-   #10138
+   Playlists: Update of playlist labels after adding tracks
+   #12866
+   #12761
   </li>
   <li>
-   Effects: Add Compressor
-   #12523
+   Tracks: Custom text color for played tracks (qss)
+   #12744
+   #5911
+   #12912
   </li>
   <li>
-   Add beatloop anchor to set and adjust loop from either start or end
-   #12745
-   #13241
+   History: Show track count and duration in sidebar
+   #12811
+   #12788
   </li>
   <li>
-   Handle not supported files when dragging to waveforms and spinnies
-   #13206
+   Fixes around cratetablemodel, remove tracks + don't allow pasting tracks into locked playlists/crates or History
+   #12926
   </li>
   <li>
-   Add Rate Tap button
-   #12104
+   Track menu, Remove from disk: stop and eject all affected decks
+   #13214
   </li>
   <li>
-   Store/restore regular loop when toggling rolling loops
-   #12475
-   #8947
+   Track menu: add star rating
+   #12700
+   #10652
   </li>
   <li>
-   Add type toggle to cue popup
-   #13215
+   Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
+   #13092
+   #10826
+  </li>
+  <li>
+   Library control: make use of WLibrary::getCurrentTrackTableView()
+   #13335
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   Add missing spacer in Interface preferences
+   #13094
+  </li>
+  <li>
+   Fix fetching of soundcard sample rate
+   #11951
+   11949
+  </li>
+  <li>
+   Add load point option 'First hotcue'
+   #12869
+   #12740
   </li>
   <li>
    MIDI Input editor: allow selecting multiple Options
    #12348
   </li>
- </ul>
- <p>
-  Waveforms
- </p>
- <ul>
   <li>
-   SlipMode waveform visual for RGB GLSL
-   #13002
-   #13256
+   Fix incorrect reboot required notification on preference updates
+   #13058
   </li>
   <li>
-   Show beats and time until next marker in the waveform
-   #12994
-  </li>
-  <li>
-   Waveforms: don't elide hotcue labels
-   #13219
-   #10722
-  </li>
-  <li>
-   Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
-   #13151
-   #12641
+   Apply changes only after pressing Apply in color preferences
+   #13302
   </li>
  </ul>
  <p>
@@ -426,73 +531,25 @@
    #13089
   </li>
   <li>
-   Add Track colour palette cycling controls
-   track_color_next
-   and
-   track_color_prev
-   to library, decks and samplers
-   #13066
-   #12905
-  </li>
-  <li>
-   Add tempo lock control
-   bpmlock
-   to decks and samplers
-   #13041
-   #13038
-   #13199
-  </li>
-  <li>
    Controller IO table: Fix display text for Action/control delegate
    #13188
   </li>
   <li>
-   Tempo locking controls
-   #13041
+   Drop lodash dependency in ComponentJS
+   #12779
   </li>
   <li>
    Support for bulk devices on Windows and Mac
    #13008
   </li>
   <li>
-   Add Track colour palette cycling controls for decks
-   #13066
-  </li>
-  <li>
    Registering MIDI Input Handlers From Javascript
    #12781
    #13089
   </li>
- </ul>
- <p>
-  Library
- </p>
- <ul>
   <li>
-   Track widgets: set
-   show_track_menu
-   only for main decks
-   #12978
-  </li>
-  <li>
-   Track menu: add star rating
-   #12700
-   #10652
-  </li>
-  <li>
-   Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
-   #13092
-   #10826
-  </li>
- </ul>
- <p>
-  Skins
- </p>
- <ul>
-  <li>
-   LateNight: Merge vinyl control toggle and status light
-   #12947
-   #10192
+   Drop lodash dependency in ComponentJS
+   #12779
   </li>
  </ul>
  <p>
@@ -517,13 +574,13 @@
    #12559
   </li>
   <li>
-   add
+   Fix: Add
    qt6-qpa-plugins
    to dependencies
    #12549
   </li>
   <li>
-   fix(qml): Improve knobs by applying selective 4xMSAA on the Arc shape
+   Fix: Improve knobs by applying selective 4xMSAA on the Arc shape
    #12541
   </li>
   <li>
@@ -548,16 +605,595 @@
    #13009
   </li>
   <li>
-   fix(QML): handle case where Waveform data is missing
+   Fix: handle case where Waveform data is missing
    #13009
   </li>
   <li>
-   fix: allow missing COs on QML component
+   Fix: allow missing COs on QML component
    #13011
   </li>
   <li>
    Initialize CmdlineArgs::m_qml
    #13152
+  </li>
+ </ul>
+ <p>
+  Update to Qt6
+ </p>
+ <ul>
+  <li>
+   Qt6 prepare
+   #11863
+  </li>
+  <li>
+   Qt6 switch
+   #11892
+  </li>
+  <li>
+   CMakeLists: Default
+   QT6
+   to
+   ON
+   #11934
+  </li>
+  <li>
+   Build with Qt6 and optionally with QML
+   #11608
+  </li>
+  <li>
+   Use constInsert() template
+   #11847
+  </li>
+  <li>
+   DlgAbout: Add Qt version to the dialog
+   #11862
+  </li>
+  <li>
+   CMakeLists: Fix
+   QT_TRANSLATION_FILE
+   path for Qt6
+   #11880
+  </li>
+  <li>
+   LibraryControl: Enable control inputs for Qt6
+   #11877
+  </li>
+  <li>
+   Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds
+   #11895
+  </li>
+  <li>
+   WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6)
+   #11870
+  </li>
+  <li>
+   Install libjpeg-turbo::jpeg to fix cover display with Qt6
+   #11922
+  </li>
+  <li>
+   Skins: Remove
+   border: 0px
+   from sidebar item styling
+   #11970
+   #11957
+  </li>
+  <li>
+   Skins: Fix checkbox styling on Qt 6
+   #12050
+  </li>
+  <li>
+   Skins: Fix Tango waveform splitter
+   #12939
+  </li>
+  <li>
+   Skin: Fix Tango rate range label position
+   #13242
+  </li>
+  <li>
+   Introduce wrapper for non const iterators for erase and insert
+   #12201
+  </li>
+  <li>
+   Fix Qt6/QML build
+   #12255
+  </li>
+  <li>
+   Fix track color background with Qt6
+   #12380
+  </li>
+  <li>
+   multi-line delegate: fix bg color, Qt6 on Linux
+   #12478
+  </li>
+  <li>
+   Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6"
+   #12342
+  </li>
+  <li>
+   Fix: Replace deprecated
+   qAsConst
+   with
+   std::as_const
+   #13028
+  </li>
+  <li>
+   Fix Drag'n'drop: avoid unintended drag on hover (WTrackProperty, WCoverArt etc.)
+   #13035
+   #13033
+  </li>
+  <li>
+   Fix ambiguous overload error due to native qDebug impl for std::optional
+   #12981
+  </li>
+  <li>
+   Workaround for Qt6 'selected click' bug
+   #12488
+  </li>
+  <li>
+   Fix menu icon position
+   #12216
+  </li>
+ </ul>
+ <p>
+  Experimental iOs support
+ </p>
+ <ul>
+  <li>
+   CMakeLists: Support building for iOS
+   #12672
+  </li>
+  <li>
+   DlgPrefInterface: Disable tooltips on iOS by default
+   #12689
+  </li>
+  <li>
+   SoundManager: Set up
+   AVAudioSession
+   on iOS
+   #12714
+  </li>
+  <li>
+   SoundManager: Use correct PortAudio backend on iOS
+   #12716
+  </li>
+  <li>
+   DesktopHelper: Add openUrl abstraction to support iOS
+   #12698
+  </li>
+  <li>
+   iOS packaging: Add Info.plist, launch screen and app icon
+   #12676
+  </li>
+  <li>
+   CmdlineArgs: Move config directory to a user-accessible location on iOS
+   #12688
+  </li>
+ </ul>
+ <p>
+  Experimental WebAssembly support
+ </p>
+ <ul>
+  <li>
+   CMakeLists: Add support for targeting Emscripten/WebAssembly
+   #12918
+  </li>
+  <li>
+   CMakeLists: Emit better errors for exotic target platforms
+   #12910
+  </li>
+  <li>
+   Build: Add
+   PORTMIDI
+   flag for compiling with(out) PortMidi
+   #12913
+  </li>
+  <li>
+   DesktopHelper: Compile out process-spawning on WASM too
+   #12916
+  </li>
+  <li>
+   MixxxApplication: Use
+   QWasmIntegrationPlugin
+   when targeting WebAssembly
+   #12915
+  </li>
+  <li>
+   CMakeLists: Enable asyncify when targeting WASM
+   #12921
+  </li>
+  <li>
+   Resources: Bundle resources for preloading when targeting Emscripten/WASM
+   #12922
+  </li>
+  <li>
+   CMakeLists: Add
+   WASM_ASSERTIONS
+   option
+   #12931
+  </li>
+  <li>
+   VersionStore: Recognize Emscripten/WebAssembly
+   #12940
+  </li>
+  <li>
+   OpenGLWindow: Fix sizing on Wasm by setting
+   Qt::FramelessWindowHint
+   #12945
+  </li>
+  <li>
+   CMakeLists: Require WebGL 2.0 when building for Wasm
+   #12952
+  </li>
+  <li>
+   ScreenSaverHelper: Add no-op implementation for WASM
+   #12930
+  </li>
+  <li>
+   SSE: Check
+   !defined(__EMSCRIPTEN__)
+   where intrinsics are unavailable on WASM
+   #12917
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Lenient taglib 2.0 guard
+   #12793
+  </li>
+  <li>
+   Tools: Add
+   rpm_buildenv.sh
+   for building on Fedora
+   #13069
+  </li>
+  <li>
+   README: Recommend running buildenvs over sourcing them on Linux
+   #13071
+  </li>
+  <li>
+   FindSndFile: Link mpg123 in static builds
+   #13087
+  </li>
+  <li>
+   macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
+   #12101
+  </li>
+ </ul>
+ <p>
+  Misc Refactorings
+ </p>
+ <ul>
+  <li>
+   Add missing
+   &lt;Qt&gt;
+   include in
+   defs.h
+   #11348
+  </li>
+  <li>
+   Engine: Minor refactor to prefer simplified ranged-for-loop
+   #11234
+  </li>
+  <li>
+   Delete unused EngineFilter
+   #11559
+  </li>
+  <li>
+   AnalyzerWaveform: Fix commented out code
+   #11561
+  </li>
+  <li>
+   Remove usage of ControlObject::getControl
+   #11643
+  </li>
+  <li>
+   Fix unnecessary transfer of the ownership before release which returns the pointer itself
+   #11726
+  </li>
+  <li>
+   Add
+   ConfigObject::get-/setValue&lt;EnumType&gt;
+   #11883
+  </li>
+  <li>
+   Github CI: Enable
+   WARNINGS_FATAL
+   on macOS, too
+   #11905
+  </li>
+  <li>
+   Refactor timers
+   #11807
+   #11850
+  </li>
+  <li>
+   Use
+   mixxx::audio::ChannelCount
+   type instead of
+   int
+   /
+   unsigned char
+   /etc.
+   #11941
+  </li>
+  <li>
+   Refactor util/timer: cleanup includes
+   #11937
+  </li>
+  <li>
+   Use
+   SampleRate
+   type consistently
+   #11904
+  </li>
+  <li>
+   CMakeLists: Match arbitrary
+   arm64-osx
+   triplets
+   #11933
+  </li>
+  <li>
+   Reduce sample buffer memory usage
+   #11988
+  </li>
+  <li>
+   Fix clazy issues on
+   main
+   #12028
+  </li>
+  <li>
+   Tidy and modernize SampleBuffer
+   #11987
+  </li>
+  <li>
+   Refactor parented_ptr: make trivially destructible in release mode, delete move operations
+   #11981
+  </li>
+  <li>
+   Labeler: Add more labels to the auto-labeler
+   #12106
+  </li>
+  <li>
+   FindPortMidi: Link ALSA in static builds on Linux
+   #12292
+   #12291
+  </li>
+  <li>
+   privat generated ui headers
+   #12060
+   #11407
+  </li>
+  <li>
+   Github CI: workaround runner-image issue
+   #12233
+  </li>
+  <li>
+   FindLibudev: Link hidapi and libusb with libudev in static builds on Linux
+   #12294
+  </li>
+  <li>
+   FindVorbis: Link ogg in static builds
+   #12297
+  </li>
+  <li>
+   MixxxApplication: Support linking Qt statically on Linux
+   #12284
+  </li>
+  <li>
+   FindSleef: Use OpenMP in static builds
+   #12295
+  </li>
+  <li>
+   Happy New Year 2024!
+   #12486
+  </li>
+  <li>
+   fix/History: remove obsolete placeholder playlists
+   #12494
+  </li>
+  <li>
+   Add missing Taglib dependency
+   #12830
+  </li>
+  <li>
+   fix: typo ;)
+   #12726
+  </li>
+  <li>
+   refactor: Avoid temporary qlist allocation on midi sysex receive
+   #12843
+  </li>
+  <li>
+   Labeler: Add
+   qml
+   to labeler config
+   #12911
+  </li>
+  <li>
+   WTrackMenu: Add missing wcoverartlabel.h include
+   #12924
+  </li>
+  <li>
+   Fix clazy complaints and naming
+   #12935
+  </li>
+  <li>
+   src/library: Sort files into sub-directories
+   #12956
+  </li>
+  <li>
+   CMakeLists: Fix deduplication trap with
+   --preload-file
+   #12944
+  </li>
+  <li>
+   GitHub CI: Add runner that allows cleaning up the download server
+   #12957
+  </li>
+  <li>
+   GitHub CI: Skip the manifest update job on forks
+   #13278
+  </li>
+  <li>
+   Refactor FFmpeg soundsource to allow other soundsource to inherit it
+   #13042
+  </li>
+  <li>
+   Code Style: Add branches around single line blocks.
+   #13097
+  </li>
+  <li>
+   Add missing member in copy ctor
+   #13229
+  </li>
+  <li>
+   Refactor/preferences enums
+   #12798
+  </li>
+  <li>
+   Update to latest vcpkg dependencies
+   #11649
+   #12512
+   #12067
+   #12898
+   #13155
+  </li>
+  <li>
+   GitHub actions updates
+   #11544
+   #11508
+   #11487
+   #11438
+   #11410
+   #11560
+   #11578
+   #11610
+   #11631
+   #11710
+   #11736
+   #11920
+   #11961
+   #12241
+   #12394
+   #12447
+   #12425
+   #12421
+   #12799
+   #12801
+   #12800
+   #12736
+   #12692
+   #12694
+   #12695
+   #12691
+   #12693
+   #12625
+   #12627
+   #12626
+   #12577
+   #13162
+   #13163
+   #13187
+   #13217
+   #13246
+   #13232
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.4.2" type="development" date="2024-06-12" timestamp="1718193546">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Korg Kaoss DJ: Update script
+   #12683
+  </li>
+  <li>
+   Novation Dicer: Remove flanger mapping with quickeffect toggle
+   #13196
+   #13134
+  </li>
+  <li>
+   Numark PartyMix: Fix EQ (script binding) display name
+   #13255
+  </li>
+  <li>
+   Numark Scratch: Add initial mapping
+   #4834
+  </li>
+  <li>
+   Sony SIXAXIS: Fix mapping
+   #13319
+  </li>
+ </ul>
+ <p>
+  Fixes
+ </p>
+ <ul>
+  <li>
+   Handle not supported files when dragging to waveforms and spinnies
+   #13208
+   #13271
+   #13275
+  </li>
+  <li>
+   Fix Sqlite 3.45 builds by using only single quotes for SQL strings
+   #13247
+   #13257
+  </li>
+  <li>
+   LateNight: Use default colors for sampler overviews (like main decks)
+   #13274
+  </li>
+  <li>
+   Library: Allow to drop files to decks with unsupported or no file extensions
+   #13209
+   #13204
+  </li>
+  <li>
+   Update build environment with libdjinterop 0.21.0
+   #13288
+  </li>
+  <li>
+   Move to GitHub workflow runner macos-12
+   #13296
+   #13248
+  </li>
+  <li>
+   Recording: with empty config, save default split size immediately
+   #13304
+  </li>
+  <li>
+   Allow to drop files with supported MIME type regardless off the file extensions
+   #13209
+   #13204
+  </li>
+  <li>
+   Add support for Ubuntu Oracular Oriole and remove Lunar Lobster
+   #13348
+  </li>
+  <li>
+   Recordbox: Fix string decoding issues
+   #13293
+   #13291
+  </li>
+  <li>
+   Mixer preferences: Don't update EQs/QuickEffects while applying
+   #13333
+  </li>
+  <li>
+   Hardware preferences: Fix UX when applying config with missing/busy devices
+   #13312
+  </li>
+  <li>
+   Fix minor 64 bit CPU performance issue
+   #13355
   </li>
  </ul>
 </description>

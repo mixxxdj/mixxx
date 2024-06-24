@@ -1,0 +1,35 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Wrapper for a single-state left-click and right-click push button.
+    Is cover if `cover_control` is > 0
+  Variables:
+    ObjectName: The object name.
+    Size: the button size.
+    state_0_text:
+    state_0_pressed:
+    state_0_unpressed:
+    left_connection_control:
+-->
+<Template>
+  <WidgetGroup><!-- Curr. pos & Lock -->
+    <Layout>stacked</Layout>
+    <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
+    <Children>
+      <Label>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
+        <ObjectName><Variable name="CoverName"/></ObjectName>
+        <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+        <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+        <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
+        <Connection>
+          <BindProperty>visible</BindProperty>
+          <ConfigKey><Variable name="cover_control"/></ConfigKey>
+        </Connection>
+      </Label>
+      <Template src="skin:left_right_1state_button.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -121,6 +121,7 @@ DlgAbout::DlgAbout()
             << "Nicolau Leal Werneck"
             << "David Guglielmi"
             << "Chris H. Meyer"
+            << "Mariano Ntrougkas"
             << "Daniel Fernandes"
             << "Gr&eacute;goire Locqueville"
             << "grizeldi"

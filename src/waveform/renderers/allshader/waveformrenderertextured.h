@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef QT_OPENGL_ES_2
+
 #include "shaders/rgbshader.h"
 #include "track/track_decl.h"
 #include "util/class.h"
@@ -65,3 +67,5 @@ class allshader::WaveformRendererTextured : public QObject,
     const QString m_pFragShader;
     std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
 };
+
+#endif // QT_OPENGL_ES_2

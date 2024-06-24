@@ -38,8 +38,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 11 x64
-            os: macos-11
+          - name: macOS 12 x64
+            os: macos-12
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -63,8 +63,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 11 arm64
-            os: macos-11
+          - name: macOS 12 arm64
+            os: macos-12
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -134,7 +134,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -348,7 +348,7 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.4" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
@@ -489,7 +489,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
 

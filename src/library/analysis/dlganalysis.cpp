@@ -116,31 +116,6 @@ void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }
 
-void DlgAnalysis::activateSelectedTrack() {
-    m_pAnalysisLibraryTableView->activateSelectedTrack();
-}
-
-void DlgAnalysis::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAnalysis::slotAddToAutoDJBottom() {
-    // append to auto DJ
-    m_pAnalysisLibraryTableView->slotAddToAutoDJBottom();
-}
-
-void DlgAnalysis::slotAddToAutoDJTop() {
-    m_pAnalysisLibraryTableView->slotAddToAutoDJTop();
-}
-
-void DlgAnalysis::slotAddToAutoDJReplace() {
-    m_pAnalysisLibraryTableView->slotAddToAutoDJReplace();
-}
-
-void DlgAnalysis::moveSelection(int delta) {
-    m_pAnalysisLibraryTableView->moveSelection(delta);
-}
-
 void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
                                        const QItemSelection& deselected) {
     Q_UNUSED(selected);

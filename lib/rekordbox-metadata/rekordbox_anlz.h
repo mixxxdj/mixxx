@@ -2,13 +2,14 @@
 
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-#include "kaitaistruct.h"
+#include "kaitai/kaitaistruct.h"
 
 #include <stdint.h>
+#include <memory>
 #include <vector>
 
-#if KAITAI_STRUCT_VERSION < 7000L
-#error "Incompatible Kaitai Struct C++/STL API: version 0.7 or later is required"
+#if KAITAI_STRUCT_VERSION < 9000L
+#error "Incompatible Kaitai Struct C++/STL API: version 0.9 or later is required"
 #endif
 
 /**
@@ -19,25 +20,26 @@
  * inside variable bit-rate audio streams, and lists of memory cues
  * and loop points. They are used by Pioneer professional DJ
  * equipment.
- *
+ * 
  * The format has been reverse-engineered to facilitate sophisticated
  * integrations with light and laser shows, videos, and other musical
  * instruments, by supporting deep knowledge of what is playing and
  * what is coming next through monitoring the network communications
  * of the players.
- * \sa Source
+ * \sa https://reverseengineering.stackexchange.com/questions/4311/help-reversing-a-edb-database-file-for-pioneers-rekordbox-software Source
  */
 
 class rekordbox_anlz_t : public kaitai::kstruct {
 
 public:
-    class phrase_up_down_t;
+    class phrase_mid_t;
     class path_tag_t;
     class wave_preview_tag_t;
     class beat_grid_tag_t;
+    class song_structure_body_t;
     class wave_color_preview_tag_t;
+    class phrase_high_t;
     class wave_scroll_tag_t;
-    class phrase_verse_bridge_t;
     class song_structure_tag_t;
     class cue_extended_entry_t;
     class vbr_tag_t;
@@ -45,6 +47,7 @@ public:
     class cue_entry_t;
     class beat_grid_beat_t;
     class cue_extended_tag_t;
+    class phrase_low_t;
     class unknown_tag_t;
     class tagged_section_t;
     class wave_color_scroll_tag_t;
@@ -52,7 +55,8 @@ public:
 
     enum cue_entry_status_t {
         CUE_ENTRY_STATUS_DISABLED = 0,
-        CUE_ENTRY_STATUS_ENABLED = 1
+        CUE_ENTRY_STATUS_ENABLED = 1,
+        CUE_ENTRY_STATUS_ACTIVE_LOOP = 4
     };
 
     enum cue_list_type_t {
@@ -60,10 +64,24 @@ public:
         CUE_LIST_TYPE_HOT_CUES = 1
     };
 
-    enum phrase_style_t {
-        PHRASE_STYLE_UP_DOWN = 1,
-        PHRASE_STYLE_VERSE_BRIDGE = 2,
-        PHRASE_STYLE_VERSE_BRIDGE_2 = 3
+    enum mood_high_phrase_t {
+        MOOD_HIGH_PHRASE_INTRO = 1,
+        MOOD_HIGH_PHRASE_UP = 2,
+        MOOD_HIGH_PHRASE_DOWN = 3,
+        MOOD_HIGH_PHRASE_CHORUS = 5,
+        MOOD_HIGH_PHRASE_OUTRO = 6
+    };
+
+    enum track_bank_t {
+        TRACK_BANK_DEFAULT = 0,
+        TRACK_BANK_COOL = 1,
+        TRACK_BANK_NATURAL = 2,
+        TRACK_BANK_HOT = 3,
+        TRACK_BANK_SUBTLE = 4,
+        TRACK_BANK_WARM = 5,
+        TRACK_BANK_VIVID = 6,
+        TRACK_BANK_CLUB_1 = 7,
+        TRACK_BANK_CLUB_2 = 8
     };
 
     enum cue_entry_type_t {
@@ -85,54 +103,67 @@ public:
         SECTION_TAGS_WAVE_COLOR_SCROLL = 1347900981
     };
 
-    enum phrase_verse_bridge_id_t {
-        PHRASE_VERSE_BRIDGE_ID_INTRO = 1,
-        PHRASE_VERSE_BRIDGE_ID_VERSE1 = 2,
-        PHRASE_VERSE_BRIDGE_ID_VERSE2 = 3,
-        PHRASE_VERSE_BRIDGE_ID_VERSE3 = 4,
-        PHRASE_VERSE_BRIDGE_ID_VERSE4 = 5,
-        PHRASE_VERSE_BRIDGE_ID_VERSE5 = 6,
-        PHRASE_VERSE_BRIDGE_ID_VERSE6 = 7,
-        PHRASE_VERSE_BRIDGE_ID_BRIDGE = 8,
-        PHRASE_VERSE_BRIDGE_ID_CHORUS = 9,
-        PHRASE_VERSE_BRIDGE_ID_OUTRO = 10
+    enum track_mood_t {
+        TRACK_MOOD_HIGH = 1,
+        TRACK_MOOD_MID = 2,
+        TRACK_MOOD_LOW = 3
     };
 
-    enum phrase_up_down_id_t {
-        PHRASE_UP_DOWN_ID_INTRO = 1,
-        PHRASE_UP_DOWN_ID_UP = 2,
-        PHRASE_UP_DOWN_ID_DOWN = 3,
-        PHRASE_UP_DOWN_ID_CHORUS = 5,
-        PHRASE_UP_DOWN_ID_OUTRO = 6
+    enum mood_mid_phrase_t {
+        MOOD_MID_PHRASE_INTRO = 1,
+        MOOD_MID_PHRASE_VERSE_1 = 2,
+        MOOD_MID_PHRASE_VERSE_2 = 3,
+        MOOD_MID_PHRASE_VERSE_3 = 4,
+        MOOD_MID_PHRASE_VERSE_4 = 5,
+        MOOD_MID_PHRASE_VERSE_5 = 6,
+        MOOD_MID_PHRASE_VERSE_6 = 7,
+        MOOD_MID_PHRASE_BRIDGE = 8,
+        MOOD_MID_PHRASE_CHORUS = 9,
+        MOOD_MID_PHRASE_OUTRO = 10
     };
 
-    rekordbox_anlz_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+    enum mood_low_phrase_t {
+        MOOD_LOW_PHRASE_INTRO = 1,
+        MOOD_LOW_PHRASE_VERSE_1 = 2,
+        MOOD_LOW_PHRASE_VERSE_1B = 3,
+        MOOD_LOW_PHRASE_VERSE_1C = 4,
+        MOOD_LOW_PHRASE_VERSE_2 = 5,
+        MOOD_LOW_PHRASE_VERSE_2B = 6,
+        MOOD_LOW_PHRASE_VERSE_2C = 7,
+        MOOD_LOW_PHRASE_BRIDGE = 8,
+        MOOD_LOW_PHRASE_CHORUS = 9,
+        MOOD_LOW_PHRASE_OUTRO = 10
+    };
+
+    rekordbox_anlz_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
 private:
     void _read();
+    void _clean_up();
 
 public:
     ~rekordbox_anlz_t();
 
-    class phrase_up_down_t : public kaitai::kstruct {
+    class phrase_mid_t : public kaitai::kstruct {
 
     public:
 
-        phrase_up_down_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        phrase_mid_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
-        ~phrase_up_down_t();
+        ~phrase_mid_t();
 
     private:
-        phrase_up_down_id_t m_id;
+        mood_mid_phrase_t m_id;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::song_structure_entry_t* m__parent;
 
     public:
-        phrase_up_down_id_t id() const { return m_id; }
+        mood_mid_phrase_t id() const { return m_id; }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::song_structure_entry_t* _parent() const { return m__parent; }
     };
@@ -146,10 +177,11 @@ public:
 
     public:
 
-        path_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        path_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~path_tag_t();
@@ -182,16 +214,17 @@ public:
 
     public:
 
-        wave_preview_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        wave_preview_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~wave_preview_tag_t();
 
     private:
-        uint32_t m_len_preview;
+        uint32_t m_len_data;
         uint32_t m__unnamed1;
         std::string m_data;
         bool n_data;
@@ -210,7 +243,7 @@ public:
          * slightly redundant because it can be computed from the
          * length of the tag.
          */
-        uint32_t len_preview() const { return m_len_preview; }
+        uint32_t len_data() const { return m_len_data; }
         uint32_t _unnamed1() const { return m__unnamed1; }
 
         /**
@@ -231,10 +264,11 @@ public:
 
     public:
 
-        beat_grid_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        beat_grid_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~beat_grid_tag_t();
@@ -242,8 +276,8 @@ public:
     private:
         uint32_t m__unnamed0;
         uint32_t m__unnamed1;
-        uint32_t m_len_beats;
-        std::vector<beat_grid_beat_t*>* m_beats;
+        uint32_t m_num_beats;
+        std::unique_ptr<std::vector<std::unique_ptr<beat_grid_beat_t>>> m_beats;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
 
@@ -254,14 +288,69 @@ public:
         /**
          * The number of beat entries which follow.
          */
-        uint32_t len_beats() const { return m_len_beats; }
+        uint32_t num_beats() const { return m_num_beats; }
 
         /**
          * The entries of the beat grid.
          */
-        std::vector<beat_grid_beat_t*>* beats() const { return m_beats; }
+        std::vector<std::unique_ptr<beat_grid_beat_t>>* beats() const { return m_beats.get(); }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * Stores the rest of the song structure tag, which can only be
+     * parsed after unmasking.
+     */
+
+    class song_structure_body_t : public kaitai::kstruct {
+
+    public:
+
+        song_structure_body_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_tag_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~song_structure_body_t();
+
+    private:
+        track_mood_t m_mood;
+        std::string m__unnamed1;
+        uint16_t m_end_beat;
+        std::string m__unnamed3;
+        track_bank_t m_bank;
+        std::string m__unnamed5;
+        std::unique_ptr<std::vector<std::unique_ptr<song_structure_entry_t>>> m_entries;
+        rekordbox_anlz_t* m__root;
+        rekordbox_anlz_t::song_structure_tag_t* m__parent;
+
+    public:
+
+        /**
+         * The mood which rekordbox assigns the track as a whole during phrase analysis.
+         */
+        track_mood_t mood() const { return m_mood; }
+        std::string _unnamed1() const { return m__unnamed1; }
+
+        /**
+         * The beat number at which the last phrase ends. The track may
+         * continue after the last phrase ends. If this is the case, it will
+         * mostly be silence.
+         */
+        uint16_t end_beat() const { return m_end_beat; }
+        std::string _unnamed3() const { return m__unnamed3; }
+
+        /**
+         * The stylistic bank which can be assigned to the track in rekordbox Lighting mode.
+         */
+        track_bank_t bank() const { return m_bank; }
+        std::string _unnamed5() const { return m__unnamed5; }
+        std::vector<std::unique_ptr<song_structure_entry_t>>* entries() const { return m_entries.get(); }
+        rekordbox_anlz_t* _root() const { return m__root; }
+        rekordbox_anlz_t::song_structure_tag_t* _parent() const { return m__parent; }
     };
 
     /**
@@ -274,10 +363,11 @@ public:
 
     public:
 
-        wave_color_preview_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        wave_color_preview_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~wave_color_preview_tag_t();
@@ -308,6 +398,30 @@ public:
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
     };
 
+    class phrase_high_t : public kaitai::kstruct {
+
+    public:
+
+        phrase_high_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~phrase_high_t();
+
+    private:
+        mood_high_phrase_t m_id;
+        rekordbox_anlz_t* m__root;
+        rekordbox_anlz_t::song_structure_entry_t* m__parent;
+
+    public:
+        mood_high_phrase_t id() const { return m_id; }
+        rekordbox_anlz_t* _root() const { return m__root; }
+        rekordbox_anlz_t::song_structure_entry_t* _parent() const { return m__parent; }
+    };
+
     /**
      * A larger waveform image suitable for scrolling along as a track
      * plays.
@@ -317,10 +431,11 @@ public:
 
     public:
 
-        wave_scroll_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        wave_scroll_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~wave_scroll_tag_t();
@@ -351,29 +466,6 @@ public:
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
     };
 
-    class phrase_verse_bridge_t : public kaitai::kstruct {
-
-    public:
-
-        phrase_verse_bridge_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
-
-    private:
-        void _read();
-
-    public:
-        ~phrase_verse_bridge_t();
-
-    private:
-        phrase_verse_bridge_id_t m_id;
-        rekordbox_anlz_t* m__root;
-        rekordbox_anlz_t::song_structure_entry_t* m__parent;
-
-    public:
-        phrase_verse_bridge_id_t id() const { return m_id; }
-        rekordbox_anlz_t* _root() const { return m__root; }
-        rekordbox_anlz_t::song_structure_entry_t* _parent() const { return m__parent; }
-    };
-
     /**
      * Stores the song structure, also known as phrases (intro, verse,
      * bridge, chorus, up, down, outro).
@@ -383,24 +475,49 @@ public:
 
     public:
 
-        song_structure_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        song_structure_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~song_structure_tag_t();
 
     private:
+        bool f_c;
+        uint16_t m_c;
+
+    public:
+        uint16_t c();
+
+    private:
+        bool f_raw_mood;
+        uint16_t m_raw_mood;
+
+    public:
+
+        /**
+         * This is a way to tell whether the rest of the tag has been masked. The value is supposed
+         * to range from 1 to 3, but in masked files it will be much larger.
+         */
+        uint16_t raw_mood();
+
+    private:
+        bool f_is_masked;
+        bool m_is_masked;
+
+    public:
+        bool is_masked();
+
+    private:
         uint32_t m_len_entry_bytes;
         uint16_t m_len_entries;
-        uint16_t m_style;
-        std::string m__unnamed3;
-        uint16_t m_end_beat;
-        std::string m__unnamed5;
-        std::vector<song_structure_entry_t*>* m_entries;
+        std::unique_ptr<song_structure_body_t> m_body;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
+        std::string m__raw_body;
+        std::unique_ptr<kaitai::kstream> m__io__raw_body;
 
     public:
 
@@ -415,27 +532,14 @@ public:
         uint16_t len_entries() const { return m_len_entries; }
 
         /**
-         * The phrase style. 1 is the up-down style
-         * (white label text in rekordbox) where the main phrases consist
-         * of up, down, and chorus. 2 is the bridge-verse style
-         * (black label text in rekordbox) where the main phrases consist
-         * of verse, chorus, and bridge. Style 3 is mostly identical to
-         * bridge-verse style except verses 1-3 are labeled VERSE1 and verses
-         * 4-6 are labeled VERSE2 in rekordbox.
+         * The rest of the tag, which needs to be unmasked before it
+         * can be parsed.
          */
-        uint16_t style() const { return m_style; }
-        std::string _unnamed3() const { return m__unnamed3; }
-
-        /**
-         * The beat number at which the last phrase ends. The track may
-         * continue after the last phrase ends. If this is the case, it will
-         * mostly be silence.
-         */
-        uint16_t end_beat() const { return m_end_beat; }
-        std::string _unnamed5() const { return m__unnamed5; }
-        std::vector<song_structure_entry_t*>* entries() const { return m_entries; }
+        song_structure_body_t* body() const { return m_body.get(); }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
+        std::string _raw_body() const { return m__raw_body; }
+        kaitai::kstream* _io__raw_body() const { return m__io__raw_body.get(); }
     };
 
     /**
@@ -447,16 +551,17 @@ public:
 
     public:
 
-        cue_extended_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::cue_extended_tag_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        cue_extended_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::cue_extended_tag_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~cue_extended_entry_t();
 
     private:
-        std::string m__unnamed0;
+        std::string m_magic;
         uint32_t m_len_header;
         uint32_t m_len_entry;
         uint32_t m_hot_cue;
@@ -466,6 +571,8 @@ public:
         uint32_t m_loop_time;
         uint8_t m_color_id;
         std::string m__unnamed9;
+        uint16_t m_loop_numerator;
+        uint16_t m_loop_denominator;
         uint32_t m_len_comment;
         bool n_len_comment;
 
@@ -508,18 +615,22 @@ public:
         bool _is_null_color_blue() { color_blue(); return n_color_blue; };
 
     private:
-        std::string m__unnamed16;
-        bool n__unnamed16;
+        std::string m__unnamed18;
+        bool n__unnamed18;
 
     public:
-        bool _is_null__unnamed16() { _unnamed16(); return n__unnamed16; };
+        bool _is_null__unnamed18() { _unnamed18(); return n__unnamed18; };
 
     private:
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::cue_extended_tag_t* m__parent;
 
     public:
-        std::string _unnamed0() const { return m__unnamed0; }
+
+        /**
+         * Identifies this as an extended cue list entry (cue point).
+         */
+        std::string magic() const { return m_magic; }
         uint32_t len_header() const { return m_len_header; }
         uint32_t len_entry() const { return m_len_entry; }
 
@@ -530,7 +641,7 @@ public:
         uint32_t hot_cue() const { return m_hot_cue; }
 
         /**
-         * Indicates whether this is a memory cue or a loop.
+         * Indicates whether this is a regular cue point or a loop.
          */
         cue_entry_type_t type() const { return m_type; }
         std::string _unnamed5() const { return m__unnamed5; }
@@ -548,11 +659,23 @@ public:
         uint32_t loop_time() const { return m_loop_time; }
 
         /**
-         * References a row in the colors table if the memory cue or loop
-         * has been assigned a color
+         * References a row in the colors table if this is a memory cue or loop
+         * and has been assigned a color.
          */
         uint8_t color_id() const { return m_color_id; }
         std::string _unnamed9() const { return m__unnamed9; }
+
+        /**
+         * The numerator of the loop length in beats.
+         * Zero if the loop is not quantized.
+         */
+        uint16_t loop_numerator() const { return m_loop_numerator; }
+
+        /**
+         * The denominator of the loop length in beats.
+         * Zero if the loop is not quantized.
+         */
+        uint16_t loop_denominator() const { return m_loop_denominator; }
         uint32_t len_comment() const { return m_len_comment; }
 
         /**
@@ -561,25 +684,25 @@ public:
         std::string comment() const { return m_comment; }
 
         /**
-         * A lookup value for a color table? We use this to index to the colors shown in rekordbox.
+         * A lookup value for a color table? We use this to index to the hot cue colors shown in rekordbox.
          */
         uint8_t color_code() const { return m_color_code; }
 
         /**
-         * The red component of the color to be displayed.
+         * The red component of the hot cue color to be displayed.
          */
         uint8_t color_red() const { return m_color_red; }
 
         /**
-         * The green component of the color to be displayed.
+         * The green component of the hot cue color to be displayed.
          */
         uint8_t color_green() const { return m_color_green; }
 
         /**
-         * The blue component of the color to be displayed.
+         * The blue component of the hot cue color to be displayed.
          */
         uint8_t color_blue() const { return m_color_blue; }
-        std::string _unnamed16() const { return m__unnamed16; }
+        std::string _unnamed18() const { return m__unnamed18; }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::cue_extended_tag_t* _parent() const { return m__parent; }
     };
@@ -593,23 +716,24 @@ public:
 
     public:
 
-        vbr_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        vbr_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~vbr_tag_t();
 
     private:
         uint32_t m__unnamed0;
-        std::vector<uint32_t>* m_index;
+        std::unique_ptr<std::vector<uint32_t>> m_index;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
 
     public:
         uint32_t _unnamed0() const { return m__unnamed0; }
-        std::vector<uint32_t>* index() const { return m_index; }
+        std::vector<uint32_t>* index() const { return m_index.get(); }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
     };
@@ -622,53 +746,106 @@ public:
 
     public:
 
-        song_structure_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_tag_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        song_structure_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_body_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~song_structure_entry_t();
 
     private:
-        uint16_t m_phrase_number;
-        uint16_t m_beat_number;
-        kaitai::kstruct* m_phrase_id;
+        uint16_t m_index;
+        uint16_t m_beat;
+        std::unique_ptr<kaitai::kstruct> m_kind;
         std::string m__unnamed3;
-        uint8_t m_fill_in;
-        uint16_t m_fill_in_beat_number;
+        uint8_t m_k1;
+        std::string m__unnamed5;
+        uint8_t m_k2;
+        std::string m__unnamed7;
+        uint8_t m_b;
+        uint16_t m_beat2;
+        uint16_t m_beat3;
+        uint16_t m_beat4;
+        std::string m__unnamed12;
+        uint8_t m_k3;
+        std::string m__unnamed14;
+        uint8_t m_fill;
+        uint16_t m_beat_fill;
         rekordbox_anlz_t* m__root;
-        rekordbox_anlz_t::song_structure_tag_t* m__parent;
+        rekordbox_anlz_t::song_structure_body_t* m__parent;
 
     public:
 
         /**
          * The absolute number of the phrase, starting at one.
          */
-        uint16_t phrase_number() const { return m_phrase_number; }
+        uint16_t index() const { return m_index; }
 
         /**
          * The beat number at which the phrase starts.
          */
-        uint16_t beat_number() const { return m_beat_number; }
+        uint16_t beat() const { return m_beat; }
 
         /**
-         * Identifier of the phrase label.
+         * The kind of phrase as displayed in rekordbox.
          */
-        kaitai::kstruct* phrase_id() const { return m_phrase_id; }
+        kaitai::kstruct* kind() const { return m_kind.get(); }
         std::string _unnamed3() const { return m__unnamed3; }
 
         /**
-         * If nonzero, fill-in is present.
+         * One of three flags that identify phrase kind variants in high-mood tracks.
          */
-        uint8_t fill_in() const { return m_fill_in; }
+        uint8_t k1() const { return m_k1; }
+        std::string _unnamed5() const { return m__unnamed5; }
+
+        /**
+         * One of three flags that identify phrase kind variants in high-mood tracks.
+         */
+        uint8_t k2() const { return m_k2; }
+        std::string _unnamed7() const { return m__unnamed7; }
+
+        /**
+         * Flags how many more beat numbers are in a high-mood "Up 3" phrase.
+         */
+        uint8_t b() const { return m_b; }
+
+        /**
+         * Extra beat number (falling within phrase) always present in high-mood "Up 3" phrases.
+         */
+        uint16_t beat2() const { return m_beat2; }
+
+        /**
+         * Extra beat number (falling within phrase, larger than beat2)
+         * present in high-mood "Up 3" phrases when b has value 1.
+         */
+        uint16_t beat3() const { return m_beat3; }
+
+        /**
+         * Extra beat number (falling within phrase, larger than beat3)
+         * present in high-mood "Up 3" phrases when b has value 1.
+         */
+        uint16_t beat4() const { return m_beat4; }
+        std::string _unnamed12() const { return m__unnamed12; }
+
+        /**
+         * One of three flags that identify phrase kind variants in high-mood tracks.
+         */
+        uint8_t k3() const { return m_k3; }
+        std::string _unnamed14() const { return m__unnamed14; }
+
+        /**
+         * If nonzero, fill-in is present at end of phrase.
+         */
+        uint8_t fill() const { return m_fill; }
 
         /**
          * The beat number at which fill-in starts.
          */
-        uint16_t fill_in_beat_number() const { return m_fill_in_beat_number; }
+        uint16_t beat_fill() const { return m_beat_fill; }
         rekordbox_anlz_t* _root() const { return m__root; }
-        rekordbox_anlz_t::song_structure_tag_t* _parent() const { return m__parent; }
+        rekordbox_anlz_t::song_structure_body_t* _parent() const { return m__parent; }
     };
 
     /**
@@ -679,16 +856,17 @@ public:
 
     public:
 
-        cue_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::cue_tag_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        cue_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::cue_tag_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~cue_entry_t();
 
     private:
-        std::string m__unnamed0;
+        std::string m_magic;
         uint32_t m_len_header;
         uint32_t m_len_entry;
         uint32_t m_hot_cue;
@@ -705,7 +883,11 @@ public:
         rekordbox_anlz_t::cue_tag_t* m__parent;
 
     public:
-        std::string _unnamed0() const { return m__unnamed0; }
+
+        /**
+         * Identifies this as a cue list entry (cue point).
+         */
+        std::string magic() const { return m_magic; }
         uint32_t len_header() const { return m_len_header; }
         uint32_t len_entry() const { return m_len_entry; }
 
@@ -716,7 +898,7 @@ public:
         uint32_t hot_cue() const { return m_hot_cue; }
 
         /**
-         * If zero, this entry should be ignored.
+         * Indicates if this is an active loop.
          */
         cue_entry_status_t status() const { return m_status; }
         uint32_t _unnamed5() const { return m__unnamed5; }
@@ -761,10 +943,11 @@ public:
 
     public:
 
-        beat_grid_beat_t(kaitai::kstream* p__io, rekordbox_anlz_t::beat_grid_tag_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        beat_grid_beat_t(kaitai::kstream* p__io, rekordbox_anlz_t::beat_grid_tag_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~beat_grid_beat_t();
@@ -810,19 +993,20 @@ public:
 
     public:
 
-        cue_extended_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        cue_extended_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~cue_extended_tag_t();
 
     private:
         cue_list_type_t m_type;
-        uint16_t m_len_cues;
+        uint16_t m_num_cues;
         std::string m__unnamed2;
-        std::vector<cue_extended_entry_t*>* m_cues;
+        std::unique_ptr<std::vector<std::unique_ptr<cue_extended_entry_t>>> m_cues;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
 
@@ -836,21 +1020,46 @@ public:
         /**
          * The length of the cue comment list.
          */
-        uint16_t len_cues() const { return m_len_cues; }
+        uint16_t num_cues() const { return m_num_cues; }
         std::string _unnamed2() const { return m__unnamed2; }
-        std::vector<cue_extended_entry_t*>* cues() const { return m_cues; }
+        std::vector<std::unique_ptr<cue_extended_entry_t>>* cues() const { return m_cues.get(); }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
+    };
+
+    class phrase_low_t : public kaitai::kstruct {
+
+    public:
+
+        phrase_low_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~phrase_low_t();
+
+    private:
+        mood_low_phrase_t m_id;
+        rekordbox_anlz_t* m__root;
+        rekordbox_anlz_t::song_structure_entry_t* m__parent;
+
+    public:
+        mood_low_phrase_t id() const { return m_id; }
+        rekordbox_anlz_t* _root() const { return m__root; }
+        rekordbox_anlz_t::song_structure_entry_t* _parent() const { return m__parent; }
     };
 
     class unknown_tag_t : public kaitai::kstruct {
 
     public:
 
-        unknown_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        unknown_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~unknown_tag_t();
@@ -874,30 +1083,31 @@ public:
 
     public:
 
-        tagged_section_t(kaitai::kstream* p__io, rekordbox_anlz_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        tagged_section_t(kaitai::kstream* p__io, rekordbox_anlz_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~tagged_section_t();
 
     private:
-        int32_t m_fourcc;
+        section_tags_t m_fourcc;
         uint32_t m_len_header;
         uint32_t m_len_tag;
-        kaitai::kstruct* m_body;
+        std::unique_ptr<kaitai::kstruct> m_body;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t* m__parent;
         std::string m__raw_body;
-        kaitai::kstream* m__io__raw_body;
+        std::unique_ptr<kaitai::kstream> m__io__raw_body;
 
     public:
 
         /**
          * A tag value indicating what kind of section this is.
          */
-        int32_t fourcc() const { return m_fourcc; }
+        section_tags_t fourcc() const { return m_fourcc; }
 
         /**
          * The size, in bytes, of the header portion of the tag.
@@ -908,11 +1118,11 @@ public:
          * The size, in bytes, of this entire tag, counting the header.
          */
         uint32_t len_tag() const { return m_len_tag; }
-        kaitai::kstruct* body() const { return m_body; }
+        kaitai::kstruct* body() const { return m_body.get(); }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t* _parent() const { return m__parent; }
         std::string _raw_body() const { return m__raw_body; }
-        kaitai::kstream* _io__raw_body() const { return m__io__raw_body; }
+        kaitai::kstream* _io__raw_body() const { return m__io__raw_body.get(); }
     };
 
     /**
@@ -925,10 +1135,11 @@ public:
 
     public:
 
-        wave_color_scroll_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        wave_color_scroll_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~wave_color_scroll_tag_t();
@@ -968,10 +1179,11 @@ public:
 
     public:
 
-        cue_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = 0, rekordbox_anlz_t* p__root = 0);
+        cue_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent = nullptr, rekordbox_anlz_t* p__root = nullptr);
 
     private:
         void _read();
+        void _clean_up();
 
     public:
         ~cue_tag_t();
@@ -979,9 +1191,9 @@ public:
     private:
         cue_list_type_t m_type;
         std::string m__unnamed1;
-        uint16_t m_len_cues;
+        uint16_t m_num_cues;
         uint32_t m_memory_count;
-        std::vector<cue_entry_t*>* m_cues;
+        std::unique_ptr<std::vector<std::unique_ptr<cue_entry_t>>> m_cues;
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
 
@@ -996,28 +1208,32 @@ public:
         /**
          * The length of the cue list.
          */
-        uint16_t len_cues() const { return m_len_cues; }
+        uint16_t num_cues() const { return m_num_cues; }
 
         /**
          * Unsure what this means.
          */
         uint32_t memory_count() const { return m_memory_count; }
-        std::vector<cue_entry_t*>* cues() const { return m_cues; }
+        std::vector<std::unique_ptr<cue_entry_t>>* cues() const { return m_cues.get(); }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::tagged_section_t* _parent() const { return m__parent; }
     };
 
 private:
-    std::string m__unnamed0;
+    std::string m_magic;
     uint32_t m_len_header;
     uint32_t m_len_file;
     std::string m__unnamed3;
-    std::vector<tagged_section_t*>* m_sections;
+    std::unique_ptr<std::vector<std::unique_ptr<tagged_section_t>>> m_sections;
     rekordbox_anlz_t* m__root;
     kaitai::kstruct* m__parent;
 
 public:
-    std::string _unnamed0() const { return m__unnamed0; }
+
+    /**
+     * Identifies this as an analysis file.
+     */
+    std::string magic() const { return m_magic; }
 
     /**
      * The number of bytes of this header section.
@@ -1034,7 +1250,7 @@ public:
      * The remainder of the file is a sequence of type-tagged sections,
      * identified by a four-byte magic sequence.
      */
-    std::vector<tagged_section_t*>* sections() const { return m_sections; }
+    std::vector<std::unique_ptr<tagged_section_t>>* sections() const { return m_sections.get(); }
     rekordbox_anlz_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
 };

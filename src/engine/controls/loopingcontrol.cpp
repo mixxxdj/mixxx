@@ -56,7 +56,8 @@ LoopingControl::LoopingControl(const QString& group,
           m_bAdjustingLoopInOld(false),
           m_bAdjustingLoopOutOld(false),
           m_bLoopOutPressedWhileLoopDisabled(false),
-          m_prevLoopSize(-1) {
+          m_prevLoopSize(-1),
+          m_trueTrackBeats(false) {
     m_currentPosition.setValue(mixxx::audio::kStartFramePos);
     m_pActiveBeatLoop = nullptr;
     m_pRateControl = nullptr;
@@ -420,7 +421,7 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
         // When the LoopIn button is released in reverse mode we jump to the end of the loop to not fall out and disable the active loop
         // This must not happen in quantized mode. The newly set start is always ahead (in time, but behind spacially) of the current position so we don't jump.
         // Jumping to the end is then handled when the loop's start is reached later in this function.
-        if (reverse && !m_bAdjustingLoopIn && !m_pQuantizeEnabled->toBool()) {
+        if (reverse && !m_bAdjustingLoopIn && !(quantizeEnabledAndHasTrueTrackBeats())) {
             m_oldLoopInfo = loopInfo;
             *pTargetPosition = loopInfo.endPosition;
             return currentPosition;
@@ -434,7 +435,8 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
         // When the LoopOut button is released in forward mode we jump to the start of the loop to not fall out and disable the active loop
         // This must not happen in quantized mode. The newly set end is always ahead of the current position so we don't jump.
         // Jumping to the start is then handled when the loop's end is reached later in this function.
-        if (!reverse && !m_bAdjustingLoopOut && !m_pQuantizeEnabled->toBool()) {
+        if (!reverse && !m_bAdjustingLoopOut &&
+                !(quantizeEnabledAndHasTrueTrackBeats())) {
             m_oldLoopInfo = loopInfo;
             *pTargetPosition = loopInfo.startPosition;
             return currentPosition;
@@ -716,7 +718,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // silence of the last buffer. This position might be not reachable in
     // a future runs, depending on the buffering.
     mixxx::audio::FramePos position = math_min(info.currentPosition, info.trackEndPosition);
-    if (m_pQuantizeEnabled->toBool() && pBeats) {
+    if (quantizeEnabledAndHasTrueTrackBeats()) {
         mixxx::audio::FramePos prevBeatPosition;
         mixxx::audio::FramePos nextBeatPosition;
         if (pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
@@ -781,9 +783,10 @@ void LoopingControl::setLoopInToCurrentPosition() {
         loopInfo.seekMode = LoopSeekMode::MovedOut;
     }
 
-    if (m_pQuantizeEnabled->toBool() && loopInfo.startPosition.isValid() &&
+    if (quantizeEnabledAndHasTrueTrackBeats() &&
+            loopInfo.startPosition.isValid() &&
             loopInfo.endPosition.isValid() &&
-            loopInfo.startPosition < loopInfo.endPosition && pBeats) {
+            loopInfo.startPosition < loopInfo.endPosition) {
         m_pCOBeatLoopSize->setAndConfirm(pBeats->numBeatsInRange(
                 loopInfo.startPosition, loopInfo.endPosition));
         updateBeatLoopingControls();
@@ -875,7 +878,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     // silence of the last buffer. This position might be not reachable in
     // a future runs, depending on the buffering.
     mixxx::audio::FramePos position = math_min(info.currentPosition, info.trackEndPosition);
-    if (m_pQuantizeEnabled->toBool() && pBeats) {
+    if (quantizeEnabledAndHasTrueTrackBeats()) {
         mixxx::audio::FramePos prevBeatPosition;
         mixxx::audio::FramePos nextBeatPosition;
         if (pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
@@ -951,7 +954,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
         loopInfo.seekMode = LoopSeekMode::MovedOut;
     }
 
-    if (m_pQuantizeEnabled->toBool() && pBeats) {
+    if (quantizeEnabledAndHasTrueTrackBeats()) {
         m_pCOBeatLoopSize->setAndConfirm(pBeats->numBeatsInRange(
                 loopInfo.startPosition, loopInfo.endPosition));
         updateBeatLoopingControls();
@@ -1249,15 +1252,24 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
 
 void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     clearActiveBeatLoop();
-    m_pBeats = pBeats;
-    if (m_pBeats) {
-        LoopInfo loopInfo = m_loopInfo.getValue();
-        if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
-            double loaded_loop_size = findBeatloopSizeForLoop(
-                    loopInfo.startPosition, loopInfo.endPosition);
-            if (loaded_loop_size != -1) {
-                m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
-            }
+    if (pBeats) {
+        m_pBeats = pBeats;
+        m_trueTrackBeats = true;
+    } else if (m_pTrack) {
+        // no beats, use fake beats so we can use seconds as beat unit
+        m_pBeats = getFake60BpmBeats();
+        m_trueTrackBeats = false;
+    } else {
+        // no track, no beats
+        m_pBeats = pBeats;
+        m_trueTrackBeats = false;
+    }
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
+        double loaded_loop_size = findBeatloopSizeForLoop(
+                loopInfo.startPosition, loopInfo.endPosition);
+        if (loaded_loop_size != -1) {
+            m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
         }
     }
 }
@@ -1389,6 +1401,10 @@ bool LoopingControl::currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) co
             loopInfo.startPosition, m_pCOBeatLoopSize->get());
 
     return positionNear(loopInfo.endPosition, loopEndPosition);
+}
+
+bool LoopingControl::quantizeEnabledAndHasTrueTrackBeats() const {
+    return m_pQuantizeEnabled->toBool() && m_trueTrackBeats;
 }
 
 double LoopingControl::findBeatloopSizeForLoop(
@@ -1549,7 +1565,7 @@ void LoopingControl::slotBeatLoop(double beats,
             currentPosition = pBeats->findNBeatsFromPosition(currentPosition, -beats);
         }
 
-        bool quantize = m_pQuantizeEnabled->toBool();
+        bool quantize = quantizeEnabledAndHasTrueTrackBeats();
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
         // The closest beat might be ahead of play position and will cause a catching loop.
         switch (loopAnchor) {

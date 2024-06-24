@@ -41,6 +41,7 @@
 #include "widget/weffectchainpresetbutton.h"
 #include "widget/weffectchainpresetselector.h"
 #include "widget/weffectknobparametername.h"
+#include "widget/weffectmetaknob.h"
 #include "widget/weffectname.h"
 #include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
@@ -57,9 +58,7 @@
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/woverviewhsv.h"
-#include "widget/woverviewlmh.h"
-#include "widget/woverviewrgb.h"
+#include "widget/woverview.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wpushbutton.h"
 #include "widget/wraterange.h"
@@ -586,6 +585,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectChainPresetSelector(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
+    } else if (nodeName == "EffectMetaKnob") {
+        result = wrapWidget(parseEffectMetaKnob(node));
     } else if (nodeName == "EffectSelector") {
         result = wrapWidget(parseEffectSelector(node));
     } else if (nodeName == "EffectParameterKnob") {
@@ -981,17 +982,8 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
         return nullptr;
     }
 
-    WOverview* overviewWidget = nullptr;
-
-    // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
-    int type = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformOverviewType"), 2);
-    if (type == 0) {
-        overviewWidget = new WOverviewLMH(group, m_pPlayerManager, m_pConfig, m_pParent);
-    } else if (type == 1) {
-        overviewWidget = new WOverviewHSV(group, m_pPlayerManager, m_pConfig, m_pParent);
-    } else {
-        overviewWidget = new WOverviewRGB(group, m_pPlayerManager, m_pConfig, m_pParent);
-    }
+    WOverview* overviewWidget =
+            new WOverview(group, m_pPlayerManager, m_pConfig, m_pParent);
 
     connect(overviewWidget,
             &WOverview::trackDropped,
@@ -1900,6 +1892,18 @@ QWidget* LegacySkinParser::parseEffectSelector(const QDomElement& node) {
         m_pControllerManager->getControllerLearningEventFilter());
     pSelector->Init();
     return pSelector;
+}
+
+QWidget* LegacySkinParser::parseEffectMetaKnob(const QDomElement& node) {
+    WEffectMetaKnob* pMetaKnob =
+            new WEffectMetaKnob(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pMetaKnob);
+    pMetaKnob->setup(node, *m_pContext);
+    pMetaKnob->installEventFilter(m_pKeyboard);
+    pMetaKnob->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pMetaKnob->Init();
+    return pMetaKnob;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {

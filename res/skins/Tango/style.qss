@@ -486,27 +486,21 @@ WWidgetGroup {
     image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
-#BeatgridCurpos,
-#BeatgridSlower,
-#BeatgridFaster,
-#BeatgridEarlier,
-#BeatgridLater,
-#HotcuesEarlier,
-#HotcuesLater {
+#BeatgridButtons WPushButton {
   background-color: #333;
   }
-  #BeatgridCurpos:hover,
-  #BeatgridSlower:hover,
-  #BeatgridFaster:hover,
-  #BeatgridEarlier:hover,
-  #BeatgridLater:hover,
-  #HotcuesEarlier:hover,
-  #HotcuesLater:hover {
+  #BeatgridButtons WPushButton:hover {
     background-color: #0f0f0f;
   }
   #BeatgridCurpos {
     image: url(skin:/../Tango/buttons/btn_beats_curpos.svg) no-repeat center center;
   }
+  #BpmLock[value="0"] {
+    image: url(skin:/../Tango/buttons/btn_bpm_unlocked.svg) no-repeat center center;
+    }
+    #BpmLock[value="1"] {
+      image: url(skin:/../Tango/buttons/btn_bpm_locked.svg) no-repeat center center;
+    }
   #BeatgridSlower {
     image: url(skin:/../Tango/buttons/btn_beats_slower.svg) no-repeat center center;
   }
@@ -524,6 +518,9 @@ WWidgetGroup {
   }
   #HotcuesLater {
     image: url(skin:/../Tango/buttons/btn_hotcues_later.svg) no-repeat center center;
+  }
+  #BeatEditCover {
+    background-color: rgba(51, 51, 51, 120);
   }
 
 /*################################################################
@@ -2378,6 +2375,7 @@ WLibrarySidebar QMenu::item:selected,
 WTrackTableViewHeader QMenu QCheckBox:selected,
 WTrackTableViewHeader QMenu QCheckBox:focus,
 WTrackTableViewHeader QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -2414,6 +2412,7 @@ WSearchLineEdit::item:selected,
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
+WLibraryTextBrowser QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -2462,6 +2461,14 @@ WTrackMenu QMenu QCheckBox::indicator {
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
     image: url(skin:/../Tango/buttons/btn_lib_checkmark_indeterminate_grey.svg);
+  }
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  border: 0px;
+  background-color: transparent;
+  image: url(skin:/../Tango/buttons/btn_search.svg);
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    image: url(skin:/../Tango/buttons/btn_search_disabled.svg);
   }
 
 /* widgets in cue popup menu */

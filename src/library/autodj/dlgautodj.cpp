@@ -248,18 +248,6 @@ void DlgAutoDJ::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
 
-void DlgAutoDJ::activateSelectedTrack() {
-    m_pTrackTableView->activateSelectedTrack();
-}
-
-void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAutoDJ::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
 void DlgAutoDJ::shufflePlaylistButton(bool) {
     QModelIndexList indexList = m_pTrackTableView->selectionModel()->selectedRows();
 

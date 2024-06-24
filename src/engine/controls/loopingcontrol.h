@@ -171,6 +171,17 @@ class LoopingControl : public EngineControl {
     void clearLoopInfoAndControls();
     void updateBeatLoopingControls();
     bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
+    bool quantizeEnabledAndHasTrueTrackBeats() const;
+
+    // Fake beats that allow using looping/beatjump controls with no beats:
+    // one 'beat' = one second
+    mixxx::BeatsPointer getFake60BpmBeats() {
+        auto fakeBeats = mixxx::Beats::fromConstTempo(
+                frameInfo().sampleRate,
+                mixxx::audio::kStartFramePos,
+                mixxx::Bpm(60.0));
+        return fakeBeats;
+    }
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
@@ -252,6 +263,9 @@ class LoopingControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     mixxx::BeatsPointer m_pBeats;
+    // Flag that allows to act quantized only if we have true track beats.
+    // See quantizeEnabledAndHasTrueTrackBeats()
+    bool m_trueTrackBeats;
 
     friend class LoopingControlTest;
 };
