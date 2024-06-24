@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #include <QObject>
-#endif
 #include <QPointer>
 #include <memory>
 
@@ -29,16 +27,15 @@ class parented_ptr final {
     explicit parented_ptr(T* t) noexcept
             : m_ptr{t} {
     }
-// Only generate destructor if not empty, otherwise its empty but will
-// cause the parented_ptr to be not trivially destructible even though it could be.
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     ~parented_ptr() noexcept {
-        DEBUG_ASSERT(!m_ptr || static_cast<const QObject*>(m_ptr)->parent());
+        if (!m_ptr) {
+            return;
+        }
+        VERIFY_OR_DEBUG_ASSERT(static_cast<const QObject*>(m_ptr)->parent()) {
+            // managed object has no parent that could clean it up later, thus we're responsible.
+            delete m_ptr;
+        }
     }
-#else
-    // explicitly generate trivial destructor (since decltype(m_ptr) is not a class type)
-    ~parented_ptr() noexcept = default;
-#endif
     // Rule of 5
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
