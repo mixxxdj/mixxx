@@ -35,13 +35,41 @@ EngineDeck::EngineDeck(
             Qt::DirectConnection);
 
     m_pPregain = new EnginePregain(getGroup());
-    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
+    m_pBuffer = new EngineBuffer(getGroup(),
+            pConfig,
+            this,
+            pMixingEngine,
+            primaryDeck ? mixxx::audio::ChannelCount::stem()
+                        : mixxx::audio::ChannelCount::stereo());
 }
 
 EngineDeck::~EngineDeck() {
     delete m_pPassing;
     delete m_pBuffer;
     delete m_pPregain;
+}
+
+void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
+    int stereoChannelCount = m_pBuffer->getChannelCount() / mixxx::kEngineChannelOutputCount;
+    auto allChannelBufferSize = iBufferSize * stereoChannelCount;
+    if (m_stemBuffer.size() < allChannelBufferSize) {
+        m_stemBuffer = mixxx::SampleBuffer(allChannelBufferSize);
+    }
+    m_pBuffer->process(m_stemBuffer.data(), allChannelBufferSize);
+
+    // TODO(XXX): process effects per stems
+
+    SampleUtil::clear(pOut, iBufferSize);
+    const CSAMPLE* pIn = m_stemBuffer.data();
+    for (int i = 0; i < iBufferSize; i += mixxx::kEngineChannelOutputCount) {
+        for (int chIdx = 0; chIdx < m_pBuffer->getChannelCount();
+                chIdx += mixxx::kEngineChannelOutputCount) {
+            // TODO(XXX): apply stem gain or skip muted stem
+            pOut[i] += pIn[stereoChannelCount * i + chIdx];
+            pOut[i + 1] += pIn[stereoChannelCount * i + chIdx + 1];
+        }
+    }
+    // TODO(XXX): process stem DSP
 }
 
 void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
@@ -61,7 +89,13 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         }
 
         // Process the raw audio
-        m_pBuffer->process(pOut, iBufferSize);
+        if (m_pBuffer->getChannelCount() <= mixxx::kEngineChannelOutputCount) {
+            // Process a single mono or stereo channel
+            m_pBuffer->process(pOut, iBufferSize);
+        } else {
+            // Process multiple stereo channels (stems) and mix them together
+            processStem(pOut, iBufferSize);
+        }
         m_pPregain->setSpeedAndScratching(m_pBuffer->getSpeed(), m_pBuffer->getScratching());
         m_bPassthroughWasActive = false;
     }

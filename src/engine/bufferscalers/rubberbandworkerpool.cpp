@@ -14,10 +14,17 @@ RubberBandWorkerPool::RubberBandWorkerPool(UserSettingsPointer pConfig)
     m_channelPerWorker = multiThreadedOnStereo
             ? mixxx::audio::ChannelCount::mono()
             : mixxx::audio::ChannelCount::stereo();
-    DEBUG_ASSERT(mixxx::kEngineChannelCount % m_channelPerWorker == 0);
+    DEBUG_ASSERT(mixxx::kMaxEngineChannelInputCount % m_channelPerWorker == 0);
+
+    int numCore = QThread::idealThreadCount();
+    int numRBTasks = qMin(numCore, mixxx::kMaxEngineChannelInputCount / m_channelPerWorker);
+
+    qDebug() << "RubberBand will use" << numRBTasks << "tasks to scale the audio signal";
 
     setThreadPriority(QThread::HighPriority);
-    setMaxThreadCount(mixxx::kEngineChannelCount / m_channelPerWorker - 1);
+    // The RB pool will only be used to scale n-1 buffer sample, so the engine
+    // thread takes care of the last buffer and doesn't have to be idle.
+    setMaxThreadCount(numRBTasks - 1);
 
     // We allocate one runner less than the total of maximum supported channel,
     // so the engine thread will also perform a stretching operation, instead of

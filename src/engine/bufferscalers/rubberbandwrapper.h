@@ -32,4 +32,7 @@ class RubberBandWrapper {
   private:
     // copy constructor of RubberBand::RubberBandStretcher is implicitly deleted.
     std::vector<std::unique_ptr<RubberBandTask>> m_pInstances;
+    // Number of channel used for each instance. This may vary whether the track
+    // is a stereo track or a stem track
+    mixxx::audio::ChannelCount m_channelPerWorker;
 };

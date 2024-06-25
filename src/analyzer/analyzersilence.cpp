@@ -74,10 +74,11 @@ SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
 // static
 bool AnalyzerSilence::verifyFirstSound(
         std::span<const CSAMPLE> samples,
-        mixxx::audio::FramePos firstSoundFrame) {
+        mixxx::audio::FramePos firstSoundFrame,
+        mixxx::audio::ChannelCount channelCount) {
     const SINT firstSoundSample = findFirstSoundInChunk(samples);
     if (firstSoundSample < static_cast<SINT>(samples.size())) {
-        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample)
+        return mixxx::audio::FramePos::fromSamplePos(firstSoundSample, channelCount)
                        .toLowerFrameBoundary() == firstSoundFrame.toLowerFrameBoundary();
     }
     return false;

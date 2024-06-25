@@ -6,6 +6,7 @@
 #define MIXXX
 #include <fidlib.h>
 
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/sample.h"
 
@@ -72,7 +73,8 @@ class EngineFilterIIR : public EngineFilterIIRBase {
             SampleUtil::linearCrossfadeBuffersOut(
                     pOutput, // fade out filtered
                     pIn,     // fade in dry
-                    iBufferSize);
+                    iBufferSize,
+                    mixxx::kEngineChannelOutputCount);
         } else {
             SampleUtil::applyRampingGain(
                     pOutput, 1.0, 0, // fade out filtered
