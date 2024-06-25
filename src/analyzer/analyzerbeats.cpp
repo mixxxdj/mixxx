@@ -42,6 +42,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
 
 bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     if (frameLength <= 0) {
         return false;
@@ -86,6 +87,7 @@ bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
     m_sampleRate = sampleRate;
+    m_channelCount = channelCount;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysis) {
@@ -199,12 +201,34 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
         return false;
     }
 
-    m_currentFrame += count / mixxx::kAnalysisChannels;
+    SINT numFrames = count / m_channelCount;
+    const CSAMPLE* pBeatInput = pIn;
+    CSAMPLE* pDrumChannel = nullptr;
+
+    if (m_channelCount > mixxx::kAnalysisChannels) {
+        // If we have multi channel file (a stem file), we extract the first
+        // stereo channel, as it is the drum stem by convention
+        count = numFrames * mixxx::kAnalysisChannels;
+        pDrumChannel = SampleUtil::alloc(count);
+
+        VERIFY_OR_DEBUG_ASSERT(pDrumChannel) {
+            return false;
+        }
+
+        SampleUtil::copyMultiToStereo(pDrumChannel, pIn, numFrames, m_channelCount, 0);
+        pBeatInput = pDrumChannel;
+    }
+
+    m_currentFrame += numFrames;
     if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore all remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, count);
+    bool ret = m_pPlugin->processSamples(pBeatInput, count);
+    if (pDrumChannel) {
+        SampleUtil::free(pDrumChannel);
+    }
+    return ret;
 }
 
 void AnalyzerBeats::cleanup() {

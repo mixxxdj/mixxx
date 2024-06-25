@@ -43,6 +43,7 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
 
 bool AnalyzerKey::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     if (frameLength <= 0) {
         return false;
@@ -75,6 +76,7 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& track,
              << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled;
 
     m_sampleRate = sampleRate;
+    m_channelCount = channelCount;
     m_totalFrames = frameLength;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
@@ -155,12 +157,39 @@ bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
         return false;
     }
 
-    m_currentFrame += count / mixxx::kAnalysisChannels;
+    SINT numFrames = count / m_channelCount;
+    m_currentFrame += numFrames;
+
     if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, count);
+    const CSAMPLE* pKeyInput = pIn;
+    CSAMPLE* pHarmonicMixedChannel = nullptr;
+
+    if (m_channelCount > mixxx::kAnalysisChannels) {
+        // If we have multi channel file (a stem file), we mix all the stems
+        // together except the first one which contains drums or beats by
+        // convention
+        count = numFrames * mixxx::kAnalysisChannels;
+        pHarmonicMixedChannel = SampleUtil::alloc(count);
+        VERIFY_OR_DEBUG_ASSERT(pHarmonicMixedChannel) {
+            return false;
+        }
+
+        SampleUtil::mixMultichannelToStereo(pHarmonicMixedChannel,
+                pIn,
+                numFrames,
+                m_channelCount,
+                1 /*exclude the first stem, 0b0001*/);
+        pKeyInput = pHarmonicMixedChannel;
+    }
+
+    bool ret = m_pPlugin->processSamples(pKeyInput, count);
+    if (pHarmonicMixedChannel) {
+        SampleUtil::free(pHarmonicMixedChannel);
+    }
+    return ret;
 }
 
 void AnalyzerKey::cleanup() {
