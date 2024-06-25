@@ -96,6 +96,63 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.6.0" type="development" date="2024-06-12" timestamp="1718193546">
+      <description>
+ <p>
+  Waveforms
+ </p>
+ <ul>
+  <li>
+   Simplify waveform combobox in preferences
+   #13220
+   #6428
+   #13226
+  </li>
+ </ul>
+ <p>
+  STEM support
+ </p>
+ <ul>
+  <li>
+   Add simple support for STEM files
+   #13044
+  </li>
+  <li>
+   Multithreaded Rubberband
+   #13143
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Add screen renderer to support controllers with a screen
+   #11407
+   #13334
+  </li>
+ </ul>
+ <p>
+  Auto-DJ
+ </p>
+ <ul>
+  <li>
+   Add AutoDJ xfader recenter option (default off)
+   #13303
+   #11571
+  </li>
+ </ul>
+ <p>
+  Misc Refactorings
+ </p>
+ <ul>
+  <li>
+   Refactor/shrink modernize scopedtimer
+   #13258
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.5.0" type="development" date="2024-06-12" timestamp="1718193546">
       <description>
  <p>

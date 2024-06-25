@@ -775,7 +775,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     qWarning() << "     $ createMenuBar";
-    ScopedTimer t(u"MixxxMainWindow::createMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
@@ -790,7 +790,7 @@ void MixxxMainWindow::connectMenuBar() {
     // so all connections must be unique!
     qWarning() << "     $ connectMenuBar";
 
-    ScopedTimer t(u"MixxxMainWindow::connectMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::connectMenuBar"));
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
