@@ -247,6 +247,11 @@ NS6II.Deck = function(channelOffset) {
                 midi.sendShortMsg(this.midi[0], takeoverLEDControls.up, directionLedBrightness);
             }
         },
+        shutdown: function() {
+            Object.values(takeoverLEDControls).forEach(control => {
+                midi.sendShortMsg(this.midi[0], control, this.off);
+            });
+        }
     });
 
     // features 14-bit precision
