@@ -23,8 +23,10 @@ NumarkScratch.autoLoopSizes = [
 NumarkScratch.invertLoopEncoderFunction = !!engine.getSetting("invertLoopEncoderFunction");
 
 // Define whether or not to keep LEDs dimmed if they are inactive.
-// 'true' will keep them dimmed, 'false' will turn them off. Default: true
-components.Button.prototype.off = !!engine.getSetting("inactiveLightsAlwaysBacklit");
+// 0x01 ('true' in UI) will keep them dimmed, 0x00 ('false' in UI) will turn them off. Default: 0x01 ('true')
+NumarkScratch.noLight = 0x00;
+NumarkScratch.dimLight = 0x01;
+components.Button.prototype.off = engine.getSetting("inactiveLightsAlwaysBacklit") ? NumarkScratch.dimLight : NumarkScratch.noLight;
 
 /*
  * CODE
