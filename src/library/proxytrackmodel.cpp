@@ -113,6 +113,17 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     }
 }
 
+void ProxyTrackModel::cutTracks(const QModelIndexList& indices) {
+    QModelIndexList translatedList;
+    foreach (QModelIndex index, indices) {
+        QModelIndex indexSource = mapToSource(index);
+        translatedList.append(indexSource);
+    }
+    if (m_pTrackModel) {
+        m_pTrackModel->cutTracks(translatedList);
+    }
+}
+
 void ProxyTrackModel::copyTracks(const QModelIndexList& indices) const {
     QModelIndexList translatedList;
     foreach (QModelIndex index, indices) {
@@ -122,6 +133,18 @@ void ProxyTrackModel::copyTracks(const QModelIndexList& indices) const {
     if (m_pTrackModel) {
         m_pTrackModel->copyTracks(translatedList);
     }
+}
+
+QList<int> ProxyTrackModel::pasteTracks(const QModelIndex& index) {
+    QList<int> translatedList;
+    if (m_pTrackModel) {
+        QList<int> rowIndices = m_pTrackModel->pasteTracks(mapToSource(index));
+        foreach (int row, rowIndices) {
+            QModelIndex indexProxy = mapFromSource(sourceModel()->index(row, 0));
+            translatedList.append(indexProxy.row());
+        }
+    }
+    return translatedList;
 }
 
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
