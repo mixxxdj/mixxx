@@ -57,7 +57,8 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="72"/>
         <source>Banshee database file not found at
 </source>
-        <translation>밴시 데이터베이스 파일을 찾을 수 없음</translation>
+        <translation>밴시 데이터베이스 파일을 찾을 수 없음
+</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="83"/>
@@ -1106,7 +1107,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="333"/>
         <source>Toggle quantize mode</source>
-        <translation>양자화(quantiza) 모드 토글</translation>
+        <translation>양자화(quantize) 모드 토글</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
@@ -1542,7 +1543,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="297"/>
         <source>Adjust Beatgrid Faster +.01</source>
-        <translation>비트그리드를 0.01초 더 빠르게 설정</translation>
+        <translation>비트그리드를 +.01초 더 빠르게 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="298"/>

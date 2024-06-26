@@ -15,7 +15,8 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            const QString& group);
+            const QString& group,
+            bool isMainDeck);
     ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -50,6 +51,7 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     TrackPointer m_pCurrentTrack;
     QColor m_trackColor;
     int m_trackColorAlpha;
+    const bool m_isMainDeck;
 
     parented_ptr<WTrackMenu> m_pTrackMenu;
 };

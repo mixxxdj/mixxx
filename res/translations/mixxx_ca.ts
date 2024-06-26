@@ -342,7 +342,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="205"/>
         <source>Cover Art</source>
-        <translation>Caràtula</translation>
+        <translation>Portada</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
@@ -377,7 +377,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="233"/>
         <source>Key</source>
-        <translation>Clau musical</translation>
+        <translation>Tonalitat musical</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="237"/>
@@ -562,7 +562,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="191"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation>Heu afegit un o més carpetes de música. Les cançons d&apos;aquestes carpetes no estaran disponibles fins que es faci un escaneig de nou. Voleu realitzar l&apos;escaneig ara?</translation>
+        <translation>Heu afegit una o més carpetes de música. Les cançons d&apos;aquestes carpetes no estaran disponibles fins escanejar la biblioteca de nou. Voleu realitzar l&apos;escaneig ara?</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="195"/>
@@ -716,7 +716,7 @@
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="217"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
-        <translation>El fitxer &apos;%1&apos; està buit i no es pot carregar</translation>
+        <translation>El fitxer &apos;%1&apos; està buit i no es pot carregar.</translation>
     </message>
 </context>
 <context>
@@ -749,7 +749,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="238"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
-        <translation>Fa que el Mixxx mostri totes les dades del controlador que rep i les funcions de script que carrega</translation>
+        <translation>Fa que el Mixxx mostri/registri totes les dades de la controladora que rep i les funcions de script que carrega</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="251"/>
@@ -759,7 +759,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="261"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
-        <translation>habilita el mode desenvolupador. Inclou registre extra d&apos;informació, estadístiques de rendiment i un menú amb utilitats de desenvolupador.</translation>
+        <translation>habilita el mode desenvolupador. Inclou registre extra d&apos;informació, estadístiques de rendiment i un menú de desenvolupador.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="186"/>
@@ -1078,7 +1078,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="241"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="242"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>PPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
@@ -1244,7 +1244,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="639"/>
         <source>Looping</source>
-        <translation>Bucles</translation>
+        <translation>Repetint</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="723"/>
@@ -1458,7 +1458,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="172"/>
         <source>Track Gain knob</source>
-        <translation>Potenciòmetre de guany de pista</translation>
+        <translation>Control de guany de pista</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="175"/>
@@ -1669,7 +1669,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="127"/>
         <source>Mid EQ</source>
-        <translation>EQ de Mitjos</translation>
+        <translation>EQ de mitjos</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="22"/>
@@ -1690,7 +1690,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>Main Output Gain</source>
-        <translation>Guany de la sortida principal</translation>
+        <translation>Ganància de la sortida principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="127"/>
@@ -1936,12 +1936,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="962"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation>Potenciòmetre Súper d&apos;Efecte ràpid del Plat %1</translation>
+        <translation>Súper Control d&apos;Efecte ràpid del Plat %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="963"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
-        <translation>Potenciòmetre Súper de l&apos;Efecte Ràpid (controla el paràmetre de l&apos;efecte associat)</translation>
+        <translation>Súper control de l&apos;Efecte Ràpid (controla el paràmetre de l&apos;efecte associat)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="967"/>
@@ -1977,7 +1977,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1012"/>
         <source>Super Knob</source>
-        <translation>Potenciòmetre Súper</translation>
+        <translation>Súper Control</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1026"/>
@@ -2064,7 +2064,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1300"/>
         <source>Gain knob</source>
-        <translation>Potenciòmetre de guany</translation>
+        <translation>Control de guany</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1367"/>
@@ -2089,7 +2089,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1399"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation>Micròfon i Línia auxiliar Mostra/Amaga</translation>
+        <translation> Mostra/Amaga Micròfon i Línia auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1400"/>
@@ -2270,7 +2270,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
         <source>Effect Unit %1</source>
-        <translation>Unitat d&apos;efecte %1</translation>
+        <translation>Unitat d&apos;efectes %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
@@ -2295,7 +2295,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Main Output gain</source>
-        <translation>Guany de la sortida principal</translation>
+        <translation>Ganància de la sortida principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
@@ -2513,12 +2513,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="443"/>
         <source>Increase Pitch</source>
-        <translation>Incrementar Pitch</translation>
+        <translation>Augmentar Pitch</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
         <source>Increases the pitch by one semitone</source>
-        <translation>Augmentar el pitch un semito</translation>
+        <translation>Augmentar el pitch un semitò</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="447"/>
@@ -2553,7 +2553,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="469"/>
         <source>Keylock</source>
-        <translation>Bloqueig de clau musical</translation>
+        <translation>Bloqueig de to musical</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="512"/>
@@ -2563,32 +2563,32 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="533"/>
         <source>Shift cue points earlier</source>
-        <translation>Canvia els punts de referència abans</translation>
+        <translation>Canvia els punts de marca abans</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation>Canvia els punts de referència 10 milisegons abans</translation>
+        <translation>Canvia els punts de marca 10 mil·lisegons abans</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Shift cue points earlier (fine)</source>
-        <translation>Canvia els punts de referència abans (suau)</translation>
+        <translation>Canvia els punts de marca abans (suau)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="538"/>
         <source>Shift cue points 1 millisecond earlier</source>
-        <translation>Canvia els punts de referència 1 mil·lisegon abans</translation>
+        <translation>Canvia els punts de marca 1 mil·lisegon abans</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
         <source>Shift cue points later</source>
-        <translation>Canvia els punts de referència més tard</translation>
+        <translation>Canvia els punts de marca més tard</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="542"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation>Canvia els punts de referència 10 mil·lisegons més tard</translation>
+        <translation>Canvia els punts de marca 10 mil·lisegons més tard</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
@@ -2660,7 +2660,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="624"/>
         <source>Jump to or set the %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Saltar a o configurar %1</translation>
+        <translation>Saltar a o estableix %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="628"/>
@@ -2678,7 +2678,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="633"/>
         <source>Clear %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Neteja %1</translation>
+        <translation>Esborrar %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="634"/>
@@ -2905,7 +2905,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="835"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
-        <translation>Mou verticalment en ambdúes direccions utilitzant un potenciòmetre, com al prémer les tecles amunt/avall</translation>
+        <translation>Mou verticalment en ambdúes direccions utilitzant un control, com al prémer les tecles amunt/avall</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="839"/>
@@ -2935,7 +2935,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="848"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
-        <translation>Salta verticalment en ambdúes direccions utilitzant un potenciòmetre, com al prémer les tecles pàgina amunt/avall</translation>
+        <translation>Mou verticalment en ambdúes direccions utilitzant un control, com al prémer les tecles pàgina amunt/avall</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="852"/>
@@ -2965,7 +2965,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="861"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
-        <translation>Mou horitzontalment en ambúes direccions utilitzant un potenciòmetre, com al prémer les tecles Esquerra/Dreta del teclat</translation>
+        <translation>Mou horitzontalment en ambúes direccions utilitzant un control, com al prémer les tecles Esquerra/Dreta del teclat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="866"/>
@@ -2995,7 +2995,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="875"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
-        <translation>Mou el focus al panell de la dreta o esquerra utilizant un potenciòmetre, com al prémer tabulació/Majúscules+tabulació</translation>
+        <translation>Mou el focus al panell de la dreta o esquerra utilizant un control, com al prémer tabulació/Majúscules+tabulació</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="879"/>
@@ -3102,7 +3102,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="971"/>
         <source>Quick Effect Enable Button</source>
-        <translation>Botó d&apos;efecte ràpid</translation>
+        <translation>Botó que habilita l&apos;efecte ràpid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="998"/>
@@ -3112,7 +3112,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1013"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
-        <translation>Potenciòmetre Súper (controla els potenciòmetres Meta dels efectes)</translation>
+        <translation>Control Super (controla els controls &apos;Meta&apos; dels efectes)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1019"/>
@@ -3163,32 +3163,32 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1158"/>
         <source>Meta Knob</source>
-        <translation>Potenciòmetre Meta</translation>
+        <translation>Control Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1159"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
-        <translation>Potenciòmetre Meta de l&apos;efecte (controla els paràmetres de l&apos;efecte enllaçats)</translation>
+        <translation>Control Meta de l&apos;efecte (controla els paràmetres de l&apos;efecte enllaçats)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1222"/>
         <source>Meta Knob Mode</source>
-        <translation>Mode del potenciòmetre Meta</translation>
+        <translation>Mode de Control Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1223"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Defineix la manera com canvien els paràmetres de l&apos;efecte enllaçats al girar el potenciòmetre Meta.</translation>
+        <translation>Defineix la manera com canvien els paràmetres de l&apos;efecte enllaçats al girar el control Meta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1230"/>
         <source>Meta Knob Mode Invert</source>
-        <translation>Mode d&apos;inversió del potenciòmetre Meta</translation>
+        <translation>Mode d&apos;inversió del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1231"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Inverteix el sentit en que canvien els paràmetres de l&apos;efecte enllaçats al girar el potenciòmetre Meta.</translation>
+        <translation>Inverteix el sentit en que canvien els paràmetres de l&apos;efecte enllaçats al girar el control Meta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1262"/>
@@ -3314,7 +3314,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1516"/>
         <source>Stream your mix over the Internet.</source>
-        <translation>Emet la mescla a través d&apos;Internet.</translation>
+        <translation>Retransmissió la vostra mescla a través d&apos;Internet.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1521"/>
@@ -3350,12 +3350,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1438"/>
         <source>Toggle 4 Decks</source>
-        <translation>Commuta 4 plats</translation>
+        <translation>Commuta 4 reproductors</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1439"/>
         <source>Switches between showing 2 decks and 4 decks.</source>
-        <translation>Canvia entre les opcions de mostrar 2 o 4 plats.</translation>
+        <translation>Canvia entre mostrar 2 reproductors o 4 reproductors.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1443"/>
@@ -3688,7 +3688,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="196"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested tracks.</source>
-        <translation>Crea una caixa per a la propera actuació, per a les teves pistes prefereides d&apos;electohouse, o per a les pistes més demanades.</translation>
+        <translation>Crea una caixa per a la propera actuació, per a les vostres pistes prefereides d&apos;electohouse, o per a les pistes més demanades.</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="447"/>
@@ -4262,7 +4262,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="192"/>
         <source>Hints: If you&apos;re mapping a button or switch, only press or flip it once.  For knobs and sliders, move the control in both directions for best results. Make sure to touch one control at a time.</source>
-        <translation>Suggerència: Si esteu assignant un botó o un selector, premeu-lo o activeu-lo un cop. Per a potenciòmetres i lliscadors, moveu el control en ambdúes direccions per a millors resultats. Assegureu-vos de tocar els controls d&apos;un en un.</translation>
+        <translation>Suggerència: Si esteu assignant un botó o un selector, premeu-lo o activeu-lo un cop. Per a controls i faders, moveu el control en ambdúes direccions per a millors resultats. Assegureu-vos de tocar els controls d&apos;un en un.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="247"/>
@@ -4287,7 +4287,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="336"/>
         <source>Ignores slider or knob movements until they are close to the internal value. This helps prevent unwanted extreme changes while mixing but can accidentally ignore intentional rapid movements.</source>
-        <translation>Ignora els moviments dels lliscadors o potenciòmetres fins que estan aprop del valor intern. Això ajuda a prevenir salts grans no desitjats al mesclar, però pot ser que ignori moviments ràpids fets intencionadament.</translation>
+        <translation>Ignora els moviments dels faders o controls fins que estan aprop del valor intern. Això ajuda a prevenir salts grans no desitjats al mesclar, però pot ser que ignori moviments ràpids fets intencionadament.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="339"/>
@@ -4307,7 +4307,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="356"/>
         <source>For jog wheels or infinite-scroll knobs. Interprets incoming messages in two&apos;s complement.</source>
-        <translation>Per a potenciòmetres continus o rodetes. Interpreta l&apos;entrada en complement a dos.</translation>
+        <translation>Per a controls continus o Rodetes. Interpreta l&apos;entrada en complement a dos.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="359"/>
@@ -4337,7 +4337,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="33"/>
         <source>You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.</source>
-        <translation>Podeu fer clic en qualsevol botó, lliscador o potenciòmetre del Mixxx per a que sigui el control a aprendre. També podeu cercar el control escrivint el seu nom o fer clic al botó Tria el control per seleccionar-lo d&apos;una llista.</translation>
+        <translation>Podeu fer clic en qualsevol botó, fader o control del Mixxx per a que sigui el control a aprendre. També podeu cercar el control escrivint el seu nom o fer clic al botó Tria el control per seleccionar-lo d&apos;una llista.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="44"/>
@@ -5040,7 +5040,7 @@ No es poden activar simultàniament dues connexions font al mateix servidor que 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="95"/>
         <source>Loop default color</source>
-        <translation>Color per defecte del bucle</translation>
+        <translation>Color per defecte del loop</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="52"/>
@@ -5343,7 +5343,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="18"/>
         <source>Controllers</source>
-        <translation>Controladors</translation>
+        <translation>Controladores</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="65"/>
@@ -5544,7 +5544,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="150"/>
         <source>Main cue</source>
-        <translation>Punt CUE</translation>
+        <translation>Marca principal</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="151"/>
@@ -5574,7 +5574,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="169"/>
         <source>Allow, play from load point</source>
-        <translation>Permet, reprodueix des del punt de càrrega</translation>
+        <translation>Permet, reprodueix des del punt de carrega</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="231"/>
@@ -5732,7 +5732,7 @@ If this option is disabled, the intro start point is automatically placed at the
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="29"/>
         <source>Loading a track, when deck is playing</source>
-        <translation>Carregar una pista, quan el reproductor està reproduïnt</translation>
+        <translation>Carregar una pista, quan el reproductor està reproduint</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="187"/>
@@ -5930,7 +5930,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="42"/>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="93"/>
         <source>Effect Chain Presets</source>
-        <translation>Configuracions predefinides de cadena d&apos;efectes</translation>
+        <translation>Configuracions predefinides de cadenes d&apos;efectes</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="54"/>
@@ -6001,7 +6001,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="278"/>
         <source>Hidden Effects</source>
-        <translation>Efectes amagats</translation>
+        <translation>Effectes amagats</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="475"/>
@@ -6011,12 +6011,12 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="481"/>
         <source>Keep metaknob position</source>
-        <translation>Manté la posició del potenciòmetre meta</translation>
+        <translation>Manté la posició del metaknob</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="491"/>
         <source>Reset metaknob to effect default</source>
-        <translation>Reinicia el potenciòmetre meta al valor per defecte de l&apos;efecte</translation>
+        <translation>Reinicia el metaknob al valor per defecte de l&apos;efecte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="300"/>
@@ -6445,7 +6445,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="271"/>
         <source>BPM display precision:</source>
-        <translation>Precisió visual del BPM:</translation>
+        <translation>Precisió visual del BPM</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="369"/>
@@ -6495,7 +6495,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="330"/>
         <source>Enable search history keyboard shortcuts</source>
-        <translation>Habilita les tecles ràpides a l&apos;historial de cerca</translation>
+        <translation>Habilita les tecles ràpides a l&apos;històric de cerca</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="338"/>
@@ -6743,12 +6743,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="202"/>
         <source>Only allow EQ knobs to control EQ-specific effects</source>
-        <translation>Permet assignar únicament efectes d&apos;equalització als potenciòmetre d&apos;EQ </translation>
+        <translation>Permet assignar a les rodetes d&apos;EQ únicament efectes d&apos;equalització</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="208"/>
         <source>Uncheck to allow any effect to be loaded into the EQ knobs.</source>
-        <translation>Desactiva per permetre que es pugui assignar qualsevol efecte als potenciòmetres d&apos;EQ.</translation>
+        <translation>Desactiva per permetre que es pugui assignar qualsevol efecte als controls d&apos;EQ.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="215"/>
@@ -7505,7 +7505,7 @@ The loudness target is approximate and assumes track pregain and main output lev
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
         <source>Headphone Output Delay</source>
-        <translation>Retard de sortida d&apos;auriculars</translation>
+        <translation>Retard de sortida d&apos;auricular</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
@@ -7602,12 +7602,12 @@ The loudness target is approximate and assumes track pregain and main output lev
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="205"/>
         <source>Deck 1</source>
-        <translation>Plat 1</translation>
+        <translation>Reproductor 1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="231"/>
         <source>Deck 2</source>
-        <translation>Plat 2</translation>
+        <translation>Reproductor 2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="257"/>
@@ -7931,7 +7931,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="124"/>
         <source>Controllers</source>
-        <translation>Controladors</translation>
+        <translation>Controladores</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="115"/>
@@ -7978,7 +7978,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="71"/>
         <source>&amp;Restore Defaults</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
-        <translation>&amp;Restaura valors per defecte</translation>
+        <translation>&amp;Restaura opcions per defecte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
@@ -8876,7 +8876,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="150"/>
         <source>duplicate</source>
-        <translation>duplica</translation>
+        <translation>duplicat</translation>
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="172"/>
@@ -9066,7 +9066,7 @@ Sovint ofereix una graella de pulsacions de major qualitat, però no serà prou 
     <message>
         <location filename="../../src/engine/enginebuffer.h" line="181"/>
         <source>Unknown, using Rubberband (better)</source>
-        <translation>Desconegut, utilitzant Rubberband (millor)</translation>
+        <translation>Desconegut utilitzant Rubberband (millor)</translation>
     </message>
     <message>
         <location filename="../../src/engine/enginebuffer.h" line="183"/>
@@ -9789,7 +9789,7 @@ Voleu seleccionar ara un dispositiu d&apos;entrada?</translation>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="1375"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
-        <translation>La Renderizació Directa no està activada a la vostra màquina.&lt;br&gt;&lt;br&gt; Això significa que els gràfics d&apos;ona seran molt &lt;br&gt;&lt;b&gt;lent i poden fer anar molta CPU&lt;/b&gt;. Prove de canviar la&lt;br&gt; configuració per activar la renderització directa, o desactiveu&lt;br&gt;els gràfics d&apos;ona a les preferències del Mixxx selecionant&lt;br&gt;&quot;Buit&quot; al tipus deforma d&apos;ona local, en la secció de &quot;Gràfics d&apos;ona&quot;.</translation>
+        <translation>La Renderizació Directa no està habilitada a la vostra màquina.&lt;br&gt;&lt;br&gt; Això significa que els gràfics forma d&apos;ona seran molt &lt;br&gt;&lt;b&gt;lents i poden fer servir molta CPU&lt;/b&gt;. Prove de canviar la&lt;br&gt; configuració per habilitar la renderització directa, o desactiveu&lt;br&gt;els gràfics de forma d&apos;ona a les preferències del Mixxx seleccionant&lt;br&gt;&quot;Buit&quot; al tipus de forma d&apos;ona, en la secció de &quot;Gràfics d&apos;ona&quot;.</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="1410"/>
@@ -10925,7 +10925,7 @@ Valors més alts atenuaran menys les freqüències altes.</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/loudnesscontoureffect.cpp" line="55"/>
         <source>Follow Gain Knob</source>
-        <translation>Potenciòmetre de seguiment del guany</translation>
+        <translation>Compensa el factor loudness depenent del control de guany del reproductor</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="82"/>
@@ -11348,7 +11348,7 @@ Configureu un format diferent a les preferències</translation>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="88"/>
         <source>The range of the Pitch knob (0 - 2 octaves).
 </source>
-        <translation>El rang del potenciòmetre de to (0 - 2 octaves).
+        <translation>El rang del potenciòmetre de tò (0 - 2 octaves).
 </translation>
     </message>
     <message>
@@ -12532,7 +12532,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="303"/>
         <source>Auxiliary Gain</source>
-        <translation>Guany auxiliar</translation>
+        <translation>Ganància auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="304"/>
@@ -12562,7 +12562,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="316"/>
         <source>Manual: Reduce music volume by a fixed amount set by the Strength knob.</source>
-        <translation>Manual: Redueix el volum de la música en una quantitat fixa, definida en el potenciòmetre de nivell de reducció.</translation>
+        <translation>Manual: Redueix el volum de la música en una quantitat fixa, definida en el nivell de reducció.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="322"/>
@@ -13483,14 +13483,14 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1015"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
-        <translation>Mode Directe/Processat (línies creuades): El potenciòmetre de mescla fa crossfading entre la senyal Directa i la senyal Processada.
+        <translation>Mode Directe/Processat (línies creuades): El control de mescla fa crossfading entre la senyal Directa i la senyal Processada.
 Ho pots utilitzar per canviar el so de la pista amb EQs i efectes de filtre.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1017"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
-        <translation>Mode Directe+Processat (lína directa plana): El potenciòmetre de mescla afegeix la senyal processada a la senyal directa.
+        <translation>Mode Directe+Processat (lína directa plana): El control de mescla afegeix la senyal processada a la senyal directa.
 Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de filtre.</translation>
     </message>
     <message>
@@ -13511,7 +13511,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1129"/>
         <source>Right side active: parameter moves with right half of Meta Knob turn</source>
-        <translation>Part dreta activa: el paràmetre es mou només durant la segona meitat del potenciòmetre Meta</translation>
+        <translation>Part dreta activa: el paràmetre es mou només durant la segona meitat del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1166"/>
@@ -13556,27 +13556,27 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1124"/>
         <source>Meta Knob Link</source>
-        <translation>Enllaça el potenciòmetre Meta </translation>
+        <translation>Enllaça el control Meta </translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1125"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
-        <translation>Configura com afecta el potenciòmetre Meta de l&apos;efecte a aquest paràmetre.</translation>
+        <translation>Configura com afecta a aquest paràmetre el control Meta de l&apos;efecte.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1133"/>
         <source>Meta Knob Link Inversion</source>
-        <translation>Inversió de l&apos;enllaç del a potenciòmetre Meta</translation>
+        <translation>Inversió de l&apos;enllaç del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1134"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
-        <translation>Inverteix la direcció cap a on es mou el paràmetre quan es mou el potenciòmetre Meta.</translation>
+        <translation>Inverteix la direcció cap a on es mou el paràmetre quan es mou el control Meta.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1021"/>
         <source>Super Knob</source>
-        <translation>Potenciòmetre Súper</translation>
+        <translation>Súper Control</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1030"/>
@@ -13646,7 +13646,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1022"/>
         <source>Controls the Meta Knob of all effects in this unit together.</source>
-        <translation>Controla el potenciòmetre Meta de tots els efectes d&apos;aquesta unitat.</translation>
+        <translation>Controla el control Meta de tots els efectes d&apos;aquesta unitat.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1031"/>
@@ -13739,7 +13739,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1108"/>
         <source>Meta Knob</source>
-        <translation>Potenciòmetre Meta</translation>
+        <translation>Control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1109"/>
@@ -13784,17 +13784,17 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1127"/>
         <source>Active: parameter moves with Meta Knob</source>
-        <translation>Actiu: el paràmetre es mou amb el potenciòmetre Meta</translation>
+        <translation>Actiu: el paràmetre es mou amb el control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1128"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
-        <translation>Part esquerra actiu: el paràmetre es mou només durant la primera meitat del potenciòmetre Meta</translation>
+        <translation>Part esquerra actiu: el paràmetre es mou només durant la primera meitat del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1130"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
-        <translation>Esquerra i dreta actiu: el paràmetre es mou en rang sencer durant la primera meitat del potenciòmetre Meta, i torna enrera en la segona meitat.</translation>
+        <translation>Esquerra i dreta actiu: el paràmetre es mou en rang sencer durant la primera meitat del control Meta, i torna enrera en la segona meitat.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1137"/>
@@ -13811,12 +13811,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1143"/>
         <source>Quick Effect Super Knob</source>
-        <translation>Potenciòmetre Súper de l&apos;efecte ràpid</translation>
+        <translation>Súper control d&apos;efecte ràpid</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1144"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
-        <translation>Potenciòmetre Súper de l&apos;efecte ràpid (controla els paràmetres de l&apos;efecte enllaçat)</translation>
+        <translation>Súper control d&apos;efecte ràpid (controla els paràmetres d&apos;efectes enllaçats)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1146"/>
@@ -15578,7 +15578,7 @@ Això no es pot desfer!</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="240"/>
         <source>Toggle search history</source>
         <comment>Shows/hides the search history entries</comment>
-        <translation>commuta l&apos;historial de cerca</translation>
+        <translation>commuta l&apos;històric de cerques</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="243"/>
@@ -15672,7 +15672,8 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="352"/>
         <source>Directory</source>
-        <translation>Directori</translation>
+        <translation>Directori
+</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="361"/>
@@ -16288,7 +16289,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1193"/>
         <source>Confirm track hide</source>
-        <translation>Confirma per amagar les pistes</translation>
+        <translation>Confirma la ocultació de pistes</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1194"/>
@@ -16508,12 +16509,12 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="128"/>
         <source>Export Library to Engine Prime</source>
-        <translation>Exporta la biblioteca a Engine Prime</translation>
+        <translation>Exportar la llibreria a Engine Prime</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="167"/>
         <source>Export Library To</source>
-        <translation>Exporta la biblioteca a</translation>
+        <translation>Exportar la llibreria a</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="184"/>

@@ -1,7 +1,7 @@
 // Tests for engineeffectsdelay.cpp
 
 // Premise: internal Mixxx structure works with a stereo signal.
-// If the mixxx::kEngineChannelCount wouldn't be a stereo in the future,
+// If the mixxx::kEngineChannelOutputCount wouldn't be a stereo in the future,
 // tests have to be updated.
 
 #include "engine/effects/engineeffectsdelay.h"
@@ -26,7 +26,7 @@
 
 namespace {
 
-static_assert(mixxx::kEngineChannelCount == mixxx::audio::ChannelCount::stereo(),
+static_assert(mixxx::kEngineChannelOutputCount == mixxx::audio::ChannelCount::stereo(),
         "EngineEffectsDelayTest requires stereo input signal.");
 
 class EngineEffectsDelayTest : public MixxxTest {
@@ -366,7 +366,7 @@ BENCHMARK(BM_ZeroDelay)->Range(64, 4 << 10);
 
 static void BM_DelaySmallerThanBufferSize(benchmark::State& state) {
     const SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
-    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelOutputCount;
 
     // The delay is half of the buffer size.
     const SINT delayFrames = bufferSizeInFrames / 2;
@@ -386,7 +386,7 @@ BENCHMARK(BM_DelaySmallerThanBufferSize)->Range(64, 4 << 10);
 
 static void BM_DelayGreaterThanBufferSize(benchmark::State& state) {
     const SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
-    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelOutputCount;
 
     // The delay is the same as twice of buffer size.
     const SINT delayFrames = bufferSizeInFrames * 2;
@@ -406,7 +406,7 @@ BENCHMARK(BM_DelayGreaterThanBufferSize)->Range(64, 4 << 10);
 
 static void BM_DelayCrossfading(benchmark::State& state) {
     const SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
-    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelOutputCount;
 
     // The first delay is half of the buffer size.
     const SINT firstDelayFrames = bufferSizeInFrames / 2;
@@ -430,7 +430,7 @@ BENCHMARK(BM_DelayCrossfading)->Range(64, 4 << 10);
 
 static void BM_DelayNoCrossfading(benchmark::State& state) {
     const SINT bufferSizeInSamples = static_cast<SINT>(state.range(0));
-    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelCount;
+    const SINT bufferSizeInFrames = bufferSizeInSamples / mixxx::kEngineChannelOutputCount;
 
     // The delay is half of the buffer size.
     const SINT delayFrames = bufferSizeInFrames / 2;

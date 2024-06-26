@@ -730,17 +730,17 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="162"/>
         <source>Starts Mixxx in full-screen mode</source>
-        <translation>Iniciar Mixxx en modo pantalla completa</translation>
+        <translation>Starts Mixxx in full-screen mode</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="171"/>
         <source>Use a custom locale for loading translations. (e.g &apos;fr&apos;)</source>
-        <translation>Utiliza un locale personalizado para cargar traducciones. (ej. &apos;fr&apos;)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="200"/>
         <source>Top-level directory where Mixxx should look for its resource files such as MIDI mappings, overriding the default installation location.</source>
-        <translation>Directorio de nivel superior donde Mixxx debería buscar sus archivos de recursos tales como mapeos MIDI, anulando la ubicación de instalación predeterminada.</translation>
+        <translation>Top-level directory where Mixxx should look for its resource files such as MIDI mappings, overriding the default installation location.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="214"/>
@@ -750,7 +750,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="238"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
-        <translation>Causa que Mixxx muestre/registre todos los datos del controlador que recibe y las funciones en script que cargue</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="251"/>
@@ -760,7 +760,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="261"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
-        <translation>Habilita el modo desarrollador. Incluye información extra en el registro, estadísticas sobre el desempeño, y un menú de herramientas para el Desarrollador.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="186"/>
@@ -790,12 +790,12 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="275"/>
         <source>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</source>
-        <translation>Habilita el modo seguro. Deshabilita formas de onda en OpenGL, y widgets de vinilos giratorios. Intenta esta opción si Mixxx se bloquea al iniciar.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="286"/>
         <source>[auto|always|never] Use colors on the console output.</source>
-        <translation>[auto|always|never] Utiliza colores en la salida de la consola.</translation>
+        <translation>[auto|always|never] Use colors on the console output.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="294"/>
@@ -805,12 +805,7 @@ warning  - Above + Warnings
 info     - Above + Informational messages
 debug    - Above + Debug/Developer messages
 trace    - Above + Profiling messages</source>
-        <translation>Sets the verbosity of command line logging.
-crítico - Crítico/Fatal únicamente
-advertencia  - Arriba + Advertencias
-info     - Arriba + Mensajes informacionales
-depurar    - Arriba + Mensajes de Depuración/Desarrollador
-rastrear    - Arriba + Perfilar mensajes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="310"/>
@@ -820,12 +815,12 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="324"/>
         <source>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</source>
-        <translation>Interrumpe (SIGINT) Mixxx, si un DEBUG_ASSERT es evaluado a falso. Bajo un depurador podrás continuar después.</translation>
+        <translation>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="338"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
-        <translation>Carga los archivos de música especificados al iniciar. Cada archivo que especifiques será cargado en el siguiente deck virtual.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -859,7 +854,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
         <source>Assign to Hotcue Number</source>
-        <translation>Asignar a número de Acceso Directo</translation>
+        <translation>Asignar a número de Hotcue</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
@@ -890,7 +885,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="11"/>
         <source>Item</source>
-        <translation>Elemento</translation>
+        <translation>Ítem</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="12"/>
@@ -1464,7 +1459,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="172"/>
         <source>Track Gain knob</source>
-        <translation>Perilla de ganancia de pista</translation>
+        <translation>Rueda de ganancia de pista</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="175"/>
@@ -1741,32 +1736,32 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="497"/>
         <source>Cue</source>
-        <translation>Marcador</translation>
+        <translation>Cue</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
         <source>Set Cue</source>
-        <translation>Establecer Marca</translation>
+        <translation>Establecer punto cue</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="499"/>
         <source>Go-To Cue</source>
-        <translation>Ir a Marca</translation>
+        <translation>Ir al Cue</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="501"/>
         <source>Go-To Cue And Play</source>
-        <translation>Ir a Marca y reproducir</translation>
+        <translation>Ir a Cue y reproducir</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="505"/>
         <source>Go-To Cue And Stop</source>
-        <translation>Ir a Marca y detener</translation>
+        <translation>Ir al Cue y detener</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="508"/>
         <source>Preview Cue</source>
-        <translation>Vista Previa de Marca</translation>
+        <translation>Preescuchar Cue</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="509"/>
@@ -1942,12 +1937,12 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="962"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation>Super perilla de efecto rápido del plato %1</translation>
+        <translation>Super rueda de efecto rápido del plato %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="963"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
-        <translation>Super perilla de efecto rápido (parámetros de efecto asociado al control)</translation>
+        <translation>Super rueda de efecto rápido (parámetros de efecto asociado al control)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="967"/>
@@ -1983,7 +1978,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1012"/>
         <source>Super Knob</source>
-        <translation>Súper Perilla</translation>
+        <translation>Rueda Súper</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1026"/>
@@ -2070,7 +2065,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1300"/>
         <source>Gain knob</source>
-        <translation>Perilla de Ganancia</translation>
+        <translation>Rueda de Ganancia</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1367"/>
@@ -2095,27 +2090,27 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1399"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation>Mostrar/Ocultar Micrófono y Auxiliar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1400"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
-        <translation>Muestra/oculta la sección del micrófono y el auxiliar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1414"/>
         <source>4 Effect Units Show/Hide</source>
-        <translation>Mostrar/Ocultar 4 Unidades de Efectos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1415"/>
         <source>Switches between showing 2 and 4 effect units</source>
-        <translation>Cambia entre mostrar 2 y 4 unidades de efectos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1419"/>
         <source>Mixer Show/Hide</source>
-        <translation>Mostrar/Ocultar Mezclador</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1420"/>
@@ -2125,12 +2120,12 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1424"/>
         <source>Cover Art Show/Hide (Library)</source>
-        <translation>Mostrar/Ocultar Portadas (Biblioteca)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1425"/>
         <source>Show/hide cover art in the library</source>
-        <translation>Muestra/oculta las portadas en la biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1429"/>
@@ -2190,7 +2185,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="437"/>
         <source>Pitch (Musical key)</source>
-        <translation>Tono (Clave Musical)</translation>
+        <translation>Pitch (tonalidad)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="402"/>
@@ -2276,7 +2271,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
         <source>Effect Unit %1</source>
-        <translation>Unidad de Efectos %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
@@ -2296,22 +2291,22 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="53"/>
         <source>Crossfader / Orientation</source>
-        <translation>Crossfader / Orientación</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Main Output gain</source>
-        <translation>Ganancia Salida Principal</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Main Output balance</source>
-        <translation>Balance Salida Principal</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="93"/>
         <source>Main Output delay</source>
-        <translation>Retardo Salida Principal</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="97"/>
@@ -2332,7 +2327,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="239"/>
         <source>BPM / Beatgrid</source>
-        <translation>BPM / Cuadrícula de Tempo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="263"/>
@@ -2433,7 +2428,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="337"/>
         <source>Sync / Sync Lock</source>
-        <translation>Sincronizar / Bloqueo Sincronización</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="356"/>
@@ -2514,47 +2509,47 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="435"/>
         <source>Pitch (Musical Key)</source>
-        <translation>Tono (Clave Musical)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="443"/>
         <source>Increase Pitch</source>
-        <translation>Incrementar Tono</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
         <source>Increases the pitch by one semitone</source>
-        <translation>Incrementar el tono por un semitono</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="447"/>
         <source>Increase Pitch (Fine)</source>
-        <translation>Incrementar Tono (Fino)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="448"/>
         <source>Increases the pitch by 10 cents</source>
-        <translation>Incrementa el tono por 10 céntimos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="451"/>
         <source>Decrease Pitch</source>
-        <translation>Decrementar Tono</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="452"/>
         <source>Decreases the pitch by one semitone</source>
-        <translation>Decrementa el tono por un semitono</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="455"/>
         <source>Decrease Pitch (Fine)</source>
-        <translation>Decrementar Tono (Fino)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="456"/>
         <source>Decreases the pitch by 10 cents</source>
-        <translation>Decrementa el tono por 10 céntimos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="469"/>
@@ -2564,133 +2559,133 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="512"/>
         <source>CUP (Cue + Play)</source>
-        <translation>CUP (Marcar + Reproducir)</translation>
+        <translation>CUP (Cue + Play)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="533"/>
         <source>Shift cue points earlier</source>
-        <translation>Cambiar puntos marcado antes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation>Cambiar puntos marcado 10 milisegundos antes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Shift cue points earlier (fine)</source>
-        <translation>Cambiar puntos marcado antes (fino)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="538"/>
         <source>Shift cue points 1 millisecond earlier</source>
-        <translation>Cambiar puntos marcado 1 milisegundo antes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
         <source>Shift cue points later</source>
-        <translation>Cambiar puntos marcado después</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="542"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation>Cambiar puntos marcado 10 milisegundos después</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
         <source>Shift cue points later (fine)</source>
-        <translation>Cambiar puntos marcado después (fino)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="546"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation>Cambiar puntos marcado 1 milisegundo después</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
         <source>Hotcues %1-%2</source>
-        <translation>Accesos Directos %1-%2</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="602"/>
         <source>Intro / Outro Markers</source>
-        <translation>Marcadores de Entrada / Salida</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="604"/>
         <source>Intro Start Marker</source>
-        <translation>Marcador Inicial de Entrada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="605"/>
         <source>Intro End Marker</source>
-        <translation>Marcador Final de Entrada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="606"/>
         <source>Outro Start Marker</source>
-        <translation>Marcador Inicial de Salida</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="607"/>
         <source>Outro End Marker</source>
-        <translation>Marcador Final de Salida</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>intro start marker</source>
-        <translation>marcador inicial de entrada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="610"/>
         <source>intro end marker</source>
-        <translation>marcador final de entrada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="611"/>
         <source>outro start marker</source>
-        <translation>marcador inicial de salida</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="612"/>
         <source>outro end marker</source>
-        <translation>marcador final de salida</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="623"/>
         <source>Activate %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Activar %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="624"/>
         <source>Jump to or set the %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Saltar a o poner el %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="628"/>
         <source>Set %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Poner %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="629"/>
         <source>Set or jump to the %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Poner o saltar al %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="633"/>
         <source>Clear %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Limpiar %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="634"/>
         <source>Clear the %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Limpiar el %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="643"/>
@@ -2850,22 +2845,22 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
         <source>Beat Jump / Loop Move Forward</source>
-        <translation>Salto de pulsaciones / Movimiento del Bucle Adelante</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
         <source>Beat Jump / Loop Move Backward</source>
-        <translation>Salto de pulsaciones / Movimiento del Bucle Atrás</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
         <source>Loop Move Forward</source>
-        <translation>Movimiento del Bucle Adelante</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="806"/>
         <source>Loop Move Backward</source>
-        <translation>Movimiento del Bucle Atrás</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="816"/>
@@ -2880,7 +2875,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="824"/>
         <source>Navigation</source>
-        <translation>Navegación</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="826"/>
@@ -2910,7 +2905,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="835"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
-        <translation>Mover verticalmente en cualquier dirección usando una perilla, como si se pulsaran las teclas flecha arriba/abajo</translation>
+        <translation>Mover verticalmente en qualquier dirección usando una rueda, como si se pulsaran las teclas flecha arriba/abajo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="839"/>
@@ -2940,7 +2935,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="848"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
-        <translation>Mover verticalmente en cualquier dirección usando una perilla, como si se pulsaran las teclas avance/retroceso página</translation>
+        <translation>Mover verticalmente en qualquier dirección usando una rueda, como si se pulsaran las teclas avance/retroceso página</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="852"/>
@@ -2970,7 +2965,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="861"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
-        <translation>Mover verticalmente en cualquier dirección usando una perilla, como si se pulsaran las teclas flecha izquierda/derecha</translation>
+        <translation>Mover verticalmente en qualquier dirección usando una rueda, como si se pulsaran las teclas flecha izquierda/derecha</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="866"/>
@@ -3000,7 +2995,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="875"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
-        <translation>Mueve el foco al panel izquierdo o derecho usando una perilla, como si se pulsara tabulación/mayusculas+tabulación.</translation>
+        <translation>Mueve el foco al panel izquierdo o derecho usando una rueda, como si se pulsara tabulación/mayusculas+tabulación.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="879"/>
@@ -3025,7 +3020,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="896"/>
         <source>Load Track and Play</source>
-        <translation>Cargar Pista y Reproducir</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="910"/>
@@ -3040,32 +3035,32 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="916"/>
         <source>Select next search history</source>
-        <translation>Selecciona siguiente búsqueda del historial</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="917"/>
         <source>Selects the next search history entry</source>
-        <translation>Selecciona la siguiente entrada de búsqueda del historial</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="920"/>
         <source>Select previous search history</source>
-        <translation>Seleccionar entrada previa de búsqueda del historial</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="921"/>
         <source>Selects the previous search history entry</source>
-        <translation>Selecciona la entrada previa de búsqueda del historial</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="924"/>
         <source>Move selected search entry</source>
-        <translation>Mover entrada de búsqueda seleccionada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="925"/>
         <source>Moves the selected search history item into given direction and steps</source>
-        <translation>Mueve el elemento de la búsqueda histórica seleccionado en la dirección dada y pasa</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="929"/>
@@ -3117,7 +3112,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1013"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
-        <translation>Super Perilla(Meta perillas del control de efectos)</translation>
+        <translation>Rueda Super (controla las ruedas Meta del efecto)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1019"/>
@@ -3163,37 +3158,37 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1053"/>
         <source>Effect Unit Assignment</source>
-        <translation>Asignación de Unidad de Efectos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1158"/>
         <source>Meta Knob</source>
-        <translation>Meta Perilla</translation>
+        <translation>Rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1159"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
-        <translation>Perilla Meta del efecto (controla los parámetros del efecto asociados)</translation>
+        <translation>Rueda Meta del efecto (controla los parámetros del efecto asociados)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1222"/>
         <source>Meta Knob Mode</source>
-        <translation>Modo de la Perilla Meta</translation>
+        <translation>Modo de la rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1223"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Define como se comportan los parámetros del efecto enlazados al mover la perilla Meta.</translation>
+        <translation>Define como se comportan los parámetros del efecto enlazados al mover la rueda Meta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1230"/>
         <source>Meta Knob Mode Invert</source>
-        <translation>Modo Invertido de Perilla Meta </translation>
+        <translation>Modo rueda Meta Invertida</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1231"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Invierte el sentido en el que se mueven los parámetros del efecto enlazados al girar la Perilla Meta.</translation>
+        <translation>Invierte el sentido en el que se mueven los parámetros del efecto enlazados al girar la rueda Meta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1262"/>
@@ -4278,12 +4273,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="356"/>
         <source>For jog wheels or infinite-scroll knobs. Interprets incoming messages in two&apos;s complement.</source>
-        <translation>Para perillas giratorios con presión o perillas giratorias sin fin. Se interpreta el mensaje  entrante en dos complementos.</translation>
+        <translation>Para jog wheels o ruedas sin fin. Se interpreta el el mensaje como complemento a dos.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="359"/>
         <source>Jog Wheel / Select Knob</source>
-        <translation>Perilla Giratoria / Seleccionar Perilla</translation>
+        <translation>Jog Wheel / Rueda de selección</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="387"/>
@@ -6552,7 +6547,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="131"/>
         <source>Synchronize library track metadata from/to file tags</source>
-        <translation>Sincroniza los metadatos de la biblioteca de pistas desde/hacia las etiquetas de archivos</translation>
+        <translation>Sincroniza los metadatos de la librería de pistas desde/hacia las etiquetas de archivos</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="128"/>
@@ -9986,7 +9981,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="51"/>
         <source>SelectKnob</source>
-        <translation>Seleccionar Perilla</translation>
+        <translation>Rueda de Selección</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="53"/>
@@ -10889,7 +10884,7 @@ Valores más altos no atenuaran tanto las altas frecuencias.</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/loudnesscontoureffect.cpp" line="55"/>
         <source>Follow Gain Knob</source>
-        <translation>Seguir Perilla Ganancia</translation>
+        <translation>Compensa el factor de loudness dependiendo del valor de ganáncia del reproductor.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="82"/>
@@ -12526,7 +12521,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="316"/>
         <source>Manual: Reduce music volume by a fixed amount set by the Strength knob.</source>
-        <translation>Manual: Reduce el volumen de la música con un valor fijo definido en la Perilla de Intensidad.</translation>
+        <translation>Manual: Reduce el volumen de la música con un valor fijo definido en el control de Intensidad.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="322"/>
@@ -12980,7 +12975,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="317"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="321"/>
         <source>Adjust the amount the music volume is reduced with the Strength knob.</source>
-        <translation>Ajusta la cantidad de volumen de la música que es reducida con la Perilla de Intensidad.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="324"/>
@@ -13447,15 +13442,15 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1015"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
-        <translation>Modo Seco/Mojado (líneas cruzadas): La Perilla de mezcla funde en cruce entre seco y mojado
-Utiliza esto para cambiar el sonido de la pista con EQ y efectos de filtrado.</translation>
+        <translation>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
+Use this to change the sound of the track with EQ and filter effects.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1017"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
-        <translation>Modo Seco+Húmedo (línea seca plana): La perilla de mezcla agrega mojado a seco
-Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efectos de filtrado.</translation>
+        <translation>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
+Use this to change only the effected (wet) signal with EQ and filter effects.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1053"/>
@@ -13475,7 +13470,7 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1129"/>
         <source>Right side active: parameter moves with right half of Meta Knob turn</source>
-        <translation>Derecha activo: el parámetro se mueve al girar la mitad derecha de la perilla Meta.</translation>
+        <translation>Derecha activo: el parámetro se mueve al mover la mitad derecha del control Meta.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1166"/>
@@ -13520,27 +13515,27 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1124"/>
         <source>Meta Knob Link</source>
-        <translation>Enlace de la Perilla Meta</translation>
+        <translation>Enlace de la rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1125"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
-        <translation>Configura cómo le afecta a este parámetro la Perilla Meta.</translation>
+        <translation>Configura cómo le afecta a este parámetro la rueda Meta.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1133"/>
         <source>Meta Knob Link Inversion</source>
-        <translation>Inversión del enlace de la Perilla Meta</translation>
+        <translation>Inversión del enlaze de la rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1134"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
-        <translation>Invierte la dirección en la que se mueve el parámetro al mover la Perilla Meta.</translation>
+        <translation>Invierte la dirección en la que se mueve el parámetro al mover la rueda Meta.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1021"/>
         <source>Super Knob</source>
-        <translation>Perilla Súper</translation>
+        <translation>Rueda Súper</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1030"/>
@@ -13610,7 +13605,7 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1022"/>
         <source>Controls the Meta Knob of all effects in this unit together.</source>
-        <translation>Controla a la vez las Perillas Meta de todos los efectos asociados a esta unidad.</translation>
+        <translation>Controla a la vez las ruedas Meta de todos los efectos asociados a esta unidad.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1031"/>
@@ -13703,7 +13698,7 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1108"/>
         <source>Meta Knob</source>
-        <translation>Perilla Meta</translation>
+        <translation>Rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1109"/>
@@ -13748,17 +13743,17 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1127"/>
         <source>Active: parameter moves with Meta Knob</source>
-        <translation>Activo: el parámetro se mueve con la Perilla Meta</translation>
+        <translation>Activo: el parámetro se mueve con la rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1128"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
-        <translation>Izquierda activo: el parámetro se mueve con la primera mitad de la Perilla Meta</translation>
+        <translation>Izquierda activo: el parámetro se mueve con la primera mitad de la rueda Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1130"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
-        <translation>Izquierda y derecha activo: el parámetro recorre todo el rango con la primera mitad de la Perilla Meta, y vuelve atrás con la segunda mitad</translation>
+        <translation>Izquierda y derecha activo: el parámetro recorre todo el rango con la primera mitad de la rueda Meta, y vueve atrás con la segunda mitad</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1137"/>
@@ -13775,12 +13770,12 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1143"/>
         <source>Quick Effect Super Knob</source>
-        <translation>Súper Perilla de Efecto Rápido</translation>
+        <translation>Rueda Súper de efecto rápido</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1144"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
-        <translation>Súper Perilla de Efecto Rápido (controla los parámetros de efecto vinculados).</translation>
+        <translation>Rueda Súper de efecto rápido (controla los parámetros de efecto asociados).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1146"/>
@@ -14069,7 +14064,7 @@ Utiliza esto para cambiar únicamente la señal afectada (mojada) con EQ y efect
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="320"/>
         <source>Microphone Talkover Ducking Strength</source>
-        <translation>Intensidad de Atenuación al Usar el Micrófono</translation>
+        <translation>Intensidad de atenuación al usar el Micrófono</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="493"/>
@@ -14914,7 +14909,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="178"/>
         <source>Save snapshot</source>
-        <translation>Guardar instantánea</translation>
+        <translation>Guardar captura</translation>
     </message>
 </context>
 <context>
@@ -15926,12 +15921,12 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1331"/>
         <source>Importing metadata of %n track(s) from file tags</source>
-        <translation><numerusform>Importando metadatos de %n pista(s) desde etiquetas de archivos</numerusform><numerusform>Importando metadatos de %n pista(s) desde etiquetas de archivos</numerusform><numerusform>Importando metadatos de %n pista(s) desde etiquetas de archivos</numerusform></translation>
+        <translation><numerusform>Importación de metadatos de %n pista a partir de las etiquetas del archivo</numerusform><numerusform>Importación de metadatos de %n pistas a partir de las etiquetas de los archivos</numerusform><numerusform>Importación de metadatos de %n pista(s) a partir de las etiquetas del archivo</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1363"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
-        <translation><numerusform>Haciendo metadatos de %n pista(s) a ser exportadas en las etiquetas de archivos</numerusform><numerusform>Haciendo metadatos de %n pista(s) a ser exportadas en las etiquetas de archivos</numerusform><numerusform>Haciendo metadatos de %n pista(s) a ser exportadas en las etiquetas de archivos</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1414"/>
@@ -15979,7 +15974,7 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1672"/>
         <source>Scaling BPM of %n track(s)</source>
-        <translation><numerusform>Escalando BPM de %n pista(s)</numerusform><numerusform>Escalando BPM de %n pista(s)</numerusform><numerusform>Escalando BPM de %n pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1701"/>
@@ -15989,12 +15984,12 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1745"/>
         <source>Locking BPM of %n track(s)</source>
-        <translation><numerusform>Bloqueando BPM de %n% pista(s)</numerusform><numerusform>Bloqueando BPM de %n% pista(s)</numerusform><numerusform>Bloqueando BPM de %n% pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1746"/>
         <source>Unlocking BPM of %n track(s)</source>
-        <translation><numerusform>Desbloqueando BPM de %n pista(s)</numerusform><numerusform>Desbloqueando BPM de %n pista(s)</numerusform><numerusform>Desbloqueando BPM de %n pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1779"/>

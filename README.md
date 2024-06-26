@@ -5,7 +5,7 @@
 [![Build status](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml/badge.svg)](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml)
 [![Coverage status](https://coveralls.io/repos/github/mixxxdj/mixxx/badge.svg)](https://coveralls.io/github/mixxxdj/mixxx)
 [![Zulip chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://mixxx.zulipchat.com)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://mixxx.org/donate)
+[![Donate](https://img.shields.io/opencollective/all/mixxx?label=Donate)](https://mixxx.org/donate)
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
 DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
@@ -37,10 +37,18 @@ source code and navigate to it:
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies and set up the build environment (on Windows,
-macOS and Debian/Ubuntu, you can do that by running
-`tools\windows_buildenv.bat`, `source tools/macos_buildenv.sh setup` or `source
-tools/debian_buildenv.sh setup` respectively), then run:
+Fetch the required dependencies and set up the build environment by running the
+corresponding command for your operating system:
+
+| OS | Command |
+| -- | ------- |
+| Windows | `tools\windows_buildenv.bat` |
+| macOS | `source tools/macos_buildenv.sh setup` |
+| Debian/Ubuntu | `tools/debian_buildenv.sh setup` |
+| Fedora | `tools/rpm_buildenv.sh setup` |
+| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) |
+
+To build Mixxx, run
 
     $ mkdir build
     $ cd build

@@ -4,10 +4,11 @@
 #define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
 #endif
 
-#include <QString>
-#include <QMultiHash>
 #include <QFileInfo>
+#include <QMultiHash>
+#include <QString>
 
+#include "audio/types.h"
 #include "soundio/soundmanagerutil.h"
 
 class SoundManager;
@@ -53,7 +54,12 @@ class SoundManagerConfig {
 
     static const QString kDefaultAPI;
     static const QString kEmptyComboBox;
-    static const unsigned int kFallbackSampleRate;
+
+    /// The default sample rate that Mixxx uses.
+    static constexpr mixxx::audio::SampleRate kMixxxDefaultSampleRate =
+            mixxx::audio::SampleRate(44100);
+    /// A sample rate that likely every soundcard supports, even cheap ones.
+    static constexpr mixxx::audio::SampleRate kFallbackSampleRate = mixxx::audio::SampleRate(48000);
     static const unsigned int kDefaultDeckCount;
     static const int kDefaultSyncBuffers;
 
@@ -62,8 +68,8 @@ class SoundManagerConfig {
     QString getAPI() const;
     void setAPI(const QString& api);
     bool checkAPI();
-    unsigned int getSampleRate() const;
-    void setSampleRate(unsigned int sampleRate);
+    mixxx::audio::SampleRate getSampleRate() const;
+    void setSampleRate(mixxx::audio::SampleRate sampleRate);
     bool checkSampleRate(const SoundManager& soundManager);
 
     // Record the number of decks configured with this setup so they can
@@ -77,7 +83,7 @@ class SoundManagerConfig {
     unsigned int getFramesPerBuffer() const;
     void setAudioBufferSizeIndex(unsigned int latency);
     unsigned int getSyncBuffers() const;
-    void setSyncBuffers(unsigned int sampleRate);
+    void setSyncBuffers(unsigned int syncBuffers);
     bool getForceNetworkClock() const;
     void setForceNetworkClock(bool force);
     void addOutput(const SoundDeviceId& device, const AudioOutput& out);
@@ -95,7 +101,7 @@ class SoundManagerConfig {
     QString m_api;
     // none of our sample rates are actually decimals, this avoids
     // the weirdness using floating point can introduce
-    unsigned int m_sampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     unsigned int m_deckCount;
     // m_latency is an index > 0, where 1 is a latency of 1ms and
     // higher indices represent subsequently higher latencies (storing

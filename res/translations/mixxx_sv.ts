@@ -2084,7 +2084,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1387"/>
         <source>Toggle Auto DJ On/Off</source>
-        <translation>Växla Auto DJ på/av</translation>
+        <translation>Växla Auto-DJ på/av</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1399"/>
@@ -2884,7 +2884,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="827"/>
         <source>Equivalent to pressing the UP key on the keyboard</source>
-        <translation>Samma som att trycka UPP tangenten på tangentbordet</translation>
+        <translation>Samma som att trycka UPP piltangenten på tangentbordet</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="830"/>
@@ -2894,7 +2894,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="831"/>
         <source>Equivalent to pressing the DOWN key on the keyboard</source>
-        <translation>Samma som att trycka NER tangenten på tangentbordet</translation>
+        <translation>Samma som att trycka NER piltangenten på tangentbordet</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="834"/>
@@ -2944,7 +2944,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="853"/>
         <source>Equivalent to pressing the LEFT key on the keyboard</source>
-        <translation>Samma som att trycka VÄNSTRA piltangenten på tangentbordet</translation>
+        <translation>Samma som att trycka VÄNSTER piltangent på tangentbordet</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="856"/>
@@ -9962,7 +9962,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="55"/>
         <source>Script</source>
-        <translation>Script</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="57"/>
@@ -13585,7 +13585,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1048"/>
         <source>Route the headphone channel through this effect unit.</source>
-        <translation>Skickar hörlursljudet genom den här effekten</translation>
+        <translation>Skickar hörlursljudet genom den här effekten.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
@@ -14220,7 +14220,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="911"/>
         <source>Displays the musical key of the loaded track.</source>
-        <translation>Visar den laddade låtens tonarten.</translation>
+        <translation>Visar den laddade låtens tonart.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="934"/>

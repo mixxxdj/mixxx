@@ -20,6 +20,9 @@
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 
 namespace {
 
@@ -95,6 +98,14 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 m_pRecordingManager.get());
 
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+        RubberBandWorkerPool::createInstance();
+    }
+
+    void TearDown() override {
+        CoverArtCache::destroy();
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::destroy();
+#endif
     }
 
     ~PlayerManagerTest() {

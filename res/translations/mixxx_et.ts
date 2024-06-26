@@ -375,7 +375,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="233"/>
         <source>Key</source>
-        <translation>Nupp</translation>
+        <translation>Helistik</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="237"/>
@@ -638,7 +638,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
         <source>Key</source>
-        <translation>Nupp</translation>
+        <translation>Helistik</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>

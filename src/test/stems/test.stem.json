@@ -1,0 +1,40 @@
+{
+  "mastering_dsp": {
+    "compressor": {
+      "ratio": 3,
+      "output_gain": 0.5,
+      "enabled": false,
+      "threshold": 0,
+      "attack": 0.003000000026077032,
+      "input_gain": 0.5,
+      "release": 0.300000011920929,
+      "hp_cutoff": 300,
+      "dry_wet": 50
+    },
+    "limiter": {
+      "release": 0.05000000074505806,
+      "threshold": 0,
+      "ceiling": -0.3499999940395355,
+      "enabled": false
+    }
+  },
+  "version": 1,
+  "stems": [
+    {
+      "color": "#fd4a4a",
+      "name": "Drums"
+    },
+    {
+      "color": "#ffff00",
+      "name": "Bass"
+    },
+    {
+      "color": "#00e8e8",
+      "name": "Synths"
+    },
+    {
+      "color": "#ad65ff",
+      "name": "Vox"
+    }
+  ]
+}

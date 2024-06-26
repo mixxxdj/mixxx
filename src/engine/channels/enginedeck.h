@@ -2,9 +2,10 @@
 
 #include <QScopedPointer>
 
-#include "preferences/usersettings.h"
 #include "engine/channels/enginechannel.h"
+#include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/samplebuffer.h"
 
 class EnginePregain;
 class EngineBuffer;
@@ -70,9 +71,15 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void slotPassthroughChangeRequest(double v);
 
   private:
+    // Process multiple channels and mix them together into the passed buffer
+    void processStem(CSAMPLE* pOutput, const int iBufferSize);
+
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
     EnginePregain* m_pPregain;
+
+    // Stem buffer used to retrieve all the channel to mix together
+    mixxx::SampleBuffer m_stemBuffer;
 
     // Begin vinyl passthrough fields
     QScopedPointer<ControlObject> m_pInputConfigured;

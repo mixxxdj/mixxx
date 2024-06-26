@@ -1092,28 +1092,6 @@ TEST_F(HotcueControlTest, CueLoopWithSavedLoopToggles) {
     EXPECT_TRUE(m_pLoopEnabled->toBool());
 }
 
-TEST_F(HotcueControlTest, CueLoopWithoutLoopOrBeats) {
-    createAndLoadFakeTrack();
-
-    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
-    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-            m_pHotcue1Position->get())
-                         .isValid());
-    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-            m_pHotcue1EndPosition->get())
-                         .isValid());
-
-    m_pHotcue1CueLoop->set(1);
-    m_pHotcue1CueLoop->set(0);
-
-    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pHotcue1Position);
-    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-            m_pHotcue1EndPosition->get())
-                         .isValid());
-    EXPECT_FALSE(m_pLoopEnabled->toBool());
-}
-
 TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);

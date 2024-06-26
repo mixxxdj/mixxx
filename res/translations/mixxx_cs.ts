@@ -590,7 +590,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
         <source>Artist</source>
-        <translation>Umělec</translation>
+        <translation>Interpret</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
@@ -756,7 +756,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="251"/>
         <source>The controller mapping will issue more aggressive warnings and errors when detecting misuse of controller APIs. New Controller Mappings should be developed with this option enabled!</source>
-        <translation>Přiřazení řadiče bude při zjištění nesprávného použití rozhraní API řadiče vydávat agresivnější varování a chyby. Nová přiřazení řadičů by měla být vyvíjena s touto volbou!</translation>
+        <translation>Přiřazení ovladače bude při zjištění nesprávného použití rozhraní API ovladače vydávat agresivnější varování a chyby. Nová přiřazení řadičů by měla být vyvíjena s touto volbou!</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="261"/>
@@ -4396,8 +4396,8 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 This could be because you are either using an old skin and this control is no longer supported, or you clicked a control that provides visual feedback and can only be mapped to outputs like LEDs via scripts.
 
 You tried to learn: %1,%2</source>
-        <translation>Ovládací prvek, na který jste klikli v Mixxx, se nelze naučit.
-Může to být způsobené tím, že buď používáte starý vzhled a tento ovládací prvek již není podporován, nebo jste klikli na ovládací prvek, který poskytuje vizuální zpětnou vazbu a lze jej přiřadit pouze na výstupy, jako jsou LED, pomocí skriptů.
+        <translation>Ovládací prvek, na který jste v Mixxxu klepli, se nelze naučit.
+Může to být způsobeno tím, že buď používáte starý vzhled a tento ovládací prvek již není podporován, nebo jste klepli na ovládací prvek, který poskytuje vizuální zpětnou vazbu a lze jej pomocí skriptů přiřadit pouze na výstupy, jako jsou LED.
 
 Pokusili jste se naučit: %1,%2</translation>
     </message>
@@ -5990,7 +5990,7 @@ Vždy můžete přetažením skladeb na obrazovce naklonovat přehrávač.</tran
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="188"/>
         <source>Delete</source>
-        <translation>Vymazat</translation>
+        <translation>Smazat</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="214"/>
@@ -6347,7 +6347,7 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="221"/>
         <source>Item is not a directory or directory is missing</source>
-        <translation>Položka není adresář nebo adresář chybí</translation>
+        <translation>Přestaň</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="394"/>
@@ -6521,12 +6521,12 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="530"/>
         <source>Preferred Cover Art Fetcher Resolution</source>
-        <translation>Upřednostňované rozlišení vyhledávače obalů</translation>
+        <translation>Upřednostňované rozlišení přinašeče obrázků obalů</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="536"/>
         <source>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</source>
-        <translation>Získejte obaly ze stránek coverartarchive.com pomocí funkce Importovat metadata z Musicbrainz.</translation>
+        <translation>Natáhněte (získejte) obaly ze stránek coverartarchive.com pomocí funkce Nahrát popisná data z Musicbrainz.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="546"/>
@@ -8257,7 +8257,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="210"/>
         <source>Current Cover Art</source>
-        <translation>Aktuální obrázek obalu</translation>
+        <translation>Nynější obrázek obalu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="262"/>
@@ -8347,17 +8347,17 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="671"/>
         <source>Cover art found, receiving image.</source>
-        <translation>Obal nalezen, přijímání obrázku</translation>
+        <translation>Obal nalezen, přijímá se obrázek</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="678"/>
         <source>Cover Art is not available for selected metadata</source>
-        <translation>Obrázek obalu není dostupný pro zvolená metadata</translation>
+        <translation>Pro zvolený popis není obrázek obalu dostupný</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="695"/>
         <source>Metadata &amp; Cover Art applied</source>
-        <translation>Byla použita metadata a obrázek obalu</translation>
+        <translation>Byla použita popisná data a obrázek obalu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="697"/>
@@ -11869,7 +11869,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="101"/>
         <source>Delete all unlocked child playlists</source>
-        <translation>Smazat všechny odemčené podřízené seznamy skladeb</translation>
+        <translation>Smazat všechny odemknuté podřízené seznamy skladeb</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="120"/>
@@ -11902,7 +11902,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="570"/>
         <source>Deleting %1 playlists from &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;</source>
         <extracomment>%1 is the number of playlists to be deleted %2 is the year &lt;b&gt; + &lt;/b&gt; are used to make the text in between bold in the popup &lt;br&gt; is a linebreak</extracomment>
-        <translation>Mazání %1 seznamů skladeb z &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;</translation>
+        <translation>Maže se %1 seznamů skladeb z &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -12867,7 +12867,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="673"/>
         <source>Un-ejects when no track is loaded, i.e. reloads the track that was ejected last (of any deck).</source>
-        <translation>Zruší vysunutí, když není načtena žádná skladba, tj. znovu načte skladbu, která byla vysunuta jako poslední (z libovolného přehrávače).</translation>
+        <translation>Zruší vysunutí, když není načtena žádná skladba, tj. znovu nahraje skladbu, která byla vysunuta jako poslední (z libovolného přehrávače).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="697"/>
@@ -12877,12 +12877,12 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="915"/>
         <source>Track Comment</source>
-        <translation>Komentář skladby</translation>
+        <translation>Poznámka ke skladbě</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="916"/>
         <source>Displays the comment tag of the loaded track.</source>
-        <translation>Ukáže značku komentáře nahrané skladby.</translation>
+        <translation>Ukáže značku poznámky nahrané skladby.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="951"/>
@@ -15116,7 +15116,7 @@ Tento krok nelze vrátit zpět!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="205"/>
         <location filename="../../src/widget/wmainmenubar.cpp" line="207"/>
         <source>&amp;View</source>
-        <translation>&amp;Zobrazení</translation>
+        <translation>&amp;Pohled</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
@@ -15450,7 +15450,7 @@ Tento krok nelze vrátit zpět!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="676"/>
         <source>&amp;Settings directory</source>
-        <translation>&amp;Nastavení adresáře</translation>
+        <translation>Adresář &amp;nastavení</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="677"/>
@@ -15470,7 +15470,7 @@ Tento krok nelze vrátit zpět!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="700"/>
         <source>&amp;About</source>
-        <translation>O &amp;programu</translation>
+        <translation>&amp;O programu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="701"/>
@@ -15539,7 +15539,7 @@ Tento krok nelze vrátit zpět!</translation>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="220"/>
         <source>Clear the search bar input field</source>
-        <translation>Vymazat vstupní pruh vyhledávacího pole</translation>
+        <translation>Vyprázdnit zadávací pole vyhledávacího řádku</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="226"/>
@@ -16079,12 +16079,12 @@ Tento krok nelze vrátit zpět!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1907"/>
         <source>Clearing rating of %n track(s)</source>
-        <translation><numerusform>Vymazat hodnocení %n skladby</numerusform><numerusform>Vymazat hodnocení %n skladeb</numerusform><numerusform>Vymazat hodnocení %n skladeb</numerusform><numerusform>Vymazat hodnocení %n skladeb</numerusform></translation>
+        <translation><numerusform>Vymazání hodnocení %n skladby</numerusform><numerusform>Vymazání hodnocení %n skladeb</numerusform><numerusform>Vymazání hodnocení %n skladeb</numerusform><numerusform>Vymazání hodnocení %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1930"/>
         <source>Clearing comment of %n track(s)</source>
-        <translation><numerusform>Vymazat komentář %n skladby</numerusform><numerusform>Vymazat komentář %n skladeb</numerusform><numerusform>Vymazat komentář %n skladeb</numerusform><numerusform>Vymazat komentář %n skladeb</numerusform></translation>
+        <translation><numerusform>Vymazání poznámky %n skladby</numerusform><numerusform>Vymazání poznámky %n skladeb</numerusform><numerusform>Vymazání poznámky %n skladeb</numerusform><numerusform>Vymazání poznámky %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2022"/>
@@ -16337,7 +16337,7 @@ Tento krok nelze vrátit zpět!</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1217"/>
         <source>Don&apos;t ask again during this session</source>
-        <translation>Příště se během tohoto sezení nepsat</translation>
+        <translation>Příště se během tohoto sezení neptat</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1196"/>

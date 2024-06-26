@@ -20,11 +20,15 @@ extern const ConfigKey kTrackDoubleClickActionConfigKey;
 
 extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
+extern const ConfigKey kSearchBpmFuzzyRangeConfigKey;
+
 extern const ConfigKey kEnableSearchCompletionsConfigKey;
 
 extern const ConfigKey kEnableSearchHistoryShortcutsConfigKey;
 
 extern const ConfigKey kBpmColumnPrecisionConfigKey;
+
+extern const ConfigKey kApplyPlayedTrackColorConfigKey;
 
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 

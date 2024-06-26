@@ -1,5 +1,6 @@
 #include "engine/effects/engineeffectsmanager.h"
 
+#include "audio/types.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectchain.h"
 #include "util/defs.h"
@@ -7,8 +8,8 @@
 
 EngineEffectsManager::EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe)
         : m_pResponsePipe(std::move(pResponsePipe)),
-          m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN) {
+          m_buffer1(kMaxEngineSamples),
+          m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
@@ -95,7 +96,7 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
         unsigned int numSamples,
-        unsigned int sampleRate) {
+        mixxx::audio::SampleRate sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer effects do not make use of it.
     GroupFeatureState featureState;
@@ -114,7 +115,7 @@ void EngineEffectsManager::processPostFaderInPlace(
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
         unsigned int numSamples,
-        unsigned int sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
@@ -138,7 +139,7 @@ void EngineEffectsManager::processPostFaderAndMix(
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         unsigned int numSamples,
-        unsigned int sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
@@ -163,7 +164,7 @@ void EngineEffectsManager::processInner(
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         unsigned int numSamples,
-        unsigned int sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,

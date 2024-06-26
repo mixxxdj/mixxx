@@ -28,8 +28,12 @@ class ReadAheadManagerMock : public ReadAheadManager {
               m_iSamplesRead(0) {
     }
 
-    SINT getNextSamplesFake(double dRate, CSAMPLE* buffer, SINT requested_samples) {
+    SINT getNextSamplesFake(double dRate,
+            CSAMPLE* buffer,
+            SINT requested_samples,
+            mixxx::audio::ChannelCount channelCount) {
         Q_UNUSED(dRate);
+        Q_UNUSED(channelCount);
         bool hasBuffer = m_pBuffer != NULL;
         // You forgot to set the mock read buffer.
         EXPECT_TRUE(hasBuffer);
@@ -51,7 +55,11 @@ class ReadAheadManagerMock : public ReadAheadManager {
         return m_iSamplesRead;
     }
 
-    MOCK_METHOD3(getNextSamples, SINT(double dRate, CSAMPLE* buffer, SINT requested_samples));
+    MOCK_METHOD4(getNextSamples,
+            SINT(double dRate,
+                    CSAMPLE* buffer,
+                    SINT requested_samples,
+                    mixxx::audio::ChannelCount channelCount));
 
     CSAMPLE* m_pBuffer;
     SINT m_iBufferSize;
@@ -74,7 +82,8 @@ class EngineBufferScaleLinearTest : public MixxxTest {
     void SetRate(double rate) {
         double tempoRatio = rate;
         double pitchRatio = rate;
-        m_pScaler->setSampleRate(mixxx::audio::SampleRate(44100));
+        m_pScaler->setSignal(mixxx::audio::SampleRate(44100),
+                mixxx::audio::ChannelCount::stereo());
         m_pScaler->setScaleParameters(
                 1.0, &tempoRatio, &pitchRatio);
     }
@@ -137,7 +146,7 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
     m_pReadAheadMock->setReadBuffer(readBuffer, 1);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
-    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
@@ -157,7 +166,7 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
     SetRateNoLerp(1.0);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
-    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     QVector<CSAMPLE> readBuffer;
@@ -189,7 +198,7 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
     m_pReadAheadMock->setReadBuffer(readBuffer, 1);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
-    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
@@ -214,7 +223,7 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     m_pReadAheadMock->setReadBuffer(readBuffer, 8);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
-    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
@@ -243,7 +252,7 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     m_pReadAheadMock->setReadBuffer(readBuffer, 4);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
-    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
@@ -275,7 +284,7 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
     m_pReadAheadMock->setReadBuffer(readBuffer, 4);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
-    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE expectedResult[] = { -101.0, 101.0,

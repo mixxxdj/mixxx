@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysis/analysisfeature.cpp" line="51"/>
         <source>Analyze</source>
-        <translation>Analizatu</translation>
+        <translation>Aztertu</translation>
     </message>
 </context>
 <context>
@@ -51,19 +51,21 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="71"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="82"/>
         <source>Error loading Banshee database</source>
-        <translation>Errore bat gertatu da Banshee-ren data-basea kargatzerakoan</translation>
+        <translation>Errore bat gertatu da Banshee-ren datu-basea kargatzerakoan</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="72"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Banshee-ren datu-basearen fitxategia ez da aurkitu leku honetan</translation>
+        <translation>Banshee-ren datu-basearen fitxategia ez da aurkitu leku honetan
+</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="83"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation>Errore bat gertatu da zure Banshee-ren datu-basea kargatzerakoan</translation>
+        <translation>Errore bat gertatu da zure Banshee-ren datu-basea kargatzerakoan
+</translation>
     </message>
 </context>
 <context>
@@ -187,7 +189,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="301"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="353"/>
         <source>Enter name for new playlist:</source>
-        <translation>Idatzi erreprodukzio-zerrendaren izena</translation>
+        <translation>Erreprodukzio-zerrenda berriaren izena sartu:</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="135"/>
@@ -274,7 +276,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="58"/>
         <source>#</source>
-        <translation>Zk.</translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
@@ -485,7 +487,7 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="197"/>
         <source>Disconnected</source>
-        <translation>Deskonektatua</translation>
+        <translation>Deskonektatuta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="199"/>
@@ -513,12 +515,12 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="54"/>
         <source>Add to Quick Links</source>
-        <translation>Gehitu lotura azkarretara</translation>
+        <translation>Gehitu esteka azkarretara</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="60"/>
         <source>Remove from Quick Links</source>
-        <translation>Kendu lotura azkarretatik</translation>
+        <translation>Kendu esteka azkarretatik</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="66"/>
@@ -555,7 +557,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="190"/>
         <source>Music Directory Added</source>
-        <translation>Musika Direktorioa gehituta</translation>
+        <translation>Musika-direktorioa gehitu da</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="191"/>
@@ -648,7 +650,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
         <source>Bitrate</source>
-        <translation>Bit tasa</translation>
+        <translation>Bit-tasa</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>

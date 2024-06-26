@@ -25,7 +25,7 @@ void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& contex
 
 void WEffectParameterKnob::parameterUpdated() {
     if (m_pEffectParameterSlot->isLoaded()) {
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 m_pEffectParameterSlot->name(),
                 m_pEffectParameterSlot->description()));
     } else {

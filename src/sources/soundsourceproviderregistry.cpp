@@ -1,6 +1,7 @@
 #include "sources/soundsourceproviderregistry.h"
 
 #include "util/logger.h"
+#include "util/make_const_iterator.h"
 
 namespace mixxx {
 
@@ -12,25 +13,24 @@ void insertRegistration(
         QList<SoundSourceProviderRegistration>* pRegistrations,
         SoundSourceProviderRegistration&& registration) {
     DEBUG_ASSERT(pRegistrations);
-    QList<SoundSourceProviderRegistration>::iterator listIter(
-            pRegistrations->begin());
+    auto listIter = pRegistrations->cbegin();
     // Perform a linear search through the list & insert
-    while (pRegistrations->end() != listIter) {
+    while (pRegistrations->cend() != listIter) {
         // Priority comparison with <=: New registrations will be inserted
         // before existing registrations with equal priority, but after
         // existing registrations with higher priority.
         if (listIter->getProviderPriority() <= registration.getProviderPriority()) {
-            listIter = pRegistrations->insert(listIter, std::move(registration));
-            DEBUG_ASSERT(pRegistrations->end() != listIter);
-            return; // done
-        } else {
-            ++listIter; // continue loop
+            listIter = constInsert(
+                    pRegistrations,
+                    listIter,
+                    std::move(registration));
+            DEBUG_ASSERT(pRegistrations->cend() != listIter);
+            return;
         }
+        ++listIter;
     }
-    if (pRegistrations->end() == listIter) {
-        // List was empty or registration has the lowest priority
-        pRegistrations->append(std::move(registration));
-    }
+    // List was empty or registration has the lowest priority
+    pRegistrations->append(std::move(registration));
 }
 
 } // anonymous namespace

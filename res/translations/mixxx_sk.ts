@@ -709,7 +709,7 @@
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="200"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
-        <translation>Súbor &apos;%1&apos; nebol nájdený.</translation>
+        <translation>Súbor &apos;%1&apos; nie je možné nájsť.</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="217"/>
@@ -8052,7 +8052,7 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="61"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="85"/>
         <source>is not</source>
-        <translation>nieje</translation>
+        <translation>nie je</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="69"/>

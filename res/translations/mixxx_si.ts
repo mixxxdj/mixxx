@@ -3897,7 +3897,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="56"/>
         <source>Shows tracks added to the library within the last 7 days.</source>
-        <translation>අවසන් දවස් 7 ඇතුළත පුස්තකාලයට එකතු කළ තැටි පෙන්වන්න.</translation>
+        <translation>අවසන් දවස් 7 ඇතුළත ලේඛනාලයට එකතු කළ තැටි පෙන්වන්න.</translation>
     </message>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="59"/>

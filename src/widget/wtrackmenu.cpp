@@ -16,6 +16,7 @@
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
+#include "library/dlgtrackinfomulti.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
@@ -27,6 +28,7 @@
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -41,10 +43,13 @@
 #include "util/widgethelper.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
+// WStarRating is required for DlgTrackInfo
 #include "widget/wstarrating.h"
+#include "widget/wstarratingaction.h"
 
 constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 
@@ -132,7 +137,15 @@ int WTrackMenu::getTrackCount() const {
     }
 }
 
+const QString WTrackMenu::getDeckGroup() const {
+    return m_deckGroup;
+}
+
 void WTrackMenu::closeEvent(QCloseEvent* event) {
+    // Unfortunately, trackMenuVisible(false) is emitted before the menu is effectively
+    // closed, which causes issues in WTrackProperty::slotShowTrackMenuChangeRequest.
+    // Explicitly hide() to avoid this.
+    hide();
     // Actually the event is accepted by default. doing it explicitly doesn't hurt.
     // If it's not accepted the menu remains open and entire GUI will be blocked!
     event->accept();
@@ -196,7 +209,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = new QMenu(this);
         //: Reset metadata in right click track context menu in library
-        m_pClearMetadataMenu->setTitle(tr("Reset"));
+        m_pClearMetadataMenu->setTitle(tr("Clear"));
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -212,6 +225,10 @@ void WTrackMenu::createMenus() {
                 &QMenu::aboutToShow,
                 this,
                 [this] {
+                    // TODO When accidentally leaving the menu and reopening it,
+                    // the previous check states are cleared.
+                    // Clear in closeEvent() only? And create actions on aboutToShow
+                    // only if it's empty?
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
@@ -225,6 +242,7 @@ void WTrackMenu::createMenus() {
                 this,
                 [this](const QString& searchQuery) {
                     m_pLibrary->searchTracksInCollection(searchQuery);
+                    hide();
                 });
     }
 
@@ -328,6 +346,13 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
+        m_pStarRatingAction = new WStarRatingAction(this);
+        m_pStarRatingAction->setObjectName("RatingAction");
+        connect(m_pStarRatingAction,
+                &WStarRatingAction::ratingSet,
+                this,
+                &WTrackMenu::slotSetRating);
+
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
@@ -475,11 +500,17 @@ void WTrackMenu::createActions() {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
         });
 
-        m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
+        m_pBpmResetAction = new QAction(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
         connect(m_pBpmResetAction,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotClearBeats);
+
+        m_pBpmUndoAction = new QAction(tr("Undo last BPM/beats change"), m_pBPMMenu);
+        connect(m_pBpmUndoAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotUndoBeatsChange);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -595,9 +626,13 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmResetAction);
-        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmUndoAction);
 
         addMenu(m_pBPMMenu);
+    }
+
+    if (featureIsEnabled(Feature::Properties)) {
+        addAction(m_pStarRatingAction);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -729,6 +764,39 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
         }
     }
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
+}
+
+int WTrackMenu::getCommonTrackRating() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return 0;
+    }
+    int commonRating;
+    if (m_pTrackModel) {
+        const int column =
+                m_pTrackModel->fieldIndex(LIBRARYTABLE_RATING);
+        commonRating = m_trackIndexList.first()
+                               .sibling(m_trackIndexList.first().row(), column)
+                               .data()
+                               .value<StarRating>()
+                               .starCount();
+        for (const auto& trackIndex : m_trackIndexList) {
+            const auto otherRating =
+                    trackIndex.sibling(trackIndex.row(), column)
+                            .data()
+                            .value<StarRating>()
+                            .starCount();
+            if (commonRating != otherRating) {
+                // Multiple, different ratings
+                return 0;
+            }
+        }
+    } else {
+        if (!m_pTrack) {
+            return 0;
+        }
+        commonRating = m_pTrack->getRating();
+    }
+    return commonRating;
 }
 
 std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() const {
@@ -959,6 +1027,7 @@ void WTrackMenu::updateMenus() {
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
+            m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
 
             // Append scaled BPM preview for single selection
             if (singleTrackSelected) {
@@ -1033,7 +1102,12 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
-        m_pPropertiesAct->setEnabled(singleTrackSelected);
+        // Might be needed to resize Menu to fit the star rating
+        // QResizeEvent resizeEvent(QSize(), m_pStarRatingAction->sizeHint());
+        // qApp->sendEvent(m_pStarRatingAction, &resizeEvent);
+        m_pStarRatingAction->setRating(getCommonTrackRating());
+
+        m_pPropertiesAct->setEnabled(true);
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
@@ -1136,6 +1210,21 @@ TrackPointer WTrackMenu::getFirstTrackPointer() const {
         return TrackPointer();
     }
     return m_pTrack;
+}
+
+TrackPointerList WTrackMenu::getTrackPointers() const {
+    TrackPointerList tracks;
+    if (m_pTrackModel) {
+        for (const auto& index : m_trackIndexList) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                tracks.append(pTrack);
+            }
+        }
+    } else {
+        tracks.append(m_pTrack);
+    }
+    return tracks;
 }
 
 std::unique_ptr<mixxx::TrackPointerIterator> WTrackMenu::newTrackPointerIterator() const {
@@ -1590,6 +1679,50 @@ void WTrackMenu::slotScaleBpm(mixxx::Beats::BpmScale scale) {
 
 namespace {
 
+class UndoBeatsChangeTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit UndoBeatsChangeTrackPointerOperation() {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        if (pTrack->isBpmLocked()) {
+            return;
+        }
+        pTrack->undoBeatsChange();
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotUndoBeatsChange() {
+    const auto progressLabelText =
+            tr("Undo BPM/beats change of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            UndoBeatsChangeTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+bool WTrackMenu::canUndoBeatsChange() const {
+    const auto pTrackPointerIterator = newTrackPointerIterator();
+    if (!pTrackPointerIterator) {
+        // Empty, i.e. nothing to do
+        return false;
+    }
+    while (auto nextTrackPointer = pTrackPointerIterator->nextItem()) {
+        const auto pTrack = *nextTrackPointer;
+        if (!pTrack->canUndoBeatsChange()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+namespace {
+
 class LockBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
     explicit LockBpmTrackPointerOperation(bool lock)
@@ -1616,6 +1749,41 @@ void WTrackMenu::lockBpm(bool lock) {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+}
+
+namespace {
+
+class SetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit SetRatingTrackPointerOperation(const int rating)
+            : m_rating(rating) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setRating(m_rating);
+    }
+
+    const int m_rating;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotSetRating(int rating) {
+    if (!mixxx::TrackRecord::isValidRating(rating)) {
+        return;
+    }
+
+    const auto progressLabelText =
+            tr("Setting rating of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            SetRatingTrackPointerOperation(rating);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+
+    hide();
 }
 
 namespace {
@@ -2117,7 +2285,9 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         QString delWarningText;
         if (m_pTrackModel) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            delWarningText = tr("Move these files to the trash bin?");
+#else
             delWarningText = tr("Permanently delete these files from disk?") +
                     QStringLiteral("<br><br><b>") +
                     tr("This can not be undone!") + QStringLiteral("</b>");
@@ -2125,13 +2295,23 @@ void WTrackMenu::slotRemoveFromDisk() {
         } else { // track menu of track labels
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 
-            delWarningText = tr("Stop the deck and move this track file to the trash bin?");
+            delWarningText = tr("Move this track file to the trash bin?");
 #else
             delWarningText =
-                    tr("Stop the deck and permanently delete this track file from disk?") +
+                    tr("Permanently delete this track file from disk?") +
                     QStringLiteral("<br><br><b>") +
                     tr("This can not be undone!") + QStringLiteral("</b>");
 #endif
+        }
+        delWarningText.append(QStringLiteral("<br><br>"));
+        if (m_pTrackModel) {
+            delWarningText.append(tr(
+                    "All decks where these tracks are loaded will be "
+                    "stopped and the tracks will be ejected."));
+        } else {
+            delWarningText.append(tr(
+                    "All decks where this track is loaded will be "
+                    "stopped and the track will be ejected."));
         }
 
         // Setup the warning message and dialog buttons
@@ -2179,24 +2359,19 @@ void WTrackMenu::slotRemoveFromDisk() {
         }
     }
 
-    // If the operation was initiated from a deck's track menu
-    // we'll first stop the deck and eject the track.
-    // TODO(ronso0) Consider querying PlayerManager if any of the tracks is loaded
-    // into another (playing?) deck?
-    // Also (rare situation) the track we work on might have been replaced (in the deck)
-    // by another one in the mean time (Auto DJ) and we would unnecessarily stop & eject.
-    // Ideally, there would be a PlayerManager instance that does
-    // stopAndEjectAllPlayersWithTrackLoaded(TrackPointer / TrackId)
+    // Try to keep a usable index for navigation if the track is in the
+    // current track view.
     bool restoreViewState = false;
-    if (m_pTrack) {
-        ControlObject::set(ConfigKey(m_deckGroup, "stop"), 1.0);
-        ControlObject::set(ConfigKey(m_deckGroup, "eject"), 1.0);
-        // Try to keep a usable index for navigation if the track is in the
-        // current track view.
-        if (m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId())) {
-            restoreViewState = true;
-            emit saveCurrentViewState();
-        }
+    if (m_pTrack && m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId())) {
+        restoreViewState = true;
+        emit saveCurrentViewState();
+    }
+    // Stop all affected decks and eject tracks.
+    const TrackPointerList tracks = getTrackPointers();
+    const QStringList groups = PlayerInfo::instance().getPlayerGroupsWithTracksLoaded(tracks);
+    for (const QString& group : groups) {
+        ControlObject::set(ConfigKey(group, "stop"), 1.0);
+        ControlObject::set(ConfigKey(group, "eject"), 1.0);
     }
 
     // Set up and initiate the track batch operation
@@ -2322,25 +2497,50 @@ void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {
         return;
     }
-    // Create a fresh dialog on invocation
-    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
-            m_pConfig,
-            m_pTrackModel);
-    connect(m_pDlgTrackInfo.get(),
-            &QDialog::finished,
-            this,
-            [this]() {
-                if (m_pDlgTrackInfo.get() == sender()) {
-                    m_pDlgTrackInfo.release()->deleteLater();
-                }
-            });
-    // Method getFirstTrackPointer() is not applicable here!
-    if (m_pTrackModel) {
-        m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
+
+    if (m_pTrackModel && getTrackCount() > 1) {
+        // Use the batch editor.
+        // Create a fresh dialog on invocation.
+        m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
+                m_pConfig);
+        connect(m_pDlgTrackInfoMulti.get(),
+                &QDialog::finished,
+                this,
+                [this]() {
+                    if (m_pDlgTrackInfoMulti.get() == sender()) {
+                        m_pDlgTrackInfoMulti.release()->deleteLater();
+                    }
+                });
+        QList<TrackPointer> tracks;
+        tracks.reserve(getTrackCount());
+        for (int i = 0; i < m_trackIndexList.size(); i++) {
+            tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
+        }
+        m_pDlgTrackInfoMulti->loadTracks(tracks);
+        m_pDlgTrackInfoMulti->show();
     } else {
-        m_pDlgTrackInfo->loadTrack(m_pTrack);
+        // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
+        // Create a fresh dialog on invocation.
+        m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+                m_pConfig,
+                m_pTrackModel);
+        connect(m_pDlgTrackInfo.get(),
+                &QDialog::finished,
+                this,
+                [this]() {
+                    if (m_pDlgTrackInfo.get() == sender()) {
+                        m_pDlgTrackInfo.release()->deleteLater();
+                    }
+                });
+        // Method getFirstTrackPointer() is not applicable here, the dialog
+        // needs an index reference for the Next/Prev navigation.
+        if (m_pTrackModel) {
+            m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
+        } else {
+            m_pDlgTrackInfo->loadTrack(m_pTrack);
+        }
+        m_pDlgTrackInfo->show();
     }
-    m_pDlgTrackInfo->show();
 }
 
 void WTrackMenu::showDlgTrackInfo(const QString& property) {

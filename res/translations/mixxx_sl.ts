@@ -1118,12 +1118,12 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
         <source>One-time beat sync (tempo only)</source>
-        <translation>Enkratna sinhronizacija ritma (samo tempo)</translation>
+        <translation>Enkratna sinhronizacija ritma (zgolj tempo)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>One-time beat sync (phase only)</source>
-        <translation>Enkratna sinhronizacija ritma (samo faza)</translation>
+        <translation>Enkratna sinhronizacija ritma (zgolj faza)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="469"/>
@@ -1941,12 +1941,12 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="962"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation>Super regulator za hitre učinke za predvajalnik %1 </translation>
+        <translation>Super regulator za hitre učinke predvajalnika %1 </translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="963"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
-        <translation>Super regulator za hitre učinke (kontrola povezanih parametrov učinka)</translation>
+        <translation>Super regulator za hitre učinke (nadzor povezanih parametrov učinka)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="967"/>
@@ -2084,12 +2084,12 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1386"/>
         <source>Auto DJ Toggle</source>
-        <translation>Preklopi samodejnega DJ-a</translation>
+        <translation>Preklopi Samodejni DJ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1387"/>
         <source>Toggle Auto DJ On/Off</source>
-        <translation>Vkopi/izklopi samodejnega DJ-a</translation>
+        <translation>Vkopi/izklopi Samodejni DJ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1399"/>
@@ -2665,7 +2665,7 @@ trace - gornje + profilirna sporočila</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="624"/>
         <source>Jump to or set the %1</source>
         <comment>[intro/outro marker</comment>
-        <translation>Skoči ali določi %1</translation>
+        <translation>Skoči ali postavi %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="628"/>
@@ -2909,7 +2909,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="835"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
-        <translation>Vertikalni pomik z uporabo regulaotrja, kar ustreza tipkama GOR/DOL</translation>
+        <translation>Vertikalni pomik z uporabo vrtljivega gumba, kar ustreza tipkama GOR/DOL</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="839"/>
@@ -2939,7 +2939,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="848"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
-        <translation>Vertikalno drsenje z uporabo regulatorja, kar ustreza tipkama PGUP/PGDN</translation>
+        <translation>Vertikalno drsenje z uporabo vrtljivega gumba, kar ustreza tipkama PGUP/PGDN</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="852"/>
@@ -2969,7 +2969,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="861"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
-        <translation>Horizontalni pomik z uporabo regulatorja, kar ustreza tipkama LEVO/DESNO</translation>
+        <translation>Horizontalni pomik z uporabo vrtljivega gumba, kar ustreza tipkama LEVO/DESNO</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="866"/>
@@ -2999,7 +2999,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="875"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
-        <translation>Premik fokusa z uporabo regulatorja, kar ustreza tipkam TAB/SHIFT+TAB</translation>
+        <translation>Premik fokusa z uporabo vrtljivega gumba, kar ustreza tipkam TAB/SHIFT+TAB</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="879"/>
@@ -3172,7 +3172,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1159"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
-        <translation>Meta-regulator učinka (kontrola povezanih parametrov učinka)</translation>
+        <translation>Meta-regulator učinka (nadzor povezanih parametrov učinka)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1222"/>
@@ -3192,7 +3192,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1231"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Obrne oz. invertira spreminjanje povezanih parametrov učinka, ko vrtimo meta-regulator.</translation>
+        <translation>Obrne smer za spreminjanje povezanih parametrov učinka, ko vrtimo meta-regulator.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1262"/>
@@ -3384,7 +3384,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1458"/>
         <source>Vinyl Spinners Show/Hide (All Decks)</source>
-        <translation>Vrtenje gramofonov prikaži/skrij</translation>
+        <translation>Vrtenje gramofonov prikaži/skrij (vsi predvajalniki)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1459"/>
@@ -3399,7 +3399,7 @@ trace - gornje + profilirna sporočila</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1475"/>
         <source>Show/hide the scrolling waveforms.</source>
-        <translation>Prikaži/skrij pomikajoče se valovne oblike</translation>
+        <translation>Prikaže/skrije pomikajoče se valovne oblike.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1477"/>
@@ -4404,7 +4404,7 @@ Skušali ste učiti: %1, %2</translation>
     <message>
         <location filename="../../src/library/dlgcoverartfullsize.cpp" line="94"/>
         <source>Fetched Cover Art</source>
-        <translation>Razčlenjene naslovnice</translation>
+        <translation>Zajete naslovnice</translation>
     </message>
 </context>
 <context>
@@ -4943,7 +4943,7 @@ Dva vira, ki se povezujeta na isti strežnik, ne moreta imeti hkrati vklopljene 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="421"/>
         <source>Use static artist and title.</source>
-        <translation>Uprabi statičnega umetnika in naslov.</translation>
+        <translation>Uporabi statičnega izvajalca in naslov.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="404"/>
@@ -5332,7 +5332,7 @@ Potrdim nastavitve in nadaljujem?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="80"/>
         <source>MIDI Scripting with Javascript</source>
-        <translation>MIDI skripti z Javo</translation>
+        <translation>MIDI skripti z Javascriptom</translation>
     </message>
 </context>
 <context>
@@ -5903,7 +5903,7 @@ Vedno lahko skladbe tudi povlečete in sputite, da podvojite nek predvajalnik.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="591"/>
         <source>Keyunlock mode</source>
-        <translation>Odklenjen način</translation>
+        <translation>Odklep tonalitete</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="598"/>
@@ -6028,7 +6028,7 @@ Vedno lahko skladbe tudi povlečete in sputite, da podvojite nek predvajalnik.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="300"/>
         <source>Effect Info</source>
-        <translation>Informacije učinka</translation>
+        <translation>Podatki o učinku</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="344"/>
@@ -6518,12 +6518,12 @@ in vam omogoča, da prilagodite njihovo višino za harmonično miksanje.</transl
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="530"/>
         <source>Preferred Cover Art Fetcher Resolution</source>
-        <translation>Željena ločljivost razčlenjevalnika naslovnic</translation>
+        <translation>Željena ločljivost zajemalnika naslovnic</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="536"/>
         <source>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</source>
-        <translation>Razčleni naslovnice z coverartarchive.com s pomočjo metapodatkov z Musicbrainz.</translation>
+        <translation>Zajemi naslovnice z coverartarchive.com s pomočjo metapodatkov z Musicbrainz.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="546"/>
@@ -6638,7 +6638,7 @@ in vam omogoča, da prilagodite njihovo višino za harmonično miksanje.</transl
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="516"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
-        <translation>Mixxx je potrebno ponovno zagnati, da bi te nastavitve začele delvoati.</translation>
+        <translation>Mixxx je potrebno ponovno zagnati, da bi te nastavitve začele delovati.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="443"/>
@@ -8920,7 +8920,7 @@ Večinoma ustrvarja bolj kakovostno ritmično mrežo, vendar ne deluje dobro s s
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="258"/>
         <source>Effect chain preset &quot;%1&quot; is read-only and can not be renamed.</source>
-        <translation>Predloga verige učinkov &quot;%1&quot; je zgolj za branje in je ni mogoče preimenovati</translation>
+        <translation>Predloga verige učinkov &quot;%1&quot; je zgolj za branje in je ni mogoče preimenovati.</translation>
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="272"/>
@@ -8968,7 +8968,7 @@ Večinoma ustrvarja bolj kakovostno ritmično mrežo, vendar ne deluje dobro s s
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="347"/>
         <source>Effect chain preset &quot;%1&quot; is read-only and can not be deleted.</source>
-        <translation>Predloga verige učinkov &quot;%1&quot; je zgolj za branje in je ni mogoče izbrisati</translation>
+        <translation>Predloga verige učinkov &quot;%1&quot; je zgolj za branje in je ni mogoče izbrisati.</translation>
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="354"/>
@@ -9029,7 +9029,7 @@ Večinoma ustrvarja bolj kakovostno ritmično mrežo, vendar ne deluje dobro s s
     <message>
         <location filename="../../src/effects/effectparameterslotbase.cpp" line="45"/>
         <source>No effect loaded.</source>
-        <translation>Ni naloženih efektov.</translation>
+        <translation>Ni naloženih učinkov.</translation>
     </message>
 </context>
 <context>
@@ -10434,7 +10434,7 @@ Kadar je širina nič, omogoči ročno preletavanje preko celotnega razpona zami
         <location filename="../../src/effects/backends/builtin/flangereffect.cpp" line="81"/>
         <location filename="../../src/effects/backends/builtin/phasereffect.cpp" line="75"/>
         <source>Intensity of the effect</source>
-        <translation>Intenzivnost efekta</translation>
+        <translation>Intenzivnost učinka</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/flangereffect.cpp" line="92"/>
@@ -10567,7 +10567,7 @@ Večje vrednosti manj dušijo visoke frekvence.</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/reverbeffect.cpp" line="61"/>
         <source>How much of the signal to send in to the effect</source>
-        <translation>Koliko signala naj se pošilja v efekt</translation>
+        <translation>Koliko signala naj se pošilja v učinek</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/reverbeffect.cpp" line="37"/>
@@ -11141,7 +11141,7 @@ večji Q vpliva na ožji pas frekvenc.</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="28"/>
         <source>How much the effect changes the volume</source>
-        <translation>Koliko efekt spreminja glasnost</translation>
+        <translation>Koliko učinek spreminja glasnost</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="37"/>
@@ -11163,7 +11163,7 @@ večji Q vpliva na ožji pas frekvenc.</translation>
         <source>Width of the volume peak
 10% - 90% of the effect period</source>
         <translation>Širina vrha glasnosti
-10% - 90% periode efekta</translation>
+10% - 90% periode učinka</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="63"/>
@@ -11177,7 +11177,7 @@ popolnoma na resno: sinusna krivulja.</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="100"/>
         <source>When the Quantize parameter is enabled, divide the effect period by 3.</source>
-        <translation>Če je kvantizacijski parameter vklopljen, deli periodo efekta s 3.</translation>
+        <translation>Če je kvantizacijski parameter vklopljen, deli periodo učinka s 3.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="61"/>
@@ -11197,8 +11197,8 @@ popolnoma na resno: sinusna krivulja.</translation>
 Fully left: beginning of the effect period
 Fully right: end of the effect period</source>
         <translation>Premakne položaj vrha glasnosti v periodi.
-Popolnoma na levi: začetek periode efekta
-Popolnoma na desni: konec periode efekta</translation>
+Popolnoma na levi: začetek periode učinka
+Popolnoma na desni: konec periode učinka</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="89"/>
@@ -12241,7 +12241,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="43"/>
         <source>Effects within the chain must be enabled to hear them.</source>
-        <translation>Efekti v verigi morajo biti vklopljeni, da bi se jih slišalo.</translation>
+        <translation>Učinki v verigi morajo biti vklopljeni, da bi se jih slišalo.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="48"/>
@@ -12504,12 +12504,12 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="277"/>
         <source>Show Effects</source>
-        <translation>Prikaži efekte</translation>
+        <translation>Prikaži učinke</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="278"/>
         <source>Show or hide the effects.</source>
-        <translation>Prikaži ali skrij efekte.</translation>
+        <translation>Prikaži ali skrij učinke.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="285"/>
@@ -12579,7 +12579,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="316"/>
         <source>Manual: Reduce music volume by a fixed amount set by the Strength knob.</source>
-        <translation>Ročno: Zmanjša glasnost glasbe za vrednost nastavljeno preko regulatorja Jakost</translation>
+        <translation>Ročno: Zmanjša glasnost glasbe za vrednost anstavljeno preko regulatorja Jakost</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="322"/>
@@ -12710,7 +12710,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="434"/>
         <source>Adjust Beats Earlier</source>
-        <translation>Prilagodi dobe na prej</translation>
+        <translation>Zamakni dobe nazaj</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="435"/>
@@ -12720,7 +12720,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="438"/>
         <source>Adjust Beats Later</source>
-        <translation>Prilagodi dobe na kasneje</translation>
+        <translation>Zamakni dobe naprej</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="439"/>
@@ -13494,7 +13494,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1014"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
-        <translation>Prilagodite, kako bo surov (vhodi) signal mešan z obogatenim (izhodnim) signalom efekt-enote</translation>
+        <translation>Prilagodi mešanje surovega (vhodnega) signala z obogatenim (izhodnim) signalom učinka</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1015"/>
@@ -13508,7 +13508,7 @@ To se uporablja za spreminjanje zvoka skladbe s pomočjo izravnalnika in filter 
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
         <translation>Surov+obogaten način (flat dry line): Regulator miksa dodaja obogaten zvok v surovega.
-To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) s pomočjo izravnalnika in filter efektov.</translation>
+To se uporablja za spreminjanje zgolj z učinki obogatenega signala (wet) preko izravnalnika in filtrirnih učinkov.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1053"/>
@@ -13518,12 +13518,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1058"/>
         <source>Route the left crossfader bus through this effect unit.</source>
-        <translation>Usmeri vodilo levega navzkrižnega drsnika skozi to efekt-enoto.</translation>
+        <translation>Usmeri vodilo levega navzkrižnega drsnika skozi to FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1063"/>
         <source>Route the right crossfader bus through this effect unit.</source>
-        <translation>Usmeri vodilo desnega navzkrižnega drsnika skozi to efekt-enoto.</translation>
+        <translation>Usmeri vodilo desnega navzkrižnega drsnika skozi to FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1129"/>
@@ -13568,7 +13568,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1092"/>
         <source>Enable Effect</source>
-        <translation>Vklopi efekt</translation>
+        <translation>Vklopi učinek</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1124"/>
@@ -13588,7 +13588,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1134"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
-        <translation>Obrne smer v katero se premika ta parameter, če obračamo meta regulator efekta.</translation>
+        <translation>Obrne smer v katero se premika ta parameter, ko obračamo meta regulator učinka.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1021"/>
@@ -13618,7 +13618,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1089"/>
         <source>Clear the current effect.</source>
-        <translation>Briši trenutni efekt.</translation>
+        <translation>Izbriši trenutni učinek.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1149"/>
@@ -13643,12 +13643,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="996"/>
         <source>Clear effect unit.</source>
-        <translation>Počisti efekt-enoto.</translation>
+        <translation>Počisti FX enoto</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1000"/>
         <source>Show/hide parameters for effects in this unit.</source>
-        <translation>Prikaži/skrij parametre za efekt-enoto v tej enoti.</translation>
+        <translation>Prikaži/skrij parametre za učinke v tej enoti.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1003"/>
@@ -13658,7 +13658,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1004"/>
         <source>Enable or disable this whole effect unit.</source>
-        <translation>Vklopi ali izklopi to celotno efekt-enoto</translation>
+        <translation>Vklopi ali izklopi celotno FX enoto</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1022"/>
@@ -13668,17 +13668,17 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1031"/>
         <source>Load next effect chain preset into this effect unit.</source>
-        <translation>Naloži naslednjo predlogo verige efektov v to efekt-enoto.</translation>
+        <translation>Naloži naslednjo predlogo verige učinkov v to FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1035"/>
         <source>Load previous effect chain preset into this effect unit.</source>
-        <translation>Naloži prejšnjo predlogo verige efektov v to efekt-enoto.</translation>
+        <translation>Naloži prejšnjo predlogo verige učinkov v to FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1039"/>
         <source>Load next or previous effect chain preset into this effect unit.</source>
-        <translation>Naloži naslednjo ali prejšnjo predlogo verige efektov v to efekt-enoto.</translation>
+        <translation>Naloži naslednjo ali prejšnjo predlogo verige učinkov v to FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1042"/>
@@ -13691,47 +13691,47 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1077"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1082"/>
         <source>Assign Effect Unit</source>
-        <translation>Dodeli efekt-enoto</translation>
+        <translation>Dodeli FX enoto</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1043"/>
         <source>Assign this effect unit to the channel output.</source>
-        <translation>Dodeli efekt-enoto izhodu kanala</translation>
+        <translation>Dodeli FX enoto izhodu kanala</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1048"/>
         <source>Route the headphone channel through this effect unit.</source>
-        <translation>Usmeri kanal za slušalke skozi to efekt-enoto</translation>
+        <translation>Usmeri kanal za slušalke skozi to FX enoto</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
         <source>Route this deck through the indicated effect unit.</source>
-        <translation>usmeri ta predvajalnik skozi označeno efekt-enoto.</translation>
+        <translation>Usmeri ta predvajalnik skozi označeno FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1073"/>
         <source>Route this sampler through the indicated effect unit.</source>
-        <translation>Usmeri ta vzorčevalnik skozi označeno efekt-enoto.</translation>
+        <translation>Usmeri ta vzorčevalnik skozi označeno FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1078"/>
         <source>Route this microphone through the indicated effect unit.</source>
-        <translation>Usmeri ta mikrofon skozi označeno efekt-enoto.</translation>
+        <translation>Usmeri ta mikrofon skozi označeno FX enoto.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1083"/>
         <source>Route this auxiliary input through the indicated effect unit.</source>
-        <translation>Usmeri ta pomožni AUX vhod skozi označeno efekt-enoto.</translation>
+        <translation>Usmeri ta pomožni AUX vhod skozi označeno FX enoto</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1093"/>
         <source>The effect unit must also be assigned to a deck or other sound source to hear the effect.</source>
-        <translation>Efekt-enota mora biti tudi dodeljena nekemu predvajalniku ali drugemu viru zvoka, da bi učinek slišali.</translation>
+        <translation>Da bi učinek slišali, mora biti FX enota dodeljena nekemu predvajalniku ali drugemu viru zvoka.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1097"/>
         <source>Switch to the next effect.</source>
-        <translation>Preklop na naslednji efekt.</translation>
+        <translation>Preklopi na naslednji učinek.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1100"/>
@@ -13741,7 +13741,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1101"/>
         <source>Switch to the previous effect.</source>
-        <translation>Preklop na prejšnji efekt.</translation>
+        <translation>Preklopi na prejšnji učinek.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1104"/>
@@ -13751,7 +13751,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1105"/>
         <source>Switch to either the next or previous effect.</source>
-        <translation>Preklop na naslednji ali prejšnji efekt.</translation>
+        <translation>Preklopi na naslednji ali prejšnji učinek</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1108"/>
@@ -13766,12 +13766,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1113"/>
         <source>Effect Focus Button</source>
-        <translation>Gumb za fokusiranje efekta</translation>
+        <translation>Gumb za fokusiranje učinka</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1114"/>
         <source>Focuses this effect.</source>
-        <translation>Fokusira na ta efekt</translation>
+        <translation>Fokus na ta učinek</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1115"/>
@@ -13786,12 +13786,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1119"/>
         <source>Effect Parameter</source>
-        <translation>Parametri efekta</translation>
+        <translation>Parametri učinka</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1120"/>
         <source>Adjusts a parameter of the effect.</source>
-        <translation>Spreminja parametre efekta</translation>
+        <translation>Spreminja parameter učinka.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1126"/>
@@ -13811,7 +13811,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1130"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
-        <translation>Leva in desna stran sta aktivni: parameter se veča z levo polovico zasuka in manjša s desno polovico zauska meta-regulatorja</translation>
+        <translation>Leva in desna stran sta aktivni: parameter se veča z levo polovico zasuka in manjša s desno polovico zasuka meta regulatorja</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1137"/>
@@ -13828,12 +13828,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1143"/>
         <source>Quick Effect Super Knob</source>
-        <translation>Super-regulator za hitri efekt.</translation>
+        <translation>Super-regulator za hitri učinek.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1144"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
-        <translation>Super regulator za hitre efekte (nadzoruje povezane parametre učinka).</translation>
+        <translation>Super regulator za hitre učinke (nadzoruje povezane parametre učinka).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1146"/>
@@ -14366,7 +14366,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="941"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
-        <translation>V takšni situaciji ne uporabljajte zaklepa tonalitete, efektov ali dodatnih predvajalnikov.</translation>
+        <translation>V takšni situaciji ne uporabljajte zaklepa tonalitete, učinkov ali dodatnih predvajalnikov.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="944"/>
@@ -14386,7 +14386,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="203"/>
         <source>Change the crossfader curve in Preferences -&gt; Crossfader</source>
-        <translation>Spremeni krivulju navzkrižnega drsnika v Nastavitve -&gt; Navzkrižni drsnik</translation>
+        <translation>Spremeni krivuljo navzkrižnega drsnika v Nastavitve -&gt; Navzkrižni drsnik</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="233"/>
@@ -14997,7 +14997,7 @@ Tega ni mogoče razveljaviti!</translation>
     <message>
         <location filename="../../src/widget/weffectselector.cpp" line="62"/>
         <source>No effect loaded.</source>
-        <translation>Ni naloženih efektov.</translation>
+        <translation>Ni naloženih učinkov.</translation>
     </message>
 </context>
 <context>
@@ -15109,7 +15109,7 @@ Tega ni mogoče razveljaviti!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="205"/>
         <location filename="../../src/widget/wmainmenubar.cpp" line="207"/>
         <source>&amp;View</source>
-        <translation>&amp;Pogled</translation>
+        <translation>&amp;Prikaz</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
@@ -15959,7 +15959,7 @@ Tega ni mogoče razveljaviti!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="523"/>
         <source>Reanalyze (constant BPM)</source>
-        <translation>Ponovno analiza (konstantni BPM)¸¸</translation>
+        <translation>Ponovno analiza (konstantni BPM)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="529"/>
@@ -15979,12 +15979,12 @@ Tega ni mogoče razveljaviti!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1331"/>
         <source>Importing metadata of %n track(s) from file tags</source>
-        <translation><numerusform>Uvažanje metapodatkov %n skladbe iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform></translation>
+        <translation><numerusform>Uvažanje metapodatkov %n skladbe iz oznak v datoteki</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform><numerusform>Uvažanje metapodatkov %n skladb iz oznak v datotekah</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1363"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
-        <translation><numerusform>Označevanje metapodatkov %n skladbe za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform></translation>
+        <translation><numerusform>Označevanje metapodatkov %n skladbe za izvoz v oznake datoteke</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform><numerusform>Označevanje metapodatkov %n skladb za izvoz v oznake datotek</numerusform></translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1414"/>
@@ -16057,7 +16057,7 @@ Tega ni mogoče razveljaviti!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1810"/>
         <source>Setting color of %n track(s)</source>
-        <translation><numerusform>Odklepanje BPM %n skladbe</numerusform><numerusform>Odklepanje BPM %n skladb</numerusform><numerusform>Odklepanje BPM %n skladb</numerusform><numerusform>Določanje barve %n skladb</numerusform></translation>
+        <translation><numerusform>Določanje barve %n skladbe</numerusform><numerusform>Določanje barve %n skladb</numerusform><numerusform>Določanje barve %n skladb</numerusform><numerusform>Določanje barve %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1858"/>
@@ -16072,17 +16072,17 @@ Tega ni mogoče razveljaviti!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1907"/>
         <source>Clearing rating of %n track(s)</source>
-        <translation><numerusform>Brisanje ocen za %1 skladbo</numerusform><numerusform>Brisanje ocen za %1 skladbi</numerusform><numerusform>Brisanje ocen za %1 skladbe</numerusform><numerusform>Brisanje ocen za %1 skladb</numerusform></translation>
+        <translation><numerusform>Brisanje ocen za %1 skladbe</numerusform><numerusform>Brisanje ocen za %1 skladb</numerusform><numerusform>Brisanje ocen za %1 skladb</numerusform><numerusform>Brisanje ocen za %1 skladb</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1930"/>
         <source>Clearing comment of %n track(s)</source>
-        <translation><numerusform>Čiščenje komentarjev za %n skladbo</numerusform><numerusform>Čiščenje komentarjev za %n skladbi</numerusform><numerusform>Čiščenje komentarjev za %n skladbe</numerusform><numerusform>Čiščenje komentarjev za %n skladb</numerusform></translation>
+        <translation><numerusform>Čiščenje komentarjev za %n skladbe</numerusform><numerusform>Čiščenje komentarjev za %n skladb</numerusform><numerusform>Čiščenje komentarjev za %n skladb</numerusform><numerusform>Čiščenje komentarjev za %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2022"/>
         <source>Removing main cue from %n track(s)</source>
-        <translation><numerusform>Odstranjevanje glavne iztočnice %n skladbe</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform></translation>
+        <translation><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform><numerusform>Odstranjevanje glavne iztočnice %n skladb</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2032"/>
@@ -16158,7 +16158,7 @@ Tega ni mogoče razveljaviti!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2349"/>
         <source>Move Track File(s) to Trash?</source>
-        <translation>Premaknem datoteke skladb(e) v kop?</translation>
+        <translation>Premaknem datoteke skladb(e) v koš?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2405"/>
@@ -16173,7 +16173,7 @@ Tega ni mogoče razveljaviti!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2411"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
-        <translation>%1 skladb je bilo premaknjenih v koš in izbrisanih iz Mixxx podatkovne baze.</translation>
+        <translation>%1 skladb je bilo premaknjenih v koš in izbrisanih iz Mixxx baze podatkov.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2414"/>

@@ -163,7 +163,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="125"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="130"/>
         <source>Import Playlist</source>
-        <translation>Çalma listesini içe aktar</translation>
+        <translation>Çalma Listesini İçe Aktar</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="140"/>
@@ -635,7 +635,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
         <source>BPM</source>
-        <translation>BPM(Dakikalık Vuruş Sayısı)</translation>
+        <translation>BPM (Dakikalık Vuruş Sayısı)</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>

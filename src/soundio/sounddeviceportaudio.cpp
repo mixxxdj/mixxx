@@ -7,6 +7,7 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -96,7 +97,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_lastCallbackEntrytoDacSecs(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
-    m_dSampleRate = deviceInfo->defaultSampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
     if (m_deviceTypeId == paALSA) {
         // PortAudio gives the device name including the ALSA hw device. The
         // ALSA hw device is an only somewhat reliable identifier; it may change
@@ -117,8 +118,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     }
     m_deviceId.portAudioIndex = devIndex;
     m_strDisplayName = QString::fromUtf8(deviceInfo->name);
-    m_iNumInputChannels = m_deviceInfo->maxInputChannels;
-    m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
+    m_numInputChannels = mixxx::audio::ChannelCount(m_deviceInfo->maxInputChannels);
+    m_numOutputChannels = mixxx::audio::ChannelCount(m_deviceInfo->maxOutputChannels);
 
     m_inputParams.device = 0;
     m_inputParams.channelCount = 0;
@@ -206,8 +207,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     // Sample rate
-    if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0;
+    if (!m_sampleRate.isValid()) {
+        m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;
@@ -225,8 +226,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
-    double bufferMSec = framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz and buffer size:"
+    double bufferMSec = framesPerBuffer / m_sampleRate.toDouble() * 1000;
+    qDebug() << "Requested sample rate: " << m_sampleRate << "Hz and buffer size:"
              << bufferMSec << "ms";
 
     qDebug() << "Output channels:" << m_outputParams.channelCount
@@ -337,7 +338,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     err = Pa_OpenStream(&pStream,
             pInputParams,
             pOutputParams,
-            m_dSampleRate,
+            m_sampleRate.toDouble(),
             framesPerBuffer,
             paClipOff, // Stream flags
             pCallback,
@@ -375,9 +376,9 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
-    m_dSampleRate = streamDetails->sampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(streamDetails->sampleRate);
     double currentLatencyMSec = streamDetails->outputLatency * 1000;
-    qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:"
+    qDebug() << "   Actual sample rate: " << m_sampleRate << "Hz, latency:"
              << currentLatencyMSec << "ms";
 
     if (isClkRefDevice) {
@@ -386,7 +387,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
         ControlObject::set(
                 ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
                 currentLatencyMSec);
-        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_dSampleRate);
+        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
@@ -662,7 +663,7 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                    	copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
+                        copyCount = qMin(readAvailable, copyCount + m_numOutputChannels);
                     } else {
                         m_outputDrift = true;
                     }
@@ -905,10 +906,17 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #endif
         m_bSetThreadPriority = true;
 
-#ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
+
+        // On Emscripten (WebAssembly) denormals-as-zero/flush-as-zero are
+        // neither supported nor configurable. This may lead to degraded
+        // performance compared to other platforms and may be addressed in the
+        // future if/when WebAssembly adds support for DAZ/FTZ. For further
+        // discussion and links see https://github.com/mixxxdj/mixxx/pull/12917
+
+#if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -976,7 +984,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     // Send audio from the soundcard's input off to the SoundManager...
     if (in) {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess input %1",
+        ScopedTimer t(QStringLiteral("SoundDevicePortAudio::callbackProcess input %1"),
                 m_deviceId.debugName());
         composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, framesPerBuffer);
@@ -985,13 +993,13 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     m_pSoundManager->readProcess(framesPerBuffer);
 
     {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
+        ScopedTimer t(QStringLiteral("SoundDevicePortAudio::callbackProcess prepare %1"),
                 m_deviceId.debugName());
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
 
     if (out) {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess output %1",
+        ScopedTimer t(QStringLiteral("SoundDevicePortAudio::callbackProcess output %1"),
                 m_deviceId.debugName());
 
         if (m_outputParams.channelCount <= 0) {
@@ -1043,7 +1051,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
     PaTime callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
             - timeInfo->currentTime;
-    double bufferSizeSec = framesPerBuffer / m_dSampleRate;
+    double bufferSizeSec = framesPerBuffer / m_sampleRate.toDouble();
 
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
@@ -1086,10 +1094,10 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_audioLatencyUsage.set(
-                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
         // qDebug() << m_audioLatencyUsage

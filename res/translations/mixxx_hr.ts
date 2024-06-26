@@ -108,7 +108,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="131"/>
         <source>Playlist Creation Failed</source>
-        <translation>Neuspjelo kreiranje liste izvođenja</translation>
+        <translation>Kreiranje liste izvođenja nije uspjelo</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="132"/>
@@ -126,7 +126,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="103"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Dodaj u automatski DJ red</translation>
+        <translation>Dodaj u automatski DJ red (na kraj)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="70"/>
@@ -211,7 +211,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="272"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="276"/>
         <source>Renaming Playlist Failed</source>
-        <translation>Neuspjelo preimenovanje popisa izvođenja</translation>
+        <translation>Preimenovanje popisa izvođenja nije uspjelo</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="273"/>
@@ -675,7 +675,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
         <source>File Modified</source>
-        <translation>Datoteka stvorena</translation>
+        <translation>Datoteka izmjenjena</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
@@ -1001,7 +1001,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="164"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1314"/>
         <source>Set to full volume</source>
-        <translation>Postavi punu glasnoći</translation>
+        <translation>Postavi punu glasnoću</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="168"/>
@@ -1083,7 +1083,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
         <source>Increase BPM by 1</source>
-        <translation>Smanji BPM za 1</translation>
+        <translation>Povećaj BPM za 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="251"/>
@@ -1544,7 +1544,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="297"/>
         <source>Adjust Beatgrid Faster +.01</source>
-        <translation>Prilagodi mrežu ritmova, brže +0,01</translation>
+        <translation>Prilagodi mrežu ritmova, brže +,01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="298"/>

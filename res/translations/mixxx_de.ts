@@ -57,15 +57,14 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="72"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Banshee-Datenbankdatei nicht gefunden bei
+        <translation>Banshee Datenbank Datei nicht gefunden
 </translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="83"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation>Ein Fehler ist aufgetreten beim Laden der Banshee-Datenbank von
-</translation>
+        <translation>Beim Laden der Banshee-Datenbank &quot;%1&quot; ist ein Fehler aufgetreten.</translation>
     </message>
 </context>
 <context>
@@ -6208,12 +6207,12 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="182"/>
         <source>Bb</source>
-        <translation>B</translation>
+        <translation>B-Dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="205"/>
         <source>B</source>
-        <translation>H</translation>
+        <translation>H-Dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="228"/>
@@ -6223,7 +6222,7 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="251"/>
         <source>Db</source>
-        <translation>Des</translation>
+        <translation>Des-Dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="274"/>
@@ -6233,7 +6232,7 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="297"/>
         <source>Eb</source>
-        <translation>Es</translation>
+        <translation>Es-Dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="320"/>
@@ -6248,7 +6247,7 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="366"/>
         <source>F#</source>
-        <translation>Fis</translation>
+        <translation>Fis-Dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="389"/>
@@ -6258,67 +6257,67 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="412"/>
         <source>Ab</source>
-        <translation>As</translation>
+        <translation>As-Dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="435"/>
         <source>Am</source>
-        <translation>a</translation>
+        <translation>a-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="458"/>
         <source>Bbm</source>
-        <translation>b</translation>
+        <translation>b-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="481"/>
         <source>Bm</source>
-        <translation>h</translation>
+        <translation>h-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="504"/>
         <source>Cm</source>
-        <translation>c</translation>
+        <translation>c-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="527"/>
         <source>C#m</source>
-        <translation>cis</translation>
+        <translation>cis-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="550"/>
         <source>Dm</source>
-        <translation>d</translation>
+        <translation>d-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="573"/>
         <source>Ebm</source>
-        <translation>dis</translation>
+        <translation>dis-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="596"/>
         <source>Em</source>
-        <translation>Em</translation>
+        <translation>e-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="619"/>
         <source>Fm</source>
-        <translation>f</translation>
+        <translation>f-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="642"/>
         <source>F#m</source>
-        <translation>fis</translation>
+        <translation>fis-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="665"/>
         <source>Gm</source>
-        <translation>g</translation>
+        <translation>g-Moll</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="688"/>
         <source>G#m</source>
-        <translation>gis</translation>
+        <translation>gis-Moll</translation>
     </message>
 </context>
 <context>
@@ -9082,7 +9081,7 @@ Das führt oft zu Beatgrids mit höherer Qualität, wird aber nicht so gut bei T
     <message>
         <location filename="../../src/engine/enginebuffer.h" line="183"/>
         <source>Unknown, using Soundtouch</source>
-        <translation>Unbekannt, Soundtouch wird verwendet</translation>
+        <translation>Unbekannt, Soundtouch wird verwenden</translation>
     </message>
 </context>
 <context>
@@ -13521,12 +13520,12 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1058"/>
         <source>Route the left crossfader bus through this effect unit.</source>
-        <translation>Den linken Crossfader-Bus durch die angegebene Effekteinheit routen.</translation>
+        <translation>Den linken Crossfader-Bus durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1063"/>
         <source>Route the right crossfader bus through this effect unit.</source>
-        <translation>Den rechten Crossfader-Bus durch die angegebene Effekteinheit routen.</translation>
+        <translation>Den rechten Crossfader-Bus durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1129"/>
@@ -13709,22 +13708,22 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
         <source>Route this deck through the indicated effect unit.</source>
-        <translation>Dieses Deck durch die angegebene Effekteinheit routen.</translation>
+        <translation>Dieses Deck durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1073"/>
         <source>Route this sampler through the indicated effect unit.</source>
-        <translation>Diesen Sampler durch die angegebene Effekteinheit routen.</translation>
+        <translation>Diesen Sampler durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1078"/>
         <source>Route this microphone through the indicated effect unit.</source>
-        <translation>Dieses Mikrofon durch die angegebene Effekteinheit routen.</translation>
+        <translation>Dieses Mikrofon durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1083"/>
         <source>Route this auxiliary input through the indicated effect unit.</source>
-        <translation>Diesen Aux-Eingang durch die angegebene Effekteinheit routen.</translation>
+        <translation>Diesen Aux-Eingang durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1093"/>
@@ -16196,7 +16195,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2457"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
-        <translation>Die folgenden %1 Datei(en) konnten nicht von der Festplatte gelöscht werden</translation>
+        <translation>Die folgenden %1 Datei(en) konnten nicht von der Festplatte gelöscht werden.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2465"/>
@@ -16333,7 +16332,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1217"/>
         <source>Don&apos;t ask again during this session</source>
-        <translation>Während dieser Sitzung nicht erneut fragen</translation>
+        <translation>Während dieser Sitzung nicht erneut fragen.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1196"/>

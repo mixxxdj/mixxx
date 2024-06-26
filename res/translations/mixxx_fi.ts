@@ -1359,7 +1359,7 @@ jäljitys - kuten yllä + henkilökuvaliitteiset viestit </translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="188"/>
         <source>Fast Rewind</source>
-        <translation>Pikakelaus eteenpäin</translation>
+        <translation>Pikakelaus taaksepäin.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="189"/>
@@ -1369,7 +1369,9 @@ jäljitys - kuten yllä + henkilökuvaliitteiset viestit </translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="192"/>
         <source>Fast Forward</source>
-        <translation>Pikakelaus taaksepäin</translation>
+        <translation>Pikakelaus eteenpäin
+
+ </translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>

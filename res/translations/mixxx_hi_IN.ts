@@ -448,7 +448,7 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="474"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation>सुरक्षित पासवर्ड संग्रहण का उपयोग नहीं कर सकते: किचेन ऐक्सेस विफल।</translation>
+        <translation>सुरक्षित पासवर्ड संग्रहण का उपयोग नहीं कर सकते: कीचेन ऐक्सेस विफल।</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="504"/>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="154"/>
         <source>Mixxx is an open source DJ software. For more information, see: </source>
-        <translation>Mixxx एक सार्वजनिक स्रोत डिस्क जोकी (DJ) सॉफ्टवेयर है। अधिक जानकारी के लिए देखें :</translation>
+        <translation>Mixxx एक सार्वजनिक स्रोत डिस्क जॉकी सॉफ्टवेयर है। अधिक जानकारी के लिए देखें :</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="162"/>

@@ -29,15 +29,13 @@ PitchShiftGroupState::PitchShiftGroupState(
 }
 
 PitchShiftGroupState::~PitchShiftGroupState() {
-    SampleUtil::free(m_retrieveBuffer[0]);
-    SampleUtil::free(m_retrieveBuffer[1]);
 }
 
 void PitchShiftGroupState::initializeBuffer(
         const mixxx::EngineParameters& engineParameters) {
-    m_retrieveBuffer[0] = SampleUtil::alloc(
+    m_retrieveBuffer[0] = mixxx::SampleBuffer(
             engineParameters.framesPerBuffer());
-    m_retrieveBuffer[1] = SampleUtil::alloc(
+    m_retrieveBuffer[1] = mixxx::SampleBuffer(
             engineParameters.framesPerBuffer());
 }
 
@@ -80,7 +78,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "The pitch shift applied to the sound."));
     pitch->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pitch->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
-    pitch->setNeutralPointOnScale(0.0);
+    pitch->setNeutralPointOnScale(0.5);
     pitch->setRange(-1.0, 0.0, 1.0);
 
     EffectManifestParameterPointer range = pManifest->addParameter();
@@ -91,7 +89,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "The range of the Pitch knob (0 - 2 octaves).\n"));
     range->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     range->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
-    range->setNeutralPointOnScale(1.0);
+    range->setNeutralPointOnScale(0.5);
     range->setRange(0.0, 1.0, 2.0);
 
     EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
@@ -136,6 +134,8 @@ void PitchShiftEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
+
+    DEBUG_ASSERT(engineParameters.framesPerBuffer() <= pState->m_retrieveBuffer[0].size());
 
     if (const bool formantPreserving = m_pFormantPreservingParameter->toBool();
             m_currentFormant != formantPreserving) {
@@ -224,12 +224,15 @@ void PitchShiftEffect::processChannel(
     pState->m_pRubberBand->setPitchScale(pitch);
 
     SampleUtil::deinterleaveBuffer(
-            pState->m_retrieveBuffer[0],
-            pState->m_retrieveBuffer[1],
+            pState->m_retrieveBuffer[0].data(),
+            pState->m_retrieveBuffer[1].data(),
             pInput,
             engineParameters.framesPerBuffer());
+
+    CSAMPLE* retrieveBuffers[2]{pState->m_retrieveBuffer[0].data(),
+            pState->m_retrieveBuffer[1].data()};
     pState->m_pRubberBand->process(
-            pState->m_retrieveBuffer,
+            retrieveBuffers,
             engineParameters.framesPerBuffer(),
             false);
 
@@ -239,11 +242,11 @@ void PitchShiftEffect::processChannel(
             engineParameters.framesPerBuffer());
 
     SINT receivedFrames = pState->m_pRubberBand->retrieve(
-            pState->m_retrieveBuffer,
+            retrieveBuffers,
             framesToRead);
 
     SampleUtil::interleaveBuffer(pOutput,
-            pState->m_retrieveBuffer[0],
-            pState->m_retrieveBuffer[1],
+            pState->m_retrieveBuffer[0].data(),
+            pState->m_retrieveBuffer[1].data(),
             receivedFrames);
 }

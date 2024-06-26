@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="99"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Quitar cajón como fuente de pistas</translation>
+        <translation>Eliminar la caja como fuente de pista</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="112"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="305"/>
         <source>Add Crate as Track Source</source>
-        <translation>Usar cajón como fuente de pistas</translation>
+        <translation>Añadir caja como fuente de pista</translation>
     </message>
 </context>
 <context>
@@ -163,7 +163,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="125"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="130"/>
         <source>Import Playlist</source>
-        <translation>Importar lista de reproducción</translation>
+        <translation>Importar Lista de Reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="140"/>
@@ -258,7 +258,8 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="428"/>
         <source>Do you really want to delete playlist &lt;b&gt;%1&lt;/b&gt;?</source>
-        <translation>Do you really want to delete playlist %1?</translation>
+        <translation>Do you really want to delete playlist
+%1?</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
@@ -819,7 +820,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="338"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
-        <translation type="unfinished"/>
+        <translation>Carga los archivos de música especificados al inicio. Cada archivo que especifiques se cargará en el siguiente deck virtual.</translation>
     </message>
 </context>
 <context>
@@ -919,7 +920,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="146"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="155"/>
         <source>Deck %1</source>
-        <translation>Plato %1</translation>
+        <translation>Deck %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
@@ -929,7 +930,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
         <source>Preview Deck %1</source>
-        <translation>Plato de preescucha %1</translation>
+        <translation>Deck de preescucha %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="27"/>
@@ -1599,7 +1600,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="322"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation>Ajusta la cuadrícula de tempo para que coincida con otro plato en reproducción.</translation>
+        <translation>Ajusta la rejilla para que coincida con otro deck en reproducción.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="333"/>
@@ -1725,12 +1726,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="491"/>
         <source>Vinyl Control Next Deck</source>
-        <translation>siguiente plato en Control por vinilo</translation>
+        <translation>siguiente deck en control de vinilo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
-        <translation>Modo de plato único - Cambia el control de vinilo al siguiente plato</translation>
+        <translation>Modo de un solo deck - Cambia el control de vinilo al siguiente deck</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="497"/>
@@ -1936,7 +1937,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="962"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation>Super rueda de efecto rápido del plato %1</translation>
+        <translation>Super rueda de efecto rápido del deck %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="963"/>
@@ -3603,7 +3604,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="64"/>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="202"/>
         <source>Create New Crate</source>
-        <translation>Crear un nuevo cajón</translation>
+        <translation>Crear nueva caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="70"/>
@@ -3619,7 +3620,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="120"/>
         <source>Export Crate as Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Exportar caja como lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="125"/>
@@ -3634,7 +3635,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="104"/>
         <source>Analyze entire Crate</source>
-        <translation>Analizar todo el cajón</translation>
+        <translation>Analizar toda la caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="97"/>
@@ -3644,7 +3645,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="479"/>
         <source>Enter new name for crate:</source>
-        <translation>Escriba un nuevo nombre para el cajón:</translation>
+        <translation>Introduce un nuevo nombre para la caja:</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="187"/>
@@ -3656,12 +3657,12 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="110"/>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="115"/>
         <source>Import Crate</source>
-        <translation>Importar cajón</translation>
+        <translation>Importar caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="784"/>
         <source>Export Crate</source>
-        <translation>Exportar cajón</translation>
+        <translation>Exportar caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="391"/>
@@ -3671,12 +3672,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="736"/>
         <source>An unknown error occurred while creating crate: </source>
-        <translation>Ocurrió un error desconocido al crear el cajón: </translation>
+        <translation>Se ha producido un error desconocido al crear la caja:</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="478"/>
         <source>Rename Crate</source>
-        <translation>Renombrar cajón</translation>
+        <translation>Renombrar caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="131"/>
@@ -3687,7 +3688,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="196"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Haz una caja para tu próximo concierto, para tus temas electrohouse favoritos o para tus temas más solicitados.</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="447"/>
@@ -3698,12 +3699,12 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="489"/>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="495"/>
         <source>Renaming Crate Failed</source>
-        <translation>No se pudo renombrar el cajón</translation>
+        <translation>Fallo al renombrar la caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="735"/>
         <source>Crate Creation Failed</source>
-        <translation>Falló la creación del cajón</translation>
+        <translation>Fallo al crear la caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="786"/>
@@ -3718,12 +3719,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="193"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
-        <translation>Los Cajones son una muy buena opción para organizar la música para las sesiones de DJ.</translation>
+        <translation>Las cajas son una forma estupenda de organizar la música con la que quieres hacer tu sesión de DJ.</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="199"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
-        <translation>Los cajones permiten organizar tu música como tu quieras!</translation>
+        <translation>¡Las cajas te permiten organizar tu música como quieras!</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="448"/>
@@ -3733,12 +3734,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="490"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>Los cajones no pueden carecer de nombre.</translation>
+        <translation>Una caja no puede tener un nombre en blanco.</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="496"/>
         <source>A crate by that name already exists.</source>
-        <translation>Ya existe un cajón con ese nombre.</translation>
+        <translation>Ya existe una caja con ese nombre.</translation>
     </message>
 </context>
 <context>
@@ -3746,43 +3747,43 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="38"/>
         <source>New Crate</source>
-        <translation>Nuevo Cajón</translation>
+        <translation>Nueva caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="45"/>
         <source>Create New Crate</source>
-        <translation>Crear un nuevo cajón</translation>
+        <translation>Crear nueva caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="46"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="102"/>
         <source>Enter name for new crate:</source>
-        <translation>Escriba un nombre para el cajón: </translation>
+        <translation>Introduce el nombre de la nueva caja:</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="57"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="64"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="84"/>
         <source>Creating Crate Failed</source>
-        <translation>No se pudo crear el cajón</translation>
+        <translation>Error al crear la caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="58"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="114"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>Los cajones no pueden carecer de nombre.</translation>
+        <translation>Una caja no puede tener un nombre en blanco.</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="65"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="121"/>
         <source>A crate by that name already exists.</source>
-        <translation>Ya existe un cajón con ese nombre.</translation>
+        <translation>Ya existe una caja con ese nombre.</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="85"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="157"/>
         <source>An unknown error occurred while creating crate: </source>
-        <translation>Ocurrió un error desconocido al crear el cajón: </translation>
+        <translation>Se ha producido un error desconocido al crear la caja:</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="94"/>
@@ -3793,14 +3794,14 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="101"/>
         <source>Duplicate Crate</source>
-        <translation>Duplicar Cajón</translation>
+        <translation>Duplicar caja</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="113"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="120"/>
         <location filename="../../src/library/trackset/crate/cratefeaturehelper.cpp" line="156"/>
         <source>Duplicating Crate Failed</source>
-        <translation>La copia del cajón ha fallado</translation>
+        <translation>Fallo al duplicar la caja</translation>
     </message>
 </context>
 <context>
@@ -4117,8 +4118,8 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="117"/>
         <source>Adds a random track from track sources (crates) to the Auto DJ queue.
 If no track sources are configured, the track is added from the library instead.</source>
-        <translation>Añade una nueva pista de las fuentes de pistas (cajones) a la cola de Auto DJ.
-Si no hay fuentes de pistas configuradas, se añade una pista de la biblioteca.</translation>
+        <translation>Añade una pista aleatoria de fuentes de pista (cajas) a la cola de Auto DJ.
+Si no hay fuentes de pista configuradas, la pista se añade desde la biblioteca.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="137"/>
@@ -9743,7 +9744,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="1375"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
-        <translation>El renderizado directo no está habilitado en su máquina. &lt;br&gt;&lt;br&gt;Esto significa que las visualizaciones de forma de onda serán muy &lt;br&gt;lentas y pueden exigir mucho a su CPU&lt;b&gt;. Actualice su &lt;br&gt;configuración para habilitar la representación directa o desactiv&lt;br&gt; las visualizaciones de forma de onda en las preferencias de Mixxx seleccionando &lt;br&gt;&quot;Vacío&quot; como la pantalla de forma de onda en la sección &apos;Interfaz&apos;.</translation>
+        <translation>El renderizado directo no está habilitado en su máquina. &lt;br&gt;&lt;br&gt;Esto significa que las visualizaciones de forma de onda serán muy &lt;br&gt;&lt;b&gt;lentas y pueden exigir mucho a su CPU&lt;/b&gt;. Actualice su &lt;br&gt;configuración para habilitar la representación directa o desactiv&lt;br&gt; las visualizaciones de forma de onda en las preferencias de Mixxx seleccionando &lt;br&gt;&quot;Vacío&quot; como la pantalla de forma de onda en la sección &apos;Interfaz&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="1410"/>
@@ -9872,7 +9873,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="588"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
-        <translation>Esto no afecta a los Cues, Hotcues, listas de reproducción o cajas guardados/as.</translation>
+        <translation>Esto no afecta a los Cues, Hotcues, listas de reproducción o cajas guardadas.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="590"/>
@@ -11917,7 +11918,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="347"/>
         <source>Error setting stream AIM!</source>
-        <translation>Error al configurar el flujo AIM!</translation>
+        <translation>¡Error al configurar el flujo AIM!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="354"/>
@@ -13937,7 +13938,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="31"/>
         <source>Drag this item to other decks/samplers, to crates and playlist or to external file manager.</source>
-        <translation type="unfinished"/>
+        <translation>Arrastra este elemento a otros decks/samplers, a cajas y listas de reproducción o a un gestor de archivos externo.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="49"/>
@@ -15028,12 +15029,12 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
         <source>Create New &amp;Crate</source>
-        <translation>Crear un nuevo&amp;cajón</translation>
+        <translation>Crear nueva &amp;caja</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
         <source>Create a new crate</source>
-        <translation>Crear un nuevo cajón</translation>
+        <translation>Crea una nueva caja</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="190"/>
@@ -15914,7 +15915,7 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1331"/>
         <source>Importing metadata of %n track(s) from file tags</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Importación de metadatos de %n pista a partir de las etiquetas del archivo</numerusform><numerusform>Importación de metadatos de %n pistas a partir de las etiquetas de los archivos</numerusform><numerusform>Importación de metadatos de %n pista(s) a partir de las etiquetas del archivo</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1363"/>
@@ -15962,7 +15963,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1529"/>
         <source>Add to New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Añadir a nueva caja</translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1672"/>
@@ -16012,7 +16013,7 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1930"/>
         <source>Clearing comment of %n track(s)</source>
-        <translation><numerusform>Borrando comentarios de %n pista</numerusform><numerusform>Borrando comentarios de %n pistas</numerusform><numerusform>Borrando comentarios de %n pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2022"/>
@@ -16255,7 +16256,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1204"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
-        <translation>Estás seguro que quieres eliminar las pistas seleccionada de este cajón?</translation>
+        <translation>¿Estás seguro de que quieres eliminar las pistas seleccionadas de esta caja?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1208"/>
@@ -16430,7 +16431,7 @@ Pulse Aceptar para salir.</translation>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="84"/>
         <source>Selected crates</source>
-        <translation type="unfinished"/>
+        <translation>Cajas seleccionadas</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="91"/>
@@ -16511,7 +16512,7 @@ Pulse Aceptar para salir.</translation>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="59"/>
         <source>Exported %1 track(s) and %2 crate(s).</source>
-        <translation type="unfinished"/>
+        <translation>Exportados %1 pista(s) y %2 caja(s).</translation>
     </message>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="68"/>

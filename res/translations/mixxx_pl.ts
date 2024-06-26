@@ -93,7 +93,8 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="50"/>
         <source>Import as Crate</source>
-        <translation>Importuj jako skrzynkę</translation>
+        <translation> 
+Importuj jako skrzynkę</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="155"/>
@@ -605,7 +606,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
         <source>Track #</source>
-        <translation>Nr ścieżki</translation>
+        <translation>Nr ścieżki #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
@@ -819,7 +820,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="338"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
-        <translation>Załaduj określone pliki muzyczne podczas uruchamiania. Każdy określony plik zostanie załadowany do następnej wirtualnej talii.</translation>
+        <translation>Załaduj określone pliki muzyczne podczas uruchamiania. Każdy określony plik zostanie załadowany do następnego wirtualnego decka.</translation>
     </message>
 </context>
 <context>
@@ -1614,7 +1615,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
         <source>Beat Sync One-Shot</source>
-        <translation>Synchronizacja One-Shot</translation>
+        <translation>Synchronizacja bitów One-Shot</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="346"/>
@@ -1710,12 +1711,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="478"/>
         <source>Vinyl Control Mode</source>
-        <translation>Tryb kontroli vinylem</translation>
+        <translation>Tryb kontroli winylem</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="482"/>
         <source>Vinyl Control Cueing Mode</source>
-        <translation>Tryb sterowania cue winylem</translation>
+        <translation>Przejście kontroli CUE winylu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="486"/>
@@ -1770,7 +1771,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="510"/>
         <source>Stutter Cue</source>
-        <translation>Sygnał CUE</translation>
+        <translation>Wskazóœka CUE</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="513"/>
@@ -2265,7 +2266,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="142"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
         <source>Adjust %1</source>
-        <translation>Dostosuj</translation>
+        <translation>Dostosuj %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
@@ -2326,7 +2327,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="239"/>
         <source>BPM / Beatgrid</source>
-        <translation>BPM / Beatgrid</translation>
+        <translation>BPM / Siatka bitów</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="263"/>
@@ -2543,7 +2544,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="455"/>
         <source>Decrease Pitch (Fine)</source>
-        <translation>Zmniejsz wysokość dźwięku (dokładnie)</translation>
+        <translation>Zmniejsza wysokość dźwięku (dokładnie)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="456"/>
@@ -2563,7 +2564,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="533"/>
         <source>Shift cue points earlier</source>
-        <translation>Cofnij do punktu CUE</translation>
+        <translation>Cofnij do wcześniejszego punktu CUE</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
@@ -2633,7 +2634,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>intro start marker</source>
-        <translation>stop intro marker</translation>
+        <translation>start intro marker</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="610"/>
@@ -2744,12 +2745,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="724"/>
         <source>Go To Loop In</source>
-        <translation>Przejdź do pętli</translation>
+        <translation>Przejdź do początku pętli</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="724"/>
         <source>Go to Loop In button</source>
-        <translation>Przejdź do przycisku Zapętlenie</translation>
+        <translation>Przejdź do początku przycisku Zapętlenie</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="726"/>
@@ -6122,7 +6123,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="68"/>
         <source>Analyzer Settings</source>
-        <translation>Ustawienia Analizatora:</translation>
+        <translation>Ustawienia Analizatora</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="74"/>
@@ -7610,7 +7611,7 @@ The loudness target is approximate and assumes track pregain and main output lev
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="654"/>
         <source>Powered by xwax</source>
-        <translation>Powered by xwax</translation>
+        <translation>Powered by Adasqu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="612"/>
@@ -10065,7 +10066,7 @@ Czy chcesz przeskanować Twoją bibliotekę plików teraz?</translation>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="137"/>
         <source>Vinyl Control</source>
-        <translation>Kontrola vinylem</translation>
+        <translation>Kontrola Winylem</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="140"/>

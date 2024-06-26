@@ -15,11 +15,10 @@
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 #include "qml/qmlapplication.h"
-#else
-#include "mixxxmainwindow.h"
 #endif
+#include "mixxxmainwindow.h"
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
@@ -33,9 +32,7 @@
 namespace {
 
 // Exit codes
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 constexpr int kFatalErrorOnStartupExitCode = 1;
-#endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
@@ -58,10 +55,12 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 
     int exitCode;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
-    exitCode = pApp->exec();
-#else
+#ifdef MIXXX_USE_QML
+    if (args.isQml()) {
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        exitCode = pApp->exec();
+    } else
+#endif
     {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
@@ -109,7 +108,6 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             exitCode = pApp->exec();
         }
     }
-#endif
     return exitCode;
 }
 

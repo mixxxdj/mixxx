@@ -15218,7 +15218,7 @@ Carpeta: %2
         <location filename="../../src/widget/wmainmenubar.cpp" line="326"/>
         <source>Space</source>
         <comment>Menubar|View|Maximize Library</comment>
-        <translation>Espacio</translation>
+        <translation>Space</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="335"/>
@@ -15977,12 +15977,12 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1331"/>
         <source>Importing metadata of %n track(s) from file tags</source>
-        <translation><numerusform>Importing metadata of %n track(s) from file tags</numerusform><numerusform>Importing metadata of %n track(s) from file tags</numerusform><numerusform>Importing metadata of %n track(s) from file tags</numerusform></translation>
+        <translation><numerusform>Importación de metadatos de %n pista a partir de las etiquetas del archivo</numerusform><numerusform>Importación de metadatos de %n pistas a partir de las etiquetas de los archivos</numerusform><numerusform>Importación de metadatos de %n pista(s) a partir de las etiquetas del archivo</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1363"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
-        <translation><numerusform>Marking metadata of %n track(s) to be exported into file tags</numerusform><numerusform>Marking metadata of %n track(s) to be exported into file tags</numerusform><numerusform>Marking metadata of %n track(s) to be exported into file tags</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1414"/>
@@ -16030,7 +16030,7 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1672"/>
         <source>Scaling BPM of %n track(s)</source>
-        <translation><numerusform>Scaling BPM of %n track(s)</numerusform><numerusform>Scaling BPM of %n track(s)</numerusform><numerusform>Scaling BPM of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1701"/>
@@ -16040,12 +16040,12 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1745"/>
         <source>Locking BPM of %n track(s)</source>
-        <translation><numerusform>Locking BPM of %n track(s)</numerusform><numerusform>Locking BPM of %n track(s)</numerusform><numerusform>Locking BPM of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1746"/>
         <source>Unlocking BPM of %n track(s)</source>
-        <translation><numerusform>Unlocking BPM of %n track(s)</numerusform><numerusform>Unlocking BPM of %n track(s)</numerusform><numerusform>Unlocking BPM of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1779"/>
@@ -16055,22 +16055,22 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1810"/>
         <source>Setting color of %n track(s)</source>
-        <translation><numerusform>Setting color of %n track(s)</numerusform><numerusform>Setting color of %n track(s)</numerusform><numerusform>Setting color of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1858"/>
         <source>Resetting play count of %n track(s)</source>
-        <translation><numerusform>Resetting play count of %n track(s)</numerusform><numerusform>Resetting play count of %n track(s)</numerusform><numerusform>Resetting play count of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1880"/>
         <source>Resetting beats of %n track(s)</source>
-        <translation><numerusform>Resetting beats of %n track(s)</numerusform><numerusform>Resetting beats of %n track(s)</numerusform><numerusform>Resetting beats of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1907"/>
         <source>Clearing rating of %n track(s)</source>
-        <translation><numerusform>Clearing rating of %n track(s)</numerusform><numerusform>Clearing rating of %n track(s)</numerusform><numerusform>Clearing rating of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1930"/>
@@ -16080,47 +16080,47 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2022"/>
         <source>Removing main cue from %n track(s)</source>
-        <translation><numerusform>Removing main cue from %n track(s)</numerusform><numerusform>Removing main cue from %n track(s)</numerusform><numerusform>Removing main cue from %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2032"/>
         <source>Removing outro cue from %n track(s)</source>
-        <translation><numerusform>Removing outro cue from %n track(s)</numerusform><numerusform>Removing outro cue from %n track(s)</numerusform><numerusform>Removing outro cue from %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2042"/>
         <source>Removing intro cue from %n track(s)</source>
-        <translation><numerusform>Removing intro cue from %n track(s)</numerusform><numerusform>Removing intro cue from %n track(s)</numerusform><numerusform>Removing intro cue from %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2052"/>
         <source>Removing loop cues from %n track(s)</source>
-        <translation><numerusform>Removing loop cues from %n track(s)</numerusform><numerusform>Removing loop cues from %n track(s)</numerusform><numerusform>Removing loop cues from %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2062"/>
         <source>Removing hot cues from %n track(s)</source>
-        <translation><numerusform>Removing hot cues from %n track(s)</numerusform><numerusform>Removing hot cues from %n track(s)</numerusform><numerusform>Removing hot cues from %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2084"/>
         <source>Resetting keys of %n track(s)</source>
-        <translation><numerusform>Resetting keys of %n track(s)</numerusform><numerusform>Resetting keys of %n track(s)</numerusform><numerusform>Resetting keys of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2106"/>
         <source>Resetting replay gain of %n track(s)</source>
-        <translation><numerusform>Resetting replay gain of %n track(s)</numerusform><numerusform>Resetting replay gain of %n track(s)</numerusform><numerusform>Resetting replay gain of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2141"/>
         <source>Resetting waveform of %n track(s)</source>
-        <translation><numerusform>Resetting waveform of %n track(s)</numerusform><numerusform>Resetting waveform of %n track(s)</numerusform><numerusform>Resetting waveform of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2197"/>
         <source>Resetting all performance metadata of %n track(s)</source>
-        <translation><numerusform>Resetting all performance metadata of %n track(s)</numerusform><numerusform>Resetting all performance metadata of %n track(s)</numerusform><numerusform>Resetting all performance metadata of %n track(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2289"/>
@@ -16282,12 +16282,12 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2630"/>
         <source>Setting cover art of %n track(s)</source>
-        <translation><numerusform>Setting cover art of %n track(s)</numerusform><numerusform>Setting cover art of %n track(s)</numerusform><numerusform>Poniendo portadas de %n pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2654"/>
         <source>Reloading cover art of %n track(s)</source>
-        <translation><numerusform>Reloading cover art of %n track(s)</numerusform><numerusform>Reloading cover art of %n track(s)</numerusform><numerusform>Recarga de portadas de %n pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -16323,7 +16323,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1208"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
-        <translation>¿Esta seguro de que desea eliminar las pistas seleccionadas de la playlist?</translation>
+        <translation>¿Esta seguro de que desea eliminar las pistas seleccionadas de la lista de reproducción?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1217"/>
@@ -16333,7 +16333,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1196"/>
         <source>Confirm track removal</source>
-        <translation>Confirma eliminación de la pista</translation>
+        <translation>Confirmar eliminación del track</translation>
     </message>
 </context>
 <context>
@@ -16429,12 +16429,12 @@ Carpeta: %2
     <message>
         <location filename="../../src/coreservices.cpp" line="242"/>
         <source>fonts</source>
-        <translation>tipos de letra</translation>
+        <translation>fonts</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="246"/>
         <source>database</source>
-        <translation>base de datos</translation>
+        <translation>database</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="261"/>
@@ -16444,7 +16444,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/coreservices.cpp" line="271"/>
         <source>audio interface</source>
-        <translation>interface de sonido</translation>
+        <translation>audio interface</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="291"/>
@@ -16454,7 +16454,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/coreservices.cpp" line="337"/>
         <source>library</source>
-        <translation>Biblioteca</translation>
+        <translation>library</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="371"/>
@@ -16464,7 +16464,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/coreservices.cpp" line="380"/>
         <source>controllers</source>
-        <translation>Controladores</translation>
+        <translation>controllers</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="520"/>

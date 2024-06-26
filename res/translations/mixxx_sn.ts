@@ -441,7 +441,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation>Tinokumbira uvhure chero konection imwe zvayo kuti ushandise Live Broadcasting</translation>
+        <translation>Tinokumbira uvhure chero konection imwe zvayo kuti ushandise Live Broadcasting.</translation>
     </message>
 </context>
 <context>
@@ -449,7 +449,7 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="474"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation>Tatadza kushandisa password yak yakachengetedzwa: keychain yaramba kubatika.</translation>
+        <translation>Tatadza kushandisa password yako yakachengetedzwa: keychain yaramba kubatika.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="504"/>
@@ -464,7 +464,7 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="517"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation>Pane zvanetsa nema settings e &apos;%1&apos;:</translation>
+        <translation>&lt;b&gt;Pane zvanetsa nema settings e &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>

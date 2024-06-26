@@ -1,5 +1,6 @@
 #include "widget/wslidercomposed.h"
 
+#include <QStringView>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QtDebug>
@@ -88,18 +89,22 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
         QString bgMargins;
         if (context.hasNodeSelectString(node, "BarMargins", &margins)) {
             int comma = margins.indexOf(",");
-            bool m1ok;
-            bool m2ok;
+            if (comma > 0 && comma < margins.size()) {
+                bool m1ok;
+                bool m2ok;
+                QStringView marginsView(margins);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            double m1 = (margins.left(comma)).toDouble(&m1ok);
-            double m2 = (margins.mid(comma + 1)).toDouble(&m2ok);
+                double m1 = (marginsView.first(comma)).toDouble(&m1ok);
+                double m2 = (marginsView.sliced(comma + 1)).toDouble(&m2ok);
 #else
-            double m1 = (margins.leftRef(comma)).toDouble(&m1ok);
-            double m2 = (margins.midRef(comma + 1)).toDouble(&m2ok);
+                QLocale c(QLocale::C);
+                double m1 = c.toDouble(marginsView.left(comma), &m1ok);
+                double m2 = c.toDouble(marginsView.mid(comma + 1), &m2ok);
 #endif
-            if (m1ok && m2ok) {
-                m_dBarStart = m1 * scaleFactor;
-                m_dBarEnd = m2 * scaleFactor;
+                if (m1ok && m2ok) {
+                    m_dBarStart = m1 * scaleFactor;
+                    m_dBarEnd = m2 * scaleFactor;
+                }
             }
         }
 
@@ -118,18 +123,22 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             }
             if (context.hasNodeSelectString(node, "BarBgMargins", &bgMargins)) {
                 int comma = bgMargins.indexOf(",");
-                bool m1ok;
-                bool m2ok;
+                if (comma > 0 && comma + 1 < margins.size()) {
+                    bool m1ok;
+                    bool m2ok;
+                    QStringView bgMarginsView(bgMargins);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                double m1 = (bgMargins.left(comma)).toDouble(&m1ok);
-                double m2 = (bgMargins.mid(comma + 1)).toDouble(&m2ok);
+                    double m1 = (bgMarginsView.first(comma)).toDouble(&m1ok);
+                    double m2 = (bgMarginsView.sliced(comma + 1)).toDouble(&m2ok);
 #else
-                double m1 = (bgMargins.leftRef(comma)).toDouble(&m1ok);
-                double m2 = (bgMargins.midRef(comma + 1)).toDouble(&m2ok);
+                    QLocale c(QLocale::C);
+                    double m1 = c.toDouble(bgMarginsView.left(comma), &m1ok);
+                    double m2 = c.toDouble(bgMarginsView.mid(comma + 1), &m2ok);
 #endif
-                if (m1ok && m2ok) {
-                    m_dBarBgStart = m1 * scaleFactor;
-                    m_dBarBgEnd = m2 * scaleFactor;
+                    if (m1ok && m2ok) {
+                        m_dBarBgStart = m1 * scaleFactor;
+                        m_dBarBgEnd = m2 * scaleFactor;
+                    }
                 }
             } else {
                 m_dBarBgStart = m_dBarStart;

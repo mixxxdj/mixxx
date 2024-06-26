@@ -1,7 +1,9 @@
 #include "mixer/basetrackplayer.h"
 
 #include <QMessageBox>
+#include <QMetaMethod>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
@@ -15,9 +17,7 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#endif
 
 namespace {
 
@@ -104,6 +104,38 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pTrackColor->set(kNoTrackColor);
     m_pTrackColor->connectValueChangeRequest(
             this, &BaseTrackPlayerImpl::slotTrackColorChangeRequest);
+
+    m_pTrackColorPrev = std::make_unique<ControlPushButton>(
+            ConfigKey(getGroup(), "track_color_prev"));
+    connect(m_pTrackColorPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    BaseTrackPlayerImpl::slotTrackColorSelector(-1);
+                }
+            });
+
+    m_pTrackColorNext = std::make_unique<ControlPushButton>(
+            ConfigKey(getGroup(), "track_color_next"));
+    connect(m_pTrackColorNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    BaseTrackPlayerImpl::slotTrackColorSelector(1);
+                }
+            });
+
+    m_pTrackColorSelect = std::make_unique<ControlEncoder>(
+            ConfigKey(getGroup(), "track_color_selector"), false);
+    connect(m_pTrackColorSelect.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                int iSteps = static_cast<int>(steps);
+                BaseTrackPlayerImpl::slotTrackColorSelector(iSteps);
+            });
 
     m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_up"));
     connect(m_pStarsUp.get(),
@@ -255,7 +287,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     TrackPointer pTrack(Track::newTemporary());
     pTrack->setAudioProperties(
-            mixxx::kEngineChannelCount,
+            mixxx::kEngineChannelOutputCount,
             mixxx::audio::SampleRate(44100),
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(10));
@@ -600,7 +632,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
         if (!m_pChannelToCloneFrom) {
-            int reset = m_pConfig->getValue<int>(
+            BaseTrackPlayer::TrackLoadReset reset = m_pConfig->getValue(
                     ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
             if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
                 // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
@@ -725,6 +757,37 @@ void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
     slotLoadTrack(pTrack, false);
 }
 
+bool BaseTrackPlayerImpl::isTrackMenuControlAvailable() {
+    if (m_pShowTrackMenuControl == nullptr) {
+        // Create the control and return true so LegacySkinParser knows it should
+        // connect our signal to WTrackProperty.
+        m_pShowTrackMenuControl = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "show_track_menu"));
+        m_pShowTrackMenuControl->connectValueChangeRequest(
+                this,
+                [this](double value) {
+                    emit trackMenuChangeRequest(value > 0);
+                });
+        return true;
+    } else if (isSignalConnected(
+                       QMetaMethod::fromSignal(&BaseTrackPlayer::trackMenuChangeRequest))) {
+        // Control exists and we're already connected.
+        // This means the request was made while creating the 2nd or later WTrackProperty.
+        return false;
+    } else {
+        // Control already exists but signal is not connected, which is the case
+        // after loading a skin. Return true so LegacySkinParser makes a new connection.
+        return true;
+    }
+}
+
+void BaseTrackPlayerImpl::slotSetAndConfirmTrackMenuControl(bool visible) {
+    VERIFY_OR_DEBUG_ASSERT(m_pShowTrackMenuControl) {
+        return;
+    }
+    m_pShowTrackMenuControl->setAndConfirm(visible ? 1.0 : 0.0);
+}
+
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change.
@@ -755,6 +818,27 @@ void BaseTrackPlayerImpl::slotSetTrackColor(const mixxx::RgbColor::optional_t& c
     m_pTrackColor->forceSet(trackColorToDouble(color));
 }
 
+void BaseTrackPlayerImpl::slotTrackColorSelector(int steps) {
+    if (!m_pLoadedTrack || steps == 0) {
+        return;
+    }
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    mixxx::RgbColor::optional_t color = m_pLoadedTrack->getColor();
+
+    while (steps != 0) {
+        if (steps > 0) {
+            color = colorPalette.nextColor(color);
+            steps--;
+        } else {
+            color = colorPalette.previousColor(color);
+            steps++;
+        }
+    }
+    m_pLoadedTrack->setColor(color);
+}
+
 void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
     if (!m_pLoadedTrack) {
         return;
@@ -768,7 +852,6 @@ void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
         }
         color = mixxx::RgbColor::optional(colorCode);
     }
-    m_pTrackColor->setAndConfirm(trackColorToDouble(color));
     m_pLoadedTrack->setColor(color);
 }
 
@@ -831,13 +914,8 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
             && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
-#else
-    // TODO: Re-enable zoom range check or decouple zoom from engine code
-    {
-#endif
         m_pWaveformZoom->setAndConfirm(v);
     }
 }
@@ -864,12 +942,7 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
     }
 
     double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]", "DefaultZoom"),
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             WaveformWidgetRenderer::s_waveformDefaultZoom);
-#else
-            // TODO: This should not be hardcoded.
-            3.0);
-#endif
     m_pWaveformZoom->set(defaultZoom);
 }
 

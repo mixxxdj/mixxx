@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QString>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
@@ -91,7 +92,9 @@ class KeyUtils {
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
-            const KeyChangeList& key_changes, SINT totalFrames, int iSampleRate);
+            const KeyChangeList& key_changes,
+            SINT totalFrames,
+            mixxx::audio::SampleRate sampleRate);
 
     static void setNotation(
         const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);

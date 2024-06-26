@@ -42,12 +42,13 @@ class EngineBufferScale : public QObject {
         m_dPitchRatio = *pPitchRatio;
     }
 
-    // Set the desired output sample rate.
-    void setSampleRate(
-            mixxx::audio::SampleRate sampleRate);
+    // Set the desired output signal.
+    void setSignal(
+            mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCout);
 
     const mixxx::audio::SignalInfo& getOutputSignal() const {
-        return m_outputSignal;
+        return m_signal;
     }
 
     // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
@@ -64,9 +65,9 @@ class EngineBufferScale : public QObject {
             SINT iOutputBufferSize) = 0;
 
   private:
-    mixxx::audio::SignalInfo m_outputSignal;
+    mixxx::audio::SignalInfo m_signal;
 
-    virtual void onSampleRateChanged() = 0;
+    virtual void onSignalChanged() = 0;
 
   protected:
     double m_dBaseRate;

@@ -162,7 +162,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="125"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="130"/>
         <source>Import Playlist</source>
-        <translation>Importă listă de redare</translation>
+        <translation>Importare listă de redare</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="140"/>
@@ -5032,7 +5032,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="285"/>
         <source>None</source>
-        <translation>Nimic</translation>
+        <translation>Niciuna</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="290"/>
@@ -8611,7 +8611,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="972"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Anulează</translation>
+        <translation>&amp;Anulare</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.cpp" line="573"/>
@@ -10494,7 +10494,7 @@ Higher values result in less attenuation of high frequencies.</source>
         <location filename="../../src/test/metaknob_link_test.cpp" line="44"/>
         <location filename="../../src/test/metaknob_link_test.cpp" line="209"/>
         <source>Low</source>
-        <translation>Scăzută</translation>
+        <translation>Joase</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/equalizer_util.h" line="22"/>
@@ -10551,7 +10551,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/backends/builtin/equalizer_util.h" line="55"/>
         <source>High</source>
-        <translation>Ridicată</translation>
+        <translation>Înalte</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/equalizer_util.h" line="56"/>
@@ -12556,7 +12556,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="411"/>
         <source>Key</source>
         <extracomment>The musical key of a track</extracomment>
-        <translation>Tastă</translation>
+        <translation>Cheie</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="415"/>

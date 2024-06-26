@@ -4,12 +4,13 @@
 
 
 namespace mixxx {
-    // TODO(XXX): When we move from stereo to multi-channel this needs updating.
-static constexpr audio::ChannelCount kEngineChannelCount =
+static constexpr audio::ChannelCount kEngineChannelOutputCount =
         audio::ChannelCount::stereo();
+static constexpr audio::ChannelCount kMaxEngineChannelInputCount =
+        audio::ChannelCount::stem();
 
 // Contains the information needed to process a buffer of audio
-class EngineParameters {
+class EngineParameters final {
   public:
     SINT framesPerBuffer() const {
         return m_framesPerBuffer;
@@ -30,10 +31,11 @@ class EngineParameters {
             audio::SampleRate sampleRate,
             SINT framesPerBuffer)
             : m_outputSignal(
-                      kEngineChannelCount,
+                      kEngineChannelOutputCount,
                       sampleRate),
               m_framesPerBuffer(framesPerBuffer) {
         DEBUG_ASSERT(framesPerBuffer > 0);
+        DEBUG_ASSERT(sampleRate > 0);
     }
 
   private:

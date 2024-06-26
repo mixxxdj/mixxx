@@ -1,9 +1,11 @@
 #include "woverview.h"
 
 #include <QBrush>
+#include <QColor>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPen>
 #include <QVBoxLayout>
 
 #include "analyzer/analyzerprogress.h"
@@ -13,6 +15,7 @@
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
+#include "util/colorcomponents.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
@@ -29,13 +32,14 @@ WOverview::WOverview(
         UserSettingsPointer pConfig,
         QWidget* parent)
         : WWidget(parent),
+          m_group(group),
+          m_pConfig(pConfig),
+          m_type(-1),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
           m_diffGain(0),
           m_devicePixelRatio(1.0),
-          m_group(group),
-          m_pConfig(pConfig),
           m_endOfTrack(false),
           m_bPassthroughEnabled(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
@@ -44,7 +48,6 @@ WOverview::WOverview(
           m_bLeftClickDragging(false),
           m_iPickupPos(0),
           m_iPlayPos(0),
-          m_pHoveredMark(nullptr),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
@@ -52,26 +55,35 @@ WOverview::WOverview(
           m_b(0.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
+          m_pHoveredMark(nullptr),
           m_scaleFactor(1.0) {
-    m_endOfTrackControl = new ControlProxy(
-            m_group, "end_of_track", this, ControlFlag::NoAssertIfMissing);
+    m_endOfTrackControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
-    m_pRateRatioControl = new ControlProxy(
-            m_group, "rate_ratio", this, ControlFlag::NoAssertIfMissing);
+    m_pRateRatioControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("rate_ratio"), this, ControlFlag::NoAssertIfMissing);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
     m_pRateRatioControl->connectValueChanged(
             this, &WOverview::onRateRatioChange);
-    m_trackSampleRateControl = new ControlProxy(
-            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
-    m_trackSamplesControl = new ControlProxy(m_group, "track_samples", this);
-    m_playpositionControl = new ControlProxy(
-            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
-    m_pPassthroughControl =
-            new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
+    m_trackSampleRateControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("track_samplerate"), this, ControlFlag::NoAssertIfMissing);
+    m_trackSamplesControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("track_samples"), this);
+    m_playpositionControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("playposition"), this, ControlFlag::NoAssertIfMissing);
+    m_pPassthroughControl = make_parented<ControlProxy>(
+            m_group, QStringLiteral("passthrough"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
     m_bPassthroughEnabled = m_pPassthroughControl->toBool();
 
-    m_pPassthroughLabel = new QLabel(this);
+    m_pTypeControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("WaveformOverviewType"),
+            this);
+    m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeChanged);
+    slotTypeChanged(m_pTypeControl->get());
+
+    m_pPassthroughLabel = make_parented<QLabel>(this);
 
     setAcceptDrops(true);
 
@@ -165,7 +177,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         child = child.nextSibling();
     }
 
-    DEBUG_ASSERT(m_pPassthroughLabel != nullptr);
+    DEBUG_ASSERT(m_pPassthroughLabel.get() != nullptr);
     m_pPassthroughLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     // Shown on the overview waveform when vinyl passthrough is enabled
     m_pPassthroughLabel->setText(tr("Passthrough"));
@@ -388,6 +400,20 @@ void WOverview::onPassthroughChange(double v) {
     update();
 }
 
+void WOverview::slotTypeChanged(double v) {
+    int type = static_cast<int>(v);
+    VERIFY_OR_DEBUG_ASSERT(type >= 0 && type <= 2) {
+        type = 2;
+    }
+    if (type == m_type) {
+        return;
+    }
+
+    m_type = type;
+    m_pWaveform.clear();
+    slotWaveformSummaryUpdated();
+}
+
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
@@ -431,13 +457,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -498,13 +524,13 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -548,7 +574,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
-                    m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+                    m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
 #else
@@ -577,7 +603,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
 
 void WOverview::paintEvent(QPaintEvent* pEvent) {
     Q_UNUSED(pEvent);
-    ScopedTimer t("WOverview::paintEvent");
+    ScopedTimer t(QStringLiteral("WOverview::paintEvent"));
 
     QPainter painter(this);
     painter.fillRect(rect(), m_backgroundColor);
@@ -864,7 +890,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         if (rect.isValid()) {
             QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5);
+            loopColor.setAlphaF(0.5f);
             pPainter->fillRect(rect, loopColor);
         }
 
@@ -1053,7 +1079,11 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     shadowFont.setWeight(99);
+#else
+    shadowFont.setWeight(QFont::Black);
+#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
@@ -1207,9 +1237,286 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
     }
 }
 
+bool WOverview::drawNextPixmapPart() {
+    ConstWaveformPointer pWaveform = getWaveform();
+    if (!pWaveform) {
+        return false;
+    }
+
+    const int dataSize = pWaveform->getDataSize();
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    const double trackSamples = getTrackSamples();
+    if (dataSize <= 0 || audioVisualRatio <= 0 || trackSamples <= 0) {
+        return false;
+    }
+
+    if (m_waveformSourceImage.isNull()) {
+        // Waveform pixmap twice the height of the viewport to be scalable
+        // by total_gain
+        // We keep full range waveform data to scale it on paint
+        m_waveformSourceImage = QImage(
+                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
+                2 * 255,
+                QImage::Format_ARGB32_Premultiplied);
+        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+        if (dataSize / 2 != m_waveformSourceImage.width()) {
+            qWarning() << "Track duration has changed since last analysis"
+                       << m_waveformSourceImage.width() << "!=" << dataSize / 2;
+        }
+    }
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
+
+    // Always multiple of 2
+    const int waveformCompletion = pWaveform->getCompletion();
+    // Test if there is some new to draw (at least of pixel width)
+    const int completionIncrement = waveformCompletion - m_actualCompletion;
+
+    int visiblePixelIncrement = completionIncrement * length() / dataSize;
+    if (waveformCompletion < (dataSize - 2) &&
+            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
+        return false;
+    }
+
+    const int nextCompletion = m_actualCompletion + completionIncrement;
+
+    // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
+    //  << nextCompletion
+    //  << "m_actualCompletion:" << m_actualCompletion
+    //  << "waveformCompletion:" << waveformCompletion
+    //  << "completionIncrement:" << completionIncrement;
+
+    QPainter painter(&m_waveformSourceImage);
+    painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
+
+    if (m_type == 0) {
+        drawNextPixmapPartLMH(&painter, pWaveform, nextCompletion);
+    } else if (m_type == 1) {
+        drawNextPixmapPartHSV(&painter, pWaveform, nextCompletion);
+    } else {
+        drawNextPixmapPartRGB(&painter, pWaveform, nextCompletion);
+    }
+
+    m_waveformImageScaled = QImage();
+    m_diffGain = 0;
+
+    // Test if the complete waveform is done
+    if (m_actualCompletion >= dataSize - 2) {
+        m_pixmapDone = true;
+        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
+    }
+
+    return true;
+}
+
+void WOverview::drawNextPixmapPartHSV(QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        const int nextCompletion) {
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
+    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
+
+    // Get HSV of low color.
+    float h, s, v;
+    getHsvF(m_signalColors.getLowColor(), &h, &s, &v);
+
+    QColor color;
+    float lo, hi, total;
+
+    unsigned char maxLow[2] = {0, 0};
+    unsigned char maxHigh[2] = {0, 0};
+    unsigned char maxMid[2] = {0, 0};
+    unsigned char maxAll[2] = {0, 0};
+
+    int currentCompletion = 0;
+    for (int currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        maxAll[0] = pWaveform->getAll(currentCompletion);
+        maxAll[1] = pWaveform->getAll(currentCompletion + 1);
+        if (maxAll[0] || maxAll[1]) {
+            maxLow[0] = pWaveform->getLow(currentCompletion);
+            maxLow[1] = pWaveform->getLow(currentCompletion + 1);
+            maxMid[0] = pWaveform->getMid(currentCompletion);
+            maxMid[1] = pWaveform->getMid(currentCompletion + 1);
+            maxHigh[0] = pWaveform->getHigh(currentCompletion);
+            maxHigh[1] = pWaveform->getHigh(currentCompletion + 1);
+
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
+                            maxHigh[0] + maxHigh[1]) *
+                    1.2f;
+
+            // Prevent division by zero
+            if (total > 0) {
+                // Normalize low and high
+                // (mid not need, because it not change the color)
+                lo = (maxLow[0] + maxLow[1]) / total;
+                hi = (maxHigh[0] + maxHigh[1]) / total;
+            } else {
+                lo = hi = 0.0;
+            }
+
+            // Set color
+            color.setHsvF(h, 1.0f - hi, 1.0f - lo);
+
+            pPainter->setPen(color);
+            pPainter->drawLine(QPoint(currentCompletion / 2, -maxAll[0]),
+                    QPoint(currentCompletion / 2, maxAll[1]));
+        }
+    }
+
+    // Evaluate waveform ratio peak
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
+    }
+
+    m_actualCompletion = nextCompletion;
+}
+
+void WOverview::drawNextPixmapPartLMH(QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        const int nextCompletion) {
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
+    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartLMH"));
+
+    QColor lowColor = m_signalColors.getLowColor();
+    QPen lowColorPen(QBrush(lowColor), 1);
+
+    QColor midColor = m_signalColors.getMidColor();
+    QPen midColorPen(QBrush(midColor), 1);
+
+    QColor highColor = m_signalColors.getHighColor();
+    QPen highColorPen(QBrush(highColor), 1);
+
+    int currentCompletion = 0;
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        unsigned char lowNeg = pWaveform->getLow(currentCompletion);
+        unsigned char lowPos = pWaveform->getLow(currentCompletion + 1);
+        if (lowPos || lowNeg) {
+            pPainter->setPen(lowColorPen);
+            pPainter->drawLine(QPoint(currentCompletion / 2, -lowNeg),
+                    QPoint(currentCompletion / 2, lowPos));
+        }
+    }
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        pPainter->setPen(midColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -pWaveform->getMid(currentCompletion)),
+                QPoint(currentCompletion / 2,
+                        pWaveform->getMid(currentCompletion + 1)));
+    }
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        pPainter->setPen(highColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -pWaveform->getHigh(currentCompletion)),
+                QPoint(currentCompletion / 2,
+                        pWaveform->getHigh(currentCompletion + 1)));
+    }
+
+    // Evaluate waveform ratio peak
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
+    }
+
+    m_actualCompletion = nextCompletion;
+}
+
+void WOverview::drawNextPixmapPartRGB(QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        const int nextCompletion) {
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
+    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
+
+    QColor color;
+
+    float lowColor_r, lowColor_g, lowColor_b;
+    getRgbF(m_signalColors.getRgbLowColor(), &lowColor_r, &lowColor_g, &lowColor_b);
+
+    float midColor_r, midColor_g, midColor_b;
+    getRgbF(m_signalColors.getRgbMidColor(), &midColor_r, &midColor_g, &midColor_b);
+
+    float highColor_r, highColor_g, highColor_b;
+    getRgbF(m_signalColors.getRgbHighColor(), &highColor_r, &highColor_g, &highColor_b);
+
+    int currentCompletion = 0;
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        unsigned char left = pWaveform->getAll(currentCompletion);
+        unsigned char right = pWaveform->getAll(currentCompletion + 1);
+
+        // Retrieve "raw" LMH values from waveform
+        float low = static_cast<float>(pWaveform->getLow(currentCompletion));
+        float mid = static_cast<float>(pWaveform->getMid(currentCompletion));
+        float high = static_cast<float>(pWaveform->getHigh(currentCompletion));
+
+        // Do matrix multiplication
+        float red = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        float green = low * lowColor_g + mid * midColor_g + high * highColor_g;
+        float blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
+
+        // Normalize and draw
+        float max = math_max3(red, green, blue);
+        if (max > 0.0) {
+            color.setRgbF(red / max, green / max, blue / max);
+            pPainter->setPen(color);
+            pPainter->drawLine(QPointF(currentCompletion / 2, -left),
+                    QPointF(currentCompletion / 2, 0));
+        }
+
+        // Retrieve "raw" LMH values from waveform
+        low = static_cast<float>(pWaveform->getLow(currentCompletion + 1));
+        mid = static_cast<float>(pWaveform->getMid(currentCompletion + 1));
+        high = static_cast<float>(pWaveform->getHigh(currentCompletion + 1));
+
+        // Do matrix multiplication
+        red = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        green = low * lowColor_g + mid * midColor_g + high * highColor_g;
+        blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
+
+        // Normalize and draw
+        max = math_max3(red, green, blue);
+        if (max > 0.0) {
+            color.setRgbF(red / max, green / max, blue / max);
+            pPainter->setPen(color);
+            pPainter->drawLine(QPointF(currentCompletion / 2, 0),
+                    QPointF(currentCompletion / 2, right));
+        }
+    }
+
+    // Evaluate waveform ratio peak
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
+    }
+
+    m_actualCompletion = nextCompletion;
+}
+
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    m_lowColor.setAlphaF(0.5);
+    m_lowColor.setAlphaF(0.5f);
     QPen lowColorPen(
             QBrush(m_lowColor), 1.25 * m_scaleFactor, Qt::SolidLine, Qt::RoundCap);
     pPainter->setPen(lowColorPen);
@@ -1236,7 +1543,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 
 double WOverview::samplePositionToSeconds(double sample) {
     double trackTime = sample /
-            (m_trackSampleRateControl->get() * mixxx::kEngineChannelCount);
+            (m_trackSampleRateControl->get() * mixxx::kEngineChannelOutputCount);
     return trackTime / m_pRateRatioControl->get();
 }
 
@@ -1266,6 +1573,7 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
 void WOverview::dragEnterEvent(QDragEnterEvent* pEvent) {
     DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
+
 void WOverview::dropEvent(QDropEvent* pEvent) {
     DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }

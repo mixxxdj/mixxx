@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "audio/frame.h"
+#include "audio/types.h"
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
@@ -98,7 +99,8 @@ class CachingReaderWorker : public EngineWorker {
     // Construct a CachingReader with the given group.
     CachingReaderWorker(const QString& group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
-            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
+            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO,
+            mixxx::audio::ChannelCount maxSupportedChannel);
     ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
@@ -113,7 +115,10 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int sampleRate, double numSamples);
+    void trackLoaded(TrackPointer pTrack,
+            mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
+            mixxx::audio::FramePos numFrame);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
@@ -147,7 +152,8 @@ class CachingReaderWorker : public EngineWorker {
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
 
-    void verifyFirstSound(const CachingReaderChunk* pChunk);
+    void verifyFirstSound(const CachingReaderChunk* pChunk,
+            mixxx::audio::ChannelCount channelCount);
 
     // The current audio source of the track loaded
     mixxx::AudioSourcePointer m_pAudioSource;
@@ -157,6 +163,9 @@ class CachingReaderWorker : public EngineWorker {
     // Temporary buffer for reading samples from all channels
     // before conversion to a stereo signal.
     mixxx::SampleBuffer m_tempReadBuffer;
+
+    // The maximum number of channel that this reader can support
+    mixxx::audio::ChannelCount m_maxSupportedChannel;
 
     QAtomicInt m_stop;
 };
