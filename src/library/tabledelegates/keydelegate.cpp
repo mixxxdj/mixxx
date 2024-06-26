@@ -6,8 +6,6 @@
 
 #include "moc_keydelegate.cpp"
 #include "track/keyutils.h"
-#include "util/color/predefinedcolorpalettes.h"
-#include "util/color/rgbcolor.h"
 
 void KeyDelegate::paintItem(
         QPainter* painter,
@@ -17,21 +15,16 @@ void KeyDelegate::paintItem(
 
     QString keyText = index.data().toString();
     mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(keyText);
-    int openKeyNumber = KeyUtils::keyToOpenKeyNumber(key);
+    const auto keyColor = KeyUtils::keyToColor(key);
 
-    if (openKeyNumber != 0) {
-        const auto rgbColor =
-                mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette.at(
-                        openKeyNumber - 1); // Open Key numbers start from 1
-        const auto qcolor = mixxx::RgbColor::toQColor(rgbColor);
-
+    if (keyColor.isValid()) {
         // Draw the colored rectangle next to the key label
         painter->fillRect(
                 option.rect.x() + 2,
                 option.rect.y() + 2,
                 4, // width
                 option.rect.height() - 4,
-                qcolor);
+                keyColor);
     }
 
     const int rectWidth = 10; // 2px left padding + 4px width + 4px right padding
