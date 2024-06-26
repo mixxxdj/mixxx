@@ -1,4 +1,6 @@
 
+type MidiInputHandler = (channel: number, control: number, value:number, status:number, group:string) => void;
+
 /** MidiControllerJSProxy */
 
 declare namespace midi {
