@@ -1,7 +1,5 @@
 #include "library/tabledelegates/keydelegate.h"
 
-#include <qnamespace.h>
-
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
@@ -10,10 +8,6 @@
 #include "track/keyutils.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/color/rgbcolor.h"
-
-KeyDelegate::KeyDelegate(QTableView* pTableView)
-        : TableItemDelegate(pTableView) {
-}
 
 void KeyDelegate::paintItem(
         QPainter* painter,
