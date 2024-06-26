@@ -41,6 +41,14 @@ void KeyDelegate::paintItem(
             Qt::ElideLeft,
             columnWidth(index) - rectWidth);
 
+    if (option.state & QStyle::State_Selected) {
+        // This uses selection-color from stylesheet for the text pen:
+        // #LibraryContainer QTableView {
+        //   selection-color: #fff;
+        // }
+        painter->setPen(QPen(option.palette.highlightedText().color()));
+    }
+
     painter->drawText(option.rect.x() + rectWidth,
             option.rect.y(),
             option.rect.width() - rectWidth,
