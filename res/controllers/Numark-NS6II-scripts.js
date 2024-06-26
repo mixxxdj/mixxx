@@ -421,7 +421,7 @@ NS6II.MixerContainer = function() {
         // of its physical controls to mixxx.
         invertNext: function() {
             this._invertNext = true;
-            this._timerHandle = engine.beginTimer(200, function() {
+            this._timerHandle = engine.beginTimer(200, () => {
                 this._invertNext = false;
             }, true);
         },
