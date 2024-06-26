@@ -24,8 +24,8 @@ class MessagePipe {
     // allow moving since that does not violate the constraint
     MessagePipe(const MessagePipe&) = delete;
     MessagePipe& operator=(const MessagePipe&) = delete;
-    MessagePipe(MessagePipe&&) = default;
-    MessagePipe& operator=(MessagePipe&&) = default;
+    MessagePipe(MessagePipe&&) noexcept = default;
+    MessagePipe& operator=(MessagePipe&&) noexcept = default;
     ~MessagePipe() = default;
 
     // Returns the number of ReceiverMessageType messages waiting to be read by
@@ -69,8 +69,8 @@ class MessagePipe {
 /// (sends ReceiverMessageType and receives SenderMessageType messages).
 template<class SenderMessageType, class ReceiverMessageType>
 static std::pair<
-        std::unique_ptr<MessagePipe<SenderMessageType, ReceiverMessageType>>,
-        std::unique_ptr<MessagePipe<ReceiverMessageType, SenderMessageType>>>
+        MessagePipe<SenderMessageType, ReceiverMessageType>,
+        MessagePipe<ReceiverMessageType, SenderMessageType>>
 makeTwoWayMessagePipe(
         int sender_fifo_size,
         int receiver_fifo_size) {
@@ -80,12 +80,8 @@ makeTwoWayMessagePipe(
     auto receiver_pipe =
             gsl::make_not_null(std::make_shared<rigtorp::SPSCQueue<SenderMessageType>>(
                     receiver_fifo_size));
-    // TODO: remove unnecessary unique_ptr indirection
-    auto requestPipe = std::make_unique<MessagePipe<SenderMessageType, ReceiverMessageType>>(
-            receiver_pipe,
-            sender_pipe);
-    auto responsePipe = std::make_unique<MessagePipe<ReceiverMessageType, SenderMessageType>>(
-            std::move(sender_pipe),
-            std::move(receiver_pipe));
+    MessagePipe<SenderMessageType, ReceiverMessageType> requestPipe(receiver_pipe, sender_pipe);
+    MessagePipe<ReceiverMessageType, SenderMessageType> responsePipe(
+            std::move(sender_pipe), std::move(receiver_pipe));
     return {std::move(requestPipe), std::move(responsePipe)};
 };

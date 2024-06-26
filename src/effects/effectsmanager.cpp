@@ -33,13 +33,12 @@ EffectsManager::EffectsManager(
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
 
-    auto [pRequestPipe, pResponsePipe] = makeTwoWayMessagePipe<EffectsRequest*,
+    auto [requestPipe, responsePipe] = makeTwoWayMessagePipe<EffectsRequest*,
             EffectsResponse>(kEffectMessagePipeFifoSize,
             kEffectMessagePipeFifoSize);
 
-    m_pMessenger = EffectsMessengerPointer(new EffectsMessenger(
-            std::move(pRequestPipe)));
-    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(std::move(pResponsePipe));
+    m_pMessenger = EffectsMessengerPointer::create(std::move(requestPipe));
+    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(std::move(responsePipe));
 
     m_pEffectPresetManager = EffectPresetManagerPointer(
             new EffectPresetManager(pConfig, m_pBackendManager));
