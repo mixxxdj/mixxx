@@ -345,14 +345,16 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotRemoveFromDisk);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pStarRatingAction = new WStarRatingAction(this);
         m_pStarRatingAction->setObjectName("RatingAction");
         connect(m_pStarRatingAction,
                 &WStarRatingAction::ratingSet,
                 this,
                 &WTrackMenu::slotSetRating);
+    }
 
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
@@ -631,7 +633,7 @@ void WTrackMenu::setupActions() {
         addMenu(m_pBPMMenu);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         addAction(m_pStarRatingAction);
     }
 
@@ -1101,12 +1103,14 @@ void WTrackMenu::updateMenus() {
         m_pSelectInLibraryAct->setEnabled(enabled);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         // Might be needed to resize Menu to fit the star rating
         // QResizeEvent resizeEvent(QSize(), m_pStarRatingAction->sizeHint());
         // qApp->sendEvent(m_pStarRatingAction, &resizeEvent);
         m_pStarRatingAction->setRating(getCommonTrackRating());
+    }
 
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct->setEnabled(true);
     }
 
@@ -2753,7 +2757,7 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::FindOnWeb:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::Properties);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
     case Feature::SelectInLibrary:
