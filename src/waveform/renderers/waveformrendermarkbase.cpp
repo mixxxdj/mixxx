@@ -92,5 +92,8 @@ void WaveformRenderMarkBase::updateMarkImages() {
         if (pMark->needsImageUpdate()) {
             updateMarkImage(pMark);
         }
+        if (pMark->needsEndImageUpdate()) {
+            updateEndMarkImage(pMark);
+        }
     }
 }
