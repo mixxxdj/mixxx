@@ -20,14 +20,14 @@ void KeyDelegate::paintItem(
     if (keyColor.isValid()) {
         // Draw the colored rectangle next to the key label
         painter->fillRect(
-                option.rect.x() + 2,
+                option.rect.x(),
                 option.rect.y() + 2,
                 4, // width
                 option.rect.height() - 4,
                 keyColor);
     }
 
-    const int rectWidth = 10; // 2px left padding + 4px width + 4px right padding
+    const int rectWidth = 8; // 4px width + 4px right padding
 
     QString elidedText = option.fontMetrics.elidedText(
             index.data().toString(),
