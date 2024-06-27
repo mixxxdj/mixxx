@@ -106,7 +106,7 @@ DlgLibraryExport::DlgLibraryExport(
     auto pExportButton = make_parented<QPushButton>(tr("Export"), this);
     pExportButton->setDefault(true);
     connect(pExportButton, &QPushButton::clicked, this, &DlgLibraryExport::exportRequested);
-    auto pCancelButton = make_parented<QPushButton>(tr("Cancel"));
+    auto pCancelButton = make_parented<QPushButton>(tr("Cancel"), this);
     connect(pCancelButton, &QPushButton::clicked, this, &QDialog::reject);
 
     // Arrange action buttons at bottom of dialog.
