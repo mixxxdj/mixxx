@@ -59,8 +59,11 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
 
-    // Returns a set of all track locations in the library.
+    // Returns a set of all track locations in the library,
+    // incl. locations of tracks currently marked as missing.
     QSet<QString> getAllTrackLocations() const;
+    // Return only tracks that are reported to exist during last scan.
+    QSet<QString> getAllExistingTrackLocations() const;
     QString getTrackLocation(TrackId trackId) const;
 
     // Only used by friend class LibraryScanner, but public for testing!

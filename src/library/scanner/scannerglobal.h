@@ -29,7 +29,8 @@ class ScannerGlobal {
               // Unless marked un-clean, we assume it will finish cleanly.
               m_scanFinishedCleanly(true),
               m_shouldCancel(false),
-              m_numScannedDirectories(0) {
+              m_numScannedDirectories(0),
+              m_numRelocatedTracks(0) {
     }
 
     TaskWatcher& getTaskWatcher() {
@@ -144,6 +145,9 @@ class ScannerGlobal {
     }
     void trackAdded(const QString& trackLocation) {
         m_addedTracks << trackLocation;
+        // TODO Collect TrackIds?
+        // If Track is clean / !isDirty() it is new and we may add it
+        // to some sort of 'New Tracks' list (special crate?)
     }
 
     int numScannedDirectories() const {
@@ -151,6 +155,13 @@ class ScannerGlobal {
     }
     void directoryScanned() {
         m_numScannedDirectories++;
+    }
+
+    int numRelocatedTracks() const {
+        return m_numRelocatedTracks;
+    }
+    void addRelocatedTracks(int numTracks) {
+        m_numRelocatedTracks += numTracks;
     }
 
   private:
@@ -197,6 +208,7 @@ class ScannerGlobal {
     // Stats tracking.
     PerformanceTimer m_timer;
     int m_numScannedDirectories;
+    int m_numRelocatedTracks;
 };
 
 typedef QSharedPointer<ScannerGlobal> ScannerGlobalPointer;
