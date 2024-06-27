@@ -99,7 +99,11 @@ class parented_ptr final {
     friend class parented_ptr;
 };
 
+template<typename... Args>
+concept AnyIsQObject = (... || std::is_convertible_v<Args, QObject*>);
+
 template<typename T, typename... Args>
+    requires(std::is_base_of_v<QObject, T> && AnyIsQObject<Args...>)
 inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
 }
