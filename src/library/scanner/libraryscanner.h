@@ -93,7 +93,7 @@ class LibraryScanner : public QThread {
     // CANCELING -> IDLE
     bool changeScannerState(LibraryScanner::ScannerState newState);
 
-    void cleanUpScan();
+    int cleanUpScan();
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
@@ -117,6 +117,8 @@ class LibraryScanner : public QThread {
     QSemaphore m_stateSema;
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
+
+    int m_numPreviousExistingTrackLocations;
 
     QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
