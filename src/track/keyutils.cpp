@@ -470,11 +470,11 @@ QColor KeyUtils::keyToColor(ChromaticKey key) {
 
     if (openKeyNumber != 0) {
         const auto& palette = mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
-        DEBUG_ASSERT(openKeyNumber <= palette.length());
+        DEBUG_ASSERT(openKeyNumber <= palette.size() && openKeyNumber >= 1);
         const auto rgbColor = palette.at(openKeyNumber - 1); // Open Key numbers start from 1
         return mixxx::RgbColor::toQColor(rgbColor);
     } else {
-        return QColor::QColor(); // return invalid color
+        return {}; // return invalid color
     }
 }
 
