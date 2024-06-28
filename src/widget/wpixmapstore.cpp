@@ -33,7 +33,7 @@ PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
 std::unique_ptr<QPixmap> WPixmapStore::getPixmapNoCache(
         const QString& fileName,
         double scaleFactor) {
-    auto pImage = m_loader->getImage(fileName, scaleFactor);
+    auto* pImage = m_loader->getImage(fileName, scaleFactor);
     if (!pImage || pImage->isNull()) {
         return nullptr;
     }
