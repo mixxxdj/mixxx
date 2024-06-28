@@ -4,8 +4,7 @@
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
-QSharedPointer<ImgSource> WPixmapStore::m_loader
-        = QSharedPointer<ImgSource>(new ImgLoader());
+std::shared_ptr<ImgSource> WPixmapStore::m_loader = std::make_shared<ImgLoader>();
 
 // static
 PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
@@ -21,10 +20,10 @@ PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
     // See if we have a cached value for the pixmap.
     auto it = m_paintableCache.find(key);
     if (it != m_paintableCache.end()) {
-        return it.value();
+        return it.value().lock();
     }
 
-    PaintablePointer pPaintable(new Paintable(source, mode, scaleFactor));
+    PaintablePointer pPaintable = std::make_shared<Paintable>(source, mode, scaleFactor);
     m_paintableCache.insert(key, pPaintable);
     return pPaintable;
 }
@@ -49,7 +48,7 @@ bool WPixmapStore::willCorrectColors() {
     return m_loader->willCorrectColors();
 }
 
-void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
+void WPixmapStore::setLoader(std::shared_ptr<ImgSource> ld) {
     m_loader = ld;
 
     // We shouldn't hand out pointers to existing pixmaps anymore since our

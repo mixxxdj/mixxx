@@ -103,7 +103,7 @@ void WBattery::slotStateChanged() {
         setBaseTooltip(formatTooltip(dPercentage));
     }
 
-    m_pCurrentPixmap.clear();
+    m_pCurrentPixmap.reset();
     switch (chargingState) {
         case Battery::CHARGING:
             if (!m_chargingPixmaps.isEmpty()) {
@@ -144,13 +144,13 @@ void WBattery::slotStateChanged() {
 void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
                          Paintable::DrawMode mode, double scaleFactor) {
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (pPixmap.isNull() || pPixmap->isNull()) {
-        qDebug() << this << "Error loading pixmap:" << source.getPath();
+    if (!pPixmap || pPixmap->isNull()) {
+            qDebug() << this << "Error loading pixmap:" << source.getPath();
     } else {
-        *ppPixmap = pPixmap;
-        if (mode == Paintable::FIXED) {
-            setFixedSize(pPixmap->size());
-        }
+            *ppPixmap = pPixmap;
+            if (mode == Paintable::FIXED) {
+                setFixedSize(pPixmap->size());
+            }
     }
 }
 

@@ -1,22 +1,20 @@
 #pragma once
 
-#include <QPixmap>
 #include <QHash>
-#include <QSharedPointer>
-#include <QSvgRenderer>
 #include <QImage>
-#include <QScopedPointer>
 #include <QPainter>
+#include <QPixmap>
 #include <QRectF>
 #include <QString>
+#include <QSvgRenderer>
+#include <memory>
 
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/pixmapsource.h"
 #include "widget/paintable.h"
 
-
-typedef QSharedPointer<Paintable> PaintablePointer;
-typedef QWeakPointer<Paintable> WeakPaintablePointer;
+typedef std::shared_ptr<Paintable> PaintablePointer;
+typedef std::weak_ptr<Paintable> WeakPaintablePointer;
 
 class WPixmapStore {
   public:
@@ -27,11 +25,11 @@ class WPixmapStore {
     static std::unique_ptr<QPixmap> getPixmapNoCache(
             const QString& fileName,
             double scaleFactor);
-    static void setLoader(QSharedPointer<ImgSource> ld);
+    static void setLoader(std::shared_ptr<ImgSource> ld);
     static void correctImageColors(QImage* p);
     static bool willCorrectColors();
 
   private:
     static QHash<QString, WeakPaintablePointer> m_paintableCache;
-    static QSharedPointer<ImgSource> m_loader;
+    static std::shared_ptr<ImgSource> m_loader;
 };

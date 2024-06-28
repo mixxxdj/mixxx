@@ -260,7 +260,7 @@ void WPushButton::setPixmap(int iState,
     }
 
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (pPixmap.isNull() || pPixmap->isNull()) {
+    if (!pPixmap || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
         if (!source.isEmpty()) {
             qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
@@ -278,7 +278,7 @@ void WPushButton::setPixmapBackground(const PixmapSource& source,
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!source.isEmpty() &&
-            (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
+            (!m_pPixmapBack || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
         qDebug() << "WPushButton: Error loading background pixmap:" << source.getPath();
     }
@@ -347,7 +347,7 @@ void WPushButton::paintOnDevice(QPaintDevice* pd, int idx) {
     }
 
     PaintablePointer pPixmap = pixmaps.at(idx);
-    if (!pPixmap.isNull() && !pPixmap->isNull()) {
+    if (pPixmap && !pPixmap->isNull()) {
         pPixmap->draw(rect(), p.get());
     }
 

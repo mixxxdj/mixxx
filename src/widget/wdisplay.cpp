@@ -76,7 +76,7 @@ void WDisplay::setPositions(int iNoPos) {
 }
 
 void WDisplay::resetPositions() {
-    m_pPixmapBack.clear();
+    m_pPixmapBack.reset();
     m_pixmaps.resize(0);
     m_disabledPixmaps.resize(0);
 }
@@ -85,7 +85,7 @@ void WDisplay::setPixmapBackground(const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+    if (!m_pPixmapBack || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
     }
@@ -103,7 +103,7 @@ void WDisplay::setPixmap(
 
     PixmapSource source(filename);
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (pPixmap.isNull() || pPixmap->isNull()) {
+    if (!pPixmap || pPixmap->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading pixmap:" << filename;
     } else {

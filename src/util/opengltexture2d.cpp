@@ -20,7 +20,7 @@ void OpenGLTexture2D::setData(const QPixmap& pixmap) {
     setData(pixmap.toImage());
 };
 
-void OpenGLTexture2D::setData(const QSharedPointer<Paintable>& pPaintable) {
+void OpenGLTexture2D::setData(const std::shared_ptr<Paintable>& pPaintable) {
     if (pPaintable) {
         setData(pPaintable->toImage());
     }

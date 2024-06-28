@@ -95,7 +95,7 @@ void WVuMeterBase::setPixmapBackground(
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapBack.isNull()) {
+    if (!m_pPixmapBack) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
     } else if (mode == Paintable::FIXED) {
@@ -108,7 +108,7 @@ void WVuMeterBase::setPixmaps(const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapVu.isNull()) {
+    if (!m_pPixmapVu) {
         qDebug() << "WVuMeterBase: Error loading vu pixmap" << source.getPath();
     } else {
         m_bHorizontal = bHorizontal;
