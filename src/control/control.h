@@ -200,7 +200,9 @@ class ControlDoublePrivate : public QObject {
 
     QString m_trackKey;
 
-    // Whether to track value changes with the stats framework.
+    // Note: keep the order of the members below to not introduce gaps due to
+    // memory alignment in this often used class. Whether to track value changes
+    // with the stats framework.
     int m_trackType;
     int m_trackFlags;
     bool m_bTrack;
