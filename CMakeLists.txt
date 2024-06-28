@@ -64,7 +64,8 @@ if(WIN32)
     # Extract the filename from the URL
     get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
 
-    # Remove the extension from the filename (note that our buildenv names contain two dots)
+    # Remove the extension from the filename
+    # Note, that our buildenv file names contain two dots, e.g. mixxx-deps-2.5-x64-windows-875f13b.zip
     string(REGEX REPLACE "\\.[^.]*$" "" BUILDENV_NAME "${FILENAME_WITH_EXTENSION}")
 
     message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}")
