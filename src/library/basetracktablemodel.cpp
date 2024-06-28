@@ -909,7 +909,7 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             // Render the key with the user-provided notation
-            return KeyUtils::keyToString(key);
+            return QVariant::fromValue(key);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
