@@ -15,6 +15,7 @@
 #include "track/track.h"
 #include "track/trackref.h"
 #include "util/cache.h"
+#include "util/cmdlineargs.h"
 #include "util/color/rgbcolor.h"
 #include "util/fileinfo.h"
 #include "util/math.h"
@@ -181,10 +182,15 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
 #endif
 
     PerformanceTimer time;
-    time.start();
+    bool isDeveloper = CmdlineArgs::Instance().getDeveloper();
+
+    if (isDeveloper) {
+        time.start();
+    }
+
     bool ret = QApplication::notify(target, event);
 
-    if (time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+    if (isDeveloper && time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
         qDebug() << "Processing event type"
                  << event->type()
                  << "for object"
