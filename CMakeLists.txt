@@ -1441,7 +1441,6 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/util/rampingvalue.h
   src/util/rangelist.h
   src/util/readaheadsamplebuffer.h
-  src/util/reference.h
   src/util/regex.h
   src/util/rescaler.h
   src/util/ringdelaybuffer.h
