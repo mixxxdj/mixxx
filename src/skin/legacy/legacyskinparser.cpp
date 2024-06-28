@@ -904,7 +904,9 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
 
     bg->move(0, 0);
     if (background != nullptr && !background->isNull()) {
-        bg->setPixmap(*background.get());
+        // setPixmap makes a copy of the background
+        // which can be disposed of afterwards.
+        bg->setPixmap(*background);
     }
 
     bg->lower();
