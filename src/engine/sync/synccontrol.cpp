@@ -45,22 +45,20 @@ SyncControl::SyncControl(const QString& group,
     m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay, Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
-    m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncMode->setStates(static_cast<int>(SyncMode::NumModes));
+    m_pSyncMode->setBehavior(ControlButtonMode::TOGGLE, static_cast<int>(SyncMode::NumModes));
     m_pSyncMode->connectValueChangeRequest(
             this, &SyncControl::slotSyncModeChangeRequest, Qt::DirectConnection);
 
     m_pSyncLeaderEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_leader")));
-    m_pSyncLeaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncLeaderEnabled->setStates(3);
+    m_pSyncLeaderEnabled->setBehavior(ControlButtonMode::TOGGLE, 3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
     m_pSyncLeaderEnabled->addAlias(ConfigKey(group, QStringLiteral("sync_master")));
 
     m_pSyncEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_enabled")));
-    m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
+    m_pSyncEnabled->setButtonMode(ControlButtonMode::LONGPRESSLATCHING);
     m_pSyncEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 

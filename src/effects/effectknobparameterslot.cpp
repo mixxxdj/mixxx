@@ -30,15 +30,14 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(
 
     m_pControlLinkType = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_type")));
-    m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(
+    m_pControlLinkType->setBehavior(ControlButtonMode::TOGGLE,
             static_cast<int>(EffectManifestParameter::LinkType::NumLinkTypes));
     m_pControlLinkType->connectValueChangeRequest(
             this, &EffectKnobParameterSlot::slotLinkTypeChanging);
 
     m_pControlLinkInverse = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
-    m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlLinkInverse->setButtonMode(ControlButtonMode::TOGGLE);
     connect(m_pControlLinkInverse,
             &ControlObject::valueChanged,
             this,

@@ -241,7 +241,7 @@ BpmControl::BpmControl(const QString& group,
 
     m_pBpmLock = std::make_unique<ControlPushButton>(
             ConfigKey(group, "bpmlock"), false);
-    m_pBpmLock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pBpmLock->setButtonMode(ControlButtonMode::TOGGLE);
     m_pBpmLock->connectValueChangeRequest(
             this,
             &BpmControl::slotToggleBpmLock,

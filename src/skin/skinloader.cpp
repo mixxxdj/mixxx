@@ -230,22 +230,22 @@ void SkinLoader::setupSpinnyCoverControls() {
     m_pShowCover = make_parented<ControlProxy>("[Skin]", "show_coverart", this);
     m_pSelectBigSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "select_big_spinny_or_cover"), true);
-    m_pSelectBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSelectBigSpinnyCover->setButtonMode(ControlButtonMode::TOGGLE);
 
     // This is 1 if [Skin], show_spinnies == 1 OR [Skin],show_coverart == 1
     m_pShowSpinnyAndOrCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_spinny_or_cover"));
-    m_pShowSpinnyAndOrCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowSpinnyAndOrCover->setButtonMode(ControlButtonMode::TOGGLE);
     m_pShowSpinnyAndOrCover->setReadOnly();
     // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 0
     m_pShowSmallSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_small_spinny_or_cover"));
-    m_pShowSmallSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowSmallSpinnyCover->setButtonMode(ControlButtonMode::TOGGLE);
     m_pShowSmallSpinnyCover->setReadOnly();
     // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 1
     m_pShowBigSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_big_spinny_or_cover"));
-    m_pShowBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowBigSpinnyCover->setButtonMode(ControlButtonMode::TOGGLE);
     m_pShowBigSpinnyCover->setReadOnly();
 
     m_pShowSpinny->connectValueChanged(this, &SkinLoader::updateSpinnyCoverControls);
@@ -285,7 +285,7 @@ void SkinLoader::setupMicDuckingControls() {
     // This is 1 if at least one microphone device is configured
     m_pShowDuckingControls = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_ducking_controls"));
-    m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowDuckingControls->setButtonMode(ControlButtonMode::TOGGLE);
     m_pShowDuckingControls->setReadOnly();
 
     m_pNumMics = make_parented<ControlProxy>(

@@ -18,6 +18,7 @@
 #ifndef CONTROLPUSHBUTTON_H
 #define CONTROLPUSHBUTTON_H
 
+#include "control/controlbuttonmode.h"
 #include "control/controlobject.h"
 
 /**
@@ -27,44 +28,36 @@
 class ControlPushButton : public ControlObject {
     Q_OBJECT
   public:
-    enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
-         TRIGGER,
-    };
-
-    static QString buttonModeToString(int mode) {
+    static QString buttonModeToString(ControlButtonMode mode) {
         switch(mode) {
-            case ControlPushButton::PUSH:
-                return "PUSH";
-            case ControlPushButton::TOGGLE:
-                return "TOGGLE";
-            case ControlPushButton::POWERWINDOW:
-                return "POWERWINDOW";
-            case ControlPushButton::LONGPRESSLATCHING:
-                return "LONGPRESSLATCHING";
-            case ControlPushButton::TRIGGER:
-                return "TRIGGER";
-            default:
-                return "UNKNOWN";
+        case ControlButtonMode::PUSH:
+            return "PUSH";
+        case ControlButtonMode::TOGGLE:
+            return "TOGGLE";
+        case ControlButtonMode::POWERWINDOW:
+            return "POWERWINDOW";
+        case ControlButtonMode::LONGPRESSLATCHING:
+            return "LONGPRESSLATCHING";
+        case ControlButtonMode::TRIGGER:
+            return "TRIGGER";
+        default:
+            return "UNKNOWN";
         }
     }
 
     ControlPushButton(const ConfigKey& key, bool bPersist = false, double defaultValue = 0.0);
     virtual ~ControlPushButton();
 
-    inline ButtonMode getButtonMode() const {
+    inline ControlButtonMode getButtonMode() const {
         return m_buttonMode;
     }
-    void setButtonMode(enum ButtonMode mode);
+    void setButtonMode(enum ControlButtonMode mode);
     void setStates(int num_states);
+    void setBehavior(enum ControlButtonMode mode, int num_states);
 
   private:
-    void setBehavior();
-
-    enum ButtonMode m_buttonMode;
+    void updateBehavior();
+    enum ControlButtonMode m_buttonMode;
     int m_iNoStates;
 };
 
