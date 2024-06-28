@@ -14,7 +14,7 @@ PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
     if (source.isEmpty()) {
         return PaintablePointer();
     }
-    QString key = QString("%1%2%3").arg(source.getId(),
+    QString key = QStringLiteral("%1%2%3").arg(source.getId(),
             QString::number(mode),
             QString::number(scaleFactor));
 
