@@ -1332,6 +1332,7 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/control/control.h
   src/control/controlaudiotaperpot.h
   src/control/controlbehavior.h
+  src/control/controlbuttonmode.h
   src/control/controlcompressingproxy.h
   src/control/controleffectknob.h
   src/control/controlencoder.h
