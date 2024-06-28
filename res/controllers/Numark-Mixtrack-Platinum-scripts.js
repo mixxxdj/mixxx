@@ -50,6 +50,9 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
     // set up two banks of samplers, 4 samplers each
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     MixtrackPlatinum.sampler_all = new components.ComponentContainer();
     MixtrackPlatinum.sampler_all[1] = new MixtrackPlatinum.Sampler(1);
     MixtrackPlatinum.sampler_all[2] = new MixtrackPlatinum.Sampler(5);
@@ -396,7 +399,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             }
 
             var button = this;
-            this.flash_timer = engine.beginTimer(time, function() {
+            this.flash_timer = engine.beginTimer(time, () => {
                 if (button.flash_state) {
                     button.send(button.on);
                     button.flash_state = false;
@@ -405,7 +408,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                     button.send(button.off);
                     button.flash_state = true;
                 }
-            }.bind(this));
+            });
         },
         stopFlash: function() {
             engine.stopTimer(this.flash_timer);
@@ -1190,7 +1193,7 @@ MixtrackPlatinum.startScratchTimer = function (deck) {
     if (MixtrackPlatinum.scratch_timer[deck]) return;
 
     MixtrackPlatinum.scratch_tick[deck] = 0;
-    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, function() {
+    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, () => {
         MixtrackPlatinum.scratchTimerCallback(deck);
     });
 };

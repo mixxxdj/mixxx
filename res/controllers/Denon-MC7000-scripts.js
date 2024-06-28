@@ -234,14 +234,17 @@ MC7000.init = function() {
     for (let chanIdx = 1; chanIdx <= 4; chanIdx++) {
         // HotCue Mode LEDs
         for (let cueIdx = 1; cueIdx <= 8; cueIdx++) {
-            engine.makeConnection("[Channel"+chanIdx+"]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
+            engine.makeConnection(`[Channel${chanIdx}]`, `hotcue_${cueIdx}_status`, MC7000.HotCueLED);
         }
         // Pitch LEDs
         for (let pitchIdx = 1; pitchIdx <= 8; pitchIdx++) {
-            engine.makeConnection("[Channel"+chanIdx+"]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
+            engine.makeConnection(`[Channel${chanIdx}]`, `hotcue_${pitchIdx}_status`, MC7000.PitchLED);
         }
     }
     // Sampler Mode LEDs and Velocity Sampler Mode LEDs
+    if (engine.getValue("[App]", "num_samplers") < MC7000.SamplerQty) {
+        engine.setValue("[App]", "num_samplers", MC7000.SamplerQty);
+    }
     for (let samplerIdx = 1; samplerIdx <= MC7000.SamplerQty; samplerIdx++) {
         engine.makeConnection("[Sampler"+samplerIdx+"]", "track_loaded", MC7000.SamplerLED);
         engine.makeConnection("[Sampler"+samplerIdx+"]", "play", MC7000.SamplerLED);
@@ -249,7 +252,7 @@ MC7000.init = function() {
         engine.makeConnection("[Sampler"+samplerIdx+"]", "play", MC7000.VelSampLED);
     }
     // send Softtakeover delayed to avoid conflicts with ControllerStatusSysex
-    engine.beginTimer(2000, function() {
+    engine.beginTimer(2000, () => {
         // Softtakeover for Pitch Faders only
         for (let chanIdx = 1; chanIdx <= 4; chanIdx++) {
             engine.softTakeover("[Channel" + chanIdx + "]", "rate", true);
@@ -281,7 +284,7 @@ MC7000.padModeCue = function(channel, control, value, status, group) {
     MC7000.PADMode[deckIndex] = "Cue";
     // change PAD color when switching to Hot Cue Mode
     for (let cueIdx = 1; cueIdx <= 8; cueIdx++) {
-        const hotcueEnabled = engine.getValue(group, "hotcue_" + cueIdx + "_enabled", true);
+        const hotcueEnabled = engine.getValue(group, `hotcue_${cueIdx}_status`);
         midi.sendShortMsg(0x94 + deckIndex, 0x14 + cueIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
     }
 };
@@ -401,7 +404,7 @@ MC7000.padModePitch = function(channel, control, value, status, group) {
         if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) {
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, MC7000.padColor.pitchoff);
         } else {
-            const hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + "_enabled", true);
+            const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx}_status`);
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
         }
     }
@@ -430,9 +433,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 engine.setValue(group, "hotcue_" + cueIdx + "_activate", false);
                 if (engine.getValue(group, "slip_enabled")) {
                     engine.setValue(group, "slip_enabled", false);
-                    engine.beginTimer(50, function() {
-                        engine.setValue(group, "slip_enabled", true);
-                    }, true);
+                    engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
                 }
             } else if (control === 0x1C + cueIdx - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + cueIdx + "_clear", true);
@@ -568,7 +569,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 const isButtonReleased = (value === 0x00);
                 const isControlAddress = (control === 0x14 + pitchIdx - 1);
                 const isControlAddressShift = (control === 0x1C + pitchIdx - 1);
-                const hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + "_enabled"), HotcueSelectedOnDeck = MC7000.HotcueSelectedGroup[deckIndex];
+                const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx}_status`), HotcueSelectedOnDeck = MC7000.HotcueSelectedGroup[deckIndex];
                 if (isButtonPressed && isControlAddress) {
                     if (!HotcueSelectedOnDeck) {
                         MC7000.setAllPadColor(deckIndex, MC7000.padColor.pitchoff);
@@ -589,15 +590,13 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                     // midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, MC7000.padColor.pitchoff); // switch to pitch off color
                     if (engine.getValue(group, "slip_enabled")) {
                         engine.setValue(group, "slip_enabled", false);
-                        engine.beginTimer(50, function() {
-                            engine.setValue(group, "slip_enabled", true);
-                        }, true);
+                        engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
                     }
                 } else if (isButtonPressed && isControlAddressShift) { //shifted buttons deselect hotcue for pitch
                     engine.setValue(group, "pitch", 0);
                     MC7000.HotcueSelectedGroup[deckIndex] = 0;
                     for (let padIdx = 1; padIdx <= 8; padIdx++) {
-                        const padHotcueEnabled = engine.getValue(group, "hotcue_" + padIdx + "_enabled", true);
+                        const padHotcueEnabled = engine.getValue(group, `hotcue_${padIdx}_status`);
                         midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, padHotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
                         midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, padHotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff); // keep color when shift is pressed
                     }
@@ -691,9 +690,7 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
             if (engine.getValue(group, "slip_enabled")) {
                 engine.scratchDisable(deckNumber, false); // stops scratching immediately
                 engine.setValue(group, "slip_enabled", false);
-                engine.beginTimer(50, function() {
-                    engine.setValue(group, "slip_enabled", true);
-                }, true);
+                engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
             } else {
                 engine.scratchDisable(deckNumber); // continues scratching e.g. for backspin
             }
@@ -909,9 +906,7 @@ MC7000.reverse = function(channel, control, value, status, group) {
             engine.brake(deckNumber, false); // disable brake effect
             engine.setValue(group, "play", 1);
             engine.setValue(group, "slip_enabled", false);
-            engine.beginTimer(50, function() {
-                engine.setValue(group, "slip_enabled", true);
-            }, true);
+            engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
         } else {
             engine.softStart(deckNumber, true, MC7000.spinbackFactor[deckIndex]);
         }
@@ -927,9 +922,7 @@ MC7000.censor = function(channel, control, value, status, group) {
         } else {
             engine.setValue(group, "reverseroll", 0);
         }
-        engine.beginTimer(50, function() {
-            engine.setValue(group, "slip_enabled", true);
-        }, true);
+        engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
     } else {
         // reverse play while button pressed
         if (value > 0) {
@@ -1098,12 +1091,12 @@ MC7000.HotCueLED = function(value, group) {
     if (MC7000.PADMode[deckIndex] === "Cue") {
         for (let padIdx = 1; padIdx <= 8; padIdx++) {
             if (value === 1) {
-                if (engine.getValue(group, "hotcue_"+padIdx+"_enabled") === 1) {
+                if (engine.getValue(group, `hotcue_${padIdx}_status`) === 1) {
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, MC7000.padColor.hotcueon);
                     midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, MC7000.padColor.hotcueon);
                 }
             } else {
-                if (engine.getValue(group, "hotcue_"+padIdx+"_enabled") === 0) {
+                if (engine.getValue(group, `hotcue_${padIdx}_status`) === 0) {
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, MC7000.padColor.hotcueoff);
                     midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, MC7000.padColor.hotcueoff);
                 }
@@ -1183,7 +1176,7 @@ MC7000.PitchLED = function(value, group) {
                 if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) { // hotcue selected
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx, MC7000.padColor.pitchoff);
                 } else {
-                    const hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + 1 + "_enabled", true);
+                    const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx + 1}_status`);
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
                 }
             } else {

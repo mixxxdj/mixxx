@@ -18,6 +18,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_TITLE);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_DESCRIPTION);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_FILTER);
+    m_controlProxyModel.sort(0, Qt::AscendingOrder);
 
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {

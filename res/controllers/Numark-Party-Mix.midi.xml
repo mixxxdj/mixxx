@@ -111,7 +111,7 @@
       </control>
       <!-- EQ -->
       <control>
-        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].treble.input</key>
         <status>0xB0</status>
         <midino>0x18</midino>
@@ -120,7 +120,7 @@
         </options>
       </control>
       <control>
-        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].treble.input</key>
         <status>0xB1</status>
         <midino>0x18</midino>
@@ -129,7 +129,7 @@
         </options>
       </control>
       <control>
-        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].bass.input</key>
         <status>0xB0</status>
         <midino>0x19</midino>
@@ -138,7 +138,7 @@
         </options>
       </control>
       <control>
-        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].bass.input</key>
         <status>0xB1</status>
         <midino>0x19</midino>

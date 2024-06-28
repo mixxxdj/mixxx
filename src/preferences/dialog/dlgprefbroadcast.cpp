@@ -5,15 +5,8 @@
 #include <QMessageBox>
 #include <QtDebug>
 
-// shout.h checks for WIN32 to see if we are on Windows
-#ifdef WIN64
-#define WIN32
-#endif
 // this is needed to define SHOUT_META_* macros used in version guard
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -128,6 +121,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      }
 
      // Encoding format combobox
+     connect(comboBoxEncodingFormat,
+             QOverload<int>::of(&QComboBox::currentIndexChanged),
+             this,
+             [this]() {
+                 ogg_dynamicupdate->setEnabled(
+                         comboBoxEncodingFormat->currentData() == ENCODING_OGG);
+             });
      comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
      comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
@@ -508,6 +508,7 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // OGG "dynamicupdate" checkbox
+    ogg_dynamicupdate->setEnabled(profile->getFormat() == ENCODING_OGG);
     ogg_dynamicupdate->setChecked(profile->getOggDynamicUpdate());
 }
 

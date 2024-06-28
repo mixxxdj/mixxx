@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleName</key>
+    <string>@IOS_BUNDLE_NAME@</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>@IOS_BUNDLE_NAME@</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <true/>
+
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+
+    <key>UIFileSharingEnabled</key>
+	<true/>
+
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Mixxx requires microphone access for microphone and vinyl input.</string>
+
+    <key>NSAppleMusicUsageDescription</key>
+    <string>Mixxx accesses the Apple Music library to presents its tracks and playlists in the library.</string>
+
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+</dict>
+</plist>

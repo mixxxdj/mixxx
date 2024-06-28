@@ -338,7 +338,7 @@ HerculesMP3Hid.scroll_tracks = function(g, e, v) {
     if (v > 0) {
         engine.setValue("[Playlist]", e == "track_next_a" ? "SelectNextTrack" : "SelectPrevTrack", 1);
         if (!HerculesMP3Hid.scroll_timer) {
-            HerculesMP3Hid.scroll_timer = engine.beginTimer(150, function () {
+            HerculesMP3Hid.scroll_timer = engine.beginTimer(150, () => {
                 HerculesMP3Hid.scroll_tracks("[Playlist]", e, v);
             });
         }

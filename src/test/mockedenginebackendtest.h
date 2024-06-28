@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -20,7 +21,6 @@
 #include "preferences/usersettings.h"
 #include "test/signalpathtest.h"
 #include "util/defs.h"
-#include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
 #include "waveform/guitick.h"

@@ -7,8 +7,8 @@
 #include <initializer_list>
 
 #include "audio/frame.h"
+#include "audio/types.h"
 #include "control/controlvalue.h"
-#include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/slipmodestate.h"
@@ -17,6 +17,10 @@
 #include "track/bpm.h"
 #include "track/track_decl.h"
 #include "util/types.h"
+
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
+#endif
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -58,19 +62,21 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        SEEK_NONE = 0u,
+        SEEK_NONE = 0,
         /// Force an in-phase seek
-        SEEK_PHASE = 1u,
+        SEEK_PHASE = 1 << 0,
         /// Bypass Quantization
-        SEEK_EXACT = 2u,
+        SEEK_EXACT = 1 << 1,
         /// This is an artificial state that happens if an exact seek and a
         /// phase seek are scheduled at the same time.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
         /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
-        SEEK_STANDARD = 4u,
+        SEEK_STANDARD = 1 << 2,
         /// This is an artificial state that happens if a standard seek and a
         /// phase seek are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
+        /// #SEEK_EXACT to the other deck position
+        SEEK_CLONE = 1 << 3
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -78,15 +84,20 @@ class EngineBuffer : public EngineObject {
     // Don't remove or swap values to keep backward compatibility
     enum class KeylockEngine {
         SoundTouch = 0,
+#ifdef __RUBBERBAND__
         RubberBandFaster = 1,
         RubberBandFiner = 2,
+#endif
     };
 
     // intended for iteration over the KeylockEngine enum
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
             KeylockEngine::SoundTouch,
+#ifdef __RUBBERBAND__
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner};
+            KeylockEngine::RubberBandFiner
+#endif
+    };
 
     EngineBuffer(const QString& group,
             UserSettingsPointer pConfig,
@@ -119,11 +130,11 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
-    void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize) override;
     void processSlip(int iBufferSize);
+    void postProcessLocalBpm();
     void postProcess(const int iBufferSize);
 
     /// Returns the seek position iff a seek is currently queued but not yet
@@ -156,6 +167,7 @@ class EngineBuffer : public EngineObject {
         switch (engine) {
         case KeylockEngine::SoundTouch:
             return tr("Soundtouch (faster)");
+#ifdef __RUBBERBAND__
         case KeylockEngine::RubberBandFaster:
             return tr("Rubberband (better)");
         case KeylockEngine::RubberBandFiner:
@@ -163,8 +175,13 @@ class EngineBuffer : public EngineObject {
                 return tr("Rubberband R3 (near-hi-fi quality)");
             }
             [[fallthrough]];
+#endif
         default:
+#ifdef __RUBBERBAND__
             return tr("Unknown, using Rubberband (better)");
+#else
+            return tr("Unknown, using Soundtouch");
+#endif
         }
     }
 
@@ -172,23 +189,29 @@ class EngineBuffer : public EngineObject {
         switch (engine) {
         case KeylockEngine::SoundTouch:
             return true;
+#ifdef __RUBBERBAND__
         case KeylockEngine::RubberBandFaster:
             return true;
         case KeylockEngine::RubberBandFiner:
             return EngineBufferScaleRubberBand::isEngineFinerAvailable();
+#endif
         default:
             return false;
         }
     }
 
     constexpr static KeylockEngine defaultKeylockEngine() {
+#ifdef __RUBBERBAND__
         return KeylockEngine::RubberBandFaster;
+#else
+        return KeylockEngine::SoundTouch;
+#endif
     }
 
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
-    void loadTrack(TrackPointer pTrack, bool play);
+    void loadTrack(TrackPointer pTrack, bool play, EngineChannel* pChannelToCloneFrom);
 
     void setChannelIndex(int channelIndex) {
         m_channelIndex = channelIndex;
@@ -215,7 +238,7 @@ class EngineBuffer : public EngineObject {
     void slotTrackLoading();
     void slotTrackLoaded(
             TrackPointer pTrack,
-            int trackSampleRate,
+            mixxx::audio::SampleRate trackSampleRate,
             double trackNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);
@@ -249,9 +272,6 @@ class EngineBuffer : public EngineObject {
     // for transitioning from one scaler to another, or reseeking a scaler
     // to prevent pops.
     void readToCrossfadeBuffer(const int iBufferSize);
-
-    // Copy the play position from the given buffer
-    void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(mixxx::audio::FramePos playpos);
@@ -375,6 +395,7 @@ class EngineBuffer : public EngineObject {
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
+    ControlProxy* m_pReplayGain;
 
     // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
@@ -408,7 +429,9 @@ class EngineBuffer : public EngineObject {
     EngineBufferScaleLinear* m_pScaleLinear;
     // Objects used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
+#ifdef __RUBBERBAND__
     EngineBufferScaleRubberBand* m_pScaleRB;
+#endif
 
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
@@ -423,6 +446,8 @@ class EngineBuffer : public EngineObject {
 
     /// Indicates that no seek is queued
     static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
+    /// indicates a clone seek on a bosition from another deck
+    static constexpr QueuedSeek kCloneSeek = {mixxx::audio::kInvalidFramePos, SEEK_CLONE};
     QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing

@@ -62,6 +62,10 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
 };
 
 DJCi300.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
+
     // Scratch button state
     DJCi300.scratchButtonState = true;
     // Scratch Action

@@ -3,11 +3,11 @@
 #include <QString>
 #include <QVariant>
 #include <QtGlobal>
+#include <memory>
 
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
 #include "engine/channelhandle.h"
-#include "util/memory.h"
 #include "util/messagepipe.h"
 
 class EngineEffectChain;

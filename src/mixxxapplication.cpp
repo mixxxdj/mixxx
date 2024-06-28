@@ -3,6 +3,7 @@
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
+#include <QtGlobal>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -22,17 +23,25 @@
 // https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins
 #ifdef QT_STATIC
 #include <QtPlugin>
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WASM)
+Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
+#elif defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#elif defined(Q_OS_IOS)
+Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMacStylePlugin)
+#elif defined(Q_OS_LINUX)
+Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #else
 #error "Q_IMPORT_PLUGIN() for the current patform is missing"
 #endif
+#if !defined(Q_OS_WASM)
 Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
+#endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
@@ -41,9 +50,9 @@ Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
 #endif // QT_STATIC
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 namespace {
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 /// This class allows to change the button of a mouse event on the fly.
 /// This is required because we want to change the behaviour of Qts mouse
 /// buttony synthesizer without duplicate all the code.
@@ -60,11 +69,10 @@ class QMouseEventEditable : public QMouseEvent {
     }
 #endif
 };
-
-constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(5);
+#endif
+constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(20);
 
 } // anonymous namespace
-#endif
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
@@ -121,8 +129,8 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // All touch events are translated into two simultaneous events: one for
     // the target QWidgetWindow and one for the target QWidget.
     // A second touch becomes a mouse move without additional press and release
@@ -170,10 +178,10 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     default:
         break;
     }
+#endif
 
     PerformanceTimer time;
     time.start();
-
     bool ret = QApplication::notify(target, event);
 
     if (time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
@@ -191,6 +199,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     return ret;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {
         m_pTouchShift = new ControlProxy(

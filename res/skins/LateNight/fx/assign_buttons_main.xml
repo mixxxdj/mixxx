@@ -25,20 +25,20 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>f,min</SizePolicy>
         <Children>
-          <Template src="skin:../LateNight/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">1</SetVariable>
             <SetVariable name="Width">26</SetVariable>
             <SetVariable name="Text">&#8202;FX&#8202;</SetVariable>
           </Template>
-          <Template src="skin:../LateNight/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">2</SetVariable>
             <SetVariable name="Width">20</SetVariable>
           </Template>
-          <Template src="skin:../LateNight/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">3</SetVariable>
             <SetVariable name="Width">20</SetVariable>
           </Template>
-          <Template src="skin:../LateNight/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">4</SetVariable>
             <SetVariable name="Width">20</SetVariable>
           </Template>

@@ -708,6 +708,9 @@ TraktorS4MK2.pointlessLightShow = function() {
 };
 
 TraktorS4MK2.init = function(id) {
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
     TraktorS4MK2.pointlessLightShow();
     TraktorS4MK2.registerInputPackets();
     TraktorS4MK2.registerOutputPackets();
@@ -1060,7 +1063,7 @@ TraktorS4MK2.jogTouchHandler = function(field) {
             TraktorS4MK2.finishJogTouch(field.group);
         } else {
             TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] = engine.beginTimer(
-                inertiaTime, "TraktorS4MK2.finishJogTouch(\"" + field.group + "\")", true);
+                inertiaTime, () => { TraktorS4MK2.finishJogTouch(field.group); }, true);
         }
     }
 };
@@ -1092,7 +1095,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
         } else {
             // Check again soon.
             TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = engine.beginTimer(
-                100, "TraktorS4MK2.finishJogTouch(\"" + group + "\")", true);
+                100, () => { TraktorS4MK2.finishJogTouch(group); }, true);
         }
     }
 };

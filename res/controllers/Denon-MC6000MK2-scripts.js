@@ -612,7 +612,7 @@ DenonMC6000MK2.Sampler.prototype.connectControls = function() {
 DenonMC6000MK2.OldDeck = function(number, midiChannel) {
     this.number = number;
     this.group = "[Channel" + number + "]";
-    this.filterGroup = "[QuickEffectRack1_" + this.group + "_Effect1]";
+    this.filterGroup = "[QuickEffectRack1_" + this.group + "]";
     this.midiChannel = midiChannel;
     this.jogTouchState = false;
     DenonMC6000MK2.oldDecksByGroup[this.group] = this;
@@ -912,7 +912,7 @@ DenonMC6000MK2.OldDeck.prototype.spinJog = function(jogDelta) {
 DenonMC6000MK2.OldDeck.prototype.applyFilter = function() {
     var side = DenonMC6000MK2.getOldSideByGroup(this.group);
     engine.setValue(this.filterGroup, "enabled", side.filterEnabled);
-    engine.setParameter(this.filterGroup, "meta", side.filterParam);
+    engine.setParameter(this.filterGroup, "super1", side.filterParam);
 };
 
 /* Loops */
@@ -1343,7 +1343,7 @@ DenonMC6000MK2.initValues = function() {
         engine.setValue("[App]", "samplerate", DenonMC6000MK2.SAMPLE_RATE);
     }
     DenonMC6000MK2.backupNumDecks = engine.getValue("[App]", "num_decks");
-    if (DenonMC6000MK2.backupNumDecks !== DenonMC6000MK2.DECK_COUNT) {
+    if (DenonMC6000MK2.backupNumDecks < DenonMC6000MK2.DECK_COUNT) {
         DenonMC6000MK2.logInfo(
             "Adjusting number of decks: " +
             DenonMC6000MK2.backupNumDecks +
@@ -1353,7 +1353,7 @@ DenonMC6000MK2.initValues = function() {
     }
     DenonMC6000MK2.backupNumSamplers = engine.getValue("[App]", "num_samplers");
     var numSamplers = DenonMC6000MK2.SIDE_COUNT * DenonMC6000MK2.SAMPLER_COUNT_PER_SIDE;
-    if (DenonMC6000MK2.backupNumSamplers !== numSamplers) {
+    if (DenonMC6000MK2.backupNumSamplers < numSamplers) {
         DenonMC6000MK2.logInfo(
             "Adjusting number of samplers: " +
             DenonMC6000MK2.backupNumSamplers +

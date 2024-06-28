@@ -1,11 +1,11 @@
-<svg width="11" height="13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="22" height="26" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="a" x1="-11.2589" x2="-1.077" y1="8" y2="8" gradientTransform="matrix(.875436 0 0 .875445 -2.38124 -7.46765)" gradientUnits="userSpaceOnUse">
+    <linearGradient id="a" x1="-11.2589" x2="-1.077" y1="8" y2="8" gradientTransform="matrix(1.7508715,0,0,1.7508908,-4.7624891,-14.935315)" gradientUnits="userSpaceOnUse">
       <stop offset="0"/>
       <stop stop-color="#fff" stop-opacity="0" offset="1"/>
     </linearGradient>
   </defs>
-  <rect y="2" width="14.7647" height="8" rx="4" ry="4" fill="#0f0f0f"/>
-  <circle transform="scale(-1,1)" cx="-4" cy="6" r="4" fill="#787878"/>
-  <ellipse transform="matrix(-.500007 -.866021 -.86603 .499993 0 0)" cx="-7.19613" cy="-.464092" rx="3.50174" ry="3.50178" fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.00001"/>
+  <rect x="1.1740101e-5" y="4.0000052" width="29.5294" height="16" rx="8" ry="8" fill="#0f0f0f" stroke-width="2"/>
+  <circle transform="scale(-1,1)" cx="-8.0000114" cy="12.000006" r="8" fill="#787878" stroke-width="2"/>
+  <ellipse transform="matrix(-.50000716 -.86602127 -.86602958 .49999276 0 0)" cx="-14.392266" cy="-.92819202" rx="7.0034776" ry="7.0035634" fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.00002"/>
 </svg>

@@ -8,25 +8,17 @@ Build-Depends: debhelper (>= 11),
                docbook-to-man,
                markdown,
                libglu1-mesa-dev,
-# qt5-default depends on qtbase5-dev, which includes headers for
-# QtConcurrent
-# QtCore
-# QtGui
-# QtNetwork
-# QtPlatformHeaders
-# QtPrintSupport
-# QtSql
-# QtWidgets
-# QtXml
-               qt5keychain-dev,
-# We additionally need headers for QtOpenGL, QtScript, and QtSvg.
-               qtdeclarative5-dev,
-               qtscript5-dev,
-               libqt5opengl5-dev,
-               libqt5svg5-dev,
-# Only needed for running tests that use SQLite.
-               libqt5sql5-sqlite,
-               libqt5x11extras5-dev,
+               qtkeychain-qt6-dev,
+               qt6-declarative-private-dev,
+               qt6-base-private-dev,
+               qml6-module-qt-labs-qmlmodels,
+               qml6-module-qtquick-controls,
+               qml6-module-qtquick-layouts,
+               libqt6core5compat6-dev,
+               libqt6opengl6-dev,
+               libqt6shadertools6-dev,
+               libqt6sql6-sqlite,
+               libqt6svg6-dev,
                cmake (>= 3.13),
                libjack-dev,
                portaudio19-dev,
@@ -57,8 +49,6 @@ Build-Depends: debhelper (>= 11),
                libebur128-dev,
                libwavpack-dev,
                libudev-dev,
-# Note: libdjinterop is available within the Mixxx PPA
-               libdjinterop-dev,
                libmsgsl-dev,
 # for running mixxx-test
                libgtest-dev,

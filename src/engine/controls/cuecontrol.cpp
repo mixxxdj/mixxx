@@ -542,7 +542,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekOnLoad(mixxx::audio::kStartFramePos);
         }
-        break;
+        return;
     case SeekOnLoadMode::FirstSound: {
         CuePointer pN60dBSound =
                 pNewTrack->findCueByType(mixxx::CueType::N60dBSound);
@@ -567,8 +567,19 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pCuePoint->get());
         if (mainCuePosition.isValid()) {
             seekOnLoad(mainCuePosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
+        }
+        break;
+    }
+    case SeekOnLoadMode::FirstHotcue: {
+        mixxx::audio::FramePos firstHotcuePosition;
+        HotcueControl* pControl = m_hotcueControls.value(0, nullptr);
+        if (pControl) {
+            firstHotcuePosition = pControl->getPosition();
+            if (firstHotcuePosition.isValid()) {
+                seekOnLoad(firstHotcuePosition);
+                return;
+            }
         }
         break;
     }
@@ -578,16 +589,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pIntroStartPosition->get());
         if (introStartPosition.isValid()) {
             seekOnLoad(introStartPosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
         }
         break;
     }
     default:
         DEBUG_ASSERT(!"Unknown enum value");
-        seekOnLoad(mixxx::audio::kStartFramePos);
         break;
     }
+    seekOnLoad(mixxx::audio::kStartFramePos);
 }
 
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
@@ -852,7 +862,25 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     bool loopEnabled = m_pLoopEnabled->toBool();
     if (mode == HotcueSetMode::Auto) {
-        mode = loopEnabled ? HotcueSetMode::Loop : HotcueSetMode::Cue;
+        if (loopEnabled) {
+            // Don't create a hotcue at loop start if there is one already.
+            // This allows to set a hotuce inside an active, saved loop with
+            // 'hotcue_X_activate'.
+            auto* pSavedLoopControl = m_pCurrentSavedLoopControl.loadAcquire();
+            if (pSavedLoopControl &&
+                    pSavedLoopControl->getPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopStartPosition->get()) &&
+                    pSavedLoopControl->getEndPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopEndPosition->get())) {
+                mode = HotcueSetMode::Cue;
+            } else {
+                mode = HotcueSetMode::Loop;
+            }
+        } else {
+            mode = HotcueSetMode::Cue;
+        }
     }
 
     switch (mode) {
@@ -2248,10 +2276,7 @@ bool CueControl::isTrackAtIntroCue() {
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
-    int configValue =
-            getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                    static_cast<int>(SeekOnLoadMode::IntroStart));
-    return static_cast<SeekOnLoadMode>(configValue);
+    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), SeekOnLoadMode::IntroStart);
 }
 
 void CueControl::hotcueFocusColorPrev(double value) {
@@ -2459,11 +2484,6 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             this,
             &HotcueControl::slotHotcueColorChangeRequest,
             Qt::DirectConnection);
-    connect(m_hotcueColor.get(),
-            &ControlObject::valueChanged,
-            this,
-            &HotcueControl::slotHotcueColorChanged,
-            Qt::DirectConnection);
 
     m_hotcueSet = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("set")));
     connect(m_hotcueSet.get(),
@@ -2631,16 +2651,12 @@ void HotcueControl::slotHotcueEndPositionChanged(double newEndPosition) {
     emit hotcueEndPositionChanged(this, newEndPosition);
 }
 
-void HotcueControl::slotHotcueColorChangeRequest(double color) {
-    if (color < 0 || color > 0xFFFFFF) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+void HotcueControl::slotHotcueColorChangeRequest(double newColor) {
+    if (newColor < 0 || newColor > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChangeRequest got invalid value:" << newColor;
         return;
     }
-    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << color;
-    m_hotcueColor->setAndConfirm(color);
-}
-
-void HotcueControl::slotHotcueColorChanged(double newColor) {
+    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << newColor;
     if (!m_pCue) {
         return;
     }
@@ -2651,7 +2667,7 @@ void HotcueControl::slotHotcueColorChanged(double newColor) {
     }
 
     m_pCue->setColor(*color);
-    emit hotcueColorChanged(this, newColor);
+    m_hotcueColor->setAndConfirm(newColor);
 }
 
 mixxx::audio::FramePos HotcueControl::getPosition() const {
@@ -2684,9 +2700,10 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     // qDebug() << "HotcueControl::setColor()" << newColor;
     if (newColor) {
-        m_hotcueColor->set(*newColor);
+        m_hotcueColor->setAndConfirm(*newColor);
     }
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code

@@ -43,7 +43,7 @@ class DlgControllerLearning : public QDialog,
     // Triggered when the user picks a control from the menu.
     void controlPicked(const ConfigKey& control);
     // Triggered when user clicks a control from the GUI
-    void controlClicked(ControlObject* pControl);
+    void controlClicked(const ConfigKey& controlKey);
     void comboboxIndexChanged(int index);
 
     void slotMessageReceived(unsigned char status,

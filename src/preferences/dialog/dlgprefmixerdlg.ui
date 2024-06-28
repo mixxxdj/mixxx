@@ -94,22 +94,19 @@
              <number>0</number>
             </property>
             <property name="maximum">
-             <number>100</number>
+             <number>100000</number>
             </property>
             <property name="singleStep">
-             <number>1</number>
+             <number>1000</number>
             </property>
             <property name="pageStep">
-             <number>1</number>
+             <number>1000</number>
             </property>
             <property name="value">
-             <number>50</number>
+             <number>50000</number>
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickInterval">
-             <number>5</number>
             </property>
            </widget>
           </item>

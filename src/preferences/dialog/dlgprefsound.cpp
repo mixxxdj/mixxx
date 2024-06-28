@@ -34,10 +34,8 @@ bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
 
 } // namespace
 
-/**
- * Construct a new sound preferences pane. Initializes and populates all the
- * all the controls to the values obtained from SoundManager.
- */
+/// Construct a new sound preferences pane. Initializes and populates
+/// all the controls to the values obtained from SoundManager.
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
         std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
@@ -68,11 +66,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::apiChanged);
 
     sampleRateComboBox->clear();
-    for (auto& srate : m_pSoundManager->getSampleRates()) {
-        if (srate > 0) {
+    const auto sampleRates = m_pSoundManager->getSampleRates();
+    for (const auto& sampleRate : sampleRates) {
+        if (sampleRate.isValid()) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(tr("%1 Hz").arg(srate), srate);
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate));
         }
     }
     connect(sampleRateComboBox,
@@ -122,6 +122,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
 
+    // TODO These settings are applied immediately via ControlProxies.
+    // While this is handy for testing the delays, it breaks the rule to
+    // apply only in slotApply(). Add hint to UI?
     connect(latencyCompensationSpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -265,25 +268,15 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
 }
 
-/**
- * Slot called when the preferences dialog is opened or this pane is
- * selected.
- */
+/// Slot called when the preferences dialog is opened.
 void DlgPrefSound::slotUpdate() {
-    // this is unfortunate, because slotUpdate is called every time
-    // we change to this pane, we lose changed and unapplied settings
-    // every time. There's no real way around this, just another argument
-    // for a prefs rewrite -- bkgood
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
-    m_settingsModified = false;
 }
 
-/**
- * Slot called when the Apply or OK button is pressed.
- */
+/// Slot called when the Apply or OK button is pressed.
 void DlgPrefSound::slotApply() {
     if (!m_settingsModified) {
         return;
@@ -321,13 +314,11 @@ QUrl DlgPrefSound::helpUrl() const {
     return QUrl(MIXXX_MANUAL_SOUND_URL);
 }
 
-/**
- * Initializes (and creates) all the path items. Each path item widget allows
- * the user to input a sound device name and channel number given a description
- * of what will be done with that info. Inputs and outputs are grouped by tab,
- * and each path item has an identifier (Main, Headphones, ...) and an index,
- * if necessary.
- */
+/// Initializes (and creates) all the path items. Each path item widget allows
+/// the user to input a sound device name and channel number given a description
+/// of what will be done with that info. Inputs and outputs are grouped by tab,
+/// and each path item has an identifier (Master, Headphones, ...) and an index,
+/// if necessary.
 void DlgPrefSound::initializePaths() {
     // Pre-sort paths so they're added in the order they'll appear later on
     // so Tab key order matches order in layout:
@@ -362,10 +353,6 @@ void DlgPrefSound::addPath(const AudioOutput& output) {
             m_outputDevices,
             false,
             AudioPath::isIndexed(type) ? output.getIndex() : 0);
-    connect(this,
-            &DlgPrefSound::refreshOutputDevices,
-            pSoundItem,
-            &DlgPrefSoundItem::refreshDevices);
     insertItem(pSoundItem, outputVLayout);
     connectSoundItem(pSoundItem);
 
@@ -383,21 +370,35 @@ void DlgPrefSound::addPath(const AudioInput& input) {
             m_inputDevices,
             true,
             AudioPath::isIndexed(type) ? input.getIndex() : 0);
-
-    connect(this,
-            &DlgPrefSound::refreshInputDevices,
-            pSoundItem,
-            &DlgPrefSoundItem::refreshDevices);
-    insertItem(pSoundItem, inputVLayout);
     connectSoundItem(pSoundItem);
+    insertItem(pSoundItem, inputVLayout);
 
     setScrollSafeGuardForAllInputWidgets(pSoundItem);
 }
 
 void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
-    connect(pItem, &DlgPrefSoundItem::settingChanged, this, &DlgPrefSound::deviceSettingChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::selectedDeviceChanged,
+            this,
+            &DlgPrefSound::deviceChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::selectedChannelsChanged,
+            this,
+            &DlgPrefSound::deviceChannelsChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::configuredDeviceNotFound,
+            this,
+            &DlgPrefSound::configuredDeviceNotFound);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
+    if (pItem->isInput()) {
+        connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
+    } else {
+        connect(this,
+                &DlgPrefSound::refreshOutputDevices,
+                pItem,
+                &DlgPrefSoundItem::refreshDevices);
+    }
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
 }
@@ -407,7 +408,7 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
         DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
             pLayout->itemAt(pos)->widget()));
-        if (!pOther) {
+        if (!pOther) { // not a sound item, skip
             continue;
         }
         if (pItem->type() < pOther->type()) {
@@ -421,25 +422,22 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     pLayout->insertWidget(pos, pItem);
 }
 
-/**
- * Convenience overload to load settings from the SoundManagerConfig owned by
- * SoundManager.
- */
+/// Convenience overload to load settings from the SoundManagerConfig owned by
+/// SoundManager.
 void DlgPrefSound::loadSettings() {
     loadSettings(m_pSoundManager->getConfig());
 }
 
-/**
- * Loads the settings in the given SoundManagerConfig into the dialog.
- */
-void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
+/// Loads the settings in the given SoundManagerConfig into the dialog.
+void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     m_loading = true; // so settingsChanged ignores all our modifications here
     m_config = config;
     int apiIndex = apiComboBox->findData(m_config.getAPI());
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
     }
-    int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
+    int sampleRateIndex = sampleRateComboBox->findData(
+            QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
@@ -491,17 +489,42 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         keylockComboBox->setCurrentIndex(keylockComboBox->count() - 1);
     }
 
+    // Collect selected I/O channel indices for all non-empty device comboboxes
+    // in order to allow auto-selecting free channels when different devices are
+    // selected later on, when a different device is selected for any I/O.
+    m_selectedOutputChannelIndices.clear();
+    m_selectedInputChannelIndices.clear();
+    for (auto* ch : std::as_const(outputTab->children())) {
+        DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
+        if (pItem) {
+            auto id = pItem->getDeviceId();
+            if (id == SoundDeviceId()) {
+                continue;
+            }
+            m_selectedOutputChannelIndices.insert(pItem,
+                    QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
+        }
+    }
+    for (auto* ch : std::as_const(inputTab->children())) {
+        DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
+        if (pItem) {
+            auto id = pItem->getDeviceId();
+            if (id == SoundDeviceId()) {
+                continue;
+            }
+            m_selectedInputChannelIndices.insert(pItem,
+                    QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
+        }
+    }
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
     emit loadPaths(m_config);
 }
 
-/**
- * Slot called when the user selects a different API, or the
- * software changes it programmatically (for instance, when it
- * loads a value from SoundManager). Refreshes the device lists
- * for the new API and pushes those to the path items.
- */
+/// Slot called when the user selects a different API, or the
+/// software changes it programmatically (for instance, when it
+/// loads a value from SoundManager). Refreshes the device lists
+/// for the new API and pushes those to the path items.
 void DlgPrefSound::apiChanged(int index) {
     m_config.setAPI(apiComboBox->itemData(index).toString());
     refreshDevices();
@@ -520,10 +543,8 @@ void DlgPrefSound::apiChanged(int index) {
     updateAudioBufferSizes(sampleRateComboBox->currentIndex());
 }
 
-/**
- * Updates the list of APIs, trying to keep the API and device selections
- * constant if possible.
- */
+/// Updates the list of APIs, trying to keep the API and device selections
+/// constant if possible.
 void DlgPrefSound::updateAPIs() {
     QString currentAPI(apiComboBox->itemData(apiComboBox->currentIndex()).toString());
     emit updatingAPI();
@@ -540,22 +561,17 @@ void DlgPrefSound::updateAPIs() {
     emit updatedAPI();
 }
 
-/**
- * Slot called when the sample rate combo box changes to update the
- * sample rate in the config.
- */
+/// Slot called when the sample rate combo box changes to update the
+/// sample rate in the config.
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(
-            sampleRateComboBox->itemData(index).toUInt());
+    m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
 }
 
-/**
- * Slot called when the latency combo box is changed to update the
- * latency in the config.
- */
+/// Slot called when the latency combo box is changed to update the
+/// latency in the config.
 void DlgPrefSound::audioBufferChanged(int index) {
     m_config.setAudioBufferSizeIndex(
             audioBufferComboBox->itemData(index).toUInt());
@@ -609,7 +625,11 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                 static_cast<unsigned int>(SoundManagerConfig::
                                 JackAudioBufferSizeIndex::Size4096fpp));
     } else {
-        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
+        DEBUG_ASSERT(sampleRateComboBox->itemData(sampleRateIndex)
+                             .canConvert<mixxx::audio::SampleRate>());
+        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
+                                    .value<mixxx::audio::SampleRate>()
+                                    .toDouble();
         unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
         // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
         // don't right now!), so we iterate over all the buffer sizes until we
@@ -639,10 +659,8 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     }
 }
 
-/**
- * Slot called when device lists go bad to refresh them, or the API
- * just changes and we need to display new devices.
- */
+/// Slot called when device lists go bad to refresh them, or the API
+/// just changes and we need to display new devices.
 void DlgPrefSound::refreshDevices() {
     if (m_config.getAPI() == SoundManagerConfig::kDefaultAPI) {
         m_outputDevices.clear();
@@ -657,11 +675,9 @@ void DlgPrefSound::refreshDevices() {
     emit refreshInputDevices(m_inputDevices);
 }
 
-/**
- * Called when any of the combo boxes in this dialog are changed. Enables the
- * apply button and marks that settings have been changed so that
- * DlgPrefSound::slotApply knows to apply them.
- */
+/// Called when any of the combo boxes in this dialog are changed. Enables the
+/// apply button and marks that settings have been changed so that
+/// DlgPrefSound::slotApply knows to apply them.
 void DlgPrefSound::settingChanged() {
     if (m_loading) {
         return; // doesn't count if we're just loading prefs
@@ -669,26 +685,87 @@ void DlgPrefSound::settingChanged() {
     m_settingsModified = true;
 }
 
-void DlgPrefSound::deviceSettingChanged() {
+/// Slot called when a device from the config can not be selected, i.e. is
+/// currently not available. This may happen during startup when MixxxMainWindow
+/// opens this page to allow users to make adjustments in case configured
+/// devices are busy/missing.
+/// The issue is that the visual state (combobox(es) with 'None') does not match
+/// the untouched config state. This set the modified flag so slotApply() will
+/// apply the (seemingly) unchanged configuration if users simply click Apply/Okay
+/// because they are okay to continue without these devices.
+void DlgPrefSound::configuredDeviceNotFound() {
+    m_settingsModified = true;
+}
+
+void DlgPrefSound::deviceChanged() {
     if (m_loading) {
         return;
     }
+
+    DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(sender());
+    if (!pItem) {
+        return;
+    }
+    QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>>* channels;
+    if (pItem->isInput()) {
+        channels = &m_selectedInputChannelIndices;
+    } else {
+        channels = &m_selectedOutputChannelIndices;
+    }
+    auto id = pItem->getDeviceId();
+    if (id == SoundDeviceId()) {
+        if (channels->contains(pItem)) {
+            channels->remove(pItem);
+        }
+    } else {
+        QList<int> selectedChannelsForDevice;
+        QHashIterator<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> it(
+                pItem->isInput()
+                        ? m_selectedInputChannelIndices
+                        : m_selectedOutputChannelIndices);
+        while (it.hasNext()) {
+            it.next();
+            if (it.value().first == id) {
+                selectedChannelsForDevice.append(it.value().second);
+            }
+        }
+        pItem->selectFirstUnusedChannelIndex(selectedChannelsForDevice);
+    }
+
     checkLatencyCompensation();
     m_settingsModified = true;
 }
 
-/**
- * Slot called when the "Query Devices" button is clicked.
- */
+void DlgPrefSound::deviceChannelsChanged() {
+    if (m_loading) {
+        return;
+    }
+    DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(sender());
+    if (!pItem) {
+        return;
+    }
+    auto id = pItem->getDeviceId();
+    int index = pItem->getChannelIndex();
+    if (id != SoundDeviceId()) {
+        if (pItem->isInput()) {
+            m_selectedInputChannelIndices.insert(pItem, QPair<SoundDeviceId, int>(id, index));
+        } else {
+            m_selectedOutputChannelIndices.insert(pItem, QPair<SoundDeviceId, int>(id, index));
+        }
+    }
+
+    checkLatencyCompensation();
+    m_settingsModified = true;
+}
+
+/// Slot called when the "Query Devices" button is clicked.
 void DlgPrefSound::queryClicked() {
     ScopedWaitCursor cursor;
     m_pSoundManager->clearAndQueryDevices();
     updateAPIs();
 }
 
-/**
- * Slot called when the "Reset to Defaults" button is clicked.
- */
+/// Slot called when the "Reset to Defaults" button is clicked.
 void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
@@ -799,27 +876,29 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString warningIcon(
-                    "<html>"
-                    "<img "
-                    "src=':/images/preferences/ic_preferences_warning.svg' "
-                    "width='20' height='20'>"
-                    "</html> ");
             QString lineBreak("<br/>");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation->get() == 0.0) {
-                latencyCompensationWarningLabel->setText(
-                      warningIcon +
-                      tr("Microphone inputs are out of time in the record & broadcast signal compared to what you hear.") + lineBreak +
-                      tr("Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
-                      tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
+                        tr("Microphone inputs are out of time in the record & "
+                           "broadcast signal compared to what you hear.") +
+                        lineBreak +
+                        tr("Measure round trip latency and enter it above for "
+                           "Microphone Latency Compensation to align "
+                           "microphone timing.") +
+                        lineBreak +
+                        tr("Refer to the Mixxx User Manual for details.") +
+                        "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
-                latencyCompensationWarningLabel->setText(
-                  warningIcon +
-                  tr("Configured latency has changed.") + lineBreak +
-                  tr("Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
-                  tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
+                        tr("Configured latency has changed.") + lineBreak +
+                        tr("Remeasure round trip latency and enter it above "
+                           "for Microphone Latency Compensation to align "
+                           "microphone timing.") +
+                        lineBreak +
+                        tr("Refer to the Mixxx User Manual for details.") +
+                        "</html>");
                 latencyCompensationWarningLabel->show();
             } else {
                 latencyCompensationWarningLabel->hide();

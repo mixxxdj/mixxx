@@ -41,8 +41,10 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
                 this,
                 &WEffectSelector::slotEffectSelected);
     } else {
-        SKIN_WARNING(node, context)
-                << "EffectSelector node could not attach to effect slot.";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectSelector node could not attach to effect "
+                               "slot."));
     }
 
     populate();

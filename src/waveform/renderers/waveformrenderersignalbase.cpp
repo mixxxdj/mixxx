@@ -169,11 +169,14 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     onSetup(node);
 }
 
-void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
-                                          float* pMidGain, float* pHighGain) {
+void WaveformRendererSignalBase::getGains(float* pAllGain,
+        bool applyCompensation,
+        float* pLowGain,
+        float* pMidGain,
+        float* pHighGain) {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     if (pAllGain) {
-        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain()) *
+        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain(applyCompensation)) *
                 static_cast<CSAMPLE_GAIN>(factory->getVisualGain(WaveformWidgetFactory::All));
         ;
     }
@@ -222,4 +225,14 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             *pHighGain = highGain;
         }
     }
+}
+
+std::span<float, 256> WaveformRendererSignalBase::unscaleTable() {
+    // Table to undo the scaling std::pow(invalue, 2.0f * 0.316f);
+    // done in scaleSignal in analyzerwaveform.h
+    static std::array<float, 256> result;
+    for (int i = 0; i < 256; i++) {
+        result[i] = 255.f * std::pow(static_cast<float>(i) / 255.f, 1.f / 0.632f);
+    }
+    return result;
 }

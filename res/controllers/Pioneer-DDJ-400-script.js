@@ -172,7 +172,11 @@ PioneerDDJ400.init = function() {
     engine.softTakeover("[EffectRack1_EffectUnit1_Effect3]", "meta", true);
     engine.softTakeover("[EffectRack1_EffectUnit1]", "mix", true);
 
-    for (let i = 1; i <= 16; ++i) {
+    const samplerCount = 16;
+    if (engine.getValue("[App]", "num_samplers") < samplerCount) {
+        engine.setValue("[App]", "num_samplers", samplerCount);
+    }
+    for (let i = 1; i <= samplerCount; ++i) {
         engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJ400.samplerPlayOutputCallbackFunction);
     }
 
@@ -352,7 +356,7 @@ PioneerDDJ400.startLoopLightsBlink = function(channel, control, status, group) {
 
     PioneerDDJ400.stopLoopLightsBlink(group, control, status);
 
-    PioneerDDJ400.timers[group][control] = engine.beginTimer(500, function() {
+    PioneerDDJ400.timers[group][control] = engine.beginTimer(500, () => {
         blink = 0x7F - blink;
 
         // When adjusting the loop out position, turn the loop in light off
@@ -606,7 +610,7 @@ PioneerDDJ400.startSamplerBlink = function(channel, control, group) {
     let val = 0x7f;
 
     PioneerDDJ400.stopSamplerBlink(channel, control);
-    PioneerDDJ400.timers[channel][control] = engine.beginTimer(250, function() {
+    PioneerDDJ400.timers[channel][control] = engine.beginTimer(250, () => {
         val = 0x7f - val;
 
         // blink the appropriate pad

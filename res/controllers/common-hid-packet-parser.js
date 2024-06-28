@@ -696,14 +696,14 @@ class HIDPacket {
         field.auto_repeat = undefined;
         field.auto_repeat_interval = undefined;
 
-        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);
+        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8) - 1;
         const signed = this.signedPackFormats.includes(field.pack);
         if (signed) {
-            field.min = 0 - (packet_max_value / 2) + 1;
-            field.max = (packet_max_value / 2) - 1;
+            field.min = 0 - ((packet_max_value + 1) / 2) + 1;
+            field.max = ((packet_max_value + 1) / 2) - 1;
         } else {
             field.min = 0;
-            field.max = packet_max_value - 1;
+            field.max = packet_max_value;
         }
 
         if (bitmask === undefined || bitmask === packet_max_value) {
@@ -1679,7 +1679,7 @@ class HIDController {
      */
     processIncomingPacket(packet, delta) {
 
-        HIDController.fastForIn(delta, (field_name) => {
+        HIDController.fastForIn(delta, (function(field_name) {
             // @ts-ignore ignoredControlChanges should be defined in the users mapping
             // see EKS-Otus.js for an example
             if (this.ignoredControlChanges !== undefined &&
@@ -1697,8 +1697,7 @@ class HIDController {
             } else {
                 console.warn(`HIDController.processIncomingPacket - Unknown field ${field.name} type ${field.type}`);
             }
-        }
-        );
+        }).bind(this)); // Qt < 6.2.4 : .bind(this) needed because of QTBUG-95677
     }
     /**
      * Get active group for this field
@@ -1711,10 +1710,8 @@ class HIDController {
             return this.resolveGroup(field.mapped_group);
         }
         const group = field.group;
-        if (group === undefined) {
-            if (this.activeDeck !== undefined) {
-                return `[Channel${this.activeDeck}]`;
-            }
+        if (group === "deck" || group === "deck1" || group === "deck2") {
+            return group;
         }
         return this.resolveGroup(group);
     }
@@ -2077,9 +2074,12 @@ class HIDController {
                                 continue;
                             }
                             const bitControlGroup = this.resolveGroup(bit.mapped_group);
+                            if (bitControlGroup === undefined) {
+                                console.warn("HIDController.switchDeck: resolvedGroup(bit.mapped_group) returned undefined");
+                            }
                             engine.connectControl(
                                 bitControlGroup, bit.mapped_name, bit.mapped_callback, true);
-                            engine.connectControl(new_group, bit.mapped_name, bit.mapped_callback);
+                            engine.makeConnection(new_group, bit.mapped_name, bit.mapped_callback);
                             const value = engine.getValue(new_group, bit.mapped_name);
                             console.log(`Bit ${bit.group}.${bit.name} value ${value}`);
                             if (value) {
@@ -2100,9 +2100,12 @@ class HIDController {
                         continue;
                     }
                     const fieldControlGroup = this.resolveGroup(field.mapped_group);
+                    if (fieldControlGroup === undefined) {
+                        console.warn("HIDController.switchDeck: resolvedGroup(field.mapped_group) returned undefined");
+                    }
                     engine.connectControl(
                         fieldControlGroup, field.mapped_name, field.mapped_callback, true);
-                    engine.connectControl(new_group, field.mapped_name, field.mapped_callback);
+                    engine.makeConnection(new_group, field.mapped_name, field.mapped_callback);
                     const value = engine.getValue(new_group, field.mapped_name);
                     if (value) {
                         this.setOutput(
@@ -2142,10 +2145,13 @@ class HIDController {
             return;
         }
         const controlgroup = this.resolveGroup(m_group);
+        if (controlgroup === undefined) {
+            console.warn("HIDController.linkOutput: resolvedGroup(m_group) returned undefined");
+        }
         field.mapped_group = m_group;
         field.mapped_name = m_name;
         field.mapped_callback = callback;
-        engine.connectControl(controlgroup, m_name, callback);
+        engine.makeConnection(controlgroup, m_name, callback);
         if (engine.getValue(controlgroup, m_name)) {
             this.setOutput(m_group, m_name, this.LEDColors.on);
         } else {
@@ -2169,6 +2175,9 @@ class HIDController {
             return;
         }
         const controlgroup = this.resolveGroup(field.mapped_group);
+        if (controlgroup === undefined) {
+            console.warn("HIDController.unlinkOutput: resolvedGroup(field.mapped_group) returned undefined");
+        }
         engine.connectControl(controlgroup, field.mapped_name, callback, true);
         field.mapped_group = undefined;
         field.mapped_name = undefined;

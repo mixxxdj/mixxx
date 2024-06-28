@@ -1,6 +1,7 @@
 {
   "extends": [ "eslint:recommended",
-               "plugin:jsdoc/recommended"],
+               "plugin:jsdoc/recommended",
+               "plugin:diff/diff"],
 
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -83,6 +84,7 @@
     "object-curly-spacing": "warn",
     "prefer-const": "warn",
     "prefer-regex-literals": "warn",
+    "prefer-template": "warn",
     "quotes": [ "warn", "double" ],
     "require-atomic-updates": "error",
     "semi": "warn",

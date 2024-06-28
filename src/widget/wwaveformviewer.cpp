@@ -37,9 +37,7 @@ WWaveformViewer::WWaveformViewer(
             group, "wheel", this, ControlFlag::NoAssertIfMissing);
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(this,
-            &WWaveformViewer::passthroughChanged,
-            Qt::DirectConnection);
+    m_pPassthroughEnabled->connectValueChanged(this, &WWaveformViewer::passthroughChanged);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
@@ -52,14 +50,29 @@ WWaveformViewer::~WWaveformViewer() {
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
+        m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
     }
-    m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event);
     if (m_waveformWidget) {
+        // Note m_waveformWidget is a WaveformWidgetAbstract,
+        // so this calls the method of WaveformWidgetAbstract,
+        // note of the derived waveform widgets which are also
+        // a QWidget, though that will be called directly.
         m_waveformWidget->resize(width(), height());
+    }
+}
+
+void WWaveformViewer::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
+    if (m_waveformWidget) {
+        // We leave it up to Qt to set the size of the derived
+        // waveform widget, but we still need to set the size
+        // of the renderer.
+        m_waveformWidget->resizeRenderer(
+                width(), height(), static_cast<float>(devicePixelRatioF()));
     }
 }
 
@@ -89,7 +102,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         if (!isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
-                m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
+                m_pCueMenuPopup->setTrackCueGroup(currentTrack, cueAtClickPos, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_pCueMenuPopup->popup(event->globalPosition().toPoint());
 #else
@@ -189,16 +202,16 @@ void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     }
 }
 
-void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WWaveformViewer::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
 
-void WWaveformViewer::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WWaveformViewer::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
 
-bool WWaveformViewer::handleDragAndDropEventFromWindow(QEvent* ev) {
-    return event(ev);
+bool WWaveformViewer::handleDragAndDropEventFromWindow(QEvent* pEvent) {
+    return event(pEvent);
 }
 
 void WWaveformViewer::leaveEvent(QEvent*) {
@@ -248,7 +261,9 @@ void WWaveformViewer::setZoom(double zoom) {
 }
 
 void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
-    m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    if (m_waveformWidget) {
+        m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    }
 }
 
 void WWaveformViewer::setPlayMarkerPosition(double position) {
@@ -260,12 +275,19 @@ void WWaveformViewer::setPlayMarkerPosition(double position) {
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        disconnect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
+        disconnect(pWidget);
     }
     m_waveformWidget = waveformWidget;
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
+        DEBUG_ASSERT(pWidget);
+        connect(pWidget,
+                &QWidget::destroyed,
+                this,
+                [this]() {
+                    // The pointer must be considered as dangling!
+                    m_waveformWidget = nullptr;
+                });
         m_waveformWidget->getWidget()->setMouseTracking(true);
 #ifdef MIXXX_USE_QOPENGL
         if (m_waveformWidget->getGLWidget()) {

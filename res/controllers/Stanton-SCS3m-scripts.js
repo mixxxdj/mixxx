@@ -405,7 +405,7 @@ SCS3M.Agent = function(device) {
         }
     }
 
-    var flushModeset = function() {
+    var flushModeset = () => {
         var message;
 
         // Now we can flush the rest of the messages.
@@ -576,7 +576,7 @@ SCS3M.Agent = function(device) {
         sw.hold = function(onHeld) {
             return function() {
                 heldBegin = true;
-                var switchExpire = engine.beginTimer(200, function() {
+                var switchExpire = engine.beginTimer(200, () => {
                     engine.stopTimer(switchExpire);
                     if (heldBegin) {
                         heldBegin = false;

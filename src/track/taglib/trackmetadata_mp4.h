@@ -1,6 +1,6 @@
 #pragma once
 
-#include <taglib/mp4tag.h>
+#include <mp4tag.h>
 
 class QImage;
 

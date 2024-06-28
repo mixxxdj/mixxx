@@ -31,7 +31,7 @@
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -190,10 +190,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }.bind(this), true);
+                    }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -255,10 +255,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
-                        }.bind(this), true);
+                        }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
@@ -298,7 +298,7 @@
             this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
-        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.outKey = "hotcue_" + this.number + "_status";
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
@@ -363,7 +363,12 @@
             return;
         }
         this.volumeByVelocity = options.volumeByVelocity;
-        this.number = options.number;
+        const samNum = options.number;
+        if (engine.getValue("[App]", "num_samplers") < samNum) {
+            console.warn("Mapping tried to connect to non-existent sampler.");
+            engine.setValue("[App]", "num_samplers", samNum);
+        }
+        this.number = samNum;
         this.group = "[Sampler" + this.number + "]";
         Button.call(this, options);
     };
@@ -656,7 +661,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            script.deepMerge(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -730,9 +735,7 @@
     const JogWheelBasic = function(options) {
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
-
-        if (!_.isInteger(this.deck)) {
+        if (!Number.isInteger(this.deck)) {
             console.warn("missing scratch deck");
             return;
         }
@@ -740,18 +743,18 @@
             console.warn("invalid deck number: " + this.deck);
             return;
         }
-        if (!_.isInteger(this.wheelResolution)) {
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
         if (this.group === undefined) {

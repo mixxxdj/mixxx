@@ -5,25 +5,21 @@
 #include <QStandardPaths>
 #include <QtGlobal>
 
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
 #ifdef __BROADCAST__
 #include <shoutidjc/shout.h>
 #endif
-#ifdef WIN64
-#undef WIN32
+
+#ifdef __RUBBERBAND__
+#include <rubberband/RubberBandStretcher.h>
 #endif
 
 #include <FLAC/format.h>
 #include <chromaprint.h>
 #include <lame/lame.h>
 #include <portaudio.h>
-#include <rubberband/RubberBandStretcher.h>
 #include <sndfile.h>
 #include <soundtouch/SoundTouch.h>
-#include <taglib/taglib.h>
+#include <taglib.h>
 #include <vorbis/codec.h>
 
 #include "util/gitinfostore.h"
@@ -69,7 +65,9 @@ QString VersionStore::applicationName() {
 
 // static
 QString VersionStore::platform() {
-#ifdef __APPLE__
+#ifdef Q_OS_IOS
+    QString base = QStringLiteral("iOS");
+#elif defined(Q_OS_MACOS)
     QString base = QStringLiteral("macOS");
 #elif defined(__LINUX__)
     QString base = QStringLiteral("Linux");
@@ -80,6 +78,8 @@ QString VersionStore::platform() {
     QString base = QStringLiteral("FreeBSD");
 #elif defined(__BSD__)
     QString base = QStringLiteral("BSD");
+#elif defined(__EMSCRIPTEN__)
+    QString base = QStringLiteral("Emscripten");
 #else
     QString base = QStringLiteral("Unknown OS");
 #endif
@@ -106,6 +106,10 @@ QString VersionStore::platform() {
         defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) ||   \
         defined(_M_PPC)
     base.append(" PowerPC");
+#elif defined(__wasm32__)
+    base.append(" Wasm32");
+#elif defined(__wasm__)
+    base.append(" Wasm");
 #endif
 
     return base;
@@ -137,6 +141,11 @@ QString VersionStore::gitVersion() {
 }
 
 // static
+QString VersionStore::qtVersion() {
+    return qVersion();
+}
+
+// static
 QString VersionStore::buildFlags() {
     return kBuildFlags;
 }
@@ -160,8 +169,10 @@ QStringList VersionStore::dependencyVersions() {
             << QString("PortAudio: %1 %2")
                        .arg(Pa_GetVersion())
                        .arg(Pa_GetVersionText())
+#ifdef __RUBBERBAND__
             // The version of the RubberBand headers Mixxx was compiled with.
             << QString("RubberBand: %1").arg(RUBBERBAND_VERSION)
+#endif
             // The version of the SoundTouch headers Mixxx was compiled with.
             << QString("SoundTouch: %1").arg(SOUNDTOUCH_VERSION)
             // The version of the TagLib headers Mixxx was compiled with.
