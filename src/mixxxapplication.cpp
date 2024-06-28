@@ -71,7 +71,16 @@ class QMouseEventEditable : public QMouseEvent {
 #endif
 };
 #endif
-constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(20);
+
+// kEventNotifyExecTimeWarningThreshold defines the threshold duration for event
+// processing warnings. If the processing time of an event exceeds this duration
+// in developer mode, a warning will be logged. This is used to identify
+// potentially slow event processing in the application, which could impact
+// performance. With a 60Hz waveform update rate, paint and swap events must be
+// processed through the event queue every 16.6ms, to ensure smooth rendering.
+// Exceeding this processing time can lead to visible delays, therefore 5ms is a
+// reasonable threshold.
+constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(5);
 
 } // anonymous namespace
 
