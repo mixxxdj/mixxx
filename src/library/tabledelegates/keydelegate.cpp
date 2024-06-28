@@ -13,9 +13,11 @@ void KeyDelegate::paintItem(
         const QModelIndex& index) const {
     paintItemBackground(painter, option, index);
 
-    QString keyText = index.data().toString();
-    mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(keyText);
-    const auto keyColor = KeyUtils::keyToColor(key);
+    mixxx::track::io::key::ChromaticKey key =
+            index.data().value<mixxx::track::io::key::ChromaticKey>();
+    // Get the key text with the user-provided notation
+    QString keyText = KeyUtils::keyToString(key);
+    QColor keyColor = KeyUtils::keyToColor(key);
 
     if (keyColor.isValid()) {
         // Draw the colored rectangle next to the key label
@@ -30,7 +32,7 @@ void KeyDelegate::paintItem(
     const int rectWidth = 8; // 4px width + 4px right padding
 
     QString elidedText = option.fontMetrics.elidedText(
-            index.data().toString(),
+            keyText,
             Qt::ElideLeft,
             columnWidth(index) - rectWidth);
 

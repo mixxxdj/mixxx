@@ -886,8 +886,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // If we know the semantic key via the LIBRARYTABLE_KEY_ID
             // column (as opposed to the string representation of the key
-            // currently stored in the DB) then lookup the key and render it
-            // using the user's selected notation.
+            // currently stored in the DB) then lookup the key and return it
             const QVariant keyCodeValue = rawSiblingValue(
                     index,
                     ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
@@ -908,8 +907,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID) {
                 return QVariant();
             }
-            // Render the key with the user-provided notation
-            return KeyUtils::keyToString(key);
+            return QVariant::fromValue(key);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
