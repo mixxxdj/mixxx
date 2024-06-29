@@ -101,20 +101,20 @@ class ControlDoublePrivate : public QObject {
     void reset();
 
     // Set the behavior to be used when setting values and translating between
-    // parameter and value space. Returns the previously set behavior (if any).
+    // normalized value and value space. Returns the previously set behavior (if any).
     // Callers must allocate the passed behavior using new and ownership to this
     // memory is passed with the function call!!
     // TODO: Pass a std::unique_ptr instead of a plain pointer to ensure this
     // transfer of ownership.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
-    void setParameter(double dParam, QObject* pSender);
-    double getParameter() const;
-    double getParameterForValue(double value) const;
-    double getParameterForMidi(double midiValue) const;
+    void setNormalizedValue(double dParam, QObject* pSender);
+    double getNormalizedValue() const;
+    double getNormalizedValueForValue(double value) const;
+    double getNormalizedValueForMidi7Bit(double dMidi7BitValue) const;
 
-    void setValueFromMidi(MidiOpCode opcode, double dParam);
-    double getMidiParameter() const;
+    void setValueFromMidi7Bit(MidiOpCode opcode, double dMidi7BitValue);
+    double getValueScaledAsMidi7Bit() const;
 
     bool ignoreNops() const {
         return m_bIgnoreNops;

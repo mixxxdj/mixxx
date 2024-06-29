@@ -31,7 +31,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.margins: 1
             antialiasing: false // for performance reasons
-            height: control.parameter * (parent.height - 2 * anchors.margins)
+            height: control.normalizedValue * (parent.height - 2 * anchors.margins)
             radius: width / 2
         }
     }

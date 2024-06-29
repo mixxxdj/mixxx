@@ -44,11 +44,11 @@ void ControlWidgetConnection::setControlParameter(double parameter) {
     if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transformInverse(parameter);
     }
-    m_pControl->setParameter(parameter);
+    m_pControl->setNormalizedValue(parameter);
 }
 
 double ControlWidgetConnection::getControlParameter() const {
-    double parameter = m_pControl->getParameter();
+    double parameter = m_pControl->getNormalizedValue();
     if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transform(parameter);
     }
@@ -56,7 +56,7 @@ double ControlWidgetConnection::getControlParameter() const {
 }
 
 double ControlWidgetConnection::getControlParameterForValue(double value) const {
-    double parameter = m_pControl->getParameterForValue(value);
+    double parameter = m_pControl->getNormalizedValueForValue(value);
     if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transform(parameter);
     }
@@ -79,11 +79,12 @@ void ControlParameterWidgetConnection::Init() {
 QString ControlParameterWidgetConnection::toDebugString() const {
     const ConfigKey& key = getKey();
     return QString("%1,%2 Parameter: %3 Value: %4 Direction: %5 Emit: %6")
-            .arg(key.group, key.item,
-                 QString::number(m_pControl->getParameter()),
-                 QString::number(m_pControl->get()),
-                 directionOptionToString(m_directionOption),
-                 emitOptionToString(m_emitOption));
+            .arg(key.group,
+                    key.item,
+                    QString::number(m_pControl->getNormalizedValue()),
+                    QString::number(m_pControl->get()),
+                    directionOptionToString(m_directionOption),
+                    emitOptionToString(m_emitOption));
 }
 
 void ControlParameterWidgetConnection::slotControlValueChanged(double value) {
@@ -134,7 +135,7 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
     return QString("%1,%2 Parameter: %3 Property: %4 Value: %5")
             .arg(key.group,
                     key.item,
-                    QString::number(m_pControl->getParameter()),
+                    QString::number(m_pControl->getNormalizedValue()),
                     m_propertyName,
                     m_property.read(m_pWidget->toQWidget()).toString());
 }

@@ -118,29 +118,29 @@ class ControlProxy : public QObject {
         return get() > 0.0;
     }
 
-    /// Returns the parameterized value of the object. Thread safe, non-blocking.
-    inline double getParameter() const {
-        return m_pControl->getParameter();
+    /// Returns the normalized value of the object. Thread safe, non-blocking.
+    inline double getNormalizedValue() const {
+        return m_pControl->getNormalizedValue();
     }
 
-    /// Returns the parameterized value of the object. Thread safe, non-blocking.
-    inline double getParameterForValue(double value) const {
-        return m_pControl->getParameterForValue(value);
+    /// Returns the normalized value of the object. Thread safe, non-blocking.
+    inline double getNormalizedValueForValue(double value) const {
+        return m_pControl->getNormalizedValueForValue(value);
     }
 
-    /// Returns the normalized parameter of the object. Thread safe, non-blocking.
+    /// Returns the default value of the object. Thread safe, non-blocking.
     inline double getDefault() const {
         return m_pControl->defaultValue();
     }
 
   public slots:
-    /// Sets the control value to v. Thread safe, non-blocking.
+    /// Sets the controls value to v. Thread safe, non-blocking.
     void set(double v) {
         m_pControl->set(v, this);
     }
-    /// Sets the control parameterized value to v. Thread safe, non-blocking.
-    void setParameter(double v) {
-        m_pControl->setParameter(v, this);
+    /// Sets the controls normalized value to v. Thread safe, non-blocking.
+    void setNormalizedValue(double v) {
+        m_pControl->setNormalizedValue(v, this);
     }
     /// Resets the control to its default value. Thread safe, non-blocking.
     void reset() {

@@ -132,20 +132,20 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
-    // Returns the parameterized value of the object. Thread safe, non-blocking.
-    virtual double getParameter() const;
+    // Returns the normalized value of the object. Thread safe, non-blocking.
+    virtual double getNormalizedValue() const;
 
-    // Returns the parameterized value of the object. Thread safe, non-blocking.
-    virtual double getParameterForValue(double value) const;
+    // Returns the normalized value of the object. Thread safe, non-blocking.
+    virtual double getNormalizedValueForValue(double value) const;
 
-    // Returns the parameterized value of the object. Thread safe, non-blocking.
-    virtual double getParameterForMidi(double midiValue) const;
+    // Returns the normalized value of the object. Thread safe, non-blocking.
+    virtual double getNormalizedValueForMidi7Bit(double midi7BitValue) const;
 
-    // Sets the control parameterized value to v. Thread safe, non-blocking.
-    virtual void setParameter(double v);
+    // Sets the control normalized value to v. Thread safe, non-blocking.
+    virtual void setNormalizedValue(double v);
 
-    // Sets the control parameterized value to v. Thread safe, non-blocking.
-    virtual void setParameterFrom(double v, QObject* pSender = NULL);
+    // Sets the control normalized value to v. Thread safe, non-blocking.
+    virtual void setNormalizedValueFrom(double v, QObject* pSender = NULL);
 
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.
@@ -173,8 +173,8 @@ class ControlObject : public QObject {
   public:
     // DEPRECATED: Called to set the control value from the controller
     // subsystem.
-    virtual void setValueFromMidi(MidiOpCode o, double v);
-    virtual double getMidiParameter() const;
+    virtual void setValueFromMidi7Bit(MidiOpCode o, double v);
+    virtual double getValueScaledAsMidi7Bit() const;
 
   protected:
     // Key of the object

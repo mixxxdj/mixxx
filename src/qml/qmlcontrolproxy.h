@@ -21,7 +21,8 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     Q_PROPERTY(bool keyValid READ isKeyValid NOTIFY keyValidChanged)
     Q_PROPERTY(bool initialized READ isInitialized NOTIFY initializedChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)
-    Q_PROPERTY(double parameter READ getParameter WRITE setParameter NOTIFY parameterChanged)
+    Q_PROPERTY(double normalizedValue READ getNormalizedValue WRITE
+                    setNormalizedValue NOTIFY normalizedValueChanged)
     QML_NAMED_ELEMENT(ControlProxy)
 
   public:
@@ -49,8 +50,8 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     void setValue(double newValue);
     double getValue() const;
 
-    void setParameter(double newValue);
-    double getParameter() const;
+    void setNormalizedValue(double newValue);
+    double getNormalizedValue() const;
 
     bool isKeyValid() const;
     bool isInitialized() const;
@@ -64,10 +65,10 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     void keyValidChanged(bool valid);
     void initializedChanged(bool initialized);
     void valueChanged(double newValue);
-    void parameterChanged(double newParameter);
+    void normalizedValueChanged(double newNormalizedValue);
 
   private slots:
-    /// Emits both the valueChanged and parameterChanged signals
+    /// Emits both the valueChanged and normalizedValueChanged signals
     void slotControlProxyValueChanged(double newValue);
 
   private:

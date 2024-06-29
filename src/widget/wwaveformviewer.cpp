@@ -87,7 +87,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         // If we are pitch-bending then disable and reset because the two
         // shouldn't be used at once.
         if (m_bBending) {
-            m_pWheel->setParameter(0.5);
+            m_pWheel->setNormalizedValue(0.5);
             m_bBending = false;
         }
         m_bScratching = true;
@@ -116,7 +116,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
                 m_pScratchPositionEnable->set(0.0);
                 m_bScratching = false;
             }
-            m_pWheel->setParameter(0.5);
+            m_pWheel->setNormalizedValue(0.5);
             m_bBending = true;
         }
     }
@@ -155,7 +155,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         double v = 0.5 + (diffValue / 1270.0);
         // clamp to [0.0, 1.0]
         v = math_clamp(v, 0.0, 1.0);
-        m_pWheel->setParameter(v);
+        m_pWheel->setNormalizedValue(v);
     } else if (!isPlaying()) {
         WaveformMarkPointer pMark;
         pMark = m_waveformWidget->getCueMarkAtPoint(event->pos());
@@ -183,7 +183,7 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
         m_bScratching = false;
     }
     if (m_bBending) {
-        m_pWheel->setParameter(0.5);
+        m_pWheel->setNormalizedValue(0.5);
         m_bBending = false;
     }
     m_mouseAnchor = QPoint();

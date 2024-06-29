@@ -65,7 +65,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                         // Since setting the value might cause us to go down
                         // a route that would eventually clear the active
                         // key list, do that last.
-                        control->setValueFromMidi(MidiOpCode::NoteOn, 1);
+                        control->setValueFromMidi7Bit(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
                         qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
@@ -130,7 +130,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
                     //qDebug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
-                    pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
+                    pControl->setValueFromMidi7Bit(MidiOpCode::NoteOff, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
                 // Due to the modifier clearing workaround we might match multiple keys for

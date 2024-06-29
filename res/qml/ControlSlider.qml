@@ -6,8 +6,8 @@ Skin.Slider {
     property alias group: control.group
     property alias key: control.key
 
-    value: control.parameter
-    onMoved: control.parameter = value
+    value: control.normalizedValue
+    onMoved: control.normalizedValue = value
 
     Mixxx.ControlProxy {
         id: control

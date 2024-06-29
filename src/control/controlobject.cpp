@@ -67,12 +67,12 @@ bool ControlObject::exists(const ConfigKey& key) {
     return !ControlDoublePrivate::getControl(key, ControlFlag::NoWarnIfMissing).isNull();
 }
 
-void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
-    m_pControl->setValueFromMidi(o, v);
+void ControlObject::setValueFromMidi7Bit(MidiOpCode o, double v) {
+    m_pControl->setValueFromMidi7Bit(o, v);
 }
 
-double ControlObject::getMidiParameter() const {
-    return m_pControl->getMidiParameter();
+double ControlObject::getValueScaledAsMidi7Bit() const {
+    return m_pControl->getValueScaledAsMidi7Bit();
 }
 
 // static
@@ -81,24 +81,24 @@ double ControlObject::get(const ConfigKey& key) {
     return pCop ? pCop->get() : 0.0;
 }
 
-double ControlObject::getParameter() const {
-    return m_pControl->getParameter();
+double ControlObject::getNormalizedValue() const {
+    return m_pControl->getNormalizedValue();
 }
 
-double ControlObject::getParameterForValue(double value) const {
-    return m_pControl->getParameterForValue(value);
+double ControlObject::getNormalizedValueForValue(double value) const {
+    return m_pControl->getNormalizedValueForValue(value);
 }
 
-double ControlObject::getParameterForMidi(double midiParameter) const {
-    return m_pControl->getParameterForMidi(midiParameter);
+double ControlObject::getNormalizedValueForMidi7Bit(double midi7BitValue) const {
+    return m_pControl->getNormalizedValueForMidi7Bit(midi7BitValue);
 }
 
-void ControlObject::setParameter(double v) {
-    m_pControl->setParameter(v, this);
+void ControlObject::setNormalizedValue(double v) {
+    m_pControl->setNormalizedValue(v, this);
 }
 
-void ControlObject::setParameterFrom(double v, QObject* pSender) {
-    m_pControl->setParameter(v, pSender);
+void ControlObject::setNormalizedValueFrom(double v, QObject* pSender) {
+    m_pControl->setNormalizedValue(v, pSender);
 }
 
 // static

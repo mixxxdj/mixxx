@@ -101,7 +101,7 @@ QVariant ControlModel::data(const QModelIndex& index,
         case CONTROL_COLUMN_VALUE:
             return control.pControl->get();
         case CONTROL_COLUMN_PARAMETER:
-            return control.pControl->getParameter();
+            return control.pControl->getNormalizedValue();
         case CONTROL_COLUMN_TITLE:
             return control.title;
         case CONTROL_COLUMN_DESCRIPTION:
@@ -175,7 +175,7 @@ bool ControlModel::setData(const QModelIndex& modelIndex,
             emit dataChanged(modelIndex, index(modelIndex.row(), CONTROL_COLUMN_PARAMETER));
             return true;
         case CONTROL_COLUMN_PARAMETER:
-            control.pControl->setParameter(value.toDouble());
+            control.pControl->setNormalizedValue(value.toDouble());
             emit dataChanged(index(modelIndex.row(), CONTROL_COLUMN_VALUE), modelIndex);
             return true;
     }

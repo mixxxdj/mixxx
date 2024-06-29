@@ -41,17 +41,17 @@ class PollingControlProxy {
         return get() > 0.0;
     }
 
-    /// Returns the parameterized value of the object. Thread safe, non-blocking.
-    double getParameter() const {
-        return m_pControl->getParameter();
+    /// Returns the normalized value of the object. Thread safe, non-blocking.
+    double getNormalizedValue() const {
+        return m_pControl->getNormalizedValue();
     }
 
-    /// Returns the parameterized value of the object. Thread safe, non-blocking.
-    double getParameterForValue(double value) const {
-        return m_pControl->getParameterForValue(value);
+    /// Returns the normalized value of the object. Thread safe, non-blocking.
+    double getNormalizedValueForValue(double value) const {
+        return m_pControl->getNormalizedValueForValue(value);
     }
 
-    /// Returns the normalized parameter of the object. Thread safe, non-blocking.
+    /// Returns the default value of the object. Thread safe, non-blocking.
     double getDefault() const {
         return m_pControl->defaultValue();
     }
@@ -65,9 +65,9 @@ class PollingControlProxy {
     void set(double v) {
         m_pControl->set(v, nullptr);
     }
-    /// Sets the control parameterized value to v. Thread safe, non-blocking.
-    void setParameter(double v) {
-        m_pControl->setParameter(v, nullptr);
+    /// Sets the control normalized value to v. Thread safe, non-blocking.
+    void setNormalizedValue(double v) {
+        m_pControl->setNormalizedValue(v, nullptr);
     }
 
   private:
