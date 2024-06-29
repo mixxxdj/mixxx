@@ -17,6 +17,7 @@ Variables:
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
+    <Pos><Variable name="Pos"/></Pos>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>

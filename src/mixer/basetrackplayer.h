@@ -166,6 +166,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
     std::unique_ptr<ControlEncoder> m_pTrackColorSelect;
 
+#ifdef __STEM__
+    // Stems color
+    std::vector<std::unique_ptr<ControlObject>> m_pStemColors;
+#endif
+
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
     std::unique_ptr<ControlPushButton> m_pWaveformZoomUp;

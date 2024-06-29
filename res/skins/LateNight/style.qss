@@ -1045,3 +1045,10 @@ WLibrarySidebar {
 #Border58 {
   border: 1px solid #585858;
 }
+
+WStemControl #FxToggleButton[displayValue="1"] {
+  background-color: #438225;
+}
+WStemControl #FxToggleButton[displayValue="0"] {
+  background-color: #121212;
+}
