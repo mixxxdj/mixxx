@@ -15,6 +15,7 @@ void KeyDelegate::paintItem(
 
     mixxx::track::io::key::ChromaticKey key =
             index.data().value<mixxx::track::io::key::ChromaticKey>();
+    // Get the key text with the user-provided notation
     QString keyText = KeyUtils::keyToString(key);
     QColor keyColor = KeyUtils::keyToColor(key);
 
