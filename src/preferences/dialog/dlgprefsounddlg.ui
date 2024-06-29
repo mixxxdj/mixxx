@@ -224,18 +224,15 @@
         <widget class="QComboBox" name="keylockComboBox"/>
        </item>
        <item>
-        <widget class="QCheckBox" name="keylockMultithreadedCheckBox">
+        <widget class="QCheckBox" name="keylockDualthreadedCheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Using multi threading may result in pitch and tone imperfaction depending of the platform, leading to mono-incompatibiltiy, due to third party limitations. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
          <property name="text">
-          <string>Multi-threaded</string>
+          <string>Dual-threaded Stereo</string>
          </property>
         </widget>
        </item>

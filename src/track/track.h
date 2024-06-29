@@ -111,7 +111,7 @@ class Track : public QObject {
     QString getType() const;
 
     // Get number of channels
-    int getChannels() const;
+    mixxx::audio::ChannelCount getChannels() const;
 
     mixxx::audio::SampleRate getSampleRate() const;
 

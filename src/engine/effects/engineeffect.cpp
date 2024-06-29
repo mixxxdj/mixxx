@@ -182,7 +182,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters engineParameters(
                 sampleRate,
-                numSamples / mixxx::kEngineChannelCount);
+                numSamples / mixxx::kEngineChannelOutputCount);
 
         m_pProcessor->process(inputHandle,
                 outputHandle,
@@ -202,14 +202,16 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                 SampleUtil::linearCrossfadeBuffersOut(
                         pOutput,
                         pInput,
-                        numSamples);
+                        numSamples,
+                        mixxx::kEngineChannelOutputCount);
             } else if (effectiveEffectEnableState == EffectEnableState::Enabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade in (fade to wet signal)
-                SampleUtil::linearCrossfadeBuffersIn(
+                SampleUtil::linearCrossfadeBuffersOut(
                         pOutput,
                         pInput,
-                        numSamples);
+                        numSamples,
+                        mixxx::kEngineChannelOutputCount);
             }
         }
     }

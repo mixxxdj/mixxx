@@ -104,13 +104,13 @@ QByteArray Waveform::toByteArray() const {
 
     // TODO(vrince) set max/min for each signal
     all->set_units(io::Waveform::RMS);
-    all->set_channels(mixxx::kEngineChannelCount);
+    all->set_channels(mixxx::kEngineChannelOutputCount);
     low->set_units(io::Waveform::RMS);
-    low->set_channels(mixxx::kEngineChannelCount);
+    low->set_channels(mixxx::kEngineChannelOutputCount);
     mid->set_units(io::Waveform::RMS);
-    mid->set_channels(mixxx::kEngineChannelCount);
+    mid->set_channels(mixxx::kEngineChannelOutputCount);
     high->set_units(io::Waveform::RMS);
-    high->set_channels(mixxx::kEngineChannelCount);
+    high->set_channels(mixxx::kEngineChannelOutputCount);
 
     int dataSize = getDataSize();
     for (int i = 0; i < dataSize; ++i) {

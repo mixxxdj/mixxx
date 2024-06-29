@@ -11,9 +11,59 @@ using RubberBand::RubberBandStretcher;
 
 namespace {
 
-mixxx::audio::ChannelCount getChannelPerWorker() {
+/// The function is used to compute the best number of channel per RB task,
+/// depending of the number of channels and available worker. This allows
+/// hardware if will less than 8 core to adjust the task distribution in the
+/// most optimum way.
+///
+/// The following table provide the expected number of channel per task with
+/// stereo processing for a given number of CPU core (the default behaviour)
+///
+///  | NbOfCore | Stereo | Stem |
+///  |----------|--------|------|
+///  | 1        | 2      | 8    |
+///  | 2        | 2      | 4    |
+///  | 3        | 2      | 2    |
+///  | 4        | 2      | 2    |
+///
+/// The following table provide the expected number of channel per task when the
+/// user has explicitly requested stereo channel to be processed as mono
+/// channels for a given number of CPU core.
+///
+///  | NbOfCore | Stereo | Stem |
+///  |----------|--------|------|
+///  | 1        | 2      | 8    |
+///  | 2        | 1      | 4    |
+///  | 3        | 1      | 2    |
+///  | 4        | 1      | 2    |
+///  | 5        | 1      | 2    |
+///  | 6        | 1      | 2    |
+///  | 7        | 1      | 2    |
+///  | 8        | 1      | 1    |
+
+mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
     RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
-    return pPool ? pPool->channelPerWorker() : mixxx::kEngineChannelCount;
+
+    // There should always be a pool set, even if multi threading isn't enabled.
+    // This is because multi threading will always be used for stem when
+    // possible.
+    VERIFY_OR_DEBUG_ASSERT(pPool) {
+        return mixxx::kMaxEngineChannelInputCount;
+    }
+    auto channelPerWorker = pPool->channelPerWorker();
+    // The task count includes all the thread in the pool + the engine thread
+    auto maxThreadCount = pPool->maxThreadCount() + 1;
+    VERIFY_OR_DEBUG_ASSERT(chCount % channelPerWorker == 0) {
+        return mixxx::kEngineChannelOutputCount;
+    }
+    auto numTasks = chCount / channelPerWorker;
+    if (numTasks > maxThreadCount) {
+        VERIFY_OR_DEBUG_ASSERT(numTasks % maxThreadCount == 0) {
+            return mixxx::kEngineChannelOutputCount;
+        }
+        return mixxx::audio::ChannelCount(chCount / maxThreadCount);
+    }
+    return channelPerWorker;
 }
 } // namespace
 
@@ -65,13 +115,13 @@ size_t RubberBandWrapper::retrieve(
             // interruption will still create undesirable audio artefacts.
             VERIFY_OR_DEBUG_ASSERT(numSamplesRetrieved == samples) {
                 if (samples > numSamplesRetrieved) {
-                    for (int ch = 0; ch < getChannelPerWorker(); ch++) {
+                    for (int ch = 0; ch < m_channelPerWorker; ch++) {
                         SampleUtil::clear(output[ch] + numSamplesRetrieved,
                                 samples - numSamplesRetrieved);
                     }
                 }
             }
-            output += getChannelPerWorker();
+            output += m_channelPerWorker;
         }
         return samples;
     }
@@ -139,7 +189,7 @@ void RubberBandWrapper::process(const float* const* input, size_t samples, bool 
                 // Otherwise, it means the main thread should take care of the stretching
                 pInstance->run();
             }
-            input += pPool->channelPerWorker();
+            input += m_channelPerWorker;
         }
         // We always perform a wait, even for task that were ran in the main
         // thread, so it resets the semaphore
@@ -164,24 +214,24 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
         m_pInstances.clear();
     };
 
-    auto channelPerWorker = getChannelPerWorker();
-    qDebug() << "RubberBandWrapper::setup" << channelPerWorker;
-    VERIFY_OR_DEBUG_ASSERT(0 == chCount % channelPerWorker) {
+    m_channelPerWorker = getChannelPerWorker(chCount);
+    qDebug() << "RubberBandWrapper::setup - using" << m_channelPerWorker << "channel(s) per task";
+    VERIFY_OR_DEBUG_ASSERT(0 == chCount % m_channelPerWorker) {
         // If we have an uneven number of channel, which we can't evenly
         // distribute across the RubberBandPool workers, we fallback to using a
-        // single instance to limit the audio impefection that may come from
-        // using RB withg different parameters.
+        // single instance to limit the audio imperfection that may come from
+        // using RB with different parameters.
         m_pInstances.emplace_back(
                 std::make_unique<RubberBandTask>(
                         sampleRate, chCount, opt));
         return;
     }
 
-    m_pInstances.reserve(chCount / channelPerWorker);
-    for (int c = 0; c < chCount; c += channelPerWorker) {
+    m_pInstances.reserve(chCount / m_channelPerWorker);
+    for (int c = 0; c < chCount; c += m_channelPerWorker) {
         m_pInstances.emplace_back(
                 std::make_unique<RubberBandTask>(
-                        sampleRate, channelPerWorker, opt));
+                        sampleRate, m_channelPerWorker, opt));
     }
 }
 void RubberBandWrapper::setPitchScale(double scale) {

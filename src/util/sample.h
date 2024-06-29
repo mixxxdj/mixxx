@@ -235,27 +235,69 @@ class SampleUtil {
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
 
-    // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
+    // Interleave the samples in pSrc1 and pSrc2 into pDest (stereo). iNumSamples must be
     // the number of samples in pSrc1 and pSrc2, and pDest must have at least
-    // space for iNumSamples*2 samples. pDest must not be an alias of pSrc1 or
+    // space for numFrames*2 samples. pDest must not be an alias of pSrc1 or
     // pSrc2.
     static void interleaveBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc1,
             const CSAMPLE* pSrc2, SINT numSamples);
 
+    // Interleave the samples in pSrc1, pSrc2, etc... into pDest (stem stereo). numFrames must be
+    // the number of samples each pSrc, and pDest must have at least
+    // space for numFrames*8 samples. pDest must not be an alias any pSrc.
+    static void interleaveBuffer(CSAMPLE* pDest,
+            const CSAMPLE* pSrc1,
+            const CSAMPLE* pSrc2,
+            const CSAMPLE* pSrc3,
+            const CSAMPLE* pSrc4,
+            const CSAMPLE* pSrc5,
+            const CSAMPLE* pSrc6,
+            const CSAMPLE* pSrc7,
+            const CSAMPLE* pSrc8,
+            SINT numFrames);
+
     // Deinterleave the samples in pSrc alternately into pDest1 and
-    // pDest2. iNumSamples must be the number of samples in pDest1 and pDest2,
-    // and pSrc must have at least iNumSamples*2 samples. Neither pDest1 or
+    // pDest2 (stereo). numFrames must be the number of samples in pDest1 and pDest2,
+    // and pSrc must have at least numFrames*2 samples. Neither pDest1 or
     // pDest2 can be aliases of pSrc.
-    static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
-            const CSAMPLE* pSrc, SINT numSamples);
+    static void deinterleaveBuffer(CSAMPLE* pDest1,
+            CSAMPLE* pDest2,
+            const CSAMPLE* pSrc,
+            SINT numFrames);
+
+    // Deinterleave the samples in pSrc alternately into pDest1, pDest2, etc ti
+    // pDest8 (stem stereo). numFrames must be the number of samples in each
+    // pDest*, and pSrc must have at least numFrames*8 samples. None of the
+    // pDest can be aliases of pSrc.
+    static void deinterleaveBuffer(CSAMPLE* pDest1,
+            CSAMPLE* pDest2,
+            CSAMPLE* pDest3,
+            CSAMPLE* pDest4,
+            CSAMPLE* pDest5,
+            CSAMPLE* pDest6,
+            CSAMPLE* pDest7,
+            CSAMPLE* pDest8,
+            const CSAMPLE* pSrc,
+            SINT numFrames);
 
     /// Crossfade two buffers together. All the buffers must be the same length.
     /// pDest is in one version the Out and in the other version the In buffer.
     static void linearCrossfadeBuffersOut(
-            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples, int channelCount);
     static void linearCrossfadeBuffersIn(
+            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples, int channelCount);
+
+  private:
+    static void linearCrossfadeStereoBuffersOut(
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
+    static void linearCrossfadeStemBuffersOut(
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
+    static void linearCrossfadeStereoBuffersIn(
+            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
+    static void linearCrossfadeStemBuffersIn(
             CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
 
+  public:
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
@@ -314,8 +356,9 @@ class SampleUtil {
 
     // copy pSrc to pDest and reverses stereo sample order (backward)
     static void copyReverse(CSAMPLE* M_RESTRICT pDest,
-            const CSAMPLE* M_RESTRICT pSrc, SINT numSamples);
-
+            const CSAMPLE* M_RESTRICT pSrc,
+            SINT numSamples,
+            int channelCount);
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
