@@ -6,7 +6,7 @@
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 
-class ControlObject;
+class ControlPushButton;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
@@ -27,7 +27,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   private slots:
     void slotSetFrameRate(int frameRate);
     void slotSetWaveformType(int index);
-    void slotSetWaveformOverviewType(int index);
+    void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
@@ -50,7 +50,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void notifyRebootNecessary();
     void updateEnableUntilMark();
 
-    std::unique_ptr<ControlObject> m_pTypeControl;
+    std::unique_ptr<ControlPushButton> m_pTypeControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

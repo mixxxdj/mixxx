@@ -32,6 +32,13 @@ class WOverview : public WWidget, public TrackDropTarget {
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
 
+    enum class Type {
+        Filtered,
+        HSV,
+        RGB,
+    };
+    Q_ENUM(Type);
+
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
@@ -66,7 +73,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
 
-    void slotTypeChanged(double v);
+    void slotTypeControlChanged(double v);
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -120,7 +127,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     double getTrackSamples() const {
         if (m_trackLoaded) {
-            return m_trackSamplesControl->get();
+            return m_trackSamplesControl.get();
         } else {
             // Ignore the value, because the engine can still have the old track
             // during loading
@@ -133,7 +140,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
-    int m_type;
+    Type m_type;
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;
@@ -176,9 +183,9 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     parented_ptr<ControlProxy> m_endOfTrackControl;
     parented_ptr<ControlProxy> m_pRateRatioControl;
-    parented_ptr<ControlProxy> m_trackSampleRateControl;
-    parented_ptr<ControlProxy> m_trackSamplesControl;
-    parented_ptr<ControlProxy> m_playpositionControl;
+    PollingControlProxy m_trackSampleRateControl;
+    PollingControlProxy m_trackSamplesControl;
+    PollingControlProxy m_playpositionControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
 
