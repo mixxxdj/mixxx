@@ -205,9 +205,13 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
     const CSAMPLE* pBeatInput = pIn;
     CSAMPLE* pDrumChannel = nullptr;
 
-    if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
-        // If we have multi channel file (a stem file), we extract the first
-        // stereo channel, as it is the drum stem by convention
+    if (m_channelCount == mixxx::audio::ChannelCount::stem()) {
+        // We have an 8 channel soundsource. The only implemented soundsource with
+        // 8ch is the NI STEM file format.
+        // TODO: If we add other soundsources with 8ch, we need to rework this condition.
+        //
+        // For NI STEM we mix all the stems together except the first one,
+        // which contains drums or beats by convention.
         count = numFrames * mixxx::audio::ChannelCount::stereo();
         pDrumChannel = SampleUtil::alloc(count);
 
@@ -217,6 +221,9 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
 
         SampleUtil::copyMultiToStereo(pDrumChannel, pIn, numFrames, m_channelCount, 0);
         pBeatInput = pDrumChannel;
+    } else if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
+        DEBUG_ASSERT(!"Unsupported channel count");
+        return false;
     }
 
     m_currentFrame += numFrames;

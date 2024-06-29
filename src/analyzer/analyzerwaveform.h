@@ -6,6 +6,7 @@
 #include "analyzer/analyzer.h"
 #include "library/dao/analysisdao.h"
 #include "util/performancetimer.h"
+#include "util/sample.h"
 #include "waveform/waveform.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
@@ -13,6 +14,10 @@
 #ifdef TEST_HEAT_MAP
 class QImage;
 #endif
+
+namespace {
+constexpr int kMaxSupportedStem = 4;
+}
 
 class EngineFilterIIRBase;
 class QSqlDatabase;
@@ -140,7 +145,7 @@ struct WaveformStride {
 
     float m_overallData[ChannelCount];
     float m_filteredData[ChannelCount][FilterCount];
-    float m_stemData[ChannelCount][4];
+    float m_stemData[ChannelCount][kMaxSupportedStem];
 
     float m_averageOverallData[ChannelCount];
     float m_averageFilteredData[ChannelCount][FilterCount];
