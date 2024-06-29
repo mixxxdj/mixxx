@@ -27,11 +27,12 @@ class Waveform;
 #define WAVEFORM_5_DESCRIPTION "Waveform 5.0"
 #define WAVEFORMSUMMARY_5_DESCRIPTION "WaveformSummary 5.0"
 
-// Used from Mixxx 2.? with Stem data
-#define WAVEFORM_6_VERSION "Waveform-6.0"
-#define WAVEFORMSUMMARY_6_VERSION "WaveformSummary-6.0"
-#define WAVEFORM_6_DESCRIPTION "Waveform 6.0"
-#define WAVEFORMSUMMARY_6_DESCRIPTION "WaveformSummary 6.0"
+// Used from Mixxx 2.? with Stem data (6.0) and without
+// analyzer/analyzerwaveform.h:scaleSignal (6.1)
+#define WAVEFORM_6_VERSION "Waveform-6.1"
+#define WAVEFORMSUMMARY_6_VERSION "WaveformSummary-6.1"
+#define WAVEFORM_6_DESCRIPTION "Waveform 6.1"
+#define WAVEFORMSUMMARY_6_DESCRIPTION "WaveformSummary 6.1"
 
 #define WAVEFORM_CURRENT_VERSION WAVEFORM_6_VERSION
 #define WAVEFORMSUMMARY_CURRENT_VERSION WAVEFORMSUMMARY_6_VERSION
