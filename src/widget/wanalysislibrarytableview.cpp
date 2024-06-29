@@ -10,8 +10,7 @@ WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         : WTrackTableView(parent,
                   pConfig,
                   pLibrary,
-                  trackTableBackgroundColorOpacity,
-                  true) {
+                  trackTableBackgroundColorOpacity) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }

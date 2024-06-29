@@ -23,20 +23,19 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(
-            QWidget* parent,
+            QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
-    void contextMenuEvent(QContextMenuEvent * event) override;
+    void contextMenuEvent(QContextMenuEvent* pEvent) override;
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
     void pasteFromSidebar() override;
-    void keyPressEvent(QKeyEvent* event) override;
-    void resizeEvent(QResizeEvent* event) override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
+    void resizeEvent(QResizeEvent* pEvent) override;
     void activateSelectedTrack();
     void loadSelectedTrackToGroup(const QString& group, bool play);
     void assignNextTrackColor() override;
@@ -51,7 +50,7 @@ class WTrackTableView : public WLibraryTableView {
     void addToAutoDJBottom();
     void addToAutoDJTop();
     void addToAutoDJReplace();
-    void selectTrack(const TrackId&);
+    void selectTrack(const TrackId& trackId);
 
     void removeSelectedTracks();
     void cutSelectedTracks();
@@ -60,7 +59,7 @@ class WTrackTableView : public WLibraryTableView {
 
     void moveSelection(int delta);
     void moveRows(QList<int> selectedRows, int destRow);
-    void moveSelectedTracks(QKeyEvent* event);
+    void moveSelectedTracks(QKeyEvent* pEvent);
     void selectTracksById(const QList<TrackId>& tracks, int prevColumn);
 
     double getBackgroundColorOpacity() const {
@@ -103,8 +102,8 @@ class WTrackTableView : public WLibraryTableView {
     void trackMissingColorChanged(QColor col);
 
   public slots:
-    void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
-    void slotMouseDoubleClicked(const QModelIndex &);
+    void loadTrackModel(QAbstractItemModel* pModel, bool restoreState = false);
+    void slotMouseDoubleClicked(const QModelIndex& index);
     void slotUnhide();
     void slotPurge();
     void slotDeleteTracksFromDisk();
@@ -130,6 +129,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:
@@ -137,9 +137,9 @@ class WTrackTableView : public WLibraryTableView {
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
-    void dragMoveEvent(QDragMoveEvent * event) override;
-    void dragEnterEvent(QDragEnterEvent * event) override;
-    void dropEvent(QDropEvent * event) override;
+    void dragMoveEvent(QDragMoveEvent* pEvent) override;
+    void dragEnterEvent(QDragEnterEvent* pEvent) override;
+    void dropEvent(QDropEvent* pEvent) override;
 
     void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
