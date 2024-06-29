@@ -39,6 +39,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void slotReplaceCueColorClicked();
     void slotEditTrackPaletteClicked();
     void slotEditHotcuePaletteClicked();
+    void slotKeyColorsEnabled(int i);
 
   private:
     void openColorPaletteEditor(
@@ -54,6 +55,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
+    bool m_bKeyColorsEnabled;
     // Pointer to color replace dialog
     DlgReplaceCueColor* m_pReplaceCueColorDlg;
 };

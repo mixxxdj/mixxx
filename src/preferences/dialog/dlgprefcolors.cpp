@@ -66,6 +66,11 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotReplaceCueColorClicked);
 
+    connect(bKeyColorsEnabled,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefColors::slotKeyColorsEnabled);
+
     setScrollSafeGuardForAllInputWidgets(this);
 
     slotUpdate();
@@ -77,6 +82,7 @@ DlgPrefColors::~DlgPrefColors() {
 void DlgPrefColors::slotUpdate() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
+    bKeyColorsEnabled->setChecked(m_bKeyColorsEnabled);
     for (const auto& palette : std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
         QString paletteName = palette.getName();
         QIcon paletteIcon = drawPalettePreview(paletteName);
@@ -343,6 +349,11 @@ void DlgPrefColors::slotEditTrackPaletteClicked() {
 void DlgPrefColors::slotEditHotcuePaletteClicked() {
     QString hotcueColorPaletteName = comboBoxHotcueColors->currentText();
     openColorPaletteEditor(hotcueColorPaletteName, true);
+}
+
+void DlgPrefColors::slotKeyColorsEnabled(int i) {
+    m_bKeyColorsEnabled = static_cast<bool>(i);
+    slotUpdate();
 }
 
 void DlgPrefColors::openColorPaletteEditor(
