@@ -338,7 +338,13 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_stemInfo;
     }
-    // Setter is only available internally. See setStemInfosWhileLocked
+    // Setter is only available internally. See setStemPointsWhileLocked
+
+    bool hasStem() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return !m_stemInfo.isEmpty();
+    }
 #endif
 
     enum class ImportStatus {
@@ -428,6 +434,16 @@ class Track : public QObject {
             mixxx::Duration duration);
     void setAudioProperties(
             const mixxx::audio::StreamInfo& streamInfo);
+
+    // Information about the actual properties of the
+    // audio stream is only available after opening the
+    // source at least once. On this occasion the metadata
+    // stream info of the track need to be updated to reflect
+    // these values.
+    bool hasStreamInfoFromSource() const {
+        const auto locked = lockMutex(&m_qMutex);
+        return m_record.hasStreamInfoFromSource();
+    }
 
   signals:
     void artistChanged(const QString&);
@@ -562,16 +578,6 @@ class Track : public QObject {
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
             const SyncTrackMetadataParams& syncParams);
-
-    // Information about the actual properties of the
-    // audio stream is only available after opening the
-    // source at least once. On this occasion the metadata
-    // stream info of the track need to be updated to reflect
-    // these values.
-    bool hasStreamInfoFromSource() const {
-        const auto locked = lockMutex(&m_qMutex);
-        return m_record.hasStreamInfoFromSource();
-    }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 

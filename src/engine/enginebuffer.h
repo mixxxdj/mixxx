@@ -215,7 +215,12 @@ class EngineBuffer : public EngineObject {
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
-    void loadTrack(TrackPointer pTrack, bool play, EngineChannel* pChannelToCloneFrom);
+    void loadTrack(TrackPointer pTrack,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play,
+            EngineChannel* pChannelToCloneFrom);
 
     void setChannelIndex(int channelIndex) {
         m_channelIndex = channelIndex;

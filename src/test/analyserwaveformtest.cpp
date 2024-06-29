@@ -103,6 +103,7 @@ class AnalyzerWaveformTest : public MixxxTest {
 TEST_F(AnalyzerWaveformTest, canary) {
     m_aw.initialize(AnalyzerTrack(m_pTrack),
             m_pTrack->getSampleRate(),
+            m_pTrack->getChannels(),
             kBigBufSize / kChannelCount);
     m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize);
     m_aw.storeResults(m_pTrack);

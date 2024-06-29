@@ -54,7 +54,12 @@ class PreviewButtonDelegate : public TableItemDelegate {
             const QModelIndex& index) const override;
 
   signals:
-    void loadTrackToPlayer(const TrackPointer& pTrack, const QString& group, bool play);
+    void loadTrackToPlayer(const TrackPointer& pTrack,
+            const QString& group,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play);
     void buttonSetChecked(bool);
 
   public slots:

@@ -74,6 +74,10 @@
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#include "widget/wstemcontrol.h"
+#endif
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wtrackwidgetgroup.h"
@@ -1023,6 +1027,24 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     WaveformWidgetFactory* pFactory = WaveformWidgetFactory::instance();
     pFactory->setWaveformWidget(viewer, node, *m_pContext);
 
+#ifdef __STEM__
+    DEBUG_ASSERT(viewer->stemControlWidget());
+
+    QDomNode child = node.firstChildElement("StemControl");
+    if (!child.isNull()) {
+        setupSize(child, viewer->stemControlWidget());
+        setupConnections(child, viewer->stemControlWidget());
+        QDomElement stem = child.firstChildElement("Stem");
+        for (int i = 0; i < mixxx::kMaxSupportedStem; i++) {
+            m_pContext->setVariable("StemGroup", group);
+            m_pContext->setVariable("StemIdx", QString::number(i + 1));
+            auto widget = parseWidgetGroup(stem);
+            setupSize(stem, widget);
+            viewer->stemControlWidget()->addControl(widget);
+        }
+    }
+#endif
+
     //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
     //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
 
@@ -1040,6 +1062,17 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &BaseTrackPlayer::loadingTrack,
             viewer,
             &WWaveformViewer::slotLoadingTrack);
+#ifdef __STEM__
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::selectedStem,
+            viewer,
+            &WWaveformViewer::slotSelectStem);
+#endif
+
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            viewer,
+            &WWaveformViewer::slotTrackUnloaded);
 
     connect(viewer,
             &WWaveformViewer::trackDropped,
