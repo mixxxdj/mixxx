@@ -13,9 +13,8 @@
 #include "skin/legacy/pixmapsource.h"
 #include "widget/paintable.h"
 
-typedef std::shared_ptr<Paintable> PaintablePointer;
-typedef std::weak_ptr<Paintable> WeakPaintablePointer;
-
+using PaintablePointer = std::shared_ptr<Paintable>;
+using WeakPaintablePointer = std::weak_ptr<Paintable>;
 class WPixmapStore {
   public:
     static PaintablePointer getPaintable(
