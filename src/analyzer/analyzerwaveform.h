@@ -57,9 +57,9 @@ struct WaveformStride {
         for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
-            std::fill_n(&m_filteredData[i][0], FilterCount, 0.0f);
-            std::fill_n(&m_averageFilteredData[i][0], FilterCount, 0.0f);
-            std::fill_n(&m_stemData[i][0], m_stemCount, 0.0f);
+            SampleUtil::clear(m_filteredData[i], FilterCount);
+            SampleUtil::clear(m_averageFilteredData[i], FilterCount);
+            SampleUtil::clear(m_stemData[i], m_stemCount);
         }
     }
 
