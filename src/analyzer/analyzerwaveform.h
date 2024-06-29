@@ -76,7 +76,7 @@ struct WaveformStride {
                     m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
             for (int stemIdx = 0; stemIdx < m_stemCount; stemIdx++) {
                 datum.stems[stemIdx] = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_stemData[i][stemIdx]) + 0.5));
+                        m_postScaleConversion * m_stemData[i][stemIdx] + 0.5));
             }
         }
         m_averageDivisor++;
