@@ -89,38 +89,21 @@ bool AnalyzerSilence::verifyFirstSound(
 bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
     SINT numFrames = count / m_channelCount;
 
-    const CSAMPLE* pSilenceInput = pIn;
-    CSAMPLE* pMixedChannel = nullptr;
-
-    if (m_channelCount > mixxx::kAnalysisChannels) {
-        // If we have multi channel file (a stem file), we mix all the stems
-        // together in a stereo channel
-        count = numFrames * mixxx::kAnalysisChannels;
-        pMixedChannel = SampleUtil::alloc(count);
-        SampleUtil::clear(pMixedChannel, count);
-
-        VERIFY_OR_DEBUG_ASSERT(pMixedChannel) {
-            return false;
-        }
-        SampleUtil::mixMultichannelToStereo(pMixedChannel, pIn, numFrames, m_channelCount);
-        pSilenceInput = pMixedChannel;
-    }
-
-    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pSilenceInput, count);
+    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, count);
     if (m_signalStart < 0) {
         const SINT firstSoundSample = findFirstSoundInChunk(samples);
         if (firstSoundSample < count) {
-            m_signalStart = m_framesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
+            m_signalStart = m_framesProcessed + firstSoundSample / m_channelCount;
         }
     }
     if (m_signalStart >= 0) {
         const SINT lastSoundSample = findLastSoundInChunk(samples);
         if (lastSoundSample < count - 1) { // not only sound or silence
-            m_signalEnd = m_framesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
+            m_signalEnd = m_framesProcessed + lastSoundSample / m_channelCount + 1;
         }
     }
 
-    m_framesProcessed += count / mixxx::kAnalysisChannels;
+    m_framesProcessed += numFrames;
     return true;
 }
 
