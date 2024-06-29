@@ -47,8 +47,6 @@
               <value label="2">2</value>
               <value label="4">4</value>
               <value label="8">8</value>
-              <value label="Halve beatloop size">half</value>
-              <value label="Double beatloop size">double</value>
               <description>The first pad.</description>
           </option>
           <option
@@ -64,8 +62,6 @@
               <value label="2">2</value>
               <value label="4">4</value>
               <value label="8">8</value>
-              <value label="Halve beatloop size">half</value>
-              <value label="Double beatloop size">double</value>
               <description>The second pad.</description>
           </option>
           <option
@@ -81,8 +77,6 @@
               <value label="2">2</value>
               <value label="4">4</value>
               <value label="8">8</value>
-              <value label="Halve beatloop size">half</value>
-              <value label="Double beatloop size">double</value>
               <description>The third pad.</description>
           </option>
           <option
@@ -98,8 +92,6 @@
               <value label="2" default="true">2</value>
               <value label="4">4</value>
               <value label="8">8</value>
-              <value label="Halve beatloop size">half</value>
-              <value label="Double beatloop size">double</value>
               <description>The fourth pad.</description>
           </option>
       </row>
