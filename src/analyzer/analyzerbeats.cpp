@@ -205,10 +205,10 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
     const CSAMPLE* pBeatInput = pIn;
     CSAMPLE* pDrumChannel = nullptr;
 
-    if (m_channelCount > mixxx::kAnalysisChannels) {
+    if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
         // If we have multi channel file (a stem file), we extract the first
         // stereo channel, as it is the drum stem by convention
-        count = numFrames * mixxx::kAnalysisChannels;
+        count = numFrames * mixxx::audio::ChannelCount::stereo();
         pDrumChannel = SampleUtil::alloc(count);
 
         VERIFY_OR_DEBUG_ASSERT(pDrumChannel) {

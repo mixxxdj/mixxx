@@ -167,14 +167,14 @@ bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
     const CSAMPLE* pKeyInput = pIn;
     CSAMPLE* pHarmonicMixedChannel = nullptr;
 
-    if (m_channelCount > mixxx::kAnalysisChannels) {
+    if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
         // If we have multi channel file (a stem file), we mix all the stems
         // together except the first one which contains drums or beats by
         // convention
         // Note that if Mixxx adds support for other multi channel sound sources
         // (e.g 5:1 dolby), this condition will have to be reworked to assert if
         // the sound source is a NI stem
-        count = numFrames * mixxx::kAnalysisChannels;
+        count = numFrames * mixxx::audio::ChannelCount::stereo();
         pHarmonicMixedChannel = SampleUtil::alloc(count);
         VERIFY_OR_DEBUG_ASSERT(pHarmonicMixedChannel) {
             return false;

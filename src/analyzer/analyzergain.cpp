@@ -46,10 +46,10 @@ bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT count) {
     const CSAMPLE* pGainInput = pIn;
     CSAMPLE* pMixedChannel = nullptr;
 
-    if (m_channelCount > mixxx::kAnalysisChannels) {
+    if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
         // If we have multi channel file (a stem file), we mix all the stems
         // together in a stereo channel
-        count = numFrames * mixxx::kAnalysisChannels;
+        count = numFrames * mixxx::audio::ChannelCount::stereo();
         pMixedChannel = SampleUtil::alloc(count);
         VERIFY_OR_DEBUG_ASSERT(pMixedChannel) {
             return false;

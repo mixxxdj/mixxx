@@ -187,21 +187,21 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
     }
 
     SINT numFrames = count / m_channelCount;
-    count = numFrames * mixxx::kAnalysisChannels;
+    count = numFrames * mixxx::audio::ChannelCount::stereo();
     int stemCount = 0;
 
     const CSAMPLE* pWaveformInput = pIn;
     CSAMPLE* pMixedChannel = nullptr;
 
-    if (m_channelCount > mixxx::kAnalysisChannels) {
-        DEBUG_ASSERT(0 == m_channelCount % mixxx::kAnalysisChannels);
+    if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
+        DEBUG_ASSERT(0 == m_channelCount % mixxx::audio::ChannelCount::stereo());
 
         pMixedChannel = SampleUtil::alloc(count);
         VERIFY_OR_DEBUG_ASSERT(pMixedChannel) {
             return false;
         }
         SampleUtil::mixMultichannelToStereo(pMixedChannel, pIn, numFrames, m_channelCount);
-        stemCount = m_channelCount / mixxx::kAnalysisChannels;
+        stemCount = m_channelCount / mixxx::audio::ChannelCount::stereo();
         pWaveformInput = pMixedChannel;
     }
 
