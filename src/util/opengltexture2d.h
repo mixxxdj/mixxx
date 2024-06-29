@@ -14,6 +14,5 @@ class OpenGLTexture2D : public QOpenGLTexture {
 
     void setData(const QImage& image);
     void setData(const QPixmap& pixmap);
-    void setData(const std::shared_ptr<Paintable>& pPaintable);
-    void setData(const std::shared_ptr<QImage>& pImage);
+    void setData(const Paintable& paintable);
 };
