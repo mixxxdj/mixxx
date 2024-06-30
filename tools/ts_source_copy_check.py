@@ -21,7 +21,12 @@ PROPOSED_ALLOW_LIST_PATH = (
 def is_untranstaled_allowed(source_text, language):
     if os.path.exists(ALLOW_LIST_PATH):
         parser = etree.XMLParser(recover=True)
-        tree = etree.parse(ALLOW_LIST_PATH, parser)
+        try:
+            tree = etree.parse(ALLOW_LIST_PATH, parser)
+        except Exception as e:
+            print("XML parsing failed:")
+            print(e)
+            return
         root = tree.getroot()
     else:
         return False
@@ -44,12 +49,22 @@ def is_untranstaled_allowed(source_text, language):
 def add_to_allow_list(source_text, language):
     if os.path.exists(PROPOSED_ALLOW_LIST_PATH):
         parser = etree.XMLParser(recover=True)
-        tree = etree.parse(PROPOSED_ALLOW_LIST_PATH, parser)
+        try:
+            tree = etree.parse(PROPOSED_ALLOW_LIST_PATH, parser)
+        except Exception as e:
+            print("XML parsing failed:")
+            print(e)
+            return
         root = tree.getroot()
     else:
         if os.path.exists(ALLOW_LIST_PATH):
             parser = etree.XMLParser(recover=True)
-            tree = etree.parse(ALLOW_LIST_PATH, parser)
+            try:
+                tree = etree.parse(ALLOW_LIST_PATH, parser)
+            except Exception as e:
+                print("XML parsing failed:")
+                print(e)
+                return
             root = tree.getroot()
         else:
             root = etree.Element("allow_list")

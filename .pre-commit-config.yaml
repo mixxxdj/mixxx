@@ -43,7 +43,7 @@ repos:
       - id: check-yaml
         exclude: ^\.clang-format$
       - id: end-of-file-fixer
-        exclude: ^.*UTF-8-BOM.txt$
+        exclude: ^.*(UTF-8-BOM\.txt|\.ts)$
       - id: mixed-line-ending
       - id: trailing-whitespace
         exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
@@ -178,6 +178,7 @@ repos:
         stages:
           - commit
           - manual
+        require_serial: true
         language: python
         additional_dependencies:
           - lxml==4.9.3
