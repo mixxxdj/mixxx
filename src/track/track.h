@@ -329,7 +329,7 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_cuePoints;
     }
-
+    void swapHotcues(int a, int b);
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
 #ifdef __STEM__
