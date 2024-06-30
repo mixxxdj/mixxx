@@ -6,9 +6,8 @@
 
 #include "skin/legacy/imgloader.h"
 
-
 // static
-QHash<QString, std::weak_ptr<QImage>> WImageStore::m_dictionary;
+QHash<ImageKey, std::weak_ptr<QImage>> WImageStore::m_dictionary;
 std::shared_ptr<ImgSource> WImageStore::m_loader = std::make_shared<ImgLoader>();
 
 // static
@@ -27,8 +26,8 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
         return nullptr;
     }
 
-    // Generate a key like: 'skins:LateNight/palemoon/style/spinny_bg.svg|1'
-    QString key = QString("%1|%2").arg(source.getPath(), QString::number(scaleFactor, 'g'));
+    // Generate key struct
+    ImageKey key{source.getPath(), scaleFactor};
 
     // Attempt to find the cached Image using the generated key.
     auto it = m_dictionary.find(key);
@@ -82,7 +81,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
 
 // static
 void WImageStore::deleteImage(QImage* p) {
-    QMutableHashIterator<QString, std::weak_ptr<QImage>> it(m_dictionary);
+    QMutableHashIterator<ImageKey, std::weak_ptr<QImage>> it(m_dictionary);
     while (it.hasNext()) {
         if(it.next().value().expired()) {
             it.remove();

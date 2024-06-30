@@ -8,6 +8,24 @@
 class QImage;
 class ImgSource;
 
+struct ImageKey {
+    QString path;
+    double scaleFactor;
+
+    bool operator==(const ImageKey& other) const {
+        return path == other.path && scaleFactor == other.scaleFactor;
+    }
+};
+
+namespace std {
+template<>
+struct hash<ImageKey> {
+    std::size_t operator()(const ImageKey& key) const {
+        return qHash(key.path) ^ std::hash<double>()(key.scaleFactor);
+    }
+};
+} // namespace std
+
 class WImageStore {
   public:
     static std::shared_ptr<QImage> getImage(const QString& fileName, double scaleFactor);
@@ -23,6 +41,6 @@ class WImageStore {
     static void deleteImage(QImage* p);
 
     // Dictionary of Images already instantiated
-    static QHash<QString, std::weak_ptr<QImage>> m_dictionary;
+    static QHash<ImageKey, std::weak_ptr<QImage>> m_dictionary;
     static std::shared_ptr<ImgSource> m_loader;
 };
