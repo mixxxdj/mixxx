@@ -14,7 +14,7 @@ PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
         return PaintablePointer();
     }
     QString key = QStringLiteral("%1%2%3").arg(source.getId(),
-            QString::number(mode),
+            QString::number(static_cast<int>(mode)),
             QString::number(scaleFactor));
 
     // See if we have a cached value for the pixmap.

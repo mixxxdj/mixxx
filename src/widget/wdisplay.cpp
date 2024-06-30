@@ -26,8 +26,8 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
     QDomElement backPathNode = context.selectElement(node, "BackPath");
     if (!backPathNode.isNull()) {
         setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::TILE),
-                            context.getScaleFactor());
+                context.selectScaleMode(backPathNode, Paintable::DrawMode::TILE),
+                context.getScaleFactor());
     }
 
     // Number of states
@@ -39,7 +39,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
     // The implicit default in <1.12.0 was FIXED so we keep it for
     // backwards compatibility.
     Paintable::DrawMode pathMode =
-            context.selectScaleMode(pathNode, Paintable::FIXED);
+            context.selectScaleMode(pathNode, Paintable::DrawMode::FIXED);
     for (int i = 0; i < m_pixmaps.size(); ++i) {
         setPixmap(&m_pixmaps, i, context.makeSkinPath(path.arg(i)),
                   pathMode, context.getScaleFactor());
@@ -52,7 +52,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
         // The implicit default in <1.12.0 was FIXED so we keep it for
         // backwards compatibility.
         Paintable::DrawMode disabledMode =
-            context.selectScaleMode(disabledNode, Paintable::FIXED);
+                context.selectScaleMode(disabledNode, Paintable::DrawMode::FIXED);
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
                       context.makeSkinPath(disabledPath.arg(i)),
@@ -108,7 +108,7 @@ void WDisplay::setPixmap(
                  << "Error loading pixmap:" << filename;
     } else {
         (*pPixmaps)[iPos] = pPixmap;
-        if (mode == Paintable::FIXED) {
+        if (mode == Paintable::DrawMode::FIXED) {
             setFixedSize(pPixmap->size());
         }
     }

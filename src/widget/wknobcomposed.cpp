@@ -33,7 +33,7 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathElement.isNull()) {
         setPixmapBackground(
                 context.getPixmapSource(backPathElement),
-                context.selectScaleMode(backPathElement, Paintable::STRETCH),
+                context.selectScaleMode(backPathElement, Paintable::DrawMode::STRETCH),
                 scaleFactor);
     }
 
@@ -42,7 +42,7 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     if (!knobNode.isNull()) {
         setPixmapKnob(
                 context.getPixmapSource(knobNode),
-                context.selectScaleMode(knobNode, Paintable::STRETCH),
+                context.selectScaleMode(knobNode, Paintable::DrawMode::STRETCH),
                 scaleFactor);
     }
 

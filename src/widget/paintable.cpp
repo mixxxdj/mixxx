@@ -16,35 +16,36 @@
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
     if (str.compare("FIXED", Qt::CaseInsensitive) == 0) {
-        return FIXED;
+        return DrawMode::FIXED;
     } else if (str.compare("STRETCH", Qt::CaseInsensitive) == 0) {
-        return STRETCH;
+        return DrawMode::STRETCH;
     } else if (str.compare("STRETCH_ASPECT", Qt::CaseInsensitive) == 0) {
-        return STRETCH_ASPECT;
+        return DrawMode::STRETCH_ASPECT;
     } else if (str.compare("TILE", Qt::CaseInsensitive) == 0) {
-        return TILE;
+        return DrawMode::TILE;
     }
 
     // Fall back on the implicit default from before Mixxx supported draw modes.
     qWarning() << "Unknown DrawMode string in DrawModeFromString:"
                << str << "using FIXED";
-    return FIXED;
+    return DrawMode::FIXED;
 }
 
 // static
 QString Paintable::DrawModeToString(DrawMode mode) {
     switch (mode) {
-        case FIXED:
-            return "FIXED";
-        case STRETCH:
-            return "STRETCH";
-        case STRETCH_ASPECT:
-            return "STRETCH_ASPECT";
-        case TILE:
-            return "TILE";
+    case DrawMode::FIXED:
+        return "FIXED";
+    case DrawMode::STRETCH:
+        return "STRETCH";
+    case DrawMode::STRETCH_ASPECT:
+        return "STRETCH_ASPECT";
+    case DrawMode::TILE:
+        return "TILE";
     }
     // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode in DrawModeToString " << mode
+    qWarning() << "Unknown DrawMode in DrawModeToString " << static_cast<int>(mode)
+
                << "using FIXED";
     return "FIXED";
 }
@@ -82,9 +83,10 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         // cache the pixmap. We do not do this for TILE and color schemas.
         // which can result in a correct but possibly blurry picture at a
         // Retina display. This can be fixed when switching to QT5
-        if (mode == TILE || WPixmapStore::willCorrectColors()) {
+        if (mode == DrawMode::TILE || WPixmapStore::willCorrectColors()) {
 #else
-        if (mode == TILE || mode == Paintable::FIXED || WPixmapStore::willCorrectColors()) {
+        if (mode == DrawMode::TILE || mode == DrawMode::FIXED ||
+                WPixmapStore::willCorrectColors()) {
 #endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
@@ -168,7 +170,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
     }
 
     switch (m_drawMode) {
-    case FIXED: {
+    case DrawMode::FIXED: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -178,7 +180,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         drawInternal(adjustedTarget, pPainter, adjustedSource);
         break;
     }
-    case STRETCH_ASPECT: {
+    case DrawMode::STRETCH_ASPECT: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -195,10 +197,10 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         }
         break;
     }
-    case STRETCH:
+    case DrawMode::STRETCH:
         drawInternal(targetRect, pPainter, sourceRect);
         break;
-    case TILE:
+    case DrawMode::TILE:
         drawInternal(targetRect, pPainter, sourceRect);
         break;
     }
@@ -207,7 +209,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
 void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
     switch (m_drawMode) {
-    case FIXED: {
+    case DrawMode::FIXED: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -220,7 +222,7 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
         drawInternal(adjustedTarget, pPainter, adjustedSource);
         break;
     }
-    case STRETCH_ASPECT: {
+    case DrawMode::STRETCH_ASPECT: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -237,10 +239,10 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
         }
         break;
     }
-    case STRETCH:
+    case DrawMode::STRETCH:
         drawInternal(targetRect, pPainter, sourceRect);
         break;
-    case TILE:
+    case DrawMode::TILE:
         // TODO(XXX): What's the right behavior here? Draw the first tile at the
         // center point and then tile all around it based on that?
         drawInternal(targetRect, pPainter, sourceRect);
@@ -253,7 +255,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
     // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_draw_mode)
     //          << targetRect << sourceRect;
     if (m_pPixmap) {
-        if (m_drawMode == TILE) {
+        if (m_drawMode == DrawMode::TILE) {
             // TODO(rryan): Using a source rectangle doesn't make much sense
             // with tiling. Ignore the source rect and tile our natural size
             // across the target rect. What's the right general behavior here?
@@ -267,7 +269,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                                  sourceRect.toRect());
         }
     } else if (m_pSvg) {
-        if (m_drawMode == TILE) {
+        if (m_drawMode == DrawMode::TILE) {
             qWarning() << "Tiled SVG should have been rendered to pixmap!";
         } else {
             // NOTE(rryan): QSvgRenderer render does not clip for us -- it

@@ -16,7 +16,7 @@ class QSvgRenderer;
 // high fidelity.
 class Paintable {
   public:
-    enum DrawMode {
+    enum class DrawMode {
         // Draw the image in its native dimensions with no stretching or tiling.
         FIXED,
         // Stretch the image.
