@@ -12,9 +12,7 @@ struct ImageKey {
     QString path;
     double scaleFactor;
 
-    bool operator==(const ImageKey& other) const {
-        return path == other.path && scaleFactor == other.scaleFactor;
-    }
+    bool operator==(const ImageKey& other) const = default;
 };
 
 namespace std {

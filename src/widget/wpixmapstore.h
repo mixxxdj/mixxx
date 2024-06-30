@@ -18,9 +18,7 @@ struct PixmapKey {
     Paintable::DrawMode mode;
     double scaleFactor;
 
-    bool operator==(const PixmapKey& other) const {
-        return path == other.path && mode == other.mode && scaleFactor == other.scaleFactor;
-    }
+    bool operator==(const PixmapKey& other) const = default;
 };
 
 namespace std {
