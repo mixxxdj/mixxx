@@ -105,6 +105,10 @@ def check_copied_source_on_lines(rootdir, file_to_format, stylepath=None):
 
     lang_code = match.group(1)
 
+    if lang_code.startswith("en_"):
+        # for Engish languages all source copies are allowed
+        return False
+
     parser = etree.XMLParser(recover=True)
     tree = etree.parse(filename, parser)
     root = tree.getroot()
