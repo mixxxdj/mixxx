@@ -733,16 +733,52 @@
     });
 
     const JogWheelBasic = function(options) {
+        if (options.deck !== undefined && options.group !== undefined) {
+            console.warn(
+                "options.deck and option.group are both set; " +
+              "options.deck will take priority"
+            );
+        }
+
+        const deck = options.deck;
+        const group = script.deckFromGroup(options.group);
+        delete options.deck;
+        delete options.group;
+
+        this._deck = undefined;
+        this._group = undefined;
+        const self = this;
+
+        options = {
+            ...(options || {}),
+            get deck() {
+                return self._deck;
+            },
+            set deck(value) {
+                if (Number.isInteger(value) && value > 0) {
+                    self._deck = value;
+                    self._group = `[Channel${value}]`;
+                }
+            },
+            get group() {
+                return self._deck;
+            },
+            set group(value) {
+                const deck = script.deckFromGroup(value);
+                if (deck > 0) {
+                    self._deck = deck;
+                    self._group = `[Channel${deck}]`;
+                }
+            },
+        };
+
         Component.call(this, options);
 
-        if (!Number.isInteger(this.deck)) {
-            console.warn("missing scratch deck");
-            return;
+        this.deck = deck;
+        if (!this.deck) {
+            this.group = group;  // try setting deck from group
         }
-        if (this.deck <= 0) {
-            console.warn("invalid deck number: " + this.deck);
-            return;
-        }
+
         if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
@@ -757,9 +793,7 @@
         if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
-        if (this.group === undefined) {
-            this.group = "[Channel" + this.deck + "]";
-        }
+
         this.inKey = "jog";
     };
 
@@ -771,6 +805,10 @@
             return value < 0x40 ? value : value - (this.max + 1);
         },
         inputWheel: function(_channel, _control, value, _status, _group) {
+            if (!this.deck) {
+                console.warn("no deck number; inputWheel() ignored");
+            }
+
             value = this.inValueScale(value);
             if (engine.isScratching(this.deck)) {
                 engine.scratchTick(this.deck, value);
@@ -779,6 +817,10 @@
             }
         },
         inputTouch: function(channel, control, value, status, _group) {
+            if (!this.deck) {
+                console.warn("no deck number; inputTouch() ignored");
+            }
+
             if (this.isPress(channel, control, value, status) && this.vinylMode) {
                 engine.scratchEnable(this.deck,
                     this.wheelResolution,
@@ -793,13 +835,6 @@
             throw "Called wrong input handler for " + status + ": " + control + ".\n" +
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
-        // this is needed for features such as "deck switching" that work
-        // by changing the component group. It is assumed they call `connect`
-        // afterwards.
-        connect: function() {
-            Component.prototype.connect.call(this);
-            this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
-        }
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
