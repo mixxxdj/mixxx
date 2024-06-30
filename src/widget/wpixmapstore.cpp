@@ -1,6 +1,7 @@
 #include "widget/wpixmapstore.h"
 
 #include "skin/legacy/imgloader.h"
+#include "widget/paintable.h"
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
@@ -13,16 +14,19 @@ PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
     if (source.isEmpty()) {
         return PaintablePointer();
     }
-    QString key = QStringLiteral("%1%2%3").arg(source.getId(),
-            QString::number(mode),
-            QString::number(scaleFactor));
+    // Generate a key like: 'skins:LateNight/palemoon/buttons/btn___active.svg|STRETCH|1'
+    QString key = QString("%1|%2|%3")
+                          .arg(source.getPath(),
+                                  Paintable::DrawModeToString(mode),
+                                  QString::number(scaleFactor, 'g'));
 
-    // See if we have a cached value for the pixmap.
+    // Attempt to find the cached Paintable using the generated key.
     auto it = m_paintableCache.find(key);
     if (it != m_paintableCache.end()) {
         return it.value().lock();
     }
 
+    // If not found, create a new Paintable, cache it, and return it.
     PaintablePointer pPaintable = std::make_shared<Paintable>(source, mode, scaleFactor);
     m_paintableCache.insert(key, pPaintable);
     return pPaintable;

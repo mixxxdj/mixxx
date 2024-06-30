@@ -26,10 +26,12 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
     if (source.isEmpty()) {
         return nullptr;
     }
-    // Search for Image in list
-    QString key = source.getId() + QString::number(scaleFactor);
 
-    QHash<QString, std::weak_ptr<QImage>>::iterator it = m_dictionary.find(key);
+    // Generate a key like: 'skins:LateNight/palemoon/style/spinny_bg.svg|1'
+    QString key = QString("%1|%2").arg(source.getPath(), QString::number(scaleFactor, 'g'));
+
+    // Attempt to find the cached Image using the generated key.
+    auto it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
         //qDebug() << "WImageStore returning cached Image for:" << source.getPath();
         return it.value().lock();
@@ -58,13 +60,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
     if (source.isSVG()) {
         QSvgRenderer renderer;
 
-        if (!source.getSvgSourceData().isEmpty()) {
-            // Call here the different overload for svg content
-            if (!renderer.load(source.getSvgSourceData())) {
-                // The above line already logs a warning
-                return nullptr;
-            }
-        } else if (!source.getPath().isEmpty()) {
+        if (!source.getPath().isEmpty()) {
             if (!renderer.load(source.getPath())) {
                 // The above line already logs a warning
                 return nullptr;
@@ -75,7 +71,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
 
         auto* pImage = new QImage(renderer.defaultSize() * scaleFactor,
                 QImage::Format_ARGB32);
-        pImage->fill(0x00000000);  // Transparent black.
+        pImage->fill(Qt::transparent);
         QPainter painter(pImage);
         renderer.render(&painter);
         return pImage;

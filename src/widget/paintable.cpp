@@ -61,19 +61,13 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
             m_pPixmap = std::move(pPixmap);
     } else {
         auto pSvg = std::make_unique<QSvgRenderer>();
-        if (!source.getSvgSourceData().isEmpty()) {
-            // Call here the different overload for svg content
-            if (!pSvg->load(source.getSvgSourceData())) {
-                // The above line already logs a warning
-                return;
-            }
-        } else if (!source.getPath().isEmpty()) {
-            if (!pSvg->load(source.getPath())) {
-                // The above line already logs a warning
-                return;
-            }
+        if (!source.getPath().isEmpty()) {
+                if (!pSvg->load(source.getPath())) {
+                    // The above line already logs a warning
+                    return;
+                }
         } else {
-            return;
+                return;
         }
         m_pSvg.reset(pSvg.release());
 #ifdef __APPLE__
