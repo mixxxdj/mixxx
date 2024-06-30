@@ -32,6 +32,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
             &PlaylistDAO::tracksRemoved,
             this,
             &PlaylistTableModel::playlistsChanged);
+    setPositionColumn(PLAYLISTTRACKSTABLE_POSITION);
 }
 
 void PlaylistTableModel::initSortColumnMapping() {
@@ -325,6 +326,20 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         allIds.insert(position, trackId);
     }
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
+}
+
+const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {
+    if (indices.isEmpty()) {
+        return {};
+    }
+    QList<int> positions;
+    // TODO Transpose m_trackPosToRow ?? Would it be faster?
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (auto idx : indices) {
+        int pos = idx.siblingAtColumn(positionColumn).data().toInt();
+        positions.append(pos);
+    }
+    return positions;
 }
 
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
