@@ -21,35 +21,57 @@ PROPOSED_ALLOW_LIST_PATH = (
 def is_untranstaled_allowed(source_text, language):
     if os.path.exists(ALLOW_LIST_PATH):
         parser = etree.XMLParser(recover=True)
-        tree = etree.parse(ALLOW_LIST_PATH, parser)
+        try:
+            tree = etree.parse(ALLOW_LIST_PATH, parser)
+        except Exception as e:
+            print("XML parsing failed:")
+            print(e)
+            raise e
         root = tree.getroot()
     else:
         return False
 
-    for message in root.findall("message"):
-        if message.find("source").text == source_text:
-            if message.find("allow_all_languages").text == "true":
-                return True
-            languages_elem = message.find("allowed_languages")
-            if languages_elem is None:
-                return False
-            allowed_languages = {
-                lang.text for lang in languages_elem.findall("language")
-            }
-            if language in allowed_languages:
-                return True
+    try:
+        for message in root.findall("message"):
+            if message.find("source").text == source_text:
+                if message.find("allow_all_languages").text == "true":
+                    return True
+                languages_elem = message.find("allowed_languages")
+                if languages_elem is None:
+                    return False
+                allowed_languages = {
+                    lang.text for lang in languages_elem.findall("language")
+                }
+                if language in allowed_languages:
+                    return True
+
+    except Exception as e:
+        print(f"Parsing failed at {message.base}:{message.sourceline}")
+        print(e)
+        raise e
+
     return False
 
 
 def add_to_allow_list(source_text, language):
     if os.path.exists(PROPOSED_ALLOW_LIST_PATH):
         parser = etree.XMLParser(recover=True)
-        tree = etree.parse(PROPOSED_ALLOW_LIST_PATH, parser)
+        try:
+            tree = etree.parse(PROPOSED_ALLOW_LIST_PATH, parser)
+        except Exception as e:
+            print("XML parsing failed:")
+            print(e)
+            raise e
         root = tree.getroot()
     else:
         if os.path.exists(ALLOW_LIST_PATH):
             parser = etree.XMLParser(recover=True)
-            tree = etree.parse(ALLOW_LIST_PATH, parser)
+            try:
+                tree = etree.parse(ALLOW_LIST_PATH, parser)
+            except Exception as e:
+                print("XML parsing failed:")
+                print(e)
+                return
             root = tree.getroot()
         else:
             root = etree.Element("allow_list")
@@ -57,10 +79,15 @@ def add_to_allow_list(source_text, language):
 
     # Check if the message already exists
     existing_message = None
-    for message in root.findall("message"):
-        if message.find("source").text == source_text:
-            existing_message = message
-            break
+    try:
+        for message in root.findall("message"):
+            if message.find("source").text == source_text:
+                existing_message = message
+                break
+    except Exception as e:
+        print(f"Parsing failed at {message.base}:{message.sourceline}")
+        print(e)
+        raise e
 
     if existing_message is not None:
         allow_all_languages = (
@@ -110,7 +137,14 @@ def check_copied_source_on_lines(rootdir, file_to_format, stylepath=None):
         return False
 
     parser = etree.XMLParser(recover=True)
-    tree = etree.parse(filename, parser)
+
+    try:
+        tree = etree.parse(filename, parser)
+    except Exception as e:
+        print("XML parsing failed:")
+        print(e)
+        return False
+
     root = tree.getroot()
 
     found = False
