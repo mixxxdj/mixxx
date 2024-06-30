@@ -240,17 +240,10 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     // item is not focused, require second press to perform the desired action.
 
     SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
-    QModelIndexList selectedIndices = selectionModel()->selectedRows();
-    if (sidebarModel && !selectedIndices.isEmpty()) {
-        QModelIndex index = selectedIndices.at(0);
-        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
-            sidebarModel->clear(index);
-            return;
-        }
-        if (event->matches(QKeySequence::Paste)) {
-            sidebarModel->paste(index);
-            return;
-        }
+    QModelIndex selIndex = selectedIndex();
+    if (sidebarModel && selIndex.isValid() && event->matches(QKeySequence::Paste)) {
+        sidebarModel->paste(selIndex);
+        return;
     }
 
     focusSelectedIndex();

@@ -405,7 +405,8 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
     }
 
     if (index.internalPointer() == this) {
-        // can't delete root features
+        // Used only to call AutoDJFeature::clear()
+        m_sFeatures[index.row()]->clear();
         return;
     } else {
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
