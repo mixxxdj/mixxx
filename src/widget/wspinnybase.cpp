@@ -146,8 +146,8 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
             context.getScaleFactor());
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
-            Paintable::DrawMode::FIXED);
-    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::DrawMode::FIXED) {
+            Paintable::DrawMode::Fixed);
+    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::DrawMode::Fixed) {
         setFixedSize(m_pBgImage->size());
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);

@@ -25,7 +25,7 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPath.isNull()) {
         setPixmap(&m_pPixmapBack,
                 context.getPixmapSource(backPath),
-                context.selectScaleMode(backPath, Paintable::DrawMode::TILE),
+                context.selectScaleMode(backPath, Paintable::DrawMode::Tile),
                 context.getScaleFactor());
     }
 
@@ -33,7 +33,7 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
     if (!chargedPath.isNull()) {
         setPixmap(&m_pPixmapCharged,
                 context.getPixmapSource(chargedPath),
-                context.selectScaleMode(chargedPath, Paintable::DrawMode::TILE),
+                context.selectScaleMode(chargedPath, Paintable::DrawMode::Tile),
                 context.getScaleFactor());
     }
 
@@ -50,7 +50,7 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
         // TODO(XXX) inline SVG support via context.getPixmapSource.
         QString chargingPath = context.nodeToString(pixmapsCharging);
         Paintable::DrawMode mode = context.selectScaleMode(pixmapsCharging,
-                Paintable::DrawMode::TILE);
+                Paintable::DrawMode::Tile);
         for (int i = 0; i < m_chargingPixmaps.size(); ++i) {
             PixmapSource source = context.getPixmapSource(chargingPath.arg(i));
             setPixmap(&m_chargingPixmaps[i], source, mode, context.getScaleFactor());
@@ -62,7 +62,7 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
         // TODO(XXX) inline SVG support via context.getPixmapSource.
         QString dischargingPath = context.nodeToString(pixmapsDischarging);
         Paintable::DrawMode mode = context.selectScaleMode(pixmapsDischarging,
-                Paintable::DrawMode::TILE);
+                Paintable::DrawMode::Tile);
         for (int i = 0; i < m_dischargingPixmaps.size(); ++i) {
             PixmapSource source = context.getPixmapSource(dischargingPath.arg(i));
             setPixmap(&m_dischargingPixmaps[i], source, mode, context.getScaleFactor());
@@ -148,7 +148,7 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
             qDebug() << this << "Error loading pixmap:" << source.getPath();
     } else {
             *ppPixmap = pPixmap;
-            if (mode == Paintable::DrawMode::FIXED) {
+            if (mode == Paintable::DrawMode::Fixed) {
                 setFixedSize(pPixmap->size());
             }
     }
