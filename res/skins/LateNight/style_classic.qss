@@ -1946,6 +1946,12 @@ WPushButton#BpmLockToggle[value="1"] {
   #BpmLockToggle[value="0"] {
     image: url(skins:LateNight/classic/buttons/btn__bpm_unlocked.svg);
     }
+  #Undo[value="0"] {
+    image: url(skins:LateNight/classic/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/classic/buttons/btn__undo_active.svg) no-repeat center center;
+    }
   #BeatCurposLarge {
     image: url(skins:LateNight/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;
     }

@@ -455,10 +455,12 @@ WWidgetGroup {
   margin-right: -17px; */
 }
 
-#BeatgridButtons {
+#BeatgridButtons,
+#BeatgridButtons WWidgetGroup {
 /* Those buttons are pushed outside the screen by 17px (see above),
   so bring them back in
   padding-right: 17px; */
+  qproperty-layoutSpacing: 1;
 }
 #WaveformContainer1,
 #WaveformContainer2,
@@ -501,6 +503,10 @@ WWidgetGroup {
     #BpmLock[value="1"] {
       image: url(skin:/../Tango/buttons/btn_bpm_locked.svg) no-repeat center center;
     }
+  #Undo[value="0"] {
+    image: url(skin:/../Tango/buttons/btn_undo.svg) no-repeat center center;
+    }
+
   #BeatgridSlower {
     image: url(skin:/../Tango/buttons/btn_beats_slower.svg) no-repeat center center;
   }
