@@ -53,7 +53,12 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         : m_drawMode(mode),
           m_source(source) {
     if (!source.isSVG()) {
-        m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
+            auto pPixmap = WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor);
+            if (!pPixmap) {
+                qWarning() << "Failed to load pixmap from path:" << source.getPath();
+                return;
+            }
+            m_pPixmap = std::move(pPixmap);
     } else {
         auto pSvg = std::make_unique<QSvgRenderer>();
         if (!source.getSvgSourceData().isEmpty()) {
@@ -100,18 +105,18 @@ bool Paintable::isNull() const {
 }
 
 QSize Paintable::size() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->size();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         return m_pSvg->defaultSize();
     }
     return QSize();
 }
 
 int Paintable::width() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->width();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.width();
     }
@@ -119,9 +124,9 @@ int Paintable::width() const {
 }
 
 int Paintable::height() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->height();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.height();
     }
@@ -129,9 +134,9 @@ int Paintable::height() const {
 }
 
 QRectF Paintable::rect() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->rect();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         return QRectF(QPointF(0, 0), m_pSvg->defaultSize());
     }
     return QRectF();
@@ -142,7 +147,7 @@ QImage Paintable::toImage() const {
     // This confusion let to the wrong assumption that we could simple
     //   return m_pPixmap->toImage();
     // relying on QPixmap returning QImage() when it was null.
-    return m_pPixmap.isNull() ? QImage() : m_pPixmap->toImage();
+    return !m_pPixmap ? QImage() : m_pPixmap->toImage();
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {

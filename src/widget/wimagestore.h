@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QHash>
-#include <QSharedPointer>
 #include <memory>
 
 #include "skin/legacy/pixmapsource.h"
@@ -15,7 +14,7 @@ class WImageStore {
     static QImage* getImageNoCache(const QString& fileName, double scaleFactor);
     static std::shared_ptr<QImage> getImage(const PixmapSource& source, double scaleFactor);
     static QImage* getImageNoCache(const PixmapSource& source, double scaleFactor);
-    static void setLoader(QSharedPointer<ImgSource> ld);
+    static void setLoader(std::shared_ptr<ImgSource> ld);
     // For external owned images like software generated ones.
     static void correctImageColors(QImage* p);
     static bool willCorrectColors();
@@ -25,5 +24,5 @@ class WImageStore {
 
     // Dictionary of Images already instantiated
     static QHash<QString, std::weak_ptr<QImage>> m_dictionary;
-    static QSharedPointer<ImgSource> m_loader;
+    static std::shared_ptr<ImgSource> m_loader;
 };

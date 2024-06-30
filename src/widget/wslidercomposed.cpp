@@ -207,8 +207,8 @@ void WSliderComposed::setHandlePixmap(
 }
 
 void WSliderComposed::unsetPixmaps() {
-    m_pSlider.clear();
-    m_pHandle.clear();
+    m_pSlider.reset();
+    m_pHandle.reset();
 }
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
@@ -237,7 +237,7 @@ void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
     QStylePainter p(this);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
+    if (m_pSlider && !m_pSlider->isNull()) {
         m_pSlider->draw(rect(), &p);
     }
 
@@ -246,7 +246,7 @@ void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
         drawBar(&p);
     }
 
-    if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
+    if (m_pHandle && !m_pHandle->isNull()) {
         // Slider position rounded, verify this for HiDPI : bug 1479037
         double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
         QRectF targetRect;

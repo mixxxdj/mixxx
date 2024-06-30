@@ -9,8 +9,7 @@
 
 // static
 QHash<QString, std::weak_ptr<QImage>> WImageStore::m_dictionary;
-QSharedPointer<ImgSource> WImageStore::m_loader
-        = QSharedPointer<ImgSource>(new ImgLoader());
+std::shared_ptr<ImgSource> WImageStore::m_loader = std::make_shared<ImgLoader>();
 
 // static
 QImage* WImageStore::getImageNoCache(const QString& fileName, double scaleFactor) {
@@ -107,6 +106,6 @@ bool WImageStore::willCorrectColors() {
 };
 
 // static
-void WImageStore::setLoader(QSharedPointer<ImgSource> ld) {
+void WImageStore::setLoader(std::shared_ptr<ImgSource> ld) {
     m_loader = ld;
 }

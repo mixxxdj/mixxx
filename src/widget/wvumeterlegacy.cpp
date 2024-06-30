@@ -81,7 +81,7 @@ void WVuMeterLegacy::setPixmapBackground(
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+    if (!m_pPixmapBack || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
     } else if (mode == Paintable::FIXED) {
@@ -94,7 +94,7 @@ void WVuMeterLegacy::setPixmaps(const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
+    if (!m_pPixmapVu || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeterLegacy: Error loading vu pixmap" << source.getPath();
     } else {
         m_bHorizontal = bHorizontal;
@@ -169,12 +169,12 @@ void WVuMeterLegacy::paintEvent(QPaintEvent* /*unused*/) {
 
     QPainter p(this);
 
-    if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
+    if (m_pPixmapBack && !m_pPixmapBack->isNull()) {
         // Draw background. DrawMode takes care of whether to stretch or not.
         m_pPixmapBack->draw(rect(), &p);
     }
 
-    if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
+    if (m_pPixmapVu && !m_pPixmapVu->isNull()) {
         const double widgetWidth = width();
         const double widgetHeight = height();
         const double pixmapWidth = m_pPixmapVu->width();

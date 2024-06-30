@@ -899,11 +899,13 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QLabel* bg = new QLabel(pInnerWidget);
 
     QString filename = m_pContext->selectString(node, "Path");
-    QPixmap* background = WPixmapStore::getPixmapNoCache(
-        m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
+    auto background = WPixmapStore::getPixmapNoCache(
+            m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
 
     bg->move(0, 0);
     if (background != nullptr && !background->isNull()) {
+        // setPixmap makes a copy of the background
+        // which can be disposed of afterwards.
         bg->setPixmap(*background);
     }
 
@@ -928,10 +930,6 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     pOuterWidget->setBackgroundRole(QPalette::Window);
     pOuterWidget->setPalette(palette);
     pOuterWidget->setAutoFillBackground(true);
-
-    // WPixmapStore::getPixmapNoCache() allocated background and gave us
-    // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
-    delete background;
 
     return bg;
 }

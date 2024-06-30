@@ -4,8 +4,7 @@
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
-QSharedPointer<ImgSource> WPixmapStore::m_loader
-        = QSharedPointer<ImgSource>(new ImgLoader());
+std::shared_ptr<ImgSource> WPixmapStore::m_loader = std::make_shared<ImgLoader>();
 
 // static
 PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
@@ -14,32 +13,30 @@ PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
     if (source.isEmpty()) {
         return PaintablePointer();
     }
-    QString key = source.getId() + QString::number(mode) + QString::number(scaleFactor);
+    QString key = QStringLiteral("%1%2%3").arg(source.getId(),
+            QString::number(mode),
+            QString::number(scaleFactor));
 
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(
-            key,
-            PaintablePointer());
-    if (pPaintable) {
-        return pPaintable;
+    auto it = m_paintableCache.find(key);
+    if (it != m_paintableCache.end()) {
+        return it.value().lock();
     }
 
-    pPaintable = PaintablePointer(new Paintable(source, mode, scaleFactor));
-
+    PaintablePointer pPaintable = std::make_shared<Paintable>(source, mode, scaleFactor);
     m_paintableCache.insert(key, pPaintable);
     return pPaintable;
 }
 
 // static
-QPixmap* WPixmapStore::getPixmapNoCache(
+std::unique_ptr<QPixmap> WPixmapStore::getPixmapNoCache(
         const QString& fileName,
         double scaleFactor) {
-    QPixmap* pPixmap = nullptr;
-    QImage* img = m_loader->getImage(fileName, scaleFactor);
-    pPixmap = new QPixmap();
-    pPixmap->convertFromImage(*img);
-    delete img;
-    return pPixmap;
+    auto* pImage = m_loader->getImage(fileName, scaleFactor);
+    if (!pImage || pImage->isNull()) {
+        return nullptr;
+    }
+    return std::make_unique<QPixmap>(QPixmap::fromImage(*pImage));
 }
 
 // static
@@ -49,9 +46,9 @@ void WPixmapStore::correctImageColors(QImage* p) {
 
 bool WPixmapStore::willCorrectColors() {
     return m_loader->willCorrectColors();
-};
+}
 
-void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
+void WPixmapStore::setLoader(std::shared_ptr<ImgSource> ld) {
     m_loader = ld;
 
     // We shouldn't hand out pointers to existing pixmaps anymore since our

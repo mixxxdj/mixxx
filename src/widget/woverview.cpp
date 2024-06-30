@@ -128,9 +128,12 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_backgroundPixmap = QPixmap();
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (!m_backgroundPixmapPath.isEmpty()) {
-        m_backgroundPixmap = *WPixmapStore::getPixmapNoCache(
+        auto pPixmap = WPixmapStore::getPixmapNoCache(
                 context.makeSkinPath(m_backgroundPixmapPath),
                 m_scaleFactor);
+        if (pPixmap) {
+            m_backgroundPixmap = *pPixmap;
+        }
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);

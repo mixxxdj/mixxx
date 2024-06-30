@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QOpenGLTexture>
-#include <QSharedPointer>
 #include <memory>
 
 class Paintable;
@@ -15,6 +14,5 @@ class OpenGLTexture2D : public QOpenGLTexture {
 
     void setData(const QImage& image);
     void setData(const QPixmap& pixmap);
-    void setData(const QSharedPointer<Paintable>& pPaintable);
-    void setData(const std::shared_ptr<QImage>& pImage);
+    void setData(const Paintable& paintable);
 };
