@@ -1,4 +1,6 @@
-KDJ500 = new Controller();
+
+// eslint-disable-next-line no-var
+var KDJ500 = {};
 
 KDJ500.init = function (id, debugging) {
 
