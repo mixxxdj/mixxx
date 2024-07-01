@@ -16,6 +16,7 @@ class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
 class RelocatedTrack;
+struct LibraryScanResultSummary;
 
 // Manages Mixxx's internal database of tracks as well as external track collections.
 //
@@ -95,6 +96,7 @@ class TrackCollectionManager: public QObject,
   signals:
     void libraryScanStarted();
     void libraryScanFinished();
+    void libraryScanSummary(const LibraryScanResultSummary& result);
 
   public slots:
     void startLibraryScan();

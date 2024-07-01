@@ -33,6 +33,7 @@
 #endif
 #include "control/controlindicatortimer.h"
 #include "library/library.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
@@ -117,6 +118,12 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
                 CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref);
     }
 #endif // __LINUX__
+
+    connect(m_pCoreServices.get(),
+            &mixxx::CoreServices::libraryScanSummary,
+            this,
+            &MixxxMainWindow::slotLibraryScanSummaryDlg);
+
     createMenuBar();
     m_pMenuBar->hide();
 
@@ -1137,6 +1144,30 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout;
     about->show();
+}
+
+void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
+    QString summary =
+            tr("Scan took %1.").arg(result.durationString) + QStringLiteral("\n\n");
+    if ((result.numNewTracks + result.numMovedTracks + result.numMissingTracks) == 0) {
+        summary += tr("No changes were detected.");
+    } else {
+        summary += tr("%1 verified directories").arg(result.numVerifiedDirs) +
+                QStringLiteral("\n") +
+                tr("%1 scanned directories").arg(result.numScannedDirs) +
+                QStringLiteral("\n") +
+                tr("%1 verified tracks").arg(result.numVerifiedTracks) +
+                QStringLiteral("\n") +
+                tr("%1 new tracks found").arg(result.numNewTracks) +
+                QStringLiteral("\n") +
+                tr("%1 moved tracks detected").arg(result.numMovedTracks) +
+                QStringLiteral("\n") +
+                tr("%1 are missing").arg(result.numMissingTracks);
+    }
+    QMessageBox* msg = new QMessageBox();
+    msg->setWindowTitle(tr("Library scan finished"));
+    msg->setText(summary);
+    msg->show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {

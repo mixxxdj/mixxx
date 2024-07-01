@@ -17,6 +17,7 @@ class GuiTick;
 class LaunchImage;
 class VisualsManager;
 class WMainMenuBar;
+struct LibraryScanResultSummary;
 
 namespace mixxx {
 
@@ -63,7 +64,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsPreferences();
     /// show the about dialog
     void slotHelpAbout();
-    // show keywheel
+    /// show popup with library scan results
+    void slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result);
+    /// show keywheel
     void slotShowKeywheel(bool toggle);
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);

@@ -1,6 +1,7 @@
 #include "library/scanner/libraryscanner.h"
 
 #include "library/coverartutils.h"
+#include "library/library_decl.h"
 #include "library/queryutil.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
@@ -429,29 +430,38 @@ void LibraryScanner::slotFinishUnhashedScan() {
     }
 
     const QString durationString = m_scannerGlobal->timerElapsed().formatMillisWithUnit();
-    const int numUnchangedDirs = static_cast<int>(m_scannerGlobal->verifiedDirectories().size());
-    const int numChangedAddedDirs = m_scannerGlobal->numScannedDirectories();
+    const int numVerifiedDirs = static_cast<int>(m_scannerGlobal->verifiedDirectories().size());
+    const int numScannedDirs = m_scannerGlobal->numScannedDirectories();
     const int numVerifiedTracks = static_cast<int>(m_scannerGlobal->verifiedTracks().size());
     const int numNewTracks = m_scannerGlobal->addedTracks().size() - m_numRelocatedTracks;
     const int numMissingTracks = m_numPreviousExistingTrackLocations +
             numNewTracks -
             m_trackDao.getAllExistingTrackLocations().size();
-    // TODO Use this information to display a scan summary popup.
     qInfo() << "-------------------------------------------------------";
     qInfo("Library scan finished after %s", durationString.toLocal8Bit().constData());
-    qInfo(" %d unchanged directories", numUnchangedDirs);
-    qInfo(" %d changed/added directories", numChangedAddedDirs);
+    qInfo(" %d unchanged directories", numVerifiedDirs);
+    qInfo(" %d scanned directories", numScannedDirs);
     qInfo(" %d tracks verified from changed/added directories", numVerifiedTracks);
     qInfo(" %d new tracks", numNewTracks);
     qInfo(" %d moved tracks", m_numRelocatedTracks);
     qInfo(" %d missing tracks", numMissingTracks);
     qInfo() << "-------------------------------------------------------";
 
+    LibraryScanResultSummary result;
+    result.durationString = durationString;
+    result.numVerifiedDirs = numVerifiedDirs;
+    result.numScannedDirs = numScannedDirs;
+    result.numVerifiedTracks = numVerifiedTracks;
+    result.numNewTracks = numNewTracks;
+    result.numMovedTracks = m_numRelocatedTracks;
+    result.numMissingTracks = numMissingTracks;
+
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
     // now we may accept new scan commands
 
     emit scanFinished();
+    emit scanSummary(result);
 }
 
 void LibraryScanner::scan() {
