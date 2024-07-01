@@ -22,13 +22,13 @@ Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
             {"TILE", DrawMode::Tile}};
 
     auto it = stringMap.find(str.toUpper());
-    if (it != stringMap.end()) {
-        return it.value();
-    } else {
+    if (it == stringMap.end()) {
         qWarning() << "Unknown DrawMode string passed to DrawModeFromString:"
                    << str << "using DrawMode::Fixed as fallback";
         return DrawMode::Fixed;
     }
+
+    return it.value();
 }
 
 // static
@@ -40,14 +40,14 @@ QString Paintable::DrawModeToString(DrawMode mode) {
             {DrawMode::Tile, "TILE"}};
 
     auto it = modeMap.find(mode);
-    if (it != modeMap.end()) {
-        return it.value();
-    } else {
+    if (it == modeMap.end()) {
         qWarning() << "Unknown DrawMode passed to DrawModeToString "
                    << static_cast<int>(mode) << "using FIXED as fallback";
         DEBUG_ASSERT(false);
         return "FIXED";
     }
+
+    return it.value();
 }
 
 Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
