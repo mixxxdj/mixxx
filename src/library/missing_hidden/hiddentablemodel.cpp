@@ -97,7 +97,9 @@ Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
 TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
     return Capability::Purge |
             Capability::Unhide |
-            Capability::RemoveFromDisk;
+            Capability::RemoveFromDisk |
+            Capability::EditMetadata |
+            Capability::Properties;
 }
 
 QString HiddenTableModel::modelKey(bool noSearch) const {

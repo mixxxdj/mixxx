@@ -98,5 +98,6 @@ TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
             Capability::Hide |
             Capability::ResetPlayed |
             Capability::RemoveFromDisk |
-            Capability::Analyze;
+            Capability::Analyze |
+            Capability::Properties;
 }
