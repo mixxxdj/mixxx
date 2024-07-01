@@ -225,6 +225,10 @@ void allshader::WaveformRenderMark::paintGL() {
                 static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
                         ->texture();
 
+        if (!pTexture) {
+            continue;
+        }
+
         const float currentMarkPoint =
                 std::round(
                         static_cast<float>(

@@ -22,11 +22,13 @@ AnalyzerGain::~AnalyzerGain() {
 
 bool AnalyzerGain::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     if (m_rgSettings.isAnalyzerDisabled(1, track.getTrack()) || frameLength <= 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;
     }
+    m_channelCount = channelCount;
 
     return m_pReplayGain->initialise(
             sampleRate,
@@ -39,18 +41,39 @@ void AnalyzerGain::cleanup() {
 bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT count) {
     ScopedTimer t(QStringLiteral("AnalyzerGain::process()"));
 
-    SINT numFrames = count / mixxx::kAnalysisChannels;
+    SINT numFrames = count / m_channelCount;
+
+    const CSAMPLE* pGainInput = pIn;
+    CSAMPLE* pMixedChannel = nullptr;
+
+    if (m_channelCount > mixxx::kAnalysisChannels) {
+        // If we have multi channel file (a stem file), we mix all the stems
+        // together in a stereo channel
+        count = numFrames * mixxx::kAnalysisChannels;
+        pMixedChannel = SampleUtil::alloc(count);
+        VERIFY_OR_DEBUG_ASSERT(pMixedChannel) {
+            return false;
+        }
+        SampleUtil::mixMultichannelToStereo(pMixedChannel, pIn, numFrames, m_channelCount);
+        pGainInput = pMixedChannel;
+    }
+
     if (numFrames > static_cast<SINT>(m_pLeftTempBuffer.size())) {
         m_pLeftTempBuffer.resize(numFrames);
         m_pRightTempBuffer.resize(numFrames);
     }
     SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer.data(),
             m_pRightTempBuffer.data(),
-            pIn,
+            pGainInput,
             numFrames);
     SampleUtil::applyGain(m_pLeftTempBuffer.data(), 32767, numFrames);
     SampleUtil::applyGain(m_pRightTempBuffer.data(), 32767, numFrames);
-    return m_pReplayGain->process(m_pLeftTempBuffer.data(), m_pRightTempBuffer.data(), numFrames);
+    bool ret = m_pReplayGain->process(
+            m_pLeftTempBuffer.data(), m_pRightTempBuffer.data(), numFrames);
+    if (pMixedChannel) {
+        SampleUtil::free(pMixedChannel);
+    }
+    return ret;
 }
 
 void AnalyzerGain::storeResults(TrackPointer pTrack) {

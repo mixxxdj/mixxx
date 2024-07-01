@@ -117,7 +117,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     /// Deletes older widget and resets positions to config defaults.
     bool setWaveformWidget(
             WWaveformViewer* viewer,
-            const QDomElement &node,
+            const QDomElement& node,
             const SkinContext& parentContext);
 
     void setFrameRate(int frameRate);

@@ -300,6 +300,13 @@ void WaveformRendererTextured::paintGL() {
     if (data == nullptr) {
         return;
     }
+#ifdef __STEM__
+    auto stemInfo = pTrack->getStemInfo();
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && pWaveform->hasStem()) {
+        return;
+    }
+#endif
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {

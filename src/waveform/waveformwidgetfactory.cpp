@@ -469,8 +469,8 @@ void WaveformWidgetFactory::slotSkinLoaded() {
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
-                                              const QDomElement& node,
-                                              const SkinContext& parentContext) {
+        const QDomElement& node,
+        const SkinContext& parentContext) {
     int index = findIndexOf(viewer);
     if (index != -1) {
         qDebug() << "WaveformWidgetFactory::setWaveformWidget - "\

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>427</width>
-    <height>333</height>
+    <width>441</width>
+    <height>908</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,7 +20,6 @@
    <string>Crossfader Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -157,17 +156,17 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="fixedSize">
-           <size>
-            <width>123</width>
-            <height>83</height>
-           </size>
-          </property>
           <property name="verticalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
           <property name="horizontalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="fixedSize" stdset="0">
+           <size>
+            <width>123</width>
+            <height>83</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -189,36 +188,35 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="DeckEqualizerOptions">
      <property name="title">
       <string>Deck Equalizers</string>
      </property>
-     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0">
+     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0,0,0,0">
       <item>
        <widget class="QCheckBox" name="CheckBoxEqOnly">
+        <property name="toolTip">
+         <string>Uncheck to allow any effect to be loaded into the EQ knobs.</string>
+        </property>
         <property name="text">
          <string>Only allow EQ knobs to control EQ-specific effects</string>
         </property>
-         <property name="checked">
+        <property name="checked">
          <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string>Uncheck to allow any effect to be loaded into the EQ knobs.</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="CheckBoxSingleEqEffect">
+        <property name="toolTip">
+         <string>Uncheck to allow different decks to use different EQ effects.</string>
+        </property>
         <property name="text">
          <string>Use the same EQ filter for all decks</string>
         </property>
         <property name="checked">
          <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string>Uncheck to allow different decks to use different EQ effects.</string>
         </property>
        </widget>
       </item>
@@ -239,7 +237,7 @@
            <property name="text">
             <string>Equalizer Plugin</string>
            </property>
-           <property name="leftMargin">
+           <property name="leftMargin" stdset="0">
             <number>3</number>
            </property>
           </widget>
@@ -252,11 +250,11 @@
              <bold>true</bold>
             </font>
            </property>
-           <property name="leftMargin">
-            <number>3</number>
-           </property>
            <property name="text">
             <string>Quick Effect</string>
+           </property>
+           <property name="leftMargin" stdset="0">
+            <number>3</number>
            </property>
           </widget>
          </item>
@@ -276,18 +274,16 @@
         </layout>
        </widget>
       </item>
-
       <item>
        <widget class="QCheckBox" name="CheckBoxBypass">
-        <property name="text">
-         <string>Bypass EQ effect processing</string>
-        </property>
         <property name="toolTip">
          <string>When checked, EQs are not processed, improving performance on slower computers.</string>
         </property>
+        <property name="text">
+         <string>Bypass EQ effect processing</string>
+        </property>
        </widget>
       </item>
-
       <item>
        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
         <property name="toolTip">
@@ -298,7 +294,6 @@
         </property>
        </widget>
       </item>
-
       <item>
        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
         <property name="toolTip">
@@ -309,39 +304,41 @@
         </property>
        </widget>
       </item>
-
+      <item>
+       <widget class="QCheckBox" name="CheckBoxStemAutoReset">
+        <property name="text">
+         <string>Reset stem controls on track load</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="GroupEQSliders">
      <property name="title">
       <string>Equalizer frequency Shelves</string>
      </property>
      <layout class="QVBoxLayout" name="vBoxLayout_1">
-
       <item>
        <widget class="QWidget" name="GroupHiEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_2">
-
          <item>
           <widget class="QLabel" name="label_highshelf">
-           <property name="text">
-            <string>High EQ</string>
-           </property>
            <property name="font">
             <font>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
+           <property name="text">
+            <string>High EQ</string>
+           </property>
            <property name="wordWrap">
             <bool>false</bool>
            </property>
           </widget>
          </item>
-
          <item>
           <widget class="QSlider" name="SliderHiEQ">
            <property name="minimum">
@@ -364,7 +361,6 @@
            </property>
           </widget>
          </item>
-
          <item>
           <layout class="QHBoxLayout" name="sliderHiEQ_labels">
            <item>
@@ -428,32 +424,28 @@
            </item>
           </layout>
          </item>
-
         </layout>
        </widget>
       </item>
-
       <item>
        <widget class="QWidget" name="GroupLoEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_3">
-
          <item>
           <widget class="QLabel" name="label_lowshelf">
-           <property name="text">
-            <string>Low EQ</string>
-           </property>
            <property name="font">
             <font>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
+           <property name="text">
+            <string>Low EQ</string>
+           </property>
            <property name="wordWrap">
             <bool>false</bool>
            </property>
           </widget>
          </item>
-
          <item>
           <widget class="QSlider" name="SliderLoEQ">
            <property name="minimum">
@@ -476,7 +468,6 @@
            </property>
           </widget>
          </item>
-
          <item>
           <layout class="QHBoxLayout" name="sliderLoEQ_labels">
            <item>
@@ -540,22 +531,18 @@
            </item>
           </layout>
          </item>
-
         </layout>
        </widget>
       </item>
-
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="MainMainEQ">
      <property name="title">
       <string>Main EQ</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
-
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -606,7 +593,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <spacer>
      <property name="orientation">
@@ -620,7 +606,6 @@
      </property>
     </spacer>
    </item>
-
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -631,8 +616,6 @@
   <tabstop>checkBoxReverse</tabstop>
   <tabstop>CheckBoxEqOnly</tabstop>
   <tabstop>CheckBoxSingleEqEffect</tabstop>
-  <!-- TODO(ronso0)
-      Dynamically add Eq / Quick Effect comboboxes -->
   <tabstop>CheckBoxBypass</tabstop>
   <tabstop>CheckBoxEqAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
@@ -640,12 +623,10 @@
   <tabstop>SliderLoEQ</tabstop>
   <tabstop>comboBoxMainEq</tabstop>
   <tabstop>pbResetMainEq</tabstop>
-  <!-- TODO(ronso0)
-      Dynamically add Main EQ sliders -->
  </tabstops>
  <resources/>
+ <connections/>
  <buttongroups>
   <buttongroup name="buttonGroupCrossfaderModes"/>
  </buttongroups>
- <connections/>
 </ui>
