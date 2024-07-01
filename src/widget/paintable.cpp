@@ -15,39 +15,39 @@
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
-    if (str.compare("Fixed", Qt::CaseInsensitive) == 0) {
-        return DrawMode::Fixed;
-    } else if (str.compare("Stretch", Qt::CaseInsensitive) == 0) {
-        return DrawMode::Stretch;
-    } else if (str.compare("StretchAspect", Qt::CaseInsensitive) == 0) {
-        return DrawMode::StretchAspect;
-    } else if (str.compare("Tile", Qt::CaseInsensitive) == 0) {
-        return DrawMode::Tile;
-    }
+    static const QMap<QString, DrawMode> stringMap = {
+            {"FIXED", DrawMode::Fixed},
+            {"STRETCH", DrawMode::Stretch},
+            {"STRETCH_ASPECT", DrawMode::StretchAspect},
+            {"TILE", DrawMode::Tile}};
 
-    // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode string in DrawModeFromString:"
-               << str << "using Fixed";
-    return DrawMode::Fixed;
+    auto it = stringMap.find(str.toUpper());
+    if (it != stringMap.end()) {
+        return it.value();
+    } else {
+        qWarning() << "Unknown DrawMode string passed to DrawModeFromString:"
+                   << str << "using DrawMode::Fixed as fallback";
+        return DrawMode::Fixed;
+    }
 }
 
 // static
 QString Paintable::DrawModeToString(DrawMode mode) {
-    switch (mode) {
-    case DrawMode::Fixed:
-        return "Fixed";
-    case DrawMode::Stretch:
-        return "Stretch";
-    case DrawMode::StretchAspect:
-        return "StretchAspect";
-    case DrawMode::Tile:
-        return "Tile";
-    }
-    // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode in DrawModeToString " << static_cast<int>(mode)
+    static const QMap<DrawMode, QString> modeMap = {
+            {DrawMode::Fixed, "FIXED"},
+            {DrawMode::Stretch, "STRETCH"},
+            {DrawMode::StretchAspect, "STRETCH_ASPECT"},
+            {DrawMode::Tile, "TILE"}};
 
-               << "using Fixed";
-    return "Fixed";
+    auto it = modeMap.find(mode);
+    if (it != modeMap.end()) {
+        return it.value();
+    } else {
+        qWarning() << "Unknown DrawMode passed to DrawModeToString "
+                   << static_cast<int>(mode) << "using FIXED as fallback";
+        DEBUG_ASSERT(false);
+        return "FIXED";
+    }
 }
 
 Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
