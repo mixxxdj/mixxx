@@ -727,13 +727,14 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
     pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
     pPainter->setOpacity(1.0);
 
-    const double overviewHeight = height();
+    const double overviewHeight = m_orientation == Qt::Horizontal ? height() : width();
     const double markerHeight = overviewHeight * 0.08;
     const double lowerMarkerYPos = overviewHeight * 0.92;
     double currentMarkerXPos;
+    const int iWidth = m_orientation == Qt::Horizontal ? width() : height();
     for (double currentMarkerSeconds = 60; currentMarkerSeconds < trackSeconds;
             currentMarkerSeconds += 60) {
-        currentMarkerXPos = currentMarkerSeconds / trackSeconds * width();
+        currentMarkerXPos = currentMarkerSeconds / trackSeconds * iWidth;
 
         if (m_orientation == Qt::Horizontal) {
             line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
