@@ -21,6 +21,7 @@
 class ScannerTask;
 class LibraryScannerDlg;
 class QString;
+struct LibraryScanResultSummary;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
@@ -42,6 +43,7 @@ class LibraryScanner : public QThread {
   signals:
     void scanStarted();
     void scanFinished();
+    void scanSummary(const LibraryScanResultSummary& result);
     void progressHashing(const QString&);
     void progressLoading(const QString& path);
     void progressCoverArt(const QString& file);

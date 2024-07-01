@@ -1,6 +1,7 @@
 #include "library/scanner/libraryscanner.h"
 
 #include "library/coverartutils.h"
+#include "library/library_decl.h"
 #include "library/queryutil.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
@@ -439,7 +440,6 @@ void LibraryScanner::slotFinishUnhashedScan() {
     const int numMissingTracks = m_numPreviousExistingTrackLocations +
             numNewTracks -
             m_trackDao.getAllExistingTrackLocations().size();
-    // TODO Use this information to display a scan summary popup.
     qInfo() << "----------------------------------------------";
     qInfo("Library scan finished after %s", durationString.toLocal8Bit().constData());
     qInfo(" %d unchanged directories", numUnchangedDirs);
@@ -450,11 +450,21 @@ void LibraryScanner::slotFinishUnhashedScan() {
     qInfo(" %d missing tracks", numMissingTracks);
     qInfo() << "----------------------------------------------";
 
+    LibraryScanResultSummary result;
+    result.durationString = durationString;
+    result.numUnchangedDirs = numUnchangedDirs;
+    result.numChangedAddedDirs = numChangedAddedDirs;
+    result.numVerifiedTracks = numVerifiedTracks;
+    result.numNewTracks = numNewTracks;
+    result.numMovedTracks = numMovedTracks;
+    result.numMissingTracks = numMissingTracks;
+
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
     // now we may accept new scan commands
 
     emit scanFinished();
+    emit scanSummary(result);
 }
 
 void LibraryScanner::scan() {
