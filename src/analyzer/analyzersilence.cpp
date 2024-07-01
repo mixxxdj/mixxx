@@ -41,6 +41,7 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
 
 bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(frameLength);
@@ -52,6 +53,7 @@ bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
     m_framesProcessed = 0;
     m_signalStart = -1;
     m_signalEnd = -1;
+    m_channelCount = channelCount;
 
     return true;
 }
@@ -85,21 +87,23 @@ bool AnalyzerSilence::verifyFirstSound(
 }
 
 bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
+    SINT numFrames = count / m_channelCount;
+
     std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, count);
     if (m_signalStart < 0) {
         const SINT firstSoundSample = findFirstSoundInChunk(samples);
         if (firstSoundSample < count) {
-            m_signalStart = m_framesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
+            m_signalStart = m_framesProcessed + firstSoundSample / m_channelCount;
         }
     }
     if (m_signalStart >= 0) {
         const SINT lastSoundSample = findLastSoundInChunk(samples);
         if (lastSoundSample < count - 1) { // not only sound or silence
-            m_signalEnd = m_framesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
+            m_signalEnd = m_framesProcessed + lastSoundSample / m_channelCount + 1;
         }
     }
 
-    m_framesProcessed += count / mixxx::kAnalysisChannels;
+    m_framesProcessed += numFrames;
     return true;
 }
 
