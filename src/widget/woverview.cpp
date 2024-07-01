@@ -83,6 +83,13 @@ WOverview::WOverview(
     m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeChanged);
     slotTypeChanged(m_pTypeControl->get());
 
+    m_pMinuteMarkersControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("DrawOverviewMinuteMarkers"),
+            this);
+    m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
+    slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
+
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
     setAcceptDrops(true);
@@ -417,6 +424,10 @@ void WOverview::slotTypeChanged(double v) {
     slotWaveformSummaryUpdated();
 }
 
+void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
+    update();
+}
+
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
@@ -621,6 +632,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackBackground(&painter);
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
+        drawMinuteMarkers(&painter);
         drawPlayedOverlay(&painter);
         drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
@@ -699,6 +711,46 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
 
         pPainter->drawImage(rect(), m_waveformImageScaled);
+    }
+}
+
+void WOverview::drawMinuteMarkers(QPainter* pPainter) {
+    if (!m_trackLoaded) {
+        return;
+    }
+
+    if (!static_cast<bool>(m_pMinuteMarkersControl->get())) {
+        return;
+    }
+
+    // Faster than track->getDuration() and already has playback speed ratio compensated for
+    const double trackSeconds = samplePositionToSeconds(getTrackSamples());
+
+    QLineF line;
+    pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
+    pPainter->setOpacity(1.0);
+
+    const double overviewHeight = m_orientation == Qt::Horizontal ? height() : width();
+    const double markerHeight = overviewHeight * 0.08;
+    const double lowerMarkerYPos = overviewHeight * 0.92;
+    double currentMarkerXPos;
+    const int iWidth = m_orientation == Qt::Horizontal ? width() : height();
+    for (double currentMarkerSeconds = 60; currentMarkerSeconds < trackSeconds;
+            currentMarkerSeconds += 60) {
+        currentMarkerXPos = currentMarkerSeconds / trackSeconds * iWidth;
+
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
+            pPainter->drawLine(line);
+            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+            pPainter->drawLine(line);
+        } else {
+            // untested, best effort basis
+            line.setLine(0.0, currentMarkerXPos, markerHeight, currentMarkerXPos);
+            pPainter->drawLine(line);
+            line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
+            pPainter->drawLine(line);
+        }
     }
 }
 

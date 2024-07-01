@@ -52,6 +52,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
     void slotSetNormalizeOverview(bool normalize);
+    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotWaveformMeasured(float frameRate, int droppedFrames);
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
@@ -73,6 +74,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
 
     std::unique_ptr<ControlObject> m_pTypeControl;
+    std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
