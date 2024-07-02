@@ -152,17 +152,15 @@ DDJSR2.fx2assignLeds = [0x4D, 0x51, 0x71, 0x55];
 //////////
 
 DDJSR2.init = function() {
-    let i, j;
-
 
     DDJSR2.deck = [];
-    for (i = 0; i < 4; i++) {
-        DDJSR2.deck[i] = new DDJSR2.Deck(i + 1, i);
+    for (var i = 0; i < 4; i++) {
+        DDJSR2.deck[i] = new DDJSR2.Deck(i);
         DDJSR2.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
     }
 
     DDJSR2.effectUnit = [];
-    for (i = 1; i <= 2; i++) {
+    for (var i = 1; i <= 2; i++) {
         DDJSR2.effectUnit[i] = new components.EffectUnit([i, i + 2]);
         DDJSR2.effectUnit[i].enableButtons[1].midi = [0x93 + i, 0x47];
         DDJSR2.effectUnit[i].enableButtons[2].midi = [0x93 + i, 0x48];
@@ -170,7 +168,7 @@ DDJSR2.init = function() {
         DDJSR2.effectUnit[i].dryWetKnob.input = function(channel, control, value, _status, _group) {
             this.inSetParameter(this.inGetParameter() + DDJSR2.getRotaryDelta(value) / 30);
         };
-        for (j = 1; j <= 4; j++) {
+        for (var j = 1; j <= 4; j++) {
             DDJSR2.effectUnit[i].enableOnChannelButtons.addButton(`Channel${  j}`);
             var midiout;
             if (i === 1) {
@@ -187,7 +185,7 @@ DDJSR2.init = function() {
     // Get initial state of controls:
     midi.sendShortMsg(0x9B, 0x08, 0x7F);
 
-    DDJSR2.seratoTimer = engine.beginTimer(250, "DDJSR2.doTimer", 0);
+    DDJSR2.seratoTimer = engine.beginTimer(350, DDJSR2.doTimer, false);
     midi.sendSysexMsg(DDJSR2.seratoPoll, DDJSR2.seratoPoll.length);
 };
 
@@ -222,17 +220,14 @@ DDJSR2.getJogWheelDelta = function(value) {
     return value - 0x40;
 };
 
-DDJSR2.wheelLedControl = function(deck, ledNumber) {
+DDJSR2.wheelLedControl = function(deck, color) {
     const wheelLedBaseChannel = 0xBB,
-        channel = DDJSR2.deckConverter(deck),
-        colorcode = "0x".concat(parseInt(ledNumber).toString(16)),
-        colorcodetext = `hexcode ${colorcode}`;
-    console.log(colorcodetext);
+        channel = DDJSR2.deckConverter(deck);
     if (channel !== null) {
         midi.sendShortMsg(
             wheelLedBaseChannel,
             0x20+(channel),
-            colorcode
+            color 
         );
     }
 };
@@ -245,37 +240,40 @@ DDJSR2.pitchBendFromJog = function(group, movement) {
     engine.setValue(group, "jog", movement / 5 * DDJSR2.jogwheelSensitivity);
 };
 
-DDJSR2.Deck = function(deckNumbers, offset) {
-    components.Deck.call(this, deckNumbers);
+DDJSR2.Deck = function(channelOffset) {
+    var deckNumber = channelOffset + 1;
+    this.group = "[Channel" + deckNumber + "]";
+    var theDeck = this;
+    components.Deck.call(this, deckNumber);
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton({
-        midi: [0x90+offset, 0x0B]
+        midi: [0x90+channelOffset, 0x0B]
     });
     this.censor = new components.Button({
-        midi: [0x90+offset, 0x15],
+        midi: [0x90+channelOffset, 0x15],
         key: "reverseroll"
     });
     this.reverse = new components.Button({
-        midi: [0x90+offset, 0x38],
+        midi: [0x90+channelOffset, 0x38],
         input: function(channel, control, value, status, group) {
 	      script.toggleControl(group, "reverse");
 	  }
     });
     this.stutter = new components.Button({
-        midi: [0x90+offset, 0x47],
+        midi: [0x90+channelOffset, 0x47],
 	  input: function(channel, control, value, status, group) {
 	      engine.setValue(group, "play_stutter", value ? 1 : 0);
 	  }
     });
     this.cue = new components.CueButton({
-        midi: [0x90 + offset, 0x0C]
+        midi: [0x90 + channelOffset, 0x0C]
     });
     this.cuerewind = new components.Button({
-        midi: [0x90 + offset, 0x48],
+        midi: [0x90 + channelOffset, 0x48],
 	  key: "start_stop"
     });
     this.sync = new components.Button({
-        midi: [0x90 + offset, 0x58],
+        midi: [0x90 + channelOffset, 0x58],
         key: "sync_enabled",
         type: components.Button.prototype.types.toggle
         //        output: function(value, _group, _control) {
@@ -305,7 +303,7 @@ DDJSR2.Deck = function(deckNumbers, offset) {
         //        }
     });
     this.syncOff = new components.Button({
-        midi: [0x90 + offset, 0x5C],
+        midi: [0x90 + channelOffset, 0x5C],
         //group: "[Channel" + deckNumbers + "]",
         key: "sync_enabled",
         //       output: function(value, _group, _control) {
@@ -372,20 +370,20 @@ DDJSR2.Deck = function(deckNumbers, offset) {
 	  }
     });
     this.keyLock = new components.Button({
-        midi: [0x90 + offset, 0x1A],
+        midi: [0x90 + channelOffset, 0x1A],
         key: "keylock",
         type: components.Button.prototype.types.toggle
     });
     this.keySync = new components.Button({
-        midi: [0x90 + offset, 0x70],
+        midi: [0x90 + channelOffset, 0x70],
         key: "sync_key"
 	  });
     this.keyShiftUp = new components.Button({
-        midi: [0x90 + offset, 0x73],
+        midi: [0x90 + channelOffset, 0x73],
    	  key: "pitch_up"
     });
     this.keyShiftDown = new components.Button({
-        midi: [0x90 + offset, 0x72],
+        midi: [0x90 + channelOffset, 0x72],
 	  key: "pitch_down"
     });
     this.keyReset = new components.Button({
@@ -394,13 +392,13 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     });
 
     this.slipButton = new components.Button({
-	  midi: [0x90 + offset, 0x40],
+	  midi: [0x90 + channelOffset, 0x40],
         key: "slip_enabled",
 	  type: components.Button.prototype.types.toggle
     });
 
     this.gridSetButton = new components.Button({
-        midi: [0x90 + offset, 0x64],
+        midi: [0x90 + channelOffset, 0x64],
         key: "beats_translate_curpos"
     });
 
@@ -435,51 +433,51 @@ DDJSR2.Deck = function(deckNumbers, offset) {
             DDJSR2.wheelLedsBlinkStatus[deck]++;
         }
 
-        DDJSR2.wheelLedControl(group, wheelPos);
+        DDJSR2.wheelLedControl(group, Math.round(wheelPos));
     });
 
     // ========================== LOOP SECTION ==============================
 
     this.loopActive = new components.Button({
-        midi: [0x90 + offset, 0x50],
+        midi: [0x90 + channelOffset, 0x50],
         key: "loop_enabled",
         type: components.Button.prototype.types.toggle,
     });
     this.reloopExit = new components.Button({
-        midi: [0x90 + offset, 0x4D],
-        key: "reloop_exit",
+        midi: [0x90 + channelOffset, 0x4D],
+        key: "reloop_toggle",
     });
     this.loopHalve = new components.Button({
-        midi: [0x90 + offset, 0x12],
+        midi: [0x90 + channelOffset, 0x12],
         key: "loop_halve",
     });
     this.loopDouble = new components.Button({
-        midi: [0x90 + offset, 0x13],
+        midi: [0x90 + channelOffset, 0x13],
         key: "loop_double",
     });
     this.loopShiftBackward = new components.Button({
-        midi: [0x90 + offset, 0x61],
+        midi: [0x90 + channelOffset, 0x61],
         key: "beatjump_backward",
     });
     this.loopShiftForward = new components.Button({
-        midi: [0x90 + offset, 0x62],
+        midi: [0x90 + channelOffset, 0x62],
         key: "beatjump_forward",
     });
     this.loopIn = new components.Button({
-        midi: [0x90 + offset, 0x10],
+        midi: [0x90 + channelOffset, 0x10],
         key: "loop_in",
     });
     this.loopOut = new components.Button({
-        midi: [0x90 + offset, 0x11],
+        midi: [0x90 + channelOffset, 0x11],
         key: "loop_out",
     });
     this.slotSelect = new components.Button({
-        midi: [0x90 + offset, 0x4C],
+        midi: [0x90 + channelOffset, 0x4C],
         key: "quantize",
         type: components.Button.prototype.types.toggle,
     });
     this.autoLoop = new components.Button({
-        midi: [0x90 + offset, 0x14],
+        midi: [0x90 + channelOffset, 0x14],
         outKey: "loop_enabled",
    		input: function(channel, control, value, status, group) {
 			    if (value) {
@@ -497,7 +495,7 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
         // midi: [0xB0 + offset, 0x16],
-        group: `[Channel${  deckNumbers  }]`,
+        group: theDeck.group,
         inKey: "pregain",
     });
 
@@ -515,15 +513,15 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     });
 
     this.pfl = new components.Button({
-        midi: [0x90 + offset, 0x54],
-        group: `[Channel${  deckNumbers  }]`,
+        midi: [0x90 + channelOffset, 0x54],
+        group: theDeck.group,
         type: components.Button.prototype.types.toggle,
         inKey: "pfl",
         outKey: "pfl",
     });
 
     this.tapBPM = new components.Button({
-        midi: [0x90 + offset, 0x68],
+        midi: [0x90 + channelOffset, 0x68],
         key: "bpm_tap"
     });
 
@@ -532,7 +530,7 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     });
 
     this.vuMeter = new components.Component({
-        outKey: "VuMeter",
+        outKey: "vu_meter",
         output: function(value, group, _control) {
             // Remark: Only deck vu meters can be controlled! Master vu meter is handled by hardware!
             let midiBaseAddress = 0xB0,
@@ -541,7 +539,7 @@ DDJSR2.Deck = function(deckNumbers, offset) {
 
             value = parseInt(value * 0x76); //full level indicator: 0x7F
 
-            if (engine.getValue(group, "PeakIndicator")) {
+            if (engine.getValue(group, "peak_indicator")) {
                 value = value + 0x09;
             }
 
@@ -571,13 +569,13 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     });
 
     this.loadTrackButton = new components.Button({
-        midi: [0x9B, 0x0+offset],
+        midi: [0x9B, 0x0+channelOffset],
         key: "LoadSelectedTrack"
     });
 
     this.ejectTrackButton = new components.Button({
         inKey: "eject",
-	  midi: [0x96, 58+offset],
+	  midi: [0x96, 58+channelOffset],
 	  input: function(channel, control, value, status, group) {
             var midiBaseAddress = 0x96,
                 channel = 0x46 + DDJSR2.channelGroups[group],
@@ -697,7 +695,7 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     };
 
     this.vinylButton = new components.Button({
-        midi: [0x90+offset, 0x17],
+        midi: [0x90+channelOffset, 0x17],
         type: components.Button.prototype.types.toggle,
         input: function(channel, control, value, status, group) {
             var deck = DDJSR2.channelGroups[group],
@@ -708,7 +706,7 @@ DDJSR2.Deck = function(deckNumbers, offset) {
 	      if (value) {
 	          DDJSR2.scratchMode[deck] = !DDJSR2.scratchMode[deck];
 	          midi.sendShortMsg(
-                    midiBaseAddress + offset,
+                    midiBaseAddress + channelOffset,
                     channel,
                     DDJSR2.scratchMode[deck]
 		  );
@@ -717,13 +715,13 @@ DDJSR2.Deck = function(deckNumbers, offset) {
     });
 	  // Defaulting the scratchmodes.
     midi.sendShortMsg(
-        0x90 + offset,
+        0x90 + channelOffset,
         0x17,
-        DDJSR2.scratchMode[offset]
+        DDJSR2.scratchMode[channelOffset]
     );
 
     // Attach the pads to the deck instance
-    this.padSection = new DDJSR2.PadSection(this, offset);
+    this.padSection = new DDJSR2.PadSection(this, channelOffset);
 
 
 };
@@ -1131,7 +1129,7 @@ DDJSR2.PadSection.prototype.controlToPadMode = function(control) {
 			break;
 		*/
     }
-    engine.log(mode);
+    console.log(mode);
     return mode;
 };
 
@@ -1233,7 +1231,7 @@ DDJSR2.HotcueMode = function(deck, offset) {
             number: i + 1,
             group: deck.currentDeck,
             on: this.color,
-            off: DDJSR2.PadColorMap.OFF,
+            off: DDJSR2.PadColor.OFF,
             colorMapper: DDJSR2.PadColorMap,
             outConnect: false,
         });
