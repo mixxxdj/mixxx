@@ -362,7 +362,6 @@ void DlgPrefColors::slotKeyColorsEnabled(int i) {
     m_bKeyColorsEnabled = static_cast<bool>(i);
     BaseTrackTableModel::setKeyColorsEnabled(m_bKeyColorsEnabled);
     m_pConfig->setValue(kKeyColorsEnabledConfigKey, bKeyColorsEnabled->checkState());
-    slotUpdate();
 }
 
 void DlgPrefColors::openColorPaletteEditor(
