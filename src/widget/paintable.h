@@ -16,15 +16,15 @@ class QSvgRenderer;
 // high fidelity.
 class Paintable {
   public:
-    enum DrawMode {
+    enum class DrawMode {
         // Draw the image in its native dimensions with no stretching or tiling.
-        FIXED,
+        Fixed,
         // Stretch the image.
-        STRETCH,
+        Stretch,
         // Stretch the image maintaining its aspect ratio.
-        STRETCH_ASPECT,
+        StretchAspect,
         // Tile the image.
-        TILE
+        Tile
     };
 
     Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor);

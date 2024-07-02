@@ -47,7 +47,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             // backwards compatibility.
             setPixmapBackground(
                     backgroundSource,
-                    context.selectScaleMode(backPathNode, Paintable::FIXED),
+                    context.selectScaleMode(backPathNode, Paintable::DrawMode::Fixed),
                     context.getScaleFactor());
         }
     }
@@ -97,7 +97,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode unpressedMode =
-                        stateContext->selectScaleMode(unpressedNode, Paintable::FIXED);
+                        stateContext->selectScaleMode(unpressedNode, Paintable::DrawMode::Fixed);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource,
                               unpressedMode, context.getScaleFactor());
@@ -108,7 +108,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode pressedMode =
-                        stateContext->selectScaleMode(pressedNode, Paintable::FIXED);
+                        stateContext->selectScaleMode(pressedNode, Paintable::DrawMode::Fixed);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource,
                               pressedMode, context.getScaleFactor());
@@ -265,7 +265,7 @@ void WPushButton::setPixmap(int iState,
         if (!source.isEmpty()) {
             qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
         }
-    } else if (mode == Paintable::FIXED) {
+    } else if (mode == Paintable::DrawMode::Fixed) {
         // Set size of widget equal to pixmap size
         setFixedSize(pPixmap->size());
     }
