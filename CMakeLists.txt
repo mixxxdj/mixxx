@@ -984,6 +984,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/tabledelegates/bpmdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
   src/library/tabledelegates/playcountdelegate.cpp

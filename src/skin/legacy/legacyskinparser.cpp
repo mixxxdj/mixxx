@@ -1564,6 +1564,12 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
 
+    const auto keyColorsEnabled =
+            m_pConfig->getValue(
+                    ConfigKey("[Config]", "KeyColorsEnabled"),
+                    BaseTrackTableModel::kKeyColorsEnabledDefault);
+    BaseTrackTableModel::setKeyColorsEnabled(keyColorsEnabled);
+
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
                     mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,

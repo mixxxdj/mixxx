@@ -105,6 +105,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int kBpmColumnPrecisionMaximum = 10;
     static void setBpmColumnPrecision(int precision);
 
+    static constexpr bool kKeyColorsEnabledDefault = true;
+    static void setKeyColorsEnabled(bool keyColorsEnabled);
+
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
 
@@ -293,6 +296,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
+    static bool s_keyColorsEnabled;
 
     static bool s_bApplyPlayedTrackColor;
 };

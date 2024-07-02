@@ -18,8 +18,11 @@ class PredefinedColorPalettes {
     static const ColorPalette kTraktorProTrackColorPalette;
     static const ColorPalette kVirtualDJTrackColorPalette;
 
+    static const ColorPalette kMixxxKeyColorPalette;
+
     static const ColorPalette kDefaultHotcueColorPalette;
     static const ColorPalette kDefaultTrackColorPalette;
+    static const ColorPalette kDefaultKeyColorPalette;
 
     static const QList<ColorPalette> kPalettes;
     static const mixxx::RgbColor kDefaultCueColor;

@@ -9,6 +9,7 @@
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
+#include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
 #include "library/tabledelegates/playcountdelegate.h"
@@ -19,6 +20,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetracktablemodel.cpp"
+#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/clipboard.h"
@@ -99,9 +101,11 @@ QSqlDatabase cloneDatabase(
 constexpr int BaseTrackTableModel::kBpmColumnPrecisionDefault;
 constexpr int BaseTrackTableModel::kBpmColumnPrecisionMinimum;
 constexpr int BaseTrackTableModel::kBpmColumnPrecisionMaximum;
+constexpr bool BaseTrackTableModel::kKeyColorsEnabledDefault;
 
 int BaseTrackTableModel::s_bpmColumnPrecision =
         kBpmColumnPrecisionDefault;
+bool BaseTrackTableModel::s_keyColorsEnabled = kKeyColorsEnabledDefault;
 
 // static
 void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
@@ -114,6 +118,12 @@ void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
     s_bpmColumnPrecision = precision;
 }
 
+// static
+void BaseTrackTableModel::setKeyColorsEnabled(bool keyColorsEnabled) {
+    // todo: need to refresh the key column when this setting changes
+    s_keyColorsEnabled = keyColorsEnabled;
+}
+
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
         kApplyPlayedTrackColorDefault;
 
@@ -121,7 +131,7 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
 }
 
-//static
+// static
 QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
 }
@@ -506,6 +516,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 this,
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+        return new KeyDelegate(pTableView);
     }
     return nullptr;
 }
@@ -576,7 +588,8 @@ QVariant BaseTrackTableModel::data(
             role != Qt::CheckStateRole &&
             role != Qt::ToolTipRole &&
             role != kDataExportRole &&
-            role != Qt::TextAlignmentRole) {
+            role != Qt::TextAlignmentRole &&
+            role != Qt::UserRole) {
         return QVariant();
     }
 
@@ -889,18 +902,13 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // If we know the semantic key via the LIBRARYTABLE_KEY_ID
             // column (as opposed to the string representation of the key
-            // currently stored in the DB) then lookup the key and render it
-            // using the user's selected notation.
+            // currently stored in the DB) then lookup the key and return it
             const QVariant keyCodeValue = rawSiblingValue(
                     index,
                     ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
             if (keyCodeValue.isNull()) {
                 // Otherwise, just use the column value as is
                 return std::move(rawValue);
-            }
-            // Convert or clear invalid values
-            VERIFY_OR_DEBUG_ASSERT(keyCodeValue.canConvert<int>()) {
-                return QVariant();
             }
             bool ok;
             const auto keyCode = keyCodeValue.toInt(&ok);
@@ -911,8 +919,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID) {
                 return QVariant();
             }
-            // Render the key with the user-provided notation
-            return KeyUtils::keyToString(key);
+            return QVariant::fromValue(key);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
@@ -1018,6 +1025,18 @@ QVariant BaseTrackTableModel::roleValue(
         }
         default:
             return QVariant(); // default AlignLeft for all other columns
+        }
+    }
+    case Qt::UserRole: {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
+            // return whether or not to display the color rectangle
+            return QVariant::fromValue(s_keyColorsEnabled);
+        }
+        default: {
+            DEBUG_ASSERT(!"unexpected field for UserRole");
+            break;
+        }
         }
     }
     default:
