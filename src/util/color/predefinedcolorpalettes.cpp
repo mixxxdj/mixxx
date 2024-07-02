@@ -144,7 +144,7 @@ constexpr mixxx::RgbColor kVirtualDJTrackColorBlue(0x0000FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorFuchsia(0xFF00FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorWhite(0xFFFFFF);
 
-// Default Mixxx Key Color Palette
+// Default Mixxx Key Color Palette (obtained from Mixxx Keywheel)
 
 constexpr mixxx::RgbColor kMixxxKeyColor1(0xFC4949);
 constexpr mixxx::RgbColor kMixxxKeyColor2(0xFE642D);
