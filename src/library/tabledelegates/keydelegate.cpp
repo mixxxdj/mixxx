@@ -17,19 +17,21 @@ void KeyDelegate::paintItem(
             index.data().value<mixxx::track::io::key::ChromaticKey>();
     // Get the key text with the user-provided notation
     QString keyText = KeyUtils::keyToString(key);
-    QColor keyColor = KeyUtils::keyToColor(key);
-
-    if (keyColor.isValid()) {
-        // Draw the colored rectangle next to the key label
-        painter->fillRect(
-                option.rect.x(),
-                option.rect.y() + 2,
-                4, // width
-                option.rect.height() - 4,
-                keyColor);
+    bool keyColorsEnabled = index.data(Qt::UserRole).value<bool>();
+    int rectWidth = 0; // only leave space for rect if it is rendered
+    if (keyColorsEnabled) {
+        QColor keyColor = KeyUtils::keyToColor(key);
+        rectWidth = 8; // 4px width + 4px right padding
+        if (keyColor.isValid()) {
+            // Draw the colored rectangle next to the key label
+            painter->fillRect(
+                    option.rect.x(),
+                    option.rect.y() + 2,
+                    4, // width
+                    option.rect.height() - 4,
+                    keyColor);
+        }
     }
-
-    const int rectWidth = 8; // 4px width + 4px right padding
 
     QString elidedText = option.fontMetrics.elidedText(
             keyText,

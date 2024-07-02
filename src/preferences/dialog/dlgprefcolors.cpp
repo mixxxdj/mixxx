@@ -5,6 +5,7 @@
 #include <QTableView>
 
 #include "dialog/dlgreplacecuecolor.h"
+#include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "moc_dlgprefcolors.cpp"
@@ -21,6 +22,7 @@ const ConfigKey kAutoHotcueColorsConfigKey("[Controls]", "auto_hotcue_colors");
 const ConfigKey kAutoLoopColorsConfigKey("[Controls]", "auto_loop_colors");
 const ConfigKey kHotcueDefaultColorIndexConfigKey("[Controls]", "HotcueDefaultColorIndex");
 const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorIndex");
+const ConfigKey kKeyColorsEnabledConfigKey("[Config]", "KeyColorsEnabled");
 
 } // anonymous namespace
 
@@ -167,6 +169,7 @@ void DlgPrefColors::slotResetToDefaults() {
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size());
     comboBoxLoopDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 1);
+    bKeyColorsEnabled->setChecked(BaseTrackTableModel::kKeyColorsEnabledDefault);
 }
 
 // Apply and save any changes made in the dialog
@@ -221,6 +224,8 @@ void DlgPrefColors::slotApply() {
         m_pConfig->setValue(kAutoLoopColorsConfigKey, true);
         m_pConfig->setValue(kLoopDefaultColorIndexConfigKey, -1);
     }
+
+    m_pConfig->setValue(kKeyColorsEnabledConfigKey, bKeyColorsEnabled->checkState());
 }
 
 void DlgPrefColors::slotReplaceCueColorClicked() {
@@ -353,6 +358,7 @@ void DlgPrefColors::slotEditHotcuePaletteClicked() {
 
 void DlgPrefColors::slotKeyColorsEnabled(int i) {
     m_bKeyColorsEnabled = static_cast<bool>(i);
+    BaseTrackTableModel::setKeyColorsEnabled(m_bKeyColorsEnabled);
     slotUpdate();
 }
 
