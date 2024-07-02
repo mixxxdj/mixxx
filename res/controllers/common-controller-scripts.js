@@ -140,6 +140,14 @@ var colorCodeToObject = function(colorCode) {
 var script = function() {
 };
 
+// ----------------- Common regular expressions --------------------------
+script.samplerRegEx = /^\[Sampler(\d+)\]$/;
+script.channelRegEx = /^\[Channel(\d+)\]$/;
+script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/;
+script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/;
+script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/;
+script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/;
+
 /**
  * Discriminates whether an object was created using the `{}` synthax.
  *
@@ -248,18 +256,17 @@ script.midiDebug = function(channel, control, value, status, group) {
 
 // Returns the deck number of a "ChannelN" or "SamplerN" group
 script.deckFromGroup = function(group) {
-    let deck = 0;
-    if (group.substring(2, 8) === "hannel") {
-        // Extract deck number from the group text
-        deck = group.substring(8, group.length - 1);
-    }
-    /*
-        else if (group.substring(2,8)=="ampler") {
-            // Extract sampler number from the group text
-            deck = group.substring(8,group.length-1);
+    try {
+        group = `${group}`;  // forcing string
+        const deck = `${Number.parseInt(script.channelRegEx.exec(group)[1])}`;
+        if (Number.isNaN(deck)) {
+            return 0;
+        } else {
+            return deck;
         }
-    */
-    return parseInt(deck);
+    } catch {
+        return 0;
+    }
 };
 
 /* -------- ------------------------------------------------------
@@ -623,14 +630,6 @@ bpm.tapButton = function(deck) {
         group, "rate",
         fRateScale * engine.getValue(group, "rate_dir"));
 };
-
-// ----------------- Common regular expressions --------------------------
-script.samplerRegEx = /^\[Sampler(\d+)\]$/;
-script.channelRegEx = /^\[Channel(\d+)\]$/;
-script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/;
-script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/;
-script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/;
-script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/;
 
 // ----------------- Object definitions --------------------------
 
