@@ -904,10 +904,6 @@ QVariant BaseTrackTableModel::roleValue(
                 // Otherwise, just use the column value as is
                 return std::move(rawValue);
             }
-            // Convert or clear invalid values
-            VERIFY_OR_DEBUG_ASSERT(keyCodeValue.canConvert<int>()) {
-                return QVariant();
-            }
             bool ok;
             const auto keyCode = keyCodeValue.toInt(&ok);
             VERIFY_OR_DEBUG_ASSERT(ok) {
