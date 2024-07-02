@@ -38,7 +38,6 @@ class Paintable {
         return m_drawMode;
     }
 
-    void draw(int x, int y, QPainter* pPainter);
     void draw(const QRectF& targetRect, QPainter* pPainter);
     void draw(const QRectF& targetRect, QPainter* pPainter,
               const QRectF& sourceRect);
@@ -48,7 +47,6 @@ class Paintable {
 
     static DrawMode DrawModeFromString(const QString& str);
     static QString DrawModeToString(DrawMode mode);
-    static QString getAltFileName(const QString& fileName);
 
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,

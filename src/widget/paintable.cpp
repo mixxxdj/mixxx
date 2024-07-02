@@ -62,15 +62,16 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
             m_pPixmap = std::move(pPixmap);
     } else {
         auto pSvg = std::make_unique<QSvgRenderer>();
-        if (!source.getPath().isEmpty()) {
-                if (!pSvg->load(source.getPath())) {
-                    // The above line already logs a warning
-                    return;
-                }
-        } else {
+        if (source.getPath().isEmpty()) {
                 return;
         }
-        m_pSvg.reset(pSvg.release());
+
+        if (!pSvg->load(source.getPath())) {
+                // The above line already logs a warning
+                return;
+        }
+
+        m_pSvg = std::move(pSvg);
 #ifdef __APPLE__
         // Apple does Retina scaling behind the scenes, so we also pass a
         // DrawMode::Fixed image. On the other targets, it is better to
@@ -85,7 +86,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
             QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
-            copy_buffer.fill(0x00000000);  // Transparent black.
+            copy_buffer.fill(Qt::transparent);
             QPainter painter(&copy_buffer);
             m_pSvg->render(&painter);
             WPixmapStore::correctImageColors(&copy_buffer);
@@ -103,58 +104,72 @@ bool Paintable::isNull() const {
 QSize Paintable::size() const {
     if (m_pPixmap) {
         return m_pPixmap->size();
-    } else if (m_pSvg) {
+    }
+
+    if (m_pSvg) {
         return m_pSvg->defaultSize();
     }
+
     return QSize();
 }
 
 int Paintable::width() const {
     if (m_pPixmap) {
         return m_pPixmap->width();
-    } else if (m_pSvg) {
+    }
+
+    if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.width();
     }
+
     return 0;
 }
 
 int Paintable::height() const {
     if (m_pPixmap) {
         return m_pPixmap->height();
-    } else if (m_pSvg) {
+    }
+
+    if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.height();
     }
+
     return 0;
 }
 
 QRectF Paintable::rect() const {
     if (m_pPixmap) {
         return m_pPixmap->rect();
-    } else if (m_pSvg) {
+    }
+
+    if (m_pSvg) {
         return QRectF(QPointF(0, 0), m_pSvg->defaultSize());
     }
+
     return QRectF();
 }
 
 QImage Paintable::toImage() const {
-    // Note: m_pPixmap is a QScopedPointer<QPixmap> and not a QPixmap.
-    // This confusion let to the wrong assumption that we could simple
-    //   return m_pPixmap->toImage();
-    // relying on QPixmap returning QImage() when it was null.
-    return !m_pPixmap ? QImage() : m_pPixmap->toImage();
+    if (m_pPixmap) {
+        return m_pPixmap->toImage();
+    }
+
+    if (m_pSvg) {
+        QImage image(m_pSvg->defaultSize(), QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        m_pSvg->render(&painter);
+        return image;
+    }
+
+    return QImage();
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
     // The sourceRect is implicitly the entire Paintable.
     draw(targetRect, pPainter, rect());
-}
-
-void Paintable::draw(int x, int y, QPainter* pPainter) {
-    QRectF sourceRect(rect());
-    QRectF targetRect(QPointF(x, y), sourceRect.size());
-    draw(targetRect, pPainter, sourceRect);
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
@@ -277,23 +292,5 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             m_pSvg->setViewBox(sourceRect);
             m_pSvg->render(pPainter, targetRect);
         }
-    }
-}
-
-// static
-QString Paintable::getAltFileName(const QString& fileName) {
-    // Detect if the alternate image file exists and, if it does,
-    // return its path instead
-    QStringList temp = fileName.split('.');
-    if (temp.length() != 2) {
-        return fileName;
-    }
-
-    QString newFileName = temp[0] + QLatin1String("@2x.") + temp[1];
-    QFile file(newFileName);
-    if (QFileInfo(file).exists()) {
-        return newFileName;
-    } else {
-        return fileName;
     }
 }
