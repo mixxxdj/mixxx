@@ -1,6 +1,4 @@
-
 /** ScriptConnectionJSProxy */
-
 declare interface ScriptConnection {
     /**
      * Disconnect the script connection,

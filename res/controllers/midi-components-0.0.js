@@ -1,7 +1,7 @@
 /**
  * Components JS library for Mixxx
  * Documentation is on the Mixxx wiki at
- * http://mixxx.org/wiki/doku.php/components_js
+ * https://github.com/mixxxdj/mixxx/wiki/Components-JS
  *
  * Copyright (C) 2017 Be <be.0@gmx.com>
  *
@@ -18,12 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- *
- *
- * This library depends on Lodash, which is copyright JS Foundation
- * and other contributors and licensed under the MIT license. Refer to
- * the lodash.mixxx.js file in this directory for details.
  */
 
 (function(global) {

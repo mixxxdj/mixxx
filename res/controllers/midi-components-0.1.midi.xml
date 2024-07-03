@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5.0" schemaVersion="1">
+    <info>
+        <name>Dummy controller for testing midi-components-0.1.js</name>
+        <author>christophehenry</author>
+        <description>
+            Dummy controller to assert midi-components-0.1.js code is correctly interpretable by Mixxx' JS engine
+        </description>
+    </info>
+    <controller id="Dummy">
+        <scriptfiles>
+            <file filename="midi-components-0.1.js" functionprefix=""/>
+        </scriptfiles>
+        <controls/>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
