@@ -94,8 +94,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
                 m_pSvg->render(&painter);
                 WPixmapStore::correctImageColors(&copy_buffer);
 
-                m_pPixmap.reset(new QPixmap(copy_buffer.size()));
-                m_pPixmap->convertFromImage(copy_buffer);
+                m_pPixmap = std::make_unique<QPixmap>(QPixmap::fromImage(copy_buffer));
         }
     }
 }
