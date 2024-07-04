@@ -85,14 +85,15 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
 #endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-            QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
-            copy_buffer.fill(Qt::transparent);
-            QPainter painter(&copy_buffer);
-            m_pSvg->render(&painter);
-            WPixmapStore::correctImageColors(&copy_buffer);
+                QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor,
+                        QImage::Format_ARGB32_Premultiplied);
+                copy_buffer.fill(Qt::transparent);
+                QPainter painter(&copy_buffer);
+                m_pSvg->render(&painter);
+                WPixmapStore::correctImageColors(&copy_buffer);
 
-            m_pPixmap.reset(new QPixmap(copy_buffer.size()));
-            m_pPixmap->convertFromImage(copy_buffer);
+                m_pPixmap.reset(new QPixmap(copy_buffer.size()));
+                m_pPixmap->convertFromImage(copy_buffer);
         }
     }
 }
@@ -157,7 +158,7 @@ QImage Paintable::toImage() const {
     }
 
     if (m_pSvg) {
-        QImage image(m_pSvg->defaultSize(), QImage::Format_ARGB32);
+        QImage image(m_pSvg->defaultSize(), QImage::Format_ARGB32_Premultiplied);
         image.fill(Qt::transparent);
         QPainter painter(&image);
         m_pSvg->render(&painter);
