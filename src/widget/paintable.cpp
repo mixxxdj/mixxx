@@ -87,6 +87,8 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
             // it to a pixmap which will then get tiled.
                 QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor,
                         QImage::Format_ARGB32_Premultiplied);
+                // The constructor doesn't initialize the image with data,
+                // so we need to fill it before we can draw on it.
                 copy_buffer.fill(Qt::transparent);
                 QPainter painter(&copy_buffer);
                 m_pSvg->render(&painter);
@@ -159,6 +161,8 @@ QImage Paintable::toImage() const {
 
     if (m_pSvg) {
         QImage image(m_pSvg->defaultSize(), QImage::Format_ARGB32_Premultiplied);
+        // The constructor doesn't initialize the image with data,
+        // so we need to fill it before we can draw on it.
         image.fill(Qt::transparent);
         QPainter painter(&image);
         m_pSvg->render(&painter);
