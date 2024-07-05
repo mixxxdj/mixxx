@@ -1062,6 +1062,23 @@ CuePointer Track::findCueById(DbId id) const {
     return CuePointer();
 }
 
+CuePointer Track::findHotcueByIndex(int idx) const {
+    auto locked = lockMutex(&m_qMutex);
+    auto is_hotcue_n = [](int n) {
+        return [n](const CuePointer& pCue) {
+            return pCue && pCue->getHotCue() == n;
+        };
+    };
+    auto cueIt = std::find_if(m_cuePoints.begin(), m_cuePoints.end(), is_hotcue_n(idx));
+    if (cueIt != m_cuePoints.end()) {
+        qWarning() << "     > found hotcue" << idx;
+        return *cueIt;
+    } else {
+        qWarning() << "     ! no hotcue" << idx;
+        return {};
+    }
+}
+
 void Track::removeCue(const CuePointer& pCue) {
     if (!pCue) {
         return;
@@ -1114,27 +1131,8 @@ void Track::swapHotcues(int a, int b) {
     }
     auto locked = lockMutex(&m_qMutex);
     qWarning() << "     Track::swapHotcues" << a << "and" << b;
-    CuePointer pCueA;
-    CuePointer pCueB;
-    for (CuePointer& pCue : m_cuePoints) {
-        if (pCueA && pCueB) {
-            qWarning() << "     > found both, break";
-            break;
-        }
-        if (pCue->getType() != mixxx::CueType::HotCue) {
-            continue;
-        }
-        if (pCue->getHotCue() == a) {
-            qWarning() << "     > found a" << a;
-            pCueA = pCue;
-            continue;
-        }
-        if (pCue->getHotCue() == to) {
-            qWarning() << "     > found b" << b;
-            pCueB = pCue;
-            continue;
-        }
-    }
+    CuePointer pCueA = findHotcueByIndex(a);
+    CuePointer pCueB = findHotcueByIndex(b);
     if (!pCueA && !pCueB) {
         return;
     }

@@ -322,6 +322,7 @@ class Track : public QObject {
     }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
+    CuePointer findHotcueByIndex(int idx) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const {
