@@ -87,7 +87,6 @@
          * By default, sets the Mixxx control {@link value} specified by {@link Component#inKey} in the group
          * {@link Component#group}.
          *
-         * @callback InputCallback
          * @param {number} channel The MIDI channel
          * @param {number} control The MIDI control (MIDI data 2)
          * @param {number} value The MIDI value (MIDI byte 3)
@@ -213,7 +212,190 @@
         CONTROL: 2
     });
 
+    class InputTimeWindow extends Function {
+        /**
+         * @param {number} windowDuration In milliseconds, duration for which to accumulate events
+         * @param {string[]} eventNames List of event names to accumulate
+         * @param {function(Object.<string, number>):void} dispatch The function to which to dispatch to list of events
+         *          and the number of their occurrence during the `windowDuration` period.
+         */
+        constructor(windowDuration, eventNames, dispatch) {
+            super();
+            /** @type {function(Object.<string, number>):void}} */
+            this.__dispatch = dispatch;
+            this.__windowDuration = windowDuration;
+            this.__eventNames = eventNames;
+            this.__reset();
+            this.__timer = script.TimerPromise.resolve(this.__events);
+
+            return Object.setPrototypeOf(this.__onEvent.bind(this), InputTimeWindow.prototype);
+        }
+
+        __onEvent(evt) {
+            if (evt === undefined) {
+                this.__timer.cancel();
+
+            } else if (evt in this.__events) {
+                if (this.__timer.settled) {
+                    this.__timer = new script.TimerPromise(this.__windowDuration, true).then(() => {
+                        this.__dispatch(this.__events);
+                        this.__reset();
+                    });
+                }
+                this.__events[evt]++;
+            }
+        }
+
+        __reset() {
+            this.__events = this.__eventNames.reduce((obj, name) => {
+                obj[name] = 0;
+                return obj;
+            }, {});
+        }
+    }
+
+    /** @typedef {function():void} ButtonActionCallback */
+
+    /**
+     * @callback ButtonEventCallback
+     * @param {Button.Events} event
+     */
+
+    /**
+     * @typedef {ComponentOpts} ButtonOpts
+     * @property {Button.Types} [type=Button.Types.PUSH]
+     * @property {number} [on=127]
+     * @property {number} [off=0]
+     * @property {number} [longPressTimeout=275] Time millisecondsto distinguish a short press
+     *      from a long press. It is recommended to refer to it (as this.longPressTimeout)
+     *      in any Buttons that act differently with short and long presses
+     *      to keep the timeouts uniform
+     * @property {ButtonEventCallback} [onEvent=undefined]
+     * @property {ButtonActionCallback} [onPress=undefined]
+     * @property {ButtonActionCallback} [onLongPress=undefined]
+     * @property {ButtonActionCallback} [onDoublePress=undefined]
+     */
+    class Button extends Component {
+        /** @param {ButtonOpts} opts */
+        constructor({
+            type = Button.Types.PUSH,
+            on = 127,
+            off = 0,
+            longPressTimeout = 275,
+            onEvent = undefined,
+            onPress = undefined,
+            onLongPress = undefined,
+            onDoublePress = undefined
+        } = {}) {
+            super(arguments[0]);
+
+            this.type = type;
+            this.on = on;
+            this.off = off;
+            this.longPressTimeout = longPressTimeout;
+
+            // Replacing default methods by user specified ones
+            if (onEvent instanceof Function) {
+                this.onEvent = onEvent.bind(this);
+            }
+
+            if (onPress instanceof Function) {
+                this.onPress = onPress.bind(this);
+            }
+
+            if (onLongPress instanceof Function) {
+                this.onLongPress = onLongPress.bind(this);
+            }
+
+            if (onDoublePress instanceof Function) {
+                this.onDoublePress = onDoublePress.bind(this);
+            }
+
+            this.__btnEvts = new InputTimeWindow(this.longPressTimeout, Object.values(Button.Events), evts => {
+                if (evts[Button.Events.PRESS] === 1 && evts[Button.Events.RELEASE] === 1) {
+                    this.onPress();
+                } else if (evts[Button.Events.PRESS] === 1 && evts[Button.Events.RELEASE] === 0) {
+                    this.onLongPress();
+                } else if (evts[Button.Events.PRESS] === 2) {
+                    this.onDoublePress();
+                } else { // Unbound action
+                    console.debug(`Unbound action to ${evts}`);
+                }
+            });
+        }
+
+        // eslint-disable-next-line no-unused-vars
+        isPress(channel, control, value, status) {
+            return value > 0;
+        }
+
+        // eslint-disable-next-line no-unused-vars
+        input(channel, control, value, status, group) {
+            // Skip checking double and long press events when no callback was provided
+            const event = (
+                this.isPress(channel, control, value, status)
+                    ? Button.Events.PRESS
+                    : Button.Events.RELEASE
+            );
+
+            this.onEvent(event);
+
+            if (this.onLongPress.__notImplemented__ !== true && !this.onDoublePress.__notImplemented__) {
+                return this.onPress();
+            }
+
+            this.__btnEvts(event);
+        }
+
+        /** @param {Button.Events} event A dictionary of events and their occurrence number */
+        // eslint-disable-next-line no-unused-vars
+        onEvent(event) { /* Does nothing */ }
+
+        onPress() {
+            if (this.type === Button.Types.TOGGLE) {
+                this.inToggle();
+            } else {
+                this.inSetValue(true);
+            }
+        }
+
+        onLongPress() { /* Does nothing */ }
+
+        onDoublePress() { /* Does nothing */ }
+
+        outValueScale(value) {
+            return (value > 0) ? this.on : this.off;
+        }
+
+        shutdown() {
+            this.send(this.off);
+        }
+    }
+
+    /*
+     * Flags to indicate onLongPress and onDoublePress where not overridden
+     * and input can skip checking double and long press
+     */
+    Button.prototype.onLongPress.__notImplemented__ = true;
+    Button.prototype.onDoublePress.__notImplemented__ = true;
+
+    /**
+     * @readonly
+     * @enum {number}
+     */
+    Button.Types = Object.freeze({
+        PUSH: 0,
+        TOGGLE: 1,
+        POWER_WINDOW: 2
+    });
+
+    Button.Events = Object.freeze({
+        PRESS: "press",
+        RELEASE: "release"
+    });
+
     global.components = Object.freeze({
-        Component
+        Component,
+        Button
     });
 }(this));
