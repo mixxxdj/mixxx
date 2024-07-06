@@ -141,6 +141,77 @@ var script = function() {
 };
 
 /**
+ * Wraps the engine timer API in JS promises
+ *
+ * Use `new TimerPromise()` to call `engine.beginTimer`, use {@link TimerPromise#cancel} to call `engine.stopTimer()`.
+ * The Promise resolves the first time the timer completes and rejects when canceled.
+ */
+class TimerPromise extends Promise {
+    /**
+     * @param {number} interval Time in milliseconds until the function is executed. Intervals below 20ms are ignored
+     * @param {boolean} oneShot If true the function is only once, if false the function is executed repeatedly and the
+     *          promise resolves the first time the timer completes. [default = false]
+     */
+    constructor(interval, oneShot = false) {
+        let resolve = undefined;
+        let reject = undefined;
+        super((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+
+        this._resolve = resolve;
+        this._reject = reject;
+
+        this.__timer = 0;
+        if (Number.isInteger(interval) && interval >= 20) {
+            this.__timer = engine.beginTimer(interval, () => {
+                this.__done = true;
+                this.__canceled = false;
+                this._resolve();
+            }, oneShot);
+        }
+
+    }
+
+    get settled() {
+        return this.__done || this.__canceled;
+    }
+
+    get done() {
+        return this.__done;
+    }
+
+    get canceled() {
+        return this.__canceled;
+    }
+
+    cancel() {
+        if (this.__done || this.__canceled) { return; }
+        this.__done = false;
+        this.__canceled = true;
+        if (this.__timer !== 0) {
+            engine.stopTimer(this.__timer);
+        }
+        this._reject();
+    }
+}
+
+TimerPromise.resolve = function resolve(value) {
+    const promise = new TimerPromise(0);
+    promise._resolve(value);
+    return promise;
+};
+
+TimerPromise.cancelled = function cancelled() {
+    const promise = new TimerPromise(0);
+    promise.cancel();
+    return promise;
+};
+
+script.TimerPromise = TimerPromise;
+
+/**
  * Discriminates whether an object was created using the `{}` synthax.
  *
  * Returns true when was an object was created using the `{}` synthax.
