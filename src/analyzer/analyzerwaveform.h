@@ -15,10 +15,6 @@
 class QImage;
 #endif
 
-namespace {
-constexpr int kMaxSupportedStem = 4;
-}
-
 class EngineFilterIIRBase;
 class QSqlDatabase;
 
@@ -145,7 +141,7 @@ struct WaveformStride {
 
     float m_overallData[ChannelCount];
     float m_filteredData[ChannelCount][FilterCount];
-    float m_stemData[ChannelCount][kMaxSupportedStem];
+    float m_stemData[ChannelCount][mixxx::kMaxSupportedStem];
 
     float m_averageOverallData[ChannelCount];
     float m_averageFilteredData[ChannelCount][FilterCount];

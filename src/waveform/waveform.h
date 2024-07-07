@@ -7,6 +7,7 @@
 #include <QString>
 #include <vector>
 
+#include "analyzer/constants.h"
 #include "audio/signalinfo.h"
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
@@ -21,7 +22,7 @@ struct WaveformData {
         unsigned char high;
         unsigned char all;
     } filtered;
-    unsigned char stems[4];
+    unsigned char stems[mixxx::kMaxSupportedStem];
 };
 
 class Waveform {
