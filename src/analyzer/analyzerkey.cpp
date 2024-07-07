@@ -180,11 +180,17 @@ bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
             return false;
         }
 
-        SampleUtil::mixMultichannelToStereo(pHarmonicMixedChannel,
-                pIn,
-                numFrames,
-                m_channelCount,
-                1 /*exclude the first stem, 0b0001*/);
+        if (m_keySettings.getStemStrategy() == KeyDetectionSettings::StemStrategy::Enforced) {
+            SampleUtil::mixMultichannelToStereo(pHarmonicMixedChannel,
+                    pIn,
+                    numFrames,
+                    m_channelCount,
+                    1 /*exclude the first stem, 0b0001*/);
+        } else {
+            SampleUtil::mixMultichannelToStereo(
+                    pHarmonicMixedChannel, pIn, numFrames, m_channelCount);
+        }
+
         pKeyInput = pHarmonicMixedChannel;
     } else if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
         DEBUG_ASSERT(!"Unsupported channel count");

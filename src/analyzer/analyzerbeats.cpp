@@ -219,7 +219,12 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
             return false;
         }
 
-        SampleUtil::copyMultiToStereo(pDrumChannel, pIn, numFrames, m_channelCount, 0);
+        if (m_bpmSettings.getStemStrategy() == BeatDetectionSettings::StemStrategy::Enforced) {
+            SampleUtil::copyMultiToStereo(pDrumChannel, pIn, numFrames, m_channelCount, 0);
+        } else {
+            SampleUtil::mixMultichannelToStereo(pDrumChannel, pIn, numFrames, m_channelCount);
+        }
+
         pBeatInput = pDrumChannel;
     } else if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
         DEBUG_ASSERT(!"Unsupported channel count");
