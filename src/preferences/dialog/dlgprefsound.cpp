@@ -216,6 +216,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::settingChanged);
+    connect(keylockComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSound::updateKeylockDualThreadingCheckbox);
 #ifdef __RUBBERBAND__
     connect(keylockDualthreadedCheckBox,
             &QCheckBox::clicked,
@@ -311,7 +315,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 void DlgPrefSound::slotUpdate() {
     m_bSkipConfigClear = true;
     loadSettings();
-    settingChanged();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
 }
@@ -362,6 +365,7 @@ void DlgPrefSound::slotApply() {
     m_bSkipConfigClear = true;
     loadSettings(); // in case SM decided to change anything it didn't like
     checkLatencyCompensation();
+    updateKeylockDualThreadingCheckbox();
     m_bSkipConfigClear = false;
 }
 
@@ -747,6 +751,9 @@ void DlgPrefSound::settingChanged() {
     m_settingsModified = true;
 
 #ifdef __RUBBERBAND__
+}
+
+void DlgPrefSound::updateKeylockDualThreadingCheckbox() {
     bool supportedScaler = keylockComboBox->currentData()
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
@@ -781,6 +788,8 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
     msg.setDefaultButton(pNoBtn);
     msg.exec();
     keylockDualthreadedCheckBox->setChecked(msg.clickedButton() == pYesBtn);
+
+    updateKeylockDualThreadingCheckbox();
 #endif
 }
 
@@ -789,7 +798,7 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
 /// opens this page to allow users to make adjustments in case configured
 /// devices are busy/missing.
 /// The issue is that the visual state (combobox(es) with 'None') does not match
-/// the untouched config state. This set the modified flag so slotApply() will
+/// the untouched config state. This sets the modified flag so slotApply() will
 /// apply the (seemingly) unchanged configuration if users simply click Apply/Okay
 /// because they are okay to continue without these devices.
 void DlgPrefSound::configuredDeviceNotFound() {
@@ -900,7 +909,8 @@ void DlgPrefSound::slotResetToDefaults() {
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
-    settingChanged(); // force the apply button to enable
+    settingChanged();
+    updateKeylockDualThreadingCheckbox();
 }
 
 void DlgPrefSound::bufferUnderflow(double count) {
@@ -943,15 +953,7 @@ void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
     m_pMainMonoMixdown->set(static_cast<double>(value));
 
 #ifdef __RUBBERBAND__
-    bool supportedScaler = keylockComboBox->currentData()
-                                   .value<EngineBuffer::KeylockEngine>() !=
-            EngineBuffer::KeylockEngine::SoundTouch;
-    keylockDualthreadedCheckBox->setEnabled(!value && supportedScaler);
-    keylockDualthreadedCheckBox->setToolTip(
-            value ? kKeylockMultiThreadedUnavailableMono
-                  : (supportedScaler
-                                    ? kKeylockMultiThreadedAvailable
-                                    : kKeylockMultiThreadedUnavailableRubberband));
+    updateKeylockDualThreadingCheckbox();
 #endif
 }
 
