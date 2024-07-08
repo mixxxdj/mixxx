@@ -473,7 +473,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
