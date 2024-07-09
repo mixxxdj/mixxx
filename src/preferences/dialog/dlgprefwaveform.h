@@ -11,6 +11,7 @@
 #endif
 
 class ControlPushButton;
+class ControlObject;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
