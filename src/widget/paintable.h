@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QImage>
-#include <QScopedPointer>
 #include <QRectF>
+#include <QScopedPointer>
 #include <QString>
+#include <memory>
 
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/pixmapsource.h"
