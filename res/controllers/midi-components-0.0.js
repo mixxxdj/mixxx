@@ -651,7 +651,13 @@
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
         },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         * @deprecated since 2.5.0. Use @{ComponentContainer#setLayer} instead
+         */
         applyLayer: function(newLayer, reconnectComponents) {
+            console.warn("ComponentContainer.applyLayer is deprecated; use ComponentContainer.setLayer instead");
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
             }
@@ -669,6 +675,30 @@
                     component.trigger();
                 });
             }
+        },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         */
+        setLayer(newLayer, reconnectComponents) {
+            if (reconnectComponents !== false) {
+                reconnectComponents = true;
+            }
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.disconnect();
+                });
+            }
+
+            Object.assign(this, newLayer);
+
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.connect();
+                    component.trigger();
+                });
+            }
+
         },
         shutdown: function() {
             this.forEachComponent(function(component) {

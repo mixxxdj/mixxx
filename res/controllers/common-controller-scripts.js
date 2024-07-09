@@ -166,6 +166,8 @@ script.isSimpleObject = isSimpleObject;
  * @param source {object | Array} Object to merge into source
  */
 const deepMerge = function(target, source) {
+    console.warn("script.deepMerge is deprecated; use Object.assign instead");
+
     if (target === source || target === undefined || target === null || source === undefined || source === null) {
         return;
     }
@@ -190,6 +192,7 @@ const deepMerge = function(target, source) {
     }
 };
 
+/** @deprecated Use {@link Object.assign} instead */
 script.deepMerge = deepMerge;
 
 // ----------------- Mapping constants ---------------------
