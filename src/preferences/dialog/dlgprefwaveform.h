@@ -10,7 +10,7 @@
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #endif
 
-class ControlObject;
+class ControlPushButton;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
@@ -44,7 +44,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
         slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
-    void slotSetWaveformOverviewType(int index);
+    void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
@@ -73,7 +73,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void updateWaveformAcceleration(
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
 
-    std::unique_ptr<ControlObject> m_pTypeControl;
+    std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
 
     UserSettingsPointer m_pConfig;

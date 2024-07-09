@@ -373,7 +373,8 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::ResetPlayed |
             Capability::RemoveFromDisk |
             Capability::Hide |
-            Capability::Analyze;
+            Capability::Analyze |
+            Capability::Properties;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()

@@ -378,6 +378,10 @@ EnginePrimeExportJob::EnginePrimeExportJob(
     }
 }
 
+// out-of-line declaration because we can't generate dtor in
+// header with unique_ptr's of incomplete types.
+EnginePrimeExportJob::~EnginePrimeExportJob() = default;
+
 void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
