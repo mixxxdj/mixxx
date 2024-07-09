@@ -15,14 +15,13 @@ struct ImageKey {
     bool operator==(const ImageKey& other) const = default;
 };
 
-namespace std {
 template<>
-struct hash<ImageKey> {
-    std::size_t operator()(const ImageKey& key) const {
-        return qHash(key.path) ^ std::hash<double>()(key.scaleFactor);
+struct std::hash<ImageKey> {
+    size_t operator()(const ImageKey& key, size_t seed = std::hash<int>{}(0)) const {
+        return std::hash<QString>()(key.path) ^
+                std::hash<double>()(key.scaleFactor) ^ seed;
     }
 };
-} // namespace std
 
 class WImageStore {
   public:
