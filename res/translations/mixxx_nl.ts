@@ -1379,7 +1379,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="196"/>
         <source>Strip Search</source>
-        <translation>Strip Search</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
@@ -1695,7 +1695,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>Main Output Gain</source>
-        <translation>Hoofduitgang Gain</translation>
+        <translation>Hoofduitgang Versterking</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="127"/>
@@ -2275,7 +2275,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
         <source>Effect Unit %1</source>
-        <translation>Effect Unit %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
@@ -2300,7 +2300,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Main Output gain</source>
-        <translation>Hoofduitgang Gain</translation>
+        <translation>Hoofduitgang Versterking</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
@@ -2794,7 +2794,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="741"/>
         <source>Beat Jump / Loop Move</source>
-        <translation>Beat Jump / Loop Move</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="742"/>
@@ -3813,7 +3813,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Mixxx %1.%2 Development Team</source>
-        <translation>Mixxx %1.%2 Development Team</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="43"/>
@@ -3836,12 +3836,12 @@ traceren - Boven + Profileringsberichten</translation>
         <translation>Eerdere Medewerkers</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="414"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="415"/>
         <source>Official Website</source>
         <translation>Officiële Website</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="424"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="425"/>
         <source>Donate</source>
         <translation>Donaties</translation>
     </message>
@@ -7293,108 +7293,108 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <translation>Netwerk Klok</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="147"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="150"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation>Directe monitor (enkel opnemen en uitzenden)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="216"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="219"/>
         <source>Disabled</source>
         <translation>Uitgeschakeld</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="217"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="220"/>
         <source>Enabled</source>
         <translation>Ingeschakeld</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="226"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="229"/>
         <source>Stereo</source>
         <translation>Stereo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="227"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="230"/>
         <source>Mono</source>
         <translation>Mono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="246"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="249"/>
         <source>To enable Realtime scheduling (currently disabled), see the %1.</source>
         <translation>Om Realtime scheduling in te schakelen (momenteel uitgeschakeld), zie de %1.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="260"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="263"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation>De %1 bevat een lijst met geluidskaarten en controllers die u kunt overwegen voor het gebruik met Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="264"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="267"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation>Mixxx DJ Hardware Gids</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="617"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="618"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation>auto (&lt;= 1024 frames/periode)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="620"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="621"/>
         <source>2048 frames/period</source>
         <translation>2048 frames/periode</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="624"/>
         <source>4096 frames/period</source>
         <translation>4096 frames/periode</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="870"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="883"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>Microfooningangen zijn niet synchroon met het opname- en uitzendsignaal in vergelijking met wat je hoort.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="873"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="886"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Meet de Round Trip Latency en voer het hierboven in voor Microphone Latency Compensation om de microfoon timing uit te lijnen.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="877"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="887"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="890"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="900"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>Raadpleeg de Mixxx-gebruikershandleiding voor meer informatie.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="882"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="895"/>
         <source>Configured latency has changed.</source>
         <translation>De geconfigureerde latency is gewijzigd.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="883"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="896"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Meet opnieuw de Round Trip Latency en voer het hierboven in voor Microphone Latency Compensation om de microfoon timing uit te lijnen.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="243"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="246"/>
         <source>Realtime scheduling is enabled.</source>
         <translation>Realtime scheduling is ingeschakeld.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="143"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="146"/>
         <source>Main output only</source>
         <translation>Alleen HoofdUitgang</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="145"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="148"/>
         <source>Main and booth outputs</source>
         <translation>Hoofd en Booth uitgangen</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="643"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="644"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="305"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="302"/>
         <source>Configuration error</source>
         <translation>Configuratiefout</translation>
     </message>
@@ -7414,7 +7414,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation>Sample Rate</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
@@ -7640,7 +7640,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="654"/>
         <source>Powered by xwax</source>
-        <translation>Powered by xwax</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="612"/>
@@ -7656,47 +7656,47 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
 <context>
     <name>DlgPrefWaveform</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="21"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="31"/>
         <source>Filtered</source>
         <translation>Gefilterd</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="22"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="32"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="23"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="33"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="45"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="72"/>
         <source>Top</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="46"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="73"/>
         <source>Center</source>
-        <translation type="unfinished"/>
+        <translation>Midden</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="47"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="74"/>
         <source>Bottom</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="168"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="195"/>
         <source>OpenGL not available</source>
         <translation>OpenGL niet beschikbaar</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="336"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="366"/>
         <source>dropped frames</source>
         <translation>verloren frames</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="386"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="418"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation>Waveforms in cache gebruiken %1 Mb op schijf</translation>
     </message>
@@ -7952,27 +7952,27 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <translation>Omgeving</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="167"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="166"/>
         <source>Waveforms</source>
         <translation>Waveforms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="185"/>
         <source>Mixer</source>
         <translation>Mixer</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="203"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="197"/>
         <source>Auto DJ</source>
         <translation>Auto-DJ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="185"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="179"/>
         <source>Decks</source>
         <translation>Decks</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="179"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="173"/>
         <source>Colors</source>
         <translation>Kleuren</translation>
     </message>
@@ -8007,32 +8007,32 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="197"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="191"/>
         <source>Effects</source>
         <translation>Effecten</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="217"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="211"/>
         <source>Recording</source>
         <translation>Opname</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="223"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="217"/>
         <source>Beat Detection</source>
         <translation>Beat detectie</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="223"/>
         <source>Key Detection</source>
         <translation>Key detectie</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="234"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="228"/>
         <source>Normalization</source>
         <translation>Normalisatie</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="258"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="252"/>
         <source>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Sommige voorkeurenpagina&apos;s bevatten fouten. Los eerst de problemen op om de wijzigingen toe te passen.&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
@@ -8042,12 +8042,12 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <translation>Vinyl Besturing</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="204"/>
         <source>Live Broadcasting</source>
         <translation>Live uitzenden</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="241"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="235"/>
         <source>Modplug Decoder</source>
         <translation>Modplug Decoder</translation>
     </message>
@@ -8590,7 +8590,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="660"/>
         <source>Samplerate:</source>
-        <translation>Samplerate:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="712"/>
@@ -9300,15 +9300,15 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1321"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1411"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1310"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1400"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Veilige Modus ingeschakeld</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1331"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1419"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1320"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1408"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -9320,57 +9320,57 @@ Shown when VuMeter can not be displayed. Please keep
 ondersteuning.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2434"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2423"/>
         <source>activate</source>
         <translation>Activeer</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2439"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2428"/>
         <source>toggle</source>
         <translation>Schakelaar</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2450"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2439"/>
         <source>right</source>
         <translation>rechts</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2455"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2444"/>
         <source>left</source>
         <translation>links</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2460"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2449"/>
         <source>right small</source>
         <translation>rechts klein</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2465"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2454"/>
         <source>left small</source>
         <translation>links klein</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2470"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2459"/>
         <source>up</source>
         <translation>omhoog</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2475"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2464"/>
         <source>down</source>
         <translation>omlaag</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2480"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2469"/>
         <source>up small</source>
         <translation>omhoog klein</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2485"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2474"/>
         <source>down small</source>
         <translation>omlaag klein</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2513"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2502"/>
         <source>Shortcut</source>
         <translation>Snelkoppeling</translation>
     </message>
@@ -10015,7 +10015,7 @@ Wilt u nu in uw Bibliotheek scannen naar Cover Art?</translation>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="45"/>
         <source>Switch</source>
-        <translation>Switch</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="47"/>
@@ -10898,7 +10898,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/biquadfullkilleqeffect.cpp" line="59"/>
         <source>Biquad Full Kill Equalizer</source>
-        <translation>Biquad Full Kill Equalizer</translation>
+        <translation>Biquad Compleet Demp Equalizer</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/biquadfullkilleqeffect.cpp" line="60"/>
@@ -11218,7 +11218,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarybeats.h" line="22"/>
         <source>Queen Mary Tempo and Beat Tracker</source>
-        <translation>Queen Mary Tempo and Beat Tracker</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarykey.h" line="22"/>
@@ -11298,7 +11298,7 @@ Volledig rechts: einde van de effectperiode</translation>
         <translation>Kan de geselecteerde instellingen niet toepassen.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgprefmixer.cpp" line="188"/>
         <source>Deck %1</source>
         <translation>Deck %1</translation>
     </message>
@@ -11308,22 +11308,22 @@ Volledig rechts: einde van de effectperiode</translation>
         <translation>Locatie</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="145"/>
+        <location filename="../../src/library/parsercsv.cpp" line="163"/>
         <location filename="../../src/library/parserm3u.cpp" line="150"/>
         <location filename="../../src/library/parserpls.cpp" line="86"/>
         <source>Playlist Export Failed</source>
         <translation>Afspeellijst Exporteren Mislukt</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="146"/>
-        <location filename="../../src/library/parsercsv.cpp" line="237"/>
+        <location filename="../../src/library/parsercsv.cpp" line="164"/>
+        <location filename="../../src/library/parsercsv.cpp" line="255"/>
         <location filename="../../src/library/parserm3u.cpp" line="151"/>
         <location filename="../../src/library/parserpls.cpp" line="87"/>
         <source>Could not create file</source>
         <translation>Kon bestand niet aanmaken</translation>
     </message>
     <message>
-        <location filename="../../src/library/parsercsv.cpp" line="236"/>
+        <location filename="../../src/library/parsercsv.cpp" line="254"/>
         <source>Readable text Export Failed</source>
         <translation>Export leesbare tekst mislukt</translation>
     </message>
@@ -11698,54 +11698,54 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1381"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1460"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1634"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1344"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1423"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1597"/>
         <source>Rekordbox</source>
         <translation>Rekordbox</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1478"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1441"/>
         <source>Playlists</source>
         <translation>Afspeellijsten</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1477"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1440"/>
         <source>Folders</source>
-        <translation>Folders</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1461"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1424"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation>Leest databases die zijn geëxporteerd voor Pioneer CDJ / XDJ-spelers met behulp van de &lt;br/&gt;Rekordbox ExportModus.Rekordbox kan alleen exporteren naar USB- of SD-apparaten met een FAT- of HFS-bestandssysteem. &lt;br/&gt;Mixxx kan een database lezen van elk apparaat dat de databasemappen bevat (&lt;tt&gt;PIONEER&lt;/tt&gt; en &lt;tt&gt;Inhoud&lt;/tt&gt;). &lt;br/&gt;Niet ondersteund worden Rekordbox-databases die zijn verplaatst naar een extern apparaat via &lt;br/&gt;&lt;i&gt;Voorkeuren &gt; Geavanceerd &gt; Databasebeheer&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;De volgende gegevens worden gelezen:</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1480"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1443"/>
         <source>Hot cues</source>
         <translation>Hot cues</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1482"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1445"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation>Loops (alleen de eerste loop is momenteel bruikbaar in Mixxx)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1485"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1448"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation>Controleer op aangesloten Rekordbox USB / SD-apparaten (vernieuwen)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1479"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1442"/>
         <source>Beatgrids</source>
         <translation>Beat-Grids</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1481"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1444"/>
         <source>Memory cues</source>
         <translation>Memory Cues</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1511"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1474"/>
         <source>(loading) Rekordbox</source>
         <translation>(laden) Rekordbox</translation>
     </message>
@@ -11764,7 +11764,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
         <source>Mixxx Sampler Banks (*.xml)</source>
-        <translation>Mixxx Sampler Banks (*.xml)</translation>
+        <translation>Mixxx Sampler Banken (*.xml)</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="64"/>
@@ -12548,7 +12548,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="303"/>
         <source>Auxiliary Gain</source>
-        <translation>Auxiliary Gain</translation>
+        <translation>Auxiliary versterking</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="304"/>
@@ -12909,7 +12909,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="83"/>
         <source>Big Spinny/Cover Art</source>
-        <translation>Big Spinny/Cover Art</translation>
+        <translation>Groot Spinny/Cover Art</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="84"/>
@@ -12965,7 +12965,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="185"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="190"/>
         <source>Main Output Gain</source>
-        <translation>Hoofduitgang Gain</translation>
+        <translation>Hoofduitgang versterking</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="186"/>
@@ -14167,7 +14167,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="175"/>
         <source>Main Channel R Volume Meter</source>
-        <translation>Main Channel R Volume Meter</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="536"/>
@@ -15412,7 +15412,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="628"/>
         <source>&amp;Community Support</source>
-        <translation>&amp;Community Support</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="629"/>
@@ -15473,25 +15473,25 @@ Dit kan niet ongedaan gemaakt worden!</translation>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="171"/>
+        <location filename="../../src/widget/woverview.cpp" line="186"/>
         <source>Passthrough</source>
         <translation>Directe Doorvoer</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="746"/>
+        <location filename="../../src/widget/woverview.cpp" line="774"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Klaar om te spelen, analyseren...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="749"/>
-        <location filename="../../src/widget/woverview.cpp" line="759"/>
+        <location filename="../../src/widget/woverview.cpp" line="777"/>
+        <location filename="../../src/widget/woverview.cpp" line="787"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Track laden...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="753"/>
+        <location filename="../../src/widget/woverview.cpp" line="781"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finaliseren...</translation>
@@ -15750,13 +15750,13 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="217"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="517"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="519"/>
         <source>Analyze</source>
         <translation>Analyseer</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="274"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2347"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2351"/>
         <source>Delete Track Files</source>
         <translation>Verwijder Track bestanden</translation>
     </message>
@@ -15821,391 +15821,391 @@ Dit kan niet ongedaan gemaakt worden!</translation>
         <translation>Verwijder Bestanden van Schijf</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="356"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="358"/>
         <source>Properties</source>
         <translation>Eigenschappen</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="371"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="373"/>
         <source>Open in File Browser</source>
         <translation>Open bestand in Browser</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="376"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="378"/>
         <source>Select in Library</source>
         <translation>Selecteer in Bibliotheek</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="382"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="384"/>
         <source>Import From File Tags</source>
         <translation>Importeer van bestandslabels</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="389"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="391"/>
         <source>Import From MusicBrainz</source>
         <translation>Importeer van MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="396"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="398"/>
         <source>Export To File Tags</source>
         <translation>Exporteer naar bestandslabels</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="424"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="426"/>
         <source>BPM and Beatgrid</source>
         <translation>BPM en Beat-Grid</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="427"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="429"/>
         <source>Play Count</source>
-        <translation>Play Count</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="430"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="432"/>
         <source>Rating</source>
         <translation>Waardering</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="433"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="435"/>
         <source>Cue Point</source>
         <translation>Cue-Punt</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="436"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="438"/>
         <source>Hotcues</source>
         <translation>Hotcues</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="439"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="441"/>
         <source>Intro</source>
         <translation>Intro</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="442"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="444"/>
         <source>Outro</source>
         <translation>Outro</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="448"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="450"/>
         <source>Key</source>
         <translation>Toonaard (Key)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="451"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="453"/>
         <source>ReplayGain</source>
-        <translation>Replay Gain</translation>
+        <translation>ReplayGain</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="454"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="456"/>
         <source>Waveform</source>
         <translation>Waveform</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="457"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="459"/>
         <source>Comment</source>
         <translation>Opmerking</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="460"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="462"/>
         <source>All</source>
         <translation>Alles</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="465"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
         <source>Lock BPM</source>
         <translation>Vergrendel BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="466"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="468"/>
         <source>Unlock BPM</source>
         <translation>Ontgrendel BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="471"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
         <source>Double BPM</source>
         <translation>Dubbele BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="475"/>
         <source>Halve BPM</source>
         <translation>1/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="475"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="477"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="477"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="479"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="479"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="481"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="481"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="483"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="520"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="522"/>
         <source>Reanalyze</source>
         <translation>Her-analizeer</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="523"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="525"/>
         <source>Reanalyze (constant BPM)</source>
         <translation>Her-analyseer (constante BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="529"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="531"/>
         <source>Reanalyze (variable BPM)</source>
         <translation>Her-analyseer (variabele BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="541"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="543"/>
         <source>Update ReplayGain from Deck Gain</source>
-        <translation>Update ReplayGain van Deck Gain</translation>
+        <translation>Update ReplayGain van Deck Versterking</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="928"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="930"/>
         <source>Deck %1</source>
         <translation>Deck %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1331"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1335"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation><numerusform>Importeren metadata van %n bestand(en) van file tags</numerusform><numerusform>Importeren metadata van %n Track(s) van file tags</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1363"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1367"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation><numerusform>Markeren metadata van %n bestand(en) om te exporteren in bestand tags</numerusform><numerusform>Markeren metadata van %n bestand(en) om te exporteren in file tags</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1414"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1438"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1418"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1442"/>
         <source>Create New Playlist</source>
         <translation>Creëer nieuwe afspeellijst </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1439"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1443"/>
         <source>Enter name for new playlist:</source>
         <translation>Geef naam voor nieuwe afspeellijst:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1441"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1445"/>
         <source>New Playlist</source>
         <translation>Nieuwe Afspeellijst</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1449"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1453"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1462"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1457"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1466"/>
         <source>Playlist Creation Failed</source>
         <translation>Aanmaken Afspeellijst Mislukt</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1450"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1454"/>
         <source>A playlist by that name already exists.</source>
         <translation>Een afspeellijst met die naam bestaat al.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1454"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1458"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Een afspeellijst kan geen blanco naam hebben.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1463"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1467"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Een onbekende fout trad op bij het creëren van afspeellijst:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1529"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1533"/>
         <source>Add to New Crate</source>
         <translation>Toevoegen aan nieuwe Krat</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1672"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1676"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>Schalen BPM van %n bestand(en)</numerusform><numerusform>Schalen BPM van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1701"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1705"/>
         <source>Undo BPM/beats change of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1745"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1749"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>Vergrendelen BPM van %n bestand(en)</numerusform><numerusform>Vergrendelen BPM van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1746"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1750"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>Ontgrendelen BPM van %n bestand(en)</numerusform><numerusform>Vergrendelen BPM van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1779"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1783"/>
         <source>Setting rating of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1810"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1814"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>Kleur instellen van %n bestand(en)</numerusform><numerusform>Kleur instellen van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1858"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1862"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>Resetten afspeelteller van %n bestand(en)</numerusform><numerusform>Resetten afspeelteller van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1880"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1884"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>Resetten Beats van %n bestand(en)</numerusform><numerusform>Resetten Beats van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1907"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1911"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>Verwijderen beoordeling van %n bestand(en)</numerusform><numerusform>Verwijderen beoordeling van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1930"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1934"/>
         <source>Clearing comment of %n track(s)</source>
         <translation><numerusform>Dit kan niet ongedaan gemaakt worden</numerusform><numerusform>Verwijder opmerking van %n Track(s)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2022"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2026"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>Verwijderen Main Cue van %n bestand(en)</numerusform><numerusform>Verwijderen Main Cue van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2032"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2036"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>Verwijderen Outro Cue van %n bestand(en)</numerusform><numerusform>Verwijderen Outro Cue van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2042"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2046"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>Verwijderen Intro Cue van %n bestand(en)</numerusform><numerusform>Verwijderen Intro Cue van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2052"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2056"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>Verwijderen Loop Cues van %n bestand(en)</numerusform><numerusform>Verwijderen Loop Cues van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2062"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2066"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>Verwijderen Hotcues van %n bestand(en)</numerusform><numerusform>Verwijderen Hotcues van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2084"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2088"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>Resetten Toonaard (Key) van %n bestand(en)</numerusform><numerusform>Resetten Toonaard (Key) van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2106"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2110"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>Resetten herhaal versterking van %n bestand(en)</numerusform><numerusform>Resetten herhaal versterking van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2141"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2145"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>Resetten Waveform van %n bestand(en)</numerusform><numerusform>Resetten Waveform van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2197"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2201"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>Resetten alle prestatie Metadata van %n bestand(en)</numerusform><numerusform>Resetten alle prestatie Metadata van %n bestand(en)</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2289"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2293"/>
         <source>Move these files to the trash bin?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2291"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2295"/>
         <source>Permanently delete these files from disk?</source>
         <translation>Deze bestanden permanent verwijderen van de schijf?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2293"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2303"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2297"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2307"/>
         <source>This can not be undone!</source>
         <translation>Dit kan niet ongedaan gemaakt worden</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2326"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2330"/>
         <source>Cancel</source>
         <translation>Annuleer</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2330"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2334"/>
         <source>Delete Files</source>
         <translation>Verwijder bestanden</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2332"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2336"/>
         <source>Okay</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2349"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2353"/>
         <source>Move Track File(s) to Trash?</source>
         <translation>Track Bestand(en) Verplaatsen naar Prullenmand?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2405"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2409"/>
         <source>Track Files Deleted</source>
         <translation>Track Bestanden zijn verwijderd</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2407"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2411"/>
         <source>Track Files Moved To Trash</source>
         <translation>Track Bestanden zijn Verplaatst Naar de Prullenmand</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2411"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2415"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
         <translation>%1 Track bestanden werden verplaatst naar de prullenmand en verwijderd uit de Mixxx database.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2414"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2418"/>
         <source>%1 track files were deleted from disk and purged from the Mixxx database.</source>
         <translation>%1 Track bestanden werden verwijderd van de schijf en verwijderd uit de Mixxx database.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2428"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2432"/>
         <source>Track File Deleted</source>
         <translation>Track Bestand Verwijderd</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2429"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2433"/>
         <source>Track file was deleted from disk and purged from the Mixxx database.</source>
         <translation>Track bestand werd verwijderd van de schijf en verwijderd uit de Mixxx database.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2457"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2461"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
         <translation>Volgend(e) %1 bestand(en) konden niet worden verwijderd van de schijf.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2465"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2469"/>
         <source>This track file could not be deleted from disk</source>
         <translation>Dit Track bestand kon niet worden verwijderd van de schijf.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2488"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2492"/>
         <source>Remaining Track File(s)</source>
         <translation>Overblijvende Track Bestand(en)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2478"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2482"/>
         <source>Close</source>
         <translation>Sluit</translation>
     </message>
@@ -16216,77 +16216,77 @@ Dit kan niet ongedaan gemaakt worden!</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="445"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="447"/>
         <source>Loops</source>
         <translation>Loops</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="503"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="505"/>
         <source>Clear BPM and Beatgrid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="509"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="511"/>
         <source>Undo last BPM/beats change</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2298"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2302"/>
         <source>Move this track file to the trash bin?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2301"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2305"/>
         <source>Permanently delete this track file from disk?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2308"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2312"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2312"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2316"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2380"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2384"/>
         <source>Removing %n track file(s) from disk...</source>
         <translation>%n Track bestand(en) van schijf verwijderen...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2419"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2423"/>
         <source>Note: if you are in the Computer or Recording view you need to click the current view again to see changes.</source>
         <translation>Nota: Als u in het Computer- of Opnameaanzicht bent dan dient u op het huidige aanzicht opnieuw te klikken om de wijzigingen te zien.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2423"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2427"/>
         <source>Track File Moved To Trash</source>
         <translation>Track Bestand is verplaatst naar de Prullenmand</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2424"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2428"/>
         <source>Track file was moved to trash and purged from the Mixxx database.</source>
         <translation>Track bestand werd verplaatst naar de Prullenmand en verwijderd uit de Mixxx database.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2455"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2459"/>
         <source>The following %1 file(s) could not be moved to trash</source>
         <translation>De volgende %1 bestand(en) konden niet verplaatst worden naar de Prullenmand.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2463"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2467"/>
         <source>This track file could not be moved to trash</source>
         <translation>Dit Track bestand kon niet verplaatst worden naar de Prullenmand.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2630"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2634"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>Instellen Cover Art van %n bestand(en)</numerusform><numerusform>Instellen Cover Art van %n bestand(en)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2654"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2658"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>Opnieuw inladen Cover Art van %n bestand(en)</numerusform><numerusform>Opnieuw inladen Cover Art van %n bestand(en)</numerusform></translation>
     </message>
