@@ -68,7 +68,7 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotReplaceCueColorClicked);
 
-    connect(bKeyColorsEnabled,
+    connect(checkboxKeyColorsEnabled,
             &QCheckBox::stateChanged,
             this,
             &DlgPrefColors::slotKeyColorsEnabled);
@@ -84,7 +84,7 @@ DlgPrefColors::~DlgPrefColors() {
 void DlgPrefColors::slotUpdate() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
-    bKeyColorsEnabled->setChecked(
+    checkboxKeyColorsEnabled->setChecked(
             m_pConfig->getValue(kKeyColorsEnabledConfigKey,
                     BaseTrackTableModel::kKeyColorsEnabledDefault));
     for (const auto& palette : std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
@@ -171,7 +171,7 @@ void DlgPrefColors::slotResetToDefaults() {
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size());
     comboBoxLoopDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 1);
-    bKeyColorsEnabled->setChecked(BaseTrackTableModel::kKeyColorsEnabledDefault);
+    checkboxKeyColorsEnabled->setChecked(BaseTrackTableModel::kKeyColorsEnabledDefault);
 }
 
 // Apply and save any changes made in the dialog
@@ -227,7 +227,7 @@ void DlgPrefColors::slotApply() {
         m_pConfig->setValue(kLoopDefaultColorIndexConfigKey, -1);
     }
 
-    m_pConfig->setValue(kKeyColorsEnabledConfigKey, bKeyColorsEnabled->checkState());
+    m_pConfig->setValue(kKeyColorsEnabledConfigKey, checkboxKeyColorsEnabled->checkState());
 }
 
 void DlgPrefColors::slotReplaceCueColorClicked() {
@@ -361,7 +361,7 @@ void DlgPrefColors::slotEditHotcuePaletteClicked() {
 void DlgPrefColors::slotKeyColorsEnabled(int i) {
     m_bKeyColorsEnabled = static_cast<bool>(i);
     BaseTrackTableModel::setKeyColorsEnabled(m_bKeyColorsEnabled);
-    m_pConfig->setValue(kKeyColorsEnabledConfigKey, bKeyColorsEnabled->checkState());
+    m_pConfig->setValue(kKeyColorsEnabledConfigKey, checkboxKeyColorsEnabled->checkState());
 }
 
 void DlgPrefColors::openColorPaletteEditor(

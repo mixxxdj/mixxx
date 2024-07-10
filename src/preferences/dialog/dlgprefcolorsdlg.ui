@@ -101,7 +101,7 @@
     </item>
 
     <item row="4" column="0" colspan="2">
-     <widget class="QCheckBox" name="bKeyColorsEnabled">
+     <widget class="QCheckBox" name="checkboxKeyColorsEnabled">
       <property name="toolTip">
        <string>When key colors are enabled, Mixxx will display a color hint
 associated with each key.</string>
@@ -136,6 +136,7 @@ associated with each key.</string>
   <tabstop>pushButtonEditHotcuePalette</tabstop>
   <tabstop>comboBoxHotcueDefaultColor</tabstop>
   <tabstop>pushButtonReplaceCueColor</tabstop>
+  <tabstop>checkboxKeyColorsEnabled</tabstop>
  </tabstops>
  <resources/>
  <connections/>
