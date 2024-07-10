@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
@@ -74,6 +75,7 @@ class WCueMenuPopup : public QWidget {
     /// which effectively makes the cue a saved loop and use the current play
     /// position as loop end
     void slotSavedLoopCueManual();
+    void slotSwapHotcues();
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
@@ -91,6 +93,10 @@ class WCueMenuPopup : public QWidget {
     std::unique_ptr<WColorPicker> m_pColorPicker;
     std::unique_ptr<QPushButton> m_pDeleteCue;
     std::unique_ptr<CueTypePushButton> m_pSavedLoopCue;
+    std::unique_ptr<QLabel> m_pCueNumberSwap;
+    std::unique_ptr<QLabel> m_pSwapIndicator;
+    std::unique_ptr<QComboBox> m_pSwapSelector;
+    std::unique_ptr<QPushButton> m_pSwapTrigger;
 
   protected:
     void closeEvent(QCloseEvent* event) override;

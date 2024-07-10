@@ -1079,6 +1079,18 @@ CuePointer Track::findHotcueByIndex(int idx) const {
     }
 }
 
+QList<CuePointer> Track::getHotcues() const {
+    const QMutexLocker lock(&m_qMutex);
+    // lock thread-unsafe copy constructors of QList
+    QList<CuePointer> hotcues;
+    for (const auto& pCue : m_cuePoints) {
+        if (pCue->getType() == mixxx::CueType::HotCue) {
+            hotcues.append(pCue);
+        }
+    }
+    return hotcues;
+}
+
 void Track::removeCue(const CuePointer& pCue) {
     if (!pCue) {
         return;
