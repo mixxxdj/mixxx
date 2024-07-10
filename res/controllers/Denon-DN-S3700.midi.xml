@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.2.3" schemaVersion="1">
+    <info>
+        <name>Denon DN-S3700 (QML)</name>
+        <author>christophehenry</author>
+        <description>Controller preset for Denon DN-S3700 turntable</description>
+    </info>
+    <controller id="DN-S3700">
+        <scriptfiles>
+            <file filename="Denon-DN-S3700.qml" functionprefix=""/>
+        </scriptfiles>
+        <controls />
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
