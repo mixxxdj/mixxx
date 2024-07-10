@@ -32,7 +32,11 @@ void KeyDelegate::paintItem(
         }
     }
 
-    const QString keyText = KeyUtils::keyToString(key);
+    QString keyText = KeyUtils::keyToString(key);
+    if (QString("INVALID").compare(keyText) == 0) { // if the key is invalid, display empty string
+        keyText.clear();
+    }
+
     QString elidedText = option.fontMetrics.elidedText(
             keyText,
             Qt::ElideLeft,
