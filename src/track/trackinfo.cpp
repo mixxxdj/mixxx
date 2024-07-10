@@ -61,7 +61,7 @@ bool TrackInfo::compareEq(
 #if defined(__EXTRA_METADATA__)
             (getISRC() == trackInfo.getISRC()) &&
 #endif // __EXTRA_METADATA__
-            (getKeyText() == trackInfo.getKeyText()) &&
+            (getGlobalKey() == trackInfo.getGlobalKey()) &&
 #if defined(__EXTRA_METADATA__)
             (getLanguage() == trackInfo.getLanguage()) &&
             (getLyricist() == trackInfo.getLyricist()) &&
