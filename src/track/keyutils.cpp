@@ -466,7 +466,7 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 
 // static
 QColor KeyUtils::keyToColor(ChromaticKey key) {
-    int openKeyNumber = KeyUtils::keyToOpenKeyNumber(key);
+    int openKeyNumber = keyToOpenKeyNumber(key);
 
     if (openKeyNumber != 0) {
         const auto& palette = mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
