@@ -21,15 +21,14 @@ struct PixmapKey {
     bool operator==(const PixmapKey& other) const = default;
 };
 
-namespace std {
 template<>
-struct hash<PixmapKey> {
-    std::size_t operator()(const PixmapKey& key) const {
-        return qHash(key.path) ^ std::hash<Paintable::DrawMode>()(key.mode) ^
-                std::hash<double>()(key.scaleFactor);
+struct std::hash<PixmapKey> {
+    std::size_t operator()(const PixmapKey& key, size_t seed = std::hash<int>{}(0)) const {
+        return std::hash<QString>()(key.path) ^
+                std::hash<Paintable::DrawMode>()(key.mode) ^
+                std::hash<double>()(key.scaleFactor) ^ seed;
     }
 };
-} // namespace std
 
 using PaintablePointer = std::shared_ptr<Paintable>;
 using WeakPaintablePointer = std::weak_ptr<Paintable>;
