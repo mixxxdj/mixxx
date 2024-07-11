@@ -286,8 +286,10 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = std::move(pTrack);
     if (!m_pLoadedTrack) {
         // nothing to
+        qWarning() << "  ! no track to load";
         return;
     }
+    qWarning() << "  >> load track";
 
     // Clear loop
     // It seems that the trick is to first clear the loop out point, and then
@@ -489,6 +491,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         auto fileInfo = pNewTrack->getFileInfo();
         if (!Sandbox::askForAccess(&fileInfo)) {
             // We don't have access.
+            qWarning() << "  ! can't read" << fileInfo.location();
             return;
         }
     }

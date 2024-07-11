@@ -46,6 +46,7 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
 LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
+    qWarning() << "LoadToGroupController::slotLoadToGroup" << m_group << "v:" << v;
     if (v > 0) {
         emit loadToGroup(m_group, false);
     }
@@ -536,12 +537,15 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
+    qWarning() << "LibraryControl::slotLoadSelectedTrackToGroup:" << group << play;
     if (!m_pLibraryWidget) {
+        qWarning() << "  ! no WLibrary widget";
         return;
     }
 
     LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
     if (!pActiveView) {
+        qWarning() << "  ! no active view";
         return;
     }
     pActiveView->loadSelectedTrackToGroup(group, play);

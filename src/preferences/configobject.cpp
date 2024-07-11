@@ -187,7 +187,7 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
         qDebug() << "ConfigObject: Could not read" << m_filename;
         return false;
     } else {
-        //qDebug() << "ConfigObject: Parse" << m_filename;
+        qDebug() << "ConfigObject: Parse" << m_filename;
         // Parse the file
         int group = 0;
         QString groupStr, line;
@@ -210,7 +210,7 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
                     QTextStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
                     val = val.trimmed();
-                    //qDebug() << "control:" << key << "value:" << val;
+                    qWarning().noquote() << "control:" << groupStr << key << "       " << val;
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
                     set(k, m);

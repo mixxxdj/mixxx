@@ -1005,8 +1005,10 @@ void WTrackTableView::activateSelectedTrack() {
 }
 
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
+    qDebug() << "WTrackTableView::loadSelectedTrackToGroup:" << group << play;
     auto indices = selectionModel()->selectedRows();
     if (indices.isEmpty()) {
+        qWarning() << "  ! indices empty";
         return;
     }
     bool allowLoadTrackIntoPlayingDeck = false;
@@ -1032,15 +1034,23 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
         // TODO(XXX): Check for other than just the first preview deck.
         if (group != "[PreviewDeck1]" &&
                 ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            qWarning() << "  ! not allowed to load to this deck, might be playing";
             return;
         }
     }
     auto index = indices.at(0);
     auto* trackModel = getTrackModel();
     TrackPointer pTrack;
-    if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-        emit loadTrackToPlayer(pTrack, group, play);
+    if (trackModel) {
+        pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            qWarning() << "  > emit loadTrackToPlayer, deck:" << group;
+            emit loadTrackToPlayer(pTrack, group, play);
+        } else {
+            qWarning() << "  ! track is nullptr";
+        }
+    } else {
+        qWarning() << "  ! no track model";
     }
 }
 

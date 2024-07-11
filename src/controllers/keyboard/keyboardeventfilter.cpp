@@ -41,7 +41,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 
         QKeySequence ks = getKeySeq(ke);
+        qWarning() << " > keySeq:" << ks.toString();
         if (!ks.isEmpty()) {
+            qWarning() << " > lookup control";
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
@@ -49,9 +51,11 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             for (auto it = m_keySequenceToControlHash.constFind(ksv);
                  it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
+                qWarning() << " > found CfgKey:" << configKey.group << configKey.item;
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
+                        qWarning() << " > found control, set to 1";
                         //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
@@ -66,6 +70,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                                  << configKey.group << configKey.item;
                     }
                 }
+            }
+            if (result == false) {
+                qWarning() << " ! no CfgKey found";
             }
             return result;
         }
@@ -163,6 +170,18 @@ void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdCo
     // Mixxx.
     m_keySequenceToControlHash = pKbdConfigObject->transpose();
     m_pKbdConfigObject = pKbdConfigObject;
+
+    qWarning() << "   m_keySequenceToControlHash:";
+    QHashIterator<ConfigValueKbd, ConfigKey> it(m_keySequenceToControlHash);
+    while (it.hasNext()) {
+        it.next();
+        const QKeySequence ks = it.key().value;
+        const QString kss = ks.toString();
+        if (kss.startsWith("Shift")) {
+            qWarning().noquote() << "    " << ks.toString() << "     "
+                                 << it.value().group << it.value().item;
+        }
+    }
 }
 
 ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
