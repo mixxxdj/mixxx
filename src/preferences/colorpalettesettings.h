@@ -3,8 +3,6 @@
 #include "preferences/usersettings.h"
 #include "util/color/colorpalette.h"
 
-#define KEY_COLORS_ENABLED "KeyColorsEnabled"
-
 // Saves ColorPalettes to and loads ColorPalettes from the mixxx.cfg file
 class ColorPaletteSettings {
   public:
@@ -27,7 +25,7 @@ class ColorPaletteSettings {
     void removePalette(const QString& name);
     QSet<QString> getColorPaletteNames() const;
 
-    DEFINE_PREFERENCE_HELPERS(KeyColorsEnabled, bool, "[Config]", KEY_COLORS_ENABLED, true);
+    DEFINE_PREFERENCE_HELPERS(KeyColorsEnabled, bool, "[Config]", "KeyColorsEnabled", true);
 
   private:
     UserSettingsPointer m_pConfig;
