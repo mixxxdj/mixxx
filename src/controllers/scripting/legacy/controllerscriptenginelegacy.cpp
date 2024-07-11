@@ -33,12 +33,12 @@ const QByteArray kScreenTransformFunctionUntypedSignature =
                 "transformFrame(QVariant,QVariant)");
 const QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
-const QByteArray kScreenInitFunctionUntypedSignature =
+const QByteArray kQmlComponentInitFunctionUntypedSignature =
         QMetaObject::normalizedSignature(
                 "init(QVariant,QVariant)");
-const QByteArray kScreenInitFunctionTypedSignature =
+const QByteArray kQmlComponentFunctionTypedSignature =
         QMetaObject::normalizedSignature("init(QString,bool)");
-const QByteArray kScreenShutdownFunctionSignature =
+const QByteArray kQmlComponentShutdownFunctionSignature =
         QMetaObject::normalizedSignature("shutdown()");
 } // anonymous namespace
 #endif
@@ -95,7 +95,6 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(
 
     const QJSValue global = m_pJSEngine->globalObject();
 
-    // TODO: ICI
     bool success = true;
     for (const QString& prefixName : scriptFunctionPrefixes) {
         QJSValue prefix = global.property(prefixName);
@@ -155,7 +154,7 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
             }
 
             QMetaMethod shutdownFunction;
-            int methodIdx = metaObject->indexOfMethod(kScreenShutdownFunctionSignature);
+            int methodIdx = metaObject->indexOfMethod(kQmlComponentShutdownFunctionSignature);
 
             if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
@@ -219,12 +218,12 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
 
             QMetaMethod initFunction;
             bool typed = false;
-            int methodIdx = metaObject->indexOfMethod(kScreenInitFunctionUntypedSignature);
+            int methodIdx = metaObject->indexOfMethod(kQmlComponentInitFunctionUntypedSignature);
 
             if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
                                   << "has no valid untyped init method.";
-                methodIdx = metaObject->indexOfMethod(kScreenInitFunctionTypedSignature);
+                methodIdx = metaObject->indexOfMethod(kQmlComponentFunctionTypedSignature);
                 typed = true;
             }
 
@@ -459,6 +458,66 @@ bool ControllerScriptEngineLegacy::initialize() {
 #ifdef MIXXX_USE_QML
         } else {
             if (script.identifier.isEmpty()) {
+                if (availableScreens.isEmpty()) {
+                    QQmlComponent qmlComponent = QQmlComponent(
+                            std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine).get());
+
+                    QFile scene = QFile(script.file.absoluteFilePath());
+
+                    QDir dir(m_resourcePath + "/qml/");
+
+                    scene.open(QIODevice::ReadOnly);
+                    qmlComponent.setData(scene.readAll(),
+                            // Obfuscate the scene filename to make it appear in the QML folder.
+                            // This allows a smooth integration with QML components.
+                            QUrl::fromLocalFile(
+                                    dir.absoluteFilePath(script.file.fileName())));
+                    scene.close();
+
+                    while (qmlComponent.isLoading()) {
+                        qCDebug(m_logger) << "Waiting for component "
+                                          << script.file.absoluteFilePath()
+                                          << " to be ready: " << qmlComponent.progress();
+                        QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 500);
+                    }
+
+                    if (qmlComponent.isError()) {
+                        const QList<QQmlError> errorList = qmlComponent.errors();
+                        for (const QQmlError& error : errorList) {
+                            qCWarning(m_logger)
+                                    << "Unable to load the QML scene:"
+                                    << error.url() << "at line" << error.line()
+                                    << ", error: " << error;
+                            showQMLExceptionDialog(error, true);
+                        }
+                    }
+
+                    VERIFY_OR_DEBUG_ASSERT(qmlComponent.isReady()) {
+                        qCWarning(m_logger)
+                                << "QMLComponent isn't ready although "
+                                   "synchronous load was requested.";
+                    }
+
+                    QObject* pRootObject = qmlComponent.createWithInitialProperties(
+                            QVariantMap{});
+                    if (qmlComponent.isError()) {
+                        const QList<QQmlError> errorList = qmlComponent.errors();
+                        for (const QQmlError& error : errorList) {
+                            qCWarning(m_logger) << error.url() << error.line() << error;
+                        }
+                    }
+
+                    std::shared_ptr<QQuickItem> rootItem =
+                            std::shared_ptr<QQuickItem>(qobject_cast<QQuickItem*>(pRootObject));
+                    if (!rootItem) {
+                        qWarning("Oopsie run: Not a QQuickItem");
+                        delete pRootObject;
+                    }
+
+                    watchFilePath(script.file.absoluteFilePath());
+
+                    m_rootItems.insert("screenIdentifier", rootItem);
+                }
                 while (!availableScreens.isEmpty()) {
                     QString screenIdentifier(availableScreens.firstKey());
                     if (!bindSceneToScreen(script,

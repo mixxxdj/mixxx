@@ -1,6 +1,6 @@
-import QtQml
+import QtQuick
 
-QtObject {
+Item {
     id: controller
 
     property string controllerId: ""
@@ -9,9 +9,10 @@ QtObject {
     function init(controllerId, debugMode) {
         controller.controllerId = controllerId;
         controller.debugMode = debugMode;
-        console.log(controllerId, debugMode);
+        console.error(controllerId, debugMode);
+        console.error(controller.controllerId, controller.debugMode);
     }
     function shutdown() {
-        console.log(`Shutting down ${controller.controllerId} with debug mode ${controller.controllerId}`);
+        console.error(`Shutting down ${controller.controllerId} with debug mode ${controller.controllerId}`);
     }
 }
