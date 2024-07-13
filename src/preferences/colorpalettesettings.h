@@ -25,6 +25,8 @@ class ColorPaletteSettings {
     void removePalette(const QString& name);
     QSet<QString> getColorPaletteNames() const;
 
+    DEFINE_PREFERENCE_HELPERS(KeyColorsEnabled, bool, "[Config]", "KeyColorsEnabled", true);
+
   private:
     UserSettingsPointer m_pConfig;
 };

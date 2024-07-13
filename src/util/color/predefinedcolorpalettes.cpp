@@ -144,6 +144,21 @@ constexpr mixxx::RgbColor kVirtualDJTrackColorBlue(0x0000FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorFuchsia(0xFF00FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorWhite(0xFFFFFF);
 
+// Default Mixxx Key Color Palette (obtained from Mixxx Keywheel)
+
+constexpr mixxx::RgbColor kMixxxKeyColor1(0xFC4949);
+constexpr mixxx::RgbColor kMixxxKeyColor2(0xFE642D);
+constexpr mixxx::RgbColor kMixxxKeyColor3(0xF98C27);
+constexpr mixxx::RgbColor kMixxxKeyColor4(0xFED600);
+constexpr mixxx::RgbColor kMixxxKeyColor5(0x99FE00);
+constexpr mixxx::RgbColor kMixxxKeyColor6(0x42FE3E);
+constexpr mixxx::RgbColor kMixxxKeyColor7(0x0AD58F);
+constexpr mixxx::RgbColor kMixxxKeyColor8(0x0AE7E7);
+constexpr mixxx::RgbColor kMixxxKeyColor9(0x04C9FE);
+constexpr mixxx::RgbColor kMixxxKeyColor10(0x3D8AFD);
+constexpr mixxx::RgbColor kMixxxKeyColor11(0xAC64FE);
+constexpr mixxx::RgbColor kMixxxKeyColor12(0xFD3FEA);
+
 // Replaces "no color" values and is used for new cues if auto_hotcue_colors is
 // disabled
 constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
@@ -357,11 +372,32 @@ const ColorPalette PredefinedColorPalettes::kVirtualDJTrackColorPalette =
                         kVirtualDJTrackColorWhite,
                 });
 
+const ColorPalette PredefinedColorPalettes::kMixxxKeyColorPalette =
+        ColorPalette(
+                QStringLiteral("Mixxx Key Colors"),
+                {
+                        kMixxxKeyColor1,
+                        kMixxxKeyColor2,
+                        kMixxxKeyColor3,
+                        kMixxxKeyColor4,
+                        kMixxxKeyColor5,
+                        kMixxxKeyColor6,
+                        kMixxxKeyColor7,
+                        kMixxxKeyColor8,
+                        kMixxxKeyColor9,
+                        kMixxxKeyColor10,
+                        kMixxxKeyColor11,
+                        kMixxxKeyColor12,
+                });
+
 const ColorPalette PredefinedColorPalettes::kDefaultHotcueColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
 
 const ColorPalette PredefinedColorPalettes::kDefaultTrackColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxTrackColorPalette;
+
+const ColorPalette PredefinedColorPalettes::kDefaultKeyColorPalette =
+        mixxx::PredefinedColorPalettes::kMixxxKeyColorPalette;
 
 const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
@@ -376,6 +412,8 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         mixxx::PredefinedColorPalettes::kSeratoDJProTrackColorPalette,
         mixxx::PredefinedColorPalettes::kTraktorProTrackColorPalette,
         mixxx::PredefinedColorPalettes::kVirtualDJTrackColorPalette,
+        // Key Color Palettes
+        mixxx::PredefinedColorPalettes::kMixxxKeyColorPalette,
 };
 
 const mixxx::RgbColor PredefinedColorPalettes::kDefaultCueColor =
