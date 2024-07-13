@@ -55,6 +55,7 @@
 #include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/translations.h"
+#include "util/undostack.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
@@ -143,6 +144,8 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     mixxx::Translations::initializeTranslations(
             m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
     initializeKeyboard();
+
+    UndoStack::createInstance();
 }
 
 CoreServices::~CoreServices() {
@@ -158,6 +161,8 @@ CoreServices::~CoreServices() {
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::destroy();
     }
+
+    UndoStack::destroy();
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
