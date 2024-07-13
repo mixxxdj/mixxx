@@ -89,7 +89,7 @@ This can speed up beat detection on slower computers but may result in lower qua
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="labelStemStrategy">
           <property name="text">
            <string>Use rhythmic channel when analysing stem file</string>
           </property>

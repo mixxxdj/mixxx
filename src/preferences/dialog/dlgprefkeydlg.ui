@@ -82,7 +82,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="labelStemStrategy">
           <property name="text">
            <string>Exclude rhythmic channel when analysing stem file</string>
           </property>

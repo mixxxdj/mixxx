@@ -50,6 +50,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 
     loadSettings();
 
+    // TODO (#13466) Keeping the setting hidden for now
+    comboBoxStemStrategy->hide();
+    labelStemStrategy->hide();
+
     // Connections
     connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefKey::pluginSelected);

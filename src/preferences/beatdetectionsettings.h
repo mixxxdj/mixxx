@@ -22,11 +22,11 @@
 class BeatDetectionSettings {
   public:
     enum class StemStrategy {
-        Disabled,
-        // TODO (xxx) - detect if the stem is using compliant labels for its
+        Disabled = 0,
+        // TODO (#13466) - detect if the stem is using compliant labels for its
         // channels and use the first channel if so - to be implemented
         // Automatic
-        Enforced
+        Enforced = 2
     };
 
     BeatDetectionSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
