@@ -481,8 +481,7 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
-                this.input(channel, control, value, status, group);
+                this.input(channel, control, (value << 7) + (this._firstLSB ? this._firstLSB : 0), status, group);
             }
             this.MSB = value;
         },
