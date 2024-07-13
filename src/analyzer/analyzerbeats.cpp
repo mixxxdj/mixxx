@@ -220,7 +220,7 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
         }
 
         if (m_bpmSettings.getStemStrategy() == BeatDetectionSettings::StemStrategy::Enforced) {
-            SampleUtil::copyMultiToStereo(pDrumChannel, pIn, numFrames, m_channelCount, 0);
+            SampleUtil::copyOneStereoFromMulti(pDrumChannel, pIn, numFrames, m_channelCount, 0);
         } else {
             SampleUtil::mixMultichannelToStereo(pDrumChannel, pIn, numFrames, m_channelCount);
         }

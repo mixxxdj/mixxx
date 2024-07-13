@@ -322,7 +322,12 @@ class SampleUtil {
             const CSAMPLE* pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,
-            int excludeChannelMask = 0);
+            int excludeChannelMask);
+    // Full downmix overload
+    static void mixMultichannelToStereo(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
@@ -359,11 +364,11 @@ class SampleUtil {
     // channels will be ignored.
     // pSrc must contain (numFrames * numChannels) samples
     // (numFrames * 2) samples will be written into pDest
-    static void copyMultiToStereo(CSAMPLE* pDest,
+    static void copyOneStereoFromMulti(CSAMPLE* pDest,
             const CSAMPLE* pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,
-            int channelOffset = 0);
+            int sourceChannel = 0);
 
     // reverses stereo sample in place
     static void reverse(CSAMPLE* pBuffer, SINT numSamples);

@@ -12,6 +12,10 @@
 #include "track/keyfactory.h"
 #include "track/track.h"
 
+namespace {
+constexpr int excludeFirstChannelMask = 0x1;
+}
+
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
@@ -185,7 +189,7 @@ bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
                     pIn,
                     numFrames,
                     m_channelCount,
-                    1 /*exclude the first stem, 0b0001*/);
+                    excludeFirstChannelMask);
         } else {
             SampleUtil::mixMultichannelToStereo(
                     pHarmonicMixedChannel, pIn, numFrames, m_channelCount);
