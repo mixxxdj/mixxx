@@ -426,6 +426,46 @@ TEST_F(SampleUtilTest, copyReverseStem) {
     EXPECT_FLOAT_EQ(destination[15], 0.7f);
 }
 
+TEST_F(SampleUtilTest, mixMultichannelToStereo) {
+    EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 16 && sizes[1] > 16);
+    CSAMPLE* source = buffers[0];
+    CSAMPLE* destination = buffers[1];
+    for (int i = 0; i < 16; ++i) {
+        source[i] = i * 0.1f;
+    }
+
+    SampleUtil::mixMultichannelToStereo(destination, source, 2, mixxx::audio::ChannelCount::stem());
+
+    EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + 0.4f + 0.6f);
+    EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f + 0.7f);
+    EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f + 1.4f);
+    EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f + 1.5f);
+
+    SampleUtil::mixMultichannelToStereo(
+            destination, source, 2, mixxx::audio::ChannelCount::stem(), 0b0100);
+
+    EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + /*0.4f +*/ 0.6f);
+    EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + /*0.5f +*/ 0.7f);
+    EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + /*1.2f +*/ 1.4f);
+    EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + /*1.3f +*/ 1.5f);
+
+    SampleUtil::mixMultichannelToStereo(
+            destination, source, 2, mixxx::audio::ChannelCount::stem(), 0b0101);
+
+    EXPECT_FLOAT_EQ(destination[0], /*0.0f +*/ 0.2f + /*0.4f +*/ 0.6f);
+    EXPECT_FLOAT_EQ(destination[1], /*0.1f +*/ 0.3f + /*0.5f +*/ 0.7f);
+    EXPECT_FLOAT_EQ(destination[2], /*0.8f +*/ 1.0f + /*1.2f +*/ 1.4f);
+    EXPECT_FLOAT_EQ(destination[3], /*0.9f +*/ 1.1f + /*1.3f +*/ 1.5f);
+
+    SampleUtil::mixMultichannelToStereo(
+            destination, source, 2, mixxx::audio::ChannelCount::stem(), 0b1000);
+
+    EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + 0.4f /* + 0.6f*/);
+    EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f /* + 0.7f*/);
+    EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f /* + 1.4f*/);
+    EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f /* + 1.5f*/);
+}
+
 static void BM_MemCpy(benchmark::State& state) {
     SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
