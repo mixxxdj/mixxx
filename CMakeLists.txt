@@ -3457,6 +3457,11 @@ if (STEM)
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
 endif()
 
 # Test Suite

@@ -127,6 +127,10 @@ class Waveform {
     // constructor runs.
     const WaveformData* data() const { return &m_data[0];}
 
+    bool hasStem() const {
+        return m_stemCount > 0;
+    }
+
     void dump() const;
 
   private:
