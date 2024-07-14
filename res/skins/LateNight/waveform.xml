@@ -137,6 +137,45 @@
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
+            <StemControl alignment="left">
+              <MinimumSize>138,68</MinimumSize>
+              <MaximumSize>158,1920</MaximumSize>
+              <SizePolicy>me,me</SizePolicy>
+              <Stem>
+                <MinimumSize>130,17</MinimumSize>
+                <MaximumSize>150,34</MaximumSize>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Label>
+                    <ObjectName>stem_label</ObjectName>
+                    <SizePolicy>e,max</SizePolicy>
+                  </Label>
+                  <KnobComposed>
+                    <Pos>0,0</Pos>
+                    <MinimumSize>20,17</MinimumSize>
+                    <MaximumSize>40,34</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_regular_<Variable name="KnobColorEq"/>.svg</Knob>
+                    <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_regular.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
+                    <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+                    <ArcColor><Variable name="ArcColorEq"/></ArcColor>
+                    <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+                    <KnobCenterYOffset>1.998</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey><Variable name="StemGroup"/>,stem_<Variable name="StemIdx"/>_volume</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </Stem>
+              <Connection>
+                <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
+                <BindProperty>displayed</BindProperty>
+              </Connection>
+            </StemControl>
           </Visual>
         </Children>
         <Connection>
