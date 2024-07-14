@@ -785,7 +785,7 @@ La valeur par défaut est :</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="269"/>
         <source>Loads experimental QML GUI instead of legacy QWidget skin</source>
-        <translation type="unfinished"/>
+        <translation>Charge l&apos;interface graphique QML expérimentale au lieu de l&apos;ancien thème QWidget</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="275"/>
@@ -2281,7 +2281,7 @@ trace : ci-dessus + messages de profilage</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
         <source>Button Parameter %1</source>
-        <translation type="unfinished"/>
+        <translation>Bouton paramètre %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="44"/>
@@ -4835,7 +4835,7 @@ Deux de source de connexions vers le même serveur, ayant le même point de mont
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="629"/>
         <source>Live mix</source>
-        <translation type="unfinished"/>
+        <translation>Live mix</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="643"/>
@@ -6446,12 +6446,12 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="161"/>
         <source>Track Table View</source>
-        <translation type="unfinished"/>
+        <translation> Vue table des pistes</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="176"/>
         <source>Track Double-Click Action:</source>
-        <translation type="unfinished"/>
+        <translation>Action double-clic sur une piste :</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="271"/>
@@ -6466,12 +6466,12 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="376"/>
         <source>Track duplicate distance</source>
-        <translation type="unfinished"/>
+        <translation>Distance pour doublon de piste</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="389"/>
         <source>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</source>
-        <translation type="unfinished"/>
+        <translation>Lors de la nouvelle lecture d&apos;une piste, enregistrez-la dans l&apos;historique de la session uniquement si plus de N autres pistes ont été lues entre-temps.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="406"/>
@@ -6481,7 +6481,7 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="409"/>
         <source>Delete history playlist with less than N tracks</source>
-        <translation type="unfinished"/>
+        <translation>Supprimer la liste de lecture de l&apos;historique contenant moins de N pistes</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="246"/>
@@ -6561,7 +6561,7 @@ vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage ha
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="606"/>
         <source>The Mixxx settings directory contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</source>
-        <translation type="unfinished"/>
+        <translation> Le répertoire des paramètres Mixxx contient la base de données de la bibliothèque, divers fichiers de configuration, fichiers de journalisation, données d&apos;analyse de piste, ainsi que des mappages de contrôleurs personnalisés.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="629"/>
@@ -7930,7 +7930,7 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="558"/>
         <source>Clear Cached Waveforms</source>
-        <translation>Supprimer les formes d&apos;onde en cache.</translation>
+        <translation>Effacer les formes d&apos;onde en cache.</translation>
     </message>
 </context>
 <context>
@@ -8394,7 +8394,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="84"/>
         <source>(status text)</source>
-        <translation type="unfinished"/>
+        <translation>(texte de statut)</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
@@ -8537,7 +8537,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="879"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation>Réinitialiser le tempo et la grille rythmique</translation>
+        <translation>Effacer le tempo et la grille rythmique</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="924"/>
@@ -10020,12 +10020,12 @@ Désirez-vous rechercher maintenant les pochettes dans votre bibliothèque?</tra
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="43"/>
         <source>Button</source>
-        <translation type="unfinished"/>
+        <translation>Button</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="45"/>
         <source>Switch</source>
-        <translation type="unfinished"/>
+        <translation>Switch</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="47"/>
@@ -10558,7 +10558,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
         <location filename="../../src/effects/backends/builtin/reverbeffect.cpp" line="27"/>
         <location filename="../../src/effects/backends/builtin/reverbeffect.cpp" line="28"/>
         <source>Decay</source>
-        <translation type="unfinished"/>
+        <translation>Affaiblissement</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/reverbeffect.cpp" line="29"/>
@@ -11340,34 +11340,34 @@ Complètement à droite : fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/library/parserm3u.cpp" line="158"/>
         <source>Playlist Export Has Special Characters</source>
-        <translation type="unfinished"/>
+        <translation>L&apos;exportation de la liste de lecture comporte des caractères spéciaux</translation>
     </message>
     <message>
         <location filename="../../src/library/parserm3u.cpp" line="159"/>
         <source>Some file paths in the playlist have special characters. These file paths will be encoded as absolute path URLs. Please select the m3u8 format for better and lossless exporting.</source>
-        <translation type="unfinished"/>
+        <translation>Certains chemins d&apos;accès aux fichiers de la liste de lecture comportent des caractères spéciaux. Ces chemins d&apos;accès aux fichiers seront codés comme des chemins d&apos;accès absolu sous forme d’URL. Veuillez sélectionner le format m3u8 pour une exportation meilleure et sans perte.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="65"/>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="66"/>
         <source>Pitch Shift</source>
-        <translation type="unfinished"/>
+        <translation>Changement de hauteur tonale</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="69"/>
         <source>Raises or lowers the original pitch of a sound.</source>
-        <translation type="unfinished"/>
+        <translation>Augmente ou diminue la hauteur originale d&apos;un son.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="75"/>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="76"/>
         <source>Pitch</source>
-        <translation type="unfinished"/>
+        <translation>Hauteur tonale (Pitch)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="77"/>
         <source>The pitch shift applied to the sound.</source>
-        <translation type="unfinished"/>
+        <translation>Le changement de hauteur tonale appliqué au son.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/pitchshifteffect.cpp" line="88"/>
@@ -12900,12 +12900,12 @@ du signal d&apos;entrée, des temps de relâchement courts peuvent introduire un
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1026"/>
         <source>Effect Chain Preset Settings</source>
-        <translation type="unfinished"/>
+        <translation>Paramètres prédéfinis de la chaine d’effets</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1027"/>
         <source>Show the effect chain settings menu for this unit.</source>
-        <translation type="unfinished"/>
+        <translation>Affiche le menu des paramètres de chaine d’effets pour cette unité.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1179"/>
@@ -14967,7 +14967,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="101"/>
         <source>Update Preset</source>
-        <translation type="unfinished"/>
+        <translation>Mettre à jour le préréglage</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="106"/>
@@ -14977,7 +14977,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="110"/>
         <source>Save As New Preset...</source>
-        <translation type="unfinished"/>
+        <translation>Enregistrer comme nouveau préréglage...</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectchainpresetbutton.cpp" line="178"/>
@@ -15020,7 +15020,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wfindonwebmenu.cpp" line="11"/>
         <source>Find on Web</source>
-        <translation type="unfinished"/>
+        <translation>Rechercher sur Internet</translation>
     </message>
 </context>
 <context>
@@ -15599,7 +15599,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="234"/>
         <source>Trigger search before search-as-you-type timeout orjump to tracks view afterwards</source>
-        <translation type="unfinished"/>
+        <translation> Déclenche la recherche avant l&apos;expiration du délai de recherche au-fur-et-à-mesure-de-la-frappe ou passe ensuite à l&apos;affichage des pistes</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="239"/>
@@ -15969,7 +15969,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="522"/>
         <source>Reanalyze</source>
-        <translation type="unfinished"/>
+        <translation>Réanalyser</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="525"/>
@@ -16208,17 +16208,17 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2461"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
-        <translation type="unfinished"/>
+        <translation>Le(s) fichier(s) %1 suivants n&apos;ont pas pu être supprimés du disque</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2469"/>
         <source>This track file could not be deleted from disk</source>
-        <translation type="unfinished"/>
+        <translation>Ce fichier de piste n&apos;a pas pu être supprimé du disque</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2492"/>
         <source>Remaining Track File(s)</source>
-        <translation type="unfinished"/>
+        <translation>Fichier(s) de piste restant(s)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2482"/>
@@ -16239,7 +16239,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="505"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation>Réinitialiser le tempo et la grille rythmique</translation>
+        <translation>Effacer le tempo et la grille rythmique</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="511"/>
@@ -16320,27 +16320,27 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1193"/>
         <source>Confirm track hide</source>
-        <translation type="unfinished"/>
+        <translation>Confirmer le masquage de la piste</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1194"/>
         <source>Are you sure you want to hide the selected tracks?</source>
-        <translation type="unfinished"/>
+        <translation>Êtes-vous certain de vouloir masquer les pistes sélectionnées ?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1200"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Êtes-vous sûr de vouloir supprimer les pistes sélectionnées de la file d&apos;attente AutoDJ ?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1204"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
-        <translation type="unfinished"/>
+        <translation>Êtes-vous sûr de vouloir supprimer les pistes sélectionnées de ce bac ?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1208"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
-        <translation type="unfinished"/>
+        <translation>Êtes-vous sûr de vouloir supprimer les pistes sélectionnées de cette liste de lecture ?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1217"/>
@@ -16350,7 +16350,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1196"/>
         <source>Confirm track removal</source>
-        <translation type="unfinished"/>
+        <translation>Confirmer la suppression de la piste</translation>
     </message>
 </context>
 <context>
@@ -16366,7 +16366,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1312"/>
         <source>legacy</source>
-        <translation type="unfinished"/>
+        <translation>hériter (legacy)</translation>
     </message>
 </context>
 <context>

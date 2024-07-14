@@ -530,7 +530,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="72"/>
         <source>Refresh directory tree</source>
-        <translation type="unfinished"/>
+        <translation>Vernieuw de mappenlijst</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="89"/>
@@ -769,7 +769,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="179"/>
         <source>Starts Auto DJ when Mixxx is launched.</source>
-        <translation type="unfinished"/>
+        <translation>Start Auto DJ wanneer Mixxx wordt opgestart.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="226"/>
@@ -1379,7 +1379,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="196"/>
         <source>Strip Search</source>
-        <translation type="unfinished"/>
+        <translation>Grondig doorzoeken</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
@@ -2275,7 +2275,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
         <source>Effect Unit %1</source>
-        <translation type="unfinished"/>
+        <translation>Effect Eenheid %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
@@ -2336,72 +2336,72 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="263"/>
         <source>Halve BPM</source>
-        <translation type="unfinished"/>
+        <translation>Halveer BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="264"/>
         <source>Multiply current BPM by 0.5</source>
-        <translation type="unfinished"/>
+        <translation>Vermenigvuldig huidige BPM met 0.5</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="267"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="268"/>
         <source>Multiply current BPM by 0.666</source>
-        <translation type="unfinished"/>
+        <translation>Vermenigvuldig huidige BPM met 0.666</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="272"/>
         <source>Multiply current BPM by 0.75</source>
-        <translation type="unfinished"/>
+        <translation>Vermenigvuldig huidige BPM met 0.75</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="275"/>
         <source>4/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>4/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="276"/>
         <source>Multiply current BPM by 1.333</source>
-        <translation type="unfinished"/>
+        <translation>Vermenigvuldig huidige BPM met 1.333</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="279"/>
         <source>3/2 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/2 BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Multiply current BPM by 1.5</source>
-        <translation type="unfinished"/>
+        <translation>Vermenigvuldig huidige BPM met 1.5</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>Verdubbel BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="284"/>
         <source>Multiply current BPM by 2</source>
-        <translation type="unfinished"/>
+        <translation>Vermenigvuldig huidige BPM met 2</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="292"/>
         <source>Tempo Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo Tikken</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="293"/>
         <source>Tempo tap button</source>
-        <translation type="unfinished"/>
+        <translation>Tempo Tikken toets</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="313"/>
@@ -2417,17 +2417,17 @@ traceren - Boven + Profileringsberichten</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
         <source>Toggle the BPM/beatgrid lock</source>
-        <translation type="unfinished"/>
+        <translation>Schakel de BPM/beatgrid vergrendeling</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="329"/>
         <source>Revert last BPM/Beatgrid Change</source>
-        <translation type="unfinished"/>
+        <translation>Maak de laatste BPM/Beatgrid wijziging ongedaan</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="330"/>
         <source>Revert last BPM/Beatgrid Change of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Maak de laatste BPM/Beatgrid wijziging van de huidige track ongedaan</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="337"/>
@@ -2694,7 +2694,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="643"/>
         <source>if the track has no beats the unit is seconds</source>
-        <translation type="unfinished"/>
+        <translation>Indien de track geen beats heeft is de eenheid seconden</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="644"/>
@@ -2719,22 +2719,22 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="651"/>
         <source>Loop %1 Beats set from its end point</source>
-        <translation type="unfinished"/>
+        <translation>Lus %1 Beats ingesteld vanaf het eindpunt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="653"/>
         <source>Loop Roll %1 Beats set from its end point</source>
-        <translation type="unfinished"/>
+        <translation>Lus Rol %1 Beats ingesteld vanaf het eindpunt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
         <source>Create %1-beat loop with the current play position as loop end</source>
-        <translation type="unfinished"/>
+        <translation>Maak %1-beat lus met de huidige afspeelpositie als lus einde</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="660"/>
         <source>Create temporary %1-beat loop roll with the current play position as loop end</source>
-        <translation type="unfinished"/>
+        <translation>Maak tijdelijke %1-beat lus rol met de huidige afspeelpositie als lus einde</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="685"/>
@@ -2794,7 +2794,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="741"/>
         <source>Beat Jump / Loop Move</source>
-        <translation type="unfinished"/>
+        <translation>Beat Sprong / Verplaats Lus</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="742"/>
@@ -2839,12 +2839,12 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="765"/>
         <source>Beat Jump</source>
-        <translation type="unfinished"/>
+        <translation>Beat Sprong</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
         <source>Indicate which loop marker remain static when adjusting the size or is inherited from the current position</source>
-        <translation type="unfinished"/>
+        <translation>Duidt aan welke lusaanduiding statisch blijft wanneer de grootte wordt aangepast of wordt overgenomen van de huidige positie</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
@@ -3080,23 +3080,23 @@ traceren - Boven + Profileringsberichten</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="935"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1500"/>
         <source>Select Next Color Available</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de volgende beschikbare kleur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="936"/>
         <source>Select the next color in the color palette for the first selected track</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de volgende kleur in het kleurenpalet voor de eerste geselecteerde track</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="940"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1504"/>
         <source>Select Previous Color Available</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de vorige beschikbare kleur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="941"/>
         <source>Select the previous color in the color palette for the first selected track</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de vorige kleur in het kleurenpalet voor de eerste geselecteerde track</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="970"/>
@@ -3293,22 +3293,22 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1501"/>
         <source>Select the next color in the color palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de volgende kleur in het kleurenpalet voor de geladen track</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1505"/>
         <source>Select previous color in the color palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de vorige kleur in het kleurenpalet voor de geladen track</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1508"/>
         <source>Navigate Through Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Navigeer Door de Track Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1509"/>
         <source>Select either next or previous color in the palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer ofwel de volgende of de vorige kleur in het kleurenpalet voor de geladen track</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1515"/>
@@ -3813,7 +3813,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Mixxx %1.%2 Development Team</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx %1.%2 Development Team</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="43"/>
@@ -5230,7 +5230,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="443"/>
         <source>Mapping settings</source>
-        <translation type="unfinished"/>
+        <translation>Mappings instellingen (Invoerkoppelingen)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="455"/>
@@ -5438,12 +5438,12 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="211"/>
         <source>Menu bar</source>
-        <translation type="unfinished"/>
+        <translation>Menu balk</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="221"/>
         <source>Auto-hide the menu bar, toggle it with a single Alt key press</source>
-        <translation type="unfinished"/>
+        <translation>Verberg de menubalk automatisch, schakel met een enkele druk op de Alt-toets</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="283"/>
@@ -5453,7 +5453,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="293"/>
         <source>Multi-Sampling</source>
-        <translation type="unfinished"/>
+        <translation>Multi-Sampling</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="203"/>
@@ -5551,7 +5551,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="151"/>
         <source>First hotcue</source>
-        <translation type="unfinished"/>
+        <translation>Eerste hotcue</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="152"/>
@@ -5918,7 +5918,7 @@ U kunt de Tracks ten allen tijde op het scherm slepen en neerzetten om een deck 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="618"/>
         <source>The tempo of a previous soft leader track at the beginning of the transition is kept steady. After the transition, the follower track will maintain this original tempo. This technique serves as a workaround to avoid dynamic tempo changes, as seen during the outro of rubato-style tracks. For instance, it prevents the follower track from continuing with a slowed-down tempo of the soft leader. This corresponds to the behavior before Mixxx 2.4. Changes from explicit selected leaders are always applied.</source>
-        <translation type="unfinished"/>
+        <translation>Het tempo van een vorige zacht leidende track wordt stabiel gehouden aan het begin van de overgang. Na de overgang zal de volgende track dit oorspronkelijk tempo aanhouden. Deze techniek zorgt voor een oplossing om dynamische tempowijzigingen te vermijden zoals die waargenomen worden tijdens de outro van rubato-style tracks. Het verhindert bijvoorbeeld dat de volgende track vervolgt met het vertraagde tempo van de zacht leidende track. Dit komt overeen met het gedrag van Mixxx voor versie 2.4. Wijzigingen van de uitdrukkelijke leiders worden altijd toegepast.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="621"/>
@@ -6081,27 +6081,27 @@ U kunt de Tracks ten allen tijde op het scherm slepen en neerzetten om een deck 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="195"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Uitgeschakeld</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="197"/>
         <source>2x MSAA</source>
-        <translation type="unfinished"/>
+        <translation>2x MSAA</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="199"/>
         <source>4x MSAA</source>
-        <translation type="unfinished"/>
+        <translation>4x MSAA</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="201"/>
         <source>8x MSAA</source>
-        <translation type="unfinished"/>
+        <translation>8x MSAA</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="203"/>
         <source>16x MSAA</source>
-        <translation type="unfinished"/>
+        <translation>16x MSAA</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="268"/>
@@ -6116,7 +6116,7 @@ U kunt de Tracks ten allen tijde op het scherm slepen en neerzetten om een deck 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="385"/>
         <source>Mixxx must be restarted before the new locale, scaling or multi-sampling settings will take effect.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx moet worden herstart vóór de nieuwe regio, schaal of multi-sampling instellingen toegepast worden.</translation>
     </message>
 </context>
 <context>
@@ -6343,7 +6343,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="221"/>
         <source>Item is not a directory or directory is missing</source>
-        <translation type="unfinished"/>
+        <translation>Het item is geen map of ontbreekt.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="394"/>
@@ -6487,12 +6487,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="285"/>
         <source>Grey out played tracks</source>
-        <translation type="unfinished"/>
+        <translation>Verduister gespeelde tracks in grijs.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="297"/>
         <source>Track Search</source>
-        <translation type="unfinished"/>
+        <translation>Zoek track</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="322"/>
@@ -6507,12 +6507,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="338"/>
         <source>Percentage of pitch slider range for &apos;fuzzy&apos; BPM search:</source>
-        <translation type="unfinished"/>
+        <translation>Percentage van het bereik van de pitch glijder voor wazige BPM zoekfunctie:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="354"/>
         <source>This range will be used for the &apos;fuzzy&apos; BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu &gt; Search related Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Dit bereik zal zowel gebruikt worden in de wazige BPM zoekfunctie (`bpm) via het zoekvenster als voor de BPM zoekfunctie in het Track omgevingsmenu &gt; en het Zoeken van Overeenkomstige Tracks</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="530"/>
@@ -6647,7 +6647,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="122"/>
         <source>Track Metadata Synchronization / Playlists</source>
-        <translation type="unfinished"/>
+        <translation>Track Metadata Synchronisatie / Afspeellijsten</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="197"/>
@@ -7414,7 +7414,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation type="unfinished"/>
+        <translation>Samplefrequentie</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
@@ -7640,7 +7640,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="654"/>
         <source>Powered by xwax</source>
-        <translation type="unfinished"/>
+        <translation>Aangestuurd door xwax</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="612"/>
@@ -7673,7 +7673,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="72"/>
         <source>Top</source>
-        <translation type="unfinished"/>
+        <translation>Top</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="73"/>
@@ -7683,7 +7683,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="74"/>
         <source>Bottom</source>
-        <translation type="unfinished"/>
+        <translation>Onderkant</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="195"/>
@@ -7846,32 +7846,32 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="464"/>
         <source>Play marker hints</source>
-        <translation type="unfinished"/>
+        <translation>Speel markeer hints af</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="474"/>
         <source>Beats until next marker</source>
-        <translation type="unfinished"/>
+        <translation>Beats tot de volgende markering</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="481"/>
         <source>Time until next marker</source>
-        <translation type="unfinished"/>
+        <translation>Tijd tot de volgende markering</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="488"/>
         <source>Placement</source>
-        <translation type="unfinished"/>
+        <translation>Plaatsing</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="504"/>
         <source>Font size</source>
-        <translation type="unfinished"/>
+        <translation>Lettergrootte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="520"/>
         <source> pt</source>
-        <translation type="unfinished"/>
+        <translation> pt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="536"/>
@@ -8590,7 +8590,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="660"/>
         <source>Samplerate:</source>
-        <translation type="unfinished"/>
+        <translation>Samplefrequentie</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="712"/>
@@ -8700,156 +8700,156 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="20"/>
         <source>Track Editor</source>
-        <translation type="unfinished"/>
+        <translation>Track Editor</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="54"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Title</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="106"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artiest</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="139"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="172"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Album Artiest</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="218"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Componist</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="245"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Jaar</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="266"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Genre</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="293"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Toonaard</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="320"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Groepering</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="347"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Track #</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="374"/>
         <source>Comments</source>
-        <translation type="unfinished"/>
+        <translation>Opmerkingen</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="414"/>
         <source>Re-Import Metadata from files</source>
-        <translation type="unfinished"/>
+        <translation>Herimporteer Metadata uit bestand</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="422"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Kleur</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="470"/>
         <source>Duration:</source>
-        <translation type="unfinished"/>
+        <translation>Duur:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="494"/>
         <source>Filetype:</source>
-        <translation type="unfinished"/>
+        <translation>Bestandstype:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="518"/>
         <source>BPM:</source>
-        <translation type="unfinished"/>
+        <translation>BPM:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="542"/>
         <source>Bitrate:</source>
-        <translation type="unfinished"/>
+        <translation>Bitsnelheid:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="566"/>
         <source>Samplerate:</source>
-        <translation type="unfinished"/>
+        <translation>Samplefrequentie:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="587"/>
         <source>Location:</source>
-        <translation type="unfinished"/>
+        <translation>Locatie:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="613"/>
         <source>Open in File Browser</source>
-        <translation type="unfinished"/>
+        <translation>Open in verkenner</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="655"/>
         <source>Discard changes and reload saved values.</source>
         <extracomment>&quot;Reset&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Negeer de wijzigingen en herlaadt de opgeslagen waarden.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="658"/>
         <source>&amp;Reset</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Reset</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="684"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Negeer de wijzigingen en sluit het venster.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="687"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Annuleer</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="703"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Bewaar de wijzigingen en hou het venster open.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="706"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Pas toe</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="722"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Bewaar de wijzigingen en sluit het venster</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="725"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"/>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.cpp" line="884"/>
         <source>(no color)</source>
-        <translation type="unfinished"/>
+        <translation>(geen kleur)</translation>
     </message>
 </context>
 <context>
@@ -9294,7 +9294,7 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="372"/>
         <source>There was an error loading your iTunes library. Check the logs for details.</source>
-        <translation type="unfinished"/>
+        <translation>Er trad een fout op bij het laden van uw iTunes bibliotheek. Controleer de logbestanden voor details.</translation>
     </message>
 </context>
 <context>
@@ -9380,64 +9380,70 @@ ondersteuning.</translation>
     <message>
         <location filename="../../src/library/library.cpp" line="599"/>
         <source>This or a parent directory is already in your library.</source>
-        <translation type="unfinished"/>
+        <translation>Deze map of een bovenliggende map is reeds opgenomen in uw bibliotheek.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="602"/>
         <source>This or a listed directory does not exist or is inaccessible.
 Aborting the operation to avoid library inconsistencies</source>
-        <translation type="unfinished"/>
+        <translation>Deze map of een opgelijste map bestaat niet of is niet toegankelijk.
+De operatie wordt afgebroken om fouten in de bibliotheek the vermijden.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="607"/>
         <location filename="../../src/library/library.cpp" line="680"/>
         <source>This directory can not be read.</source>
-        <translation type="unfinished"/>
+        <translation>Deze map kan niet worden uitgelezen.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="611"/>
         <source>An unknown error occurred.
 Aborting the operation to avoid library inconsistencies</source>
-        <translation type="unfinished"/>
+        <translation>Een onbekende fout is opgetreden.
+De operatie wordt afgebroken om fouten in de bibliotheek the vermijden.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="620"/>
         <source>Can&apos;t add Directory to Library</source>
-        <translation type="unfinished"/>
+        <translation>Deze map kan niet worden toegevoegd aan de bibliotheek.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="621"/>
         <source>Could not add &lt;b&gt;%1&lt;/b&gt; to your library.
 
 %2</source>
-        <translation type="unfinished"/>
+        <translation>Toegevoegen van &lt;b&gt;%1&lt;/b&gt; aan uw bibliotheek is niet mogelijk.
+
+%2</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="638"/>
         <source>Can&apos;t remove Directory from Library</source>
-        <translation type="unfinished"/>
+        <translation>De map kon niet uit uw bibliotheek verwijderd worden</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="639"/>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"/>
+        <translation>Een onbekende fout is opgetreden.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="676"/>
         <source>This directory does not exist or is inaccessible.</source>
-        <translation type="unfinished"/>
+        <translation>Deze map bestaat niet of is niet toegankelijk.</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="688"/>
         <source>Relink Directory</source>
-        <translation type="unfinished"/>
+        <translation>Herlink de map</translation>
     </message>
     <message>
         <location filename="../../src/library/library.cpp" line="689"/>
         <source>Could not relink &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.
 
 %3</source>
-        <translation type="unfinished"/>
+        <translation>Herlinken van &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt; was niet mogelijk.
+
+%3</translation>
     </message>
 </context>
 <context>
@@ -9545,7 +9551,7 @@ Wil je het echt overschrijven?</translation>
     <message>
         <location filename="../../src/controllers/delegates/midioptionsdelegate.cpp" line="65"/>
         <source>Unset all</source>
-        <translation type="unfinished"/>
+        <translation>Alles uitschakelen</translation>
     </message>
 </context>
 <context>
@@ -9659,29 +9665,29 @@ Wil je het echt overschrijven?</translation>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="563"/>
         <source>Allow Mixxx to hide the menu bar?</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx toestaan om de menu balk te verbergen?</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="565"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
-        <translation type="unfinished"/>
+        <translation>De menu balk altijd weergeven?</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="566"/>
         <source>Always show</source>
-        <translation type="unfinished"/>
+        <translation>Altijd tonen</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="569"/>
         <source>The Mixxx menu bar is hidden and can be toggled with a single press of the &lt;b&gt;Alt&lt;/b&gt; key.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; to agree.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; to disable that, for example if you don&apos;t use Mixxx with a keyboard.&lt;br&gt;&lt;br&gt;You can change this setting any time in Preferences -&gt; Interface.&lt;br&gt;</source>
         <extracomment>Keep formatting tags &lt;b&gt; (bold text) and &lt;br&gt; (linebreak). %1 is the placeholder for the 'Always show' button label</extracomment>
-        <translation type="unfinished"/>
+        <translation>De Mixxx menu balk is verborgen en kan worden opgeroepen met een enkele druk op de &lt;b&gt;Alt&lt;/b&gt; toets.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; om akkoord te gaan.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; om dit uit te schakelen, bijvoorbeeld wanneer u Mixxx niet met een toetsenbord gebruikt.&lt;br&gt;&lt;br&gt;U kan deze instelling altijd wijzigen in de Voorkeuren -&gt; Interface.&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="584"/>
         <source>Ask me again</source>
-        <translation type="unfinished"/>
+        <translation>Vraag mij opnieuw</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="612"/>
@@ -10015,7 +10021,7 @@ Wilt u nu in uw Bibliotheek scannen naar Cover Art?</translation>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="45"/>
         <source>Switch</source>
-        <translation type="unfinished"/>
+        <translation>Schakelaar</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="47"/>
@@ -11050,7 +11056,8 @@ Centrum: verandert het originele signaal niet.</translation>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="25"/>
         <source>A gentle 2-band parametric equalizer based on biquad filters.
 It is designed as a complement to the steep mixing equalizers.</source>
-        <translation type="unfinished"/>
+        <translation>Een zachte 2-bands parametrische equalizer op basis van biquad filters.
+Het is ontworpen als aanvulling op de steile meng-equalizers.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="33"/>
@@ -11218,7 +11225,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarybeats.h" line="22"/>
         <source>Queen Mary Tempo and Beat Tracker</source>
-        <translation type="unfinished"/>
+        <translation>Queen Mary Tempo en Beat Tracker</translation>
     </message>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarykey.h" line="22"/>
@@ -11446,17 +11453,17 @@ Tip: compenseer &quot;chipmunk&quot; en &quot;diepeg&quot; stemmen</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/glitcheffect.cpp" line="24"/>
         <source>Periodically samples and repeats a small portion of audio to create a glitchy metallic sound.</source>
-        <translation type="unfinished"/>
+        <translation>Samplet herhaaldelijk en herhaalt een klein deel van de audio om een haperend metaalachtig geluit te maken.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/glitcheffect.cpp" line="43"/>
         <source>Round the Time parameter to the nearest 1/8 beat.</source>
-        <translation type="unfinished"/>
+        <translation>Rond de Tijd parameter af naar de dichtsbijzijnde 1/8 beat.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/glitcheffect.cpp" line="54"/>
         <source>When the Quantize parameter is enabled, divide rounded 1/8 beats of Time parameter by 3.</source>
-        <translation type="unfinished"/>
+        <translation>Wanneer de Quantizeer parameter geactiveerd is, deel de afgeronde 1/8 beats van de Tijd parameter door 3.</translation>
     </message>
     <message>
         <location filename="../../src/library/itunes/itunesdao.cpp" line="186"/>
@@ -11472,129 +11479,134 @@ Tip: compenseer &quot;chipmunk&quot; en &quot;diepeg&quot; stemmen</translation>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="24"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="25"/>
         <source>Compressor</source>
-        <translation type="unfinished"/>
+        <translation>Compressor</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="34"/>
         <source>Auto Makeup Gain</source>
-        <translation type="unfinished"/>
+        <translation>Auto Makeup Gain</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="35"/>
         <source>Makeup</source>
-        <translation type="unfinished"/>
+        <translation>Makeup</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="36"/>
         <source>The Auto Makeup button enables automatic gain adjustment to keep the input signal 
 and the processed output signal as close as possible in perceived loudness</source>
-        <translation type="unfinished"/>
+        <translation>De Auto Makeup toets activeert het automatisch aanpassen van de gain om het ingangssignaal 
+en het verwerkt uitgangssignaal auditief zo dicht mogelijk bij elkaar te houden</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="43"/>
         <source>Off</source>
-        <translation type="unfinished"/>
+        <translation>Uit</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="45"/>
         <source>On</source>
-        <translation type="unfinished"/>
+        <translation>Aan</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="49"/>
         <source>Threshold (dBFS)</source>
-        <translation type="unfinished"/>
+        <translation>Drempel (dBFS)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="50"/>
         <source>Threshold</source>
-        <translation type="unfinished"/>
+        <translation>Drempel</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="52"/>
         <source>The Threshold knob adjusts the level above which the compressor starts attenuating the input signal</source>
-        <translation type="unfinished"/>
+        <translation>The Drempelknop past het niveau aan waarboven de compressor het ingangssignaal begint te verzwakken.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="61"/>
         <source>Ratio (:1)</source>
-        <translation type="unfinished"/>
+        <translation>Ratio (:1)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="62"/>
         <source>Ratio</source>
-        <translation type="unfinished"/>
+        <translation>Ratio</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="64"/>
         <source>The Ratio knob determines how much the signal is attenuated above the chosen threshold.
 For a ratio of 4:1, one dB remains for every four dB of input signal above the threshold.
 At a ratio of 1:1 no compression is happening, as the input is exactly the output.</source>
-        <translation type="unfinished"/>
+        <translation>De Ratio knop bepaalt hoe veel het signaal verzwakt wordt boven de gekozen Drempel.
+Bij een ratio van 4:1, blijft er één dB over van elke vier dB ingangssignaal boven de drempel.
+Bij een ratio van 1:1 gebeurt er geen compressie, aangezien het ingangssignaal exact gelijk is aan het uitgangssignaal.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="77"/>
         <source>Knee (dBFS)</source>
-        <translation type="unfinished"/>
+        <translation>Knee (dBFS)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="78"/>
         <source>Knee</source>
-        <translation type="unfinished"/>
+        <translation>Knee</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="79"/>
         <source>The Knee knob is used to achieve a rounder compression curve</source>
-        <translation type="unfinished"/>
+        <translation>De Knee knop wordt gebruikt om een rondere compressie curve te bereiken.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="88"/>
         <source>Attack (ms)</source>
-        <translation type="unfinished"/>
+        <translation>Aanslag (ms)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="89"/>
         <source>Attack</source>
-        <translation type="unfinished"/>
+        <translation>Aanslag</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="90"/>
         <source>The Attack knob sets the time that determines how fast the compression 
 will set in once the signal exceeds the threshold</source>
-        <translation type="unfinished"/>
+        <translation>De Aanslag knop stelt de tijd in die bepaalt hoe snel de compressie invalt wanneer het signaal de drempel overstijgt.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="99"/>
         <source>Release (ms)</source>
-        <translation type="unfinished"/>
+        <translation>Release (ms)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="100"/>
         <source>Release</source>
-        <translation type="unfinished"/>
+        <translation>Release</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="102"/>
         <source>The Release knob sets the time that determines how fast the compressor will recover from the gain
 reduction once the signal falls under the threshold. Depending on the input signal, short release times
 may introduce a &apos;pumping&apos; effect and/or distortion.</source>
-        <translation type="unfinished"/>
+        <translation>De Release knop stelt de tijd in die bepaalt hoe snel de compressor zich zal herstellen van de
+niveau vermindering eens het signaal terugvalt onder de drempelwaarde. Afhankelijk van het ingangssignaal kan een korte
+release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="113"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="114"/>
         <source>Level</source>
-        <translation type="unfinished"/>
+        <translation>Niveau</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="116"/>
         <source>The Level knob adjusts the level of the output signal after the compression was applied</source>
-        <translation type="unfinished"/>
+        <translation>De niveauknop wijzigt het niveau van het uitgangssignaal nadat de compressie werd toegepast.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.cpp" line="28"/>
         <source>various</source>
-        <translation type="unfinished"/>
+        <translation>allerlei</translation>
     </message>
 </context>
 <context>
@@ -11712,7 +11724,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1440"/>
         <source>Folders</source>
-        <translation type="unfinished"/>
+        <translation>Mappen</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1424"/>
@@ -12904,7 +12916,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="38"/>
         <source>Select and click: Show inline value editor</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer en click: Toon inline waarde editor</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="83"/>
@@ -13047,108 +13059,108 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="328"/>
         <source>If keylock is disabled, pitch is also affected.</source>
-        <translation type="unfinished"/>
+        <translation>Indien keylock uitgeschakeld is, wordt de pitch ook aangepast.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="331"/>
         <source>Speed Up</source>
-        <translation type="unfinished"/>
+        <translation>Versnel</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="333"/>
         <source>Raises the track playback speed (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Verhoogt de afspeelsnelheid van de track (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="336"/>
         <source>Raises playback speed in small steps.</source>
-        <translation type="unfinished"/>
+        <translation>Verhoogt de afspeelsnelheid van de track in kleine stapjes</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="340"/>
         <source>Slow Down</source>
-        <translation type="unfinished"/>
+        <translation>Vertraag</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="342"/>
         <source>Lowers the track playback speed (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Vermindert de afspeelsnelheid van de track (tempo)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="345"/>
         <source>Lowers playback speed in small steps.</source>
-        <translation type="unfinished"/>
+        <translation>Vermindert de afspeelsnelheid van de track in kleine stapjes</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="349"/>
         <source>Speed Up Temporarily (Nudge)</source>
-        <translation type="unfinished"/>
+        <translation>Tijdelijk versnellen (Nudge)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="351"/>
         <source>Holds playback speed higher while active (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Houdt de afspeelsnelheid hoger tijdens inschakelen (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="354"/>
         <source>Holds playback speed higher (small amount) while active.</source>
-        <translation type="unfinished"/>
+        <translation>Houdt de afspeelsnelheid hoger (weinig) tijdens inschakelen (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="359"/>
         <source>Slow Down Temporarily (Nudge)</source>
-        <translation type="unfinished"/>
+        <translation>Tijdelijk vertragen (Nudge)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="361"/>
         <source>Holds playback speed lower while active (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Houdt de afspeelsnelheid lager tijdens inschakelen (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="364"/>
         <source>Holds playback speed lower (small amount) while active.</source>
-        <translation type="unfinished"/>
+        <translation>Houdt de afspeelsnelheid lager (weinig) tijdens inschakelen (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="403"/>
         <source>When tapped repeatedly, adjusts the tempo to match the tapped BPM.</source>
-        <translation type="unfinished"/>
+        <translation>Wanneer herhaaldelijk wordt aangetikt, wordt het tempo aangepast aan het aangetikt BPM.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="418"/>
         <source>Tempo Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo Tap</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="421"/>
         <source>Rate Tap and BPM Tap</source>
-        <translation type="unfinished"/>
+        <translation>Rate Tap en BPM Tikken</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="451"/>
         <source>Revert last BPM/Beatgrid Change</source>
-        <translation type="unfinished"/>
+        <translation>Herstel laatste BPM/Beatgrid wijziging</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="452"/>
         <source>Revert last BPM/Beatgrid Change of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Herstel laatste BPM/Beatgrid wijziging van de geladen track.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="455"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="456"/>
         <source>Toggle the BPM/beatgrid lock</source>
-        <translation type="unfinished"/>
+        <translation>Schakel de BPM/beatgrid vergrendeling</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="466"/>
         <source>Tempo and Rate Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo en Rate Tikken</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="470"/>
         <source>Tempo, Rate Tap and BPM Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo, Rate Tikken and BPM Tikken</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="476"/>
@@ -13204,22 +13216,22 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="683"/>
         <source>If hotcue is a loop cue, toggles the loop and jumps to if the loop is behind the play position.</source>
-        <translation type="unfinished"/>
+        <translation>Wanneer de hotcue een lus cue is, schakelt de lus in en springt ernaar indien de lus zich achter de afspeelpositie bevind.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="688"/>
         <source>If the play position is inside an active loop, stores the loop as loop cue.</source>
-        <translation type="unfinished"/>
+        <translation>Indien de afspeelpositie zich bevind in een actieve lus, wordt de lus als een lus cue opgeslagen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="705"/>
         <source>Expand/Collapse Samplers</source>
-        <translation type="unfinished"/>
+        <translation>Vergroot/Verkleint Samplers</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="706"/>
         <source>Toggle expanded samplers view.</source>
-        <translation type="unfinished"/>
+        <translation>Schakelt uitgebreide sampler weergave in.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="711"/>
@@ -13234,7 +13246,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="735"/>
         <source>Red for when needle skip has been detected.</source>
-        <translation type="unfinished"/>
+        <translation>Rood voor wanneer de naald skip^gedetecteerd werd.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="764"/>
@@ -13274,7 +13286,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="793"/>
         <source>If the track has no beats the unit is seconds.</source>
-        <translation type="unfinished"/>
+        <translation>Indien de track geen beats heeft is de eenheid seconden.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="796"/>
@@ -13314,12 +13326,12 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="817"/>
         <source>Beatloop Anchor</source>
-        <translation type="unfinished"/>
+        <translation>Beatlus Anker</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="818"/>
         <source>Define whether the loop is created and adjusted from its staring point or ending point.</source>
-        <translation type="unfinished"/>
+        <translation>Bepaal of de lus aangemaakt en aangepast wordt vanaf het start- of eindpunt.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="822"/>
@@ -14167,7 +14179,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="175"/>
         <source>Main Channel R Volume Meter</source>
-        <translation type="unfinished"/>
+        <translation>Main Kanaal R Volume Meter</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="536"/>
@@ -14928,17 +14940,17 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="64"/>
         <source>Toggle this cue type between normal cue and saved loop</source>
-        <translation type="unfinished"/>
+        <translation>Schakelt dit cue type tussen normale cue en opgeslagen lus cue.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="66"/>
         <source>Left-click: Use the old size or the current beatloop size as the loop size</source>
-        <translation type="unfinished"/>
+        <translation>Linker-click: Gebruik de oude grootte of de huidige beatlus grootte als de lusgrootte</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="68"/>
         <source>Right-click: Use the current play position as loop end if it is after the cue</source>
-        <translation type="unfinished"/>
+        <translation>Rechter-click: Gebruik de huidige afspeelpositie als lus einde indien deze zich achter de cue bevindt.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="139"/>
@@ -15113,12 +15125,12 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
         <source>Auto-hide menu bar</source>
-        <translation type="unfinished"/>
+        <translation>Verberg de menu balk automatisch</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
         <source>Auto-hide the main menu bar when it&apos;s not used.</source>
-        <translation type="unfinished"/>
+        <translation>Verberg de hoofd menu balk wanneer deze niet gebruikt wordt.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="238"/>
@@ -15412,7 +15424,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="628"/>
         <source>&amp;Community Support</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Community Ondersteuning</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="629"/>
@@ -15693,7 +15705,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="361"/>
         <source>&amp;Search selected</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Zoek geselecteerd</translation>
     </message>
 </context>
 <context>
@@ -15858,7 +15870,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="429"/>
         <source>Play Count</source>
-        <translation type="unfinished"/>
+        <translation>Afspeelteller</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="432"/>
@@ -16126,7 +16138,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2293"/>
         <source>Move these files to the trash bin?</source>
-        <translation type="unfinished"/>
+        <translation>Deze bestanden naar de prullenbak verplaatsen?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2295"/>
@@ -16213,7 +16225,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
         <location filename="../../src/widget/wtrackmenu.cpp" line="212"/>
         <source>Clear</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
-        <translation type="unfinished"/>
+        <translation>Reset metadata in rechter click context menu in de bibliotheek</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="447"/>
@@ -16223,32 +16235,32 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="505"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>Leeg BPM en Beatgrid</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="511"/>
         <source>Undo last BPM/beats change</source>
-        <translation type="unfinished"/>
+        <translation>Maak de laatste BPM/beats wijziging ongedaan</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2302"/>
         <source>Move this track file to the trash bin?</source>
-        <translation type="unfinished"/>
+        <translation>Dit trackbestand naar de prullenbak verplaatsen?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2305"/>
         <source>Permanently delete this track file from disk?</source>
-        <translation type="unfinished"/>
+        <translation>Deze track definitief van de schijf verwijderen?</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2312"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
-        <translation type="unfinished"/>
+        <translation>Alle decks waar deze tracks geladen zijn zullen worden gestopt en de tracks zullen uitgeworpen worden.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2316"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
-        <translation type="unfinished"/>
+        <translation>Alle decks waar deze track geladen is zullen worden gestopt en de track zal uitgeworpen worden.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2384"/>
@@ -16296,7 +16308,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackproperty.cpp" line="167"/>
         <source>title</source>
-        <translation type="unfinished"/>
+        <translation>title</translation>
     </message>
 </context>
 <context>

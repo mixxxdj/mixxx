@@ -5472,7 +5472,7 @@ Aplicar as configurações e continuar?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="116"/>
         <source>mm:ss%1zz - Traditional</source>
-        <translation type="unfinished"/>
+        <translation>mm:ss%1zz - Tradicional</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="121"/>
@@ -8520,7 +8520,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="426"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>cor</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="621"/>
@@ -11648,7 +11648,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1474"/>
         <source>(loading) Rekordbox</source>
-        <translation type="unfinished"/>
+        <translation>(carregando) Rekordbox</translation>
     </message>
 </context>
 <context>
@@ -11730,7 +11730,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1000"/>
         <source>(loading) Serato</source>
-        <translation type="unfinished"/>
+        <translation>(carregando) Serato</translation>
     </message>
 </context>
 <context>
