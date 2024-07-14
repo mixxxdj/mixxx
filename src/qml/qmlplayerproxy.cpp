@@ -31,7 +31,12 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
         : QObject(parent),
           m_pTrackPlayer(pTrackPlayer),
           m_pBeatsModel(new QmlBeatsModel(this)),
-          m_pHotcuesModel(new QmlCuesModel(this)) {
+          m_pHotcuesModel(new QmlCuesModel(this))
+#ifdef __STEM__
+          ,
+          m_pStemsModel(std::make_unique<QmlStemsModel>(this))
+#endif
+{
     connect(m_pTrackPlayer,
             &BaseTrackPlayer::loadingTrack,
             this,
@@ -129,8 +134,17 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 &Track::cuesUpdated,
                 this,
                 &QmlPlayerProxy::slotHotcuesChanged);
+#ifdef __STEM__
+        connect(pTrack.get(),
+                &Track::stemsUpdated,
+                this,
+                &QmlPlayerProxy::slotStemsChanged);
+#endif
         slotBeatsChanged();
         slotHotcuesChanged();
+#ifdef __STEM__
+        slotStemsChanged();
+#endif
     }
     emit trackChanged();
     emit trackLoaded();
@@ -175,6 +189,9 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit colorChanged();
     emit coverArtUrlChanged();
     emit trackLocationUrlChanged();
+#ifdef __STEM__
+    emit stemsChanged();
+#endif
 
     emit waveformLengthChanged();
     emit waveformTextureChanged();
@@ -218,6 +235,20 @@ void QmlPlayerProxy::slotBeatsChanged() {
         m_pBeatsModel->setBeats(nullptr, audio::kStartFramePos);
     }
 }
+
+#ifdef __STEM__
+void QmlPlayerProxy::slotStemsChanged() {
+    VERIFY_OR_DEBUG_ASSERT(m_pStemsModel != nullptr) {
+        return;
+    }
+
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        m_pStemsModel->setStems(pTrack->getStemInfo());
+        emit stemsChanged();
+    }
+}
+#endif
 
 void QmlPlayerProxy::slotHotcuesChanged() {
     VERIFY_OR_DEBUG_ASSERT(m_pHotcuesModel != nullptr) {
