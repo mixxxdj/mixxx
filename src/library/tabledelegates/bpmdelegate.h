@@ -17,5 +17,4 @@ class BPMDelegate : public TableItemDelegate {
   private:
     QCheckBox* m_pCheckBox;
     QItemEditorFactory* m_pFactory;
-    mutable QColor m_cachedTextColor;
 };
