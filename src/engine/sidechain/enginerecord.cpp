@@ -18,7 +18,9 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_recordedDuration(0),
           m_iMetaDataLife(0),
           m_cueTrack(0),
-          m_bCueIsEnabled(false) {
+          m_bCueIsEnabled(false),
+          m_bCueUsesFileAnnotation(false)
+{
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 }
@@ -36,6 +38,7 @@ int EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
+    m_bCueUsesFileAnnotation = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled")).toInt();
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
@@ -248,9 +251,12 @@ void EngineRecord::writeCueLine() {
     m_cueFile.write(QString("    PERFORMER \"%1\"\n")
                             .arg(m_pCurrentTrack->getArtist())
                             .toUtf8());
-    m_cueFile.write(QString("    FILE \"%1\"\n")
-                            .arg(m_pCurrentTrack->getLocation())
-                            .toUtf8());
+
+    if (m_bCueUsesFileAnnotation) {
+        m_cueFile.write(QString("    FILE \"%1\"\n")
+                                .arg(m_pCurrentTrack->getLocation())
+                                .toUtf8());
+    }
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
