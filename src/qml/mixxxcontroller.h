@@ -9,19 +9,18 @@ namespace mixxx {
 namespace qml {
 
 class MixxxController : public QObject {
-    struct ControllerInfo {
-        Q_GADGET
-      public:
-        QString name;
-        QString author;
-        QString forums;
-        QString manual;
-        // Other?
-    };
-
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(ControllerInfo info READ info WRITE setInfo)
+    Q_PROPERTY(QString controllerId MEMBER m_controllerId)
+    Q_PROPERTY(bool debugMode MEMBER m_debugMode)
+
+  public:
+    void init();
+    void shutdown();
+
+  private:
+    QString m_controllerId;
+    bool m_debugMode;
 };
 
 } // namespace qml

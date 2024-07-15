@@ -19,6 +19,7 @@
 #include "controllers/legacycontrollersettingslayout.h"
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
+#include "qml/mixxxcontroller.h"
 #include "util/assert.h"
 
 /// This class represents a controller mapping, containing the data elements that
@@ -374,6 +375,7 @@ class LegacyControllerMapping {
 #ifdef MIXXX_USE_QML
     QList<QMLModuleInfo> m_modules;
     QList<ScreenInfo> m_screens;
+    QList<mixxx::qml::MixxxController> m_mixxxControllers;
 #endif
     QList<ScriptFileInfo> m_scripts;
     DeviceDirections m_deviceDirection;
