@@ -36,7 +36,7 @@ void KeyDelegate::paintItem(
         const QString keyText = KeyUtils::keyToString(key);
         QString elidedText = option.fontMetrics.elidedText(
                 keyText,
-                Qt::ElideLeft,
+                Qt::ElideRight,
                 columnWidth(index) - rectWidth);
 
         if (option.state & QStyle::State_Selected) {
