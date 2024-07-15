@@ -11,4 +11,10 @@ MixxxController {
     function shutdown() {
         console.error(`Shutting down ${controller.controllerId} with debug mode ${controller.debugMode}`);
     }
+
+    MixxxScreen {
+        screenId: "screen 7"
+        splashOff: 5000
+        Component.onCompleted: console.error(`MixxxScreen.identifier=${screenId} ${splashOff}`)
+    }
 }

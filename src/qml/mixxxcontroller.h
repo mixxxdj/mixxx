@@ -4,6 +4,9 @@
 #include <QtQml/qqmlregistration.h>
 
 #include <QObject>
+#include <QtQml>
+
+#include "mixxxscreen.h"
 
 namespace mixxx {
 namespace qml {
@@ -13,6 +16,8 @@ class MixxxController : public QObject {
     QML_ELEMENT
     Q_PROPERTY(QString controllerId MEMBER m_controllerId)
     Q_PROPERTY(bool debugMode MEMBER m_debugMode)
+    Q_PROPERTY(QQmlListProperty<MixxxScreen> screens MEMBER m_screens)
+    Q_CLASSINFO("DefaultProperty", "screens")
 
   public:
     void init();
@@ -21,6 +26,7 @@ class MixxxController : public QObject {
   private:
     QString m_controllerId;
     bool m_debugMode;
+    QQmlListProperty<MixxxScreen> m_screens;
 };
 
 } // namespace qml

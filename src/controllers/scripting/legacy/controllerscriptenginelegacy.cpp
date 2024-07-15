@@ -987,11 +987,9 @@ bool ControllerScriptEngineLegacy::instanciateQMLComponent(
 
     if (qmlComponent.isError() || !bindSceneToScreen(quickItem, identifier, pScreen)) {
         if (!availableScreens.isEmpty()) {
-            if (!sceneBindingHasFailure) {
-                qCWarning(m_logger)
-                        << "Found screen with no QML scene able to run on it. Ignoring"
-                        << availableScreens.size() << "screens";
-            }
+            qCWarning(m_logger)
+                    << "Found screen with no QML scene able to run on it. Ignoring"
+                    << availableScreens.size() << "screens";
 
             while (!availableScreens.isEmpty()) {
                 VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
