@@ -218,7 +218,6 @@ void DlgPrefRecord::slotResetToDefaults() {
 
     // Sets 'Enable File Annotation in CUE file' checkbox value
     CheckBoxUseCueFileAnnotation->setChecked(false);
-
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
@@ -324,8 +323,7 @@ void DlgPrefRecord::slotSliderQuality() {
 void DlgPrefRecord::updateCueEnabled() {
     if (CheckBoxRecordCueFile->isChecked()) {
         CheckBoxUseCueFileAnnotation->setEnabled(true);
-    }
-    else {
+    } else {
         CheckBoxUseCueFileAnnotation->setEnabled(false);
         CheckBoxUseCueFileAnnotation->setChecked(false);
     }
@@ -457,7 +455,6 @@ void DlgPrefRecord::saveEncoding() {
     }
 }
 
-
 void DlgPrefRecord::slotToggleCueEnabled() {
     updateCueEnabled();
 }
@@ -469,7 +466,7 @@ void DlgPrefRecord::saveUseCueFile() {
 
 void DlgPrefRecord::saveUseCueFileAnnotation() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled"),
-                   ConfigValue(CheckBoxUseCueFileAnnotation->isChecked()));
+                  ConfigValue(CheckBoxUseCueFileAnnotation->isChecked()));
 }
 
 void DlgPrefRecord::saveSplitSize() {

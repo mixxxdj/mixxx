@@ -19,8 +19,7 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_iMetaDataLife(0),
           m_cueTrack(0),
           m_bCueIsEnabled(false),
-          m_bCueUsesFileAnnotation(false)
-{
+          m_bCueUsesFileAnnotation(false) {
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 }
