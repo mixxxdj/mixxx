@@ -22,8 +22,19 @@ uniform sampler2D waveformDataTexture;
 
 vec4 getWaveformData(float index) {
     vec2 uv_data;
-    uv_data.y = splitStereoSignal ? floor(index / float(textureStride)) : max(floor(index / float(textureStride)), floor((index + 1) / float(textureStride)));
-    uv_data.x = splitStereoSignal ? floor(index - uv_data.y * float(textureStride)) : max(floor(index - uv_data.y * float(textureStride)), floor((index + 1) - uv_data.y * float(textureStride)));
+    // The Waveform data is composed of 8 bytes per sample, (low, mid, high,
+    // all, stem1, stem2, stem3, stem4), see WaveformData struct. Currently,
+    // shaders don't support stem rendering.
+    index = 2 * index;
+
+    uv_data.y = splitStereoSignal
+            ? floor(index / float(textureStride))
+            : max(floor(index / float(textureStride)),
+                      floor((index + 2) / float(textureStride)));
+    uv_data.x = splitStereoSignal
+            ? floor(index - uv_data.y * float(textureStride))
+            : max(floor(index - uv_data.y * float(textureStride)),
+                      floor((index + 2) - uv_data.y * float(textureStride)));
     // Divide again to convert to normalized UV coordinates.
     return texture2D(waveformDataTexture, uv_data / float(textureStride));
 }
