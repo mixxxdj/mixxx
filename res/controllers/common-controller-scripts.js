@@ -26,7 +26,6 @@ String.prototype.toInt = function() {
 
 /**
  * Prints a message to the terminal and the log file.
- *
  * @param {string} message - The log message.
  * @deprecated Use console.log()/console.warn()/console.debug() instead.
  */
@@ -57,11 +56,11 @@ const stringifyObject = function(obj, maxdepth, checked, prefix) {
             for (const property in obj) {
                 const value = obj[property];
                 if (typeof value === "function") { continue; }
-                output += prefix + property + ": "
-                    + stringifyObject(value, maxdepth - 1, checked, prefix + "  ")
-                    + "\n";
+                output += `${prefix + property  }: ${
+                    stringifyObject(value, maxdepth - 1, checked, `${prefix  }  `)
+                }\n`;
             }
-            return output + prefix.substr(2) + "}";
+            return `${output + prefix.substr(2)  }}`;
         }
     }
     return obj;
@@ -78,9 +77,9 @@ const printObject = function(obj, maxdepth) {
 const secondstominutes = function(secs) {
     const m = (secs / 60) | 0;
 
-    return (m < 10 ? "0" + m : m)
-        + ":"
-        + ((secs %= 60) < 10 ? "0" + secs : secs);
+    return `${m < 10 ? `0${  m}` : m
+    }:${
+        (secs %= 60) < 10 ? `0${  secs}` : secs}`;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -92,11 +91,11 @@ const msecondstominutes = function(msecs) {
     msecs = Math.round(msecs * 100 / 1000);
     if (msecs === 100) { msecs = 99; }
 
-    return (m < 10 ? "0" + m : m)
-        + ":"
-        + (secs < 10 ? "0" + secs : secs)
-        + "."
-        + (msecs < 10 ? "0" + msecs : msecs);
+    return `${m < 10 ? `0${  m}` : m
+    }:${
+        secs < 10 ? `0${  secs}` : secs
+    }.${
+        msecs < 10 ? `0${  msecs}` : msecs}`;
 };
 
 // Converts an object with "red", "green" and "blue" properties (value range
@@ -113,7 +112,7 @@ const colorCodeToObject = function(colorCode) {
     return {
         "red": (colorCode >> 16) & 0xFF,
         "green": (colorCode >> 8) & 0xFF,
-        "blue": colorCode & 0xFF,
+        "blue": colorCode & 0xFF
     };
 };
 
@@ -153,7 +152,7 @@ var script = Object.freeze({
         PREVIEW: 21,
         COVERART: 22,
         TRACK_COLOR: 30,
-        LAST_PLAYED: 31,
+        LAST_PLAYED: 31
     }),
 
     /**
@@ -170,7 +169,7 @@ var script = Object.freeze({
      * @param {any} obj Object to test
      * @returns {boolean} true if obj was created using the `{}` or `new Object()` synthax, false otherwise
      */
-    isSimpleObject: function(obj) {
+    isSimpleObject(obj) {
         return obj !== null && typeof obj === "object" && obj.constructor.name === "Object";
     },
 
@@ -180,7 +179,7 @@ var script = Object.freeze({
      * @param target {object | Array} Object to merge source into
      * @param source {object | Array} Object to merge into source
      */
-    deepMerge: function(target, source) {
+    deepMerge(target, source) {
         if (target === source || target === undefined || target === null || source === undefined || source === null) {
             return;
         }
@@ -207,31 +206,32 @@ var script = Object.freeze({
 
 
     // @deprecated Use script.midiDebug() instead
-    debug: function(channel, control, value, status, group) {
+    debug(channel, control, value, status, group) {
         console.log("Warning: script.debug() is deprecated. Use script.midiDebug() instead.");
         script.midiDebug(channel, control, value, status, group);
     },
 
     // @deprecated Use script.midiPitch() instead
-    pitch: function(LSB, MSB, status) {
+    pitch(LSB, MSB, status) {
         console.log("Warning: script.pitch() is deprecated. Use script.midiPitch() instead.");
         return script.midiPitch(LSB, MSB, status);
     },
 
     // @deprecated Use script.absoluteLin() instead
-    absoluteSlider: function(group, key, value, low, high, min, max) {
-        console.log("Warning: script.absoluteSlider() is deprecated. Use engine.setValue(group, key, script.absoluteLin(...)) instead.");
+    absoluteSlider(group, key, value, low, high, min, max) {
+        console.log(
+            "Warning: script.absoluteSlider() is deprecated. Use engine.setValue(group, key, script.absoluteLin(...)) instead.");
         engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
     },
 
-    midiDebug: function(channel, control, value, status, group) {
+    midiDebug(channel, control, value, status, group) {
         console.log(`Script.midiDebug - channel: 0x${  channel.toString(16)
         } control: 0x${  control.toString(16)  } value: 0x${  value.toString(16)
         } status: 0x${  status.toString(16)  } group: ${  group}`);
     },
 
     // Returns the deck number of a "ChannelN" or "SamplerN" group
-    deckFromGroup: function(group) {
+    deckFromGroup(group) {
         let deck = 0;
         if (group.substring(2, 8) === "hannel") {
             // Extract deck number from the group text
@@ -243,7 +243,7 @@ var script = Object.freeze({
                 deck = group.substring(8,group.length-1);
             }
         */
-        return parseInt(deck);
+        return Number.parseInt(deck);
     },
 
     /* -------- ------------------------------------------------------
@@ -255,7 +255,7 @@ var script = Object.freeze({
                 controls will be bound to.
        Output:  none
        -------- ------------------------------------------------------ */
-    bindConnections: function(group, controlsToFunctions, remove) {
+    bindConnections(group, controlsToFunctions, remove) {
         let control;
         remove = (remove === undefined) ? false : remove;
 
@@ -273,7 +273,7 @@ var script = Object.freeze({
        Input:   Group and control names
        Output:  none
        -------- ------------------------------------------------------ */
-    toggleControl: function(group, control) {
+    toggleControl(group, control) {
         engine.setValue(group, control, !(engine.getValue(group, control)));
     },
 
@@ -286,7 +286,7 @@ var script = Object.freeze({
        Input:   Group and control names, delay in milliseconds (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    triggerControl: function(group, control, delay) {
+    triggerControl(group, control, delay) {
         if (typeof delay !== "number") {
             delay = 200;
         }
@@ -303,7 +303,7 @@ var script = Object.freeze({
                 (Default knob values are standard MIDI 0..127)
        Output:  MixxxControl value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    absoluteLin: function(value, low, high, min, max) {
+    absoluteLin(value, low, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -329,7 +329,7 @@ var script = Object.freeze({
                 (Default knob values are standard MIDI 0..127)
        Output:  Linear value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    absoluteLinInverse: function(value, low, high, min, max) {
+    absoluteLinInverse(value, low, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -355,7 +355,7 @@ var script = Object.freeze({
                 (Default knob values are standard MIDI 0..127)
        Output:  MixxxControl value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    absoluteNonLin: function(value, low, mid, high, min, max) {
+    absoluteNonLin(value, low, mid, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -380,7 +380,7 @@ var script = Object.freeze({
      bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
      Output: MixxxControl value scaled to output range
      -------- ------------------------------------------------------ */
-    absoluteNonLinInverse: function(value, low, mid, high, min, max) {
+    absoluteNonLinInverse(value, low, mid, high, min, max) {
         if (!min) {
             min = 0;
         }
@@ -413,15 +413,17 @@ var script = Object.freeze({
        Input:   Current value of the hardware control, min and max values for that control
        Output:  none
        -------- ------------------------------------------------------ */
-    crossfaderCurve: function(value, min, max) {
+    crossfaderCurve(value, min, max) {
         if (engine.getValue("[Mixer Profile]", "xFaderMode") === 1) {
             // Constant Power
             engine.setValue("[Mixer Profile]", "xFaderCalibration",
-                script.absoluteLin(value, 0.5, 0.962, min, max));
+                script.absoluteLin(value, 0.5, 0.962, min, max)
+            );
         } else {
             // Additive
             engine.setValue("[Mixer Profile]", "xFaderCurve",
-                script.absoluteLin(value, 1, 2, min, max));
+                script.absoluteLin(value, 1, 2, min, max)
+            );
         }
     },
 
@@ -432,7 +434,7 @@ var script = Object.freeze({
        Input:   dividend `a` and divisor `m` for modulo (a % m)
        Output:  positive remainder
        -------- ------------------------------------------------------ */
-    posMod: function(a, m) {
+    posMod(a, m) {
         return ((a % m) + m) % m;
     },
 
@@ -445,7 +447,7 @@ var script = Object.freeze({
        Input:   MixxxControl group, direction to move, number of beats to move
        Output:  none
        -------- ------------------------------------------------------ */
-    loopMove: function(group, direction, numberOfBeats) {
+    loopMove(group, direction, numberOfBeats) {
         if (!numberOfBeats || numberOfBeats === 0) { numberOfBeats = 0.5; }
 
         if (direction < 0) {
@@ -465,7 +467,7 @@ var script = Object.freeze({
                 message was not a Pitch message (0xE#)
        -------- ------------------------------------------------------ */
     // TODO: Is this still useful now that MidiController.cpp properly handles these?
-    midiPitch: function(LSB, MSB, status) {
+    midiPitch(LSB, MSB, status) {
         if ((status & 0xF0) !== 0xE0) { // Mask the upper nybble so we can check the opcode regardless of the channel
             console.log(`Script.midiPitch: Error, not a MIDI pitch (0xEn) message: ${  status}`);
             return false;
@@ -485,7 +487,7 @@ var script = Object.freeze({
        Input:   channel, control, value, status, group, factor (optional), start rate (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    spinback: function(channel, control, value, status, group, factor, rate) {
+    spinback(channel, control, value, status, group, factor, rate) {
         // if brake is called without defined factor and rate, reset to defaults
         if (factor === undefined) {
             factor = 1;
@@ -497,7 +499,8 @@ var script = Object.freeze({
         // disable on note-off or zero value note/cc
         engine.spinback(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
-            factor, rate);
+            factor, rate
+        );
     },
 
     /* -------- ------------------------------------------------------
@@ -508,7 +511,7 @@ var script = Object.freeze({
        Input:   channel, control, value, status, group, factor (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    brake: function(channel, control, value, status, group, factor) {
+    brake(channel, control, value, status, group, factor) {
         // if brake is called without factor defined, reset to default
         if (factor === undefined) {
             factor = 1;
@@ -516,7 +519,8 @@ var script = Object.freeze({
         // disable on note-off or zero value note/cc, use default decay rate '1'
         engine.brake(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
-            factor);
+            factor
+        );
     },
 
     /* -------- ------------------------------------------------------
@@ -528,7 +532,7 @@ var script = Object.freeze({
        Input:   channel, control, value, status, group, acceleration factor (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    softStart: function(channel, control, value, status, group, factor) {
+    softStart(channel, control, value, status, group, factor) {
         // if softStart is called without factor defined, reset to default
         if (factor === undefined) {
             factor = 1;
@@ -536,15 +540,13 @@ var script = Object.freeze({
         // disable on note-off or zero value note/cc, use default increase rate '1'
         engine.softStart(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
-            factor);
+            factor
+        );
     }
 });
 
 
-
 // bpm - Used for tapping the desired BPM for a deck
-
-
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class bpmClass {
     constructor() {
@@ -607,7 +609,8 @@ class bpmClass {
 
         engine.setValue(
             group, "rate",
-            fRateScale * engine.getValue(group, "rate_dir"));
+            fRateScale * engine.getValue(group, "rate_dir")
+        );
     }
 }
 // Add instance bpm of bpmClass to the Global JavaScript object
