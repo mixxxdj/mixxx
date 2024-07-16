@@ -7,9 +7,7 @@
     </info>
     <controller id="DN-S3700">
         <scriptfiles>
-            <file filename="Denon-DN-S3700.qml" functionprefix=""/>
+            <file filename="Denon-DN-S3700.qml" />
         </scriptfiles>
-        <controls />
-        <outputs/>
     </controller>
 </MixxxControllerPreset>

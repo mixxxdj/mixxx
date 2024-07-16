@@ -5,10 +5,11 @@
 #ifndef MIXXX_MIXXXSCREEN_H
 #define MIXXX_MIXXXSCREEN_H
 
+#include <QtQml/qqmlregistration.h>
+
 #include <QImage>
 #include <QObject>
 #include <QSize>
-#include <QtQmlIntegration>
 
 namespace mixxx {
 namespace qml {
@@ -34,24 +35,16 @@ class MixxxScreen : public QObject {
     };
     Q_ENUM(ColorEndian)
 
-    int width() {
-        return m_size.width();
-    }
-    void setWidth(int value) {
-        m_size = QSize(value, m_size.height());
-    }
-    int height() {
-        return m_size.width();
-    }
-    void setHeight(int value) {
-        m_size = QSize(m_size.width(), value);
-    }
-    uint splashOff() {
-        return m_splashOff.count();
-    }
-    void setSplashOff(uint value) {
-        m_splashOff = std::chrono::milliseconds(value);
-    }
+    int width();
+    void setWidth(int value);
+    int height();
+    void setHeight(int value);
+    uint splashOff();
+    void setSplashOff(uint value);
+
+  signals:
+    void init();
+    void shutdown();
 
   private:
     QString m_screenId;         // The screen identifier.

@@ -6,27 +6,36 @@
 #include <QObject>
 #include <QtQml>
 
-#include "mixxxscreen.h"
-
 namespace mixxx {
 namespace qml {
 
-class MixxxController : public QObject {
+class MixxxController : public QObject, public QQmlParserStatus {
     Q_OBJECT
+    Q_INTERFACES(QQmlParserStatus)
     QML_ELEMENT
     Q_PROPERTY(QString controllerId MEMBER m_controllerId)
     Q_PROPERTY(bool debugMode MEMBER m_debugMode)
-    Q_PROPERTY(QQmlListProperty<MixxxScreen> screens MEMBER m_screens)
-    Q_CLASSINFO("DefaultProperty", "screens")
+    Q_PROPERTY(QQmlListProperty<QObject> childComponents MEMBER m_pChildren)
+    Q_CLASSINFO("DefaultProperty", "childComponents")
 
   public:
+    explicit MixxxController(QObject* parent = nullptr);
+    void classBegin() override;
+    void componentComplete() override;
+
+  signals:
     void init();
     void shutdown();
 
   private:
     QString m_controllerId;
     bool m_debugMode;
-    QQmlListProperty<MixxxScreen> m_screens;
+    QList<QObject*> m_children;
+    QQmlListProperty<QObject> m_pChildren;
+
+  private slots:
+    void initChildrenComponents();
+    void shutdownChildrenComponents();
 };
 
 } // namespace qml

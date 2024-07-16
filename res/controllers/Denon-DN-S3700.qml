@@ -5,16 +5,12 @@ import "Mixxx"
 MixxxController {
     id: controller
 
-    function init() {
-        console.error(controller.controllerId, controller.debugMode);
-    }
-    function shutdown() {
-        console.error(`Shutting down ${controller.controllerId} with debug mode ${controller.debugMode}`);
-    }
+    onInit: console.error(`Starting controller ${controller.controllerId} with debug mode ${controller.debugMode}`)
+    onShutdown: console.error(`Shutting down ${controller.controllerId} with debug mode ${controller.debugMode}`)
 
     MixxxScreen {
         screenId: "screen 7"
         splashOff: 5000
-        Component.onCompleted: console.error(`MixxxScreen.identifier=${screenId} ${splashOff}`)
+        onInit: console.error(`MixxxScreen.screenId=${screenId}, MixxxScreen.splashOff=${splashOff}`)
     }
 }

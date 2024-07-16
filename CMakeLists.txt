@@ -2777,9 +2777,7 @@ if(QML)
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlwaveformoverview.cpp
     src/qml/mixxxcontroller.cpp
-    src/qml/mixxxcontroller.h
     src/qml/mixxxscreen.cpp
-    src/qml/mixxxscreen.h
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp

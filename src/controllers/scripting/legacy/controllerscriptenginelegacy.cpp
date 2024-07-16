@@ -129,7 +129,7 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
 
 #ifdef MIXXX_USE_QML
     for (const auto& controller : m_mixxxController) {
-        controller->shutdown();
+        emit controller->shutdown();
     }
 
     if (!m_bQmlMode) {
@@ -207,7 +207,7 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
         }
 
         for (const auto& controller : m_mixxxController) {
-            controller->init();
+            emit controller->init();
         }
 
         QHashIterator<QString, std::shared_ptr<QQuickItem>> i(m_rootItems);
@@ -261,48 +261,7 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
             // ControllerScriptEngineBase::handleQMLErrors
         }
 
-        QListIterator<std::shared_ptr<mixxx::qml::MixxxController>> controllers(m_mixxxController);
-        bool controllersSuccess = true;
-        while (controllers.hasNext()) {
-            const QMetaObject* metaObject = controllers.next()->metaObject();
-
-            VERIFY_OR_DEBUG_ASSERT(metaObject) {
-                qCWarning(m_logger) << "Invalid meta object for controller";
-                continue;
-            }
-
-            QMetaMethod initFunction;
-            bool typed = false;
-            int methodIdx = metaObject->indexOfMethod(kQmlComponentInitFunctionUntypedSignature);
-
-            if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
-                qCDebug(m_logger) << "QML controller has no valid untyped init method.";
-                methodIdx = metaObject->indexOfMethod(kQmlComponentFunctionTypedSignature);
-                typed = true;
-            }
-
-            initFunction = metaObject->method(methodIdx);
-
-            if (!initFunction.isValid()) {
-                qCDebug(m_logger) << "QML controller has no valid untyped init method; Skipping.";
-                continue;
-            }
-
-            qCDebug(m_logger) << "Executing init on QML controller";
-            if (typed) {
-                success &= initFunction.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QString, controllerName),
-                        Q_ARG(bool, m_logger().isDebugEnabled()));
-            } else {
-                success &= initFunction.invoke(i.value().get(),
-                        Qt::DirectConnection,
-                        Q_ARG(QVariant, controllerName),
-                        Q_ARG(QVariant, m_logger().isDebugEnabled()));
-            }
-        }
-
-        return success && controllersSuccess;
+        return success;
     }
 #endif
 }
