@@ -158,14 +158,13 @@ const isSimpleObject = function(obj) {
     return obj !== null && typeof obj === "object" && obj.constructor.name === "Object";
 };
 
-script.isSimpleObject = isSimpleObject;
-
 /**
  * Deeply merges 2 objects (Arrays and Objects only, not Map for instance).
  * @param target {object | Array} Object to merge source into
  * @param source {object | Array} Object to merge into source
+ * @deprecated Use {@link Object.assign} instead
  */
-const deepMerge = function(target, source) {
+script.deepMerge = function(target, source) {
     console.warn("script.deepMerge is deprecated; use Object.assign instead");
 
     if (target === source || target === undefined || target === null || source === undefined || source === null) {
@@ -191,9 +190,6 @@ const deepMerge = function(target, source) {
         });
     }
 };
-
-/** @deprecated Use {@link Object.assign} instead */
-script.deepMerge = deepMerge;
 
 // ----------------- Mapping constants ---------------------
 
