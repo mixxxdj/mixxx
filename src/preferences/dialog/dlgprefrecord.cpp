@@ -77,7 +77,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     CheckBoxUseCueFileAnnotation->setChecked(m_pConfig->getValue<bool>(
-            ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled"), false));
+            ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"), false));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
