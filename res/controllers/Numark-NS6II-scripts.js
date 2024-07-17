@@ -1,7 +1,6 @@
 /*
 
 TODO:
-Make "CueLoops" page map to hotcues 9-16 (maps nicely to the serato cueloop import.
 Maybe indicate current loop-/jumpsize by coloring the pads in a gradient?
 
 Reverse Engineering notes (likely interesting for other Numark Mixtrack-like controllers):
@@ -1064,6 +1063,37 @@ NS6II.PadModeContainers.BeatgridSettings = function(channelOffset) {
 NS6II.PadModeContainers.BeatgridSettings.prototype = new NS6II.PadMode();
 
 
+NS6II.PadModeContainers.IntroOutroMarkers = function(channelOffset) {
+    NS6II.PadMode.call(this, channelOffset);
+    const keyPrefix = ["intro_start", "intro_end", "outro_start", "outro_end"];
+    for (let i = 0; i < keyPrefix.length; ++i) {
+        this.pads[i] = new NS6II.Pad({
+            midi: [0x90 + channelOffset, 0x14 + i],
+            outKey: `${keyPrefix[i]}_enabled`,
+            unshift: function() {
+                this.inKey = `${keyPrefix[i]}_activate`;
+            },
+            shift: function() {
+                this.inKey = `${keyPrefix[i]}_clear`;
+            },
+            on: NS6II.PAD_COLORS.BLUE.FULL,
+            off: NS6II.PAD_COLORS.BLUE.DIMM,
+        });
+    }
+    // TODO lower 4 pads; What should I map them to?
+    for (let i = 4; i < this.pads.length; i++) {
+        // Dummy pads for now.
+        this.pads[i] = new NS6II.Pad({
+            midi: [0x90 + channelOffset, 0x14 + i],
+            trigger: function() {
+                this.send(this.off);
+            },
+        });
+    }
+};
+
+NS6II.PadModeContainers.IntroOutroMarkers.prototype = new NS6II.PadMode();
+
 NS6II.PadModeContainers.ModeSelector = function(channelOffset, group) {
     const theSelector = this;
 
@@ -1125,7 +1155,7 @@ NS6II.PadModeContainers.ModeSelector = function(channelOffset, group) {
         auto: makeModeSelectorInputHandler(0x10, [new NS6II.PadModeContainers.LoopAuto(channelOffset), new NS6II.PadModeContainers.LoopRoll(channelOffset)]),
         loop: makeModeSelectorInputHandler(0x0E, [new NS6II.PadModeContainers.LoopControl(channelOffset), new NS6II.PadModeContainers.KeyControl(channelOffset)]),
         sampler: makeModeSelectorInputHandler(0x0B /*shift: 0x0F*/, [new NS6II.PadModeContainers.SamplerNormal(channelOffset), new NS6II.PadModeContainers.SamplerVelocity(channelOffset)]),
-        slider: makeModeSelectorInputHandler(0x09, [new NS6II.PadModeContainers.BeatJump(channelOffset), new NS6II.PadModeContainers.BeatgridSettings(channelOffset)]),
+        slider: makeModeSelectorInputHandler(0x09, [new NS6II.PadModeContainers.BeatJump(channelOffset), new NS6II.PadModeContainers.IntroOutroMarkers(channelOffset), new NS6II.PadModeContainers.BeatgridSettings(channelOffset)]),
     });
 
     this.padsContainer = new NS6II.PadMode(channelOffset);
