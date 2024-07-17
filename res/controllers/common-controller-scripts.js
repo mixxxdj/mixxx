@@ -13,13 +13,13 @@
 
 // ----------------- Prototype enhancements ---------------------
 
-// Returns an ASCII byte array for the string
+/**
+ * Converts the string to an array of ASCII values.
+ * @returns {number[]} An array of ASCII values corresponding to the string's characters.
+ */
+// @ts-ignore
 String.prototype.toInt = function() {
-    const a = [];
-    for (let i = 0; i < this.length; i++) {
-        a[i] = this.charCodeAt(i);
-    }
-    return a;
+    return Array.from(this, char => char.charCodeAt(0));
 };
 
 // ----------------- Function overloads ---------------------
