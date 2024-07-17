@@ -46,13 +46,10 @@ const arrayContains = function(array, elem) {
     return array.includes(elem);
 };
 
-const stringifyObject = function(obj, maxdepth, checked, prefix) {
-    if (!maxdepth) { maxdepth = 2; }
+const stringifyObject = function(obj, maxdepth = 2, checked = [], prefix ="") {
     try {
         return JSON.stringify(obj, null, maxdepth);
     } catch (e) {
-        if (!checked) { checked = []; }
-        if (!prefix) { prefix = ""; }
         if (maxdepth > 0 && typeof obj === "object" && obj !== null &&
             Object.getPrototypeOf(obj) !== "" && !arrayContains(checked, obj)) {
             checked.push(obj);
@@ -259,11 +256,8 @@ var script = Object.freeze({
                 controls will be bound to.
        Output:  none
        -------- ------------------------------------------------------ */
-    bindConnections(group, controlsToFunctions, remove) {
-        let control;
-        remove = (remove === undefined) ? false : remove;
-
-        for (control in controlsToFunctions) {
+    bindConnections(group, controlsToFunctions, remove = false) {
+        for (const control in controlsToFunctions) {
             engine.connectControl(group, control, controlsToFunctions[control], remove);
             if (!remove) {
                 engine.trigger(group, control);
@@ -290,7 +284,7 @@ var script = Object.freeze({
        Input:   Group and control names, delay in milliseconds (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    triggerControl(group, control, delay) {
+    triggerControl(group, control, delay = 200) {
         if (typeof delay !== "number") {
             delay = 200;
         }
@@ -307,14 +301,7 @@ var script = Object.freeze({
                 (Default knob values are standard MIDI 0..127)
        Output:  MixxxControl value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    absoluteLin(value, low, high, min, max) {
-        if (!min) {
-            min = 0;
-        }
-        if (!max) {
-            max = 127;
-        }
-
+    absoluteLin(value, low, high, min = 0, max = 127) {
         if (value <= min) {
             return low;
         } else if (value >= max) {
@@ -333,22 +320,11 @@ var script = Object.freeze({
                 (Default knob values are standard MIDI 0..127)
        Output:  Linear value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    absoluteLinInverse(value, low, high, min, max) {
-        if (!min) {
-            min = 0;
-        }
-        if (!max) {
-            max = 127;
-        }
+    absoluteLinInverse(value, low, high, min = 0, max = 127) {
         const result = (((value - low) * (max - min)) / (high - low)) + min;
-        if (result < min) {
-            return min;
-        } else if (result > max) {
-            return max;
-        } else {
-            return result;
-        }
+        return Math.min(Math.max(result, min), max);
     },
+
 
     /* -------- ------------------------------------------------------
          script.absoluteNonLin
@@ -359,7 +335,7 @@ var script = Object.freeze({
                 (Default knob values are standard MIDI 0..127)
        Output:  MixxxControl value corresponding to the knob position
        -------- ------------------------------------------------------ */
-    absoluteNonLin(value, low, mid, high, min, max) {
+    absoluteNonLin(value, low, mid, high, min = 0, max = 127) {
         if (!min) {
             min = 0;
         }
@@ -384,13 +360,7 @@ var script = Object.freeze({
      bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
      Output: MixxxControl value scaled to output range
      -------- ------------------------------------------------------ */
-    absoluteNonLinInverse(value, low, mid, high, min, max) {
-        if (!min) {
-            min = 0;
-        }
-        if (!max) {
-            max = 127;
-        }
+    absoluteNonLinInverse(value, low, mid, high, min = 0, max = 127) {
         const center = (max - min) / 2;
         let result;
 
@@ -402,13 +372,7 @@ var script = Object.freeze({
             result = center + (center / (high - mid)) * (value - mid);
         }
 
-        if (result < min) {
-            return min;
-        } else if (result > max) {
-            return max;
-        } else {
-            return result;
-        }
+        return Math.min(Math.max(result, min), max);
     },
 
     /* -------- ------------------------------------------------------
@@ -451,8 +415,8 @@ var script = Object.freeze({
        Input:   MixxxControl group, direction to move, number of beats to move
        Output:  none
        -------- ------------------------------------------------------ */
-    loopMove(group, direction, numberOfBeats) {
-        if (!numberOfBeats || numberOfBeats === 0) { numberOfBeats = 0.5; }
+    loopMove(group, direction, numberOfBeats = 0.5) {
+        if (numberOfBeats === 0) { numberOfBeats = 0.5; }
 
         if (direction < 0) {
             engine.setValue(group, "loop_move", -numberOfBeats);
@@ -483,6 +447,7 @@ var script = Object.freeze({
         //     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
         return rate;
     },
+
     /* -------- ------------------------------------------------------
          script.spinback
        Purpose: wrapper around engine.spinback() that can be directly mapped
@@ -491,15 +456,7 @@ var script = Object.freeze({
        Input:   channel, control, value, status, group, factor (optional), start rate (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    spinback(channel, control, value, status, group, factor, rate) {
-        // if brake is called without defined factor and rate, reset to defaults
-        if (factor === undefined) {
-            factor = 1;
-        }
-        // if brake is called without defined rate, reset to default
-        if (rate === undefined) {
-            rate = -10;
-        }
+    spinback(channel, control, value, status, group, factor = 1, rate = -10) {
         // disable on note-off or zero value note/cc
         engine.spinback(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
@@ -515,11 +472,7 @@ var script = Object.freeze({
        Input:   channel, control, value, status, group, factor (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    brake(channel, control, value, status, group, factor) {
-        // if brake is called without factor defined, reset to default
-        if (factor === undefined) {
-            factor = 1;
-        }
+    brake(channel, control, value, status, group, factor = 1) {
         // disable on note-off or zero value note/cc, use default decay rate '1'
         engine.brake(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
@@ -536,17 +489,14 @@ var script = Object.freeze({
        Input:   channel, control, value, status, group, acceleration factor (optional)
        Output:  none
        -------- ------------------------------------------------------ */
-    softStart(channel, control, value, status, group, factor) {
-        // if softStart is called without factor defined, reset to default
-        if (factor === undefined) {
-            factor = 1;
-        }
+    softStart(channel, control, value, status, group, factor = 1) {
         // disable on note-off or zero value note/cc, use default increase rate '1'
         engine.softStart(
             parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
             factor
         );
     }
+
 });
 
 
