@@ -159,6 +159,38 @@ constexpr mixxx::RgbColor kMixxxKeyColor10(0x3D8AFD);
 constexpr mixxx::RgbColor kMixxxKeyColor11(0xAC64FE);
 constexpr mixxx::RgbColor kMixxxKeyColor12(0xFD3FEA);
 
+// Traktor Key Color Palette
+// NOTE: C Major is 1d in Open Key Notation
+
+constexpr mixxx::RgbColor kTraktorKeyColor1(0xB960A2);
+constexpr mixxx::RgbColor kTraktorKeyColor2(0x8269AB);
+constexpr mixxx::RgbColor kTraktorKeyColor3(0x527FC0);
+constexpr mixxx::RgbColor kTraktorKeyColor4(0x3CC0EF);
+constexpr mixxx::RgbColor kTraktorKeyColor5(0x5BC1CE);
+constexpr mixxx::RgbColor kTraktorKeyColor6(0x4CB686);
+constexpr mixxx::RgbColor kTraktorKeyColor7(0x73B629);
+constexpr mixxx::RgbColor kTraktorKeyColor8(0x9FC516);
+constexpr mixxx::RgbColor kTraktorKeyColor9(0xFDD615);
+constexpr mixxx::RgbColor kTraktorKeyColor10(0xF28B2E);
+constexpr mixxx::RgbColor kTraktorKeyColor11(0xEC6637);
+constexpr mixxx::RgbColor kTraktorKeyColor12(0xE84C4D);
+
+// Mixed In Key Key Color Palette
+// NOTE: C Major is 8B in Camelot Notation
+
+constexpr mixxx::RgbColor kMIKKeyColor1(0xF17EDB);
+constexpr mixxx::RgbColor kMIKKeyColor2(0xD18BFD);
+constexpr mixxx::RgbColor kMIKKeyColor3(0x9EB4FD);
+constexpr mixxx::RgbColor kMIKKeyColor4(0x4DD3F8);
+constexpr mixxx::RgbColor kMIKKeyColor5(0x01EAEC);
+constexpr mixxx::RgbColor kMIKKeyColor6(0x00EECB);
+constexpr mixxx::RgbColor kMIKKeyColor7(0x20EF7F);
+constexpr mixxx::RgbColor kMIKKeyColor8(0x7FF448);
+constexpr mixxx::RgbColor kMIKKeyColor9(0xE0CA6D);
+constexpr mixxx::RgbColor kMIKKeyColor10(0xFDA078);
+constexpr mixxx::RgbColor kMIKKeyColor11(0xFF8693);
+constexpr mixxx::RgbColor kMIKKeyColor12(0xFD7EB3);
+
 // Replaces "no color" values and is used for new cues if auto_hotcue_colors is
 // disabled
 constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
@@ -390,6 +422,42 @@ const ColorPalette PredefinedColorPalettes::kMixxxKeyColorPalette =
                         kMixxxKeyColor12,
                 });
 
+const ColorPalette PredefinedColorPalettes::kTraktorKeyColorPalette =
+        ColorPalette(
+                QStringLiteral("Traktor Key Colors"),
+                {
+                        kTraktorKeyColor1,
+                        kTraktorKeyColor2,
+                        kTraktorKeyColor3,
+                        kTraktorKeyColor4,
+                        kTraktorKeyColor5,
+                        kTraktorKeyColor6,
+                        kTraktorKeyColor7,
+                        kTraktorKeyColor8,
+                        kTraktorKeyColor9,
+                        kTraktorKeyColor10,
+                        kTraktorKeyColor11,
+                        kTraktorKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kMIKKeyColorPalette =
+        ColorPalette(
+                QStringLiteral("Mixed In Key - Key Colors"),
+                {
+                        kMIKKeyColor1,
+                        kMIKKeyColor2,
+                        kMIKKeyColor3,
+                        kMIKKeyColor4,
+                        kMIKKeyColor5,
+                        kMIKKeyColor6,
+                        kMIKKeyColor7,
+                        kMIKKeyColor8,
+                        kMIKKeyColor9,
+                        kMIKKeyColor10,
+                        kMIKKeyColor11,
+                        kMIKKeyColor12,
+                });
+
 const ColorPalette PredefinedColorPalettes::kDefaultHotcueColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
 
@@ -414,6 +482,8 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         mixxx::PredefinedColorPalettes::kVirtualDJTrackColorPalette,
         // Key Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kTraktorKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kMIKKeyColorPalette,
 };
 
 const mixxx::RgbColor PredefinedColorPalettes::kDefaultCueColor =

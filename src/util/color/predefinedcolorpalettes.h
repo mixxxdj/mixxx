@@ -19,6 +19,8 @@ class PredefinedColorPalettes {
     static const ColorPalette kVirtualDJTrackColorPalette;
 
     static const ColorPalette kMixxxKeyColorPalette;
+    static const ColorPalette kTraktorKeyColorPalette;
+    static const ColorPalette kMIKKeyColorPalette;
 
     static const ColorPalette kDefaultHotcueColorPalette;
     static const ColorPalette kDefaultTrackColorPalette;
