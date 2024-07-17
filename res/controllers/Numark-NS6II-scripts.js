@@ -135,6 +135,24 @@ NS6II.RingBufferView = class {
     }
 };
 
+NS6II.createFilteredSend = function(filter, send) {
+    return function(value) {
+        if (filter.call(this, value)) {
+            send.call(this, value);
+        }
+    };
+};
+
+NS6II.createIdempotentSend = function(send) {
+    return NS6II.createFilteredSend(function(value) {
+        const v = this._value !== value;
+        if (v) {
+            this._value = value;
+        }
+        return v;
+    }, send);
+};
+
 /**
  * creates an this.isPress guarded input handler
  * @param {(value: number) => void} func callback that is called on ButtonDown
@@ -210,18 +228,7 @@ NS6II.Deck = function(channelOffset) {
         down: 0x0A,
     });
 
-    // TODO fix me: this suffers from the UP leds being on after startup
-    // seems to be a components.Pot or Mixxx issue.
-    this.takeoverLeds = new components.Component({
-        midi: [0x90 + channelOffset, takeoverLEDControls.center],
-        outKey: "rate",
-        off: 0x00,
-        output: function(softwareSliderPosition) {
-            // slider position in [-1.0; 1.0] interval. center := 0.0
-            // rate slider centered?
-            this.send(softwareSliderPosition === 0 ? takeoverLEDValues.FULL : takeoverLEDValues.OFF);
-
-            const distance2Brightness = distance => {
+    const takeoverDistance2Brightness = distance => {
                 // src/controllers/softtakeover.cpp
                 // SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
                 const takeoverThreshold = 3 / 128;
@@ -234,23 +241,53 @@ NS6II.Deck = function(channelOffset) {
                 }
             };
 
+    const directionOutValueScale = function(softwareSliderPosition) {
             const normalizedPhysicalSliderPosition = sliderPosAccessors.get()*2 - 1;
-            const distance = Math.abs(normalizedPhysicalSliderPosition - softwareSliderPosition);
-            const directionLedBrightness = distance2Brightness(distance);
 
-            if (normalizedPhysicalSliderPosition > softwareSliderPosition) {
-                midi.sendShortMsg(this.midi[0], takeoverLEDControls.up, takeoverLEDValues.OFF);
-                midi.sendShortMsg(this.midi[0], takeoverLEDControls.down, directionLedBrightness);
-            } else {
-                midi.sendShortMsg(this.midi[0], takeoverLEDControls.down, takeoverLEDValues.OFF);
-                midi.sendShortMsg(this.midi[0], takeoverLEDControls.up, directionLedBrightness);
-            }
-        },
-        shutdown: function() {
-            Object.values(takeoverLEDControls).forEach(control => {
-                midi.sendShortMsg(this.midi[0], control, this.off);
-            });
+        if ((this.midi[1] !== takeoverLEDControls.up) !== (normalizedPhysicalSliderPosition > softwareSliderPosition)) {
+            return takeoverLEDValues.OFF;
         }
+
+        const distance = Math.abs(normalizedPhysicalSliderPosition - softwareSliderPosition);
+        return takeoverDistance2Brightness(distance);
+    };
+
+
+    this.takeoverLeds = new components.ComponentContainer({
+        trigger: function() {
+            this.up.trigger();
+            this.down.trigger();
+        },
+        center: new components.Component({
+            midi: [0x90 + channelOffset, takeoverLEDControls.center],
+            outKey: "rate",
+            off: 0x00,
+            send: NS6II.createIdempotentSend(components.Component.prototype.send),
+            outValueScale: function(value) {
+                const distance = Math.abs(value);
+                if (distance === 0) {
+                    return takeoverLEDValues.FULL;
+                } else if (distance < 0.10) {
+                    return takeoverLEDValues.DIMM;
+                } else {
+                    return takeoverLEDValues.OFF;
+                }
+            }
+        }),
+        up: new components.Component({
+            midi: [0x90 + channelOffset, takeoverLEDControls.up],
+            outKey: "rate",
+            off: 0x00,
+            send: NS6II.createIdempotentSend(components.Component.prototype.send),
+            outValueScale: directionOutValueScale,
+        }),
+        down: new components.Component({
+            midi: [0x90 + channelOffset, takeoverLEDControls.down],
+            outKey: "rate",
+            off: 0x00,
+            send: NS6II.createIdempotentSend(components.Component.prototype.send),
+            outValueScale: directionOutValueScale,
+        }),
     });
 
     // features 14-bit precision
@@ -603,6 +640,7 @@ NS6II.Display = function(channelOffset) {
                 Math.round(playpos * this.max) :
                 this.off;
         },
+        send: NS6II.createIdempotentSend(NS6II.DisplayElement.prototype.send),
     });
 
     this.vinylStickerPositionUI = new NS6II.DisplayElement({
@@ -614,6 +652,7 @@ NS6II.Display = function(channelOffset) {
             const elapsedTime = deckInfoCache.duration * playpos;
             return script.posMod(elapsedTime * deckInfoCache.vinylControlSpeedTypeRatio, 1) * this.max;
         },
+        send: NS6II.createIdempotentSend(NS6II.DisplayElement.prototype.send),
     });
 
     this.deckLoadedConnection = engine.makeConnection(deck, "track_loaded", function(value) {
