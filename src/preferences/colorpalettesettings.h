@@ -18,6 +18,10 @@ class ColorPaletteSettings {
     ColorPalette getTrackColorPalette() const;
     void setTrackColorPalette(const ColorPalette& colorPalette);
 
+    ColorPalette getKeyColorPalette(const QString& name) const;
+    ColorPalette getKeyColorPalette() const;
+    void setKeyColorPalette(const ColorPalette& colorPalette);
+
     ColorPalette getColorPalette(
             const QString& name,
             const ColorPalette& defaultPalette) const;
