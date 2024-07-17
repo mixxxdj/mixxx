@@ -321,12 +321,7 @@ void DlgPrefRecord::slotSliderQuality() {
 
 // Set 'Enable File Annotation in CUE file' checkbox value depending on 'Create a CUE file' checkbox value
 void DlgPrefRecord::updateCueEnabled() {
-    if (CheckBoxRecordCueFile->isChecked()) {
-        CheckBoxUseCueFileAnnotation->setEnabled(true);
-    } else {
-        CheckBoxUseCueFileAnnotation->setEnabled(false);
-        CheckBoxUseCueFileAnnotation->setChecked(false);
-    }
+   CheckBoxUseCueFileAnnotation->setEnabled(CheckBoxRecordCueFile->isChecked());
 }
 
 void DlgPrefRecord::updateTextQuality() {
