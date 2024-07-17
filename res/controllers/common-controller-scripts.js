@@ -35,11 +35,15 @@ const print = function(message) {
     console.log(message);
 };
 
+/**
+ * Checks if an array contains a specific element.
+ * @param {Array} array The array to search.
+ * @param {*} elem The element to search for in the array.
+ * @returns {boolean} True if the element is found in the array, false otherwise.
+ * @deprecated Use array.includes(elem) instead.
+ */
 const arrayContains = function(array, elem) {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i] === elem) { return true; }
-    }
-    return false;
+    return array.includes(elem);
 };
 
 const stringifyObject = function(obj, maxdepth, checked, prefix) {
