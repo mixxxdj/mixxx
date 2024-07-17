@@ -228,20 +228,20 @@ NS6II.Deck = function(channelOffset) {
     });
 
     const takeoverDistance2Brightness = distance => {
-                // src/controllers/softtakeover.cpp
-                // SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
-                const takeoverThreshold = 3 / 128;
-                if (distance > takeoverThreshold && distance < 0.10) {
-                    return takeoverLEDValues.DIMM;
-                } else if (distance >= 0.10) {
-                    return takeoverLEDValues.FULL;
-                } else {
-                    return takeoverLEDValues.OFF;
-                }
-            };
+        // src/controllers/softtakeover.cpp
+        // SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+        const takeoverThreshold = 3 / 128;
+        if (distance > takeoverThreshold && distance < 0.10) {
+            return takeoverLEDValues.DIMM;
+        } else if (distance >= 0.10) {
+            return takeoverLEDValues.FULL;
+        } else {
+            return takeoverLEDValues.OFF;
+        }
+    };
 
     const directionOutValueScale = function(softwareSliderPosition) {
-            const normalizedPhysicalSliderPosition = sliderPosAccessors.get()*2 - 1;
+        const normalizedPhysicalSliderPosition = sliderPosAccessors.get()*2 - 1;
 
         if ((this.midi[1] !== takeoverLEDControls.up) !== (normalizedPhysicalSliderPosition > softwareSliderPosition)) {
             return takeoverLEDValues.OFF;
@@ -1294,6 +1294,7 @@ NS6II.BrowseSection = function() {
 
     /**
      * @param {number} columnIdToSort Value from `[Library], sort_column` docs
+     * @returns {MidiInputHandler} a MIDI handler suitable to be called via a XML <key> binding
      */
     const makeSortColumnInputHandler = columnIdToSort =>
         NS6II.makeButtonDownInputHandler(function() { this.inSetValue(columnIdToSort); });
