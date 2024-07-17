@@ -15,6 +15,7 @@
 #include "library/tabledelegates/playcountdelegate.h"
 #include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/tabledelegates/stardelegate.h"
+#include "library/tabledelegates/textdelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -519,7 +520,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         return new KeyDelegate(pTableView);
     }
-    return nullptr;
+    return new TextDelegate(pTableView);
 }
 
 QVariant BaseTrackTableModel::data(
