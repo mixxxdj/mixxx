@@ -925,6 +925,53 @@ NS6II.PadModeContainers.LoopControl = function(channelOffset) {
 };
 NS6II.PadModeContainers.LoopControl.prototype = new NS6II.PadMode();
 
+NS6II.PadModeContainers.KeyControl = function(channelOffset) {
+    NS6II.PadMode.call(this, channelOffset);
+    this.pads[0] = new NS6II.Pad({
+        midi: [0x90 + channelOffset, 0x14],
+        key: "sync_key",
+        on: NS6II.PAD_COLORS.GREEN.FULL,
+        off: NS6II.PAD_COLORS.GREEN.DIMM,
+    });
+    this.pads[1] = new NS6II.Pad({
+        midi: [0x90 + channelOffset, 0x15],
+        key: "pitch_down",
+        on: NS6II.PAD_COLORS.BLUE.FULL,
+        off: NS6II.PAD_COLORS.BLUE.DIMM,
+    });
+    this.pads[2] = new NS6II.Pad({
+        midi: [0x90 + channelOffset, 0x16],
+        key: "pitch_up",
+        on: NS6II.PAD_COLORS.BLUE.FULL,
+        off: NS6II.PAD_COLORS.BLUE.DIMM,
+    });
+    this.pads[3] = new NS6II.Pad({
+        midi: [0x90 + channelOffset, 0x17],
+        inKey: "reset_key",
+        outKey: "pitch_adjust",
+        outValueScale: function(pitchAdjust) {
+            // reset_key sometimes sets the key to some small non-zero value sometimes (probably floating point rounding errors)
+            // so we check with tolerance here.
+            const epsilon = 0.001;
+            return Math.abs(pitchAdjust) > epsilon ? this.on : this.off;
+        },
+        on: NS6II.PAD_COLORS.RED.FULL,
+        off: NS6II.PAD_COLORS.RED.DIMM,
+    });
+    // TODO lower 4 pads; What should I map them to, maybe going by circle of fifths?
+    for (let i = 4; i < this.pads.length; i++) {
+        // Dummy pads for now.
+        this.pads[i] = new NS6II.Pad({
+            midi: [0x90 + channelOffset, 0x14 + i],
+            trigger: function() {
+                this.send(this.off);
+            },
+        });
+    }
+};
+
+NS6II.PadModeContainers.KeyControl.prototype = new NS6II.PadMode();
+
 NS6II.PadModeContainers.SamplerNormal = function(channelOffset) {
     NS6II.PadMode.call(this, channelOffset);
     this.constructPads(i =>
@@ -1076,7 +1123,7 @@ NS6II.PadModeContainers.ModeSelector = function(channelOffset, group) {
     this.modeSelectors = new components.ComponentContainer({
         cues: makeModeSelectorInputHandler(0x00 /*shift: 0x02*/, [startupModeInstance, new NS6II.PadModeContainers.HotcuesRegular(channelOffset, 8)]),
         auto: makeModeSelectorInputHandler(0x10, [new NS6II.PadModeContainers.LoopAuto(channelOffset), new NS6II.PadModeContainers.LoopRoll(channelOffset)]),
-        loop: makeModeSelectorInputHandler(0x0E, [new NS6II.PadModeContainers.LoopControl(channelOffset)]),
+        loop: makeModeSelectorInputHandler(0x0E, [new NS6II.PadModeContainers.LoopControl(channelOffset), new NS6II.PadModeContainers.KeyControl(channelOffset)]),
         sampler: makeModeSelectorInputHandler(0x0B /*shift: 0x0F*/, [new NS6II.PadModeContainers.SamplerNormal(channelOffset), new NS6II.PadModeContainers.SamplerVelocity(channelOffset)]),
         slider: makeModeSelectorInputHandler(0x09, [new NS6II.PadModeContainers.BeatJump(channelOffset), new NS6II.PadModeContainers.BeatgridSettings(channelOffset)]),
     });
