@@ -94,6 +94,11 @@ components.SamplerButton.prototype.shiftControl = true;
 components.SamplerButton.prototype.shiftOffset = 8;
 components.HotcueButton.prototype.outConnect = false;
 
+NS6II.physicalSliderPositions = {
+    left: 0.5,
+    right: 0.5,
+};
+
 NS6II.mixxxColorToDeviceColorCode = colorObj =>  {
     const red = (colorObj.red & 0xC0) >> 2;
     const green = (colorObj.green & 0xC0) >> 4;
@@ -108,13 +113,7 @@ NS6II.hardwareColorToHex = colorcode => {
     return (red | green | blue);
 };
 
-
 NS6II.padColorMapper = new ColorMapper(_.keyBy(_.range(0, 64), NS6II.hardwareColorToHex));
-
-NS6II.physicalSliderPositions = {
-    left: 0.5,
-    right: 0.5,
-};
 
 NS6II.RingBufferView = class {
     constructor(indexable, startIndex = 0) {
@@ -156,7 +155,7 @@ NS6II.makeButtonDownInputHandler = function(func) {
 NS6II.Deck = function(channelOffset) {
     const theDeck = this;
     const deckNumber = channelOffset + 1;
-    this.group = `[Channel${  deckNumber  }]`;
+    this.group = `[Channel${deckNumber}]`;
 
     const lr = channelOffset % 2 === 0 ? "left" : "right";
     const sliderPosAccessors = {
@@ -263,11 +262,8 @@ NS6II.Deck = function(channelOffset) {
         invert: true,
         inSetParameter: function(value) {
             sliderPosAccessors.set(value);
-
             components.Pot.prototype.inSetParameter.call(this, value);
-
             theDeck.takeoverLeds.trigger();
-
         },
     });
     const rates = new NS6II.RingBufferView(NS6II.RATE_RANGES);
@@ -517,7 +513,7 @@ NS6II.DisplayElement.prototype = new components.Component({
 
 NS6II.Display = function(channelOffset) {
     const channel = (channelOffset + 1);
-    const deck = `[Channel${  channel  }]`;
+    const deck = `[Channel${channel}]`;
 
     // optimization so frequently updated controls don't have to poll seldom
     // updated controls each time.
@@ -710,8 +706,8 @@ NS6II.PadModeContainers.LoopAuto = function(channelOffset) {
             if (c instanceof components.Component) {
                 c.disconnect();
                 const loopSize = Math.pow(2, theContainer.currentBaseLoopSize + i);
-                c.inKey = `beatloop_${  loopSize  }_toggle`;
-                c.outKey = `beatloop_${  loopSize  }_enabled`;
+                c.inKey = `beatloop_${loopSize}_toggle`;
+                c.outKey = `beatloop_${loopSize}_enabled`;
                 c.connect();
                 c.trigger();
             }
@@ -757,8 +753,8 @@ NS6II.PadModeContainers.BeatJump = function(channelOffset) {
         };
         for (let i = 0; i < 4; i++) {
             const size = Math.pow(2, theContainer.currentBaseJumpExponent + i);
-            applyToComponent(theContainer.pads[i], `beatjump_${  size  }_forward`);
-            applyToComponent(theContainer.pads[i+4], `beatjump_${  size  }_backward`);
+            applyToComponent(theContainer.pads[i], `beatjump_${size}_forward`);
+            applyToComponent(theContainer.pads[i+4], `beatjump_${size}_backward`);
         }
     };
 
@@ -790,7 +786,7 @@ NS6II.PadModeContainers.LoopRoll = function(channelOffset) {
         theContainer.pads.forEach(c => {
             if (c instanceof components.Component) {
                 c.disconnect();
-                c.inKey = `beatlooproll_${  Math.pow(2, theContainer.currentBaseLoopSize + (i++))  }_activate`;
+                c.inKey = `beatlooproll_${Math.pow(2, theContainer.currentBaseLoopSize + (i++))}_activate`;
                 c.outKey = c.inKey;
                 c.connect();
                 c.trigger();
@@ -798,15 +794,15 @@ NS6II.PadModeContainers.LoopRoll = function(channelOffset) {
         });
     };
 
-    this.constructPads(function(i) {
-        return new NS6II.Pad({
+    this.constructPads(i =>
+        new NS6II.Pad({
             midi: [0x90 + channelOffset, 0x14 + i],
             on: NS6II.PAD_COLORS.GREEN.FULL,
             off: NS6II.PAD_COLORS.GREEN.DIMM,
             type: components.Button.prototype.types.toggle,
             // key is set by changeLoopSize()
-        });
-    });
+        })
+    );
 
     this.assignParameterPressHandlerLeft(() => changeLoopSize(theContainer.currentBaseLoopSize - 1));
     this.assignParameterPressHandlerRight(() => changeLoopSize(theContainer.currentBaseLoopSize + 1));
@@ -869,31 +865,31 @@ NS6II.PadModeContainers.LoopControl.prototype = new NS6II.PadMode();
 
 NS6II.PadModeContainers.SamplerNormal = function(channelOffset) {
     NS6II.PadMode.call(this, channelOffset);
-    this.constructPads(function(i) {
-        return new components.SamplerButton({
+    this.constructPads(i =>
+        new components.SamplerButton({
             midi: [0x90 + channelOffset, 0x14 + i],
             number: i + 1,
             empty: NS6II.PAD_COLORS.OFF,
             playing: NS6II.PAD_COLORS.WHITE.FULL,
             loaded: NS6II.PAD_COLORS.WHITE.DIMM,
-        });
-    });
+        })
+    );
 };
 NS6II.PadModeContainers.SamplerNormal.prototype = new NS6II.PadMode();
 
 NS6II.PadModeContainers.SamplerVelocity = function(channelOffset) {
     NS6II.PadMode.call(this, channelOffset);
 
-    this.constructPads(function(i) {
-        return new components.SamplerButton({
+    this.constructPads(i =>
+        new components.SamplerButton({
             midi: [0x90 + channelOffset, 0x14 + i],
             number: i + 1,
             empty: NS6II.PAD_COLORS.OFF,
             playing: NS6II.PAD_COLORS.PINK.FULL,
             loaded: NS6II.PAD_COLORS.PINK.DIMM,
             volumeByVelocity: true,
-        });
-    });
+        })
+    );
 };
 
 NS6II.PadModeContainers.SamplerVelocity.prototype = new NS6II.PadMode();
@@ -963,9 +959,7 @@ NS6II.PadModeContainers.ModeSelector = function(channelOffset, group) {
     const theSelector = this;
 
     const updateSelectorLeds = () => {
-        Object.values(theSelector.modeSelectors).forEach(selector => {
-            selector.trigger();
-        });
+        theSelector.forEachComponent(c => c.trigger());
     };
 
     const setPads = padInstance => {
@@ -1032,7 +1026,7 @@ NS6II.PadModeContainers.ModeSelector = function(channelOffset, group) {
 NS6II.PadModeContainers.ModeSelector.prototype = new components.ComponentContainer();
 
 NS6II.Channel = function(channelOffset) {
-    const deck = `[Channel${  channelOffset+1  }]`;
+    const deck = `[Channel${channelOffset+1}]`;
     this.loadTrackIntoDeck = new components.Button({
         midi: [0x9F, 0x02 + channelOffset],
         // midi: [0x90 + channelOffset, 0x17],
@@ -1049,7 +1043,7 @@ NS6II.Channel = function(channelOffset) {
     // used to determine whether vumeter on the controller would change
     // so messages get only when that is the case.
     let lastVuLevel = 0;
-    this.vuMeterLevelConnection = engine.makeConnection(deck, "VuMeter", value => {
+    this.vuMeterLevelConnection = engine.makeConnection(deck, "vu_meter", value => {
         // check if channel is peaking and increase value so that the peaking led gets lit as well
         // (the vumeter and the peak led are driven by the same control) (values > 81 light up the peakLED as well)
 
@@ -1069,19 +1063,20 @@ NS6II.Channel = function(channelOffset) {
         group: deck,
         inKey: "pregain"
     });
-    this.eqKnobs = _.map(Array(3), (_, i) =>
+    const eqIndicies = [0, 1, 2];
+    this.eqKnobs = eqIndicies.map(i =>
         new components.Pot({
             midi: [0xB0 + channelOffset, 0x16 + i],
             softTakeover: false,
-            group: `[EqualizerRack1_${  deck  }_Effect1]`,
-            inKey: `parameter${  3-i}`,
+            group: `[EqualizerRack1_${deck}_Effect1]`,
+            inKey: `parameter${3-i}`,
         })
     );
-    this.eqCaps = _.map(Array(3), (_, i) =>
+    this.eqCaps = eqIndicies.map(i =>
         new components.Button({
             midi: [0x90 + channelOffset, 0x16 + i],
-            group: `[EqualizerRack1_${  deck  }_Effect1]`,
-            inKey: `button_parameter${  3-i}`,
+            group: `[EqualizerRack1_${deck}_Effect1]`,
+            inKey: `button_parameter${3-i}`,
             isPress: function(_midiChannel, _control, value, _status) {
                 return NS6II.knobCapBehavior.state > 1 && value > 0;
             }
@@ -1090,7 +1085,7 @@ NS6II.Channel = function(channelOffset) {
     this.filter = new components.Pot({
         midi: [0xB0 + channelOffset, 0x1A],
         softTakeover: false,
-        group: `[QuickEffectRack1_${  deck  }]`,
+        group: `[QuickEffectRack1_${deck}]`,
         inKey: "super1",
     });
 
@@ -1178,6 +1173,7 @@ NS6II.BrowseSection = function() {
     this.view = new components.Button({
         midi: [0x9F, 0x0E], // shift: [0x9F,0x13],
         unshift: function() {
+            // TODO 2.5: switch to `[Skin], show_maximize_library`.
             this.group = "[Master]";
             this.inKey = "maximize_library";
             this.outKey = this.inKey;
@@ -1268,8 +1264,7 @@ NS6II.createEffectUnits = function() {
             NS6II.EffectUnits[i].enableButtons[ii + 1].midi = [0x97 + i, ii]; // shift: [0x97+i,0x0B+ii]
             NS6II.EffectUnits[i].fxCaps[ii + 1] = new components.Button({
                 midi: [0x97 + i, 0x21 + ii],
-                group: `[EffectRack1_EffectUnit${  NS6II.EffectUnits[i].currentUnitNumber
-                }_Effect${  ii+1  }]`,
+                group: `[EffectRack1_EffectUnit${NS6II.EffectUnits[i].currentUnitNumber}_Effect${ii+1}]`,
                 inKey: "enabled",
                 shifted: false, // used to disable fx input while selecting
                 input: function(midichannel, control, value, status, _group) {
