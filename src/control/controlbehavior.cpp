@@ -7,35 +7,39 @@ bool ControlNumericBehavior::setFilter(double* dValue) {
     return true;
 }
 
-double ControlNumericBehavior::valueToParameter(double dValue) {
+double ControlNumericBehavior::valueToNormalizedValue(double dValue) {
+    // TODO: This does not scale - Do we need a warning if this is called?
     return dValue;
 }
 
-double ControlNumericBehavior::midiToParameter(double midiValue) {
+double ControlNumericBehavior::midi7BitToNormalizedValue(double midiValue) {
     return midiValue / 127.0;
 }
 
-double ControlNumericBehavior::parameterToValue(double dParam) {
-    return dParam;
+double ControlNumericBehavior::normalizedValueToValue(double dNormalizedValue) {
+    // TODO: This does not scale - Do we need a warning if this is called?
+    return dNormalizedValue;
 }
 
-double ControlNumericBehavior::valueToMidiParameter(double dValue) {
-    double dParam = valueToParameter(dValue);
-    return dParam * 127.0;
+double ControlNumericBehavior::valueToMidi7Bit(double dValue) {
+    double dNormalizedValue = valueToNormalizedValue(dValue);
+    return dNormalizedValue * 127.0;
 }
 
-void ControlNumericBehavior::setValueFromMidi(
-        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
+void ControlNumericBehavior::setValueFromMidi7Bit(
+        MidiOpCode o, double dNormalizedValue, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dNorm = midiToParameter(dParam);
-    pControl->set(parameterToValue(dNorm), nullptr);
+    double dNorm = midi7BitToNormalizedValue(dNormalizedValue);
+    pControl->set(normalizedValueToValue(dNorm), nullptr);
 }
 
-double ControlEncoderBehavior::midiToParameter(double midiValue) {
+double ControlEncoderBehavior::midi7BitToNormalizedValue(double midiValue) {
+    // TODO: This does not scale - Do we need a warning if this is called?
     return midiValue;
 }
 
-double ControlEncoderBehavior::valueToMidiParameter(double dValue) {
+double ControlEncoderBehavior::valueToMidi7Bit(double dValue) {
+    // TODO: This does not scale - Do we need a warning if this is called?
     return dValue;
 }
 
@@ -58,7 +62,7 @@ bool ControlPotmeterBehavior::setFilter(double* dValue) {
     return true;
 }
 
-double ControlPotmeterBehavior::valueToParameter(double dValue) {
+double ControlPotmeterBehavior::valueToNormalizedValue(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
     }
@@ -70,28 +74,28 @@ double ControlPotmeterBehavior::valueToParameter(double dValue) {
     return (dValue - m_dMinValue) / m_dValueRange;
 }
 
-double ControlPotmeterBehavior::midiToParameter(double midiValue) {
-    double parameter;
+double ControlPotmeterBehavior::midi7BitToNormalizedValue(double midiValue) {
+    double normalizedValue;
     if (midiValue > 64) {
-        parameter = (midiValue - 1) / 126.0;
+        normalizedValue = (midiValue - 1) / 126.0;
     } else {
         // Hack for 0.5 at 64
-        parameter = midiValue / 128.0;
+        normalizedValue = midiValue / 128.0;
     }
-    return parameter;
+    return normalizedValue;
 }
 
-double ControlPotmeterBehavior::parameterToValue(double dParam) {
-    return m_dMinValue + (dParam * m_dValueRange);
+double ControlPotmeterBehavior::normalizedValueToValue(double dNormalizedValue) {
+    return m_dMinValue + (dNormalizedValue * m_dValueRange);
 }
 
-double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
+double ControlPotmeterBehavior::valueToMidi7Bit(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center. We fake things a
     // little bit here to make that the case. This function is linear from [0,
     // 127.0/128.0] with slope 128 and then cuts off at 127 from 127.0/128.0 to
     // 1.0.  from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
-    double dNorm = valueToParameter(dValue);
+    double dNorm = valueToNormalizedValue(dValue);
     if (dNorm > 0.5) {
         return (dNorm * 126) + 1;
     } else {
@@ -116,7 +120,7 @@ ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue,
     m_minOffset = db2ratio(m_minDB);
 }
 
-double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
+double ControlLogPotmeterBehavior::valueToNormalizedValue(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
     }
@@ -125,15 +129,16 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
-    double linParameter = (dValue - m_dMinValue) / m_dValueRange;
-    double dbParameter = ratio2db(linParameter + m_minOffset * (1 - linParameter));
-    return 1 - (dbParameter / m_minDB);
+    double dNormalizedLinValue = (dValue - m_dMinValue) / m_dValueRange;
+    double dNormalizedDbValue = ratio2db(
+            dNormalizedLinValue + m_minOffset * (1 - dNormalizedLinValue));
+    return 1 - (dNormalizedDbValue / m_minDB);
 }
 
-double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
-    double dbParameter = (1 - dParam) * m_minDB;
-    double linParameter = (db2ratio(dbParameter) - m_minOffset) / (1 - m_minOffset);
-    return m_dMinValue + (linParameter * m_dValueRange);
+double ControlLogPotmeterBehavior::normalizedValueToValue(double dNormalizedValue) {
+    double dNormalizedDbValue = (1 - dNormalizedValue) * m_minDB;
+    double dNormalizedLinValue = (db2ratio(dNormalizedDbValue) - m_minOffset) / (1 - m_minOffset);
+    return m_dMinValue + (dNormalizedLinValue * m_dValueRange);
 }
 
 ControlLogInvPotmeterBehavior::ControlLogInvPotmeterBehavior(
@@ -141,12 +146,12 @@ ControlLogInvPotmeterBehavior::ControlLogInvPotmeterBehavior(
         : ControlLogPotmeterBehavior(dMinValue, dMaxValue, minDB) {
 }
 
-double ControlLogInvPotmeterBehavior::valueToParameter(double dValue) {
-    return 1 - ControlLogPotmeterBehavior::valueToParameter(dValue);
+double ControlLogInvPotmeterBehavior::valueToNormalizedValue(double dNormalizedValue) {
+    return 1 - ControlLogPotmeterBehavior::valueToNormalizedValue(dNormalizedValue);
 }
 
-double ControlLogInvPotmeterBehavior::parameterToValue(double dParam) {
-    return ControlLogPotmeterBehavior::parameterToValue(1 - dParam);
+double ControlLogInvPotmeterBehavior::normalizedValueToValue(double dNormalizedValue) {
+    return ControlLogPotmeterBehavior::normalizedValueToValue(1 - dNormalizedValue);
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(
@@ -159,128 +164,133 @@ ControlLinInvPotmeterBehavior::ControlLinInvPotmeterBehavior(
         : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
-double ControlLinInvPotmeterBehavior::valueToParameter(double dValue) {
-    return 1 - ControlPotmeterBehavior::valueToParameter(dValue);
+double ControlLinInvPotmeterBehavior::valueToNormalizedValue(double dValue) {
+    return 1 - ControlPotmeterBehavior::valueToNormalizedValue(dValue);
 }
 
-double ControlLinInvPotmeterBehavior::parameterToValue(double dParam) {
-    return ControlPotmeterBehavior::parameterToValue(1 - dParam);
+double ControlLinInvPotmeterBehavior::normalizedValueToValue(double dNormalizedValue) {
+    return ControlPotmeterBehavior::normalizedValueToValue(1 - dNormalizedValue);
 }
 
 ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
-                             double minDB, double maxDB,
-                             double neutralParameter)
+        double minDB, double maxDB, double neutralNormalizedValue)
         : ControlPotmeterBehavior(0.0, db2ratio(maxDB), false),
-          m_neutralParameter(neutralParameter),
+          m_neutralNormalizedValue(neutralNormalizedValue),
           m_minDB(minDB),
           m_maxDB(maxDB),
           m_offset(db2ratio(m_minDB)) {
-    m_midiCorrection = ceil(m_neutralParameter * 127) - (m_neutralParameter * 127);
+    m_midiCorrection = ceil(m_neutralNormalizedValue * 127) - (m_neutralNormalizedValue * 127);
 }
 
-double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
-    double dParam = 1.0;
+double ControlAudioTaperPotBehavior::valueToNormalizedValue(double dValue) {
+    double dNormalizedValue = 1.0;
     if (dValue <= 0.0) {
         return 0;
     } else if (dValue < 1.0) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParameter
+        // 0 dB = m_neutralNormalizedValue
         double overlay = m_offset * (1 - dValue);
         if (m_minDB != 0) {
-            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+            dNormalizedValue = (ratio2db(dValue + overlay) - m_minDB) /
+                    m_minDB * m_neutralNormalizedValue * -1;
         } else {
-            dParam = dValue * m_neutralParameter;
+            dNormalizedValue = dValue * m_neutralNormalizedValue;
         }
     } else if (dValue == 1.0) {
-        dParam = m_neutralParameter;
+        dNormalizedValue = m_neutralNormalizedValue;
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
-        // 0 dB = m_neutralParameter
-        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
+        // 0 dB = m_neutralNormalizedValue
+        dNormalizedValue =
+                (ratio2db(dValue) / m_maxDB * (1 - m_neutralNormalizedValue)) +
+                m_neutralNormalizedValue;
     }
-    //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
-    return dParam;
+    // qDebug() << "ControlAudioTaperPotBehavior::valueToNormalizedValue" <<
+    // "value =" << dNormalizedValue << "dNormalizedValue =" << dNormalizedValue;
+    return dNormalizedValue;
 }
 
-double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
+double ControlAudioTaperPotBehavior::normalizedValueToValue(double dNormalizedValue) {
     double dValue = 1;
-    if (dParam <= 0.0) {
+    if (dNormalizedValue <= 0.0) {
         dValue = 0;
-    } else if (dParam < m_neutralParameter) {
+    } else if (dNormalizedValue < m_neutralNormalizedValue) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParameter;
+        // 0 dB = m_neutralNormalizedValue;
         if (m_minDB != 0) {
-            double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
+            double db = (dNormalizedValue * m_minDB / (m_neutralNormalizedValue * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
         } else {
-            dValue = dParam / m_neutralParameter;
+            dValue = dNormalizedValue / m_neutralNormalizedValue;
         }
-    } else if (dParam == m_neutralParameter) {
+    } else if (dNormalizedValue == m_neutralNormalizedValue) {
         dValue = 1.0;
-    } else if (dParam < 1.0) {
+    } else if (dNormalizedValue < 1.0) {
         // m_maxDB = 1
         // 0 dB = m_neutralParame;
-        dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
+        dValue = db2ratio((dNormalizedValue - m_neutralNormalizedValue) *
+                m_maxDB / (1 - m_neutralNormalizedValue));
     } else {
         dValue = db2ratio(m_maxDB);
     }
-    //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
+    // qDebug() << "ControlAudioTaperPotBehavior::normalizedValueToValue" <<
+    // "dNormalizedValue =" << dNormalizedValue << "dNormalizedValue =" << dNormalizedValue;
     return dValue;
 }
 
-double ControlAudioTaperPotBehavior::midiToParameter(double midiValue) {
-    double dParam;
-    if (m_neutralParameter != 0 && m_neutralParameter != 1.0) {
+double ControlAudioTaperPotBehavior::midi7BitToNormalizedValue(double midiValue) {
+    double dNormalizedValue;
+    if (m_neutralNormalizedValue != 0 && m_neutralNormalizedValue != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
-        if (neutralTest < m_neutralParameter) {
-            dParam = midiValue /
-                    (127.0 + m_midiCorrection / m_neutralParameter);
+        if (neutralTest < m_neutralNormalizedValue) {
+            dNormalizedValue = midiValue /
+                    (127.0 + m_midiCorrection / m_neutralNormalizedValue);
         } else {
             // m_midicorrection is always < 1, so NaN check required
-            dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
-                    (127.0 - m_midiCorrection / m_neutralParameter);
+            dNormalizedValue = (midiValue - m_midiCorrection / m_neutralNormalizedValue) /
+                    (127.0 - m_midiCorrection / m_neutralNormalizedValue);
         }
     } else {
-        dParam = midiValue / 127.0;
+        dNormalizedValue = midiValue / 127.0;
     }
-    return dParam;
+    return dNormalizedValue;
 }
 
-double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
+double ControlAudioTaperPotBehavior::valueToMidi7Bit(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center.
-    // We fake things a little bit here to hit the m_neutralParameter
+    // We fake things a little bit here to hit the m_neutralNormalizedValue
     // always on a full Midi integer
-    double dParam = valueToParameter(dValue);
-    double dMidiParam = dParam * 127.0;
-    if (m_neutralParameter != 0 && m_neutralParameter != 1.0) {
-        if (dParam < m_neutralParameter) {
-            dMidiParam += m_midiCorrection * dParam / m_neutralParameter;
+    double dNormalizedValue = valueToNormalizedValue(dValue);
+    double dMidiParam = dNormalizedValue * 127.0;
+    if (m_neutralNormalizedValue != 0 && m_neutralNormalizedValue != 1.0) {
+        if (dNormalizedValue < m_neutralNormalizedValue) {
+            dMidiParam += m_midiCorrection * dNormalizedValue / m_neutralNormalizedValue;
         } else {
-            dMidiParam += m_midiCorrection * (1 - dParam) / m_neutralParameter;
+            dMidiParam += m_midiCorrection * (1 - dNormalizedValue) / m_neutralNormalizedValue;
         }
     }
     return dMidiParam;
 }
 
-void ControlAudioTaperPotBehavior::setValueFromMidi(
+void ControlAudioTaperPotBehavior::setValueFromMidi7Bit(
         MidiOpCode o, double dMidiParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dParam = midiToParameter(dMidiParam);
-    pControl->set(parameterToValue(dParam), nullptr);
+    double dNormalizedValue = midi7BitToNormalizedValue(dMidiParam);
+    pControl->set(normalizedValueToValue(dNormalizedValue), nullptr);
 }
 
-double ControlTTRotaryBehavior::valueToParameter(double dValue) {
+double ControlTTRotaryBehavior::valueToNormalizedValue(double dValue) {
     return (dValue * 200.0 + 64) / 127.0;
 }
 
-double ControlTTRotaryBehavior::parameterToValue(double dParam) {
-    dParam *= 128.0;
+double ControlTTRotaryBehavior::normalizedValueToValue(double dNormalizedValue) {
+    dNormalizedValue *= 128.0;
     // Non-linear scaling
-    double temp = ((dParam - 64.0) * (dParam - 64.0)) / 64.0;
-    if (dParam - 64 < 0) {
+    double temp = ((dNormalizedValue - 64.0) * (dNormalizedValue - 64.0)) / 64.0;
+    if (dNormalizedValue - 64 < 0) {
         temp = -temp;
     }
     return temp;
@@ -293,12 +303,12 @@ ControlLinSteppedIntPotBehavior::ControlLinSteppedIntPotBehavior(
     m_dMaxValue = round(dMaxValue);
     m_dValueRange = m_dMaxValue - m_dMinValue;
     m_bAllowOutOfBounds = allowOutOfBounds;
-    m_lastSnappedParam = 0;
+    m_lastSnappedNormalizedValue = 0;
     m_dist = 0;
     m_oldVal = 0;
 }
 
-double ControlLinSteppedIntPotBehavior::valueToParameter(double dValue) {
+double ControlLinSteppedIntPotBehavior::valueToNormalizedValue(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
     }
@@ -311,17 +321,18 @@ double ControlLinSteppedIntPotBehavior::valueToParameter(double dValue) {
     return param;
 }
 
-double ControlLinSteppedIntPotBehavior::parameterToValue(double dParam) {
-    // Note: each value change will make ControlDoublePrivate::setInner emit valueChanged(),
-    // call valueToParameter() and call parameterToValue() again with snapped parameter.
-    // Thus we can't compare dParam to the previous because that would simply swap the
-    // sign of resulting dist with each cal.
-    // Instead, compare to m_lastSnappedParam and accumulate all change request deltas.
-    if (dParam == m_lastSnappedParam) {
-        return round(m_dMinValue + (dParam * m_dValueRange));
+double ControlLinSteppedIntPotBehavior::normalizedValueToValue(double dNormalizedValue) {
+    // Note: each value change will make ControlDoublePrivate::setInner emit
+    // valueChanged(), call valueToNormalizedValue() and call
+    // normalizedValueToValue() again with snapped normalized value. Thus we
+    // can't compare dNormalizedValue to the previous because that would simply
+    // swap the sign of resulting dist with each cal. Instead, compare to
+    // m_lastSnappedNormalizedValue and accumulate all change request deltas.
+    if (dNormalizedValue == m_lastSnappedNormalizedValue) {
+        return round(m_dMinValue + (dNormalizedValue * m_dValueRange));
     }
 
-    double dist = dParam - m_lastSnappedParam;
+    double dist = dNormalizedValue - m_lastSnappedNormalizedValue;
     // compare current and previous change direction
     if (m_dist != 0 && (dist > 0) == (m_dist > 0)) { // same direction > add
         m_dist += dist;
@@ -329,9 +340,9 @@ double ControlLinSteppedIntPotBehavior::parameterToValue(double dParam) {
         m_dist = dist;
     }
 
-    double newVal = round(m_dMinValue + ((m_lastSnappedParam + m_dist) * m_dValueRange));
+    double newVal = round(m_dMinValue + ((m_lastSnappedNormalizedValue + m_dist) * m_dValueRange));
     if (newVal != m_oldVal) {
-        m_lastSnappedParam = valueToParameter(newVal);
+        m_lastSnappedNormalizedValue = valueToNormalizedValue(newVal);
         m_oldVal = newVal;
         m_dist = 0;
     }
@@ -348,15 +359,15 @@ ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
           m_iNumStates(iNumStates) {
 }
 
-void ControlPushButtonBehavior::setValueFromMidi(
-        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
+void ControlPushButtonBehavior::setValueFromMidi7Bit(
+        MidiOpCode o, double dNormalizedValue, ControlDoublePrivate* pControl) {
     // Calculate pressed State of the midi Button
     // Some controller like the RMX2 are sending always MidiOpCode::NoteOn
-    // with a changed dParam 127 for pressed an 0 for released.
+    // with a changed dNormalizedValue 127 for pressed an 0 for released.
     // Other controller like the VMS4 are using MidiOpCode::NoteOn
     // And MidiOpCode::NoteOff and a velocity value like a piano keyboard
     bool pressed = true;
-    if (o == MidiOpCode::NoteOff || dParam == 0) {
+    if (o == MidiOpCode::NoteOff || dNormalizedValue == 0) {
         // MidiOpCode::NoteOn + 0 should be interpreted a released according to
         // http://de.wikipedia.org/wiki/Musical_Instrument_Digital_Interface
         // looking for MidiOpCode::NoteOn doesn't seem to work...

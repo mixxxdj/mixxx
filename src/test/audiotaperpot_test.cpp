@@ -16,19 +16,23 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         constexpr double neutralParameter = 0.5;
         ControlAudioTaperPotBehavior catpb(minDB, maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
-        ASSERT_DOUBLE_EQ(0.0, catpb.parameterToValue(0));
+        ASSERT_DOUBLE_EQ(0.0, catpb.normalizedValueToValue(0));
         // Parameter 0 is always 0 (-Infinity)
-        ASSERT_DOUBLE_EQ(1.0, catpb.parameterToValue(neutralParameter));
+        ASSERT_DOUBLE_EQ(1.0, catpb.normalizedValueToValue(neutralParameter));
         // Parameter 1 is always maxDB
-        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
+        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.normalizedValueToValue(1));
         // value 1 is always on a Integer midi value
-        double neutralMidi = catpb.valueToMidiParameter(1);
+        double neutralMidi = catpb.valueToMidi7Bit(1);
         ASSERT_DOUBLE_EQ(0.0, fmod(neutralMidi, 1));
         // Midi value 64 should result in 0,5
-        ASSERT_DOUBLE_EQ(neutralParameter, catpb.midiToParameter(neutralMidi));
+        ASSERT_DOUBLE_EQ(neutralParameter, catpb.midi7BitToNormalizedValue(neutralMidi));
         // roundtrip check
-        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25,
+                catpb.normalizedValueToValue(catpb.midi7BitToNormalizedValue(
+                        catpb.valueToMidi7Bit(0.25))));
+        ASSERT_DOUBLE_EQ(0.75,
+                catpb.normalizedValueToValue(catpb.midi7BitToNormalizedValue(
+                        catpb.valueToMidi7Bit(0.75))));
     }
 
     {
@@ -37,19 +41,23 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         constexpr double neutralParameter = 0.5;
         ControlAudioTaperPotBehavior catpb(minDB, maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
-        ASSERT_DOUBLE_EQ(0.0, catpb.parameterToValue(0));
+        ASSERT_DOUBLE_EQ(0.0, catpb.normalizedValueToValue(0));
         // Parameter 0 is always 0 (-Infinity)
-        ASSERT_DOUBLE_EQ(1.0, catpb.parameterToValue(neutralParameter));
+        ASSERT_DOUBLE_EQ(1.0, catpb.normalizedValueToValue(neutralParameter));
         // Parameter 1 is always maxDB
-        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
+        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.normalizedValueToValue(1));
         // value 1 is always on a Integer midi value
-        double neutralMidi = catpb.valueToMidiParameter(1);
+        double neutralMidi = catpb.valueToMidi7Bit(1);
         ASSERT_DOUBLE_EQ(0.0, fmod(neutralMidi, 1));
         // Midi value 64 should result in 0,5
-        ASSERT_DOUBLE_EQ(neutralParameter, catpb.midiToParameter(neutralMidi));
+        ASSERT_DOUBLE_EQ(neutralParameter, catpb.midi7BitToNormalizedValue(neutralMidi));
         // roundtrip check
-        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25,
+                catpb.normalizedValueToValue(catpb.midi7BitToNormalizedValue(
+                        catpb.valueToMidi7Bit(0.25))));
+        ASSERT_DOUBLE_EQ(0.75,
+                catpb.normalizedValueToValue(catpb.midi7BitToNormalizedValue(
+                        catpb.valueToMidi7Bit(0.75))));
     }
 
     {
@@ -58,18 +66,22 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         constexpr double neutralParameter = 1;
         ControlAudioTaperPotBehavior catpb(minDB, maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
-        ASSERT_DOUBLE_EQ(0.0, catpb.parameterToValue(0));
+        ASSERT_DOUBLE_EQ(0.0, catpb.normalizedValueToValue(0));
         // Parameter 0 is always 0 (-Infinity)
-        ASSERT_DOUBLE_EQ(1.0, catpb.parameterToValue(neutralParameter));
+        ASSERT_DOUBLE_EQ(1.0, catpb.normalizedValueToValue(neutralParameter));
         // Parameter 1 is always maxDB
-        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
+        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.normalizedValueToValue(1));
         // value 1 is always on a Integer midi value
-        double neutralMidi = catpb.valueToMidiParameter(1);
+        double neutralMidi = catpb.valueToMidi7Bit(1);
         ASSERT_DOUBLE_EQ(0.0, fmod(neutralMidi, 1));
         // Midi value 64 should result in 0,5
-        ASSERT_DOUBLE_EQ(neutralParameter, catpb.midiToParameter(neutralMidi));
+        ASSERT_DOUBLE_EQ(neutralParameter, catpb.midi7BitToNormalizedValue(neutralMidi));
         // roundtrip checkx
-        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25,
+                catpb.normalizedValueToValue(catpb.midi7BitToNormalizedValue(
+                        catpb.valueToMidi7Bit(0.25))));
+        ASSERT_DOUBLE_EQ(0.75,
+                catpb.normalizedValueToValue(catpb.midi7BitToNormalizedValue(
+                        catpb.valueToMidi7Bit(0.75))));
     }
 }

@@ -12,7 +12,7 @@ class SoftTakeover {
     static const double kDefaultTakeoverThreshold;
 
     SoftTakeover();
-    bool ignore(ControlObject* control, double newParameter);
+    bool ignore(ControlObject* control, double newNormalizedValue);
     void ignoreNext();
     void setThreshold(double threshold);
 
@@ -26,7 +26,7 @@ class SoftTakeover {
     static const mixxx::Duration kSubsequentValueOverrideTime;
 
     mixxx::Duration m_time;
-    double m_prevParameter;
+    double m_prevNormalizedValue;
     double m_dThreshold;
 };
 
@@ -46,8 +46,8 @@ class SoftTakeoverCtrl {
     void enable(ControlObject* control);
     // Disable soft-takeover for the given Control
     void disable(ControlObject* control);
-    // Check to see if the new value for the Control should be ignored
-    bool ignore(ControlObject* control, double newMidiParameter);
+    // Check to see if the new normalized value for the Control should be ignored
+    bool ignore(ControlObject* control, double newNormalizedValue);
     // Ignore the next supplied parameter
     void ignoreNext(ControlObject* control);
 

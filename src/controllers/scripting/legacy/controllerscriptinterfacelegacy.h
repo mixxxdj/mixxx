@@ -25,13 +25,42 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE QJSValue getSetting(const QString& name);
     Q_INVOKABLE double getValue(const QString& group, const QString& name);
     Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
-    Q_INVOKABLE double getParameter(const QString& group, const QString& name);
-    Q_INVOKABLE void setParameter(const QString& group, const QString& name, double newValue);
-    Q_INVOKABLE double getParameterForValue(
+
+    Q_INVOKABLE double getNormalizedValue(const QString& group, const QString& name);
+    Q_INVOKABLE double getParameter(const QString& group, const QString& name) {
+        qCDebug(m_logger) << "engine.getParameter is deprecated, use the alias "
+                             "engine.getNormalizedValue instead!";
+        return getNormalizedValue(group, name);
+    };
+
+    Q_INVOKABLE void setNormalizedValue(const QString& group, const QString& name, double newValue);
+    Q_INVOKABLE void setParameter(const QString& group, const QString& name, double newValue) {
+        qCDebug(m_logger) << "engine.setParameter is deprecated, use the alias "
+                             "engine.setNormalizedValue instead!";
+        setNormalizedValue(group, name, newValue);
+    };
+
+    Q_INVOKABLE double getNormalizedValueForValue(
             const QString& group, const QString& name, double value);
+    Q_INVOKABLE double getParameterForValue(
+            const QString& group, const QString& name, double value) {
+        qCDebug(m_logger)
+                << "engine.getParameterForValue is deprecated, use the alias "
+                   "engine.getNormalizedValueForValue instead!";
+        return getNormalizedValueForValue(group, name, value);
+    };
+
     Q_INVOKABLE void reset(const QString& group, const QString& name);
     Q_INVOKABLE double getDefaultValue(const QString& group, const QString& name);
-    Q_INVOKABLE double getDefaultParameter(const QString& group, const QString& name);
+
+    Q_INVOKABLE double getNormalizedDefaultValue(const QString& group, const QString& name);
+    Q_INVOKABLE double getDefaultParameter(const QString& group, const QString& name) {
+        qCDebug(m_logger)
+                << "engine.getDefaultParameter is deprecated, use the alias "
+                   "engine.getNormalizedDefaultValue instead!";
+        return getNormalizedDefaultValue(group, name);
+    };
+
     Q_INVOKABLE QJSValue makeConnection(const QString& group,
             const QString& name,
             const QJSValue& callback);

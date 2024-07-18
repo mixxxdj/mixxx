@@ -62,8 +62,8 @@ TEST_F(SoftTakeoverTest, DoesntIgnoreSameValue) {
     SoftTakeoverCtrl st_control;
     st_control.enable(co.get());
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(0.6)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(0.6)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(0.6)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(0.6)));
 }
 
 // These are corner cases that allow for quickly flicking/whipping controls
@@ -77,17 +77,17 @@ TEST_F(SoftTakeoverTest, SuperFastPrevEqCurrent) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-250)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-250)));
     // This can happen any time afterwards, so we test 10 seconds
     mixxx::Time::setTestElapsedTime(mixxx::Duration::fromSeconds(10));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(200)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(200)));
 
     // From the top
     co->set(250);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(250)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(250)));
     // This can happen any time afterwards, so we test 10 seconds
     mixxx::Time::setTestElapsedTime(mixxx::Duration::fromSeconds(10));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(-200)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-200)));
 }
 
 // But when they don't match, this type of thing should be ignored!
@@ -100,10 +100,10 @@ TEST_F(SoftTakeoverTest, DISABLED_SuperFastNotSame) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(249)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(249)));
     // This can happen any time afterwards, so we test 10 seconds
     mixxx::Time::setTestElapsedTime(mixxx::Duration::fromSeconds(10));
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-200)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-200)));
 }
 
 /* The meat of the tests
@@ -128,8 +128,8 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Soon) {
@@ -140,8 +140,8 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Soon) {
@@ -152,8 +152,8 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Soon) {
@@ -164,8 +164,8 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Late) {
@@ -176,9 +176,9 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Late) {
@@ -189,9 +189,9 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 // Ignore this case:
@@ -206,9 +206,9 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearLess_NewFarLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 // Ignore this case:
@@ -223,9 +223,9 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearLess_NewFarMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 // ---- Previous Near & greater than current
@@ -238,8 +238,8 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Soon) {
@@ -250,8 +250,8 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Soon) {
@@ -262,8 +262,8 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Soon) {
@@ -274,8 +274,8 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Late) {
@@ -286,9 +286,9 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Late) {
@@ -299,9 +299,9 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 // Ignore this case:
@@ -316,9 +316,9 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearMore_NewFarLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 // Ignore this case:
@@ -333,9 +333,9 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearMore_NewFarMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(55)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 // ---- Previous Far & less than current
@@ -348,8 +348,8 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Soon) {
@@ -360,8 +360,8 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 // Ignore this case:
@@ -376,8 +376,8 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarLess_NewFarLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Soon) {
@@ -388,8 +388,8 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Late) {
@@ -400,9 +400,9 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Late) {
@@ -413,9 +413,9 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 // Ignore this case:
@@ -429,9 +429,9 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 // Ignore this case:
@@ -446,9 +446,9 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarLess_NewFarMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-50)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-50)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 // ---- Previous Far & greater than current
@@ -461,8 +461,8 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Soon) {
@@ -473,8 +473,8 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Soon) {
@@ -485,8 +485,8 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 // Ignore this case:
@@ -501,8 +501,8 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarMore_NewFarMore_Soon) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Late) {
@@ -513,9 +513,9 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Late) {
@@ -526,9 +526,9 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
 }
 
 // Ignore this case:
@@ -543,9 +543,9 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarMore_NewFarLess_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(1)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(1)));
 }
 
 // Ignore this case:
@@ -559,9 +559,9 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(120)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(120)));
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(100)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(100)));
 }
 
 TEST_F(SoftTakeoverTest, CatchOutOfBounds) {
@@ -573,21 +573,21 @@ TEST_F(SoftTakeoverTest, CatchOutOfBounds) {
     st_control.enable(co.get());
 
     // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(45)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(45)));
     // Cross the original value to take over
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(55)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(55)));
 
     // Set value to an out of bounds value
     co->set(300);
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
     // Actions in the same direction shall be ignored
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(60)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(60)));
     // actions in the other edirection shall be ignored
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(40)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(40)));
     // reaching the lower border should be ignored
-    EXPECT_TRUE(st_control.ignore(co.get(), co->getParameterForValue(-250)));
+    EXPECT_TRUE(st_control.ignore(co.get(), co->getNormalizedValueForValue(-250)));
     // reaching the upper border near the out of bounds value should not be ignored.
-    EXPECT_FALSE(st_control.ignore(co.get(), co->getParameterForValue(250)));
+    EXPECT_FALSE(st_control.ignore(co.get(), co->getNormalizedValueForValue(250)));
 }
 
 // For the ignore cases, check that they work correctly with various signed values

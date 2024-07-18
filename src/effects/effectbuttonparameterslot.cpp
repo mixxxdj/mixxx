@@ -73,5 +73,5 @@ void EffectButtonParameterSlot::clear() {
 }
 
 void EffectButtonParameterSlot::setParameter(double value) {
-    m_pControlValue->setParameterFrom(value, this);
+    m_pControlValue->setNormalizedValueFrom(value, this);
 }
