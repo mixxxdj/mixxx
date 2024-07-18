@@ -24,8 +24,15 @@ class StarRating {
             int starCount = kMinStarCount,
             int maxStarCount = mixxx::TrackRecord::kMaxRating - mixxx::TrackRecord::kMinRating);
 
-    void paint(QPainter* painter, const QRect& rect) const;
+    void paint(QPainter* painter, const QRect& rect);
+
+    /// This is the preferred size, used for example for auto-adjusting
+    /// StarDelegate's column width.
     QSize sizeHint() const;
+
+    void setStarBreadth(int breadth) {
+        m_starBreadth = breadth;
+    }
 
     int starCount() const {
         return m_starCount;
@@ -53,6 +60,7 @@ class StarRating {
     QPolygonF m_diamondPolygon;
     int m_starCount;
     int m_maxStarCount;
+    int m_starBreadth;
 };
 
 Q_DECLARE_METATYPE(StarRating)
