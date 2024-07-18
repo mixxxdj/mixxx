@@ -179,8 +179,11 @@ var script = Object.freeze({
      * Deeply merges 2 objects (Arrays and Objects only, not Map for instance).
      * @param target {object | Array} Object to merge source into
      * @param source {object | Array} Object to merge into source
+     * @deprecated Use {@link Object.assign} instead
      */
     deepMerge(target, source) {
+        console.warn("script.deepMerge is deprecated; use Object.assign instead");
+
         if (target === source || target === undefined || target === null || source === undefined || source === null) {
             return;
         }
