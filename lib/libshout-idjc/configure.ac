@@ -3,13 +3,16 @@
 
 m4_define(libshout_major, 2)
 m4_define(libshout_minor, 4)
-m4_define(libshout_micro, 1)
+m4_define(libshout_micro, 6)
 m4_define(libshout_version, libshout_major.libshout_minor.libshout_micro)
 
 AC_INIT([libshout-idjc], libshout_version, [www.sourceforge.net/projects/idjc])
 AC_PREREQ([2.54])
+
 AC_CONFIG_SRCDIR([src/shout.c])
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_HEADERS([config.h])
+
 # config.h guard
 AH_TOP([#ifndef __CONFIG_H__
 #define __CONFIG_H__ 1])
@@ -32,14 +35,17 @@ AH_VERBATIM([_mangle], [
 ])
 
 AC_PROG_CC
-AM_PROG_LIBTOOL
+LT_INIT
 
 dnl Set some options based on environment
 
 dnl openbsd headers break when _XOPEN_SOURCE is defined but without it seems
 dnl to be fine
 case "$ac_cv_host" in
-   *openbsd* | *solaris* | *irix*)
+   *openbsd* | *solaris* | *irix* | *darwin*)
+   dnl  On darwin, do not define _XOPEN_SOURCE as it will narrow us down too
+   dnl  much regarding function availability, so functions like strcasestr
+   dnl  would be unavailable.
    ;;
    *) AC_DEFINE(_XOPEN_SOURCE, 600, [Define if you have POSIX and XPG specifications])
    ;;
@@ -75,6 +81,7 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS([strings.h sys/timeb.h arpa/inet.h])
+AC_CHECK_HEADERS([stdarg.h], [SHOUT_STDARG=1], [AC_MSG_ERROR([required header <stdarg.h> not found])])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -83,16 +90,27 @@ XIPH_C99_INTTYPES
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS([gettimeofday ftime])
+AC_CHECK_FUNCS([strcasestr])
 AC_SEARCH_LIBS([nanosleep], [rt],
   [AC_DEFINE([HAVE_NANOSLEEP], [1],
     [Define if you have the nanosleep function])])
+
+dnl Allow examples not to be build
+AC_ARG_ENABLE([examples],
+  AS_HELP_STRING([--disable-examples],[Do not build example code]))
+AM_CONDITIONAL([HAVE_EXAMPLES],[test "${enable_examples}" != "no"])
+
+dnl Allow tools not to be build
+AC_ARG_ENABLE([tools],
+  AS_HELP_STRING([--disable-tools],[Do not build tools]))
+AM_CONDITIONAL([HAVE_TOOLS],[test "${enable_tools}" != "no"])
 
 dnl Module checks
 XIPH_NET
 
 dnl Extra dependencies
 AC_ARG_ENABLE([thread],
-  AC_HELP_STRING([--disable-thread],[do not build with thread support even if it is available]))
+  AS_HELP_STRING([--disable-thread],[do not build with thread support even if it is available]))
 
 SHOUT_THREADSAFE="0"
 if test "$enable_thread" != "no"
@@ -111,19 +129,36 @@ then
   AC_DEFINE([NO_THREAD], 1, [Define if you don't want to use the thread library])
 fi
 
-SHOUT_REQUIRES="ogg"
+PKG_CHECK_MODULES([OGG], [ogg], [
+    HAVE_OGG="yes"
+    SHOUT_REQUIRES="ogg"
+  ], [
+    XIPH_PATH_OGG(, [AC_MSG_ERROR([required Ogg library not found])])
+  ])
+OGG_LIBS="$OGG_LDFLAGS $OGG_LIBS"
+XIPH_CFLAGS="$XIPH_CFLAGS $OGG_CFLAGS"
 
+AC_ARG_ENABLE([vorbis],
+  AS_HELP_STRING([--disable-vorbis],[do not build with Vorbis support]))
+
+if test "x$enable_vorbis" != "xno"; then
 PKG_CHECK_MODULES(VORBIS, vorbis, [
     HAVE_VORBIS="yes"
     SHOUT_REQUIRES="$SHOUT_REQUIRES, vorbis"
   ], [
-    XIPH_PATH_VORBIS(, [AC_MSG_ERROR([required Ogg Vorbis library not found])])
+    XIPH_PATH_VORBIS(, [AC_MSG_WARN([Vorbis library not found, disabling])])
   ])
-VORBIS_LIBS="$VORBIS_LDFLAGS $VORBIS_LIBS"
-XIPH_CFLAGS="$XIPH_CFLAGS $VORBIS_CFLAGS"
+fi
+XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$VORBIS_CFLAGS])
+XIPH_VAR_PREPEND([XIPH_LIBS],[$VORBIS_LDFLAGS $VORBIS_LIBS])
+AM_CONDITIONAL([HAVE_VORBIS], [test -n "$VORBIS_LIBS"])
+if test -n "$VORBIS_LIBS"
+then
+  AC_DEFINE([HAVE_VORBIS], 1, [Define if you want Vorbis streams supported])
+fi
 
 AC_ARG_ENABLE([theora],
-  AC_HELP_STRING([--disable-theora],[do not build with Theora support]))
+  AS_HELP_STRING([--disable-theora],[do not build with Theora support]))
 
 if test "x$enable_theora" != "xno"; then
 PKG_CHECK_MODULES(THEORA, theora, [
@@ -134,7 +169,7 @@ PKG_CHECK_MODULES(THEORA, theora, [
   ])
 fi
 XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$THEORA_CFLAGS])
-XIPH_VAR_PREPEND([XIPH_LIBS],[$THEORA LDFLAGS $THEORA_LIBS])
+XIPH_VAR_PREPEND([XIPH_LIBS],[$THEORA_LDFLAGS $THEORA_LIBS])
 AM_CONDITIONAL([HAVE_THEORA], [test -n "$THEORA_LIBS"])
 if test -n "$THEORA_LIBS"
 then
@@ -142,7 +177,7 @@ then
 fi
 
 AC_ARG_ENABLE([speex],
-  AC_HELP_STRING([--disable-speex],[do not build with Speex support]))
+  AS_HELP_STRING([--disable-speex],[do not build with Speex support]))
 
 if test "x$enable_speex" != "xno"; then
 PKG_CHECK_MODULES(SPEEX, speex, [
@@ -153,7 +188,7 @@ PKG_CHECK_MODULES(SPEEX, speex, [
   ])
 fi
 XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$SPEEX_CFLAGS])
-XIPH_VAR_PREPEND([XIPH_LIBS],[$SPEEX LDFLAGS $SPEEX_LIBS])
+XIPH_VAR_PREPEND([XIPH_LIBS],[$SPEEX_LDFLAGS $SPEEX_LIBS])
 AM_CONDITIONAL([HAVE_SPEEX], [test -n "$SPEEX_LIBS"])
 if test -n "$SPEEX_LIBS"
 then
@@ -163,7 +198,7 @@ fi
 dnl If pkgconfig is found, install a shout.pc file.
 
 AC_ARG_ENABLE([pkgconfig],
-  AC_HELP_STRING([--disable-pkgconfig],[disable pkgconfig data files (auto)]),
+  AS_HELP_STRING([--disable-pkgconfig],[disable pkgconfig data files (auto)]),
   [dopkgconfig="$enableval"], [dopkgconfig="maybe"])
 if test "$dopkgconfig" = "maybe"
 then
@@ -190,6 +225,7 @@ XIPH_PATH_OPENSSL([
     XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$OPENSSL_CFLAGS])
     XIPH_VAR_APPEND([XIPH_LDFLAGS],[$OPENSSL_LDFLAGS])
     XIPH_VAR_PREPEND([XIPH_LIBS],[$OPENSSL_LIBS])
+    SHOUT_REQUIRES="$SHOUT_REQUIRES, libssl"
     SHOUT_TLS="1"
     ],
     [ AC_MSG_NOTICE([SSL disabled!])
@@ -227,4 +263,4 @@ AC_SUBST(XIPH_LIBS)
 AC_OUTPUT([Makefile include/Makefile include/shoutidjc/Makefile
   include/shoutidjc/shout.h src/Makefile src/common/net/Makefile src/common/timing/Makefile
   src/common/thread/Makefile src/common/avl/Makefile src/common/httpp/Makefile doc/Makefile
-  examples/Makefile win32/Makefile shout-idjc.pc])
+  tools/Makefile examples/Makefile win32/Makefile shout-idjc.pc])
