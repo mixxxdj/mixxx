@@ -23,7 +23,7 @@ MappingInfo::MappingInfo(const QString& mapping_path)
     m_author = "";
     m_description = "";
     m_forumlink = "";
-    m_wikilink = "";
+    m_manuallink = "";
 
     QDomElement root = XmlParse::openXMLFile(m_path, "controller");
     if (root.isNull()) {
@@ -60,9 +60,9 @@ MappingInfo::MappingInfo(const QString& mapping_path)
         m_forumlink = dom_forums.text();
     }
 
-    QDomElement dom_wiki = info.firstChildElement("wiki");
-    if (!dom_wiki.isNull()) {
-        m_wikilink = dom_wiki.text();
+    QDomElement dom_manual = info.firstChildElement("manual");
+    if (!dom_manual.isNull()) {
+        m_manuallink = dom_manual.text();
     }
 
     QDomElement devices = info.firstChildElement("devices");
