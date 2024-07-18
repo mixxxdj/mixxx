@@ -33,12 +33,18 @@ class PlaylistTableModel final : public TrackSetTableModel {
             int* pOutInsertionPos) final;
     bool isLocked() final;
 
+    /// Get the total duration of all tracks in the selected playlist
+    mixxx::Duration getTotalDuration();
+
     /// Get the total duration of all tracks referenced by the given model indices
     mixxx::Duration getTotalDuration(const QModelIndexList& indices);
 
     Capabilities getCapabilities() const final;
 
     QString modelKey(bool noSearch) const override;
+
+  signals:
+    void playlistTracksChanged();
 
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
