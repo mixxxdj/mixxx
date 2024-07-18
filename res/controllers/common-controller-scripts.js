@@ -190,7 +190,8 @@ var script = Object.freeze({
             const objSource = source.reduce((acc, val, idx) => Object.assign(acc, {[idx]: val}), {});
             script.deepMerge(objTarget, objSource);
             target.length = 0;
-            target.push(...Object.values(objTarget));
+            const values = Object.keys(objTarget).map(key => objTarget[key]);
+            target.push(...values);
         } else if (script.isSimpleObject(target) && script.isSimpleObject(source)) {
             Object.keys(source).forEach(key => {
                 if (
@@ -233,7 +234,7 @@ var script = Object.freeze({
 
     // Returns the deck number of a "ChannelN" or "SamplerN" group
     deckFromGroup(group) {
-        let deck = 0;
+        let deck = "0";
         if (group.substring(2, 8) === "hannel") {
             // Extract deck number from the group text
             deck = group.substring(8, group.length - 1);
@@ -272,7 +273,7 @@ var script = Object.freeze({
        Output:  none
        -------- ------------------------------------------------------ */
     toggleControl(group, control) {
-        engine.setValue(group, control, !(engine.getValue(group, control)));
+        engine.setValue(group, control, engine.getValue(group, control) === 0 ? 1 : 0);
     },
 
     /* -------- ------------------------------------------------------
@@ -520,7 +521,7 @@ class bpmClass {
        Output:  -
        -------- ------------------------------------------------------ */
     tapButton(deck) {
-        const now = new Date() / 1000; // Current time in seconds
+        const now = new Date().getTime() / 1000; // Current time in seconds
         const tapDelta = now - this.tapTime;
         this.tapTime = now;
 
