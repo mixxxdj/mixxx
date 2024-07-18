@@ -26,7 +26,7 @@ String.prototype.toInt = function() {
 
 /**
  * Prints a message to the terminal and the log file.
- * @param {string} message - The log message.
+ * @param {string} message The log message.
  * @deprecated Use console.log()/console.warn()/console.debug() instead.
  */
 
@@ -46,6 +46,14 @@ const arrayContains = function(array, elem) {
     return array.includes(elem);
 };
 
+/**
+ * Convert an object to a string representation with a specified maximum depth.
+ * @param {Object} obj The object to stringify.
+ * @param {number} maxdepth The maximum depth to traverse the object.
+ * @param {Array} [checked] An array to keep track of already checked objects to avoid circular references.
+ * @param {string} [prefix] A prefix used for indentation purposes, aiding in the readability of the output.
+ * @returns {string} The stringified object or the original object if it cannot be stringified.
+ */
 const stringifyObject = function(obj, maxdepth = 2, checked = [], prefix ="") {
     try {
         return JSON.stringify(obj, null, maxdepth);
@@ -67,6 +75,11 @@ const stringifyObject = function(obj, maxdepth = 2, checked = [], prefix ="") {
     return obj;
 };
 
+/**
+ * Logs a stringified representation of an object to the console with a specified maximum depth.
+ * @param {Object} obj The object to be logged.
+ * @param {number} maxdepth The maximum depth to which the object should be stringified.
+ */
 // eslint-disable-next-line no-unused-vars
 const printObject = function(obj, maxdepth) {
     console.log(stringifyObject(obj, maxdepth));
@@ -74,6 +87,11 @@ const printObject = function(obj, maxdepth) {
 
 // ----------------- Generic functions ---------------------
 
+/**
+ * Converts seconds into a minutes:seconds format string.
+ * @param {number} secs The number of seconds to convert.
+ * @returns {string} The time in minutes:seconds format, padded with zeros if necessary.
+ */
 // eslint-disable-next-line no-unused-vars
 const secondstominutes = function(secs) {
     const m = (secs / 60) | 0;
@@ -83,6 +101,11 @@ const secondstominutes = function(secs) {
         (secs %= 60) < 10 ? `0${  secs}` : secs}`;
 };
 
+/**
+ * Converts milliseconds into a formatted string of minutes, seconds, and hundredths of a second.
+ * @param {number} msecs The number of milliseconds to convert.
+ * @returns {string} The formatted time string
+ */
 // eslint-disable-next-line no-unused-vars
 const msecondstominutes = function(msecs) {
     const m = (msecs / 60000) | 0;
@@ -99,15 +122,21 @@ const msecondstominutes = function(msecs) {
         msecs < 10 ? `0${  msecs}` : msecs}`;
 };
 
-// Converts an object with "red", "green" and "blue" properties (value range
-// 0-255) into an RGB color code (e.g. 0xFF0000).
+/**
+ * Converts an object with "red", "green", and "blue" properties (value range 0-255) into an RGB color code (e.g. 0xFF0000).
+ * @param {Object} color An object with "red", "green", and "blue" properties, each a number from 0 to 255.
+ * @returns {number} Single integer representing the RGB color code corresponding to the input color components.
+ */
 // eslint-disable-next-line no-unused-vars
 const colorCodeFromObject = function(color) {
     return ((color.red & 0xFF) << 16 | (color.green & 0xFF) << 8 | (color.blue & 0xFF));
 };
 
-// Converts an RGB color code (e.g. 0xFF0000) into an object with "red",
-// "green" and "blue" properties (value range 0-255).
+/**
+ * Converts an RGB color code  (e.g. 0xFF0000) into an object with "red", "green", and "blue" properties.
+ * @param {number} colorCode The RGB color code to convert, e.g., 0xFF0000 for red.
+ * @returns {{red: number, green: number, blue: number}} An object containing the red, green, and blue components (ranging from 0 to 255) of the color.
+ */
 // eslint-disable-next-line no-unused-vars
 const colorCodeToObject = function(colorCode) {
     return {
@@ -117,6 +146,9 @@ const colorCodeToObject = function(colorCode) {
     };
 };
 
+/**
+ * A collection of generic functions and regular expression
+ */
 var script = Object.freeze({
     // ----------------- Mapping script constants ---------------------
 
@@ -229,6 +261,15 @@ var script = Object.freeze({
         engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
     },
 
+    /**
+     * Logs MIDI message information to the console.
+     * Useful for debugging MIDI scripts by printing out the MIDI message components in a readable format.
+     * @param {number} channel The MIDI channel of the message.
+     * @param {number} control The control number (e.g., note number or controller number).
+     * @param {number} value The value of the control (e.g., velocity or controller value).
+     * @param {number} status The status of the MIDI message.
+     * @param {string} group The Mixxx control group the message is associated with.
+     */
     midiDebug(channel, control, value, status, group) {
         console.log(`Script.midiDebug - channel: 0x${  channel.toString(16)
         } control: 0x${  control.toString(16)  } value: 0x${  value.toString(16)
@@ -251,15 +292,13 @@ var script = Object.freeze({
         return Number.parseInt(deck);
     },
 
-    /* -------- ------------------------------------------------------
-         script.bindConnections
-       Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
-       Input:   The group whose controls are to be bound and an object
-                (controlstToFunctions) where the properties' names are
-                controls names and the values are the functions those
-                controls will be bound to.
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Binds or unbinds functions to Mixxx controls for a specific group.
+     * @param {string} group The Mixxx control group (e.g., "[Channel1]", "[Master]") to which the bindings should apply.
+     * @param {Object.<string, engine.CoCallback>} controlsToFunctions An object mapping control names to callback functions.
+     * @param {boolean} [remove] If true, the bindings are removed instead of created. Defaults is false.
+     * @deprecated Use engine.makeConnection or connection.disconnect() based code instead
+     */
     bindConnections(group, controlsToFunctions, remove = false) {
         for (const control in controlsToFunctions) {
             engine.connectControl(group, control, controlsToFunctions[control], remove);
@@ -269,25 +308,24 @@ var script = Object.freeze({
         }
     },
 
-    /* -------- ------------------------------------------------------
-         script.toggleControl
-       Purpose: Toggles an engine value
-       Input:   Group and control names
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Toggles the value of a specified control in Mixxx.
+     * If the current value is 0, it sets the value to 1, and vice versa.
+     * @param {string} group The Mixxx control group (e.g., "[Channel1]", "[Master]") the control belongs to.
+     * @param {string} control The name of the control to toggle.
+     */
     toggleControl(group, control) {
         engine.setValue(group, control, engine.getValue(group, control) === 0 ? 1 : 0);
     },
 
-    /* -------- ------------------------------------------------------
-         script.toggleControl
-       Purpose: Triggers an engine value and resets it back to 0 after a delay
-                This is helpful for mapping encoder turns to controls that are
-                represented by buttons in skins so the skin button lights up
-                briefly but does not stay lit.
-       Input:   Group and control names, delay in milliseconds (optional)
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Triggers an engine value and resets it back to 0 after a specified delay.
+     * This is helpful for mapping encoder turns to controls that are represented by buttons in skins,
+     * so the skin button lights up briefly but does not stay lit.
+     * @param {string} group The Mixxx control group (e.g., "[Channel1]", "[Master]") the control belongs to.
+     * @param {string} control The name of the control to trigger.
+     * @param {number} [delay] The delay in milliseconds before resetting the control value back to 0. Defaults is 200ms.
+     */
     triggerControl(group, control, delay = 200) {
         if (typeof delay !== "number") {
             delay = 200;
@@ -296,15 +334,16 @@ var script = Object.freeze({
         engine.beginTimer(delay, () => engine.setValue(group, control, 0), true);
     },
 
-    /* -------- ------------------------------------------------------
-         script.absoluteLin
-       Purpose: Maps an absolute linear control value to a linear Mixxx control
-                value (like Volume: 0..1)
-       Input:   Control value (e.g. a knob,) MixxxControl values for the lowest and
-                highest points, lowest knob value, highest knob value
-                (Default knob values are standard MIDI 0..127)
-       Output:  MixxxControl value corresponding to the knob position
-       -------- ------------------------------------------------------ */
+    /**
+     * Maps an absolute linear control value to a linear Mixxx control value.
+     * This function is useful for mapping physical control inputs (e.g., knobs) to Mixxx control values that expect a linear range, such as volume (0..1).
+     * @param {number} value The control value to convert (e.g., the position of a knob).
+     * @param {number} low The lowest value of the Mixxx control (e.g., 0 for volume).
+     * @param {number} high The highest value of the Mixxx control (e.g., 1 for volume).
+     * @param {number} [min] The minimum value the control input can take (default is 0, typical for MIDI).
+     * @param {number} [max] The maximum value the control input can take (default is 127, typical for MIDI).
+     * @returns {number} The Mixxx control value corresponding to the current position of the control input.
+     */
     absoluteLin(value, low, high, min = 0, max = 127) {
         if (value <= min) {
             return low;
@@ -315,30 +354,33 @@ var script = Object.freeze({
         }
     },
 
-    /* -------- ------------------------------------------------------
-         script.absoluteLinInverse
-       Purpose: Maps a linear Mixxx control value (like balance: -1..1) to an absolute linear value
-                (inverse of the above function)
-       Input:   Control value (e.g. a knob,) MixxxControl values for the lowest and
-                highest points, lowest knob value, highest knob value
-                (Default knob values are standard MIDI 0..127)
-       Output:  Linear value corresponding to the knob position
-       -------- ------------------------------------------------------ */
+    /**
+     * Maps a linear Mixxx control value (e.g., balance: -1 to 1) to an absolute linear value.
+     * This function is the inverse of script.absoluteLin, converting a Mixxx control value back to a hardware control value.
+     * @param {number} value The control value to convert (e.g., a balance control value between -1 and 1).
+     * @param {number} low The lowest value of the Mixxx control (e.g., -1 for balance).
+     * @param {number} high The highest value of the Mixxx control (e.g., 1 for balance).
+     * @param {number} [min] The minimum value the hardware control can take (default is 0, typical for MIDI).
+     * @param {number} [max] The maximum value the hardware control can take (default is 127, typical for MIDI).
+     * @returns {number} The absolute linear value corresponding to the Mixxx control value, scaled to the hardware control's range.
+     */
     absoluteLinInverse(value, low, high, min = 0, max = 127) {
         const result = (((value - low) * (max - min)) / (high - low)) + min;
         return Math.min(Math.max(result, min), max);
     },
 
 
-    /* -------- ------------------------------------------------------
-         script.absoluteNonLin
-       Purpose: Maps an absolute linear control value to a non-linear Mixxx control
-                value (like EQs: 0..1..4)
-       Input:   Control value (e.g. a knob,) MixxxControl values for the lowest,
-                middle, and highest points, lowest knob value, highest knob value
-                (Default knob values are standard MIDI 0..127)
-       Output:  MixxxControl value corresponding to the knob position
-       -------- ------------------------------------------------------ */
+    /**
+     * Maps an absolute linear control value to a non-linear Mixxx control value.
+     * This function is useful for mapping physical control inputs (e.g., knobs) to Mixxx control values that have a non-linear response, such as EQs.
+     * @param {number} value The current value of the control input (e.g., the position of a knob).
+     * @param {number} low The lowest value of the Mixxx control.
+     * @param {number} mid The middle point of the Mixxx control.
+     * @param {number} high The highest value of the Mixxx control.
+     * @param {number} [min] The minimum value the hardware control can take (default is 0, typical for MIDI).
+     * @param {number} [max] The maximum value the hardware control can take (default is 127, typical for MIDI).
+     * @returns {number} The value corresponding to the current position of the control input, adjusted for a non-linear response.
+     */
     absoluteNonLin(value, low, mid, high, min = 0, max = 127) {
         if (!min) {
             min = 0;
@@ -356,14 +398,17 @@ var script = Object.freeze({
         }
     },
 
-    /* -------- ------------------------------------------------------
-         script.absoluteNonLinInverse
-     Purpose: Maps a non-linear Mixxx control to an absolute linear value (inverse of the above function).
-     Helpful for sending MIDI messages to controllers and comparing non-linear Mixxx controls to incoming MIDI values.
-     Input:  MixxxControl value; lowest, middle, and highest MixxxControl value;
-     bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
-     Output: MixxxControl value scaled to output range
-     -------- ------------------------------------------------------ */
+    /**
+     * Maps a non-linear Mixxx control to an absolute linear value.
+     * This function is the inverse of script.absoluteNonLin, useful for sending MIDI messages to controllers and comparing non-linear Mixxx controls to incoming MIDI values.
+     * @param {number} value The current value of the control input (e.g., the position of a knob).
+     * @param {number} low The lowest value of the Mixxx control.
+     * @param {number} mid The middle point of the Mixxx control.
+     * @param {number} high The highest value of the Mixxx control.
+     * @param {number} [min] The minimum value the hardware control can take (default is 0, typical for MIDI).
+     * @param {number} [max] The maximum value the hardware control can take (default is 127, typical for MIDI).
+     * @returns {number} The value corresponding to the current position of the control input, adjusted for a inverse non-linear response.
+     */
     absoluteNonLinInverse(value, low, mid, high, min = 0, max = 127) {
         const center = (max - min) / 2;
         let result;
@@ -379,12 +424,14 @@ var script = Object.freeze({
         return Math.min(Math.max(result, min), max);
     },
 
-    /* -------- ------------------------------------------------------
-         script.crossfaderCurve
-       Purpose: Adjusts the cross-fader's curve using a hardware control
-       Input:   Current value of the hardware control, min and max values for that control
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Adjusts the crossfader curve based on the current value of a hardware control.
+     * This function supports both Constant Power and Additive modes for the crossfader curve.
+     * It maps the hardware control value to a Mixxx control value using a linear mapping.
+     * @param {number} value The current value of the hardware control.
+     * @param {number} min The minimum value for the hardware control.
+     * @param {number} max The maximum value for the hardware control.
+     */
     crossfaderCurve(value, min, max) {
         if (engine.getValue("[Mixer Profile]", "xFaderMode") === 1) {
             // Constant Power
@@ -399,26 +446,24 @@ var script = Object.freeze({
         }
     },
 
-    /* -------- ------------------------------------------------------
-         script.posMod
-       Purpose: Computes the euclidean modulo of m % n. The result is always
-                in the range [0, m[
-       Input:   dividend `a` and divisor `m` for modulo (a % m)
-       Output:  positive remainder
-       -------- ------------------------------------------------------ */
+    /**
+     * Computes the euclidean modulo of a given m % n. The result is always
+     * in the range [0, m]
+     * @param {number} a The dividend.
+     * @param {number} m The divisor.
+     * @returns {number} The positive remainder of the euclidean modulo operation.
+     */
     posMod(a, m) {
         return ((a % m) + m) % m;
     },
 
-    /* -------- ------------------------------------------------------
-         script.loopMove
-       Purpose: Moves the current loop by the specified number of beats (default 1/2)
-                in the specified direction (positive is forwards and is the default)
-                If the current loop length is shorter than the requested move distance,
-                it's only moved a distance equal to its length.
-       Input:   MixxxControl group, direction to move, number of beats to move
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Moves the current loop by the specified number of beats (default 1/2) in the specified direction.
+     * If the current loop length is shorter than the requested move distance, it's only moved a distance equal to its length.
+     * @param {string} group The Mixxx control group (e.g., "[Channel1]", "[Master]") the loop belongs to.
+     * @param {number} [direction] The direction to move the loop. Positive direction value moves the loop forwards, negative value moves it backwards. Forward is default.
+     * @param {number} [numberOfBeats] The number of beats to move the loop. Defaults to 0.5 beats.
+     */
     loopMove(group, direction, numberOfBeats = 0.5) {
         if (numberOfBeats === 0) { numberOfBeats = 0.5; }
 
@@ -429,15 +474,14 @@ var script = Object.freeze({
         }
     },
 
-    /* -------- ------------------------------------------------------
-         script.midiPitch
-       Purpose: Takes the value from a little-endian 14-bit MIDI pitch
-                wheel message and returns the value for a "rate" (pitch
-                slider) Mixxx control
-       Input:   Least significant byte, most sig. byte, MIDI status byte
-       Output:  Value for a "rate" control, or false if the input MIDI
-                message was not a Pitch message (0xE#)
-       -------- ------------------------------------------------------ */
+    /**
+     * Takes the value from a little-endian 14-bit MIDI pitch wheel message and returns the value for a "rate" (pitch slider) Mixxx control.
+     * This function is useful for handling MIDI pitch wheel messages and converting them to a format that can be used to control the pitch in Mixxx.
+     * @param {number} LSB The least significant byte of the MIDI pitch wheel message.
+     * @param {number} MSB The most significant byte of the MIDI pitch wheel message.
+     * @param {number} status The MIDI status byte, used to verify that the message is a pitch wheel message.
+     * @returns {number|boolean} The value for a "rate" control in Mixxx, or false if the input MIDI message was not a Pitch message (0xE#).
+     */
     // TODO: Is this still useful now that MidiController.cpp properly handles these?
     midiPitch(LSB, MSB, status) {
         if ((status & 0xF0) !== 0xE0) { // Mask the upper nybble so we can check the opcode regardless of the channel
@@ -452,14 +496,18 @@ var script = Object.freeze({
         return rate;
     },
 
-    /* -------- ------------------------------------------------------
-         script.spinback
-       Purpose: wrapper around engine.spinback() that can be directly mapped
-                from xml for a spinback effect
-                e.g: <key>script.spinback</key>
-       Input:   channel, control, value, status, group, factor (optional), start rate (optional)
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Wrapper around engine.spinback() that can be directly mapped from XML for a spinback effect.
+     * This function initiates a spinback effect on the specified deck. The spinback effect simulates the sound of quickly
+     * reversing the direction of a playing track. The duration and speed of the spinback can be adjusted.
+     * @param {number} channel not used
+     * @param {number} control not used
+     * @param {number} value Positive value activates spinback
+     * @param {number} status The status of the MIDI message, if the MSB bit 0x80 of the byte is not set, value is evaluated.
+     * @param {string} group The group
+     * @param {number} [factor] Multiplier for the spinback effect. Higher values increase the speed and duration of the spinback. Default is 1.0.
+     * @param {number} [rate] Rate at which the spinback starts. Can be used to simulate different starting speeds for the effect. Default is 0.0.
+     */
     spinback(channel, control, value, status, group, factor = 1, rate = -10) {
         // disable on note-off or zero value note/cc
         engine.spinback(
@@ -468,14 +516,16 @@ var script = Object.freeze({
         );
     },
 
-    /* -------- ------------------------------------------------------
-         script.brake
-       Purpose: wrapper around engine.brake() that can be directly mapped
-                from xml for a brake effect
-                e.g: <key>script.brake</key>
-       Input:   channel, control, value, status, group, factor (optional)
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Wrapper around engine.brake() that can be directly mapped from XML for a brake effect.
+     * Initiates a brake effect on the specified deck, simulating the sound of a turntable slowing to a stop.
+     * @param {number} channel not used
+     * @param {number} control not used
+     * @param {number} value Positive value activates brake
+     * @param {number} status The status of the MIDI message, if the MSB bit 0x80 of the byte is not set, value is evaluated.
+     * @param {string} group The group where the deck number is derived from, e.g. "[Channel1]"
+     * @param {number} [factor] Multiplier for the brake effect. Higher values increase the duration of the brake effect.
+     */
     brake(channel, control, value, status, group, factor = 1) {
         // disable on note-off or zero value note/cc, use default decay rate '1'
         engine.brake(
@@ -484,15 +534,16 @@ var script = Object.freeze({
         );
     },
 
-    /* -------- ------------------------------------------------------
-         script.softStart
-       Purpose: wrapper around engine.softStart() that can be directly mapped
-                from xml to start and accelerate a deck from zero to full rate
-                defined by pitch slider, can also interrupt engine.brake()
-                e.g: <key>script.softStart</key>
-       Input:   channel, control, value, status, group, acceleration factor (optional)
-       Output:  none
-       -------- ------------------------------------------------------ */
+    /**
+     * Wrapper around engine.softStart() that can be directly mapped from XML to start and accelerate a deck from zero to full rate defined by the pitch slider. It can also interrupt engine.brake().
+     * This function is useful for creating a soft start effect on a deck, gradually increasing its playback speed to the rate determined by the pitch slider.
+     * @param {number} channel not used
+     * @param {number} control not used
+     * @param {number} value Positive value activates spinback
+     * @param {number} status The status of the MIDI message, if the MSB bit 0x80 of the byte is not set, value is evaluated.
+     * @param {string} group The group where the deck number is derived from, e.g. "[Channel1]"
+     * @param {number} [factor] Multiplier for the acceleration effect. Higher values increase the acceleration of the soft start effect.
+     */
     softStart(channel, control, value, status, group, factor = 1) {
         // disable on note-off or zero value note/cc, use default increase rate '1'
         engine.softStart(
@@ -504,7 +555,9 @@ var script = Object.freeze({
 });
 
 
-// bpm - Used for tapping the desired BPM for a deck
+/**
+ * Used for tapping the desired BPM for a deck
+ */
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class bpmClass {
     constructor() {
@@ -514,15 +567,13 @@ class bpmClass {
     }
 
 
-    /* -------- ------------------------------------------------------
-            this.tapButton
-       Purpose: Sets the tempo of the track on a deck by tapping the desired beats,
-                useful for manually synchronizing a track to an external beat.
-                (This only works if the track's detected BPM value is correct.)
-                Call this each time the tap button is pressed.
-       Input:   Mixxx deck to adjust
-       Output:  -
-       -------- ------------------------------------------------------ */
+    /**
+     * Sets the tempo of the track on a deck by tapping the desired beats.
+     * Useful for manually synchronizing a track to an external beat.
+     * This function only works if the track's detected BPM value is correct.
+     * Call this function each time the tap button is pressed.
+     * @param {number} deck The deck to adjust.
+     */
     tapButton(deck) {
         const now = new Date().getTime() / 1000; // Current time in seconds
         const tapDelta = now - this.tapTime;
