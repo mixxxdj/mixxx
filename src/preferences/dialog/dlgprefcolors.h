@@ -35,21 +35,24 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void slotHotcuePaletteIndexChanged(int paletteIndex);
     void trackPaletteUpdated(const QString& palette);
     void hotcuePaletteUpdated(const QString& palette);
+    void keyPaletteUpdated(const QString& palette);
     void palettesUpdated();
     void slotReplaceCueColorClicked();
     void slotEditTrackPaletteClicked();
     void slotEditHotcuePaletteClicked();
+    void slotEditKeyPaletteClicked();
     void slotKeyColorsEnabled(int i);
 
   private:
     void openColorPaletteEditor(
             const QString& paletteName,
-            bool editHotcuePalette);
+            void (DlgPrefColors::*paletteUpdatedSlot)(const QString&));
     QPixmap drawPalettePreview(const QString& paletteName);
     QIcon drawHotcueColorByPaletteIcon(const QString& paletteName);
     void restoreComboBoxes(
             const QString& hotcueColors,
             const QString& trackColors,
+            const QString& keyColors,
             int defaultHotcueColor,
             int defaultLoopColor);
 
