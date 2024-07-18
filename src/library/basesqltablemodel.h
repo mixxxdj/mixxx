@@ -56,6 +56,9 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     const QVector<int> getTrackRows(TrackId trackId) const override {
         return m_trackIdToRows.value(trackId);
     }
+    int getTrackRowByPosition(int position) const override {
+        return m_trackPosToRow.value(position);
+    }
 
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
@@ -92,6 +95,9 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             QString trackIdColumn,
             QStringList tableColumns,
             QSharedPointer<BaseTrackCache> trackSource);
+    void setPositionColumn(QString posColName) {
+        m_positionColumn = std::move(posColName);
+    }
     void initHeaderProperties() override;
     virtual void initSortColumnMapping();
 
@@ -106,6 +112,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString m_tableOrderBy;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
+    QString m_positionColumn;
 
   private slots:
     void tracksChanged(const QSet<TrackId>& trackIds);
@@ -122,6 +129,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     struct RowInfo {
         TrackId trackId;
         int order;
+        int position; // used by playlist models only
         QVector<QVariant> metadata;
 
         bool operator<(const RowInfo& other) const {
@@ -136,11 +144,13 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     };
 
     typedef QHash<TrackId, QVector<int>> TrackId2Rows;
+    typedef QHash<int, int> TrackPos2Row;
 
     void clearRows();
     void replaceRows(
             QVector<RowInfo>&& rows,
-            TrackId2Rows&& trackIdToRows);
+            TrackId2Rows&& trackIdToRows,
+            TrackPos2Row&& trackPosToRows);
 
     QVector<RowInfo> m_rowInfo;
 
@@ -151,6 +161,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     bool m_bInitialized;
     QHash<TrackId, int> m_trackSortOrder;
     TrackId2Rows m_trackIdToRows;
+    TrackPos2Row m_trackPosToRow;
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant>> m_headerInfo;
