@@ -77,7 +77,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     CheckBoxUseCueFileAnnotation->setChecked(m_pConfig->getValue<bool>(
-            ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled"), false));
+            ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"), false));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -321,12 +321,7 @@ void DlgPrefRecord::slotSliderQuality() {
 
 // Set 'Enable File Annotation in CUE file' checkbox value depending on 'Create a CUE file' checkbox value
 void DlgPrefRecord::updateCueEnabled() {
-    if (CheckBoxRecordCueFile->isChecked()) {
-        CheckBoxUseCueFileAnnotation->setEnabled(true);
-    } else {
-        CheckBoxUseCueFileAnnotation->setEnabled(false);
-        CheckBoxUseCueFileAnnotation->setChecked(false);
-    }
+   CheckBoxUseCueFileAnnotation->setEnabled(CheckBoxRecordCueFile->isChecked());
 }
 
 void DlgPrefRecord::updateTextQuality() {
