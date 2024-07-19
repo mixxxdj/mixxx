@@ -21,11 +21,6 @@ uniform sampler2D waveformDataTexture;
 
 vec4 getWaveformData(float index) {
     vec2 uv_data;
-    // The Waveform data is composed of 8 bytes per sample, (low, mid, high, all,
-    // stem1, stem2, stem3, stem4), see WaveformData struct. Currently, shaders
-    // don't support stem rendering.
-    index = 2 * index;
-
     uv_data.y = floor(index / float(textureStride));
     uv_data.x = floor(index - uv_data.y * float(textureStride));
     // Divide again to convert to normalized UV coordinates.
