@@ -11,11 +11,13 @@ namespace qml {
 
 class MixxxController : public QObject, public QQmlParserStatus {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     QML_ELEMENT
+    Q_INTERFACES(QQmlParserStatus)
+
     Q_PROPERTY(QString controllerId MEMBER m_controllerId)
     Q_PROPERTY(bool debugMode MEMBER m_debugMode)
     Q_PROPERTY(QQmlListProperty<QObject> childComponents MEMBER m_pChildren)
+
     Q_CLASSINFO("DefaultProperty", "childComponents")
 
   public:

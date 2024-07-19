@@ -9,14 +9,17 @@
 
 #include <QImage>
 #include <QObject>
+#include <QQuickItem>
 #include <QSize>
 
 namespace mixxx {
 namespace qml {
 
-class MixxxScreen : public QObject {
+class MixxxScreen : public QObject, public QQmlParserStatus {
     Q_OBJECT
     QML_ELEMENT
+    Q_INTERFACES(QQmlParserStatus)
+
     Q_PROPERTY(QString screenId MEMBER m_screenId REQUIRED)
     Q_PROPERTY(int width READ width WRITE setWidth)
     Q_PROPERTY(int height READ height WRITE setHeight)
@@ -28,12 +31,19 @@ class MixxxScreen : public QObject {
     Q_PROPERTY(bool reversedColor MEMBER m_reversedColor)
     Q_PROPERTY(bool rawData MEMBER m_rawData)
 
+    Q_PROPERTY(QQuickItem item MEMBER m_item)
+
+    Q_CLASSINFO("DefaultProperty", "item")
+
   public:
     enum class ColorEndian {
         Big = static_cast<int>(std::endian::big),
         Little = static_cast<int>(std::endian::little),
     };
     Q_ENUM(ColorEndian)
+
+    void classBegin() override;
+    void componentComplete() override;
 
     int width();
     void setWidth(int value);
@@ -47,19 +57,46 @@ class MixxxScreen : public QObject {
     void shutdown();
 
   private:
-    QString m_screenId;         // The screen identifier.
-    QSize m_size = QSize(0, 0); // The size of the screen.
-    uint m_targetFps = 30;      // The maximum FPS to render.
-    uint m_msaa = 1;            // The MSAA value to use for render.
+    // The screen identifier.
+    QString m_screenId;
+    // The size of the screen.
+    QSize m_size = QSize(0, 0);
+    // The maximum FPS to render.
+    uint m_targetFps = 30;
+    // The MSAA value to use for render.
+    uint m_msaa = 1;
+    // The rendering grace time given when the
+    // screen is requested to shutdown.
     std::chrono::milliseconds m_splashOff = std::chrono::milliseconds(
-            3000); // The rendering grace time given when the screen is
-                   // requested to shutdown.
+            3000);
+    // The pixel encoding format.
     QImage::Format m_pixelType =
-            QImage::Format_RGB888;              // The pixel encoding format.
-    ColorEndian m_endian = ColorEndian::Little; // The pixel endian format.
-    bool m_reversedColor = false;               // Whether or not the RGB is swapped BGR.
-    bool m_rawData = false;                     // Whether or not the screen is allowed to receive
-                                                // bare data, not transformed.
+            QImage::Format_RGB888;
+    // The pixel endian format.
+    ColorEndian m_endian = ColorEndian::Little;
+    // Whether or not the RGB is swapped BGR.
+    bool m_reversedColor = false;
+    // Whether or not the screen is allowed to receive bare data,
+    // not transformed.
+    bool m_rawData = false;
+    // The item to render
+    QQuickItem m_item;
+    // Transform function
+    std::function<QVariant(const QByteArray, const QDateTime&)> transform =
+            [](const QByteArray input, const QDateTime& timestamp) {
+                return QVariant(input);
+            };
+
+    inline static QByteArray kScreenTransformFunctionUntypedSignature =
+            QMetaObject::normalizedSignature(
+                    "transformFrame(QVariant,QVariant)");
+    inline static QByteArray kScreenTransformFunctionTypedSignature =
+            QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
+
+    QVariant transform(QMetaMethod transformMethod,
+            const QByteArray input,
+            const QDateTime& timestamp,
+            bool typed);
 };
 
 } // namespace qml
