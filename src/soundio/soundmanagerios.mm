@@ -10,9 +10,7 @@ void initializeAVAudioSession() {
     AVAudioSessionCategory category = AVAudioSessionCategoryPlayback;
     AVAudioSessionMode mode = AVAudioSessionModeDefault;
     AVAudioSessionCategoryOptions options =
-            AVAudioSessionCategoryOptionMixWithOthers |
-            AVAudioSessionCategoryOptionAllowAirPlay |
-            AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+            AVAudioSessionCategoryOptionMixWithOthers;
 
     NSError* error = nil;
     [session setCategory:category mode:mode options:options error:&error];
