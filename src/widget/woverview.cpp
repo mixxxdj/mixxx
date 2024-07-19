@@ -634,8 +634,8 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackBackground(&painter);
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
-        drawMinuteMarkers(&painter);
         drawPlayedOverlay(&painter);
+        drawMinuteMarkers(&painter);
         drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
