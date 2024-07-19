@@ -37,11 +37,7 @@ int EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
-    m_bCueUsesFileAnnotation =
-            m_pConfig
-                    ->getValueString(ConfigKey(
-                            RECORDING_PREF_KEY, "CueFileAnnotationEnabled"))
-                    .toInt();
+    m_bCueUsesFileAnnotation = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled")).toInt();
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.

@@ -12,7 +12,6 @@
 
 namespace {
 constexpr bool kDefaultCueEnabled = true;
-constexpr bool kDefaultCueFileAnnotationEnabled = false;
 } // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
@@ -78,7 +77,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     CheckBoxUseCueFileAnnotation->setChecked(m_pConfig->getValue<bool>(
-            ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"), kDefaultCueFileAnnotationEnabled));
+            ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled"), false));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -189,7 +188,7 @@ void DlgPrefRecord::slotUpdate() {
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
-    slotToggleCueEnabled();
+    updateCueEnabled();
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -218,7 +217,7 @@ void DlgPrefRecord::slotResetToDefaults() {
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 
     // Sets 'Enable File Annotation in CUE file' checkbox value
-    CheckBoxUseCueFileAnnotation->setChecked(kDefaultCueFileAnnotationEnabled);
+    CheckBoxUseCueFileAnnotation->setChecked(false);
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
@@ -320,6 +319,15 @@ void DlgPrefRecord::slotSliderQuality() {
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
 
+// Set 'Enable File Annotation in CUE file' checkbox value depending on 'Create a CUE file' checkbox value
+void DlgPrefRecord::updateCueEnabled() {
+    if (CheckBoxRecordCueFile->isChecked()) {
+        CheckBoxUseCueFileAnnotation->setEnabled(true);
+    } else {
+        CheckBoxUseCueFileAnnotation->setEnabled(false);
+        CheckBoxUseCueFileAnnotation->setChecked(false);
+    }
+}
 
 void DlgPrefRecord::updateTextQuality() {
     EncoderRecordingSettingsPointer settings =
@@ -447,10 +455,8 @@ void DlgPrefRecord::saveEncoding() {
     }
 }
 
-// Set 'Enable File Annotation in CUE file' checkbox value depending on 'Create
-// a CUE file' checkbox value
 void DlgPrefRecord::slotToggleCueEnabled() {
-    CheckBoxUseCueFileAnnotation->setEnabled(CheckBoxRecordCueFile->isChecked());
+    updateCueEnabled();
 }
 
 void DlgPrefRecord::saveUseCueFile() {
@@ -460,11 +466,10 @@ void DlgPrefRecord::saveUseCueFile() {
 
 void DlgPrefRecord::saveUseCueFileAnnotation() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled"),
-            ConfigValue(CheckBoxUseCueFileAnnotation->isChecked()));
+                  ConfigValue(CheckBoxUseCueFileAnnotation->isChecked()));
 }
 
 void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
                    ConfigValue(comboBoxSplitting->currentText()));
 }
-
