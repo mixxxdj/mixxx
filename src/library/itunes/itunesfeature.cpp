@@ -16,6 +16,7 @@
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/itunesplaylistmodel.h"
+#include "library/itunes/itunestrackmodel.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -96,10 +97,8 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             std::move(columns),
             std::move(searchColumns),
             false);
-    m_pITunesTrackModel = new BaseExternalTrackModel(this,
+    m_pITunesTrackModel = new ITunesTrackModel(this,
             m_pLibrary->trackCollectionManager(),
-            "mixxx.db.model.itunes",
-            "itunes_library",
             m_trackSource);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this,
             m_pLibrary->trackCollectionManager(),
