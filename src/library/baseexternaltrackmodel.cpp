@@ -50,7 +50,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
 
     QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    QString location = QDir::fromNativeSeparators(nativeLocation);
+    QString location = resolveLocation(nativeLocation);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -79,6 +79,10 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
         qWarning() << "Failed to load external track" << location;
     }
     return pTrack;
+}
+
+QString BaseExternalTrackModel::resolveLocation(const QString& nativeLocation) const {
+    return QDir::fromNativeSeparators(nativeLocation);
 }
 
 TrackId BaseExternalTrackModel::getTrackId(const QModelIndex& index) const {
