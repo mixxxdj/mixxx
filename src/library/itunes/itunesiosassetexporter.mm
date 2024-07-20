@@ -1,6 +1,7 @@
 #include "library/itunes/itunesiosassetexporter.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 #include <QDir>
 #include <QString>
@@ -13,23 +14,46 @@ ITunesIOSAssetExporter::ITunesIOSAssetExporter(const QDir& outputDir)
 }
 
 QString ITunesIOSAssetExporter::exportAsync(const QUrl& url) {
-    AVURLAsset* asset = [[AVURLAsset alloc] initWithURL:url.toNSURL()
-                                                options:nil];
+    AVURLAsset* asset;
+    QString baseName;
+
+    if (url.scheme() == "ipod-library") {
+        // We perform an additional lookup through Media Player instead of just
+        // constructing the AVURLAsset to retrieve additional metadata.
+
+        QUrlQuery query(url);
+        QString persistentID = query.queryItemValue("id");
+
+        MPMediaQuery* mediaQuery = [MPMediaQuery songsQuery];
+        [mediaQuery
+                addFilterPredicate:
+                        [MPMediaPropertyPredicate
+                                predicateWithValue:persistentID.toNSString()
+                                       forProperty:
+                                               MPMediaItemPropertyPersistentID]];
+
+        MPMediaItem* item = [mediaQuery.items firstObject];
+        if (item == nil) {
+            qCritical() << "Could not find item with ID in local music library"
+                        << persistentID;
+            return QString();
+        }
+
+        asset = [[AVURLAsset alloc] initWithURL:item.assetURL options:nil];
+
+        // TODO: Use a more descriptive name than the ID, e.g. including
+        // title/artist?
+        baseName = persistentID;
+    } else {
+        asset = [[AVURLAsset alloc] initWithURL:url.toNSURL() options:nil];
+        baseName = QFileInfo(url.path()).baseName();
+    }
+
     AVAssetExportSession* session = [[AVAssetExportSession alloc]
             initWithAsset:asset
                presetName:AVAssetExportPresetAppleM4A];
 
-    QString name;
-    if (url.scheme() == "ipod-library") {
-        // TODO: Use a more descriptive name than the ID, e.g. including
-        // title/artist?
-        QUrlQuery query(url);
-        name = query.queryItemValue("id");
-    } else {
-        name = QFileInfo(url.path()).baseName();
-    }
-
-    QString outputPath(outputDir.absolutePath() + "/" + name + ".m4a");
+    QString outputPath(outputDir.absolutePath() + "/" + baseName + ".m4a");
 
     session.outputFileType = AVFileTypeAppleM4A;
     session.outputURL = [NSURL fileURLWithPath:outputPath.toNSString()];
