@@ -28,7 +28,7 @@ QString ITunesTrackModel::resolveLocation(const QString& nativeLocation) const {
     if (nativeLocation.startsWith("ipod-library:")) {
         QString musicDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
         ITunesIOSAssetExporter exporter(QDir(musicDir + "/Mixxx/iTunes Tracks"));
-        return exporter.exportAsync(QUrl(nativeLocation));
+        return exporter.exportAsset(QUrl(nativeLocation));
     }
 #endif
     return BaseExternalTrackModel::resolveLocation(nativeLocation);

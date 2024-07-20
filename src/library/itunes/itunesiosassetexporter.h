@@ -11,9 +11,10 @@ class ITunesIOSAssetExporter {
   public:
     ITunesIOSAssetExporter(const QDir& outputDir);
 
-    /// Exports the asset with the given URL to the output directory. URLs using
-    /// the `ipod-library://` scheme are supported. Returns the output path.
-    QString exportAsync(const QUrl& url);
+    /// Synchronously exports the asset with the given URL to the output
+    /// directory. URLs using the `ipod-library://` scheme are supported.
+    /// Returns the output path.
+    QString exportAsset(const QUrl& url);
 
   private:
     QDir outputDir;

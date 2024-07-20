@@ -2,6 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <dispatch/dispatch.h>
 
 #include <QDir>
 #include <QString>
@@ -18,7 +19,7 @@ ITunesIOSAssetExporter::ITunesIOSAssetExporter(const QDir& outputDir)
     }
 }
 
-QString ITunesIOSAssetExporter::exportAsync(const QUrl& url) {
+QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
     AVURLAsset* asset;
     QString baseName;
 
@@ -63,6 +64,8 @@ QString ITunesIOSAssetExporter::exportAsync(const QUrl& url) {
     session.outputFileType = AVFileTypeAppleM4A;
     session.outputURL = [NSURL fileURLWithPath:outputPath.toNSString()];
 
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
     [session exportAsynchronouslyWithCompletionHandler:^{
         switch (session.status) {
         case AVAssetExportSessionStatusCompleted:
@@ -77,7 +80,11 @@ QString ITunesIOSAssetExporter::exportAsync(const QUrl& url) {
                        << "completed with unknown status:" << session.status;
             break;
         }
+
+        dispatch_semaphore_signal(semaphore);
     }];
+
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
     return outputPath;
 }
