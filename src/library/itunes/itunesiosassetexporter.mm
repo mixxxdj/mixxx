@@ -48,43 +48,48 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
         asset = [[AVURLAsset alloc] initWithURL:item.assetURL options:nil];
 
         // TODO: Use a more descriptive name than the ID, e.g. including
-        // title/artist?
+        // title/artist? Note that the file path should identify the asset
+        // uniquely, otherwise our existence check may wrongly identify
+        // some other track with the one we are looking to export here.
         baseName = persistentID;
     } else {
         asset = [[AVURLAsset alloc] initWithURL:url.toNSURL() options:nil];
         baseName = QFileInfo(url.path()).baseName();
     }
 
-    AVAssetExportSession* session = [[AVAssetExportSession alloc]
-            initWithAsset:asset
-               presetName:AVAssetExportPresetAppleM4A];
-
     QString outputPath(outputDir.absolutePath() + "/" + baseName + ".m4a");
 
-    session.outputFileType = AVFileTypeAppleM4A;
-    session.outputURL = [NSURL fileURLWithPath:outputPath.toNSString()];
+    if (!QFileInfo::exists(outputPath)) {
+        AVAssetExportSession* session = [[AVAssetExportSession alloc]
+                initWithAsset:asset
+                   presetName:AVAssetExportPresetAppleM4A];
 
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        session.outputFileType = AVFileTypeAppleM4A;
+        session.outputURL = [NSURL fileURLWithPath:outputPath.toNSString()];
 
-    [session exportAsynchronouslyWithCompletionHandler:^{
-        switch (session.status) {
-        case AVAssetExportSessionStatusCompleted:
-            qInfo() << "Successfully exported asset to" << outputPath;
-            break;
-        case AVAssetExportSessionStatusFailed:
-            qWarning() << "Exporting asset to" << outputPath
-                       << "failed:" << [session.error localizedDescription];
-            break;
-        default:
-            qWarning() << "Exporting asset to" << outputPath
-                       << "completed with unknown status:" << session.status;
-            break;
-        }
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-        dispatch_semaphore_signal(semaphore);
-    }];
+        [session exportAsynchronouslyWithCompletionHandler:^{
+            switch (session.status) {
+            case AVAssetExportSessionStatusCompleted:
+                qInfo() << "Successfully exported asset to" << outputPath;
+                break;
+            case AVAssetExportSessionStatusFailed:
+                qWarning() << "Exporting asset to" << outputPath
+                           << "failed:" << [session.error localizedDescription];
+                break;
+            default:
+                qWarning() << "Exporting asset to" << outputPath
+                           << "completed with unknown status:"
+                           << session.status;
+                break;
+            }
 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            dispatch_semaphore_signal(semaphore);
+        }];
+
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    }
 
     return outputPath;
 }
