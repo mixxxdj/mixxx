@@ -11,6 +11,11 @@
 
 ITunesIOSAssetExporter::ITunesIOSAssetExporter(const QDir& outputDir)
         : outputDir(outputDir) {
+    if (!outputDir.exists()) {
+        qInfo() << "Creating output directory for exported iTunes assets at"
+                << outputDir;
+        outputDir.mkpath(".");
+    }
 }
 
 QString ITunesIOSAssetExporter::exportAsync(const QUrl& url) {
