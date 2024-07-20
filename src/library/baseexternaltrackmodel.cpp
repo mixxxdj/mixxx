@@ -49,8 +49,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
     float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
 
-    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    QString location = resolveLocation(nativeLocation);
+    QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -94,13 +93,18 @@ TrackId BaseExternalTrackModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
+QString BaseExternalTrackModel::getTrackLocation(const QModelIndex& index) const {
+    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return resolveLocation(nativeLocation);
+}
+
 TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         // The external table has foreign Track IDs, so we need to compare
         // by location
         for (int row = 0; row < rowCount(); ++row) {
             QString nativeLocation = index(row, fieldIndex("location")).data().toString();
-            QString location = QDir::fromNativeSeparators(nativeLocation);
+            QString location = resolveLocation(nativeLocation);
             if (location == pTrack->getLocation()) {
                 return TrackId(index(row, 0).data());
             }

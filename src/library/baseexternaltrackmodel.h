@@ -25,6 +25,8 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
+    QString getTrackLocation(const QModelIndex& index) const override;
+
   protected:
     virtual QString resolveLocation(const QString& nativeLocation) const;
 
