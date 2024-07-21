@@ -47,6 +47,9 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
         }
 
         asset = [[AVURLAsset alloc] initWithURL:item.assetURL options:nil];
+        baseName = persistentID;
+
+        // Add metadata tags for the exported audio file
 
         AVMutableMetadataItem* titleItem = [[AVMutableMetadataItem alloc] init];
         titleItem.keySpace = AVMetadataKeySpaceCommon;
@@ -79,8 +82,6 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
         releaseDateItem.key = AVMetadataiTunesMetadataKeyReleaseDate;
         releaseDateItem.value = item.releaseDate;
         [metadata addObject:releaseDateItem];
-
-        baseName = persistentID;
     } else {
         asset = [[AVURLAsset alloc] initWithURL:url.toNSURL() options:nil];
         baseName = QFileInfo(url.path()).baseName();
