@@ -67,6 +67,19 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
         albumItem.value = item.albumTitle;
         [metadata addObject:albumItem];
 
+        AVMutableMetadataItem* genreItem = [[AVMutableMetadataItem alloc] init];
+        genreItem.keySpace = AVMetadataKeySpaceiTunes;
+        genreItem.key = AVMetadataiTunesMetadataKeyUserGenre;
+        genreItem.value = item.genre;
+        [metadata addObject:genreItem];
+
+        AVMutableMetadataItem* releaseDateItem =
+                [[AVMutableMetadataItem alloc] init];
+        releaseDateItem.keySpace = AVMetadataKeySpaceiTunes;
+        releaseDateItem.key = AVMetadataiTunesMetadataKeyReleaseDate;
+        releaseDateItem.value = item.releaseDate;
+        [metadata addObject:releaseDateItem];
+
         baseName = persistentID;
     } else {
         asset = [[AVURLAsset alloc] initWithURL:url.toNSURL() options:nil];
