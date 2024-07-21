@@ -30,15 +30,15 @@ class ImporterImpl {
             : m_pImporter(pImporter), m_dao(dao) {
     }
 
-    void importCollections(NSArray<MPMediaItemCollection*>* collections) {
-        qDebug() << "Importing collections via native Media Player framework";
+    void importPlaylists(MPMediaQuery* query) {
+        qDebug() << "Importing playlists via native Media Player framework";
 
         // We prefer Objective-C-style for-in loops over C++ loops when dealing
         // with Objective-C types (both here and in the methods below) since
         // they use Objective-C's enumeration protocols and are guaranteed to
         // interact well with Objective-C collections.
 
-        for (MPMediaItemCollection* collection in collections) {
+        for (MPMediaItemCollection* collection in query.collections) {
             if (m_pImporter->canceled()) {
                 break;
             }
@@ -49,16 +49,10 @@ class ImporterImpl {
         }
     }
 
-    void importMediaItems(NSArray<MPMediaItem*>* items) {
-        qDebug() << "Importing media items via native Media Player framework";
+    void importSongs(MPMediaQuery* query) {
+        qDebug() << "Importing songs via native Media Player framework";
 
-        for (MPMediaItem* item in items) {
-            if (m_pImporter->canceled()) {
-                break;
-            }
-
-            importMediaItem(item);
-        }
+        importMediaItems(query.items);
     }
 
     void appendPlaylistTree(gsl::not_null<TreeItem*> item) {
@@ -121,6 +115,16 @@ class ImporterImpl {
         }
     }
 
+    void importMediaItems(NSArray<MPMediaItem*>* items) {
+        for (MPMediaItem* item in items) {
+            if (m_pImporter->canceled()) {
+                break;
+            }
+
+            importMediaItem(item);
+        }
+    }
+
     void importMediaItem(MPMediaItem* item) {
         // Skip DRM-protected and non-downloaded tracks
         if (item.hasProtectedAsset || item.isCloudItem) {
@@ -172,8 +176,8 @@ ITunesImport ITunesIOSImporter::importLibrary() {
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_pParentFeature);
     ImporterImpl impl(this, *m_dao);
 
-    impl.importCollections([MPMediaQuery playlistsQuery].collections);
-    impl.importMediaItems([MPMediaQuery songsQuery].items);
+    impl.importPlaylists([MPMediaQuery playlistsQuery]);
+    impl.importSongs([MPMediaQuery songsQuery]);
     impl.appendPlaylistTree(rootItem.get());
 
     iTunesImport.playlistRoot = std::move(rootItem);
