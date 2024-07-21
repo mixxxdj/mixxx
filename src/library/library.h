@@ -4,7 +4,6 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
-#include <QUrl>
 #include <QtGlobal>
 
 #include "analyzer/trackanalysisscheduler.h"
