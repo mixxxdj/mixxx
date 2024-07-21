@@ -141,7 +141,7 @@ class ImporterImpl {
                 // NOTE: These URLs are of the form
                 // `ipod-library://item/item.m4a?id=...` and do not represent
                 // actual file system paths, so we have to treat them specially
-                // in `ITunesTrackModel`.
+                // in `ITunesTrackModel` and `ITunesPlaylistModel`.
                 .location = QString::fromNSString(item.assetURL.absoluteString),
                 .rating = static_cast<int>(item.rating / 20),
                 .comment = QString::fromNSString(item.comments),
