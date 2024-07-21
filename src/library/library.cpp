@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -691,6 +692,64 @@ bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
     }
     return false;
 }
+
+#ifdef Q_OS_IOS
+void Library::requestRelocateiOSSandboxDirs() {
+    // Get current sandbox directory
+    QString newSandboxDir = QDir::homePath();
+
+    static const QRegularExpression sandboxDirRegex = QRegularExpression(
+            QStringLiteral("^/private/var/mobile/Containers/Data/Application/"
+                           "[a-zA-Z0-9\\-]+(/.*)"));
+
+    // TODO: If the user selects a different app sandbox than ours (which is
+    // possible via the file picker) relinking will point those directories to
+    // our sandbox. This is not a supported scenario, however, and we should probably
+    // guard against picking directories outside the Mixxx sandbox when adding
+    // new directories.
+
+    // Patch old sandbox directories
+    bool needsRescan = false;
+    QStringList rootDirs = m_pTrackCollectionManager->internalCollection()->getRootDirStrings();
+
+    for (const QString& dir : rootDirs) {
+        QRegularExpressionMatch match = sandboxDirRegex.match(dir);
+        if (!match.hasMatch()) {
+            qWarning() << "Leaving directory outside the iOS sandbox untouched:"
+                       << dir
+                       << "(This is unusual, since iOS generally does not "
+                          "allow accessing such paths, perhaps the regex in "
+                          "Library::requestRelocateiOSSandboxDirs has to be "
+                          "updated?)";
+            continue;
+        }
+
+        QString relativePath = match.captured(1);
+        QString newDir = newSandboxDir + relativePath;
+
+        if (dir == newDir) {
+            // Sandbox directory did not move
+            continue;
+        }
+
+        qInfo() << "Relinking music directory since iOS sandbox moved:"
+                << dir << "->" << newDir;
+
+        auto result = m_pTrackCollectionManager->relocateDirectory(dir, newDir);
+        if (result != DirectoryDAO::RelocateResult::Ok) {
+            qWarning() << "Could not relink music directory after iOS sandbox moved";
+            continue;
+        }
+
+        needsRescan = true;
+    }
+
+    if (needsRescan) {
+        qInfo() << "Rescanning library since iOS sandbox moved";
+        m_pTrackCollectionManager->startLibraryScan();
+    }
+}
+#endif
 
 void Library::setFont(const QFont& font) {
     QFontMetrics currMetrics(m_trackTableFont);
