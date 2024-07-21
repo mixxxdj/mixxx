@@ -2,6 +2,7 @@
 
 #include <QGuiApplication>
 #include <QScreen>
+#include <QtGlobal>
 
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
@@ -1110,6 +1111,12 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
         // Cells are editable by default
         itemFlags |= Qt::ItemIsEditable;
     }
+#ifdef Q_OS_IOS
+    // Make items non-editable on iOS by default, since tapping any track will
+    // otherwise trigger the on-screen keyboard (even if they cannot actually
+    // be edited).
+    itemFlags &= ~Qt::ItemIsEditable;
+#endif
     return itemFlags;
 }
 
