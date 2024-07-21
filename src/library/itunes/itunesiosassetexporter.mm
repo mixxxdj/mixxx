@@ -20,7 +20,8 @@ ITunesIOSAssetExporter::ITunesIOSAssetExporter(const QDir& outputDir)
 }
 
 QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
-    AVURLAsset* asset;
+    AVURLAsset* asset = nil;
+    NSMutableArray<AVMetadataItem*>* metadata = [[NSMutableArray alloc] init];
     QString baseName;
 
     if (url.scheme() == "ipod-library") {
@@ -47,10 +48,25 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
 
         asset = [[AVURLAsset alloc] initWithURL:item.assetURL options:nil];
 
-        // TODO: Use a more descriptive name than the ID, e.g. including
-        // title/artist? Note that the file path should identify the asset
-        // uniquely, otherwise our existence check may wrongly identify
-        // some other track with the one we are looking to export here.
+        AVMutableMetadataItem* titleItem = [[AVMutableMetadataItem alloc] init];
+        titleItem.keySpace = AVMetadataKeySpaceCommon;
+        titleItem.key = AVMetadataCommonKeyTitle;
+        titleItem.value = item.title;
+        [metadata addObject:titleItem];
+
+        AVMutableMetadataItem* artistItem =
+                [[AVMutableMetadataItem alloc] init];
+        artistItem.keySpace = AVMetadataKeySpaceCommon;
+        artistItem.key = AVMetadataCommonKeyArtist;
+        artistItem.value = item.artist;
+        [metadata addObject:artistItem];
+
+        AVMutableMetadataItem* albumItem = [[AVMutableMetadataItem alloc] init];
+        albumItem.keySpace = AVMetadataKeySpaceCommon;
+        albumItem.key = AVMetadataCommonKeyAlbumName;
+        albumItem.value = item.albumTitle;
+        [metadata addObject:albumItem];
+
         baseName = persistentID;
     } else {
         asset = [[AVURLAsset alloc] initWithURL:url.toNSURL() options:nil];
@@ -64,6 +80,7 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
                 initWithAsset:asset
                    presetName:AVAssetExportPresetAppleM4A];
 
+        session.metadata = metadata;
         session.outputFileType = AVFileTypeAppleM4A;
         session.outputURL = [NSURL fileURLWithPath:outputPath.toNSString()];
 
