@@ -84,9 +84,15 @@ class ImporterImpl {
 
     void importPlaylist(MPMediaPlaylist* mpPlaylist) {
         int playlistId = dbIdFromPersistentId(mpPlaylist.persistentID);
-        // TODO: Figure out if we can infer a hierarchy or if the API even
-        // provides folders
-        int parentId = kRootITunesPlaylistId;
+
+        // We use an undocumented API to get the parent ID here:
+        // https://stackoverflow.com/a/12369132
+        NSNumber* parentPersistentId =
+                [mpPlaylist valueForProperty:@"parentPersistentID"];
+        int parentId = (parentPersistentId &&
+                               parentPersistentId.unsignedLongLongValue != 0)
+                ? dbIdFromPersistentId(parentPersistentId.unsignedLongLongValue)
+                : kRootITunesPlaylistId;
 
         ITunesPlaylist playlist = {
                 .id = playlistId,
