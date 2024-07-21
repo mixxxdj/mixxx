@@ -109,6 +109,9 @@ class Library: public QObject {
     bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
 
 #ifdef Q_OS_IOS
+    /// Updates the iOS sandbox path prefix on all music directories.
+    /// This prefix may change after reinstalls or updates, therefore
+    /// this method is called during startup.
     void requestRelocateiOSSandboxDirs();
 #endif
 

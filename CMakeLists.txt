@@ -1190,6 +1190,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/safelywritablefile.cpp
   src/util/sample.cpp
   src/util/sandbox.cpp
+  src/util/sandboxios.cpp
   src/util/screensaver.cpp
   src/util/screensavermanager.cpp
   src/util/semanticversion.cpp

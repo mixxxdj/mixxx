@@ -3,7 +3,6 @@
 #include <QApplication>
 #include <QDir>
 #include <QMessageBox>
-#include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -37,6 +36,7 @@
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/sandbox.h"
+#include "util/sandboxios.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -695,37 +695,19 @@ bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
 
 #ifdef Q_OS_IOS
 void Library::requestRelocateiOSSandboxDirs() {
-    // Get current sandbox directory
-    QString newSandboxDir = QDir::homePath();
-
-    static const QRegularExpression sandboxDirRegex = QRegularExpression(
-            QStringLiteral("^/private/var/mobile/Containers/Data/Application/"
-                           "[a-zA-Z0-9\\-]+(/.*)"));
-
     // TODO: If the user selects a different app sandbox than ours (which is
     // possible via the file picker) relinking will point those directories to
     // our sandbox. This is not a supported scenario, however, and we should probably
     // guard against picking directories outside the Mixxx sandbox when adding
     // new directories.
 
-    // Patch old sandbox directories
+    // TODO: Do we need to handle external track collections?
+
     bool needsRescan = false;
     QStringList rootDirs = m_pTrackCollectionManager->internalCollection()->getRootDirStrings();
 
     for (const QString& dir : rootDirs) {
-        QRegularExpressionMatch match = sandboxDirRegex.match(dir);
-        if (!match.hasMatch()) {
-            qWarning() << "Leaving directory outside the iOS sandbox untouched:"
-                       << dir
-                       << "(This is unusual, since iOS generally does not "
-                          "allow accessing such paths, perhaps the regex in "
-                          "Library::requestRelocateiOSSandboxDirs has to be "
-                          "updated?)";
-            continue;
-        }
-
-        QString relativePath = match.captured(1);
-        QString newDir = newSandboxDir + relativePath;
+        QString newDir = mixxx::updateiOSSandboxPath(dir);
 
         if (dir == newDir) {
             // Sandbox directory did not move
