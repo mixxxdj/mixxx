@@ -107,10 +107,12 @@ void DlgPrefColors::slotUpdate() {
                 comboBoxTrackColors->count() - 1,
                 paletteIcon);
 
-        comboBoxKeyColors->addItem(paletteName);
-        comboBoxKeyColors->setItemIcon(
-                comboBoxKeyColors->count() - 1,
-                paletteIcon);
+        if (palette.size() == 12) {
+            comboBoxKeyColors->addItem(paletteName);
+            comboBoxKeyColors->setItemIcon(
+                    comboBoxKeyColors->count() - 1,
+                    paletteIcon);
+        }
     }
 
     const QSet<QString> colorPaletteNames = m_colorPaletteSettings.getColorPaletteNames();
@@ -123,10 +125,6 @@ void DlgPrefColors::slotUpdate() {
         comboBoxTrackColors->addItem(paletteName);
         comboBoxTrackColors->setItemIcon(
                 comboBoxHotcueColors->count() - 1,
-                paletteIcon);
-        comboBoxKeyColors->addItem(paletteName);
-        comboBoxKeyColors->setItemIcon(
-                comboBoxKeyColors->count() - 1,
                 paletteIcon);
     }
 
