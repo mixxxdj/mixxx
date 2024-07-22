@@ -191,6 +191,53 @@ constexpr mixxx::RgbColor kMIKKeyColor10(0xFDA078);
 constexpr mixxx::RgbColor kMIKKeyColor11(0xFF8693);
 constexpr mixxx::RgbColor kMIKKeyColor12(0xFD7EB3);
 
+// Accessible Color Palettes
+
+// Protanopia / Protanomaly
+
+constexpr mixxx::RgbColor kProtKeyColor1(0x2626D9);
+constexpr mixxx::RgbColor kProtKeyColor2(0x7582D7);
+constexpr mixxx::RgbColor kProtKeyColor3(0xA7C2DD);
+constexpr mixxx::RgbColor kProtKeyColor4(0xB8E0E0);
+constexpr mixxx::RgbColor kProtKeyColor5(0xA7DDC2);
+constexpr mixxx::RgbColor kProtKeyColor6(0x75D782);
+constexpr mixxx::RgbColor kProtKeyColor7(0x26D926);
+constexpr mixxx::RgbColor kProtKeyColor8(0x0DA522);
+constexpr mixxx::RgbColor kProtKeyColor9(0x02783D);
+constexpr mixxx::RgbColor kProtKeyColor10(0x006666);
+constexpr mixxx::RgbColor kProtKeyColor11(0x023D78);
+constexpr mixxx::RgbColor kProtKeyColor12(0x0D22A5);
+
+// Deuteranopia / Deuteranomaly
+
+constexpr mixxx::RgbColor kDeutKeyColor1(0xD92626);
+constexpr mixxx::RgbColor kDeutKeyColor2(0xD77582);
+constexpr mixxx::RgbColor kDeutKeyColor3(0xDDA7C2);
+constexpr mixxx::RgbColor kDeutKeyColor4(0xE0B8E0);
+constexpr mixxx::RgbColor kDeutKeyColor5(0xC2A7DD);
+constexpr mixxx::RgbColor kDeutKeyColor6(0x8275D7);
+constexpr mixxx::RgbColor kDeutKeyColor7(0x2626D9);
+constexpr mixxx::RgbColor kDeutKeyColor8(0x220DA5);
+constexpr mixxx::RgbColor kDeutKeyColor9(0x3D0278);
+constexpr mixxx::RgbColor kDeutKeyColor10(0x660066);
+constexpr mixxx::RgbColor kDeutKeyColor11(0x78023D);
+constexpr mixxx::RgbColor kDeutKeyColor12(0xA50D22);
+
+// Deuteranopia / Deuteranomaly
+
+constexpr mixxx::RgbColor kTritKeyColor1(0x26D926);
+constexpr mixxx::RgbColor kTritKeyColor2(0x82D775);
+constexpr mixxx::RgbColor kTritKeyColor3(0xC2DDA7);
+constexpr mixxx::RgbColor kTritKeyColor4(0xE0E0B8);
+constexpr mixxx::RgbColor kTritKeyColor5(0xDDC2A7);
+constexpr mixxx::RgbColor kTritKeyColor6(0xD78275);
+constexpr mixxx::RgbColor kTritKeyColor7(0xD92626);
+constexpr mixxx::RgbColor kTritKeyColor8(0xA5220D);
+constexpr mixxx::RgbColor kTritKeyColor9(0x783D02);
+constexpr mixxx::RgbColor kTritKeyColor10(0x666600);
+constexpr mixxx::RgbColor kTritKeyColor11(0x3D7802);
+constexpr mixxx::RgbColor kTritKeyColor12(0x22A50D);
+
 // Replaces "no color" values and is used for new cues if auto_hotcue_colors is
 // disabled
 constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
@@ -458,6 +505,60 @@ const ColorPalette PredefinedColorPalettes::kMIKKeyColorPalette =
                         kMIKKeyColor12,
                 });
 
+const ColorPalette PredefinedColorPalettes::kProtKeyColorPalette =
+        ColorPalette(
+                QStringLiteral("Protanopia / Protanomaly Key Colors"),
+                {
+                        kProtKeyColor1,
+                        kProtKeyColor2,
+                        kProtKeyColor3,
+                        kProtKeyColor4,
+                        kProtKeyColor5,
+                        kProtKeyColor6,
+                        kProtKeyColor7,
+                        kProtKeyColor8,
+                        kProtKeyColor9,
+                        kProtKeyColor10,
+                        kProtKeyColor11,
+                        kProtKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kDeutKeyColorPalette =
+        ColorPalette(
+                QStringLiteral("Deuteranopia / Deuteranomaly Key Colors"),
+                {
+                        kDeutKeyColor1,
+                        kDeutKeyColor2,
+                        kDeutKeyColor3,
+                        kDeutKeyColor4,
+                        kDeutKeyColor5,
+                        kDeutKeyColor6,
+                        kDeutKeyColor7,
+                        kDeutKeyColor8,
+                        kDeutKeyColor9,
+                        kDeutKeyColor10,
+                        kDeutKeyColor11,
+                        kDeutKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kTritKeyColorPalette =
+        ColorPalette(
+                QStringLiteral("Tritanopia / Tritanomaly Key Colors"),
+                {
+                        kTritKeyColor1,
+                        kTritKeyColor2,
+                        kTritKeyColor3,
+                        kTritKeyColor4,
+                        kTritKeyColor5,
+                        kTritKeyColor6,
+                        kTritKeyColor7,
+                        kTritKeyColor8,
+                        kTritKeyColor9,
+                        kTritKeyColor10,
+                        kTritKeyColor11,
+                        kTritKeyColor12,
+                });
+
 const ColorPalette PredefinedColorPalettes::kDefaultHotcueColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
 
@@ -484,6 +585,9 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         mixxx::PredefinedColorPalettes::kMixxxKeyColorPalette,
         mixxx::PredefinedColorPalettes::kTraktorKeyColorPalette,
         mixxx::PredefinedColorPalettes::kMIKKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kProtKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kDeutKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kTritKeyColorPalette,
 };
 
 const mixxx::RgbColor PredefinedColorPalettes::kDefaultCueColor =

@@ -21,6 +21,9 @@ class PredefinedColorPalettes {
     static const ColorPalette kMixxxKeyColorPalette;
     static const ColorPalette kTraktorKeyColorPalette;
     static const ColorPalette kMIKKeyColorPalette;
+    static const ColorPalette kProtKeyColorPalette;
+    static const ColorPalette kDeutKeyColorPalette;
+    static const ColorPalette kTritKeyColorPalette;
 
     static const ColorPalette kDefaultHotcueColorPalette;
     static const ColorPalette kDefaultTrackColorPalette;
