@@ -24,6 +24,8 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/clipboard.h"
+#include "util/color/colorpalette.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -106,6 +108,8 @@ constexpr bool BaseTrackTableModel::kKeyColorsEnabledDefault;
 int BaseTrackTableModel::s_bpmColumnPrecision =
         kBpmColumnPrecisionDefault;
 bool BaseTrackTableModel::s_keyColorsEnabled = kKeyColorsEnabledDefault;
+ColorPalette BaseTrackTableModel::s_keyColorPalette =
+        mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
 
 // static
 void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
@@ -120,8 +124,12 @@ void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
 
 // static
 void BaseTrackTableModel::setKeyColorsEnabled(bool keyColorsEnabled) {
-    // todo: need to refresh the key column when this setting changes
     s_keyColorsEnabled = keyColorsEnabled;
+}
+
+// static
+void BaseTrackTableModel::setKeyColorPalette(ColorPalette palette) {
+    s_keyColorPalette = palette;
 }
 
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
@@ -589,7 +597,7 @@ QVariant BaseTrackTableModel::data(
             role != Qt::ToolTipRole &&
             role != kDataExportRole &&
             role != Qt::TextAlignmentRole &&
-            role != Qt::UserRole) {
+            role != Qt::DecorationRole) {
         return QVariant();
     }
 
@@ -902,7 +910,8 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // If we know the semantic key via the LIBRARYTABLE_KEY_ID
             // column (as opposed to the string representation of the key
-            // currently stored in the DB) then lookup the key and return it
+            // currently stored in the DB) then lookup the key and render it
+            // using the user's selected notation.
             const QVariant keyCodeValue = rawSiblingValue(
                     index,
                     ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
@@ -919,7 +928,8 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID) {
                 return QVariant();
             }
-            return QVariant::fromValue(key);
+            const QString keyString = KeyUtils::keyToString(key);
+            return QVariant::fromValue(keyString);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
@@ -1027,14 +1037,33 @@ QVariant BaseTrackTableModel::roleValue(
             return QVariant(); // default AlignLeft for all other columns
         }
     }
-    case Qt::UserRole: {
+    case Qt::DecorationRole: {
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
-            // return whether or not to display the color rectangle
-            return QVariant::fromValue(s_keyColorsEnabled);
+            // return color of key
+            if (!s_keyColorsEnabled) {
+                return QVariant();
+            }
+            const QVariant keyCodeValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            if (keyCodeValue.isNull()) {
+                return QVariant();
+            }
+            bool ok;
+            const auto keyCode = keyCodeValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            const auto key = KeyUtils::keyFromNumericValue(keyCode);
+            if (key == mixxx::track::io::key::INVALID) {
+                return QVariant();
+            }
+            const QColor color = KeyUtils::keyToColor(key, s_keyColorPalette);
+            return QVariant::fromValue(color);
         }
         default:
-            DEBUG_ASSERT(!"unexpected field for UserRole");
+            DEBUG_ASSERT(!"unexpected field for DecorationRole");
         }
         break;
     }

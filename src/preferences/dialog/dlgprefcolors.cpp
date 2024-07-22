@@ -54,6 +54,11 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotHotcuePaletteIndexChanged);
 
+    connect(comboBoxKeyColors,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefColors::slotKeyPaletteIndexChanged);
+
     connect(pushButtonEditHotcuePalette,
             &QPushButton::clicked,
             this,
@@ -376,6 +381,13 @@ void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
         comboBoxLoopDefaultColor->setCurrentIndex(
                 comboBoxLoopDefaultColor->count() - 1);
     }
+}
+
+void DlgPrefColors::slotKeyPaletteIndexChanged(int paletteIndex) {
+    QString paletteName = comboBoxKeyColors->itemText(paletteIndex);
+    ColorPalette palette =
+            m_colorPaletteSettings.getKeyColorPalette(paletteName);
+    BaseTrackTableModel::setKeyColorPalette(palette);
 }
 
 void DlgPrefColors::slotEditTrackPaletteClicked() {
