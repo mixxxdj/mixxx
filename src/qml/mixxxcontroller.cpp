@@ -3,13 +3,6 @@
 namespace mixxx {
 namespace qml {
 
-MixxxController::MixxxController(QObject* parent)
-        : QObject(parent), m_pChildren(this, &m_children) {
-}
-
-void MixxxController::classBegin() {
-}
-
 void MixxxController::componentComplete() {
     QObject::connect(this,
             &MixxxController::init,
@@ -23,15 +16,31 @@ void MixxxController::componentComplete() {
 
 void MixxxController::initChildrenComponents() {
     for (auto* childComponent : m_children) {
-        // Try emit init signal
-        QMetaObject::invokeMethod(childComponent, "init", Qt::DirectConnection);
+        const auto* const meta = childComponent->metaObject();
+        const auto idx = meta->indexOfMethod(kInitSignature);
+        if (idx >= 0) {
+            const auto method = meta->method(idx);
+            if (method.isValid()) {
+                method.invoke(childComponent, Qt::DirectConnection);
+            } else {
+                // TODO: log?
+            }
+        }
     }
 }
 
 void MixxxController::shutdownChildrenComponents() {
     for (auto* childComponent : m_children) {
-        // Try emit shutdown signal
-        QMetaObject::invokeMethod(childComponent, "shutdown", Qt::DirectConnection);
+        const auto* const meta = childComponent->metaObject();
+        const auto idx = meta->indexOfMethod(kShutdownSignature);
+        if (idx >= 0) {
+            const auto method = meta->method(idx);
+            if (method.isValid()) {
+                method.invoke(childComponent, Qt::DirectConnection);
+            } else {
+                // TODO: log?
+            }
+        }
     }
 }
 

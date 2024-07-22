@@ -21,8 +21,9 @@ class MixxxController : public QObject, public QQmlParserStatus {
     Q_CLASSINFO("DefaultProperty", "childComponents")
 
   public:
-    explicit MixxxController(QObject* parent = nullptr);
-    void classBegin() override;
+    explicit MixxxController(QObject* parent = nullptr)
+            : QObject(parent), m_pChildren(this, &m_children){};
+    void classBegin() override{};
     void componentComplete() override;
 
   signals:
@@ -34,6 +35,9 @@ class MixxxController : public QObject, public QQmlParserStatus {
     bool m_debugMode;
     QList<QObject*> m_children;
     QQmlListProperty<QObject> m_pChildren;
+
+    static inline QByteArray kInitSignature = QMetaObject::normalizedSignature("init()");
+    static inline QByteArray kShutdownSignature = QMetaObject::normalizedSignature("shutdown()");
 
   private slots:
     void initChildrenComponents();
