@@ -32,6 +32,7 @@ IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-06fe9b5
     SET BUILDENV_SHA256=168910f3982039ab6c3b8a6c2eaaeac5bd9c965e3b7fe695cca05ca4ecf90e6f
 )
+SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
 
 IF "%~1"=="" (
     REM In case of manual start by double click no arguments are specified: Default to COMMAND_setup
@@ -41,8 +42,8 @@ IF "%~1"=="" (
     CALL :COMMAND_%1
 )
 
-REM Make These permanent, not local to the batch script.
-ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLET=%VCPKG_DEFAULT_TRIPLET%" & SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=%X_VCPKG_APPLOCAL_DEPS_INSTALL%" & SET "CMAKE_GENERATOR=%CMAKE_GENERATOR%"
+REM Make These permanent, not local to the batch script
+ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLET=%VCPKG_DEFAULT_TRIPLET%" & SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=%X_VCPKG_APPLOCAL_DEPS_INSTALL%" & SET "CMAKE_GENERATOR=%CMAKE_GENERATOR%" & SET "BUILDENV_BASEPATH=%BUILDENV_BASEPATH%" & SET "BUILDENV_URL=%BUILDENV_URL%" & SET "BUILDENV_SHA256=%BUILDENV_SHA256%"
 
 EXIT /B 0
 
@@ -53,61 +54,26 @@ EXIT /B 0
     GOTO :EOF
 
 :COMMAND_setup
-    SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
+    SET MIXXX_VCPKG_ROOT=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
+    ECHO ^Build environment path: !MIXXX_VCPKG_ROOT!
 
-    IF NOT EXIST "%BUILDENV_BASEPATH%" (
-        ECHO ^Creating "buildenv" directory...
-        MD "%BUILDENV_BASEPATH%"
-    )
-
-    IF NOT EXIST "%BUILDENV_PATH%" (
-        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
-        IF NOT EXIST "!BUILDENV_PATH!.zip" (
-            ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
-            REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
-            BITSADMIN /transfer buildenvjob /download /priority normal /DYNAMIC !BUILDENV_URL! "!BUILDENV_PATH!.zip"
-            ECHO ^Download complete.
-            certutil -hashfile "!BUILDENV_PATH!.zip" SHA256 | FIND /C "!BUILDENV_SHA256!"
-            IF errorlevel 1 (
-                ECHO ^ERROR: Download did not match expected SHA256 checksum!
-                certutil -hashfile "!BUILDENV_PATH!.zip" SHA256
-                echo ^Expected: "!BUILDENV_SHA256!"
-                EXIT /B 1
-            )
-        ) else (
-            ECHO ^Using cached archive at "!BUILDENV_PATH!.zip".
-        )
-
-        CALL :DETECT_SEVENZIP
-        IF !RETVAL!=="" (
-            ECHO ^Unpacking "!BUILDENV_PATH!.zip" using powershell...
-            CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
-        ) ELSE (
-            ECHO ^Unpacking "!BUILDENV_PATH!.zip" using 7z...
-            CALL :UNZIP_SEVENZIP !RETVAL! "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
-        )
-        IF NOT EXIST "%BUILDENV_PATH%" (
-            ECHO ^Error: Unpacking failed. The downloaded archive might be broken, consider removing "!BUILDENV_PATH!.zip" to force redownload.
-            EXIT /B 1
-        )
-
-        ECHO ^Unpacking complete.
-        DEL /f /q "%BUILDENV_PATH%.zip"
-    )
-
-    ECHO ^Build environment path: !BUILDENV_PATH!
-
-    SET "MIXXX_VCPKG_ROOT=!BUILDENV_PATH!"
+    SET "MIXXX_VCPKG_ROOT=!MIXXX_VCPKG_ROOT!"
     SET "CMAKE_GENERATOR=Ninja"
-    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\!VCPKG_TARGET_TRIPLET!"
+    SET "CMAKE_PREFIX_PATH=!MIXXX_VCPKG_ROOT!\installed\!VCPKG_TARGET_TRIPLET!"
 
     ECHO ^Environment Variables:
     ECHO ^- MIXXX_VCPKG_ROOT='!MIXXX_VCPKG_ROOT!'
     ECHO ^- CMAKE_GENERATOR='!CMAKE_GENERATOR!'
+    ECHO ^- BUILDENV_BASEPATH='!BUILDENV_BASEPATH!'
+    ECHO ^- BUILDENV_URL='!BUILDENV_URL!'
+    ECHO ^- BUILDENV_SHA256='!BUILDENV_SHA256!'
 
     IF DEFINED GITHUB_ENV (
         ECHO MIXXX_VCPKG_ROOT=!MIXXX_VCPKG_ROOT!>>!GITHUB_ENV!
         ECHO CMAKE_GENERATOR=!CMAKE_GENERATOR!>>!GITHUB_ENV!
+        ECHO BUILDENV_BASEPATH=!BUILDENV_BASEPATH!>>!GITHUB_ENV!
+        ECHO BUILDENV_URL=!BUILDENV_URL!>>!GITHUB_ENV!
+        ECHO BUILDENV_SHA256=!BUILDENV_SHA256!>>!GITHUB_ENV!
     ) ELSE (
         ECHO ^Generating "CMakeSettings.json"...
         CALL :GENERATE_CMakeSettings_JSON
@@ -211,6 +177,9 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
     CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BUILDENV_BASEPATH"                  "STRING"   "!BUILDENV_BASEPATH:\=\\!"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BUILDENV_URL"                       "STRING"   "!BUILDENV_URL!"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BUILDENV_SHA256"                    "STRING"   "!BUILDENV_SHA256:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
