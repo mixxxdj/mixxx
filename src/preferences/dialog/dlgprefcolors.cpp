@@ -96,19 +96,21 @@ void DlgPrefColors::slotUpdate() {
                     BaseTrackTableModel::kKeyColorsEnabledDefault));
     for (const auto& palette : std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
         QString paletteName = palette.getName();
+        QString translatedName = QCoreApplication::translate(
+                "PredefinedColorPalettes", qPrintable(paletteName));
         QIcon paletteIcon = drawPalettePreview(paletteName);
-        comboBoxHotcueColors->addItem(paletteName);
+        comboBoxHotcueColors->addItem(translatedName, paletteName);
         comboBoxHotcueColors->setItemIcon(
                 comboBoxHotcueColors->count() - 1,
                 paletteIcon);
 
-        comboBoxTrackColors->addItem(paletteName);
+        comboBoxTrackColors->addItem(translatedName, paletteName);
         comboBoxTrackColors->setItemIcon(
                 comboBoxTrackColors->count() - 1,
                 paletteIcon);
 
         if (palette.size() == 12) {
-            comboBoxKeyColors->addItem(paletteName);
+            comboBoxKeyColors->addItem(translatedName, paletteName);
             comboBoxKeyColors->setItemIcon(
                     comboBoxKeyColors->count() - 1,
                     paletteIcon);
@@ -117,12 +119,14 @@ void DlgPrefColors::slotUpdate() {
 
     const QSet<QString> colorPaletteNames = m_colorPaletteSettings.getColorPaletteNames();
     for (const auto& paletteName : colorPaletteNames) {
+        QString translatedName = QCoreApplication::translate(
+                "PredefinedColorPalettes", qPrintable(paletteName));
         QIcon paletteIcon = drawPalettePreview(paletteName);
-        comboBoxHotcueColors->addItem(paletteName);
+        comboBoxHotcueColors->addItem(translatedName, paletteName);
         comboBoxHotcueColors->setItemIcon(
                 comboBoxHotcueColors->count() - 1,
                 paletteIcon);
-        comboBoxTrackColors->addItem(paletteName);
+        comboBoxTrackColors->addItem(translatedName, paletteName);
         comboBoxTrackColors->setItemIcon(
                 comboBoxHotcueColors->count() - 1,
                 paletteIcon);
@@ -130,19 +134,19 @@ void DlgPrefColors::slotUpdate() {
 
     const ColorPalette trackPalette =
             m_colorPaletteSettings.getTrackColorPalette();
-    comboBoxTrackColors->setCurrentText(
-            trackPalette.getName());
+    comboBoxTrackColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes", qPrintable(trackPalette.getName())));
 
     const ColorPalette hotcuePalette =
             m_colorPaletteSettings.getHotcueColorPalette();
-    comboBoxHotcueColors->setCurrentText(
-            hotcuePalette.getName());
+    comboBoxHotcueColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes", qPrintable(hotcuePalette.getName())));
     slotHotcuePaletteIndexChanged(comboBoxHotcueColors->currentIndex());
 
     const ColorPalette keyPalette =
             m_colorPaletteSettings.getKeyColorPalette();
-    comboBoxKeyColors->setCurrentText(
-            keyPalette.getName());
+    comboBoxKeyColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes", qPrintable(keyPalette.getName())));
 
     bool autoHotcueColors = m_pConfig->getValue(kAutoHotcueColorsConfigKey, false);
     if (autoHotcueColors) {
@@ -180,15 +184,19 @@ void DlgPrefColors::slotUpdate() {
 
 // Set the default values for all the widgets
 void DlgPrefColors::slotResetToDefaults() {
-    comboBoxHotcueColors->setCurrentText(
-            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette
-                    .getName());
-    comboBoxTrackColors->setCurrentText(
-            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette
-                    .getName());
-    comboBoxKeyColors->setCurrentText(
-            mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette
-                    .getName());
+    comboBoxHotcueColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes",
+            qPrintable(
+                    mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette
+                            .getName())));
+    comboBoxTrackColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes",
+            qPrintable(mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette
+                               .getName())));
+    comboBoxKeyColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes",
+            qPrintable(mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette
+                               .getName())));
     comboBoxHotcueDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size());
     comboBoxLoopDefaultColor->setCurrentIndex(
@@ -198,9 +206,9 @@ void DlgPrefColors::slotResetToDefaults() {
 
 // Apply and save any changes made in the dialog
 void DlgPrefColors::slotApply() {
-    QString hotcueColorPaletteName = comboBoxHotcueColors->currentText();
-    QString trackColorPaletteName = comboBoxTrackColors->currentText();
-    QString keyColorPaletteName = comboBoxKeyColors->currentText();
+    QString hotcueColorPaletteName = comboBoxHotcueColors->currentData().toString();
+    QString trackColorPaletteName = comboBoxTrackColors->currentData().toString();
+    QString keyColorPaletteName = comboBoxKeyColors->currentData().toString();
     bool bHotcueColorPaletteFound = false;
     bool bTrackColorPaletteFound = false;
     bool bKeyColorPaletteFound = false;
@@ -270,7 +278,7 @@ void DlgPrefColors::slotReplaceCueColorClicked() {
 
     ColorPalette savedPalette = colorPaletteSettings.getHotcueColorPalette();
     ColorPalette newPalette = colorPaletteSettings.getColorPalette(
-            comboBoxHotcueColors->currentText(), savedPalette);
+            comboBoxHotcueColors->currentData().toString(), savedPalette);
     m_pReplaceCueColorDlg->setColorPalette(newPalette);
 
     int savedDefaultColorIndex = m_pConfig->getValue(
@@ -335,7 +343,7 @@ QIcon DlgPrefColors::drawHotcueColorByPaletteIcon(const QString& paletteName) {
 }
 
 void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
-    QString paletteName = comboBoxHotcueColors->itemText(paletteIndex);
+    QString paletteName = comboBoxHotcueColors->itemData(paletteIndex).toString();
     ColorPalette palette =
             m_colorPaletteSettings.getHotcueColorPalette(paletteName);
 
@@ -384,19 +392,19 @@ void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
 }
 
 void DlgPrefColors::slotKeyPaletteIndexChanged(int paletteIndex) {
-    QString paletteName = comboBoxKeyColors->itemText(paletteIndex);
+    QString paletteName = comboBoxKeyColors->itemData(paletteIndex).toString();
     ColorPalette palette =
             m_colorPaletteSettings.getKeyColorPalette(paletteName);
     BaseTrackTableModel::setKeyColorPalette(palette);
 }
 
 void DlgPrefColors::slotEditTrackPaletteClicked() {
-    QString trackColorPaletteName = comboBoxTrackColors->currentText();
+    QString trackColorPaletteName = comboBoxTrackColors->currentData().toString();
     openColorPaletteEditor(trackColorPaletteName, false);
 }
 
 void DlgPrefColors::slotEditHotcuePaletteClicked() {
-    QString hotcueColorPaletteName = comboBoxHotcueColors->currentText();
+    QString hotcueColorPaletteName = comboBoxHotcueColors->currentData().toString();
     openColorPaletteEditor(hotcueColorPaletteName, true);
 }
 
@@ -433,7 +441,7 @@ void DlgPrefColors::openColorPaletteEditor(
 }
 
 void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
-    QString hotcueColors = comboBoxHotcueColors->currentText();
+    QString hotcueColors = comboBoxHotcueColors->currentData().toString();
     int defaultHotcueColor = comboBoxHotcueDefaultColor->currentIndex();
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
 
@@ -442,7 +450,7 @@ void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
 }
 
 void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
-    QString trackColors = comboBoxTrackColors->currentText();
+    QString trackColors = comboBoxTrackColors->currentData().toString();
     int defaultHotcueColor = comboBoxHotcueDefaultColor->currentIndex();
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
 
@@ -451,8 +459,8 @@ void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
 }
 
 void DlgPrefColors::palettesUpdated() {
-    QString hotcueColors = comboBoxHotcueColors->currentText();
-    QString trackColors = comboBoxTrackColors->currentText();
+    QString hotcueColors = comboBoxHotcueColors->currentData().toString();
+    QString trackColors = comboBoxTrackColors->currentData().toString();
     int defaultHotcueColor = comboBoxHotcueDefaultColor->currentIndex();
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
 
@@ -465,8 +473,10 @@ void DlgPrefColors::restoreComboBoxes(
         const QString& trackColors,
         int defaultHotcueColor,
         int defaultLoopColor) {
-    comboBoxHotcueColors->setCurrentText(hotcueColors);
-    comboBoxTrackColors->setCurrentText(trackColors);
+    comboBoxHotcueColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes", qPrintable(hotcueColors)));
+    comboBoxTrackColors->setCurrentText(QCoreApplication::translate(
+            "PredefinedColorPalettes", qPrintable(trackColors)));
     if (comboBoxHotcueDefaultColor->count() > defaultHotcueColor) {
         comboBoxHotcueDefaultColor->setCurrentIndex(defaultHotcueColor);
     } else {
