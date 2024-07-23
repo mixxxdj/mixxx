@@ -69,7 +69,7 @@ class KeyUtils {
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 
-    static QColor keyToColor(mixxx::track::io::key::ChromaticKey key, ColorPalette palette);
+    static QColor keyToColor(mixxx::track::io::key::ChromaticKey key, const ColorPalette& palette);
 
     static QPair<mixxx::track::io::key::ChromaticKey, double> scaleKeyOctaves(
         mixxx::track::io::key::ChromaticKey key, double scale);

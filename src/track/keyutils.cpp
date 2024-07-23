@@ -466,7 +466,7 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 }
 
 // static
-QColor KeyUtils::keyToColor(ChromaticKey key, ColorPalette palette) {
+QColor KeyUtils::keyToColor(ChromaticKey key, const ColorPalette& palette) {
     int openKeyNumber = keyToOpenKeyNumber(key);
 
     if (openKeyNumber != 0) {

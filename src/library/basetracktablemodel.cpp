@@ -128,7 +128,7 @@ void BaseTrackTableModel::setKeyColorsEnabled(bool keyColorsEnabled) {
 }
 
 // static
-void BaseTrackTableModel::setKeyColorPalette(ColorPalette palette) {
+void BaseTrackTableModel::setKeyColorPalette(const ColorPalette& palette) {
     s_keyColorPalette = palette;
 }
 

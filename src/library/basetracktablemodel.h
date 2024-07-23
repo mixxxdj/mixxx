@@ -109,7 +109,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr bool kKeyColorsEnabledDefault = true;
     static void setKeyColorsEnabled(bool keyColorsEnabled);
 
-    static void setKeyColorPalette(ColorPalette palette);
+    static void setKeyColorPalette(const ColorPalette& palette);
 
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
