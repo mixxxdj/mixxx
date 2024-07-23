@@ -35,6 +35,7 @@ void setCoverArt(NSMutableDictionary* nowPlayingInfo, const QPixmap& pixmap) {
         // Wrap the converted image in an artwork object as required
         // Since the block escapes, we need to de-stackify it with 'copy'
         auto fetchArtworkImage = ^NSImage*(CGSize size) {
+            Q_UNUSED(size);
             return nsImage;
         };
         MPMediaItemArtwork* artwork = [[MPMediaItemArtwork alloc]
@@ -98,12 +99,14 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
 
     [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
+        Q_UNUSED(event);
         bool success = updatePlayState(true);
         return commandHandlerStatusFor(success);
     }];
 
     [center.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
+        Q_UNUSED(event);
         bool success = updatePlayState(false);
         return commandHandlerStatusFor(success);
     }];
@@ -111,6 +114,7 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
     [center.togglePlayPauseCommand
             addTargetWithHandler:^MPRemoteCommandHandlerStatus(
                     MPRemoteCommandEvent* event) {
+                Q_UNUSED(event);
                 bool success = togglePlayState();
                 return commandHandlerStatusFor(success);
             }];
@@ -126,6 +130,7 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
 
     [center.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
+        Q_UNUSED(event);
         bool success = skipToNextTrack();
         return commandHandlerStatusFor(success);
     }];
@@ -271,6 +276,8 @@ void MacOSMediaPlayerService::slotPlayPositionChanged(
 void MacOSMediaPlayerService::slotCoverFound(const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap) {
+    Q_UNUSED(coverInfo);
+
     if (pRequestor != this) {
         return;
     }
