@@ -2713,7 +2713,7 @@ WTrackPropertyEditor {
       }
 
 #LibraryPlayedCheckbox::indicator:unchecked {
-  image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkbox.svg);
+  image: url(skins:LateNight/palemoon/buttons/btn__lib_checkbox.svg);
 }
 
 /* Button in library "Preview" column */

@@ -270,7 +270,7 @@
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
-      <Template src="skin:/controls/button_4state_display.xml">
+      <Template src="skins:LateNight/controls/button_4state_display.xml">
         <SetVariable name="ObjectName">BroadcastButton</SetVariable>
         <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
         <SetVariable name="Size">72f,20f</SetVariable>
