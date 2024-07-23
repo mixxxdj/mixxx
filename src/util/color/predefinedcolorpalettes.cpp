@@ -192,6 +192,9 @@ constexpr mixxx::RgbColor kMIKKeyColor11(0xFF8693);
 constexpr mixxx::RgbColor kMIKKeyColor12(0xFD7EB3);
 
 // Accessible Color Palettes
+// When arranged in a circle, the hue varies vertically and lightness/saturation
+// varies horizontally so that every color is unique, but adjacent colors are
+// similar.
 
 // Protanopia / Protanomaly
 
