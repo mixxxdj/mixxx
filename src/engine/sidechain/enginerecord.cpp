@@ -36,16 +36,8 @@ int EngineRecord::updateFromPreferences() {
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author"));
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
-    m_bCueIsEnabled =
-            m_pConfig
-                    ->getValueString(ConfigKey(
-                            RECORDING_PREF_KEY, "CueEnabled"))
-                    .toInt();
-    m_bCueUsesFileAnnotation =
-            m_pConfig
-                    ->getValueString(ConfigKey(
-                            RECORDING_PREF_KEY, "cue_file_annotation_enabled"))
-                    .toInt();
+    m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
+    m_bCueUsesFileAnnotation = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueFileAnnotationEnabled")).toInt();
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
@@ -248,19 +240,19 @@ void EngineRecord::writeCueLine() {
                                 ((m_frames / (m_sampleRate / 75)))
                                     % 75);
 
-    m_cueFile.write(QStringLiteral("  TRACK %1 AUDIO\n")
+    m_cueFile.write(QString("  TRACK %1 AUDIO\n")
                             .arg((double)m_cueTrack, 2, 'f', 0, '0')
                             .toUtf8());
 
-    m_cueFile.write(QStringLiteral("    TITLE \"%1\"\n")
+    m_cueFile.write(QString("    TITLE \"%1\"\n")
                             .arg(m_pCurrentTrack->getTitle())
                             .toUtf8());
-    m_cueFile.write(QStringLiteral("    PERFORMER \"%1\"\n")
+    m_cueFile.write(QString("    PERFORMER \"%1\"\n")
                             .arg(m_pCurrentTrack->getArtist())
                             .toUtf8());
 
     if (m_bCueUsesFileAnnotation) {
-        m_cueFile.write(QStringLiteral("    FILE \"%1\"\n")
+        m_cueFile.write(QString("    FILE \"%1\"\n")
                                 .arg(m_pCurrentTrack->getLocation())
                                 .toUtf8());
     }
@@ -396,4 +388,3 @@ void EngineRecord::closeCueFile() {
         m_cueFile.close();
     }
 }
-

@@ -48,6 +48,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void saveEncoding();
     void saveUseCueFile();
     void saveUseCueFileAnnotation();
+    void updateCueEnabled();
     void saveSplitSize();
 
     // Pointer to config object
