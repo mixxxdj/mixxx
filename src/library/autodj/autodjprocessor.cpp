@@ -407,6 +407,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             }
         }
 
+        if (pLeftDeck->index > 1 || pRightDeck->index > 1) {
+            // Left and/or right deck is deck 3/4 which may not be visible.
+            // Make sure it is, if the current skin is a 4-deck skin.
+            ControlObject::set(ConfigKey("[Skin]", "show_4decks"), 1);
+        }
+
         // Never load the same track if it is already playing
         if (leftDeckPlaying) {
             removeLoadedTrackFromTopOfQueue(*pLeftDeck);
