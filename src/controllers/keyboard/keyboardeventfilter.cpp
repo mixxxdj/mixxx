@@ -165,20 +165,11 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         modseq += "Shift+";
     }
 
-    if (e->modifiers() & Qt::ControlModifier) {
-        modseq += "Ctrl+";
-    }
-
-    if (e->modifiers() & Qt::AltModifier) {
-        modseq += "Alt+";
-    }
 
     if (e->modifiers() & Qt::MetaModifier) {
         modseq += "Meta+";
     }
-
-    QString keyseq = QKeySequence(e->key()).toString();
-    k = QKeySequence(modseq + keyseq);
+  
 
     if (CmdlineArgs::Instance().getDeveloper()) {
         if (e->type() == QEvent::KeyPress) {
@@ -188,11 +179,7 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         }
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    return QKeySequence(e->modifiers() | e->key());
-#else
-    return QKeySequence(e->modifiers() + e->key());
-#endif
+    return k;
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
