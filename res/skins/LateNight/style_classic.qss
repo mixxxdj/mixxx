@@ -2087,6 +2087,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 #CueSavedLoopButton {
   image: url(skins:LateNight/classic/buttons/btn__loop.svg);
 }
+#CueDeleteButton:pressed,
 #CueSavedLoopButton:pressed,
 #CueSavedLoopButton:checked {
   background-color: #db0000;
