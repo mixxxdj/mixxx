@@ -1,37 +1,17 @@
 #include "mixxxscreen.h"
 
+#include "util/assert.h"
+
 namespace mixxx {
 namespace qml {
 
-void MixxxScreen::classBegin() {
-}
-
 void MixxxScreen::componentComplete() {
-    const auto* const meta = metaObject();
-    int typedIdx = meta->indexOfMethod(kScreenTransformFunctionTypedSignature);
-    int untypedIdx = meta->indexOfMethod(kScreenTransformFunctionUntypedSignature);
-    if (typedIdx >= 0) {
-        auto transformMethod = meta->method(typedIdx);
-        if (!transformMethod.isValid()) {
-            // TODO
-        } else {
-            transform = [transformMethod, this](const QByteArray input,
-                                const QDateTime& timestamp) -> QVariant {
-                return transform(transformMethod, input, timestamp, true);
-            };
-        }
-    } else if (untypedIdx >= 0) {
-        auto transformMethod = meta->method(untypedIdx);
-        if (!transformMethod.isValid()) {
-            // TODO
-        } else {
-            transform = [transformMethod, this](const QByteArray input,
-                                const QDateTime& timestamp) -> QVariant {
-                return transform(transformMethod, input, timestamp, false);
-            };
-        }
-    } else {
+    auto* const context = QQmlEngine::contextForObject(this);
+    VERIFY_OR_DEBUG_ASSERT(context) {
+        return;
     }
+
+    m_engine = context->engine();
 }
 
 int MixxxScreen::width() {
@@ -43,7 +23,7 @@ void MixxxScreen::setWidth(int value) {
 }
 
 int MixxxScreen::height() {
-    return m_size.width();
+    return m_size.height();
 }
 
 void MixxxScreen::setHeight(int value) {
@@ -57,33 +37,41 @@ uint MixxxScreen::splashOff() {
 void MixxxScreen::setSplashOff(uint value) {
     m_splashOff = std::chrono::milliseconds(value);
 }
-QVariant MixxxScreen::transform(QMetaMethod transformMethod,
-        const QByteArray input,
-        const QDateTime& timestamp,
-        bool typed) {
-    QVariant returnedValue;
-    const bool isSuccessful = transformMethod.invoke(
-            &m_item,
-            Qt::DirectConnection,
-            Q_RETURN_ARG(QVariant, returnedValue),
-            typed ? Q_ARG(QVariant, QVariant::fromValue(input)) : Q_ARG(QByteArray, input),
-            Q_ARG(QVariant, timestamp));
-    if (!isSuccessful) {
-        // TODO
-        return {};
-    } else if (returnedValue.isValid()) {
-        // TODO
-        return {};
+
+QJSValue MixxxScreen::jsTransformFrame() {
+    return m_transformFunc;
+}
+
+void MixxxScreen::setJsTransformFrame(QJSValue value) {
+    if (!value.isCallable()) {
+        qWarning() << "transformFrame is not a valid function";
+        return;
     }
 
-    if (returnedValue.canView<QByteArray>()) {
-        return QVariant(returnedValue.view<QByteArray>());
-    } else if (returnedValue.canConvert<QByteArray>()) {
-        return QVariant(returnedValue.toByteArray());
-    } else {
-        // TODO
-        return {};
+    m_transformFunc = value;
+    emit jsTransformFrameChanged();
+}
+
+const std::unique_ptr<QByteArray> MixxxScreen::transform(
+        const QByteArray& frame, QDateTime timestamp, QRect area) {
+    VERIFY_OR_DEBUG_ASSERT(m_engine) {
+        return std::make_unique<QByteArray>(frame);
     }
+
+    if (m_transformFunc.isUndefined()) { // Default implementation
+        return std::make_unique<QByteArray>(frame);
+    }
+    const auto transformResult =
+            m_transformFunc.call(QJSValueList{m_engine->toScriptValue(frame),
+                    m_engine->toScriptValue(timestamp),
+                    m_engine->toScriptValue(area)});
+    if (!transformResult.isVariant()) {
+        qWarning() << "transformFrame did not return a valid result";
+        return std::make_unique<QByteArray>(frame);
+    }
+    const auto result = transformResult.toVariant().toByteArray();
+    qDebug() << "transformFrame returned a result of size" << result.length();
+    return std::make_unique<QByteArray>(result);
 }
 
 } // namespace qml

@@ -828,11 +828,10 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
 }
 
 #ifdef MIXXX_USE_QML
-bool ControllerScriptEngineLegacy::
-        : instanciateQMLComponent(
-                  const LegacyControllerMapping::ScriptFileInfo& qmlScript,
-                  QMap<QString, std::shared_ptr<ControllerRenderingEngine>>
-                          availableScreens) {
+bool ControllerScriptEngineLegacy::instanciateQMLComponent(
+        const LegacyControllerMapping::ScriptFileInfo& qmlScript,
+        QMap<QString, std::shared_ptr<ControllerRenderingEngine>>
+                availableScreens) {
     // Like for Javascript, if the script is invalid, it should be watched so the user can fix it
     // without having to restart Mixxx. So, add it to the watcher before
     // evaluating it.

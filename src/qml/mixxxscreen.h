@@ -12,6 +12,8 @@
 #include <QQuickItem>
 #include <QSize>
 
+#include "mixxxcontroller.h"
+
 namespace mixxx {
 namespace qml {
 
@@ -30,8 +32,10 @@ class MixxxScreen : public QObject, public QQmlParserStatus {
     Q_PROPERTY(ColorEndian endian MEMBER m_endian)
     Q_PROPERTY(bool reversedColor MEMBER m_reversedColor)
     Q_PROPERTY(bool rawData MEMBER m_rawData)
+    Q_PROPERTY(QJSValue transformFrame READ jsTransformFrame WRITE
+                    setJsTransformFrame NOTIFY jsTransformFrameChanged)
 
-    Q_PROPERTY(QQuickItem item MEMBER m_item)
+    Q_PROPERTY(QQuickItem* item MEMBER m_item)
 
     Q_CLASSINFO("DefaultProperty", "item")
 
@@ -42,7 +46,11 @@ class MixxxScreen : public QObject, public QQmlParserStatus {
     };
     Q_ENUM(ColorEndian)
 
-    void classBegin() override;
+    explicit MixxxScreen(MixxxController* parent = nullptr)
+            : QObject(parent) {
+    }
+
+    void classBegin() override{};
     void componentComplete() override;
 
     int width();
@@ -51,12 +59,18 @@ class MixxxScreen : public QObject, public QQmlParserStatus {
     void setHeight(int value);
     uint splashOff();
     void setSplashOff(uint value);
+    QJSValue jsTransformFrame();
+    void setJsTransformFrame(QJSValue value);
+    const std::unique_ptr<QByteArray> transform(
+            const QByteArray& frame, QDateTime timestamp, QRect area);
 
   signals:
     void init();
     void shutdown();
+    void jsTransformFrameChanged();
 
   private:
+    QQmlEngine* m_engine = nullptr;
     // The screen identifier.
     QString m_screenId;
     // The size of the screen.
@@ -80,23 +94,9 @@ class MixxxScreen : public QObject, public QQmlParserStatus {
     // not transformed.
     bool m_rawData = false;
     // The item to render
-    QQuickItem m_item;
+    QQuickItem* m_item;
     // Transform function
-    std::function<QVariant(const QByteArray, const QDateTime&)> transform =
-            [](const QByteArray input, const QDateTime& timestamp) {
-                return QVariant(input);
-            };
-
-    inline static QByteArray kScreenTransformFunctionUntypedSignature =
-            QMetaObject::normalizedSignature(
-                    "transformFrame(QVariant,QVariant)");
-    inline static QByteArray kScreenTransformFunctionTypedSignature =
-            QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
-
-    QVariant transform(QMetaMethod transformMethod,
-            const QByteArray input,
-            const QDateTime& timestamp,
-            bool typed);
+    QJSValue m_transformFunc;
 };
 
 } // namespace qml

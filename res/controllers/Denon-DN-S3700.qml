@@ -12,5 +12,9 @@ MixxxController {
         screenId: "screen 7"
         splashOff: 5000
         onInit: console.error(`MixxxScreen.screenId=${screenId}, MixxxScreen.splashOff=${splashOff}`)
+        transformFrame: (frame, timestamp, area) => {
+            console.error(frame)
+            return new ArrayBuffer(0)
+        }
     }
 }
