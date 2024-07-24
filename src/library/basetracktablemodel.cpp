@@ -1033,11 +1033,10 @@ QVariant BaseTrackTableModel::roleValue(
             // return whether or not to display the color rectangle
             return QVariant::fromValue(s_keyColorsEnabled);
         }
-        default: {
+        default:
             DEBUG_ASSERT(!"unexpected field for UserRole");
-            break;
         }
-        }
+        break;
     }
     default:
         DEBUG_ASSERT(!"unexpected role");
