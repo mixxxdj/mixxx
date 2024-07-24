@@ -32,6 +32,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void fastAnalysisEnabled(int i);
     void slotReanalyzeChanged(int value);
     void slotReanalyzeImportedChanged(int value);
+    void slotStemStrategyChanged(int index);
 
   private:
     void loadSettings();
@@ -44,4 +45,5 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyze;
     bool m_bReanalyzeImported;
+    BeatDetectionSettings::StemStrategy m_stemStrategy;
 };

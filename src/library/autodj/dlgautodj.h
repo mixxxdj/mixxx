@@ -28,10 +28,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
+    void pasteFromSidebar() override;
     void onSearch(const QString& text) override;
-    void activateSelectedTrack() override;
-    void loadSelectedTrackToGroup(const QString& group, bool play) override;
-    void moveSelection(int delta) override;
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
 
@@ -46,7 +44,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
     void slotTransitionModeChanged(int comboboxIndex);
-    void slotRepeatPlaylistChanged(int checkedState);
+    void slotRepeatPlaylistChanged(bool checked);
 
   signals:
     void addRandomTrackButton(bool buttonChecked);

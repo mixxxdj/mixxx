@@ -7,6 +7,7 @@
 #include <QString>
 #include <vector>
 
+#include "analyzer/constants.h"
 #include "audio/signalinfo.h"
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
@@ -14,17 +15,14 @@
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
-union WaveformData {
+struct WaveformData {
     struct {
         unsigned char low;
         unsigned char mid;
         unsigned char high;
         unsigned char all;
     } filtered;
-    int m_i;
-
-    WaveformData() {}
-    WaveformData(int i) { m_i = i;}
+    unsigned char stems[mixxx::kMaxSupportedStem];
 };
 
 class Waveform {
@@ -40,7 +38,8 @@ class Waveform {
             int audioSampleRate,
             SINT frameLength,
             int desiredVisualSampleRate,
-            int maxVisualSamples);
+            int maxVisualSamples,
+            int stemCount);
 
     virtual ~Waveform();
 
@@ -133,7 +132,7 @@ class Waveform {
   private:
     void readByteArray(const QByteArray& data);
     void resize(int size);
-    void assign(int size, int value = 0);
+    void assign(int size);
 
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
@@ -172,6 +171,9 @@ class Waveform {
     // For performance, completion is shared as a QAtomicInt and does not lock
     // the mutex. The completion of the waveform calculation.
     QAtomicInt m_completion;
+
+    // The number of stem contained in waveform samples. 0 if not a stem waveform
+    int m_stemCount;
 
     mutable QMutex m_mutex;
 

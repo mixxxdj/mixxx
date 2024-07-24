@@ -336,6 +336,14 @@ void ScreenSaverHelper::uninhibitInternal() {
     setIdleTimerDisabled(false);
     s_enabled = false;
 }
+#elif defined(Q_OS_WASM)
+// Screensavers are not supported
+void ScreenSaverHelper::triggerUserActivity() {
+}
+void ScreenSaverHelper::inhibitInternal() {
+}
+void ScreenSaverHelper::uninhibitInternal() {
+}
 #else
 void ScreenSaverHelper::triggerUserActivity()
 {

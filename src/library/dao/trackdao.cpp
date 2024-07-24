@@ -1368,14 +1368,14 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
     // will be locked again after the query has been executed (see below)
     // and potential race conditions will be resolved.
-    ScopedTimer t("TrackDAO::getTrackById");
+    ScopedTimer t(QStringLiteral("TrackDAO::getTrackById"));
 
     QSqlRecord queryRecord;
     {
         QString columnsStr;
         int columnsSize = 0;
         for (int i = 0; i < columnsCount; ++i) {
-            columnsSize += qstrlen(columns[i].name) + 1;
+            columnsSize += static_cast<int>(qstrlen(columns[i].name)) + 1;
         }
         columnsStr.reserve(columnsSize);
         for (int i = 0; i < columnsCount; ++i) {

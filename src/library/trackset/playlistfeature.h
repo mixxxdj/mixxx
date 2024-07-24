@@ -35,6 +35,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableChanged(int playlistId) override;
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
+    void slotShufflePlaylist();
 
   protected:
     void decorateChild(TreeItem* pChild, int playlistId) override;
@@ -43,4 +44,6 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private:
     QString getRootViewHtml() const override;
+
+    QAction* m_pShufflePlaylistAction;
 };

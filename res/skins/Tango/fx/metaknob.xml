@@ -15,7 +15,7 @@ Variables:
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <KnobComposed>
+      <EffectMetaKnob>
         <TooltipId>EffectSlot_metaknob</TooltipId>
         <Size>30f,26f</Size>
         <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
@@ -23,10 +23,12 @@ Variables:
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <KnobCenterYOffset>2.000</KnobCenterYOffset>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
         <Connection>
           <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,meta</ConfigKey>
         </Connection>
-      </KnobComposed>
+      </EffectMetaKnob>
     </Children>
   </WidgetGroup>
 </Template>

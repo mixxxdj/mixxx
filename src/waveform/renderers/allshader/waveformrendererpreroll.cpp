@@ -59,8 +59,11 @@ QImage drawPrerollImage(float markerLength,
 
 namespace allshader {
 
-WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget) {
+WaveformRendererPreroll::WaveformRendererPreroll(
+        WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::PositionSource type)
+        : WaveformRenderer(waveformWidget),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 WaveformRendererPreroll::~WaveformRendererPreroll() = default;
@@ -78,12 +81,16 @@ void WaveformRendererPreroll::initializeGL() {
 
 void WaveformRendererPreroll::paintGL() {
     const TrackPointer track = m_waveformRenderer->getTrackInfo();
-    if (!track) {
+    if (!track || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
         return;
     }
 
-    const double firstDisplayedPosition = m_waveformRenderer->getFirstDisplayedPosition();
-    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition();
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
+
+    const double firstDisplayedPosition =
+            m_waveformRenderer->getFirstDisplayedPosition(positionType);
+    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition(positionType);
 
     // Check if the pre- or post-roll is on screen. If so, draw little triangles
     // to indicate the respective zones.
@@ -98,7 +105,7 @@ void WaveformRendererPreroll::paintGL() {
     const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
 
-    const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
+    const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample(positionType);
     const int totalVSamples = m_waveformRenderer->getTotalVSample();
 
     const float markerBreadth = m_waveformRenderer->getBreadth() * 0.4f;
@@ -165,7 +172,7 @@ void WaveformRendererPreroll::paintGL() {
         drawPattern(x,
                 halfBreadth - halfMarkerBreadth,
                 0.f,
-                halfBreadth + halfMarkerBreadth,
+                m_isSlipRenderer ? halfBreadth : halfBreadth + halfMarkerBreadth,
                 x / markerLength);
     }
 
@@ -186,7 +193,7 @@ void WaveformRendererPreroll::paintGL() {
         drawPattern(x,
                 halfBreadth - halfMarkerBreadth,
                 end,
-                halfBreadth + halfMarkerBreadth,
+                m_isSlipRenderer ? halfBreadth : halfBreadth + halfMarkerBreadth,
                 (end - x) / markerLength);
     }
 
@@ -205,7 +212,14 @@ void WaveformRendererPreroll::drawPattern(
     const int texcoordLocation = m_shader.texcoordLocation();
 
     const std::array<float, 8> positionArray = {x1, y1, x2, y1, x1, y2, x2, y2};
-    const std::array<float, 8> texcoordArray = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f};
+    const std::array<float, 8> texcoordArray = {0.f,
+            0.f,
+            1.f,
+            0.f,
+            0.f,
+            m_isSlipRenderer ? 0.5f : 1.f,
+            1.f,
+            m_isSlipRenderer ? 0.5f : 1.f};
     m_shader.setUniformValue(repetitionsLocation, QVector2D(repetitions, 1.0));
 
     m_shader.setAttributeArray(

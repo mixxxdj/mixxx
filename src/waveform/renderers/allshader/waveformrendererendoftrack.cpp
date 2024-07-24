@@ -98,7 +98,7 @@ void WaveformRendererEndOfTrack::paintGL() {
 
     if (alpha != 0.0) {
         QColor color = m_color;
-        color.setAlphaF(alpha);
+        color.setAlphaF(static_cast<float>(alpha));
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

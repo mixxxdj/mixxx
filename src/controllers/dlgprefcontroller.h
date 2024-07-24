@@ -18,6 +18,9 @@ class ControllerOutputMappingTableModel;
 class ControlPickerMenu;
 class DlgControllerLearning;
 class MappingInfoEnumerator;
+#ifdef MIXXX_USE_QML
+class ControllerScriptEngineLegacy;
+#endif
 
 /// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
@@ -61,6 +64,15 @@ class DlgPrefController : public DlgPreferencePage {
     void slotStopLearning();
     void enableWizardAndIOTabs(bool enable);
 
+#ifdef MIXXX_USE_QML
+    // Onboard screen controller.
+    void slotShowPreviewScreens(const ControllerScriptEngineLegacy* scriptEngine);
+    // Wrapper used on shutdown.
+    void slotClearPreviewScreens() {
+        slotShowPreviewScreens(nullptr);
+    }
+#endif
+
     // Input mappings
     void addInputMapping();
     void showLearningWizard();
@@ -81,7 +93,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingPathFromIndex(int index) const;
+    QString mappingFilePathFromIndex(int index) const;
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
     bool saveMapping();

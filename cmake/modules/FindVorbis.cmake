@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_path(Vorbis_vorbis_INCLUDE_DIR
   NAMES vorbis/codec.h
   DOC "Vorbis include directory"
@@ -101,3 +103,15 @@ find_package_handle_standard_args(Vorbis
     REQUIRED_VARS Vorbis_vorbis_INCLUDE_DIR Vorbis_vorbis_LIBRARY
     HANDLE_COMPONENTS
 )
+
+if(Vorbis_vorbis_FOUND)
+  is_static_library(Vorbis_vorbis_IS_STATIC Vorbis::vorbis)
+  if(Vorbis_vorbis_IS_STATIC)
+    find_package(Ogg)
+    if(Ogg_FOUND)
+      set_property(TARGET Vorbis::vorbis APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        Ogg::ogg
+      )
+    endif()
+  endif()
+endif()

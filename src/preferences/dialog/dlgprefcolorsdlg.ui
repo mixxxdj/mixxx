@@ -101,6 +101,18 @@
     </item>
 
     <item row="4" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkboxKeyColorsEnabled">
+      <property name="toolTip">
+       <string>When key colors are enabled, Mixxx will display a color hint
+associated with each key.</string>
+      </property>
+      <property name="text">
+       <string>Enable Key Colors</string>
+      </property>
+     </widget>
+    </item>
+
+    <item row="5" column="0" colspan="2">
      <spacer>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -124,6 +136,7 @@
   <tabstop>pushButtonEditHotcuePalette</tabstop>
   <tabstop>comboBoxHotcueDefaultColor</tabstop>
   <tabstop>pushButtonReplaceCueColor</tabstop>
+  <tabstop>checkboxKeyColorsEnabled</tabstop>
  </tabstops>
  <resources/>
  <connections/>

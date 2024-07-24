@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 
 #include <QApplication>
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QFontDialog>
@@ -10,15 +9,22 @@
 #include <QStandardPaths>
 #include <QUrl>
 
+#include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "library/basetracktablemodel.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/searchquery.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
+#include "util/desktophelper.h"
 #include "widget/wsearchlineedit.h"
+
+namespace {
+constexpr int kDefaultFuzzyRateRangePercent = 75;
+} // namespace
 
 using namespace mixxx::library::prefs;
 
@@ -31,48 +37,38 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_bAddedDirectory(false),
-          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx),
+          m_pRateRangeDeck1(make_parented<ControlProxy>(
+                  QStringLiteral("[Channel1]"), QStringLiteral("rateRange"), this)) {
     setupUi(this);
 
-    connect(this,
-            &DlgPrefLibrary::requestAddDir,
-            m_pLibrary.get(),
-            &Library::slotRequestAddDir);
-    connect(this,
-            &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary.get(),
-            &Library::slotRequestRemoveDir);
-    connect(this,
-            &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary.get(),
-            &Library::slotRequestRelocateDir);
-    connect(PushButtonAddDir,
+    connect(pushButton_add_dir,
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotAddDir);
-    connect(PushButtonRemoveDir,
+    connect(pushButton_remove_dir,
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotRemoveDir);
-    connect(PushButtonRelocateDir,
+    connect(pushButton_relocate_dir,
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotRelocateDir);
-    connect(checkBox_SeratoMetadataExport,
+    connect(checkBox_serato_metadata_export,
             &QAbstractButton::clicked,
             this,
             &DlgPrefLibrary::slotSeratoMetadataExportClicked);
     const QString& settingsDir = m_pConfig->getSettingsPath();
-    connect(PushButtonOpenSettingsDir,
+    connect(pushButton_open_settings_dir,
             &QPushButton::clicked,
             [settingsDir] {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(settingsDir));
+                mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(settingsDir));
             });
 
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
-    spinBoxRowHeight->setValue(rowHeight);
-    connect(spinBoxRowHeight,
+    spinBox_row_height->setValue(rowHeight);
+    connect(spinBox_row_height,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefLibrary::slotRowHeightValueChanged);
@@ -84,16 +80,33 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotBpmColumnPrecisionChanged);
 
-    searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
-    searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
-    connect(searchDebouncingTimeoutSpinBox,
+    spinBox_search_debouncing_timeout->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
+    spinBox_search_debouncing_timeout->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
+    connect(spinBox_search_debouncing_timeout,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
+    comboBox_search_bpm_fuzzy_range->clear();
+    comboBox_search_bpm_fuzzy_range->addItem("25 %", 25);
+    comboBox_search_bpm_fuzzy_range->addItem("50 %", 50);
+    comboBox_search_bpm_fuzzy_range->addItem("75 %", 75);
+    comboBox_search_bpm_fuzzy_range->addItem("100 %", 100);
+    connect(comboBox_search_bpm_fuzzy_range,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefLibrary::slotBpmRangeSelected);
+    // Also listen to rate range changes (e.g. made in DlgPrefDecks) and
+    // adjust the fuzzy range accordingly
+    m_pRateRangeDeck1->connectValueChanged(
+            this,
+            [this]() {
+                slotBpmRangeSelected(comboBox_search_bpm_fuzzy_range->currentIndex());
+            });
+
     updateSearchLineEditHistoryOptions();
 
-    connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
+    connect(btn_library_font, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
@@ -121,13 +134,26 @@ DlgPrefLibrary::DlgPrefLibrary(
             m_pLinkColor,
             tr("See the manual for details"),
             MIXXX_MANUAL_SETTINGS_DIRECTORY_URL));
+    // TODO It seems this isnot required anymore with Qt 6.2.3
     connect(label_settingsManualLink,
             &QLabel::linkActivated,
             [](const QString& url) {
-                QDesktopServices::openUrl(url);
+                mixxx::DesktopHelper::openUrl(url);
             });
 
-    connect(checkBox_SyncTrackMetadata,
+    // Add link to the track search documentation
+    label_searchBpmFuzzyRangeInfo->setText(
+            label_searchBpmFuzzyRangeInfo->text() + QStringLiteral(" ") +
+            coloredLinkString(m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SETTINGS_DIRECTORY_URL));
+    connect(label_searchBpmFuzzyRangeInfo,
+            &QLabel::linkActivated,
+            [](const QString& url) {
+                mixxx::DesktopHelper::openUrl(url);
+            });
+
+    connect(checkBox_sync_track_metadata,
             &QCheckBox::toggled,
             this,
             &DlgPrefLibrary::slotSyncTrackMetadataToggled);
@@ -213,22 +239,27 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_history_track_duplicate_distance->setValue(
             kHistoryTrackDuplicateDistanceDefault);
     spinbox_history_min_tracks_to_keep->setValue(1);
-    checkBox_SyncTrackMetadata->setChecked(false);
-    checkBox_SeratoMetadataExport->setChecked(false);
+    checkBox_sync_track_metadata->setChecked(false);
+    checkBox_serato_metadata_export->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
-    checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
+    checkBox_edit_metadata_selected_clicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
     spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    checkbox_played_track_color->setChecked(
+            BaseTrackTableModel::kApplyPlayedTrackColorDefault);
 
     radioButton_cover_art_fetcher_medium->setChecked(true);
 
-    spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
+    spinBox_row_height->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
-    searchDebouncingTimeoutSpinBox->setValue(
+    spinBox_search_debouncing_timeout->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    checkBoxEnableSearchCompletions->setChecked(WSearchLineEdit::kCompletionsEnabledDefault);
-    checkBoxEnableSearchHistoryShortcuts->setChecked(
+    checkBox_enable_search_history_shortcuts->setChecked(
+            WSearchLineEdit::kCompletionsEnabledDefault);
+    checkBox_enable_search_history_shortcuts->setChecked(
             WSearchLineEdit::kHistoryShortcutsEnabledDefault);
+    comboBox_search_bpm_fuzzy_range->setCurrentIndex(
+            comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent));
 
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -249,11 +280,11 @@ void DlgPrefLibrary::slotUpdate() {
             kHistoryMinTracksToKeepConfigKey,
             kHistoryMinTracksToKeepDefault));
 
-    checkBox_SyncTrackMetadata->setChecked(
+    checkBox_sync_track_metadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
-    checkBox_SeratoMetadataExport->setChecked(
+    checkBox_serato_metadata_export->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
-    setSeratoMetadataEnabled(checkBox_SyncTrackMetadata->isChecked());
+    setSeratoMetadataEnabled(checkBox_sync_track_metadata->isChecked());
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             kUseRelativePathOnExportConfigKey, false));
 
@@ -307,32 +338,49 @@ void DlgPrefLibrary::slotUpdate() {
     bool editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
-    checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
-    m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
+    checkBox_edit_metadata_selected_clicked->setChecked(editMetadataSelectedClick);
+    m_pLibrary->setEditMetadataSelectedClick(editMetadataSelectedClick);
 
-    checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
+    checkBox_enable_search_history_shortcuts->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
             WSearchLineEdit::kCompletionsEnabledDefault));
-    checkBoxEnableSearchHistoryShortcuts->setChecked(m_pConfig->getValue(
+    checkBox_enable_search_history_shortcuts->setChecked(m_pConfig->getValue(
             kEnableSearchHistoryShortcutsConfigKey,
             WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
-    spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
+    spinBox_row_height->setValue(m_iOriginalTrackTableRowHeight);
     setLibraryFont(m_originalTrackTableFont);
 
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
                     kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
+    spinBox_search_debouncing_timeout->setValue(searchDebouncingTimeoutMillis);
+
+    const auto searchBpmFuzzyRange =
+            m_pConfig->getValue(
+                    kSearchBpmFuzzyRangeConfigKey,
+                    BpmFilterNode::kRelativeRangeDefault);
+    int index = comboBox_search_bpm_fuzzy_range->findData(static_cast<int>(searchBpmFuzzyRange));
+    if (index == -1) {
+        index = comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent);
+    }
+    comboBox_search_bpm_fuzzy_range->setCurrentIndex(index);
+    slotBpmRangeSelected(index);
 
     const auto bpmColumnPrecision =
             m_pConfig->getValue(
                     kBpmColumnPrecisionConfigKey,
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     spinbox_bpm_precision->setValue(bpmColumnPrecision);
+
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    checkbox_played_track_color->setChecked(applyPlayedTrackColor);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -346,9 +394,10 @@ void DlgPrefLibrary::slotAddDir() {
         this, tr("Choose a music directory"),
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
-        emit requestAddDir(fd);
-        slotUpdate();
-        m_bAddedDirectory = true;
+        if (m_pLibrary->requestAddDir(fd)) {
+            populateDirList();
+            m_bAddedDirectory = true;
+        }
     }
 }
 
@@ -404,8 +453,9 @@ void DlgPrefLibrary::slotRemoveDir() {
         removalType = LibraryRemovalType::KeepTracks;
     }
 
-    emit requestRemoveDir(fd, removalType);
-    slotUpdate();
+    if (m_pLibrary->requestRemoveDir(fd, removalType)) {
+        populateDirList();
+    }
 }
 
 void DlgPrefLibrary::slotRelocateDir() {
@@ -426,9 +476,8 @@ void DlgPrefLibrary::slotRelocateDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Relink music directory to new location"), startDir);
 
-    if (!fd.isEmpty()) {
-        emit requestRelocateDir(currentFd, fd);
-        slotUpdate();
+    if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
+        populateDirList();
     }
 }
 
@@ -446,7 +495,7 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
                             "recommended. Are you sure you want to enable this "
                             "option?"),
                     QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-            checkBox_SeratoMetadataExport->setChecked(false);
+            checkBox_serato_metadata_export->setChecked(false);
         }
     }
 }
@@ -462,18 +511,18 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(
             kSyncTrackMetadataConfigKey,
-            ConfigValue{checkBox_SyncTrackMetadata->isChecked()});
+            ConfigValue{checkBox_sync_track_metadata->isChecked()});
     m_pConfig->set(
             kSyncSeratoMetadataConfigKey,
-            ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
+            ConfigValue{checkBox_serato_metadata_export->isChecked()});
 
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
     m_pConfig->set(kEnableSearchCompletionsConfigKey,
-            ConfigValue(checkBoxEnableSearchCompletions->isChecked()));
+            ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
     m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
-            ConfigValue(checkBoxEnableSearchHistoryShortcuts->isChecked()));
+            ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
     updateSearchLineEditHistoryOptions();
 
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
@@ -515,9 +564,9 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue(dbclick_status));
 
     m_pConfig->set(kEditMetadataSelectedClickConfigKey,
-            ConfigValue(checkBoxEditMetadataSelectedClicked->checkState()));
-    m_pLibrary->setEditMedatataSelectedClick(
-            checkBoxEditMetadataSelectedClicked->checkState());
+            ConfigValue(checkBox_edit_metadata_selected_clicked->checkState()));
+    m_pLibrary->setEditMetadataSelectedClick(
+            checkBox_edit_metadata_selected_clicked->checkState());
 
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
@@ -525,11 +574,17 @@ void DlgPrefLibrary::slotApply() {
                        ConfigValue(font.toString()));
     }
 
-    int rowHeight = spinBoxRowHeight->value();
+    int rowHeight = spinBox_row_height->value();
     if (m_iOriginalTrackTableRowHeight != rowHeight) {
         m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
+
+    BaseTrackTableModel::setApplyPlayedTrackColor(
+            checkbox_played_track_color->isChecked());
+    m_pConfig->set(
+            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            ConfigValue(checkbox_played_track_color->isChecked()));
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();
@@ -540,17 +595,20 @@ void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
 }
 
 void DlgPrefLibrary::setLibraryFont(const QFont& font) {
-    libraryFont->setText(QString("%1 %2 %3pt").arg(
-        font.family(), font.styleName(), QString::number(font.pointSizeF())));
+    lineEdit_library_font->setText(
+            QString("%1 %2 %3pt")
+                    .arg(font.family(),
+                            font.styleName(),
+                            QString::number(font.pointSizeF())));
     m_pLibrary->setFont(font);
 
     // Don't let the font height exceed the row height.
     QFontMetrics metrics(font);
     int fontHeight = metrics.height();
-    spinBoxRowHeight->setMinimum(fontHeight);
+    spinBox_row_height->setMinimum(fontHeight);
     // library.cpp takes care of setting the new row height according to the
     // previous font height/ row height ratio
-    spinBoxRowHeight->setValue(m_pLibrary->getTrackTableRowHeight());
+    spinBox_row_height->setValue(m_pLibrary->getTrackTableRowHeight());
 }
 
 void DlgPrefLibrary::slotSelectFont() {
@@ -570,6 +628,14 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }
 
+void DlgPrefLibrary::slotBpmRangeSelected(int index) {
+    const int bpmRange = comboBox_search_bpm_fuzzy_range->itemData(index).toInt();
+    m_pConfig->set(kSearchBpmFuzzyRangeConfigKey, ConfigValue{bpmRange});
+    const int rateRangePercent =
+            m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"), 8);
+    BpmFilterNode::setBpmRelativeRange(bpmRange * rateRangePercent / 10000.0);
+}
+
 void DlgPrefLibrary::updateSearchLineEditHistoryOptions() {
     WSearchLineEdit::setSearchCompletionsEnabled(m_pConfig->getValue<bool>(
             kEnableSearchCompletionsConfigKey,
@@ -587,7 +653,7 @@ void DlgPrefLibrary::slotBpmColumnPrecisionChanged(int bpmPrecision) {
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
-    bool shouldSyncTrackMetadata = checkBox_SyncTrackMetadata->isChecked();
+    bool shouldSyncTrackMetadata = checkBox_sync_track_metadata->isChecked();
     if (isVisible() && shouldSyncTrackMetadata) {
         mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
     }
@@ -595,8 +661,8 @@ void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
 }
 
 void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
-    checkBox_SeratoMetadataExport->setEnabled(shouldSyncTrackMetadata);
+    checkBox_serato_metadata_export->setEnabled(shouldSyncTrackMetadata);
     if (!shouldSyncTrackMetadata) {
-        checkBox_SeratoMetadataExport->setChecked(false);
+        checkBox_serato_metadata_export->setChecked(false);
     }
 }

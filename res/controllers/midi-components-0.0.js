@@ -31,7 +31,7 @@
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -481,8 +481,7 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
-                this.input(channel, control, value, status, group);
+                this.input(channel, control, (value << 7) + (this._firstLSB ? this._firstLSB : 0), status, group);
             }
             this.MSB = value;
         },
@@ -651,7 +650,13 @@
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
         },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         * @deprecated since 2.5.0. Use @{ComponentContainer#setLayer} instead
+         */
         applyLayer: function(newLayer, reconnectComponents) {
+            console.warn("ComponentContainer.applyLayer is deprecated; use ComponentContainer.setLayer instead");
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
             }
@@ -661,7 +666,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            script.deepMerge(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -669,6 +674,30 @@
                     component.trigger();
                 });
             }
+        },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         */
+        setLayer(newLayer, reconnectComponents) {
+            if (reconnectComponents !== false) {
+                reconnectComponents = true;
+            }
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.disconnect();
+                });
+            }
+
+            Object.assign(this, newLayer);
+
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.connect();
+                    component.trigger();
+                });
+            }
+
         },
         shutdown: function() {
             this.forEachComponent(function(component) {
@@ -735,9 +764,7 @@
     const JogWheelBasic = function(options) {
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
-
-        if (!_.isInteger(this.deck)) {
+        if (!Number.isInteger(this.deck)) {
             console.warn("missing scratch deck");
             return;
         }
@@ -745,18 +772,18 @@
             console.warn("invalid deck number: " + this.deck);
             return;
         }
-        if (!_.isInteger(this.wheelResolution)) {
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
         if (this.group === undefined) {

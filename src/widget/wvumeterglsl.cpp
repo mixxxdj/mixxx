@@ -25,9 +25,13 @@ void WVuMeterGLSL::draw() {
 
 void WVuMeterGLSL::initializeGL() {
     initializeOpenGLFunctions();
+    if (m_pPixmapBack) {
+        m_textureBack.setData(*m_pPixmapBack);
+    }
 
-    m_textureBack.setData(m_pPixmapBack);
-    m_textureVu.setData(m_pPixmapVu);
+    if (m_pPixmapVu) {
+        m_textureVu.setData(*m_pPixmapVu);
+    }
     m_textureShader.init();
 }
 
