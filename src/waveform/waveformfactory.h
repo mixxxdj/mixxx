@@ -29,6 +29,7 @@ class Waveform;
 
 // Used from Mixxx 2.? with Stem data (6.0) and without
 // analyzer/analyzerwaveform.h:scaleSignal (6.1)
+#define WAVEFORM_6_0_VERSION "Waveform-6.0" // Superseded by 6.1
 #define WAVEFORM_6_VERSION "Waveform-6.1"
 #define WAVEFORMSUMMARY_6_VERSION "WaveformSummary-6.1"
 #define WAVEFORM_6_DESCRIPTION "Waveform 6.1"
