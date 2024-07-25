@@ -452,7 +452,7 @@ void CoreServices::initialize(QApplication* pApp) {
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pTrackCollectionManager->startLibraryScan();
+        m_pTrackCollectionManager->startLibraryScanNoReport();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()

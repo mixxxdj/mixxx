@@ -35,7 +35,9 @@ class LibraryScanner : public QThread {
   public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
-    void scan();
+    // Optionally omit summary report. Purpose is to not show the summary dialog
+    // during startup when being called by CoreServices::initialize.
+    void scan(bool requestSummaryReport = true);
 
     // Call from any thread to cancel the scan.
     void slotCancel();
@@ -125,4 +127,6 @@ class LibraryScanner : public QThread {
 
     QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
+
+    bool m_emitSummaryReport;
 };

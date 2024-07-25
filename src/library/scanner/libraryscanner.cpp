@@ -100,11 +100,10 @@ LibraryScanner::LibraryScanner(
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
-          m_trackDao(m_cueDao, m_playlistDao,
-                  m_analysisDao, m_libraryHashDao,
-                  pConfig),
+          m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
-          m_state(IDLE) {
+          m_state(IDLE),
+          m_emitSummaryReport(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     moveToThread(this);
@@ -461,11 +460,14 @@ void LibraryScanner::slotFinishUnhashedScan() {
     // now we may accept new scan commands
 
     emit scanFinished();
-    emit scanSummary(result);
+    if (m_emitSummaryReport) {
+        emit scanSummary(result);
+    }
 }
 
-void LibraryScanner::scan() {
+void LibraryScanner::scan(bool requestSummaryReport) {
     if (changeScannerState(STARTING)) {
+        m_emitSummaryReport = requestSummaryReport;
         emit startScan();
     }
 }
