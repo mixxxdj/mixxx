@@ -28,27 +28,27 @@ namespace {
 // component directly
 void ensureWidgetRatio(QLayout* layout) {
     for (int i = 0; i < layout->count(); i++) {
-        auto w = layout->itemAt(i)->widget();
-        if (!qobject_cast<WKnobComposed*>(w) && !qobject_cast<WKnob*>(w)) {
+        auto pWidget = layout->itemAt(i)->widget();
+        if (!qobject_cast<WKnobComposed*>(pWidget) && !qobject_cast<WKnob*>(pWidget)) {
             continue;
         }
-        float ratio = static_cast<float>(w->maximumWidth()) /
-                static_cast<float>(w->maximumHeight());
-        int maxSize = qMin(w->width(), w->height());
-        QSize currentSize = w->size();
+        float ratio = static_cast<float>(pWidget->maximumWidth()) /
+                static_cast<float>(pWidget->maximumHeight());
+        int maxSize = qMin(pWidget->width(), pWidget->height());
+        QSize currentSize = pWidget->size();
         QSize newSize;
 
         if (ratio > 1) {
-            newSize = QSize(maxSize, static_cast<int>(static_cast<float>(maxSize) / ratio));
+            newSize = QSize(maxSize, static_cast<int>(maxSize / ratio));
         } else {
-            newSize = QSize(static_cast<int>(static_cast<float>(maxSize) * ratio), maxSize);
+            newSize = QSize(static_cast<int>(maxSize * ratio), maxSize);
         }
 
         if (currentSize == newSize) {
             continue;
         }
 
-        w->resize(newSize);
+        pWidget->resize(newSize);
         layout->itemAt(i)->invalidate();
     }
 }
@@ -57,7 +57,7 @@ void ensureWidgetRatio(QLayout* layout) {
 WStemControlBox::WStemControlBox(
         const QString& group, QWidget* parent)
         : WWidgetGroup(parent), m_group(group), m_hasStem(false), m_displayed(true) {
-    auto pLayout = new QVBoxLayout(this);
+    auto pLayout = make_parented<QVBoxLayout>(this);
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(pLayout);
@@ -114,7 +114,7 @@ WStemControl::WStemControl(QWidget* widgetGroup, QWidget* parent, const QString&
           m_widget(widgetGroup),
           m_mutedCo(std::make_unique<ControlProxy>(
                   group, QString("stem_%1_mute").arg(stemIdx + 1))) {
-    auto pLayout = new QHBoxLayout(this);
+    auto pLayout = make_parented<QHBoxLayout>(this);
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
 

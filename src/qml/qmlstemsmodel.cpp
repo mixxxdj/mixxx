@@ -20,7 +20,7 @@ QmlStemsModel::QmlStemsModel(
 
 void QmlStemsModel::setStems(QList<StemInfo> stems) {
     beginResetModel();
-    m_stems = QList<StemInfo>(std::move(stems));
+    m_stems = std::move(stems);
     endResetModel();
 }
 

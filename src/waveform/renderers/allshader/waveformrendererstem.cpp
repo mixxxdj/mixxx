@@ -13,7 +13,7 @@
 
 namespace {
 constexpr int kMaxSupportedStem = 4;
-}
+} // anonymous namespace
 
 namespace allshader {
 
@@ -120,14 +120,16 @@ void WaveformRendererStem::paintGL() {
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
-    for (int pos = 0; pos < length; ++pos) {
-        for (int s = 0; s < 4; s++) {
-            for (int z = 0; z < 2; z++) {
-                QColor stemColor = stemInfo[s].getColor();
+    for (int visualIdx = 0; visualIdx < length; ++visualIdx) {
+        for (int stemIdx = 0; stemIdx < 4; stemIdx++) {
+            // Stem is drawn twice with different opacity level, this allow to
+            // see the maximum signal by transparency
+            for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
+                QColor stemColor = stemInfo[stemIdx].getColor();
                 float color_r = stemColor.redF(),
                       color_g = stemColor.greenF(),
                       color_b = stemColor.blueF(),
-                      color_a = stemColor.alphaF() * (z ? 0.75f : 0.15f);
+                      color_a = stemColor.alphaF() * (layerIdx ? 0.75f : 0.15f);
                 const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
                 const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
@@ -135,7 +137,7 @@ void WaveformRendererStem::paintGL() {
                 const int visualIndexStop =
                         std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-                const float fpos = static_cast<float>(pos);
+                const float fVisualIdx = static_cast<float>(visualIdx);
 
                 // Find the max values for current eq in the waveform data.
                 // - Max of left and right
@@ -145,7 +147,7 @@ void WaveformRendererStem::paintGL() {
                     for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                         const WaveformData& waveformData = data[i];
 
-                        u8max = math_max(u8max, waveformData.stems[s]);
+                        u8max = math_max(u8max, waveformData.stems[stemIdx]);
                     }
                 }
 
@@ -153,17 +155,17 @@ void WaveformRendererStem::paintGL() {
                 float max = static_cast<float>(u8max);
 
                 // Apply the gains
-                if (z) {
-                    max *= m_pStemMute[s]->toBool()
+                if (layerIdx) {
+                    max *= m_pStemMute[stemIdx]->toBool()
                             ? 0.f
-                            : static_cast<float>(m_pStemGain[s]->get());
+                            : static_cast<float>(m_pStemGain[stemIdx]->get());
                 }
 
                 // Lines are thin rectangles
                 // shawdow
-                m_vertices.addRectangle(fpos - 0.5f,
+                m_vertices.addRectangle(fVisualIdx - 0.5f,
                         halfBreadth - heightFactor * max,
-                        fpos + 0.5f,
+                        fVisualIdx + 0.5f,
                         m_isSlipRenderer ? halfBreadth : halfBreadth + heightFactor * max);
 
                 m_colors.addForRectangle(color_r, color_g, color_b, color_a);

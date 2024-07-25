@@ -104,7 +104,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 #ifdef __STEM__
-    bool bIsStemTrack = !tio->getStemInfo().isEmpty();
+    bool isStemTrack = !tio->getStemInfo().isEmpty();
 #endif
 
     TrackId trackId = tio->getId();
@@ -146,12 +146,14 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     }
 
 #ifdef __STEM__
-    // If the waveform was generated without stem information, we need to regenerate
+    // If the waveform was generated without stem information but the track has
+    // some, or the waveform contains stem information but the track doesn't
+    // have any, we need to regenerate the waveform.
     if (!missingWaveform &&
             ((!pTrackWaveform.isNull() &&
-                     pTrackWaveform->hasStem() != bIsStemTrack) ||
+                     pTrackWaveform->hasStem() != isStemTrack) ||
                     (!pLoadedTrackWaveform.isNull() &&
-                            pLoadedTrackWaveform->hasStem() != bIsStemTrack))) {
+                            pLoadedTrackWaveform->hasStem() != isStemTrack))) {
         missingWaveform = true;
     }
 #endif

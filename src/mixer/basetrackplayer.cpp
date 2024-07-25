@@ -286,9 +286,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
 #ifdef __STEM__
     m_pStemColors.reserve(kMaxSupportedStem);
-    for (int i = 0; i < kMaxSupportedStem; i++) {
+    for (int stemIdx = 1; stemIdx <= kMaxSupportedStem; stemIdx++) {
         m_pStemColors.emplace_back(std::make_unique<ControlObject>(
-                ConfigKey(getGroup(), QStringLiteral("stem_%1_color").arg(i + 1))));
+                ConfigKey(getGroup(), QStringLiteral("stem_%1_color").arg(stemIdx))));
         m_pStemColors.back()->setReadOnly();
         m_pStemColors.back()->set(kNoTrackColor);
     }
@@ -384,7 +384,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
                 ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_end_position")));
 
 #ifdef __STEM__
-        auto pDeckToClone = qobject_cast<EngineDeck*>(m_pChannelToCloneFrom);
+        auto* pDeckToClone = qobject_cast<EngineDeck*>(m_pChannelToCloneFrom);
         if (pDeckToClone && m_pLoadedTrack && m_pLoadedTrack->hasStem() && m_pChannel) {
             m_pChannel->cloneStemState(pDeckToClone);
         }
@@ -692,13 +692,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             const auto& stemInfo = m_pLoadedTrack->getStemInfo();
             DEBUG_ASSERT(stemInfo.size() <= kMaxSupportedStem);
             int stemIdx = 0;
-            for (const auto& stemCo : m_pStemColors) {
+            for (const auto& stemColorCo : m_pStemColors) {
                 auto color = kNoTrackColor;
                 if (stemIdx < stemInfo.size()) {
                     color = trackColorToDouble(mixxx::RgbColor::fromQColor(
                             stemInfo.at(stemIdx).getColor()));
                 }
-                stemCo->forceSet(color);
+                stemColorCo->forceSet(color);
                 stemIdx++;
             }
         }
