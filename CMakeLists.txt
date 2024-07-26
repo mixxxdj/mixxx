@@ -1155,6 +1155,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/color/predefinedcolorpalettes.cpp
   src/util/colorcomponents.cpp
   src/util/console.cpp
+  src/util/cpupinning.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
@@ -1845,6 +1846,15 @@ install(
     "${MIXXX_INSTALL_BINDIR}"
   BUNDLE DESTINATION
     .
+)
+
+# Script for cpu pinning of the engine thread
+install(
+  FILES
+    tools/mixxx-isolate.py
+  DESTINATION
+    "${MIXXX_INSTALL_BINDIR}"
+  RENAME "mixxx-isolate"
 )
 
 # Skins
