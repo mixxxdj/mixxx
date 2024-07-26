@@ -929,8 +929,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dao/trackschema.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
-  src/library/dlgtagfetcher.cpp
-  src/library/dlgtagfetcher.ui
   src/library/dlgtrackinfo.cpp
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackinfomulti.cpp
@@ -1022,16 +1020,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/mixxxapplication.cpp
   src/mixxxmainwindow.cpp
-  src/musicbrainz/chromaprinter.cpp
-  src/musicbrainz/crc.cpp
-  src/musicbrainz/gzip.cpp
-  src/musicbrainz/musicbrainz.cpp
-  src/musicbrainz/musicbrainzxml.cpp
-  src/musicbrainz/tagfetcher.cpp
-  src/musicbrainz/web/acoustidlookuptask.cpp
-  src/musicbrainz/web/coverartarchiveimagetask.cpp
-  src/musicbrainz/web/coverartarchivelinkstask.cpp
-  src/musicbrainz/web/musicbrainzrecordingstask.cpp
   src/nativeeventhandlerwin.cpp
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
@@ -2282,9 +2270,28 @@ if(WIN32)
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
-# Chromaprint
-find_package(Chromaprint REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+option(MUSICBRAINZ "Enable MusicBrainz-based tag lookup" ON)
+if(MUSICBRAINZ)
+  # Chromaprint
+  find_package(Chromaprint REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+
+  target_compile_definitions(mixxx-lib PUBLIC __MUSICBRAINZ__)
+  target_sources(mixxx-lib PRIVATE
+    src/library/dlgtagfetcher.cpp
+    src/library/dlgtagfetcher.ui
+    src/musicbrainz/chromaprinter.cpp
+    src/musicbrainz/crc.cpp
+    src/musicbrainz/gzip.cpp
+    src/musicbrainz/musicbrainz.cpp
+    src/musicbrainz/musicbrainzxml.cpp
+    src/musicbrainz/tagfetcher.cpp
+    src/musicbrainz/web/acoustidlookuptask.cpp
+    src/musicbrainz/web/coverartarchiveimagetask.cpp
+    src/musicbrainz/web/coverartarchivelinkstask.cpp
+    src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  )
+endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)

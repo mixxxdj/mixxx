@@ -19,7 +19,9 @@ class WColorPickerAction;
 class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
+#ifdef __MUSICBRAINZ__
 class DlgTagFetcher;
+#endif
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -48,8 +50,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private slots:
     void slotNextButton();
     void slotPrevButton();
+#ifdef __MUSICBRAINZ__
     void slotNextDlgTagFetcher();
     void slotPrevDlgTagFetcher();
+#endif
     void slotOk();
     void slotApply();
     void slotCancel();
@@ -63,7 +67,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotKeyTextChanged();
     void slotRatingChanged(int rating);
     void slotImportMetadataFromFile();
+#ifdef __MUSICBRAINZ__
     void slotImportMetadataFromMusicBrainz();
+#endif
 
     void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
@@ -126,5 +132,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WStarRating> m_pWStarRating;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 
+#ifdef __MUSICBRAINZ__
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+#endif
 };

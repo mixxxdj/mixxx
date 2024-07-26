@@ -16,7 +16,9 @@
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
 
+#ifdef __MUSICBRAINZ__
 class DlgTagFetcher;
+#endif
 class DlgTrackInfo;
 class DlgTrackInfoMulti;
 //class DlgDeleteFilesConfirmation;
@@ -155,7 +157,9 @@ class WTrackMenu : public QMenu {
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
+#ifdef __MUSICBRAINZ__
     void slotShowDlgTagFetcher();
+#endif
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
@@ -274,7 +278,9 @@ class WTrackMenu : public QMenu {
 
     // Reload Track Metadata Action:
     QAction* m_pImportMetadataFromFileAct{};
+#ifdef __MUSICBRAINZ__
     QAction* m_pImportMetadataFromMusicBrainzAct{};
+#endif
 
     // Save Track Metadata Action:
     QAction* m_pExportMetadataAct{};
@@ -351,7 +357,9 @@ class WTrackMenu : public QMenu {
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
+#ifdef __MUSICBRAINZ__
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+#endif
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;
