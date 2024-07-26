@@ -332,6 +332,9 @@ class Track : public QObject {
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
+    void doAddCue(const CuePointer& pCue);
+    void doRemoveCue(const CuePointer& pCue);
+
 #ifdef __STEM__
     QList<StemInfo> getStemInfo() const {
         const QMutexLocker lock(&m_qMutex);
