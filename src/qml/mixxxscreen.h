@@ -22,7 +22,7 @@ class MixxxScreen : public QObject, public QQmlParserStatus {
     QML_ELEMENT
     Q_INTERFACES(QQmlParserStatus)
 
-    Q_PROPERTY(QString screenId MEMBER m_screenId REQUIRED)
+    Q_PROPERTY(QString screenId READ screenId MEMBER m_screenId REQUIRED)
     Q_PROPERTY(int width READ width WRITE setWidth)
     Q_PROPERTY(int height READ height WRITE setHeight)
     Q_PROPERTY(uint targetFps MEMBER m_targetFps)
@@ -53,6 +53,7 @@ class MixxxScreen : public QObject, public QQmlParserStatus {
     void classBegin() override{};
     void componentComplete() override;
 
+    QString screenId();
     int width();
     void setWidth(int value);
     int height();

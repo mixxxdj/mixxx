@@ -1,5 +1,6 @@
 #include "mixxxscreen.h"
 
+#include "controllers/scripting/controllerscriptenginebase.h"
 #include "util/assert.h"
 
 namespace mixxx {
@@ -12,6 +13,17 @@ void MixxxScreen::componentComplete() {
     }
 
     m_engine = context->engine();
+    const MixxxControllerEngineInterface controllerEngineInterface =
+            qobject_cast<MixxxControllerEngineInterface>(
+                    m_engine->property("controllerEngineInterface"));
+    VERIFY_OR_DEBUG_ASSERT(controllerEngineInterface) {
+        return;
+    }
+    controllerEngineInterface.declareScreen(this);
+}
+
+QString MixxxScreen::screenId() {
+    return m_screenId;
 }
 
 int MixxxScreen::width() {

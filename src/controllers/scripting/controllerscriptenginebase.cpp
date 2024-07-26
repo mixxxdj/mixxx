@@ -24,6 +24,7 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
           m_bAbortOnWarning(false),
 #ifdef MIXXX_USE_QML
           m_bQmlMode(false),
+          m_mixxxControllerEngineInterface(this),
 #endif
           m_bTesting(false) {
     // Handle error dialog buttons
@@ -31,6 +32,10 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
 }
 
 #ifdef MIXXX_USE_QML
+void ControllerScriptEngineBase::declareScreen(mixxx::qml::MixxxScreen& screen) {
+    std::make_shared<mixxx::qml::MixxxScreen>(screen);
+}
+
 void ControllerScriptEngineBase::registerTrackCollectionManager(
         std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
@@ -60,6 +65,7 @@ bool ControllerScriptEngineBase::initialize() {
 #ifdef MIXXX_USE_QML
     } else {
         auto pQmlEngine = std::make_shared<QQmlEngine>(this);
+        pQmlEngine->setProperty("controllerEngineInterface", m_mixxxControllerEngineInterface);
         pQmlEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
         if (s_pTrackCollectionManager) {
             mixxx::qml::AsyncImageProvider* pImageProvider = new mixxx::qml::AsyncImageProvider(
@@ -288,3 +294,9 @@ void ControllerScriptEngineBase::errorDialogButton(
 void ControllerScriptEngineBase::throwJSError(const QString& message) {
     m_pJSEngine->throwError(message);
 }
+
+#ifdef MIXXX_USE_QML
+void mixxx::qml::MixxxControllerEngineInterface::declareScreen(MixxxScreen& screen) {
+    m_controllerScriptEngine->declareScreen(screen);
+}
+#endif

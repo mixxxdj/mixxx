@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #ifdef MIXXX_USE_QML
 #include <QMetaMethod>
+
+#include "qml/mixxxscreen.h"
 #endif
 
 #include "controllers/legacycontrollermapping.h"

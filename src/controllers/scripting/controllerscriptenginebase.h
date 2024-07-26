@@ -10,12 +10,14 @@
 #include "util/runtimeloggingcategory.h"
 #ifdef MIXXX_USE_QML
 #include "controllers/controllerenginethreadcontrol.h"
+#include "qml/mixxxscreen.h"
 #endif
 
 class Controller;
 class QJSEngine;
 #ifdef MIXXX_USE_QML
 class TrackCollectionManager;
+class MixxxControllerEngineInterface;
 #endif
 
 /// ControllerScriptEngineBase manages the JavaScript engine for controller scripts.
@@ -38,6 +40,8 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
     /// Precondition: QML.isValid() == true
     void showQMLExceptionDialog(const QQmlError& evaluationResult, bool bFatal = false);
+
+    void declareScreen(mixxx::qml::MixxxScreen& screen);
 #endif
     void throwJSError(const QString& message);
 
@@ -94,6 +98,8 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
   private:
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
+    QHash<QString, std::shared_ptr<mixxx::qml::MixxxScreen>> m_screens;
+    MixxxControllerEngineInterface m_mixxxControllerEngineInterface;
 
   protected:
     /// Pause the GUI main thread. Pause is required by rendering
@@ -119,3 +125,23 @@ class ControllerScriptEngineBase : public QObject {
     friend class ColorMapperJSProxy;
     friend class MidiControllerTest;
 };
+
+#ifdef MIXXX_USE_QML
+namespace mixxx {
+namespace qml {
+
+class MixxxControllerEngineInterface : QObject {
+    Q_OBJECT
+  public:
+    MixxxControllerEngineInterface(ControllerScriptEngineBase* controllerScriptEngine)
+            : QObject(controllerScriptEngine), m_controllerScriptEngine(controllerScriptEngine) {
+    }
+    void declareScreen(MixxxScreen& screen);
+
+  private:
+    ControllerScriptEngineBase* m_controllerScriptEngine;
+};
+
+} // namespace qml
+} // namespace mixxx
+#endif
