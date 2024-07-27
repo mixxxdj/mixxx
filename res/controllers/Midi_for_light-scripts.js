@@ -125,8 +125,8 @@ midi_for_light.calculateDeckPriority = function() {
     const crossfader_left =  Math.min((1-crossfader)*1.33, 1);
     const crossfader_right =  Math.min((1+crossfader)*1.33, 1);
     const crossfader_factors = [crossfader_left, 1.0, crossfader_right];
-    
-    for (var i = 0; i < 4; i++) {
+
+    for (let i = 0; i < 4; i++) {
         const channel = `[Channel${ i + 1 }]`;
         midi_for_light.decks[i].playing = engine.getParameter(channel, "play") === 1;
         if (! midi_for_light.decks[i].playing) {
@@ -145,7 +145,7 @@ midi_for_light.calculateDeckPriority = function() {
     }
 
     // Sort Decks by priority
-    var sorted = midi_for_light.decks.slice();
+    const sorted = midi_for_light.decks.slice();
     sorted.sort(function(a, b) { return b.priority - a.priority; });
     if (sorted[0].priority < 0.25) {
         midi_for_light.deck_current = -1;
