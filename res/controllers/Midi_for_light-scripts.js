@@ -42,7 +42,7 @@ var enable_vu_right_average_fit = true; // set to false if you not need VU right
 var enable_vu_right_current_meter = false; // set to false if you not need VU right current meter
 var enable_vu_right_average_meter = false; // set to false if you not need VU right average meter
 var deck_ending_time = 15; // set a time (in seconds) in which the playing track is considered to be ending
-var deck_ending_priority_factor = 0.9 // decrease the priority of the ending track by this factor
+var deck_ending_priority_factor = 0.9; // decrease the priority of the ending track by this factor
 
 
 ///////////////////////////////////////////////////////////////
@@ -96,10 +96,10 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
 
     for (var i = 0; i <= 3; i++) {
         deck_beat_watchdog_timer[i] = engine.beginTimer(beat_watchdog_time, () => { midi_for_light.deckBeatWatchdog(i); });
-        engine.connectControl("[Channel" + (i + 1) + "]", "beat_active", "midi_for_light.deckBeatOutputToMidi");
-        engine.connectControl("[Channel" + (i + 1) + "]", "volume", "midi_for_light.deckVolumeChange");
-        engine.connectControl("[Channel" + (i + 1) + "]", "play", "midi_for_light.deckButtonPlay");
-        if (enable_mtc_timecode === true) engine.connectControl("[Channel" + (i + 1) + "]", "playposition", "midi_for_light.sendMidiMtcFullFrame");
+        engine.connectControl(`[Channel${ i + 1 }]`, "beat_active", "midi_for_light.deckBeatOutputToMidi");
+        engine.connectControl(`[Channel${ i + 1 }]`, "volume", "midi_for_light.deckVolumeChange");
+        engine.connectControl(`[Channel${ i + 1 }]`, "play", "midi_for_light.deckButtonPlay");
+        if (enable_mtc_timecode === true) { engine.connectControl(`[Channel${ i + 1 }]`, "playposition", "midi_for_light.sendMidiMtcFullFrame"); }
     }
 
     midi_for_light.calculateDeckPriority();
@@ -122,13 +122,13 @@ midi_for_light.shutdown = function(id) { // called when the MIDI device is close
 midi_for_light.calculateDeckPriority = function() {
     // Calculate each channels Volume to figure out the most important
     const crossfader = engine.getValue("[Master]", "crossfader");
-    const crossfader_left =  Math.min((1-crossfader)*1.33,1);
-    const crossfader_right =  Math.min((1+crossfader)*1.33,1);
-    const crossfader_factors = [crossfader_left, 1.0, crossfader_right]
+    const crossfader_left =  Math.min((1-crossfader)*1.33, 1);
+    const crossfader_right =  Math.min((1+crossfader)*1.33, 1);
+    const crossfader_factors = [crossfader_left, 1.0, crossfader_right];
     
     for (var i = 0; i < 4; i++) {
-        const channel = "[Channel" + (i + 1) + "]";
-        midi_for_light.decks[i].playing = engine.getParameter(channel, "play") == 1;
+        const channel = `[Channel${ i + 1 }]`;
+        midi_for_light.decks[i].playing = engine.getParameter(channel, "play") === 1;
         if (! midi_for_light.decks[i].playing) {
             midi_for_light.decks[i].priority = 0.0;
             continue;
@@ -138,15 +138,15 @@ midi_for_light.calculateDeckPriority = function() {
 
         // Decrease Priority of ending Tracks
         const duration = engine.getValue(channel, "duration");
-        const PlayPosition = duration * engine.getValue(channel, "playposition");
-        if (duration - PlayPosition < deck_ending_time) {
+        const playposition = duration * engine.getValue(channel, "playposition");
+        if (duration - playposition < deck_ending_time) {
             midi_for_light.decks[i].priority *= deck_ending_priority_factor;
         }
     }
 
     // Sort Decks by priority
     var sorted = midi_for_light.decks.slice();
-    sorted.sort(function(a, b){return b.priority - a.priority})
+    sorted.sort(function(a, b) { return b.priority - a.priority; });
     if (sorted[0].priority < 0.25) {
         midi_for_light.deck_current = -1;
         return;
