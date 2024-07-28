@@ -3457,6 +3457,7 @@ if (STEM)
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/widget/wstemcontrol.cpp
   )
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE

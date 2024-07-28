@@ -11,6 +11,19 @@
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wglwidget.h"
+#ifdef __STEM__
+#include <QGuiApplication>
+
+#include "mixxxmainwindow.h"
+#include "widget/wstemcontrol.h"
+
+namespace {
+const QString kStemControlLeftAlignment = QStringLiteral("left");
+const QString kStemControlRightAlignment = QStringLiteral("right");
+const QString kStemControlElementName = QStringLiteral("StemControl");
+const QString kStemElementName = QStringLiteral("Stem");
+} // anonymous namespace
+#endif
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
@@ -23,7 +36,13 @@ WWaveformViewer::WWaveformViewer(
           m_bScratching(false),
           m_bBending(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
-          m_waveformWidget(nullptr) {
+          m_waveformWidget(nullptr)
+#ifdef __STEM__
+          ,
+          m_stemControlWidget(std::make_unique<WStemControlBox>(group, this))
+#endif
+
+{
     setMouseTracking(true);
     setAcceptDrops(true);
     m_pZoom = new ControlProxy(group, "waveform_zoom", this, ControlFlag::NoAssertIfMissing);
@@ -39,11 +58,50 @@ WWaveformViewer::WWaveformViewer(
     m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(this, &WWaveformViewer::passthroughChanged);
 
+#ifdef __STEM__
+    connect(m_stemControlWidget.get(), &WStemControlBox::displayedChanged, this, [this](bool) {
+        adjustStemControl();
+    });
+    // TODO alternative to MixxxMainWindow becoming a singleton
+    // for (QWindow* window: QGuiApplication::allWindows()) {
+    //     if (window->objectName() == "MixxxMainWindowClassWindow") {
+    //         m_mainWindow = window;
+    //         m_mainWindow->installEventFilter(this);
+    //         break;
+    //     }
+    // }
+    m_mainWindow = MixxxMainWindow::instance();
+    if (m_mainWindow) {
+        m_mainWindow->installEventFilter(this);
+    }
+#endif
+
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
 }
 
+#ifdef __STEM__
+bool WWaveformViewer::eventFilter(QObject* obj, QEvent* event) {
+    switch (event->type()) {
+    case QEvent::Move:
+    case QEvent::WindowStateChange:
+    case QEvent::Resize:
+        adjustStemControl();
+        break;
+
+    default:
+        break;
+    }
+    return WWidget::eventFilter(obj, event);
+}
+#endif
+
 WWaveformViewer::~WWaveformViewer() {
+#ifdef __STEM__
+    if (m_mainWindow) {
+        m_mainWindow->removeEventFilter(this);
+    }
+#endif
     //qDebug() << "~WWaveformViewer";
 }
 
@@ -52,7 +110,49 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
         m_waveformWidget->setup(node, context);
         m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
     }
+
+#ifdef __STEM__
+    QDomElement child = node.firstChildElement(kStemControlElementName);
+    if (!child.isNull()) {
+        QString alignment = child.attribute("alignment", kStemControlLeftAlignment).toLower();
+        if (alignment == kStemControlRightAlignment) {
+            m_stemControlWidgetAlignment = WWaveformViewer::StemControlAlignment::Right;
+        } else {
+            m_stemControlWidgetAlignment = WWaveformViewer::StemControlAlignment::Left;
+        }
+    }
+#endif
 }
+
+#ifdef __STEM__
+void WWaveformViewer::adjustStemControl() {
+    m_stemControlWidget->resize(m_stemControlWidget->width(), height());
+
+    if (m_stemControlWidget->height() > height() ||
+            !m_stemControlWidget->shouldShow() ||
+            (m_mainWindow && !m_mainWindow->isVisible())) {
+        m_stemControlWidget->hide();
+    } else if (m_stemControlWidget->shouldShow() &&
+            (m_mainWindow && m_mainWindow->isVisible())) {
+        m_stemControlWidget->show();
+        for (QWindow* window : QGuiApplication::allWindows()) {
+            if (window->objectName() == "DlgPreferencesDlgWindow" && window->isActive()) {
+                window->raise();
+                break;
+            }
+        }
+    }
+
+    switch (m_stemControlWidgetAlignment) {
+    case WWaveformViewer::StemControlAlignment::Right:
+        m_stemControlWidget->move(mapToGlobal(QPoint(width() - m_stemControlWidget->width(), 0)));
+        break;
+    case WWaveformViewer::StemControlAlignment::Left:
+        m_stemControlWidget->move(mapToGlobal(QPoint(0, 0)));
+        break;
+    }
+}
+#endif
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event);
@@ -63,6 +163,9 @@ void WWaveformViewer::resizeEvent(QResizeEvent* event) {
         // a QWidget, though that will be called directly.
         m_waveformWidget->resize(width(), height());
     }
+#ifdef __STEM__
+    adjustStemControl();
+#endif
 }
 
 void WWaveformViewer::showEvent(QShowEvent* event) {
@@ -74,6 +177,13 @@ void WWaveformViewer::showEvent(QShowEvent* event) {
         m_waveformWidget->resizeRenderer(
                 width(), height(), static_cast<float>(devicePixelRatioF()));
     }
+}
+
+void WWaveformViewer::hideEvent(QHideEvent* event) {
+    Q_UNUSED(event);
+#ifdef __STEM__
+    adjustStemControl();
+#endif
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
@@ -225,6 +335,14 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
+#ifdef __STEM__
+    m_stemControlWidget->slotTrackLoaded(track);
+    adjustStemControl();
+#endif
+}
+
+void WWaveformViewer::slotTrackUnloaded(TrackPointer pOldTrack) {
+    slotLoadingTrack(pOldTrack, TrackPointer());
 }
 
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -233,6 +351,10 @@ void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOld
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(TrackPointer());
     }
+#ifdef __STEM__
+    m_stemControlWidget->slotTrackLoaded(TrackPointer());
+    adjustStemControl();
+#endif
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
