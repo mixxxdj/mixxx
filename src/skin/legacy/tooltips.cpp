@@ -269,11 +269,6 @@ void Tooltips::addStandardTooltips() {
     add("show_beatgrid_controls")
             << tr("Show/hide the beatgrid controls section");
 
-#ifdef __STEM__
-    add("show_stem_controls")
-            << tr("Show/hide the stem controls section for stem decks");
-#endif
-
     add("show_library")
             << tr("Show Library")
             << tr("Show or hide the track library.");

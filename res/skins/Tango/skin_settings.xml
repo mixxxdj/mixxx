@@ -64,11 +64,6 @@ Description:
           </Template>
 
           <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
-            <SetVariable name="text">Show stem control</SetVariable>
-            <SetVariable name="Setting">[Skin],show_stem_controls</SetVariable>
-          </Template>
-
-          <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
             <SetVariable name="text">Symmetric Time/Duration</SetVariable>
             <SetVariable name="Setting">[Tango],symmetric_time</SetVariable>
           </Template>

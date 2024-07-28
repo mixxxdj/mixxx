@@ -8,7 +8,6 @@
 
 class ControlProxy;
 class WaveformWidgetAbstract;
-class WStemControlBox;
 class WCueMenuPopup;
 class QDomNode;
 class SkinContext;
@@ -16,11 +15,6 @@ class SkinContext;
 class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
-    enum StemControlAlignment {
-        Left = Qt::AlignLeft,
-        Right = Qt::AlignRight
-    };
-
     WWaveformViewer(
             const QString& group,
             UserSettingsPointer pConfig,
@@ -42,14 +36,6 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
     void leaveEvent(QEvent* /*unused*/) override;
 
-#ifdef __STEM__
-    // Used by LegacySkinParser to inject the stem toolbox if defined
-    WStemControlBox* stemControlWidget() const {
-        return m_stemControlWidget.get();
-    }
-
-    bool eventFilter(QObject* object, QEvent* event) override;
-#endif
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
@@ -57,12 +43,10 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer pOldTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:
     void showEvent(QShowEvent* event) override;
-    void hideEvent(QHideEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 
@@ -96,14 +80,6 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     WaveformMarkPointer m_pHoveredMark;
 
     WaveformWidgetAbstract* m_waveformWidget;
-#ifdef __STEM__
-    std::unique_ptr<WStemControlBox> m_stemControlWidget;
-    QWidget* m_mainWindow;
-
-    void adjustStemControl();
-#endif
-
-    StemControlAlignment m_stemControlWidgetAlignment;
 
     int m_dimBrightThreshold;
 

@@ -266,26 +266,6 @@ Description:
 
                     </Children>
                   </WidgetGroup>
-
-                  <!-- Stem control over the waveform -->
-                  <WidgetGroup>
-                    <ObjectName>SkinSettingsCategory</ObjectName>
-                    <SizePolicy>me,f</SizePolicy>
-                    <Layout>stacked</Layout>
-                    <Children>
-                      <!-- translucent cover when waveforms are hidden -->
-                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
-                      </Template>
-
-                      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_stem_controls</SetVariable>
-                        <SetVariable name="Text">Stem control</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_stem_controls</SetVariable>
-                      </Template>
-
-                    </Children>
-                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>

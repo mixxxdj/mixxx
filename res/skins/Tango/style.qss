@@ -3223,17 +3223,3 @@ WRateRange {
 #RateDisplayBottomRate {
     qproperty-alignment: 'AlignHCenter';
 }
-
-/** Stem control **/
-WStemControlBox {
-  padding-left: 8px;
-  background-color: transparent;
-}
-WStemControl WLabel {
-  padding-left: 5px;
-  font-weight: bold;
-  font-size: 14px;
-}
-WStemControl {
-  margin: 10px 15px 10px 15px;
-}

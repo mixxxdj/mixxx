@@ -288,19 +288,3 @@ WTrackTableViewHeader::down-arrow {
 WRateRange {
   color: #181319;
 }
-
-/** Stem control **/
-WStemControlBox {
-  background-color: transparent;
-}
-WStemControl WLabel {
-  padding-left: 5px;
-  font-weight: bold;
-  font-size: 14px;
-}
-WStemControl WKnob {
-  background-color: #aab2b7;
-}
-WStemControl {
-  margin: 10px 15px 10px 15px;
-}
