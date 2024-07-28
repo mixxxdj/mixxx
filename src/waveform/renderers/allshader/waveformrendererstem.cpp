@@ -12,7 +12,7 @@
 #include "waveform/waveform.h"
 
 namespace {
-constexpr int kMaxSupportedStem = 4;
+constexpr int kMaxSupportedStems = 4;
 } // anonymous namespace
 
 namespace allshader {
@@ -33,7 +33,7 @@ void WaveformRendererStem::initializeGL() {
     m_shader.init();
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStem; stemIdx++) {
+    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(group,
                         QStringLiteral("stem_%1_volume").arg(stemIdx)));

@@ -12,7 +12,7 @@
 
 #ifdef __STEM__
 namespace {
-constexpr int kMaxSupportedStem = 4;
+constexpr int kMaxSupportedStems = 4;
 } // anonymous namespace
 #endif
 
@@ -65,9 +65,9 @@ EngineDeck::EngineDeck(
     m_pStemCount = std::make_unique<ControlObject>(ConfigKey(getGroup(), "stem_count"));
     m_pStemCount->setReadOnly();
 
-    m_stemGain.reserve(kMaxSupportedStem);
-    m_stemMute.reserve(kMaxSupportedStem);
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStem; stemIdx++) {
+    m_stemGain.reserve(kMaxSupportedStems);
+    m_stemMute.reserve(kMaxSupportedStems);
+    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
                 ConfigKey(getGroup(), QString("stem_%1_volume").arg(stemIdx))));
         // The default value is ignored and override with the medium value by
@@ -89,7 +89,7 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
     }
     if (m_pConfig->getValue(
                 ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
-        for (int stemIdx = 0; stemIdx < kMaxSupportedStem; stemIdx++) {
+        for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
             ;
@@ -143,7 +143,7 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     VERIFY_OR_DEBUG_ASSERT(deckToClone) {
         return;
     }
-    for (int stemIdx = 0; stemIdx < kMaxSupportedStem; stemIdx++) {
+    for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }

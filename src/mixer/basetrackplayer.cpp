@@ -24,7 +24,7 @@ namespace {
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
-constexpr int kMaxSupportedStem = 4;
+constexpr int kMaxSupportedStems = 4;
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
@@ -285,8 +285,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     }
 
 #ifdef __STEM__
-    m_pStemColors.reserve(kMaxSupportedStem);
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStem; stemIdx++) {
+    m_pStemColors.reserve(kMaxSupportedStems);
+    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
         m_pStemColors.emplace_back(std::make_unique<ControlObject>(
                 ConfigKey(getGroup(), QStringLiteral("stem_%1_color").arg(stemIdx))));
         m_pStemColors.back()->setReadOnly();
@@ -690,7 +690,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 #ifdef __STEM__
         if (m_pStemColors.size()) {
             const auto& stemInfo = m_pLoadedTrack->getStemInfo();
-            DEBUG_ASSERT(stemInfo.size() <= kMaxSupportedStem);
+            DEBUG_ASSERT(stemInfo.size() <= kMaxSupportedStems);
             int stemIdx = 0;
             for (const auto& stemColorCo : m_pStemColors) {
                 auto color = kNoTrackColor;

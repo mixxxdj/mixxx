@@ -22,7 +22,7 @@ struct WaveformData {
         unsigned char high;
         unsigned char all;
     } filtered;
-    unsigned char stems[mixxx::kMaxSupportedStem];
+    unsigned char stems[mixxx::kMaxSupportedStems];
 };
 
 class Waveform {

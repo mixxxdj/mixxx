@@ -92,7 +92,7 @@ using mixxx::skin::SkinManifest;
 
 #ifdef __STEM__
 namespace {
-constexpr int kMaxSupportedStem = 4;
+constexpr int kMaxSupportedStems = 4;
 } // anonymous namespace
 #endif
 
@@ -1038,7 +1038,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
         setupSize(child, viewer->stemControlWidget());
         setupConnections(child, viewer->stemControlWidget());
         QDomElement stem = child.firstChildElement("Stem");
-        for (int stemIdx = 1; stemIdx <= kMaxSupportedStem; stemIdx++) {
+        for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
             m_pContext->setVariable("StemGroup", group);
             m_pContext->setVariable("StemIdx", QString::number(stemIdx));
             auto* pWidget = parseWidgetGroup(stem);
