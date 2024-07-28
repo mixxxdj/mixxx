@@ -21,7 +21,7 @@ Rectangle {
     Skin.ControlKnob {
         id: knob
         group: root.group
-        key: `stem_${root.index}_volume`
+        key: `stem_${root.index + 1}_volume`
         color: Theme.gainKnobColor
         anchors.topMargin: 5
         anchors.top: root.top
@@ -43,7 +43,7 @@ Rectangle {
         id: statusControl
 
         group: root.group
-        key: `stem_${root.index}_mute`
+        key: `stem_${root.index + 1}_mute`
     }
 
     Rectangle {

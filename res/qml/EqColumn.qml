@@ -26,18 +26,10 @@ Column {
             Repeater {
                 model: root.player.stemsModel
 
-                Row {
+                Skin.StemKnob {
                     id: stem
-                    required property int index
-                    required property string label
-                    required property color color
-
-                    Skin.StemKnob {
-                        group: root.group
-                        index: stem.index
-                        label: stem.label
-                        stemColor: stem.color
-                    }
+                    group: root.group
+                    property alias color: stem.stemColor
                 }
             }
         }
