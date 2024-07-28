@@ -105,7 +105,9 @@ FileType stringToEnumFileType(
             TypePair{"dff"_L1, FileType::DSDIFF},
             TypePair{"dsdiff"_L1, FileType::DSDIFF}};
 
-    const auto it = std::find_if(lookupTable.cbegin(),
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    const auto it = std::find_if(
+            lookupTable.cbegin(),
             lookupTable.cend(),
             [fileType](const auto& pair) { return pair.strType == fileType; });
     return it != lookupTable.end() ? it->eType : FileType::Unknown;
