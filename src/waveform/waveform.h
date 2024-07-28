@@ -15,13 +15,15 @@
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
+struct WaveformFilteredData {
+    unsigned char low;
+    unsigned char mid;
+    unsigned char high;
+    unsigned char all;
+};
+
 struct WaveformData {
-    struct {
-        unsigned char low;
-        unsigned char mid;
-        unsigned char high;
-        unsigned char all;
-    } filtered;
+    WaveformFilteredData filtered;
     unsigned char stems[mixxx::kMaxSupportedStems];
 };
 
