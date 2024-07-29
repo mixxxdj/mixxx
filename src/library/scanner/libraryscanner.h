@@ -122,7 +122,8 @@ class LibraryScanner : public QThread {
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
 
-    int m_numPreviousExistingTrackLocations;
+    QSet<QString> m_previouslyMissingTracks;
+    int m_numPreviouslyExistingTracks;
     int m_numRelocatedTracks;
 
     QList<mixxx::FileInfo> m_libraryRootDirs;

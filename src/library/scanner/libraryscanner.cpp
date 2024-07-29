@@ -201,7 +201,8 @@ void LibraryScanner::slotStartScan() {
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     // Store number of existing tracks so we can calculat the number
     // of missing tracks in slotFinishUnhashedScan().
-    m_numPreviousExistingTrackLocations = m_trackDao.getAllExistingTrackLocations().size();
+    m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();
+    m_numPreviouslyExistingTracks = m_trackDao.getAllExistingTrackLocations().size();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegularExpression coverExtensionFilter =
@@ -433,9 +434,24 @@ void LibraryScanner::slotFinishUnhashedScan() {
     const int numScannedDirs = m_scannerGlobal->numScannedDirectories();
     const int numVerifiedTracks = static_cast<int>(m_scannerGlobal->verifiedTracks().size());
     const int numNewTracks = m_scannerGlobal->addedTracks().size() - m_numRelocatedTracks;
-    const int numMissingTracks = m_numPreviousExistingTrackLocations +
-            numNewTracks -
-            m_trackDao.getAllExistingTrackLocations().size();
+
+    const QSet<QString> existingTracks = m_trackDao.getAllExistingTrackLocations();
+    int numRediscoveredTracks = 0;
+    for (const QString& loc : std::as_const(m_previouslyMissingTracks)) {
+        if (existingTracks.contains(loc)) {
+            numRediscoveredTracks++;
+        }
+    }
+    const auto missingTracks = m_trackDao.getAllMissingTrackLocations();
+    const int numMissingTracks = missingTracks.size();
+    int numNewMissingTracks = 0;
+    for (const QString& loc : std::as_const(missingTracks)) {
+        if (!m_previouslyMissingTracks.contains(loc)) {
+            numNewMissingTracks++;
+        }
+    }
+    const int tracksTotal = existingTracks.size();
+
     qInfo() << "-------------------------------------------------------";
     qInfo("Library scan finished after %s", durationString.toLocal8Bit().constData());
     qInfo(" %d unchanged directories", numVerifiedDirs);
@@ -443,17 +459,20 @@ void LibraryScanner::slotFinishUnhashedScan() {
     qInfo(" %d tracks verified from changed/added directories", numVerifiedTracks);
     qInfo(" %d new tracks", numNewTracks);
     qInfo(" %d moved tracks", m_numRelocatedTracks);
-    qInfo(" %d missing tracks", numMissingTracks);
+    qInfo(" %d new missing tracks", numNewMissingTracks);
+    qInfo(" %d missing tracks total", numMissingTracks);
+    qInfo(" %d rediscovered tracks", numRediscoveredTracks);
+    qInfo(" %d tracks total", tracksTotal);
     qInfo() << "-------------------------------------------------------";
 
     LibraryScanResultSummary result;
     result.durationString = durationString;
-    result.numVerifiedDirs = numVerifiedDirs;
-    result.numScannedDirs = numScannedDirs;
-    result.numVerifiedTracks = numVerifiedTracks;
     result.numNewTracks = numNewTracks;
     result.numMovedTracks = m_numRelocatedTracks;
+    result.numNewMissingTracks = numNewMissingTracks;
     result.numMissingTracks = numMissingTracks;
+    result.numRediscoveredTracks = numRediscoveredTracks;
+    result.tracksTotal = tracksTotal;
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);

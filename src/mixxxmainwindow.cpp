@@ -1148,26 +1148,41 @@ void MixxxMainWindow::slotHelpAbout() {
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
     QString summary =
-            tr("Scan took %1.").arg(result.durationString) + QStringLiteral("\n\n");
-    if ((result.numNewTracks + result.numMovedTracks + result.numMissingTracks) == 0) {
-        summary += tr("No changes were detected.");
+            tr("Scan took %1.").arg(result.durationString) + QStringLiteral("<br><br>");
+    if (result.numNewTracks == 0 &&
+            result.numMovedTracks == 0 &&
+            result.numNewMissingTracks == 0) {
+        summary += tr("No changes detected.") +
+                QStringLiteral("<br><b>") +
+                tr("%1 tracks in total").arg(result.tracksTotal) +
+                QStringLiteral("</b>");
     } else {
-        summary += tr("%1 verified directories").arg(result.numVerifiedDirs) +
-                QStringLiteral("\n") +
-                tr("%1 scanned directories").arg(result.numScannedDirs) +
-                QStringLiteral("\n") +
-                tr("%1 verified tracks").arg(result.numVerifiedTracks) +
-                QStringLiteral("\n") +
-                tr("%1 new tracks found").arg(result.numNewTracks) +
-                QStringLiteral("\n") +
-                tr("%1 moved tracks detected").arg(result.numMovedTracks) +
-                QStringLiteral("\n") +
-                tr("%1 are missing").arg(result.numMissingTracks);
+        if (result.numNewTracks != 0) {
+            summary += tr("%1 new tracks found").arg(result.numNewTracks) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numMovedTracks != 0) {
+            summary += tr("%1 moved tracks detected").arg(result.numMovedTracks) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numNewMissingTracks != 0) {
+            summary += tr("%1 tracks are missing (%2 total)")
+                               .arg(result.numNewMissingTracks,
+                                       result.numMissingTracks);
+        }
+        if (result.numRediscoveredTracks != 0) {
+            summary += QStringLiteral("<br>") +
+                    tr("%1 tracks have been rediscovered").arg(result.numRediscoveredTracks);
+        }
+        summary += QStringLiteral("<br><br><b>") +
+                tr("%1 tracks in total").arg(result.tracksTotal) +
+                QStringLiteral("</b>");
     }
-    QMessageBox* msg = new QMessageBox();
-    msg->setWindowTitle(tr("Library scan finished"));
-    msg->setText(summary);
-    msg->show();
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
+    pMsg->setText(summary);
+    pMsg->show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {

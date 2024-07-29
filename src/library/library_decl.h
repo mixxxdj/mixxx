@@ -22,10 +22,10 @@ enum class FocusWidget {
 
 struct LibraryScanResultSummary {
     QString durationString;
-    int numVerifiedDirs;
-    int numScannedDirs;
-    int numVerifiedTracks;
     int numNewTracks;
     int numMovedTracks;
     int numMissingTracks;
+    int numNewMissingTracks;
+    int numRediscoveredTracks;
+    int tracksTotal;
 };

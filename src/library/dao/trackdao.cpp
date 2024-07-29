@@ -307,7 +307,7 @@ QSet<QString> TrackDAO::getAllMissingTrackLocations() const {
             "SELECT track_locations.location "
             "FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE fs_deleted=1 AND mixxx_deleted=0");
+            "WHERE fs_deleted=1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
