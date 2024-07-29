@@ -263,8 +263,11 @@ QList<TrackId> TrackDAO::resolveTrackIds(
 QSet<QString> TrackDAO::getAllTrackLocations() const {
     QSet<QString> locations;
     QSqlQuery query(m_database);
-    query.prepare("SELECT track_locations.location FROM track_locations "
-                  "INNER JOIN library on library.location = track_locations.id");
+    query.prepare(
+            "SELECT track_locations.location "
+            "FROM track_locations "
+            "INNER JOIN library "
+            "ON library.location = track_locations.id");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
@@ -285,6 +288,26 @@ QSet<QString> TrackDAO::getAllExistingTrackLocations() const {
             "FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE fs_deleted=0");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        DEBUG_ASSERT(!"Failed query");
+    }
+
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.value(locationColumn).toString());
+    }
+    return locations;
+}
+
+QSet<QString> TrackDAO::getAllMissingTrackLocations() const {
+    QSet<QString> locations;
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT track_locations.location "
+            "FROM library INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+            "WHERE fs_deleted=1 AND mixxx_deleted=0");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");

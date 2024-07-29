@@ -64,6 +64,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QSet<QString> getAllTrackLocations() const;
     // Return only tracks that are reported to exist during last scan.
     QSet<QString> getAllExistingTrackLocations() const;
+    // Return all tracks reported missing during last scan.
+    QSet<QString> getAllMissingTrackLocations() const;
     QString getTrackLocation(TrackId trackId) const;
 
     // Only used by friend class LibraryScanner, but public for testing!
