@@ -93,7 +93,7 @@ void SidebarModel::setDefaultSelection(unsigned int index) {
 void SidebarModel::activateDefaultSelection() {
     if (m_iDefaultSelectedIndex <
             static_cast<unsigned int>(m_sFeatures.size())) {
-        emit selectIndex(getDefaultSelection());
+        emit selectIndex(getDefaultSelection(), true /* scrollTo */);
         // Selecting an index does not activate it.
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
@@ -550,7 +550,9 @@ void SidebarModel::featureRenamed(LibraryFeature* pFeature) {
     }
 }
 
-void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& featureIndex) {
+void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
+        const QModelIndex& featureIndex,
+        bool scrollTo) {
     QModelIndex ind;
     if (featureIndex.isValid()) {
         TreeItem* pTreeItem = static_cast<TreeItem*>(featureIndex.internalPointer());
@@ -563,5 +565,5 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex
             }
         }
     }
-    emit selectIndex(ind);
+    emit selectIndex(ind, scrollTo);
 }
