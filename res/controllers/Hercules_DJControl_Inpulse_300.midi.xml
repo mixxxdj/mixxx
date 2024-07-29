@@ -1402,44 +1402,39 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
-
-
-
 			<control>
 				<group>[Channel1]</group>
-				<key>reset_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 1</description>
 				<status>0x96</status>
 				<midino>0x48</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_up</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 2</description>
 				<status>0x96</status>
 				<midino>0x49</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_up_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 3</description>
 				<status>0x96</status>
 				<midino>0x4A</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 4</description>
 				<status>0x96</status>
 				<midino>0x4B</midino>
@@ -1449,37 +1444,37 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>sync_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 5</description>
 				<status>0x96</status>
 				<midino>0x4C</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_down</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 6</description>
 				<status>0x96</status>
 				<midino>0x4D</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_down_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 7</description>
 				<status>0x96</status>
 				<midino>0x4E</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 8</description>
 				<status>0x96</status>
 				<midino>0x4F</midino>
@@ -1487,8 +1482,6 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
 
 			<!--Slicer LOOP-->
 			<control>
@@ -2385,44 +2378,39 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
-
-
-
 			<control>
 				<group>[Channel2]</group>
-				<key>reset_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 1</description>
 				<status>0x97</status>
 				<midino>0x48</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_up</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 2</description>
 				<status>0x97</status>
 				<midino>0x49</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_up_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 3</description>
 				<status>0x97</status>
 				<midino>0x4A</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 4</description>
 				<status>0x97</status>
 				<midino>0x4B</midino>
@@ -2432,37 +2420,37 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>sync_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 5</description>
 				<status>0x97</status>
 				<midino>0x4C</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_down</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 6</description>
 				<status>0x97</status>
 				<midino>0x4D</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_down_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 7</description>
 				<status>0x97</status>
 				<midino>0x4E</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 8</description>
 				<status>0x97</status>
 				<midino>0x4F</midino>
@@ -2470,9 +2458,6 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
-
 
 			<!--Slicer LOOP-->
 			<control>
@@ -2805,7 +2790,6 @@
 			</control>
 
 			<!-- CC's MIDI Channel 3 (0xB2  Deck B - Standard mode)-->
-
 
 			<!-- Volume-->
 			<control>

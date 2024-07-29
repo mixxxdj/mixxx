@@ -39,12 +39,13 @@ var DJCi300 = {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
-// Beatmatch guide LED tolerances
-DJCi300.beatmatchTempoTolerance = .1;
-DJCi300.beatmatchAlignTolerance = .01;
+// Beatmatch LED guide tolerances
+DJCi300.beatmatchTempoTolerance = .1; // Measured in BPM (e.g. LEDS turn off if decks are <0.1 BPM apart)
+DJCi300.beatmatchAlignTolerance = .01; // Measured in beats (e.g. LEDS turn off if decks are <0.01 beats apart)
 
 // Determines how fast the wheel must be moving to be considered "slipping"
-DJCi300.slipThreshold = 0.1;
+// Higher numbers result in longer backspins
+DJCi300.slipThreshold = .1; // Must be between 0 and 1, non-inclusive
 
 // How fast scratching is.
 DJCi300.scratchScale = 1.0;
@@ -438,30 +439,35 @@ DJCi300.changeMode = function(channel, control, value, _status, _group) {
 // Toneplay
 DJCi300.toneplay = function(channel, control, value, _status, _group) {
     const deck = channel - 5;
-    const button = control - 0x40 + 1;
+    let button = control - 0x40 + 1;
 
     if (value) {
-        // Jump to the most recently used hotcue
-        const recentHotcue = engine.getValue(`[Channel${  deck  }]`, "hotcue_focus");
-        if ((recentHotcue !== -1) && (engine.getValue(`[Channel${  deck  }]`,
-            `hotcue_${  recentHotcue  }_enabled`))) {
+        // Pad buttons (buttons 1-8) will jump to a hotcue and change pitch
+        // Shift + pad buttons (buttons 9-16) will only change pitch without jumping
+        if (button <= 8) {
+            // Jump to the most recently used hotcue
+            const recentHotcue = engine.getValue(`[Channel${  deck  }]`, "hotcue_focus");
+            if ((recentHotcue !== -1) && (engine.getValue(`[Channel${  deck  }]`,
+                `hotcue_${  recentHotcue  }_enabled`))) {
 
-            engine.setValue(`[Channel${  deck  }]`, `hotcue_${  recentHotcue  }_goto`, 1);
-        } else {
-            // If that hotcue doesn't exist or was deleted, jump to cue
-            engine.setValue(`[Channel${  deck  }]`,
-                "cue_goto", 1);
+                engine.setValue(`[Channel${  deck  }]`, `hotcue_${  recentHotcue  }_goto`, 1);
+            } else {
+                // If that hotcue doesn't exist or was deleted, jump to cue
+                engine.setValue(`[Channel${  deck  }]`,
+                    "cue_goto", 1);
+            }
         }
 
         // Adjust pitch
-        engine.setValue(`[Channel${  deck  }]`, "reset_key", 1);
-        // Apply offset
+        engine.setValue(`[Channel${  deck  }]`, "reset_key", 1); // Reset to original key
+        button = (button > 8) ? (button - 8) : button;
+        // Adjust key accordingly
         if (DJCi300.toneplayOffset[deck] >= 0) {
             for (let i = 0; i < DJCi300.toneplayOffset[deck]; i++) {
                 engine.setValue(`[Channel${  deck  }]`, "pitch_up", 1);
             }
         } else {
-            for (i = 0; i > DJCi300.toneplayOffset[deck]; i--) {
+            for (let i = 0; i > DJCi300.toneplayOffset[deck]; i--) {
                 engine.setValue(`[Channel${  deck  }]`, "pitch_down", 1);
             }
         }
@@ -472,29 +478,10 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
             }
             // Buttons 5-8 are -4 to -1 semitones
         } else {
-            for (i = 8; i >= button; i--) {
+            for (let i = 8; i >= button; i--) {
                 engine.setValue(`[Channel${  deck  }]`, "pitch_down", 1);
             }
         }
-    }
-};
-
-// Toneplay shift (shift the toneplay keyboard up or down)
-DJCi300.toneplayShift = function(channel, control, value, _status, group) {
-    const deck = channel - 5;
-    const direction = (control === 0x4B) ? 1 : 0;
-
-    if (value) {
-        // Because the keyboard ranges from -4 to 3 semitones and Mixxx can only shift
-        // up to 6 semitones, the valid range of toneplayOffset is -2 to 3
-        if (direction === 1) {
-            DJCi300.toneplayOffset[deck] = Math.min(DJCi300.toneplayOffset[deck] + 1, 3);
-        } else {
-            DJCi300.toneplayOffset[deck] = Math.max(DJCi300.toneplayOffset[deck] - 1, -2);
-        }
-        // Update LEDs (because the keyboard has changed)
-        const newValue = engine.getValue(group, "pitch");
-        DJCi300.updateToneplayLED(newValue, group);
     }
 };
 
@@ -697,7 +684,7 @@ DJCi300.updateSlicerLED = function(deck) {
         // If at least 1 button is held down, light that up
         // Or in the case of 2+ buttons, light up everything between the outer 2 buttons
         if (start !== -1) {
-            for (i = start; i < end; i++) {
+            for (let i = start; i < end; i++) {
                 midi.sendShortMsg(status, control + i, 0x7F);
             }
         // Otherwise, light up the LED corresponding to the beat
