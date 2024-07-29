@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.2" type="development" date="2024-06-12" timestamp="1718193546">
+    <release version="2.4.2" type="development" date="2024-07-14" timestamp="1720986151">
       <description>
  <p>
   Controller Mappings
@@ -118,6 +118,7 @@
   <li>
    Numark Scratch: Add initial mapping
    #4834
+   #13375
   </li>
   <li>
    Sony SIXAXIS: Fix mapping
@@ -186,6 +187,16 @@
   <li>
    Fix minor 64 bit CPU performance issue
    #13355
+  </li>
+  <li>
+   Fix clicks at loop-out when looping into lead-in
+   #13294
+  </li>
+  <li>
+   Fix wrong pitch value on startup, caused by
+   components.Pot
+   #11814
+   #13463
   </li>
  </ul>
 </description>
