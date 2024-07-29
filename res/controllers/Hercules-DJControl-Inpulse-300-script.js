@@ -14,7 +14,7 @@
 // - Added slicer/slicer loop
 // - Replaced the song end warning with an actual beatmatch guide
 // - Changed the way scratching works (wheels have inertia, allowing backspins and other tricks)
-// - Updated VU meters (replaced vu_meter with VuMeter, connectControl with makeConnection, etc)
+// - Updated VU meter syntax (replaced vu_meter with VuMeter, connectControl with makeConnection, etc)
 //
 // Changes to v1.2
 // - Code cleanup.
@@ -28,6 +28,9 @@
 // v1.0 : Original forum release
 //
 // TO DO: Functions that could be implemented to the script:
+//
+// * HOTCUES: Make loop hotcues more intuitive. Currently, the pads are always lit when loop cues are set,
+//            regardless of whether or not the loop is enabled (maybe make the pad blink when set but inactive?)
 //
 // * ROLL: Keep SLIP active (if already enabled) when exiting from rolls
 //

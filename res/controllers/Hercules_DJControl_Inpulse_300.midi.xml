@@ -2,10 +2,10 @@
 <MixxxMIDIPreset mixxxVersion="2.4" schemaVersion="1">
 	<info>
 		<name>Hercules DJControl Inpulse 300</name>
-		<author>DJ Phatso for Hercules Technical Support</author>
-		<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
-		<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
-		<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
+			<author>DJ Phatso for Hercules Technical Support</author>
+			<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
+			<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
+			<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
 	</info>
 	<controller id="DJControl Inpulse 300">
 		<scriptfiles>
@@ -3224,6 +3224,7 @@
 				<midino>0x00</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3233,6 +3234,7 @@
 				<midino>0x01</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3242,6 +3244,7 @@
 				<midino>0x02</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3251,6 +3254,7 @@
 				<midino>0x03</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3260,6 +3264,7 @@
 				<midino>0x04</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3269,6 +3274,7 @@
 				<midino>0x05</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3278,6 +3284,7 @@
 				<midino>0x06</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3287,6 +3294,7 @@
 				<midino>0x07</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3296,6 +3304,7 @@
 				<midino>0x00</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3305,6 +3314,7 @@
 				<midino>0x01</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3314,6 +3324,7 @@
 				<midino>0x02</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3323,6 +3334,7 @@
 				<midino>0x03</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3332,6 +3344,7 @@
 				<midino>0x04</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3341,6 +3354,7 @@
 				<midino>0x05</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3350,6 +3364,7 @@
 				<midino>0x06</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3359,6 +3374,7 @@
 				<midino>0x07</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<!--LED HOT CUE (SHIFT Mode)-->
 			<output>
@@ -3369,6 +3385,7 @@
 				<midino>0x08</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3378,6 +3395,7 @@
 				<midino>0x09</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3387,6 +3405,7 @@
 				<midino>0x0A</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3396,6 +3415,7 @@
 				<midino>0x0B</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3405,6 +3425,7 @@
 				<midino>0x0C</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3414,6 +3435,7 @@
 				<midino>0x0D</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3423,6 +3445,7 @@
 				<midino>0x0E</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -3432,6 +3455,7 @@
 				<midino>0x0F</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3441,6 +3465,7 @@
 				<midino>0x08</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3450,6 +3475,7 @@
 				<midino>0x09</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3459,6 +3485,7 @@
 				<midino>0x0A</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3468,6 +3495,7 @@
 				<midino>0x0B</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3477,6 +3505,7 @@
 				<midino>0x0C</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3486,6 +3515,7 @@
 				<midino>0x0D</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3495,6 +3525,7 @@
 				<midino>0x0E</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -3504,6 +3535,7 @@
 				<midino>0x0F</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<!--LED Roll-->
 			<output>
