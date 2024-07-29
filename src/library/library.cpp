@@ -763,7 +763,8 @@ void Library::searchTracksInCollection(const QString& query) {
 void Library::showAutoDJ() {
     m_pAutoDJFeature->activate();
     emit switchToView(kAutoDJViewName);
-    m_pSidebarModel->slotFeatureSelect(m_pAutoDJFeature);
+    // Select it but don't scroll there
+    m_pSidebarModel->slotFeatureSelect(m_pAutoDJFeature, QModelIndex(), false);
 }
 
 #ifdef __ENGINEPRIME__
