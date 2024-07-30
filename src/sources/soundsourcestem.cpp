@@ -323,6 +323,12 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
 
     AVStream* firstAudioStream = nullptr;
     int stemCount = 0;
+    uint selectedStem = params.stemIdx();
+    VERIFY_OR_DEBUG_ASSERT(selectedStem <= mixxx::kMaxSupportedStems) {
+        kLogger.warning().noquote()
+                << "Invalid selected stem Idx" << selectedStem;
+        return OpenResult::Failed;
+    }
     OpenParams stemParam = params;
     stemParam.setChannelCount(mixxx::audio::ChannelCount::stereo());
     for (unsigned int streamIdx = 0; streamIdx < pavInputFormatContext->nb_streams; streamIdx++) {
@@ -365,6 +371,10 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
             stemCount++;
         }
 
+        if (selectedStem && selectedStem != streamIdx) {
+            continue;
+        }
+
         m_pStereoStreams.emplace_back(std::make_unique<SoundSourceSingleSTEM>(getUrl(), streamIdx));
         if (m_pStereoStreams.back()->open(OpenMode::Strict /*Unused*/,
                     stemParam) != OpenResult::Succeeded) {
@@ -380,7 +390,9 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         return OpenResult::Failed;
     }
 
-    if (params.getSignalInfo().getChannelCount() == mixxx::audio::ChannelCount::stereo()) {
+    if (params.getSignalInfo().getChannelCount() ==
+                    mixxx::audio::ChannelCount::stereo() ||
+            selectedStem) {
         // Requesting a stereo stream (used for samples and preview decks)
         m_requestedChannelCount = mixxx::audio::ChannelCount::stereo();
         initChannelCountOnce(mixxx::audio::ChannelCount::stereo());
@@ -434,10 +446,15 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
     int stemCount = m_pStereoStreams.size();
     CSAMPLE* pBuffer = globalSampleFrames.writableData();
 
-    if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo()) {
+    if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo() && stemCount != 1) {
         SampleUtil::clear(pBuffer, globalSampleFrames.writableLength());
     } else {
         DEBUG_ASSERT(stemSampleLength * stemCount == globalSampleFrames.writableLength());
+    }
+
+    if (stemCount == 1) {
+        m_pStereoStreams[0]->readSampleFrames(globalSampleFrames);
+        return read;
     }
 
     for (int streamIdx = 0; streamIdx < stemCount; streamIdx++) {

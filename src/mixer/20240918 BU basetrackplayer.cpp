@@ -20,23 +20,30 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
+// EVE OSC
+//#include <stdlib.h>
+//#include <string.h>
+//#include <iostream>
+//#include <cstring>
+//#include "osc/oscfunctions.h"
+// EVE OSC
+
 namespace {
 
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
-<<<<<<< HEAD
-#ifdef __STEM__
-constexpr int kMaxSupportedStems = 4;
-#endif
-=======
->>>>>>> 2d9d9ee413 (feat: add the ability to load a single stem track)
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
 }
 } // namespace
+
+// EveOSC
+void OscFunctionsSendChar(QString Oscgroup, QString OscKey, QString OscMessageBody);
+void OscFunctionsSendFloat(QString OscGroup, QString OscKey, float OscMessageBody);
+// EveOSC
 
 BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
         : BasePlayer(pParent, group) {
@@ -425,7 +432,7 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         if (lastEjected) {
             slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::kNoStemSelectedIdx,
+                    mixxx::kNoStemSelected,
 #endif
                     false);
         }
@@ -438,13 +445,12 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         if (lastEjected) {
             slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::kNoStemSelectedIdx,
+                    mixxx::kNoStemSelected,
 #endif
                     false);
         }
         return;
     }
-
     m_pChannel->getEngineBuffer()->ejectTrack();
 }
 
@@ -554,11 +560,14 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
     disconnect(m_pLoadedTrack.get(), nullptr, m_pKey.get(), nullptr);
 }
 
-void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
 #ifdef __STEM__
-        uint stemIdx,
-#endif
+void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
+        uint stemMask,
         bool bPlay) {
+#else
+void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
+        bool bPlay) {
+#endif
     //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
@@ -583,12 +592,12 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
 #ifdef __STEM__
     pEngineBuffer->loadTrack(pNewTrack,
-            stemIdx,
+            stemMask,
             bPlay,
             m_pChannelToCloneFrom);
 
     // Select a specific stem if requested
-    emit selectedStem(stemIdx);
+    emit selectedStems(stemMask);
 #else
     pEngineBuffer->loadTrack(pNewTrack, bPlay, m_pChannelToCloneFrom);
 #endif
@@ -751,6 +760,50 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    QString trackInfoArtist = " ";
+    QString trackInfoTitle = " ";
+    QString DeckStatusTxtLine2 = " ";
+    QString DeckStatusTxtLine3 = " ";
+    QString DeckStatusTxtLine4 = " ";
+    QTime tempStatusTime = QTime::currentTime();
+    QString DeckStatusTime = tempStatusTime.toString("hh:mm:ss");
+
+    if (pNewTrack) {
+        //    QString trackInfo = pNewTrack->getInfo();
+        trackInfoArtist = pNewTrack->getArtist();
+        trackInfoTitle = pNewTrack->getTitle();
+        trackInfoArtist.replace("\"", "''");
+        trackInfoTitle.replace("\"", "''");
+        DeckStatusTxtLine2 = "Artist : \"" + trackInfoArtist + "\",";
+        DeckStatusTxtLine3 = "Title : \"" + trackInfoTitle + "\",";
+        DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
+
+    } else {
+        DeckStatusTxtLine2 = "Artist : \" \",";
+        DeckStatusTxtLine3 = "Title : \" \",";
+        DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
+    }
+    QString trackInfoDeck = getGroup();
+    trackInfoDeck.replace("[Channel", "");
+    trackInfoDeck.replace("]", "");
+    QString DeckStatusFilePath = m_pConfig->getSettingsPath();
+    DeckStatusFilePath.replace("Roaming", "Local");
+    DeckStatusFilePath.replace("\\", "/");
+    QString DeckStatusFileLocation = DeckStatusFilePath + "/controllers/Status" + getGroup() + ".js";
+    //  Different file for each Deck / Sampler
+    QString DeckStatusTxtLine1 = "var TrackDeck" + trackInfoDeck + " = { ";
+    QString DeckStatusTxtLine5 = "};";
+    QFile DeckStatusFile(DeckStatusFileLocation);
+    DeckStatusFile.remove();
+    DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    // DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    QTextStream DeckStatusTxt(&DeckStatusFile);
+    DeckStatusTxt << DeckStatusTxtLine1 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine2 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine3 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine4 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine5 << "\n";
+    DeckStatusFile.close();
 }
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
@@ -804,7 +857,7 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     bool play = ControlObject::toBool(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play"));
     slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             play);
 }
@@ -832,7 +885,7 @@ void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
 
     slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
 }
@@ -956,6 +1009,12 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+
+//  EveOSC begin
+//        if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+//            OscFunctionsSendFloat(getGroup(), "play", value);
+//        }
+// EveOSC end
     }
 }
 

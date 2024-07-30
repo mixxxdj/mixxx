@@ -1265,8 +1265,17 @@ void WTrackTableView::activateSelectedTrack() {
     slotMouseDoubleClicked(indices.at(0));
 }
 
+<<<<<<< HEAD
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
     const QModelIndexList indices = getSelectedRows();
+=======
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+#ifdef __STEM__
+        uint stemIdx,
+#endif
+        bool play) {
+    auto indices = getSelectedRows();
+>>>>>>> 2d9d9ee413 (feat: add the ability to load a single stem track)
     if (indices.isEmpty()) {
         return;
     }
@@ -1299,7 +1308,12 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     auto* trackModel = getTrackModel();
     TrackPointer pTrack;
     if (trackModel && (pTrack = trackModel->getTrack(index))) {
+#ifdef __STEM__
+        DEBUG_ASSERT(!stemIdx || pTrack->hasStem());
+        emit loadTrackToPlayer(pTrack, group, stemIdx, play);
+#else
         emit loadTrackToPlayer(pTrack, group, play);
+#endif
     }
 }
 

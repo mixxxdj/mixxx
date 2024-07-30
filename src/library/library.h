@@ -114,7 +114,11 @@ class Library: public QObject {
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play);
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
@@ -127,7 +131,12 @@ class Library: public QObject {
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();
