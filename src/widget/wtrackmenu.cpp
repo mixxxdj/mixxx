@@ -293,13 +293,6 @@ void WTrackMenu::createActions() {
         connect(m_pAutoDJReplaceAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJReplace);
     }
 
-    if (featureIsEnabled(Feature::LoadTo)) {
-        m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), m_pLoadToMenu);
-        // currently there is only one preview deck so just map it here.
-        QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-        connect(m_pAddToPreviewDeck, &QAction::triggered, this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
-    }
-
     if (featureIsEnabled(Feature::Remove)) {
         // Keyboard shortcuts are set here just to have them displayed in the menu.
         // Actual keypress is handled in WTrackTableView::keyPressEvent().
@@ -582,14 +575,6 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        m_pLoadToMenu->addMenu(m_pDeckMenu);
-
-        m_pLoadToMenu->addMenu(m_pSamplerMenu);
-
-        if (m_pNumPreviewDecks.get() > 0.0) {
-            m_pLoadToMenu->addAction(m_pAddToPreviewDeck);
-        }
-
         addMenu(m_pLoadToMenu);
         addSeparator();
     }
@@ -890,10 +875,58 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
     }
 }
 
+void WTrackMenu::generateTrackLoadMenu(const QString& group,
+        const QString& label,
+        TrackPointer pTrack,
+        QMenu* pParentMenu,
+        bool enabled) {
+#ifdef __STEM__
+    if (pTrack && !pTrack->hasStreamInfoFromSource()) {
+        // The stem metadata are loaded on stream info refresh, which occurs
+        // when the file gets loaded for the time in the session. If there is no
+        // stream info from source, when open the file, which lead to loading
+        // the stem manifest.
+        mixxx::AudioSource::OpenParams config;
+        config.setChannelCount(mixxx::kMaxEngineChannelInputCount);
+        SoundSourceProxy(pTrack).openAudioSource(config);
+    }
+    if (enabled && pTrack && pTrack->hasStem()) {
+        QMenu* pStemMenu = new QMenu(label, pParentMenu);
+
+        QAction* pAction = new QAction(tr("Load as a stem deck"), this);
+        pStemMenu->addAction(pAction);
+        connect(pAction, &QAction::triggered, this, [this, group] { loadSelectionToGroup(group); });
+        pStemMenu->addSeparator();
+
+        auto stemInfo = pTrack->getStemInfo();
+        for (uint stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+            QAction* pAction =
+                    new QAction(tr("Load the \"%1\" stem")
+                                        .arg(stemInfo.at(stemIdx).getLabel()),
+                            this);
+            pStemMenu->addAction(pAction);
+            connect(pAction, &QAction::triggered, this, [this, group, stemIdx] {
+                loadSelectionToGroup(group, stemIdx + 1);
+            });
+        }
+        pParentMenu->addMenu(pStemMenu);
+    } else {
+#endif
+        QAction* pAction = new QAction(label, this);
+        pAction->setEnabled(enabled);
+        pParentMenu->addAction(pAction);
+        connect(pAction, &QAction::triggered, this, [this, group] { loadSelectionToGroup(group); });
+#ifdef __STEM__
+    }
+#endif
+}
+
 void WTrackMenu::updateMenus() {
     if (isEmpty()) {
         return;
     }
+
+    m_pLoadToMenu->clear();
 
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
@@ -927,12 +960,15 @@ void WTrackMenu::updateMenus() {
                 bool deckEnabled =
                         (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
                         singleTrackSelected;
-                QAction* pAction = new QAction(tr("Deck %1").arg(i), this);
-                pAction->setEnabled(deckEnabled);
-                m_pDeckMenu->addAction(pAction);
-                connect(pAction, &QAction::triggered, this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
+                auto pTrack = getFirstTrackPointer();
+                generateTrackLoadMenu(deckGroup,
+                        tr("Deck %1").arg(i),
+                        getFirstTrackPointer(),
+                        m_pDeckMenu,
+                        deckEnabled);
             }
         }
+        m_pLoadToMenu->addMenu(m_pDeckMenu);
 
         int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
         const int maxSamplersPerMenu = 16;
@@ -940,6 +976,7 @@ void WTrackMenu::updateMenus() {
             m_pSamplerMenu->clear();
             QMenu* pMenu = m_pSamplerMenu;
             int samplersInMenu = 0;
+            TrackPointer pTrack = getFirstTrackPointer();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 if (samplersInMenu == maxSamplersPerMenu) {
                     samplersInMenu = 0;
@@ -954,16 +991,22 @@ void WTrackMenu::updateMenus() {
                 bool samplerPlaying = ControlObject::get(
                                               ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && singleTrackSelected;
-                QAction* pAction = new QAction(samplerTrString(i), pMenu);
-                pAction->setEnabled(samplerEnabled);
-                pMenu->addAction(pAction);
-                connect(pAction,
-                        &QAction::triggered,
-                        this,
-                        [this, samplerGroup] {
-                            loadSelectionToGroup(samplerGroup);
-                        });
+
+                generateTrackLoadMenu(samplerGroup,
+                        samplerTrString(i),
+                        pTrack,
+                        pMenu,
+                        samplerEnabled);
             }
+        }
+        m_pLoadToMenu->addMenu(m_pSamplerMenu);
+
+        if (m_pNumPreviewDecks.get() > 0.0) {
+            // currently there is only one preview deck so just map it here.
+            generateTrackLoadMenu(PlayerManager::groupForPreviewDeck(0),
+                    tr("Preview Deck"),
+                    getFirstTrackPointer(),
+                    m_pLoadToMenu);
         }
     }
 
@@ -1821,7 +1864,11 @@ void WTrackMenu::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     hide();
 }
 
-void WTrackMenu::loadSelectionToGroup(const QString& group, bool play) {
+void WTrackMenu::loadSelectionToGroup(const QString& group,
+#ifdef __STEM__
+        uint stemIdx,
+#endif
+        bool play) {
     TrackPointer pTrack = getFirstTrackPointer();
     if (!pTrack) {
         return;
@@ -1841,7 +1888,11 @@ void WTrackMenu::loadSelectionToGroup(const QString& group, bool play) {
 
     // TODO: load track from this class without depending on
     // external slot to load track
-    emit loadTrackToPlayer(pTrack, group, play);
+    emit loadTrackToPlayer(pTrack, group,
+#ifdef __STEM__
+            stemIdx,
+#endif
+            play);
 }
 
 namespace {

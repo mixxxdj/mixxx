@@ -9,6 +9,7 @@
 
 #include "analyzer/constants.h"
 #include "audio/signalinfo.h"
+#include "engine/engine.h"
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
 
