@@ -928,8 +928,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID) {
                 return QVariant();
             }
-            const QString keyString = KeyUtils::keyToString(key);
-            return QVariant::fromValue(keyString);
+            return QVariant::fromValue(KeyUtils::keyToString(key));
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
@@ -1059,8 +1058,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID) {
                 return QVariant();
             }
-            const QColor color = KeyUtils::keyToColor(key, s_keyColorPalette);
-            return QVariant::fromValue(color);
+            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette));
         }
         default:
             break;
