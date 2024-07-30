@@ -1572,7 +1572,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
-    BaseTrackTableModel::setKeyColorPalette(colorPaletteSettings.getKeyColorPalette());
+    BaseTrackTableModel::setKeyColorPalette(colorPaletteSettings.getConfigKeyColorPalette());
 
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(

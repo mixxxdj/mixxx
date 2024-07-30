@@ -144,7 +144,7 @@ void DlgPrefColors::slotUpdate() {
     slotHotcuePaletteIndexChanged(comboBoxHotcueColors->currentIndex());
 
     const ColorPalette keyPalette =
-            m_colorPaletteSettings.getKeyColorPalette();
+            m_colorPaletteSettings.getConfigKeyColorPalette();
     comboBoxKeyColors->setCurrentText(QCoreApplication::translate(
             "PredefinedColorPalettes", qPrintable(keyPalette.getName())));
 
@@ -247,7 +247,7 @@ void DlgPrefColors::slotApply() {
     if (!bKeyColorPaletteFound) {
         m_colorPaletteSettings.setKeyColorPalette(
                 m_colorPaletteSettings.getColorPalette(keyColorPaletteName,
-                        m_colorPaletteSettings.getKeyColorPalette()));
+                        m_colorPaletteSettings.getConfigKeyColorPalette()));
     }
 
     int hotcueColorIndex = comboBoxHotcueDefaultColor->currentIndex();

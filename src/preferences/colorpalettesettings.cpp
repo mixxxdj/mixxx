@@ -173,7 +173,7 @@ ColorPalette ColorPaletteSettings::getKeyColorPalette(
             mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette);
 }
 
-ColorPalette ColorPaletteSettings::getKeyColorPalette() const {
+ColorPalette ColorPaletteSettings::getConfigKeyColorPalette() const {
     QString name = m_pConfig->getValueString(kKeyColorPaletteConfigKey);
     return getKeyColorPalette(name);
 }
