@@ -370,6 +370,17 @@ class SampleUtil {
             mixxx::audio::ChannelCount numChannels,
             int sourceChannel = 0);
 
+    // Copies and strips interleaved stereo sample data in pSrc with
+    // down to multi-channel samples into pDest. Samples will be written at the
+    // channel pointed by channelOffset. Samples from all other channels will be
+    // ignored. pDst must contain (numFrames * numChannels) samples (numFrames *
+    // 2) samples will be written into pDest
+    static void copyStereoToMulti(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels,
+            int channelOffset);
+
     // reverses stereo sample in place
     static void reverse(CSAMPLE* pBuffer, SINT numSamples);
 
