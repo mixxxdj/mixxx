@@ -24,7 +24,7 @@ class WStemControlBox : public WWidgetGroup {
 
     void addControl(QWidget* control);
     bool shouldShow() const {
-        return m_hasStem && m_displayed;
+        return m_hasStem && m_displayed && m_selectedStem == mixxx::kNoStemSelectedIdx;
     }
 
     bool isDisplayed() const {
@@ -34,6 +34,7 @@ class WStemControlBox : public WWidgetGroup {
     void setDisplayed(bool displayed);
   public slots:
     void slotTrackLoaded(TrackPointer track);
+    void slotSelectStem(uint stemIdx);
 
   signals:
     void displayedChanged(bool);
@@ -42,6 +43,7 @@ class WStemControlBox : public WWidgetGroup {
     std::vector<std::unique_ptr<WStemControl>> m_stemControl;
     QString m_group;
     bool m_hasStem;
+    uint m_selectedStem;
     bool m_displayed;
 };
 

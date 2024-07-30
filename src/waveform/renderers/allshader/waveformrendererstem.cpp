@@ -161,7 +161,7 @@ void WaveformRendererStem::paintGL() {
                 if (layerIdx) {
                     max *= m_pStemMute[stemIdx]->toBool() ||
                                     (selectedStem &&
-                                            selectedStem != stemIdx + 1)
+                                            selectedStem != static_cast<uint>(stemIdx) + 1)
                             ? 0.f
                             : static_cast<float>(m_pStemGain[stemIdx]->get());
                 }
