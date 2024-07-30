@@ -1063,7 +1063,7 @@ QVariant BaseTrackTableModel::roleValue(
             return QVariant::fromValue(color);
         }
         default:
-            DEBUG_ASSERT(!"unexpected field for DecorationRole");
+            break;
         }
         break;
     }
