@@ -34,11 +34,15 @@ void WaveformRendererStem::initializeGL() {
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;
     for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+        DEBUG_ASSERT(group.endsWith("]"));
+        QString stemGroup = QStringLiteral("%1Stem%2]")
+                                    .arg(group.left(group.size() - 1),
+                                            QString::number(stemIdx));
         m_pStemGain.emplace_back(
-                std::make_unique<ControlProxy>(group,
-                        QStringLiteral("stem_%1_volume").arg(stemIdx)));
+                std::make_unique<ControlProxy>(stemGroup,
+                        QStringLiteral("volume").arg(stemIdx)));
         m_pStemMute.emplace_back(std::make_unique<ControlProxy>(
-                group, QStringLiteral("stem_%1_mute").arg(stemIdx)));
+                stemGroup, QStringLiteral("mute").arg(stemIdx)));
     }
 }
 

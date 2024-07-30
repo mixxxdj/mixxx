@@ -13,6 +13,13 @@
 #ifdef __STEM__
 namespace {
 constexpr int kMaxSupportedStems = 4;
+
+QString getGroupForStem(const QString& deckGroup, int stemIdx) {
+    DEBUG_ASSERT(deckGroup.endsWith("]"));
+    return QStringLiteral("%1Stem%2]")
+            .arg(deckGroup.left(deckGroup.size() - 1),
+                    QString::number(stemIdx));
+}
 } // anonymous namespace
 #endif
 
@@ -69,14 +76,14 @@ EngineDeck::EngineDeck(
     m_stemMute.reserve(kMaxSupportedStems);
     for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
-                ConfigKey(getGroup(), QString("stem_%1_volume").arg(stemIdx))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
         // The default value is ignored and override with the medium value by
         // ControlPotmeter. This is likely a bug but fixing might have a
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
         m_stemMute.emplace_back(std::make_unique<ControlPushButton>(
-                ConfigKey(getGroup(), QString("stem_%1_mute").arg(stemIdx))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute"))));
     }
 #endif
 }

@@ -10,6 +10,13 @@
 
 class StemControlTest : public BaseSignalPathTest {
   protected:
+    QString getGroupForStem(const QString& deckGroup, int stemIdx) {
+        DEBUG_ASSERT(deckGroup.endsWith("]"));
+        return QStringLiteral("%1Stem%2]")
+                .arg(deckGroup.left(deckGroup.size() - 1),
+                        QString::number(stemIdx));
+    }
+
     void SetUp() override {
         BaseSignalPathTest::SetUp();
 
@@ -20,20 +27,31 @@ class StemControlTest : public BaseSignalPathTest {
         loadTrack(m_pMixerDeck3, pStemFile);
 
         m_pPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
-        m_pStem1Volume = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_1_volume");
-        m_pStem2Volume = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_2_volume");
-        m_pStem3Volume = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_3_volume");
-        m_pStem4Volume = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_4_volume");
-        m_pStem1Mute = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_1_mute");
-        m_pStem2Mute = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_2_mute");
-        m_pStem3Mute = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_3_mute");
-        m_pStem4Mute = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_4_mute");
-        m_pStem1Color = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_1_color");
-        m_pStem2Color = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_2_color");
-        m_pStem3Color = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_3_color");
-        m_pStem4Color = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_4_color");
+
+        m_pStem1Volume = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 1), "volume");
+        m_pStem2Volume = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 2), "volume");
+        m_pStem3Volume = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 3), "volume");
+        m_pStem4Volume = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 4), "volume");
+        m_pStem1Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 1), "mute");
+        m_pStem2Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 2), "mute");
+        m_pStem3Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 3), "mute");
+        m_pStem4Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 4), "mute");
+        m_pStem1Color = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 1), "color");
+        m_pStem2Color = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 2), "color");
+        m_pStem3Color = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 3), "color");
+        m_pStem4Color = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 4), "color");
+
         m_pStemCount = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_count");
     }
+
     void setCurrentPosition(mixxx::audio::FramePos position) {
         m_pChannel1->getEngineBuffer()->queueNewPlaypos(position, EngineBuffer::SEEK_STANDARD);
         ProcessBuffer();

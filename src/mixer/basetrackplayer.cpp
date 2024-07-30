@@ -286,9 +286,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
 #ifdef __STEM__
     m_pStemColors.reserve(kMaxSupportedStems);
+    QString group = getGroup();
     for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = QStringLiteral("%1Stem%2]")
+                                    .arg(group.left(group.size() - 1),
+                                            QString::number(stemIdx));
         m_pStemColors.emplace_back(std::make_unique<ControlObject>(
-                ConfigKey(getGroup(), QStringLiteral("stem_%1_color").arg(stemIdx))));
+                ConfigKey(stemGroup, QStringLiteral("color"))));
         m_pStemColors.back()->set(kNoTrackColor);
         m_pStemColors.back()->setReadOnly();
     }
