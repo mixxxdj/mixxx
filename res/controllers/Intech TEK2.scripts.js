@@ -2,7 +2,7 @@ const TEK2 = {};
 TEK2.jogScratchSensitivity = 1;
 TEK2.jogPitchSensitivity = 3;
 
-TEK2.init = function(_, __) {};
+TEK2.init = function() {};
 
 TEK2.shutdown = function() {};
 
