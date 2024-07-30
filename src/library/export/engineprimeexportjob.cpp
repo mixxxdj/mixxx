@@ -563,7 +563,9 @@ void EnginePrimeExportJob::run() {
             qWarning() << "Failed to export track"
                        << m_pLastLoadedTrack->getId().toString() << ":"
                        << e.what();
-            m_lastErrorMessage = e.what();
+            m_lastErrorMessage =
+                    "Failed to export track " % m_pLastLoadedTrack->getArtist() %
+                    " - " % m_pLastLoadedTrack->getTitle() % ":\n" % e.what();
             emit failed(m_lastErrorMessage);
             return;
         }
