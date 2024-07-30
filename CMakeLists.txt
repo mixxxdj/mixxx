@@ -3036,6 +3036,11 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
+  set_property(
+    SOURCE lib/apple/CAStreamBasicDescription.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-deprecated-anon-enum-enum-conversion
+  )
   target_compile_definitions(mixxx-lib PUBLIC __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
