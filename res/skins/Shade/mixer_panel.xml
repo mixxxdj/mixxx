@@ -508,7 +508,6 @@
                   }
                 </Style>
                 <Pos>113,14</Pos>
-                <CustomFormat>hh:mm</CustomFormat>
                 <ShowSeconds>false</ShowSeconds>
               </Time>
 
