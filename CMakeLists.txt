@@ -3450,6 +3450,7 @@ if (STEM)
   target_sources(mixxx-test PUBLIC
     src/test/stemtest.cpp
     src/test/steminfotest.cpp
+    src/test/stemcontrolobjecttest.cpp
   )
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
   target_sources(mixxx-lib PRIVATE
