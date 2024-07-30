@@ -24,7 +24,7 @@ struct WaveformFilteredData {
 
 struct WaveformData {
     WaveformFilteredData filtered;
-    unsigned char stems[mixxx::kMaxSupportedStem];
+    unsigned char stems[mixxx::kMaxSupportedStems];
 };
 
 class Waveform {
@@ -128,6 +128,10 @@ class Waveform {
     // We do not lock the mutex since m_data is not resized after the
     // constructor runs.
     const WaveformData* data() const { return &m_data[0];}
+
+    bool hasStem() const {
+        return m_stemCount > 0;
+    }
 
     void dump() const;
 

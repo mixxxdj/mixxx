@@ -141,7 +141,7 @@ struct WaveformStride {
 
     float m_overallData[ChannelCount];
     float m_filteredData[ChannelCount][FilterCount];
-    float m_stemData[ChannelCount][mixxx::kMaxSupportedStem];
+    float m_stemData[ChannelCount][mixxx::kMaxSupportedStems];
 
     float m_averageOverallData[ChannelCount];
     float m_averageFilteredData[ChannelCount][FilterCount];
