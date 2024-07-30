@@ -138,12 +138,10 @@
               <TextColor>#FFFFFF</TextColor>
             </Mark>
             <StemControl alignment="left">
-              <MinimumSize>138,68</MinimumSize>
-              <MaximumSize>158,1920</MaximumSize>
-              <SizePolicy>me,me</SizePolicy>
+              <MinimumSize>248me,68m</MinimumSize>
               <Stem>
-                <MinimumSize>130,17</MinimumSize>
-                <MaximumSize>150,34</MaximumSize>
+                <MinimumSize>240,17</MinimumSize>
+                <MaximumSize>240,34</MaximumSize>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
@@ -156,7 +154,7 @@
                     <MinimumSize>20,17</MinimumSize>
                     <MaximumSize>40,34</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
-                    <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_regular_<Variable name="KnobColorEq"/>.svg</Knob>
+                    <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_regular_grey.svg</Knob>
                     <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_regular.svg</BackPath>
                     <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
@@ -167,6 +165,47 @@
                     <KnobCenterYOffset>1.998</KnobCenterYOffset>
                     <Connection>
                       <ConfigKey><Variable name="StemGroup"/>,volume</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                  <EffectChainPresetSelector>
+                    <ObjectName>QuickEffectSelectorLeft</ObjectName>
+                    <MinimumSize>40,17</MinimumSize>
+                    <MaximumSize>70,28</MaximumSize>
+                    <SizePolicy>me,e</SizePolicy>
+                    <EffectUnitGroup>[QuickEffectRack1_<Variable name="StemGroup"/>]</EffectUnitGroup>
+                  </EffectChainPresetSelector>
+                  <WidgetGroup>
+                    <Size>32f,28f</Size>
+                    <Children>
+                      <Template src="skins:LateNight/controls/button_2state.xml">
+                        <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+                        <SetVariable name="ObjectName">FxToggleButton</SetVariable>
+                        <SetVariable name="BtnSize">square</SetVariable>
+                        <SetVariable name="Size">28f,28f</SetVariable>
+                        <SetVariable name="Pos">4,0</SetVariable>
+                        <SetVariable name="ConfigKey">[QuickEffectRack1_<Variable name="StemGroup"/>],enabled</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <KnobComposed>
+                    <TooltipId>QuickEffectRack_super1</TooltipId>
+                    <Pos>0,0</Pos>
+                    <MinimumSize>20,17</MinimumSize>
+                    <MaximumSize>40,34</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_regular_green.svg</Knob>
+                    <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_regular.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
+                    <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
+                    <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
+                    <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
+                    <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+                    <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+                    <KnobCenterYOffset>1.998</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],super1</ConfigKey>
                     </Connection>
                   </KnobComposed>
                 </Children>

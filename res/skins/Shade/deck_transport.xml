@@ -1,7 +1,30 @@
 <Template>
   <WidgetGroup>
-    <Size>243f,59f</Size>
+    <Size>290f,59f</Size>
     <Children>
+        <!--
+      **********************************************
+      Button- Stem
+      **********************************************
+      -->
+      <PushButton>
+        <TooltipId></TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_stem_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_stem_plus.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_stem_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_stem_minus.png</Unpressed>
+        </State>
+        <Pos>5,0</Pos>
+        <Connection>
+          <ConfigKey>[Skin],show_stem_controls</ConfigKey>
+        </Connection>
+      </PushButton>
         <!--
       **********************************************
       Button- Src
@@ -20,7 +43,7 @@
           <Pressed>skin:/btn/btn_src_minus.png</Pressed>
           <Unpressed>skin:/btn/btn_src_minus.png</Unpressed>
         </State>
-        <Pos>5,0</Pos>
+        <Pos>52,0</Pos>
         <Connection>
           <ConfigKey>[Skin],show_microphones</ConfigKey>
         </Connection>
@@ -39,7 +62,7 @@
           <Pressed>skin:/btn/btn_microphone_talkover_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_microphone_talkover_over.png</Unpressed>
         </State>
-        <Pos>5,14</Pos>
+        <Pos>52,14</Pos>
         <Connection>
           <ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -60,7 +83,7 @@
           <Pressed>skin:/btn/btn_aux_mute_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_aux_mute_over.png</Unpressed>
         </State>
-        <Pos>5,35</Pos>
+        <Pos>52,35</Pos>
         <Connection>
           <ConfigKey>[Auxiliary<Variable name="auxnum"/>],main_mix</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -85,7 +108,7 @@
           <Pressed>skin:/btn/btn_sampler_minus.png</Pressed>
           <Unpressed>skin:/btn/btn_sampler_minus.png</Unpressed>
         </State>
-        <Pos>53,0</Pos>
+        <Pos>100,0</Pos>
         <Connection>
           <ConfigKey>[Skin],show_samplers</ConfigKey>
         </Connection>
@@ -104,7 +127,7 @@
           <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
-        <Pos>53,14</Pos>
+        <Pos>100,14</Pos>
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum1"/>],cue_gotoandplay</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -131,7 +154,7 @@
           <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
-        <Pos>74,14</Pos>
+        <Pos>121,14</Pos>
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum2"/>],cue_gotoandplay</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -158,7 +181,7 @@
           <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
-        <Pos>53,35</Pos>
+        <Pos>100,35</Pos>
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum3"/>],cue_gotoandplay</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -185,7 +208,7 @@
           <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
-        <Pos>74,35</Pos>
+        <Pos>121,35</Pos>
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum4"/>],cue_gotoandplay</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -206,7 +229,7 @@
       -->
       <PushButton>
         <Size>54f,14f</Size>
-        <Pos>101,0</Pos>
+        <Pos>148,0</Pos>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -231,7 +254,7 @@
           <Pressed>skin:/btn/btn_beatjump_forward_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_beatjump_forward.png</Unpressed>
         </State>
-        <Pos>122,14</Pos>
+        <Pos>169,14</Pos>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],beatjump_forward</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -249,7 +272,7 @@
           <Pressed>skin:/btn/btn_beatjump_backward_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_beatjump_backward.png</Unpressed>
         </State>
-        <Pos>101,14</Pos>
+        <Pos>148,14</Pos>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],beatjump_backward</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
@@ -279,7 +302,7 @@
           <Pressed>skin:/btn/btn_reverse_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_reverse_over.png</Unpressed>
         </State>
-        <Pos>101,35</Pos>
+        <Pos>148,35</Pos>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],reverse</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -310,7 +333,7 @@
           <Pressed>skin:/btn/btn_loop_minus.png</Pressed>
           <Unpressed>skin:/btn/btn_loop_minus.png</Unpressed>
         </State>
-        <Pos>149,0</Pos>
+        <Pos>196,0</Pos>
         <Connection>
           <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
         </Connection>
@@ -336,7 +359,7 @@
           <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
         </State>
-        <Pos>149,14</Pos>
+        <Pos>196,14</Pos>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -358,7 +381,7 @@
       </PushButton>
       <PushButton>
         <TooltipId>reloop_toggle</TooltipId>
-        <Pos>170,14</Pos>
+        <Pos>217,14</Pos>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <State>
@@ -393,7 +416,7 @@
           <Pressed>skin:/btn/btn_beatloop_halve_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_beatloop_halve.png</Unpressed>
         </State>
-        <Pos>149,35</Pos>
+        <Pos>196,35</Pos>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],loop_halve</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -408,7 +431,7 @@
           <Pressed>skin:/btn/btn_beatloop_double_overdown.png</Pressed>
           <Unpressed>skin:/btn/btn_beatloop_double.png</Unpressed>
         </State>
-        <Pos>170,35</Pos>
+        <Pos>217,35</Pos>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],loop_double</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -436,13 +459,13 @@
           <Pressed>skin:/btn/btn_intro_cues.png</Pressed>
           <Unpressed>skin:/btn/btn_intro_cues.png</Unpressed>
         </State>
-        <Pos>196,0</Pos>
+        <Pos>245,0</Pos>
         <Connection>
           <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
         </Connection>
       </PushButton>
       <WidgetGroup><!-- Hotcues 1-4 -->
-        <Pos>197,14</Pos>
+        <Pos>244,14</Pos>
         <Size>43f,43f</Size>
         <Children>
           <Template src="skin:hotcue_button.xml">
@@ -469,7 +492,7 @@
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- Special Cues -->
-        <Pos>197,14</Pos>
+        <Pos>244,14</Pos>
         <Size>43f,43f</Size>
         <Children>
           <PushButton>

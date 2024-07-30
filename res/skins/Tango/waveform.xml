@@ -125,12 +125,10 @@ Variables:
           (and has them activated)
         -->
         <StemControl alignment="left">
-          <MinimumSize>138,68</MinimumSize>
-          <MaximumSize>158,1920</MaximumSize>
-          <SizePolicy>me,me</SizePolicy>
+          <MinimumSize>248me,68m</MinimumSize>
           <Stem>
-            <MinimumSize>130,17</MinimumSize>
-            <MaximumSize>150,34</MaximumSize>
+            <MinimumSize>240,17</MinimumSize>
+            <MaximumSize>240,34</MaximumSize>
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
@@ -150,6 +148,52 @@ Variables:
                 <KnobCenterYOffset>2.000</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="StemGroup"/>,volume</ConfigKey>
+                </Connection>
+              </KnobComposed>
+              <EffectChainPresetSelector>
+                <ObjectName>QuickEffectSelectorLeft</ObjectName>
+                <MinimumSize>40,17</MinimumSize>
+                <MaximumSize>70,28</MaximumSize>
+                <SizePolicy>me,e</SizePolicy>
+                <EffectUnitGroup>[QuickEffectRack1_<Variable name="StemGroup"/>]</EffectUnitGroup>
+              </EffectChainPresetSelector>
+              <WidgetGroup>
+                <Size>21f,18f</Size>
+                <Children>
+                  <PushButton>
+                    <ObjectName>QuickFXButton</ObjectName>
+                    <Size>18f,18f</Size>
+                    <Pos>3,0</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed scalemode="STRETCH">buttons/btn_.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">buttons/btn_.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed scalemode="STRETCH">buttons/btn_.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">buttons/btn_.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+              <KnobComposed>
+                <TooltipId>QuickEffectRack_super1</TooltipId>
+                <Pos>0,0</Pos>
+                <MinimumSize>20,17</MinimumSize>
+                <MaximumSize>40,34</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <Connection>
+                  <ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],super1</ConfigKey>
                 </Connection>
               </KnobComposed>
             </Children>

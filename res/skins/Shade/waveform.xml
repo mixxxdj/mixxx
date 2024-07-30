@@ -108,12 +108,12 @@
     - if you change from a skin which supports more hotcues
       than buttons are in the current skin (and has them activated)
     -->
-    <StemControl alignment="right">
-      <MinimumSize>138,68</MinimumSize>
-      <MaximumSize>158,1920</MaximumSize>
+    <StemControl alignment="left">
+      <MinimumSize>168,58</MinimumSize>
+      <MaximumSize>168,1920</MaximumSize>
       <SizePolicy>me,me</SizePolicy>
       <Stem>
-        <MinimumSize>130,17</MinimumSize>
+        <MinimumSize>130,14</MinimumSize>
         <MaximumSize>150,1920</MaximumSize>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
@@ -129,6 +129,22 @@
             <Pos>151,15</Pos>
             <Connection>
               <ConfigKey><Variable name="StemGroup"/>,volume</ConfigKey>
+            </Connection>
+          </Knob>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelectorLeft</ObjectName>
+            <MinimumSize>20,14</MinimumSize>
+            <MaximumSize>20,28</MaximumSize>
+            <SizePolicy>me,e</SizePolicy>
+            <EffectUnitGroup>[QuickEffectRack1_<Variable name="StemGroup"/>]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+          <Knob>
+            <TooltipId>QuickEffectRack_super1</TooltipId>
+            <NumberStates>64</NumberStates>
+            <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+            <Pos>151,15</Pos>
+            <Connection>
+              <ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],super1</ConfigKey>
             </Connection>
           </Knob>
         </Children>
