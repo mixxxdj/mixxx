@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-var
 var TEK2 = {};
 TEK2.jogScratchSensitivity = 1;
-TEK2.jogPitchSensitivity = 3;
+TEK2.jogPitchSensitivity = 1.6;
 
 TEK2.init = function() {};
 
@@ -14,7 +14,7 @@ TEK2.wheelTouch = function(channel, control, value, status, group) {
     // If button downs
         const alpha = 1.0 / 8;
         const beta = alpha / 32;
-        engine.scratchEnable(deckNumber, 128, 33 + 1 / 3, alpha, beta);
+        engine.scratchEnable(deckNumber, 100, 33 + 1 / 3, alpha, beta);
     } else {
     // If button up
         engine.scratchDisable(deckNumber);
