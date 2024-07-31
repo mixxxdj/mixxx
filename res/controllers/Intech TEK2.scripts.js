@@ -1,4 +1,5 @@
-const TEK2 = {};
+// eslint-disable-next-line no-var
+var TEK2 = {};
 TEK2.jogScratchSensitivity = 1;
 TEK2.jogPitchSensitivity = 3;
 
