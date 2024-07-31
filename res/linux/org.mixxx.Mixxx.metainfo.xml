@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-06-12" timestamp="1718171524">
+    <release version="2.5.0" type="development" date="2024-07-29" timestamp="1722231413">
       <description>
  <p>
   Waveforms
@@ -391,11 +391,6 @@
   <li>
    Track menu: Show Properties in Missing and Hidden view
    #13426
-  </li>
-  <li>
-   Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
-   #13092
-   #10826
   </li>
   <li>
    Library control: make use of WLibrary::getCurrentTrackTableView()
@@ -1102,7 +1097,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.2" type="development" date="2024-06-12" timestamp="1718171524">
+    <release version="2.4.2" type="development" date="2024-07-29" timestamp="1722231413">
       <description>
  <p>
   Controller Mappings

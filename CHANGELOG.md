@@ -139,9 +139,6 @@
   [#12700](https://github.com/mixxxdj/mixxx/pull/12700)
   [#10652](https://github.com/mixxxdj/mixxx/issues/10652)
 * Track menu: Show Properties in Missing and Hidden view [#13426](https://github.com/mixxxdj/mixxx/pull/13426)
-* Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
-  [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
-  [#10826](https://github.com/mixxxdj/mixxx/issues/10826)
 * Library control: make use of WLibrary::getCurrentTrackTableView() [#13335](https://github.com/mixxxdj/mixxx/pull/13335)
 * Optimize Library scrolling in BPMDelegate::paintItem [#13358](https://github.com/mixxxdj/mixxx/pull/13358)
 * Library: fix font reset in multiline comment editor [#13448](https://github.com/mixxxdj/mixxx/pull/13448)
