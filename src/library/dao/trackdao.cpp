@@ -263,8 +263,51 @@ QList<TrackId> TrackDAO::resolveTrackIds(
 QSet<QString> TrackDAO::getAllTrackLocations() const {
     QSet<QString> locations;
     QSqlQuery query(m_database);
-    query.prepare("SELECT track_locations.location FROM track_locations "
-                  "INNER JOIN library on library.location = track_locations.id");
+    query.prepare(
+            "SELECT track_locations.location "
+            "FROM track_locations "
+            "INNER JOIN library "
+            "ON library.location = track_locations.id");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        DEBUG_ASSERT(!"Failed query");
+    }
+
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.value(locationColumn).toString());
+    }
+    return locations;
+}
+
+QSet<QString> TrackDAO::getAllExistingTrackLocations() const {
+    QSet<QString> locations;
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT track_locations.location "
+            "FROM library INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+            "WHERE fs_deleted=0");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        DEBUG_ASSERT(!"Failed query");
+    }
+
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.value(locationColumn).toString());
+    }
+    return locations;
+}
+
+QSet<QString> TrackDAO::getAllMissingTrackLocations() const {
+    QSet<QString> locations;
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT track_locations.location "
+            "FROM library INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+            "WHERE fs_deleted=1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
@@ -1768,27 +1811,27 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
 }
 
 namespace {
-    // Computed the longest match from the right of both strings
-    int matchStringSuffix(const QString& str1, const QString& str2) {
-        int matchLength = 0;
-        int minLength = math_min(str1.length(), str2.length());
-        while (matchLength < minLength) {
-            if (str1[str1.length() - matchLength - 1] != str2[str2.length() - matchLength - 1]) {
-                // first mismatch
-                break;
-            }
-            ++matchLength;
+// Computed the longest match from the right of both strings
+int matchStringSuffix(const QString& str1, const QString& str2) {
+    int matchLength = 0;
+    int minLength = math_min(str1.length(), str2.length());
+    while (matchLength < minLength) {
+        if (str1[str1.length() - matchLength - 1] != str2[str2.length() - matchLength - 1]) {
+            // first mismatch
+            break;
         }
-        return matchLength;
+        ++matchLength;
     }
-    } // namespace
+    return matchLength;
+}
+} // namespace
 
 // Look for moved files. Look for files that have been marked as
-// "deleted on disk" and see if another "file" with the same name and
-// files size exists in the track_locations table. That means the file has
+// 'deleted on disk' and see if another track with the same file name and
+// duration exists in the track_locations table. That means the file has been
 // moved instead of being deleted outright, and so we can salvage your
 // existing metadata that you have in your DB (like cue points, etc.).
-// returns falls if canceled
+// Returns false if canceled.
 bool TrackDAO::detectMovedTracks(
         QList<RelocatedTrack> *pRelocatedTracks,
         const QStringList& addedTracks,
@@ -1880,6 +1923,7 @@ bool TrackDAO::detectMovedTracks(
             const auto nextSuffixMatch =
                     matchStringSuffix(nextTrackLocation, oldTrackLocation);
             DEBUG_ASSERT(nextSuffixMatch >= filename.length());
+            // document this
             if (newTrackLocationSuffixMatch < nextSuffixMatch) {
                 newTrackLocationSuffixMatch = nextSuffixMatch;
                 newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
@@ -2031,8 +2075,7 @@ bool TrackDAO::verifyRemainingTracks(
         int fs_deleted = 0;
         for (const auto& rootDir : libraryRootDirs) {
             if (trackLocation.startsWith(rootDir.location())) {
-                // Track is under the library root,
-                // but was not verified.
+                // Track is under the library root, but was not verified.
                 // This happens if the track was deleted
                 // a symlink duplicate or on a non normalized
                 // path like on non case sensitive file systems.
