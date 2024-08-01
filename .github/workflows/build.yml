@@ -151,7 +151,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -489,7 +489,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -503,7 +503,7 @@ jobs:
     if: always()
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
 
