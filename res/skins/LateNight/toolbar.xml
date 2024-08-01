@@ -144,7 +144,6 @@
         <Children>
           <Time>
             <TooltipId>time</TooltipId>
-            <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
       </WidgetGroup>

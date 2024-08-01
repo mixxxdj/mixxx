@@ -2587,6 +2587,13 @@ add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
 target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 
+#silence "enumeration values not handled in switch" in generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
+
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
   lib/kaitai/kaitai/kaitaistream.cpp

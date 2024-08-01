@@ -388,7 +388,9 @@
   [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
   [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
 * Numark PartyMix: Fix EQ (script binding) display name [#13255](https://github.com/mixxxdj/mixxx/pull/13255)
-* Numark Scratch: Add initial mapping [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
+* Numark Scratch: Add initial mapping
+  [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
+  [#13375](https://github.com/mixxxdj/mixxx/pull/13375)
 * Sony SIXAXIS: Fix mapping [#13319](https://github.com/mixxxdj/mixxx/pull/13319)
 
 ### Fixes
@@ -422,6 +424,10 @@
 * Hardware preferences: Fix UX when applying config with missing/busy devices
   [#13312](https://github.com/mixxxdj/mixxx/pull/13312)
 * Fix minor 64 bit CPU performance issue [#13355](https://github.com/mixxxdj/mixxx/pull/13355)
+* Fix clicks at loop-out when looping into lead-in [#13294](https://github.com/mixxxdj/mixxx/pull/13294)
+* Fix wrong pitch value on startup, caused by `components.Pot`
+  [#11814](https://github.com/mixxxdj/mixxx/issues/11814)
+  [#13463](https://github.com/mixxxdj/mixxx/pull/13463)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
