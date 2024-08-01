@@ -2087,6 +2087,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 #CueSavedLoopButton {
   image: url(skins:LateNight/classic/buttons/btn__loop.svg);
 }
+#CueDeleteButton:pressed,
 #CueSavedLoopButton:pressed,
 #CueSavedLoopButton:checked {
   background-color: #db0000;
@@ -2231,10 +2232,10 @@ WTrackProperty[selected="true"] {
       image: url(skins:LateNight/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
     }
 #LibraryPlayedCheckbox::indicator:checked {
-  image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
 }
 #LibraryPlayedCheckbox::indicator:unchecked {
-  image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_checkbox.svg);
 }
 
 WCueMenuPopup QPushButton:focus {

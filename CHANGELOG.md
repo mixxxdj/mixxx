@@ -46,6 +46,8 @@
 * Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
   [#13151](https://github.com/mixxxdj/mixxx/pull/13151)
   [#12641](https://github.com/mixxxdj/mixxx/issues/12641)
+* Allow changing the waveform overview type without reloading the skin
+  [#13273](https://github.com/mixxxdj/mixxx/pull/13273)
 
 ### Skins / Interface
 
@@ -116,6 +118,9 @@
 * Effect Meta knob: Draw arc from default meta position
   [#12638](https://github.com/mixxxdj/mixxx/pull/12638)
   [#12634](https://github.com/mixxxdj/mixxx/issues/12634)
+* Show newly added effects, read/write HiddenEffects
+  [#13326](https://github.com/mixxxdj/mixxx/pull/13326)
+  [#11343](https://github.com/mixxxdj/mixxx/issues/11343)
 
 ### Library
 
@@ -124,6 +129,7 @@
 * Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
   [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
   [#10826](https://github.com/mixxxdj/mixxx/issues/10826)
+  [#13098](https://github.com/mixxxdj/mixxx/pull/13098)
 * Search: Add special BPM filters
   [#12072](https://github.com/mixxxdj/mixxx/pull/12072)
   [#8191](https://github.com/mixxxdj/mixxx/issues/8191)
@@ -162,10 +168,10 @@
 * Track menu: add star rating
   [#12700](https://github.com/mixxxdj/mixxx/pull/12700)
   [#10652](https://github.com/mixxxdj/mixxx/issues/10652)
-* Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
-  [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
-  [#10826](https://github.com/mixxxdj/mixxx/issues/10826)
+* Track menu: Show Properties in Missing and Hidden view [#13426](https://github.com/mixxxdj/mixxx/pull/13426)
 * Library control: make use of WLibrary::getCurrentTrackTableView() [#13335](https://github.com/mixxxdj/mixxx/pull/13335)
+* Optimize Library scrolling in BPMDelegate::paintItem [#13358](https://github.com/mixxxdj/mixxx/pull/13358)
+* Library: fix font reset in multiline comment editor [#13448](https://github.com/mixxxdj/mixxx/pull/13448)
 
 ### Preferences
 
@@ -180,6 +186,7 @@
 
 ### Controller Mappings
 
+* Numark Scratch: Add controller settings  [#13404](https://github.com/mixxxdj/mixxx/pull/13404)
 * Pioneer DDJ-FLX4: Mapping improvements [#12842](https://github.com/mixxxdj/mixxx/pull/12842)
 * Traktor S4 MK3: Add setting definition for  [#12995](https://github.com/mixxxdj/mixxx/pull/12995)
 * Traktor S4 MK3: Software mixer support and default pad layout customisation [#13059](https://github.com/mixxxdj/mixxx/pull/13059)
@@ -256,7 +263,8 @@
 * Introduce wrapper for non const iterators for erase and insert [#12201](https://github.com/mixxxdj/mixxx/pull/12201)
 * Fix Qt6/QML build [#12255](https://github.com/mixxxdj/mixxx/pull/12255)
 * Fix track color background with Qt6 [#12380](https://github.com/mixxxdj/mixxx/pull/12380)
-* multi-line delegate: fix bg color, Qt6 on Linux [#12478](https://github.com/mixxxdj/mixxx/pull/12478)
+* multi-line delegate: fix bg color, Qt6 on Linux
+  [#12478](https://github.com/mixxxdj/mixxx/pull/12478)
 * Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6" [#12342](https://github.com/mixxxdj/mixxx/pull/12342)
 * Fix: Replace deprecated `qAsConst` with `std::as_const` [#13028](https://github.com/mixxxdj/mixxx/pull/13028)
 * Fix Drag'n'drop: avoid unintended drag on hover (WTrackProperty, WCoverArt etc.)
@@ -275,7 +283,13 @@
 * SoundManager: Use correct PortAudio backend on iOS [#12716](https://github.com/mixxxdj/mixxx/pull/12716)
 * DesktopHelper: Add openUrl abstraction to support iOS [#12698](https://github.com/mixxxdj/mixxx/pull/12698)
 * iOS packaging: Add Info.plist, launch screen and app icon [#12676](https://github.com/mixxxdj/mixxx/pull/12676)
-* CmdlineArgs: Move config directory to a user-accessible location on iOS [#12688](https://github.com/mixxxdj/mixxx/pull/12688)
+* CmdlineArgs: Move config directory to a user-accessible location on iOS
+  [#12688](https://github.com/mixxxdj/mixxx/pull/12688)
+* CMakeLists: Work around Qt shader bug with Xcode
+  [#13379](https://github.com/mixxxdj/mixxx/pull/13379)
+  [#13378](https://github.com/mixxxdj/mixxx/issues/13378)
+* AudioUnitManager: Disable unavailable in-process instantiation on iOS
+  [#13383](https://github.com/mixxxdj/mixxx/pull/13383)
 
 ### Experimental WebAssembly support
 
@@ -300,6 +314,10 @@
 * README: Recommend running buildenvs over sourcing them on Linux [#13071](https://github.com/mixxxdj/mixxx/pull/13071)
 * FindSndFile: Link mpg123 in static builds [#13087](https://github.com/mixxxdj/mixxx/pull/13087)
 * macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too [#12101](https://github.com/mixxxdj/mixxx/pull/12101)
+* Drop support for macOS versions earlier than 11
+* Drop support for Windows versions earlier than Windows 10 build 1809
+* Drop support for Ubuntu versions earlier than 22.04
+* Require a C++20 compiler
 
 ### Misc Refactorings
 
@@ -344,6 +362,8 @@
 * Code Style: Add branches around single line blocks. [#13097](https://github.com/mixxxdj/mixxx/pull/13097)
 * Add missing member in copy ctor [#13229](https://github.com/mixxxdj/mixxx/pull/13229)
 * Refactor/preferences enums [#12798](https://github.com/mixxxdj/mixxx/pull/12798)
+* localDateTimeFromUtc: Make argument a const reference and initialize QDateTime at construction [#13359](https://github.com/mixxxdj/mixxx/pull/13359)
+* use enum class for waveform overview type [#13370](https://github.com/mixxxdj/mixxx/pull/13370)
 * Update to latest vcpkg dependencies
   [#11649](https://github.com/mixxxdj/mixxx/pull/11649)
   [#12512](https://github.com/mixxxdj/mixxx/pull/12512)
@@ -398,7 +418,9 @@
   [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
   [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
 * Numark PartyMix: Fix EQ (script binding) display name [#13255](https://github.com/mixxxdj/mixxx/pull/13255)
-* Numark Scratch: Add initial mapping [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
+* Numark Scratch: Add initial mapping
+  [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
+  [#13375](https://github.com/mixxxdj/mixxx/pull/13375)
 * Sony SIXAXIS: Fix mapping [#13319](https://github.com/mixxxdj/mixxx/pull/13319)
 
 ### Fixes
@@ -432,6 +454,10 @@
 * Hardware preferences: Fix UX when applying config with missing/busy devices
   [#13312](https://github.com/mixxxdj/mixxx/pull/13312)
 * Fix minor 64 bit CPU performance issue [#13355](https://github.com/mixxxdj/mixxx/pull/13355)
+* Fix clicks at loop-out when looping into lead-in [#13294](https://github.com/mixxxdj/mixxx/pull/13294)
+* Fix wrong pitch value on startup, caused by `components.Pot`
+  [#11814](https://github.com/mixxxdj/mixxx/issues/11814)
+  [#13463](https://github.com/mixxxdj/mixxx/pull/13463)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 

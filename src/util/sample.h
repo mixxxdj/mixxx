@@ -36,16 +36,22 @@ class SampleUtil {
     inline
     static void clear(CSAMPLE* pBuffer, SINT numSamples) {
         DEBUG_ASSERT(numSamples >= 0);
-        // Special case: This works, because the binary representation
-        // of 0.0f is 0!
-        memset(pBuffer, 0, sizeof(*pBuffer) * numSamples);
-        //fill(pBuffer, CSAMPLE_ZERO, iNumSamples);
+        // We need to cast `numSamples` to an unsigned type to fix a
+        // `-Wstringop-overflow` warning on GCC 14.1.1. Casting to unsigned is
+        // okay, because the `DEBUG_ASSERT` above catches negative values
+        // anyway.
+        const auto sampleCount = static_cast<std::size_t>(numSamples);
+        // Special case: We can use memset here, because the binary representation
+        // of 0.0f is 0! This is much faster without optimizations than using
+        // `fill()`.
+        memset(pBuffer, 0, sizeof(*pBuffer) * sampleCount);
     }
 
     // Sets every sample in pBuffer to value
     inline
     static void fill(CSAMPLE* pBuffer, CSAMPLE value,
             SINT numSamples) {
+        DEBUG_ASSERT(numSamples >= 0);
         std::fill_n(pBuffer, numSamples, value);
     }
 
