@@ -93,7 +93,7 @@ class TrackCollectionManager: public QObject,
     };
     SaveTrackResult saveTrack(const TrackPointer& pTrack) const;
     // Same as startLibraryScan() but don't emit the scan summary.
-    void startLibraryScanNoReport();
+    void startLibraryAutoScan();
 
   signals:
     void libraryScanStarted();

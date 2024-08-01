@@ -172,11 +172,11 @@ TrackCollectionManager::~TrackCollectionManager() {
     GlobalTrackCache::destroyInstance();
 }
 
-void TrackCollectionManager::startLibraryScanNoReport() {
+void TrackCollectionManager::startLibraryAutoScan() {
     VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
         return;
     }
-    m_pScanner->scan(false);
+    m_pScanner->scan(true);
 }
 
 void TrackCollectionManager::startLibraryScan() {

@@ -103,7 +103,7 @@ LibraryScanner::LibraryScanner(
           m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
-          m_emitSummaryReport(true) {
+          m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     moveToThread(this);
@@ -473,20 +473,19 @@ void LibraryScanner::slotFinishUnhashedScan() {
     result.numMissingTracks = numMissingTracks;
     result.numRediscoveredTracks = numRediscoveredTracks;
     result.tracksTotal = tracksTotal;
+    result.autoscan = m_manualScan;
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
     // now we may accept new scan commands
 
     emit scanFinished();
-    if (m_emitSummaryReport) {
-        emit scanSummary(result);
-    }
+    emit scanSummary(result);
 }
 
-void LibraryScanner::scan(bool requestSummaryReport) {
+void LibraryScanner::scan(bool autoscan) {
     if (changeScannerState(STARTING)) {
-        m_emitSummaryReport = requestSummaryReport;
+        m_manualScan = autoscan;
         emit startScan();
     }
 }
