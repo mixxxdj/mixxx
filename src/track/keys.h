@@ -29,12 +29,11 @@ class Keys final {
     const QString& getSubVersion() const;
     void setSubVersion(const QString& subVersion);
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Key calculations
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Return the average key over the entire track if the key is valid.
+    // Return the average key over the entire track if analyzed by Mixxx
+    // or the Key found in the track metadata
     mixxx::track::io::key::ChromaticKey getGlobalKey() const;
+
+    // Return key text form the track metadata literally (not normalized)
     QString getGlobalKeyText() const;
 
   private:
