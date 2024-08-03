@@ -41,6 +41,9 @@ class PlaylistTableModel final : public TrackSetTableModel {
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
 
+  signals:
+    void firstTrackChanged();
+
   private:
     void initSortColumnMapping() override;
 

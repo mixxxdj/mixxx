@@ -219,6 +219,7 @@ class AutoDJProcessor : public QObject {
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
+    void playlistFirstTrackChanged();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
