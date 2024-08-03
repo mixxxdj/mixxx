@@ -5,7 +5,7 @@ Maybe indicate current loop-/jumpsize by coloring the pads in a gradient?
 
 Reverse Engineering notes (likely interesting for other Numark Mixtrack-like controllers):
   Platter: 1000 steps/revolution
-  Dual-precision elements: search strips, pitch
+  14bit-precision elements: search strips, pitch
   (CC: 0x06 setup display controls)
   CC: 0x0E set fine pitch of display
   CC: Ox3F set track duration leds
@@ -49,12 +49,17 @@ Reverse Engineering notes (likely interesting for other Numark Mixtrack-like con
 var NS6II = {};
 
 // UserSettings
+// available rateRanges to cycle through using the Pitch Bend +/- Buttons.
 NS6II.RATE_RANGES = [0.04, 0.08, 0.10, 0.16, 0.24, 0.50, 0.90, 1.00,];
 
+// Amount of tracks moved in a single step when turning the BROWSE encoder while pressing SHIFT.
 NS6II.NAVIGATION_ENCODER_ACCELERATION = 5;
 
+// the size of the first pad on the loop-related and beatjump padmodes.
+// this defines the exponent of the loop size so the real loopsize is 2^DEFAULT_LOOP_ROOT_SIZE!
 NS6II.DEFAULT_LOOP_ROOT_SIZE = 1;
 
+// true: deactivated button has a slight (usually red) backlight, false: LED of deactivated button is completely off
 NS6II.USE_BUTTON_BACKLIGHT = true;
 
 // Globals
