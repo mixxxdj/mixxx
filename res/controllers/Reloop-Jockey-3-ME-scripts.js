@@ -22,17 +22,6 @@ Jockey3ME.loop_move_bool = false;
 Jockey3ME.MixerDeck1 = 0;
 Jockey3ME.MixerDeck2 = 0;
 
-script.crossfaderCurve = function (value, min, max) {
-	var newValue = script.absoluteLin(value, 2, 150, min, max);
-	var newValueThree = script.absoluteLin(value, 0.1, 0.999307, min, max);
-	if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
-		// Constant Power
-		engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0, newValueThree, min, max));
-	} else {
-		// Additive
-		engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, newValue, min, max));
-	}
-}
 
 // Functions
 // Funny Led show on FX Dry/Wet
@@ -437,7 +426,17 @@ Jockey3ME.crossfader = function (channel, control, value, status, group) {
 }
 
 Jockey3ME.crossfaderCurve = function (channel, control, value, status, group) {
-	script.crossfaderCurve(value, 0 , 127);
+    const min = 0;
+    const max = 127;
+    const newValue = script.absoluteLin(value, 2, 150, min, max);
+    const newValueThree = script.absoluteLin(value, 0.1, 0.999307, min, max);
+    if (engine.getValue("[Mixer Profile]", "xFaderMode") === 1) {
+        // Constant Power
+        engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0, newValueThree, min, max));
+    } else {
+        // Additive
+        engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, newValue, min, max));
+    }
 }
 
 Jockey3ME.MixerVol = function (channel, control, value, status, group) {
