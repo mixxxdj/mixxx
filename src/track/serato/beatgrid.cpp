@@ -174,7 +174,7 @@ bool SeratoBeatGrid::parse(SeratoBeatGrid* seratoBeatGrid,
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoBeatGrid, data);
     case taglib::FileType::MP4:
@@ -363,7 +363,7 @@ bool SeratoBeatGrid::parseBase64Encoded(
 
 QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:

@@ -7,6 +7,7 @@
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "test/soundsourceproviderregistration.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
@@ -1084,5 +1085,17 @@ TEST_F(SoundSourceProxyTest, freeModeGarbage) {
                 providerRegistration.getProvider());
         ASSERT_TRUE(pContReadSource != nullptr);
         break;
+    }
+}
+
+TEST_F(SoundSourceProxyTest, taglibStringToEnumFileType) {
+    const QStringList fileTypes = SoundSourceProxy::getSupportedFileTypes();
+    for (const auto& fileType : fileTypes) {
+        qDebug() << fileType;
+        if (fileType != "okt" &&     // Oktalyzer
+                fileType != "stm") { // "Scream Tracker";
+            ASSERT_NE(mixxx::taglib::stringToEnumFileType(fileType),
+                    mixxx::taglib::FileType::Unknown);
+        }
     }
 }
