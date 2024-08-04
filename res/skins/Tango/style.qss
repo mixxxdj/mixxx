@@ -2782,14 +2782,8 @@ WTrackTableViewHeader {
     WTrackTableViewHeader::up-arrow {
       image: url(skin:/../Tango/graphics/library_sort_up.svg);
       }
-      WTrackTableViewHeader::up-arrow:hover {
-        image: url(skin:/../Tango/graphics/library_sort_down.svg);
-      }
     WTrackTableViewHeader::down-arrow {
       image: url(skin:/../Tango/graphics/library_sort_down.svg);
-      }
-      WTrackTableViewHeader::down-arrow:hover {
-        image: url(skin:/../Tango/graphics/library_sort_up.svg);
       }
 
 WLibraryTextBrowser {
