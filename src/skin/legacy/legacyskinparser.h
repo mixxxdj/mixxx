@@ -22,6 +22,7 @@ class RecordingManager;
 class ControllerManager;
 class SkinContext;
 class WLabel;
+class WStemLabel;
 class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
@@ -75,6 +76,12 @@ class LegacySkinParser : public QObject, public SkinParser {
     template <class T>
     QWidget* parseLabelWidget(const QDomElement& element);
     void setupLabelWidget(const QDomElement& element, WLabel* pLabel);
+
+#ifdef __STEM__
+    QWidget* parseStemLabelWidget(const QDomElement& element);
+    void setupStemLabelWidget(const QDomElement& element, WStemLabel* pLabel);
+#endif
+
     QWidget* parseText(const QDomElement& node);
     QWidget* parseTrackProperty(const QDomElement& node);
     QWidget* parseStarRating(const QDomElement& node);

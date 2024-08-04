@@ -74,6 +74,9 @@
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#ifdef __STEM__
+#include "widget/wstemlabel.h"
+#endif
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wtrackwidgetgroup.h"
@@ -559,7 +562,13 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
-    } else if (nodeName == "Knob") {
+    }
+#ifdef __STEM__
+    else if (nodeName == "StemLabel") {
+        result = wrapWidget(parseStemLabelWidget(node));
+    }
+#endif
+    else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
@@ -966,6 +975,41 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
             m_pControllerManager->getControllerLearningEventFilter());
     pLabel->Init();
 }
+
+#ifdef __STEM__
+QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
+    WStemLabel* pLabel = new WStemLabel(m_pParent);
+    setupStemLabelWidget(element, pLabel);
+
+    QString group = lookupNodeGroup(element);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    connect(pPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            pLabel,
+            &WStemLabel::slotTrackLoaded);
+
+    connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            pLabel,
+            &WStemLabel::slotTrackUnloaded);
+
+    return pLabel;
+}
+
+void LegacySkinParser::setupStemLabelWidget(const QDomElement& element, WStemLabel* pLabel) {
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WLabel derivatives change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    pLabel->setup(element, *m_pContext);
+    commonWidgetSetup(element, pLabel);
+    pLabel->installEventFilter(m_pKeyboard);
+    pLabel->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pLabel->Init();
+}
+#endif
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
