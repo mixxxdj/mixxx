@@ -1536,6 +1536,7 @@ WEffectSelector:!editable,
   }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#StemControls WPushButton, WPushButton#StemControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 #RateControls WPushButton,
 WPushButton#PlayDeck,
@@ -1849,6 +1850,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 
 /* Special flat/invisible buttons */
 #BeatgridControlsToggle,
+#StemControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
 WPushButton#PlaySampler[displayValue="0"],
@@ -2351,6 +2353,13 @@ WPushButton#PlayDeck[value="0"] {
     #KeylockButton34[displayValue="1"] {
       image: url(skins:LateNight/palemoon/buttons/btn__keylock_active_34.svg) no-repeat center center;
     }
+
+#StemControlsToggle[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__stem_controls_expand.svg) no-repeat center center;
+  }
+  #StemControlsToggle[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
+  }
 
 #BeatgridControlsToggle[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;

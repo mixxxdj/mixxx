@@ -1371,6 +1371,7 @@ WEffectSelector[highlight="1"] {  /*
 }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#StemControls WPushButton, WPushButton#StemControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
@@ -1626,6 +1627,7 @@ WPushButton#FxExpand[displayValue="0"],
 WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
+#StemControlsToggle,
 #SamplerControlsMini WPushButton,
 #RecDot,
 /* transparent buttons, 0-4 (max button state we have currently) */
@@ -1940,6 +1942,14 @@ WPushButton#BpmLockToggle[value="1"] {
   #BeatgridControlsToggle[displayValue="1"] {
     image: url(skins:LateNight/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
+
+#StemControlsToggle[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_controls_expand.svg) no-repeat center center;
+  }
+  #StemControlsToggle[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
+  }
+
   #BpmLockToggle[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__bpm_locked.svg);
     }
