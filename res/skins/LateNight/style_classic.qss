@@ -2272,6 +2272,9 @@ WTrackTableViewHeader {
       stop:1 #111);
   }
   WTrackTableViewHeader::section {
+    /* Workaround Qt bug that causes space being reserved for invisible sort indicators.
+       For details see style-plaemon.qss */
+    padding-right: -0.95em;
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }

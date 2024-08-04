@@ -2756,7 +2756,7 @@ WTrackTableViewHeader {
   /*  Library header 'buttons'  */
   WTrackTableViewHeader::section {
     height: 1.1em;
-    padding: 0 0.1em;
+    padding: 0 -0.7em 0 0.1em;
     /*  use 'border-right' so that for the header of the leftmost column
     the border doesn't add to the border of the surrounding qtableview */
     border-right: 1px solid #585858;
