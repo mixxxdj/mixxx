@@ -7,6 +7,8 @@
 #include <unknownframe.h>
 
 #include <array>
+
+#include "track/keyutils.h"
 #if defined(__EXTRA_METADATA__)
 #include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
@@ -1211,10 +1213,10 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             formatBpmInteger(trackMetadata),
             true);
 
-    writeTextIdentificationFrame(
-            pTag,
+    writeTextIdentificationFrame(pTag,
             "TKEY",
-            trackMetadata.getTrackInfo().getKeyText());
+            KeyUtils::keyToString(trackMetadata.getTrackInfo().getGlobalKey(),
+                    KeyUtils::KeyNotation::ID3v2));
 
     writeUserTextIdentificationFrame(
             pTag,

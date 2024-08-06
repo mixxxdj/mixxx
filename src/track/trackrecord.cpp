@@ -23,7 +23,9 @@ TrackRecord::TrackRecord(TrackId id)
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
-    refMetadata().refTrackInfo().setKeyText(KeyUtils::formatGlobalKey(keys));
+    auto& trackInfo = refMetadata().refTrackInfo();
+    trackInfo.setKeyText(KeyUtils::formatGlobalKey(keys));
+    trackInfo.setGlobalKey(keys.getGlobalKey());
     m_keys = std::move(keys);
 }
 

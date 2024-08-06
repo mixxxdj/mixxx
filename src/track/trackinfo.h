@@ -3,11 +3,11 @@
 #include <QString>
 #include <QUuid>
 
+#include "proto/keys.pb.h"
 #include "sources/audiosource.h"
 #include "track/bpm.h"
 #include "track/replaygain.h"
 #include "track/serato/tags.h"
-#include "util/duration.h"
 #include "util/macros.h"
 
 namespace mixxx {
@@ -31,6 +31,7 @@ class TrackInfo final {
     MIXXX_DECL_PROPERTY(QString, isrc, ISRC)
 #endif // __EXTRA_METADATA__
     MIXXX_DECL_PROPERTY(QString, keyText, KeyText)
+    MIXXX_DECL_PROPERTY(mixxx::track::io::key::ChromaticKey, globalKey, GlobalKey)
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, language, Language)
     MIXXX_DECL_PROPERTY(QString, lyricist, Lyricist)
