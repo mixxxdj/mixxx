@@ -112,7 +112,25 @@ associated with each key.</string>
      </widget>
     </item>
 
-    <item row="5" column="0" colspan="2">
+    <item row="5" column="0">
+     <widget class="QLabel" name="labelKeyColors">
+      <property name="text">
+       <string>Key palette</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QComboBox" name="comboBoxKeyColors">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+
+    <item row="6" column="0" colspan="2">
      <spacer>
       <property name="orientation">
        <enum>Qt::Vertical</enum>

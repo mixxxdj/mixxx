@@ -7,6 +7,7 @@
 #include "library/columncache.h"
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
+#include "util/color/colorpalette.h"
 
 class TrackCollectionManager;
 
@@ -107,6 +108,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static constexpr bool kKeyColorsEnabledDefault = true;
     static void setKeyColorsEnabled(bool keyColorsEnabled);
+
+    static void setKeyColorPalette(const ColorPalette& palette);
 
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
@@ -297,6 +300,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static int s_bpmColumnPrecision;
     static bool s_keyColorsEnabled;
+    static ColorPalette s_keyColorPalette;
 
     static bool s_bApplyPlayedTrackColor;
 };
