@@ -122,12 +122,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slotClearSearch);
 
-    QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            &WSearchLineEdit::slotSetShortcutFocus);
-
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
@@ -227,21 +221,25 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
             "\n" + tr("For more information see User Manual > Mixxx Library") +
             "\n\n" +
-            tr("Shortcuts") + ": \n" +
-            tr("Ctrl+F") + "  " +
-            tr("Focus", "Give search bar input focus") + "\n" +
-            tr("Return") + " " +
+            tr("Shortcuts (Global)") + "\n" +
+            tr("Ctrl+F") + ": " +
+            tr("Focus (Search in current view)", "Give search bar input focus") + "\n" +
+            tr("Ctrl+Shift+F") + ": " +
+            tr("Focus (Search in \'Tracks\' view)") + "\n" +
+            "\n" +
+            tr("Shortcuts (while focused)") + "\n" +
+            tr("Return") + ": " +
             tr("Trigger search before search-as-you-type timeout or"
                "jump to tracks view afterwards") +
             "\n" +
-            tr("Ctrl+Backspace") + "  " +
+            tr("Ctrl+Backspace") + ": " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
-            tr("Ctrl+Space") + "  " +
+            tr("Ctrl+Space") + ": " +
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
-            tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
-            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+            tr("Delete or Backspace") + ": " + tr("Delete query from history") + "\n" +
+            tr("Esc") + ": " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
 void WSearchLineEdit::loadQueriesFromConfig() {
@@ -789,11 +787,18 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
     m_saveTimer.start(kSaveTimeoutMillis);
 }
 
-void WSearchLineEdit::slotSetShortcutFocus() {
-    if (hasFocus()) {
+void WSearchLineEdit::handleSetFocus(Qt::FocusReason focusReason) {
+    if (!hasFocus()) {
+        // selectAll will be called by setFocus - but only if hasFocus
+        // was false previously and focusReason is Tab, Backtab or Shortcut
+        setFocus(focusReason);
+    } else if (focusReason == Qt::TabFocusReason ||
+            focusReason == Qt::BacktabFocusReason ||
+            focusReason == Qt::ShortcutFocusReason) {
+        // If this widget already had focus (which can happen when the user
+        // presses the shortcut key while already in the searchbox),
+        // we need to manually simulate this behavior instead.
         lineEdit()->selectAll();
-    } else {
-        setFocus(Qt::ShortcutFocusReason);
     }
 }
 
