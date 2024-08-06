@@ -5,6 +5,7 @@
 #include <QTreeView>
 
 #include "library/library_decl.h"
+#include "util/performancetimer.h"
 #include "widget/wbasewidget.h"
 
 class LibraryFeature;
@@ -45,7 +46,11 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
   private:
     void focusSelectedIndex();
     QModelIndex selectedIndex();
+    void queueHeaderAdjustEvent();
+    void adjustHeaderStretch();
 
     QBasicTimer m_expandTimer;
+    QBasicTimer m_headerAdjustTimer;
+    PerformanceTimer m_eventFrequencyTimer;
     QModelIndex m_hoverIndex;
 };
