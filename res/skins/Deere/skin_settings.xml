@@ -61,6 +61,11 @@
             <SetVariable name="skinsetting">[Skin],show_4decks</SetVariable>
           </Template>
 
+          <Template src="skins:Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_stem_controls</SetVariable>
+            <SetVariable name="text">Show stem controls</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_stem_controls</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
