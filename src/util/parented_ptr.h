@@ -1,13 +1,10 @@
 #pragma once
 
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #include <QObject>
-#endif
 #include <QPointer>
 #include <memory>
 
 #include "util/assert.h"
-#include "util/parented_ptr.h"
 
 // Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
 // Objects which both derive from QObject AND have a parent object, have their lifetime governed by
@@ -30,21 +27,39 @@ class parented_ptr final {
     explicit parented_ptr(T* t) noexcept
             : m_ptr{t} {
     }
-// Only generate destructor if not empty, otherwise its empty but will
-// cause the parented_ptr to be not trivially destructible even though it could be.
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     ~parented_ptr() noexcept {
-        DEBUG_ASSERT(!m_ptr || static_cast<const QObject*>(m_ptr)->parent());
+        if (!m_ptr) {
+            return;
+        }
+        VERIFY_OR_DEBUG_ASSERT(static_cast<const QObject*>(m_ptr)->parent()) {
+            // managed object has no parent that could clean it up later, thus we're responsible.
+            delete m_ptr;
+        }
     }
-#else
-    // explicitly generate trivial destructor (since decltype(m_ptr) is not a class type)
-    ~parented_ptr() noexcept = default;
-#endif
     // Rule of 5
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
-    parented_ptr(const parented_ptr<T>&& other) = delete;
-    parented_ptr& operator=(const parented_ptr<T>&& other) = delete;
+    parented_ptr(const parented_ptr<T>&& other) noexcept
+            : m_ptr(other.m_ptr) {
+        other.m_ptr = nullptr;
+    }
+    parented_ptr& operator=(const parented_ptr<T>&& other) noexcept {
+        if (this != other) {
+            delete m_ptr;
+            m_ptr = other.m_ptr;
+            other.m_ptr = nullptr;
+        }
+        return this;
+    };
+
+    /// Replace the managed object.
+    /// The reset() form is useful when the destruction has side-effects
+    /// (closing a widget for instance) and you need those side effects to
+    /// happen independently from the parent.
+    void reset(parented_ptr<T> ptr = {}) noexcept {
+        delete m_ptr;
+        m_ptr = ptr.m_ptr;
+    };
 
     // If U* is convertible to T* then parented_ptr<U> is convertible to parented_ptr<T>
     template<
