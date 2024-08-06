@@ -33,12 +33,12 @@ const QByteArray kScreenTransformFunctionUntypedSignature =
                 "transformFrame(QVariant,QVariant)");
 const QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
-const QByteArray kScreenInitFunctionUntypedSignature =
+const QByteArray kQmlComponentInitFunctionUntypedSignature =
         QMetaObject::normalizedSignature(
                 "init(QVariant,QVariant)");
-const QByteArray kScreenInitFunctionTypedSignature =
+const QByteArray kQmlComponentFunctionTypedSignature =
         QMetaObject::normalizedSignature("init(QString,bool)");
-const QByteArray kScreenShutdownFunctionSignature =
+const QByteArray kQmlComponentShutdownFunctionSignature =
         QMetaObject::normalizedSignature("shutdown()");
 } // anonymous namespace
 #endif
@@ -128,6 +128,10 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
     }
 
 #ifdef MIXXX_USE_QML
+    for (const auto& controller : m_mixxxController) {
+        emit controller->shutdown();
+    }
+
     if (!m_bQmlMode) {
 #endif
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
@@ -154,7 +158,7 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
             }
 
             QMetaMethod shutdownFunction;
-            int methodIdx = metaObject->indexOfMethod(kScreenShutdownFunctionSignature);
+            int methodIdx = metaObject->indexOfMethod(kQmlComponentShutdownFunctionSignature);
 
             if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
@@ -201,6 +205,11 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
             qCDebug(m_logger) << "Unhandled controller JS error is:"
                               << m_pJSEngine->catchError().toString();
         }
+
+        for (const auto& controller : m_mixxxController) {
+            emit controller->init();
+        }
+
         QHashIterator<QString, std::shared_ptr<QQuickItem>> i(m_rootItems);
         bool success = true;
         while (i.hasNext()) {
@@ -218,12 +227,12 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
 
             QMetaMethod initFunction;
             bool typed = false;
-            int methodIdx = metaObject->indexOfMethod(kScreenInitFunctionUntypedSignature);
+            int methodIdx = metaObject->indexOfMethod(kQmlComponentInitFunctionUntypedSignature);
 
             if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
                                   << "has no valid untyped init method.";
-                methodIdx = metaObject->indexOfMethod(kScreenInitFunctionTypedSignature);
+                methodIdx = metaObject->indexOfMethod(kQmlComponentFunctionTypedSignature);
                 typed = true;
             }
 
@@ -251,6 +260,7 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
             // connection QQmlEngine::warnings ->
             // ControllerScriptEngineBase::handleQMLErrors
         }
+
         return success;
     }
 #endif
@@ -439,10 +449,6 @@ bool ControllerScriptEngineLegacy::initialize() {
         qCWarning(m_logger) << "Controller mapping has QML library definitions but no "
                                "QML files to use it. Ignoring.";
     }
-
-    // If we encounter a failure while loading a scene, we will need to properly
-    // stop the screen threads before shutting down.
-    bool sceneBindingHasFailure = false;
 #endif
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
 #ifdef MIXXX_USE_QML
@@ -457,49 +463,13 @@ bool ControllerScriptEngineLegacy::initialize() {
             }
 #ifdef MIXXX_USE_QML
         } else {
-            if (script.identifier.isEmpty()) {
-                while (!availableScreens.isEmpty()) {
-                    QString screenIdentifier(availableScreens.firstKey());
-                    if (!bindSceneToScreen(script,
-                                screenIdentifier,
-                                availableScreens.take(screenIdentifier))) {
-                        sceneBindingHasFailure = true;
-                    }
-                }
-            } else {
-                if (!availableScreens.contains(script.identifier)) {
-                    qCCritical(m_logger) << "Not screen" << script.identifier << "found!";
+            const auto result = instanciateQMLComponent(script, availableScreens);
 
-                    sceneBindingHasFailure = true;
-                    break;
-                }
-                if (!bindSceneToScreen(script,
-                            script.identifier,
-                            availableScreens.take(script.identifier))) {
-                    sceneBindingHasFailure = true;
-                }
+            if (!result) {
+                shutdown();
+                return false;
             }
         }
-    }
-
-    if (!availableScreens.isEmpty()) {
-        if (!sceneBindingHasFailure) {
-            qCWarning(m_logger)
-                    << "Found screen with no QML scene able to run on it. Ignoring"
-                    << availableScreens.size() << "screens";
-        }
-
-        while (!availableScreens.isEmpty()) {
-            auto pScreen = availableScreens.take(availableScreens.firstKey());
-            VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
-                    !pScreen->isRunning() || pScreen->stop()) {
-                qCWarning(m_logger) << "Unable to stop the screen";
-            };
-        }
-    }
-    if (sceneBindingHasFailure) {
-        shutdown();
-        return false;
 #endif
     }
 
@@ -579,15 +549,9 @@ void ControllerScriptEngineLegacy::extractTransformFunction(
 }
 
 bool ControllerScriptEngineLegacy::bindSceneToScreen(
-        const LegacyControllerMapping::ScriptFileInfo& qmlFile,
+        const std::shared_ptr<QQuickItem> pScene,
         const QString& screenIdentifier,
         std::shared_ptr<ControllerRenderingEngine> pScreen) {
-    // Like for Javascript, if the script is invalid, it should be watched so the user can fix it
-    // without having to restart Mixxx. So, add it to the watcher before
-    // evaluating it.
-    watchFilePath(qmlFile.file.absoluteFilePath());
-
-    auto pScene = loadQMLFile(qmlFile, pScreen);
     if (!pScene) {
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {
@@ -740,6 +704,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     callShutdownFunction();
 
 #ifdef MIXXX_USE_QML
+
     m_engineThreadControl.setCanPause(false);
     // Wait till the splash off animation has finished rendering.
     std::chrono::milliseconds maxSplashOffDuration{};
@@ -863,34 +828,40 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
 }
 
 #ifdef MIXXX_USE_QML
-std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
+bool ControllerScriptEngineLegacy::instanciateQMLComponent(
         const LegacyControllerMapping::ScriptFileInfo& qmlScript,
-        std::shared_ptr<ControllerRenderingEngine> pScreen) {
+        QMap<QString, std::shared_ptr<ControllerRenderingEngine>>
+                availableScreens) {
+    // Like for Javascript, if the script is invalid, it should be watched so the user can fix it
+    // without having to restart Mixxx. So, add it to the watcher before
+    // evaluating it.
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
             qmlScript.type !=
                     LegacyControllerMapping::ScriptFileInfo::Type::Qml) {
-        return nullptr;
+        return false;
     }
+
+    watchFilePath(qmlScript.file.absoluteFilePath());
 
     QQmlComponent qmlComponent = QQmlComponent(
             std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine).get());
 
-    QFile scene = QFile(qmlScript.file.absoluteFilePath());
-    if (!scene.exists()) {
-        qCWarning(m_logger) << "Unable to load the QML scene:" << qmlScript.file.absoluteFilePath()
+    QFile file = QFile(qmlScript.file.absoluteFilePath());
+    if (!file.exists()) {
+        qCWarning(m_logger) << "Unable to load the QML file:" << qmlScript.file.absoluteFilePath()
                             << "does not exist.";
-        return nullptr;
+        return false;
     }
 
     QDir dir(m_resourcePath + "/qml/");
 
-    scene.open(QIODevice::ReadOnly);
-    qmlComponent.setData(scene.readAll(),
+    file.open(QIODevice::ReadOnly);
+    qmlComponent.setData(file.readAll(),
             // Obfuscate the scene filename to make it appear in the QML folder.
             // This allows a smooth integration with QML components.
             QUrl::fromLocalFile(
                     dir.absoluteFilePath(qmlScript.file.fileName())));
-    scene.close();
+    file.close();
 
     while (qmlComponent.isLoading()) {
         qCDebug(m_logger) << "Waiting for component "
@@ -902,47 +873,104 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     if (qmlComponent.isError()) {
         const QList<QQmlError> errorList = qmlComponent.errors();
         for (const QQmlError& error : errorList) {
-            qCWarning(m_logger) << "Unable to load the QML scene:" << error.url()
+            qCWarning(m_logger) << "Unable to load the QML file:" << error.url()
                                 << "at line" << error.line() << ", error: " << error;
             showQMLExceptionDialog(error, true);
         }
-        return nullptr;
+        return false;
     }
 
     VERIFY_OR_DEBUG_ASSERT(qmlComponent.isReady()) {
         qCWarning(m_logger) << "QMLComponent isn't ready although synchronous load was requested.";
-        return nullptr;
+        return false;
     }
 
-    QObject* pRootObject = qmlComponent.createWithInitialProperties(
-            QVariantMap{{"screenId", pScreen->info().identifier}});
-    if (qmlComponent.isError()) {
-        const QList<QQmlError> errorList = qmlComponent.errors();
-        for (const QQmlError& error : errorList) {
-            qCWarning(m_logger) << error.url() << error.line() << error;
+    QObject* createdComp = qmlComponent.create();
+
+    const std::shared_ptr<mixxx::qml::MixxxController> controller =
+            std::shared_ptr<mixxx::qml::MixxxController>(
+                    qobject_cast<mixxx::qml::MixxxController*>(createdComp));
+
+    if (controller) {
+        qmlComponent.setInitialProperties(controller.get(),
+                QVariantMap{{"controllerId",
+                                    m_pController ? m_pController->getName()
+                                                  : QString{}},
+                        {"debugMode", m_logger().isDebugEnabled()}});
+        qmlComponent.completeCreate();
+        if (qmlComponent.isError()) {
+            const QList<QQmlError> errorList = qmlComponent.errors();
+            for (const QQmlError& error : errorList) {
+                qCWarning(m_logger) << error.url() << error.line() << error;
+            }
+            delete createdComp;
+            return false;
         }
-        return nullptr;
+        m_mixxxController.append(controller);
+        return true;
     }
 
-    std::shared_ptr<QQuickItem> rootItem =
-            std::shared_ptr<QQuickItem>(qobject_cast<QQuickItem*>(pRootObject));
-    if (!rootItem) {
-        qWarning("run: Not a QQuickItem");
-        delete pRootObject;
-        return nullptr;
+    qDebug() << qmlScript.file.absoluteFilePath() << "is not a MixxxController";
+
+    std::shared_ptr<QQuickItem> quickItem =
+            std::shared_ptr<QQuickItem>(qobject_cast<QQuickItem*>(createdComp));
+
+    if (!quickItem) {
+        qWarning("run: Component is neither a MixxxController not a QQuickItem");
+        delete createdComp;
+        return false;
     }
 
-    watchFilePath(qmlScript.file.absoluteFilePath());
+    bool sceneBindingHasFailure = false;
+
+    QString identifier = "";
+
+    if (qmlScript.identifier.isEmpty()) {
+        while (!availableScreens.isEmpty()) {
+            identifier = availableScreens.firstKey();
+        }
+    } else {
+        identifier = qmlScript.identifier;
+    }
+
+    const auto pScreen = availableScreens.take(identifier);
+    if (!availableScreens.contains(qmlScript.identifier)) {
+        qCCritical(m_logger) << "Not screen" << qmlScript.identifier << "found!";
+        delete createdComp;
+        return false;
+    }
+
+    qmlComponent.setInitialProperties(quickItem.get(),
+            QVariantMap{{"screenId", pScreen->info().identifier}});
+    qmlComponent.completeCreate();
+
+    if (qmlComponent.isError() || !bindSceneToScreen(quickItem, identifier, pScreen)) {
+        if (!availableScreens.isEmpty()) {
+            qCWarning(m_logger)
+                    << "Found screen with no QML scene able to run on it. Ignoring"
+                    << availableScreens.size() << "screens";
+
+            while (!availableScreens.isEmpty()) {
+                VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
+                        !pScreen->isRunning() || pScreen->stop()) {
+                    qCWarning(m_logger) << "Unable to stop the screen";
+                }
+            }
+        }
+
+        delete createdComp;
+        return false;
+    }
 
     // The root item is ready. Associate it with the window.
     if (!m_bTesting) {
-        rootItem->setParentItem(pScreen->quickWindow()->contentItem());
+        quickItem->setParentItem(pScreen->quickWindow()->contentItem());
 
-        rootItem->setWidth(pScreen->quickWindow()->width());
-        rootItem->setHeight(pScreen->quickWindow()->height());
+        quickItem->setWidth(pScreen->quickWindow()->width());
+        quickItem->setHeight(pScreen->quickWindow()->height());
     }
 
-    return rootItem;
+    return true;
 }
 #endif
 
