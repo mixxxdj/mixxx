@@ -77,15 +77,37 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedLoopCueManual);
 
+    m_pCueNumberSwap = std::make_unique<QLabel>(this);
+    m_pCueNumberSwap->setObjectName("CueNumberSwapLabel");
+    m_pCueNumberSwap->setAlignment(Qt::AlignLeft);
+
+    m_pSwapIndicator = std::make_unique<QLabel>(QChar(0x21c4), this);
+    m_pSwapIndicator->setObjectName("CueNumberSwapIndicator");
+    m_pSwapIndicator->setAlignment(Qt::AlignLeft);
+
+    m_pSwapSelector = std::make_unique<QComboBox>(this);
+    m_pSwapTrigger = std::make_unique<QPushButton>(QChar(0x21c4), this);
+    m_pSwapTrigger->setToolTip(tr("Delete this cue"));
+    m_pSwapTrigger->setObjectName("SwapButton");
+    connect(m_pSwapTrigger.get(), &QPushButton::clicked, this, &WCueMenuPopup::slotSwapHotcues);
+
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber.get());
     pLabelLayout->addStretch(1);
     pLabelLayout->addWidget(m_pCuePosition.get());
 
+    QHBoxLayout* pSwapLayout = new QHBoxLayout();
+    pSwapLayout->addWidget(m_pCueNumberSwap.get());
+    pSwapLayout->addWidget(m_pSwapIndicator.get());
+    pSwapLayout->addWidget(m_pSwapSelector.get());
+    pSwapLayout->addWidget(m_pSwapTrigger.get());
+    pSwapLayout->addStretch(1);
+
     QVBoxLayout* pLeftLayout = new QVBoxLayout();
     pLeftLayout->addLayout(pLabelLayout);
     pLeftLayout->addWidget(m_pEditLabel.get());
     pLeftLayout->addWidget(m_pColorPicker.get());
+    pLeftLayout->addLayout(pSwapLayout);
 
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pDeleteCue.get());
@@ -158,6 +180,16 @@ void WCueMenuPopup::slotUpdate() {
         m_pEditLabel->setText(m_pCue->getLabel());
         m_pColorPicker->setSelectedColor(m_pCue->getColor());
         m_pSavedLoopCue->setChecked(m_pCue->getType() == mixxx::CueType::Loop);
+
+        m_pCueNumberSwap->setText(QChar('#') + QString::number(m_pCue->getHotCue() + 1));
+        m_pSwapSelector->clear();
+        QList<CuePointer> hotcues = m_pTrack->getHotcues();
+        for (const auto& pCue : hotcues) {
+            int idx = pCue->getHotCue();
+            if (idx != hotcueNumber) {
+                m_pSwapSelector->addItem(QString::number(idx + 1), idx);
+            }
+        }
     } else {
         m_pTrack.reset();
         m_pCue.reset();
@@ -165,6 +197,7 @@ void WCueMenuPopup::slotUpdate() {
         m_pCuePosition->setText(QString(""));
         m_pEditLabel->setText(QString(""));
         m_pColorPicker->setSelectedColor(std::nullopt);
+        m_pSwapSelector->clear();
     }
 }
 
@@ -257,6 +290,18 @@ void WCueMenuPopup::slotSavedLoopCueManual() {
     m_pCue->setEndPosition(position);
     m_pCue->setType(mixxx::CueType::Loop);
     slotUpdate();
+}
+
+void WCueMenuPopup::slotSwapHotcues() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    int newIdx = m_pSwapSelector->currentData().toInt();
+    m_pTrack->swapHotcues(m_pCue->getHotCue(), newIdx);
+    hide();
 }
 
 void WCueMenuPopup::closeEvent(QCloseEvent* event) {
