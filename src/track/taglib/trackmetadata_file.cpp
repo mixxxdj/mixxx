@@ -11,6 +11,7 @@
 
 #include <tfile.h>
 
+#include "moc_trackmetadata_file.cpp"
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 

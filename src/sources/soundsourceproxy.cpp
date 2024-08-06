@@ -503,7 +503,7 @@ void SoundSourceProxy::findProviderAndInitSoundSource() {
     if (!getUrl().isEmpty()) {
         kLogger.warning()
                 << "No SoundSourceProvider for file"
-                << getUrl().toString();
+                << getUrl().toString(QUrl::PreferLocalFile);
     }
 }
 
@@ -517,7 +517,7 @@ bool SoundSourceProxy::initSoundSourceWithProvider(
         kLogger.warning() << "SoundSourceProvider"
                           << pProvider->getDisplayName()
                           << "failed to create a SoundSource for file"
-                          << getUrl().toString();
+                          << getUrl().toString(QUrl::PreferLocalFile);
         return false;
     }
     m_pProvider = pProvider;
@@ -525,7 +525,7 @@ bool SoundSourceProxy::initSoundSourceWithProvider(
         kLogger.debug() << "SoundSourceProvider"
                         << m_pProvider->getDisplayName()
                         << "created a SoundSource for file"
-                        << getUrl().toString()
+                        << getUrl().toString(QUrl::PreferLocalFile)
                         << "of type"
                         << m_pSoundSource->getType();
     }
@@ -628,7 +628,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     if (!m_pSoundSource) {
         kLogger.warning()
                 << "Unable to update track from unsupported file type"
-                << getUrl().toString();
+                << getUrl().toString(QUrl::PreferLocalFile);
         return UpdateTrackFromSourceResult::NotUpdated;
     }
 
@@ -644,7 +644,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
                           << "to"
                           << newType
                           << "for file"
-                          << getUrl().toString();
+                          << getUrl().toString(QUrl::PreferLocalFile);
     }
 
     // Use the existing track metadata as default values. Otherwise
@@ -680,7 +680,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
                         << "Skip importing of embedded cover art from file"
-                        << getUrl().toString();
+                        << getUrl().toString(QUrl::PreferLocalFile);
             }
         } else {
             // Request reimport of embedded cover art
@@ -706,7 +706,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
                 << "Failed to import track metadata"
                 << (pCoverImg ? "and embedded cover art" : "")
                 << "from file"
-                << getUrl().toString();
+                << getUrl().toString(QUrl::PreferLocalFile);
         // make sure that the trackMetadata was not messed up due to the failure
         mixxx::TrackRecord::SourceSyncStatus sourceSyncStatusNew;
         trackMetadata = m_pTrack->getMetadata(&sourceSyncStatusNew);
@@ -750,7 +750,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Initializing track metadata and embedded cover art from file"
-                    << getUrl().toString();
+                    << getUrl().toString(QUrl::PreferLocalFile);
         }
     } else {
         if (kLogger.debugEnabled()) {
@@ -758,7 +758,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
                     << "Re-importing track metadata"
                     << (pCoverImg ? "and embedded cover art" : "")
                     << "from file"
-                    << getUrl().toString();
+                    << getUrl().toString(QUrl::PreferLocalFile);
         }
     }
 
@@ -870,14 +870,14 @@ bool SoundSourceProxy::openSoundSource(
             }
             kLogger.warning()
                     << "Failed to read file"
-                    << getUrl().toString()
+                    << getUrl().toString(QUrl::PreferLocalFile)
                     << "with provider"
                     << m_pProvider->getDisplayName();
             m_pSoundSource->close(); // cleanup
         } else {
             kLogger.warning()
                     << "Failed to open file"
-                    << getUrl().toString()
+                    << getUrl().toString(QUrl::PreferLocalFile)
                     << "with provider"
                     << m_pProvider->getDisplayName()
                     << "using mode"
@@ -915,7 +915,7 @@ bool SoundSourceProxy::openSoundSource(
     // getting here. m_pSoundSource might already be invalid/null!
     kLogger.warning()
             << "Giving up to open file"
-            << getUrl().toString()
+            << getUrl().toString(QUrl::PreferLocalFile)
             << "after"
             << attemptCount
             << "unsuccessful attempts";
