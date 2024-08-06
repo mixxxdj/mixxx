@@ -992,6 +992,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
   src/library/tabledelegates/tableitemdelegate.cpp
+  src/library/tabledelegates/textdelegate.cpp
   src/library/trackcollection.cpp
   src/library/trackcollectioniterator.cpp
   src/library/trackcollectionmanager.cpp

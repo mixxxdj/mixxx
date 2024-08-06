@@ -5,6 +5,7 @@
 #include <QItemEditorCreatorBase>
 #include <QItemEditorFactory>
 #include <QPainter>
+#include <QPixmapCache>
 #include <QTableView>
 
 #include "moc_bpmdelegate.cpp"
@@ -57,8 +58,9 @@ BPMDelegate::~BPMDelegate() {
     delete m_pFactory;
 }
 
-void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option,
-                        const QModelIndex& index) const {
+void BPMDelegate::paintItem(QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
     // NOTE(rryan): Qt has a built-in limitation that we cannot style multiple
     // CheckState indicators in the same QAbstractItemView. The CSS rule
     // QTableView::indicator:checked applies to all columns with a
@@ -89,14 +91,6 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     // Fix that by setting the bg color explicitly here.
     paintItemBackground(painter, option, index);
 
-    QStyleOptionViewItem opt = option;
-    initStyleOption(&opt, index);
-
-    // The checkbox uses the QTableView's qss style, therefore it's not picking
-    // up the 'missing' or 'played' text color via ForegroundRole from
-    // BaseTrackTableModel::data().
-    // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
-    // we need to reset it to normal/highlighted.
     QColor textColor;
     if (option.state & QStyle::State_Selected) {
         textColor = option.palette.color(QPalette::Normal, QPalette::HighlightedText);
@@ -109,15 +103,55 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
         }
     }
 
-    if (textColor.isValid() && textColor != m_cachedTextColor) {
-        m_cachedTextColor = textColor;
+    // Retrieve the check state and BPM value
+    bool isChecked = index.data(Qt::CheckStateRole).toInt() == Qt::Checked;
+    QString bpmValue =
+            index.data(Qt::UserRole + 2)
+                    .toString(); // BPM value is stored with UserRole + 2
+
+    // Generate a unique cache key that now includes isChecked and bpmValue
+    QString cacheKey = QString("BPMDelegate_%1_%2_%3_%4_%5")
+                               .arg(option.rect.width())
+                               .arg(option.rect.height())
+                               .arg(textColor.name(QColor::HexRgb),
+                                       isChecked ? "checked" : "unchecked")
+                               .arg(bpmValue);
+
+    QPixmap pixmap;
+    if (!QPixmapCache::find(cacheKey, &pixmap)) {
+        // Pixmap is not in the cache, so we create a new one
+        pixmap = QPixmap(option.rect.size());
+        pixmap.fill(Qt::transparent); // Fill uninitialized pixmap's background transparent
+        QPainter pixmapPainter(&pixmap);
+
+        QStyleOptionViewItem opt = option;
+        initStyleOption(&opt, index);
+
+        // The checkbox uses the QTableView's qss style, therefore it's not picking
+        // up the 'missing' or 'played' text color via ForegroundRole from
+        // BaseTrackTableModel::data().
+        // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
+        // we need to reset it to normal/highlighted.
+
         m_pCheckBox->setStyleSheet(QStringLiteral(
                 "#LibraryBPMButton::item { color: %1; }")
                                            .arg(textColor.name(QColor::HexRgb)));
+
+        // Set the checkbox's origin to top-left and adjust the size to fit into the pixmap.
+        opt.rect = QRect(QPoint(0, 0), option.rect.size());
+
+        // Use the QTableView's style to draw a plain default checkbox onto the pixmap.
+        QStyle* style = m_pTableView->style();
+        if (style != nullptr) {
+            style->drawControl(QStyle::CE_ItemViewItem, &opt, &pixmapPainter, m_pCheckBox);
+        }
+
+        pixmapPainter.end(); // Finish painting to the pixmap.
+
+        // Save the pixmap in the cache
+        QPixmapCache::insert(cacheKey, pixmap);
     }
 
-    QStyle* style = m_pTableView->style();
-    if (style != nullptr) {
-        style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, m_pCheckBox);
-    }
+    // Now draw the cached pixmap onto the original painter.
+    painter->drawPixmap(option.rect.topLeft(), pixmap);
 }

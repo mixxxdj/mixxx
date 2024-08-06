@@ -1,6 +1,7 @@
 #include "library/tabledelegates/previewbuttondelegate.h"
 
 #include <QPainter>
+#include <QPixmapCache>
 #include <QPushButton>
 #include <QStyleOptionButton>
 
@@ -140,27 +141,44 @@ void PreviewButtonDelegate::paintItem(QPainter* painter,
         return;
     }
 
-    if (!m_pButton) {
-        return;
-    }
+    // Generate a unique cache key for this item
+    bool isTrackLoadedAndPlaying = isTrackLoadedInPreviewDeckAndPlaying(index);
+    QString cacheKey = QString("PreviewButtonDelegate_%1_%2_%3")
+                               .arg(option.rect.width())
+                               .arg(option.rect.height())
+                               .arg(isTrackLoadedAndPlaying ? "playing" : "stopped");
 
-    // We only need m_pButton to have the right width/height, since we are
-    // calling its render method directly. Every resize/translate of a widget
-    // causes Qt to flush the backing store, so we need to avoid this whenever
-    // possible.
-    if (option.rect.size() != m_pButton->size()) {
+    QPixmap pixmap;
+    if (!QPixmapCache::find(cacheKey, &pixmap)) {
+        // Pixmap not in cache, create a new one
+        pixmap = QPixmap(option.rect.size());
+        pixmap.fill(Qt::transparent); // Fill uninitialized pixmap's background transparent
+        QPainter pixmapPainter(&pixmap);
+
+        QStyleOptionButton opt;
+
+        // Set the buttons origin to top-left and adjust the size to fit into the pixmap.
+        opt.rect = QRect(QPoint(0, 0), option.rect.size());
+
         m_pButton->setFixedSize(option.rect.size());
+
+        // Update check state
+        opt.state = isTrackLoadedAndPlaying ? QStyle::State_On : QStyle::State_Off;
+
+        // Use the QTableView's style to draw onto the pixmap.
+        QStyle* style = m_pButton->style();
+        if (style != nullptr) {
+            style->drawControl(QStyle::CE_PushButton, &opt, &pixmapPainter, m_pButton);
+        }
+
+        pixmapPainter.end(); // Finish painting to the pixmap.
+
+        // Cache the newly created pixmap
+        QPixmapCache::insert(cacheKey, pixmap);
     }
 
-    // Update check state
-    m_pButton->setChecked(isTrackLoadedInPreviewDeckAndPlaying(index));
-
-    // Render button at the desired position.
-    painter->translate(option.rect.topLeft());
-
-    // Avoid QWidget::render and call the equivalent of QPushButton::paintEvent
-    // directly.
-    m_pButton->paint(painter);
+    // Draw the cached pixmap onto the painter
+    painter->drawPixmap(option.rect.topLeft(), pixmap);
 }
 
 void PreviewButtonDelegate::updateEditorGeometry(QWidget* editor,
