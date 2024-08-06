@@ -41,6 +41,7 @@
       <attribute config_key="[App],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_stem_controls">0</attribute>
 
     <!-- Decks -->
       <!-- general -->
@@ -63,6 +64,7 @@
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_stem_controls">1</attribute>
       <!-- Compact deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_controls_compact">1</attribute>

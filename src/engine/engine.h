@@ -8,6 +8,10 @@ static constexpr audio::ChannelCount kEngineChannelOutputCount =
         audio::ChannelCount::stereo();
 static constexpr audio::ChannelCount kMaxEngineChannelInputCount =
         audio::ChannelCount::stem();
+#ifdef __STEM__
+constexpr int kMaxSupportedStems = 4;
+constexpr uint kNoStemSelectedIdx = 0;
+#endif
 
 // Contains the information needed to process a buffer of audio
 class EngineParameters final {

@@ -38,6 +38,33 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             this,
             &LoadToGroupController::slotLoadToGroupAndPlay);
 
+#ifdef __STEM__
+    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
+        m_loadSelectedTrackStemAndPlay.emplace_back(
+                std::make_unique<ControlPushButton>(ConfigKey(group,
+                        QStringLiteral("load_selected_track_stem_%1_and_play").arg(stemIdx))));
+        connect(m_loadSelectedTrackStemAndPlay.back().get(),
+                &ControlObject::valueChanged,
+                this,
+                [this, stemIdx](double value) {
+                    if (value > 0) {
+                        emit loadToGroup(m_group, stemIdx, true);
+                    }
+                });
+        m_loadSelectedTrackStem.emplace_back(
+                std::make_unique<ControlPushButton>(ConfigKey(group,
+                        QStringLiteral("load_selected_track_stem_%1").arg(stemIdx))));
+        connect(m_loadSelectedTrackStem.back().get(),
+                &ControlObject::valueChanged,
+                this,
+                [this, stemIdx](double value) {
+                    if (value > 0) {
+                        emit loadToGroup(m_group, stemIdx, false);
+                    }
+                });
+    }
+#endif
+
     connect(this,
             &LoadToGroupController::loadToGroup,
             pParent,
@@ -48,13 +75,21 @@ LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, false);
+        emit loadToGroup(m_group,
+#ifdef __STEM__
+                mixxx::kNoStemSelectedIdx,
+#endif
+                false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, true);
+        emit loadToGroup(m_group,
+#ifdef __STEM__
+                mixxx::kNoStemSelectedIdx,
+#endif
+                true);
     }
 }
 
@@ -600,14 +635,22 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
     m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
-void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
+void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group,
+#ifdef __STEM__
+        uint stemIdx,
+#endif
+        bool play) {
     if (!m_pLibraryWidget) {
         return;
     }
 
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
-        pTrackTableView->loadSelectedTrackToGroup(group, play);
+        pTrackTableView->loadSelectedTrackToGroup(group,
+#ifdef __STEM__
+                stemIdx,
+#endif
+                play);
     }
 }
 

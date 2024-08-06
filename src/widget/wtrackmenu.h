@@ -110,7 +110,12 @@ class WTrackMenu : public QMenu {
     const QString getDeckGroup() const;
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play = false);
     void trackMenuVisible(bool visible);
     void saveCurrentViewState();
     void restoreCurrentViewStateOrIndex();
@@ -214,6 +219,12 @@ class WTrackMenu : public QMenu {
     void setupActions();
     void updateMenus();
 
+    void generateTrackLoadMenu(const QString& group,
+            const QString& label,
+            TrackPointer pTrack,
+            QMenu* pParentMenu,
+            bool enabled = true);
+
     bool featureIsEnabled(Feature flag) const;
 
     void addSelectionToPlaylist(int iPlaylistId);
@@ -225,7 +236,11 @@ class WTrackMenu : public QMenu {
     void clearBeats();
     void lockBpm(bool lock);
 
-    void loadSelectionToGroup(const QString& group, bool play = false);
+    void loadSelectionToGroup(const QString& group,
+#ifdef __STEM__
+            uint stemIdx = mixxx::kNoStemSelectedIdx,
+#endif
+            bool play = false);
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
@@ -278,9 +293,6 @@ class WTrackMenu : public QMenu {
 
     // Save Track Metadata Action:
     QAction* m_pExportMetadataAct{};
-
-    // Load Track to PreviewDeck
-    QAction* m_pAddToPreviewDeck{};
 
     // Send to Auto-DJ Action
     QAction* m_pAutoDJBottomAct{};
