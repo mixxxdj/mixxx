@@ -30,6 +30,11 @@ void TrackRecord::setKeys(const Keys& keys) {
 UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         const QString& keyText,
         track::io::key::Source keySource) {
+    if (keyText.isEmpty()) {
+        // User tries to delete the key
+        setKeys(Keys());
+        return UpdateResult::Updated;
+    }
     // Try to parse the input as a key.
     mixxx::track::io::key::ChromaticKey newKey =
             KeyUtils::guessKeyFromText(keyText);
