@@ -27,7 +27,8 @@ Keys KeyFactory::makeBasicKeys(
         mixxx::track::io::key::Source source) {
     KeyMap key_map;
     key_map.set_global_key(global_key);
-    QString global_key_text = KeyUtils::keyToString(global_key, KeyUtils::KeyNotation::Custom);
+    QString global_key_text = KeyUtils::keyToString(
+            global_key, KeyUtils::KeyNotation::ID3v2);
     key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
     return Keys(key_map);
