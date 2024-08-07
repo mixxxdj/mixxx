@@ -93,6 +93,8 @@ class TrackRecord final {
         return m_keys;
     }
 
+    // Key text will be stored as StandardID3v2
+    // Invalid Keys are rejected and empty string deletes the key
     UpdateResult updateGlobalKeyNormalizeText(
             const QString& keyText,
             track::io::key::Source keySource);
