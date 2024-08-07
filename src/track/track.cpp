@@ -1451,8 +1451,7 @@ mixxx::track::io::key::ChromaticKey Track::getKey() const {
 
 // returns the formatted key for display purpose
 QString Track::getKeyText() const {
-    const auto locked = lockMutex(&m_qMutex);
-    return m_record.getKeys().getGlobalKeyText();
+    return KeyUtils::keyToString(getKey());
 }
 
 // normalizes the keyText before storing
