@@ -899,6 +899,8 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
                 // Remove missing song from auto DJ playlist.
                 m_pAutoDJTableModel->removeTrack(
                         m_pAutoDJTableModel->index(0, 0));
+                // Don't "Requeue" missing tracks to avoid andless loops
+                maybeFillRandomTracks();
             }
         } else {
             // We're out of tracks. Return the null TrackPointer.
