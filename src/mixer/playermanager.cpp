@@ -670,7 +670,12 @@ void PlayerManager::slotCloneDeck(const QString& source_group, const QString& ta
     pPlayer->slotCloneFromGroup(source_group);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(
+        TrackPointer pTrack, const QString& group,
+#ifdef __STEM__
+        uint stemIdx,
+#endif
+        bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
@@ -721,7 +726,11 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     if (clone) {
         pPlayer->slotCloneDeck();
     } else {
-        pPlayer->slotLoadTrack(pTrack, play);
+        pPlayer->slotLoadTrack(pTrack,
+#ifdef __STEM__
+                stemIdx,
+#endif
+                play);
     }
 
     m_lastLoadedPlayer = group;
@@ -773,7 +782,11 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         return;
     }
 
-    pDeck->slotLoadTrack(pTrack, false);
+    pDeck->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::kNoStemSelectedIdx,
+#endif
+            false);
 }
 
 void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {

@@ -75,6 +75,7 @@
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
 #ifdef __STEM__
+#include "engine/engine.h"
 #include "widget/wstemcontrol.h"
 #endif
 #include "widget/wtime.h"
@@ -89,12 +90,6 @@
 #include "widget/wwidgetstack.h"
 
 using mixxx::skin::SkinManifest;
-
-#ifdef __STEM__
-namespace {
-constexpr int kMaxSupportedStems = 4;
-} // anonymous namespace
-#endif
 
 /// This QSet allows to make use of the implicit sharing
 /// of QString instead of every widget keeping its own copy.
@@ -1039,7 +1034,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
         setupConnections(child, viewer->stemControlWidget());
         QDomElement stem = child.firstChildElement("Stem");
         DEBUG_ASSERT(group.endsWith("]"));
-        for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+        for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
             m_pContext->setVariable("StemGroup",
                     QStringLiteral("%1Stem%2]")
                             .arg(group.left(group.size() - 1),
@@ -1068,6 +1063,12 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &BaseTrackPlayer::loadingTrack,
             viewer,
             &WWaveformViewer::slotLoadingTrack);
+#ifdef __STEM__
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::selectedStem,
+            viewer,
+            &WWaveformViewer::slotSelectStem);
+#endif
 
     QObject::connect(pPlayer,
             &BaseTrackPlayer::trackUnloaded,
