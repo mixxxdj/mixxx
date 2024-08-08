@@ -10,6 +10,8 @@ CheckboxDelegate::CheckboxDelegate(QTableView* pTableView, const QString& checkb
         : TableItemDelegate(pTableView),
           m_pCheckBox(new QCheckBox(m_pTableView)),
           m_checkboxName(checkboxName) {
+    // Note that object names set here are not picked up by /tools/qsscheck.py
+    // and need to be added there manually
     m_pCheckBox->setObjectName(checkboxName);
     // NOTE(rryan): Without ensurePolished the first render of the QTableView
     // shows the checkbox unstyled. Not sure why -- but this fixes it.
