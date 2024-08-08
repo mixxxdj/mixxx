@@ -779,3 +779,60 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
         return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
     }
 }
+
+// returns the pitch difference between two tracks, when they are played at the
+// same tempo. Assumes all inputs are valid.
+double KeyUtils::trackSyncPitchDifference(
+        mixxx::track::io::key::ChromaticKey key1,
+        mixxx::Bpm bpm1,
+        mixxx::track::io::key::ChromaticKey key2,
+        mixxx::Bpm bpm2) {
+    // convert minor keys to their relative majors
+    // we are interested in the notes used, not the mode
+    key1 = minorToRelativeMajor(key1);
+    key2 = minorToRelativeMajor(key2);
+
+    // calculate the pitch delta for each track when stretched to a tempo of 100BPM
+    const double delta1 = powerOf2ToSemitoneChange(100 / bpm1.value());
+    const double delta2 = powerOf2ToSemitoneChange(100 / bpm2.value());
+
+    // get the resulting key for each track at 100BPM
+    const double resPitch1 = normalizePitch(keyToNumericValue(key1) - 1 + delta1);
+    const double resPitch2 = normalizePitch(keyToNumericValue(key2) - 1 + delta2);
+
+    // return the pitch difference when both tracks are played at the same tempo
+    return normalizePitch(resPitch1 - resPitch2);
+}
+
+// Calculates Similarity (0 to 1, -1 if invalid) between two tracks based on their key and BPM.
+double KeyUtils::trackSimilarity(mixxx::track::io::key::ChromaticKey key1,
+        mixxx::Bpm bpm1,
+        mixxx::track::io::key::ChromaticKey key2,
+        mixxx::Bpm bpm2) {
+    if (key1 == mixxx::track::io::key::INVALID ||
+            key2 == mixxx::track::io::key::INVALID || !bpm1.isValid() ||
+            !bpm2.isValid()) {
+        return -1.0;
+    }
+
+    // relative pitch difference between tracks, when played at same tempo
+    const double pitchDiff = trackSyncPitchDifference(key1, bpm1, key2, bpm2);
+
+    const int roundedPitchDiff = (int)normalizePitch(round(pitchDiff));
+    double cents = abs(roundedPitchDiff - pitchDiff);
+    // bring cents value back to [0-0.5] for pitchDiff values > 11.50
+    if (cents > 11) {
+        cents = 12 - cents;
+    }
+
+    const int keyWheelSteps = pitchDiffToKeywheelSteps(roundedPitchDiff);
+
+    // normalize between 0-1 by dividing by 7 (no. of steps values, including 0)
+    // invert so 1.0 means most compatible
+    const double normKWSteps = (1 - keyWheelSteps / 7.0);
+    // this 1-16x^4 curve forgives the effect of lower detune values on the similarity
+    const double normCents = (1 - 16 * pow(cents, 4)); // 0-1
+
+    // calculate final similarity and return it
+    return normKWSteps * normCents;
+}

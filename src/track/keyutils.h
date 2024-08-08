@@ -7,6 +7,7 @@
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
+#include "track/bpm.h"
 #include "track/keys.h"
 #include "util/color/colorpalette.h"
 #include "util/math.h"
@@ -56,6 +57,21 @@ class KeyUtils {
     static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic, bool major) {
         return static_cast<mixxx::track::io::key::ChromaticKey>(
             tonic + (major ? 1 : 13));
+    }
+
+    // Converts a minor key to its relative major. This will change the tonic.
+    static inline mixxx::track::io::key::ChromaticKey minorToRelativeMajor(
+            mixxx::track::io::key::ChromaticKey key) {
+        return openKeyNumberToKey(keyToOpenKeyNumber(key), true);
+    }
+
+    // Given pitch difference of 2 keys, returns their distance on the keywheel
+    static inline int pitchDiffToKeywheelSteps(int pitchDiff) {
+        // Open Key number also conveniently gives us the clockwise index in the Keywheel
+        // Keys use 1-based indexing (0 is INVALID)
+        const int CWSteps = keyToOpenKeyNumber(keyFromNumericValue(pitchDiff + 1)) - 1;
+        // it's a wheel, so check if counter-clockwise direction has fewer steps
+        return std::min(CWSteps, 12 - CWSteps);
     }
 
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
@@ -133,6 +149,26 @@ class KeyUtils {
 
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
+
+    // Ensure pitch is in the [0-12) range
+    static inline double normalizePitch(double pitch) {
+        double normPitch = fmod(pitch, 12.0);
+        if (normPitch < 0) {
+                normPitch += 12.0;
+        }
+        return normPitch;
+    }
+
+    static double trackSyncPitchDifference(
+            mixxx::track::io::key::ChromaticKey key1,
+            mixxx::Bpm bpm1,
+            mixxx::track::io::key::ChromaticKey key2,
+            mixxx::Bpm bpm2);
+
+    static double trackSimilarity(mixxx::track::io::key::ChromaticKey key1,
+            mixxx::Bpm bpm1,
+            mixxx::track::io::key::ChromaticKey key2,
+            mixxx::Bpm bpm2);
 
   private:
     static QMutex s_notationMutex;
