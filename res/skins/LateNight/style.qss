@@ -198,7 +198,7 @@ WSearchLineEdit::item:selected,
   WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
     border: 0px;
     background-color: transparent;
-    image: url(skin:../LateNight/palemoon/buttons/btn__search.svg);
+    image: url(skins:LateNight/palemoon/buttons/btn__search.svg);
     margin-left: 2px;
   }
   WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
@@ -208,7 +208,7 @@ WSearchLineEdit::item:selected,
   WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
   }
   WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
-    image: url(skin:../LateNight/palemoon/buttons/btn__search_disabled.svg);
+    image: url(skins:LateNight/palemoon/buttons/btn__search_disabled.svg);
   }
 
 /************** font sizes / alignment ****************************************/

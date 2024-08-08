@@ -1767,6 +1767,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
     if (!templateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open template file:" << absolutePath;
+        return QDomElement();
     }
 
     QDomDocument tmpl("template");
