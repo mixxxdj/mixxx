@@ -380,6 +380,18 @@ void CoreServices::initialize(QApplication* pApp) {
     bool musicDirAdded = false;
 
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
+#if defined(Q_OS_IOS) || defined(Q_OS_WASM)
+        // On the web and iOS, we are running in a sandbox (a virtual file
+        // system on the web). Since we are generally limited to this sandbox,
+        // there is not much point in asking the user, so we just default to
+        // ~/Music within it (creating it since it usually does not exist).
+        // Advanced users can still customize this directory in the settings.
+        QString fd = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+#else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
@@ -391,6 +403,7 @@ void CoreServices::initialize(QApplication* pApp) {
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
                         QStandardPaths::MusicLocation));
+#endif
         // request to add directory to database.
         if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
             musicDirAdded = true;
