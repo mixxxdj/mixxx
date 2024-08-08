@@ -8,6 +8,7 @@
 #include "soundio/sounddevicestatus.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
+#include "util/singleton.h"
 
 class ControlObject;
 class DlgDeveloperTools;
@@ -36,12 +37,9 @@ class LibraryExporter;
 /// It sets up the main window providing a menubar.
 /// For the main view, an instance of class MixxxView is
 /// created which creates your view.
-class MixxxMainWindow : public QMainWindow {
+class MixxxMainWindow : public QMainWindow, public Singleton<MixxxMainWindow> {
     Q_OBJECT
   public:
-    MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices);
-    ~MixxxMainWindow() override;
-
 #ifdef MIXXX_USE_QOPENGL
     void initializeQOpenGL();
 #endif
@@ -55,6 +53,15 @@ class MixxxMainWindow : public QMainWindow {
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
+    static void destroy() {
+        Singleton<MixxxMainWindow>::destroy();
+    };
+
+  protected:
+    MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices);
+    ~MixxxMainWindow() override;
+
+    friend class Singleton<MixxxMainWindow>;
   public slots:
     void rebootMixxxView();
 

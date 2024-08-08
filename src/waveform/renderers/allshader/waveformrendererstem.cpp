@@ -40,9 +40,9 @@ void WaveformRendererStem::initializeGL() {
                                             QString::number(stemIdx));
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(stemGroup,
-                        QStringLiteral("volume").arg(stemIdx)));
+                        QStringLiteral("volume")));
         m_pStemMute.emplace_back(std::make_unique<ControlProxy>(
-                stemGroup, QStringLiteral("mute").arg(stemIdx)));
+                stemGroup, QStringLiteral("mute")));
     }
 }
 
