@@ -154,8 +154,8 @@ class LegacyControllerMapping {
     /// @brief Set a setting layout as they should be perceived when edited in
     /// the preference dialog.
     /// @param layout The layout root element
-    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement>&& layout) {
-        VERIFY_OR_DEBUG_ASSERT(layout.get()) {
+    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement> layout) {
+        VERIFY_OR_DEBUG_ASSERT(layout) {
             return;
         }
         m_settingsLayout = std::move(layout);

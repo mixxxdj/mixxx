@@ -211,13 +211,11 @@ void EffectSlot::addEffectParameterSlot(EffectParameterType parameterType) {
     EffectParameterSlotBasePointer pParameterSlot =
             EffectParameterSlotBasePointer();
     if (parameterType == EffectParameterType::Knob) {
-        pParameterSlot = static_cast<EffectParameterSlotBasePointer>(
-                new EffectKnobParameterSlot(
-                        m_group, m_iNumParameterSlots[parameterType]));
+        pParameterSlot = QSharedPointer<EffectKnobParameterSlot>::create(
+                m_group, m_iNumParameterSlots[parameterType]);
     } else if (parameterType == EffectParameterType::Button) {
-        pParameterSlot = static_cast<EffectParameterSlotBasePointer>(
-                new EffectButtonParameterSlot(
-                        m_group, m_iNumParameterSlots[parameterType]));
+        pParameterSlot = QSharedPointer<EffectButtonParameterSlot>::create(
+                m_group, m_iNumParameterSlots[parameterType]);
     }
     ++m_iNumParameterSlots[parameterType];
     const auto pCONumParameterSlots = m_pControlNumParameterSlots[parameterType];

@@ -720,7 +720,7 @@ QVariant BaseTrackTableModel::roleValue(
         int role) const {
     const auto field = mapColumn(index.column());
     if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-        return std::move(rawValue);
+        return rawValue;
     }
     switch (role) {
     case Qt::ToolTipRole:
@@ -734,7 +734,7 @@ QVariant BaseTrackTableModel::roleValue(
             return QVariant();
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
-            return std::move(rawValue);
+            return rawValue;
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -880,7 +880,7 @@ QVariant BaseTrackTableModel::roleValue(
             }
             if (rawValue.canConvert<mixxx::audio::Bitrate>()) {
                 // return value as is
-                return std::move(rawValue);
+                return rawValue;
             } else {
                 VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
                     return QVariant();
@@ -892,7 +892,7 @@ QVariant BaseTrackTableModel::roleValue(
                 }
                 if (mixxx::audio::Bitrate(bitrateValue).isValid()) {
                     // return value as is
-                    return std::move(rawValue);
+                    return rawValue;
                 } else {
                     // clear invalid values
                     return QVariant();
@@ -908,7 +908,7 @@ QVariant BaseTrackTableModel::roleValue(
                     ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
             if (keyCodeValue.isNull()) {
                 // Otherwise, just use the column value as is
-                return std::move(rawValue);
+                return rawValue;
             }
             bool ok;
             const auto keyCode = keyCodeValue.toInt(&ok);
@@ -1042,7 +1042,7 @@ QVariant BaseTrackTableModel::roleValue(
         DEBUG_ASSERT(!"unexpected role");
         break;
     }
-    return std::move(rawValue);
+    return rawValue;
 }
 
 bool BaseTrackTableModel::isBpmLocked(

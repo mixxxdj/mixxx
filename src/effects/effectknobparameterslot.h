@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
-#include <optional>
+#include <memory>
 
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
@@ -17,7 +17,7 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
     EffectKnobParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
-    virtual ~EffectKnobParameterSlot();
+    ~EffectKnobParameterSlot() override;
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
         return QString("parameter%1").arg(iParameterSlotNumber + 1);
@@ -52,9 +52,9 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     SoftTakeover* m_pMetaknobSoftTakeover;
 
     // Control exposed to the rest of Mixxx
-    ControlEffectKnob* m_pControlValue;
-    ControlPushButton* m_pControlLinkType;
-    ControlPushButton* m_pControlLinkInverse;
+    std::unique_ptr<ControlEffectKnob> m_pControlValue;
+    std::unique_ptr<ControlPushButton> m_pControlLinkType;
+    std::unique_ptr<ControlPushButton> m_pControlLinkInverse;
 
     DISALLOW_COPY_AND_ASSIGN(EffectKnobParameterSlot);
 };

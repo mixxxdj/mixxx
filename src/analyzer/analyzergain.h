@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "analyzer/analyzer.h"
@@ -36,5 +37,5 @@ class AnalyzerGain : public Analyzer {
     std::vector<CSAMPLE> m_pLeftTempBuffer;
     std::vector<CSAMPLE> m_pRightTempBuffer;
     mixxx::audio::ChannelCount m_channelCount;
-    ReplayGain* m_pReplayGain;
+    std::unique_ptr<ReplayGain> m_pReplayGain;
 };
