@@ -889,14 +889,15 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 
     while (true) {
-        TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
+        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(
+                m_pAutoDJTableModel->index(0, 0));
 
-        if (nextTrack) {
-            if (nextTrack->getFileInfo().checkFileExists()) {
-                return nextTrack;
+        if (pNextTrack) {
+            if (pNextTrack->getFileInfo().checkFileExists()) {
+                return pNextTrack;
             } else {
-                // Remove missing song from auto DJ playlist.
+                // Remove missing track from auto DJ playlist.
+                qWarning() << "Auto DJ: Skip missing track" << pNextTrack->getLocation();
                 m_pAutoDJTableModel->removeTrack(
                         m_pAutoDJTableModel->index(0, 0));
                 // Don't "Requeue" missing tracks to avoid andless loops
@@ -904,7 +905,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             }
         } else {
             // We're out of tracks. Return the null TrackPointer.
-            return nextTrack;
+            return pNextTrack;
         }
     }
 }
