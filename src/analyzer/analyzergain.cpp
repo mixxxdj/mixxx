@@ -11,7 +11,8 @@
 #include "util/timer.h"
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
-        : m_rgSettings(pConfig), m_pReplayGain(std::make_unique<ReplayGain>()) {
+        : m_rgSettings(pConfig),
+          m_pReplayGain(std::make_unique<ReplayGain>()) {
 }
 
 AnalyzerGain::~AnalyzerGain() = default;
