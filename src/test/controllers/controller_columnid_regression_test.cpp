@@ -13,11 +13,13 @@
 #include "test/mixxxtest.h"
 #include "util/time.h"
 
+using namespace std::chrono_literals;
+
 class ControllerLibraryColumnIDRegressionTest : public MixxxTest {
   protected:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
     }
 
     void TearDown() override {

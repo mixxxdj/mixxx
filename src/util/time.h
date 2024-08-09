@@ -45,12 +45,6 @@ class Time {
     static void setTestMode(bool test) {
         s_testMode = test;
     }
-    [[deprecated(
-            "do not explicitly set time, just add to the unspecified initial "
-            "value using `addTestTime(duration)`")]] static void
-    setTestElapsedTime(mixxx::Duration elapsed) {
-        s_testElapsed = LLTIMER::ClockT::time_point(elapsed.toStdDuration());
-    }
     template<class Rep, class Period>
     static void addTestTime(std::chrono::duration<Rep, Period> elapsed) {
         s_testElapsed += elapsed;

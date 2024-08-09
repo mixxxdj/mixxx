@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QJSValue>
-#include <utility>
 
 #include "controllers/controller.h"
-#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/softtakeover.h"
 

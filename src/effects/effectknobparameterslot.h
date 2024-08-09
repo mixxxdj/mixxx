@@ -5,12 +5,12 @@
 #include <QVariant>
 #include <memory>
 
+#include "controllers/softtakeover.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
 class ControlPushButton;
 class ControlEffectKnob;
-class SoftTakeover;
 
 /// Refer to EffectParameterSlotBase for documentation
 class EffectKnobParameterSlot : public EffectParameterSlotBase {
@@ -49,7 +49,7 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
         return QString("EffectKnobParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
 
-    SoftTakeover* m_pMetaknobSoftTakeover;
+    SoftTakeover m_metaknobSoftTakeover;
 
     // Control exposed to the rest of Mixxx
     std::unique_ptr<ControlEffectKnob> m_pControlValue;
