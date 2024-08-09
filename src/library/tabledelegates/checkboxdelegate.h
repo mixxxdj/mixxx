@@ -1,19 +1,21 @@
 #pragma once
 
 #include "library/tabledelegates/tableitemdelegate.h"
+#include "util/parented_ptr.h"
 
 class QCheckBox;
 
-class PlayCountDelegate : public TableItemDelegate {
+class CheckboxDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit PlayCountDelegate(QTableView* pTableView);
+    explicit CheckboxDelegate(QTableView* pTableView, const QString& checkboxName);
 
     void paintItem(QPainter* painter,
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
 
   private:
-    QTableView* m_pTableView;
     QCheckBox* m_pCheckBox;
+    const QString m_checkboxName;
+    mutable QColor m_cachedTextColor;
 };
