@@ -982,11 +982,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/sidebarmodel.cpp
   src/library/starrating.cpp
   src/library/tabledelegates/bpmdelegate.cpp
+  src/library/tabledelegates/checkboxdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
-  src/library/tabledelegates/playcountdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -2554,6 +2555,13 @@ add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
 target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 
+#silence "enumeration values not handled in switch" in generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
+
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
   lib/kaitai/kaitai/kaitaistream.cpp
@@ -3450,6 +3458,7 @@ if (STEM)
   target_sources(mixxx-test PUBLIC
     src/test/stemtest.cpp
     src/test/steminfotest.cpp
+    src/test/stemcontrolobjecttest.cpp
   )
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
   target_sources(mixxx-lib PRIVATE
@@ -3457,6 +3466,17 @@ if (STEM)
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
+    target_sources(mixxx-qml-lib PRIVATE
+      src/qml/qmlstemsmodel.cpp
+    )
+  endif()
 endif()
 
 # Test Suite

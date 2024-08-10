@@ -13,32 +13,32 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(
                   group, iParameterSlotNumber, EffectParameterType::Knob) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
-    m_pControlValue = new ControlEffectKnob(
+    m_pControlValue = std::make_unique<ControlEffectKnob>(
             ConfigKey(m_group, itemPrefix));
-    connect(m_pControlValue,
+    connect(m_pControlValue.get(),
             &ControlObject::valueChanged,
             this,
             &EffectKnobParameterSlot::slotValueChanged);
 
-    m_pControlLoaded = new ControlObject(
+    m_pControlLoaded = std::make_unique<ControlObject>(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLoaded->setReadOnly();
 
-    m_pControlType = new ControlObject(
+    m_pControlType = std::make_unique<ControlObject>(
             ConfigKey(m_group, itemPrefix + QString("_type")));
     m_pControlType->setReadOnly();
 
-    m_pControlLinkType = new ControlPushButton(
+    m_pControlLinkType = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setBehavior(ControlButtonMode::TOGGLE,
             static_cast<int>(EffectManifestParameter::LinkType::NumLinkTypes));
     m_pControlLinkType->connectValueChangeRequest(
             this, &EffectKnobParameterSlot::slotLinkTypeChanging);
 
-    m_pControlLinkInverse = new ControlPushButton(
+    m_pControlLinkInverse = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlButtonMode::TOGGLE);
-    connect(m_pControlLinkInverse,
+    connect(m_pControlLinkInverse.get(),
             &ControlObject::valueChanged,
             this,
             &EffectKnobParameterSlot::slotLinkInverseChanged);
@@ -48,13 +48,7 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(
     clear();
 }
 
-EffectKnobParameterSlot::~EffectKnobParameterSlot() {
-    delete m_pControlValue;
-    // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
-    delete m_pControlLinkType;
-    delete m_pControlLinkInverse;
-    delete m_pMetaknobSoftTakeover;
-}
+EffectKnobParameterSlot::~EffectKnobParameterSlot() = default;
 
 void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParameter) {
     clear();
@@ -223,8 +217,8 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
         if (force) {
             m_pControlValue->setParameterFrom(parameter, nullptr);
             // This ensures that softtakover is in sync for following updates
-            m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
-        } else if (!m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter)) {
+            m_pMetaknobSoftTakeover->ignore(m_pControlValue.get(), parameter);
+        } else if (!m_pMetaknobSoftTakeover->ignore(m_pControlValue.get(), parameter)) {
             m_pControlValue->setParameterFrom(parameter, nullptr);
         }
     }
@@ -232,7 +226,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
 
 void EffectKnobParameterSlot::syncSofttakeover() {
     double parameter = m_pControlValue->getParameter();
-    m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
+    m_pMetaknobSoftTakeover->ignore(m_pControlValue.get(), parameter);
 }
 
 double EffectKnobParameterSlot::getValueParameter() const {

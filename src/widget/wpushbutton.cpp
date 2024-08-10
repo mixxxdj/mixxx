@@ -48,7 +48,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             // backwards compatibility.
             setPixmapBackground(
                     backgroundSource,
-                    context.selectScaleMode(backPathNode, Paintable::FIXED),
+                    context.selectScaleMode(backPathNode, Paintable::DrawMode::Fixed),
                     context.getScaleFactor());
         }
     }
@@ -98,7 +98,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode unpressedMode =
-                        stateContext->selectScaleMode(unpressedNode, Paintable::FIXED);
+                        stateContext->selectScaleMode(unpressedNode, Paintable::DrawMode::Fixed);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource,
                               unpressedMode, context.getScaleFactor());
@@ -109,7 +109,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode pressedMode =
-                        stateContext->selectScaleMode(pressedNode, Paintable::FIXED);
+                        stateContext->selectScaleMode(pressedNode, Paintable::DrawMode::Fixed);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource,
                               pressedMode, context.getScaleFactor());
@@ -261,12 +261,12 @@ void WPushButton::setPixmap(int iState,
     }
 
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (pPixmap.isNull() || pPixmap->isNull()) {
+    if (!pPixmap || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
         if (!source.isEmpty()) {
             qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
         }
-    } else if (mode == Paintable::FIXED) {
+    } else if (mode == Paintable::DrawMode::Fixed) {
         // Set size of widget equal to pixmap size
         setFixedSize(pPixmap->size());
     }
@@ -279,7 +279,7 @@ void WPushButton::setPixmapBackground(const PixmapSource& source,
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!source.isEmpty() &&
-            (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
+            (!m_pPixmapBack || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
         qDebug() << "WPushButton: Error loading background pixmap:" << source.getPath();
     }
@@ -348,7 +348,7 @@ void WPushButton::paintOnDevice(QPaintDevice* pd, int idx) {
     }
 
     PaintablePointer pPixmap = pixmaps.at(idx);
-    if (!pPixmap.isNull() && !pPixmap->isNull()) {
+    if (pPixmap && !pPixmap->isNull()) {
         pPixmap->draw(rect(), p.get());
     }
 

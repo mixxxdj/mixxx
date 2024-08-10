@@ -130,9 +130,6 @@ class ControlValueAtomicBase<T, cRingSize, true> {
         return m_value;
     }
 
-    inline T getValueOnce() {
-        return std::move(m_value);
-    }
 
     inline void setValue(const T& value) {
         m_value = value;

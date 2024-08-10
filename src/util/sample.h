@@ -36,16 +36,22 @@ class SampleUtil {
     inline
     static void clear(CSAMPLE* pBuffer, SINT numSamples) {
         DEBUG_ASSERT(numSamples >= 0);
-        // Special case: This works, because the binary representation
-        // of 0.0f is 0!
-        memset(pBuffer, 0, sizeof(*pBuffer) * numSamples);
-        //fill(pBuffer, CSAMPLE_ZERO, iNumSamples);
+        // We need to cast `numSamples` to an unsigned type to fix a
+        // `-Wstringop-overflow` warning on GCC 14.1.1. Casting to unsigned is
+        // okay, because the `DEBUG_ASSERT` above catches negative values
+        // anyway.
+        const auto sampleCount = static_cast<std::size_t>(numSamples);
+        // Special case: We can use memset here, because the binary representation
+        // of 0.0f is 0! This is much faster without optimizations than using
+        // `fill()`.
+        memset(pBuffer, 0, sizeof(*pBuffer) * sampleCount);
     }
 
     // Sets every sample in pBuffer to value
     inline
     static void fill(CSAMPLE* pBuffer, CSAMPLE value,
             SINT numSamples) {
+        DEBUG_ASSERT(numSamples >= 0);
         std::fill_n(pBuffer, numSamples, value);
     }
 
@@ -311,6 +317,24 @@ class SampleUtil {
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples);
 
+    // Mix a buffer down to stereo, resulting in a shorter buffer with only one
+    // channel. This uses a simple (L+R)/2 method, which assumes that the multi
+    // channel buffer input is composed of stereo pair. Note that function
+    // cannot be optimised using loop vectorization and so shouldn't be used for
+    // real-time use case. The exclude channel mask can bne used to exclude a
+    // stereo pair (two consecutive channel) out of the mix. The LSB is the
+    // first stereo channel
+    static void mixMultichannelToStereo(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels,
+            int excludeChannelMask);
+    // Full downmix overload
+    static void mixMultichannelToStereo(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels);
+
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
     // (numFrames * 2) samples will be written into pBuffer
@@ -341,15 +365,16 @@ class SampleUtil {
             mixxx::audio::ChannelCount numChannels);
 
     // Copies and strips interleaved multi-channel sample data in pSrc with
-    // numChannels >= 2 down to stereo samples into pDest. Only samples from
-    // the first two channels will be read and written. Samples from all other
+    // numChannels >= 2 down to stereo samples into pDest. Samples from
+    // the selected two consecutive channels will be read and written. Samples from all other
     // channels will be ignored.
     // pSrc must contain (numFrames * numChannels) samples
     // (numFrames * 2) samples will be written into pDest
-    static void copyMultiToStereo(CSAMPLE* pDest,
+    static void copyOneStereoFromMulti(CSAMPLE* pDest,
             const CSAMPLE* pSrc,
             SINT numFrames,
-            mixxx::audio::ChannelCount numChannels);
+            mixxx::audio::ChannelCount numChannels,
+            int sourceChannel = 0);
 
     // reverses stereo sample in place
     static void reverse(CSAMPLE* pBuffer, SINT numSamples);

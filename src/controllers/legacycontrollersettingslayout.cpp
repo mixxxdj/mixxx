@@ -25,7 +25,7 @@ void LegacyControllerSettingsLayoutContainer::addItem(
 }
 
 QBoxLayout* LegacyControllerSettingsLayoutContainer::buildLayout(QWidget* pParent) const {
-    auto pLayout = make_parented<QBoxLayout>(QBoxLayout::TopToBottom);
+    auto pLayout = make_parented<QBoxLayout>(QBoxLayout::TopToBottom, pParent);
 
     pParent->setLayout(pLayout);
 

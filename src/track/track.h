@@ -338,7 +338,13 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_stemInfo;
     }
-    // Setter is only available internally. See setStemInfosWhileLocked
+    // Setter is only available internally. See setStemPointsWhileLocked
+
+    bool hasStem() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return !m_stemInfo.isEmpty();
+    }
 #endif
 
     enum class ImportStatus {

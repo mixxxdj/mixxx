@@ -25,13 +25,13 @@ varying highp vec4 vposition;
 void main()
 {
 
-    float xBorder = abs(dimension.x * vposition.x);
-    float yBorder = dimension.y * vposition.y;
-    float upperBoard = borders.x;
-    float lowerBoard = borders.y;
+    highp float xBorder = abs(dimension.x * vposition.x);
+    highp float yBorder = dimension.y * vposition.y;
+    highp float upperBoard = borders.x;
+    highp float lowerBoard = borders.y;
 
     if (yBorder < 0.0){
-        float borderAlpha = max(
+        highp float borderAlpha = max(
             0.0, 
             lowerBoard + yBorder
         ) / lowerBoard;
@@ -39,7 +39,7 @@ void main()
 
     } else if( (xBorder > dimension.x - upperBoard && yBorder >= 0.0) || yBorder > dimension.y - upperBoard)
     {
-        float borderAlpha = max(0.0, max(
+        highp float borderAlpha = max(0.0, max(
             yBorder - dimension.y, 
             xBorder - dimension.x) + upperBoard) / upperBoard;
         gl_FragColor = vec4(mix(vec3(0.0, 0.0, 0.0), color.rgb, min(color.w, borderAlpha)), 1.0);
