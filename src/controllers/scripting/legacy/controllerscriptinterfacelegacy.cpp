@@ -609,6 +609,17 @@ void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
     m_st.ignoreNext(pControl);
 }
 
+bool ControllerScriptInterfaceLegacy::softTakeoverWillIgnore(
+        const QString& group, const QString& name, double parameter) {
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name));
+    if (!pControl) {
+        return false;
+    }
+
+    return m_st.willIgnore(pControl, parameter);
+}
+
 double ControllerScriptInterfaceLegacy::getDeckRate(const QString& group) {
     double rate = 0.0;
     ControlObjectScript* pRateRatio =

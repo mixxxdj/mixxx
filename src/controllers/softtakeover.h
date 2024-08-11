@@ -12,6 +12,7 @@ class ControlPotmeter;
 
 class SoftTakeover {
   public:
+    using ClockT = mixxx::Time;
     // 3/128 units away from the current is enough to catch fast non-sequential moves
     //  but not cause an audibly noticeable jump, determined experimentally with
     //  slow-refresh controllers.
@@ -20,6 +21,9 @@ class SoftTakeover {
 
     SoftTakeover() = default;
     bool ignore(const ControlObject& control, double newParameter);
+    bool willIgnore(const ControlObject& control,
+            double newParameter,
+            ClockT::time_point currentTime) const;
     void ignoreNext() {
         m_time = kFirstValueTime;
     }
@@ -30,11 +34,11 @@ class SoftTakeover {
     // TODO (XXX): find a better testing solution than this TestAccess
     // front-door coupled to `mixxx::Time`.
     struct TestAccess {
-        static constexpr mixxx::Time::duration getTimeThreshold() {
+        static constexpr ClockT::duration getTimeThreshold() {
             return kSubsequentValueOverrideTime;
         }
-        template<class Rep = mixxx::Time::rep,
-                class Period = mixxx::Time::period>
+        template<class Rep = ClockT::rep,
+                class Period = ClockT::period>
         static void advanceTimePastThreshold(
                 std::chrono::duration<Rep, Period> offset =
                         std::chrono::nanoseconds(0)) {
@@ -43,7 +47,6 @@ class SoftTakeover {
     };
 
   private:
-    using ClockT = mixxx::Time;
     // If a new value is received within this amount of time, jump to it
     // regardless. This allows quickly whipping controls to work while retaining
     // the benefits of soft-takeover for slower movements.  Setting this too
@@ -78,6 +81,18 @@ class SoftTakeoverCtrl {
         }
         auto& [coKey, refSoftTakeover] = *it;
         return refSoftTakeover.ignore(*pControl, newParameter);
+    }
+    bool willIgnore(ControlObject* pControl, double newParameter) {
+        auto it = m_softTakeoverHash.find(pControl);
+        if (it == m_softTakeoverHash.end()) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(pControl) {
+            return false;
+        }
+        auto currentTime = SoftTakeover::ClockT::now();
+        auto& [coKey, refSoftTakeover] = *it;
+        return refSoftTakeover.willIgnore(*pControl, newParameter, currentTime);
     }
     // Ignore the next supplied parameter
     void ignoreNext(ControlObject* pControl) {

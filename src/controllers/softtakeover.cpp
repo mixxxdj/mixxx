@@ -10,8 +10,9 @@ void SoftTakeoverCtrl::enable(gsl::not_null<ControlPotmeter*> pControl) {
     m_softTakeoverHash.try_emplace(static_cast<ControlObject*>(pControl.get()));
 }
 
-bool SoftTakeover::ignore(const ControlObject& control, double newParameter) {
-    bool ignore = false;
+bool SoftTakeover::willIgnore(const ControlObject& control,
+        double newParameter,
+        ClockT::time_point currentTime) const {
     /*
      * We only want to ignore the controller when:
      * - its new value is far away from the current value of the ControlObject
@@ -38,6 +39,31 @@ bool SoftTakeover::ignore(const ControlObject& control, double newParameter) {
      *      Don't ignore in every other case.
      */
 
+    if (m_time == kFirstValueTime) {
+        return true;
+    }
+    // don't ignore value if a previous one was not ignored in time
+    if (currentTime < m_time + kSubsequentValueOverrideTime) {
+        return false;
+    }
+    const double currentParameter = control.getParameter();
+    const double difference = currentParameter - newParameter;
+    const double prevDiff = currentParameter - m_prevParameter;
+    // Don't ignore if opposite side of the current parameter value
+    if (std::signbit(prevDiff) != std::signbit(difference)) {
+        return false;
+    }
+    // On same side of the current parameter value
+    if (fabs(difference) <= m_dThreshold || fabs(prevDiff) <= m_dThreshold) {
+        // differences are below threshold
+        return false;
+    }
+    return true;
+}
+
+bool SoftTakeover::ignore(const ControlObject& control, double newParameter) {
+    bool ignore = false;
+
     auto currentTime = ClockT::now();
     // We will get a sudden jump if we don't ignore the first value.
     if (m_time == kFirstValueTime) {
@@ -45,20 +71,8 @@ bool SoftTakeover::ignore(const ControlObject& control, double newParameter) {
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = ClockT::time_point(kFirstValueTime + 1ms);
-    } else if (currentTime >= m_time + kSubsequentValueOverrideTime) {
-        // don't ignore value if a previous one was not ignored in time
-        const double currentParameter = control.getParameter();
-        const double difference = currentParameter - newParameter;
-        const double prevDiff = currentParameter - m_prevParameter;
-        if (std::signbit(prevDiff) == std::signbit(difference)) {
-            // On same side of the current parameter value
-            if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
-                // differences are above threshold
-                ignore = true;
-//                 qDebug() << "SoftTakeover::ignore: ignoring, not near"
-//                          << newParameter << m_prevParameter << currentParameter;
-            }
-        }
+    } else {
+        ignore = willIgnore(control, newParameter, currentTime);
     }
     if (!ignore) {
         // Update the time only if the value is not ignored. Replaces any

@@ -395,6 +395,17 @@ TEST_F(SoftTakeoverTest, CatchOutOfBounds) {
     EXPECT_FALSE(st_control.ignore(&co, co.getParameterForValue(250)));
 }
 
+TEST_F(SoftTakeoverTestWithValue, willIgnore) {
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(&co, co.getParameterForValue(120)));
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
+    EXPECT_TRUE(st_control.willIgnore(&co, co.getParameterForValue(80)));
+    // do not ignore a value in range;
+    EXPECT_FALSE(st_control.willIgnore(&co, co.getParameterForValue(51)));
+    // but still ignore a value outside range because willIgnore just tests
+    EXPECT_TRUE(st_control.ignore(&co, co.getParameterForValue(80)));
+}
+
 // For the ignore cases, check that they work correctly with various signed values
 // TODO
 
