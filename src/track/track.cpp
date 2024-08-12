@@ -204,7 +204,7 @@ void Track::replaceMetadataFromSource(
         modified |= beatsAndBpmModified;
 
         auto keysModified = false;
-        Keys newKeys = KeyFactory::makeBasicKeysKeepText(
+        const Keys newKeys = KeyFactory::makeBasicKeysKeepText(
                 importedKeyText, mixxx::track::io::key::FILE_METADATA);
         if (newKeys.getGlobalKey() != mixxx::track::io::key::INVALID &&
                 m_record.getMetadata().getTrackInfo().getKeyText() != importedKeyText) {
