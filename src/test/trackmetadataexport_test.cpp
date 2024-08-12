@@ -32,7 +32,7 @@ class GlobalTrackCacheHelper : public GlobalTrackCacheSaver {
 
 } // namespace
 
-class TrackMetadataExportTest : public MixxxTest, SoundSourceProviderRegistration {
+class TrackMetadataExportTest : public MixxxTest, private SoundSourceProviderRegistration {
   public:
     TrackMetadataExportTest()
             : m_testDataDir(QDir::current().absoluteFilePath(
@@ -48,7 +48,7 @@ class TrackMetadataExportTest : public MixxxTest, SoundSourceProviderRegistratio
 TEST_F(TrackMetadataExportTest, keepWithespaceKey) {
     const QString kWhiteSpacesKey = QStringLiteral("  A#m  ");
     const QString kNormalizedDisplayKey = QString::fromUtf8("B♭m");
-    const QString kId3Key = QStringLiteral("Bbm");
+    constexpr std::string_view kId3Key = "Bbm";
 
     // Generate a file name for exporting metadata
     const QString exportTrackPath = m_exportTempDir.filePath(kEmptyFile);
@@ -134,5 +134,5 @@ TEST_F(TrackMetadataExportTest, keepWithespaceKey) {
     // normalize user edits
     pTrack->setKeyText(kWhiteSpacesKey);
     // the internal value is now at the preferred ID3v2 format
-    EXPECT_EQ(pTrack->getKeys().getGlobalKeyText().toStdString(), kId3Key.toStdString());
+    EXPECT_EQ(pTrack->getKeys().getGlobalKeyText().toStdString(), kId3Key);
 }
