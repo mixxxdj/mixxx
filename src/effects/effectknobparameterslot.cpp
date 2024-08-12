@@ -43,9 +43,6 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(
             &ControlObject::valueChanged,
             this,
             &EffectKnobParameterSlot::slotLinkInverseChanged);
-
-    m_pMetaknobSoftTakeover = new SoftTakeover();
-
     clear();
 }
 
@@ -96,7 +93,7 @@ void EffectKnobParameterSlot::clear() {
     m_pControlType->forceSet(0.0);
     m_pControlLinkType->setAndConfirm(
             static_cast<double>(EffectManifestParameter::LinkType::None));
-    m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
+    m_metaknobSoftTakeover.setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit updated();
 }
@@ -106,7 +103,7 @@ void EffectKnobParameterSlot::setParameter(double value) {
 }
 
 void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
-    m_pMetaknobSoftTakeover->ignoreNext();
+    m_metaknobSoftTakeover.ignoreNext();
     EffectManifestParameter::LinkType newType =
             static_cast<EffectManifestParameter::LinkType>(
                     static_cast<int>(v));
@@ -124,10 +121,10 @@ void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
     }
     if (newType == EffectManifestParameter::LinkType::LinkedLeft ||
             newType == EffectManifestParameter::LinkType::LinkedRight) {
-        m_pMetaknobSoftTakeover->setThreshold(
+        m_metaknobSoftTakeover.setThreshold(
                 SoftTakeover::kDefaultTakeoverThreshold * 2.0);
     } else {
-        m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
+        m_metaknobSoftTakeover.setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
     m_pControlLinkType->setAndConfirm(static_cast<double>(newType));
     m_pEffectParameter->setLinkType(newType);
@@ -135,7 +132,7 @@ void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
 
 void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
     Q_UNUSED(v);
-    m_pMetaknobSoftTakeover->ignoreNext();
+    m_metaknobSoftTakeover.ignoreNext();
     m_pEffectParameter->setLinkInversion(
             static_cast<EffectManifestParameter::LinkInversion>(
                     static_cast<int>(v)));
@@ -143,91 +140,93 @@ void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
 
 void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
-    if (m_pEffectParameter != nullptr) {
-        // Intermediate cast to integer is needed for VC++.
-        EffectManifestParameter::LinkType type =
-                static_cast<EffectManifestParameter::LinkType>(
-                        static_cast<int>(m_pControlLinkType->get()));
+    if (m_pEffectParameter == nullptr) {
+        return;
+    }
+    // Intermediate cast to integer is needed for VC++.
+    EffectManifestParameter::LinkType type =
+            static_cast<EffectManifestParameter::LinkType>(
+                    static_cast<int>(m_pControlLinkType->get()));
 
-        bool inverse = m_pControlLinkInverse->toBool();
-        double neutral = m_pManifestParameter->neutralPointOnScale();
+    bool inverse = m_pControlLinkInverse->toBool();
+    double neutral = m_pManifestParameter->neutralPointOnScale();
 
-        switch (type) {
-        case EffectManifestParameter::LinkType::Linked:
-            if (parameter < 0.0 || parameter > 1.0) {
-                return;
-            }
-            if (neutral > 0.0 && neutral < 1.0) {
-                if (inverse) {
-                    // the neutral position must stick where it is
-                    neutral = 1.0 - neutral;
-                }
-                // Knob is already a split knob
-                // Match to center position of meta knob
-                if (parameter <= 0.5) {
-                    parameter /= 0.5;
-                    parameter *= neutral;
-                } else {
-                    parameter -= 0.5;
-                    parameter /= 0.5;
-                    parameter *= 1 - neutral;
-                    parameter += neutral;
-                }
-            }
-            break;
-        case EffectManifestParameter::LinkType::LinkedLeft:
-            if (parameter >= 0.5 && parameter <= 1.0) {
-                parameter = 1;
-            } else if (parameter >= 0.0 && parameter <= 0.5) {
-                parameter *= 2;
-            } else {
-                return;
-            }
-            break;
-        case EffectManifestParameter::LinkType::LinkedRight:
-            if (parameter >= 0.5 && parameter <= 1.0) {
-                parameter -= 0.5;
-                parameter *= 2;
-            } else if (parameter >= 0.0 && parameter < 0.5) {
-                parameter = 0.0;
-            } else {
-                return;
-            }
-            break;
-        case EffectManifestParameter::LinkType::LinkedLeftRight:
-            if (parameter >= 0.5 && parameter <= 1.0) {
-                parameter -= 0.5;
-                parameter *= 2;
-            } else if (parameter >= 0.0 && parameter < 0.5) {
-                parameter *= 2;
-                parameter = 1.0 - parameter;
-            } else {
-                return;
-            }
-            break;
-        case EffectManifestParameter::LinkType::None:
-        default:
+    switch (type) {
+    case EffectManifestParameter::LinkType::Linked:
+        if (parameter < 0.0 || parameter > 1.0) {
             return;
         }
-
-        if (inverse) {
+        if (neutral > 0.0 && neutral < 1.0) {
+            if (inverse) {
+                // the neutral position must stick where it is
+                neutral = 1.0 - neutral;
+            }
+            // Knob is already a split knob
+            // Match to center position of meta knob
+            if (parameter <= 0.5) {
+                parameter /= 0.5;
+                parameter *= neutral;
+            } else {
+                parameter -= 0.5;
+                parameter /= 0.5;
+                parameter *= 1 - neutral;
+                parameter += neutral;
+            }
+        }
+        break;
+    case EffectManifestParameter::LinkType::LinkedLeft:
+        if (parameter >= 0.5 && parameter <= 1.0) {
+            parameter = 1;
+        } else if (parameter >= 0.0 && parameter <= 0.5) {
+            parameter *= 2;
+        } else {
+            return;
+        }
+        break;
+    case EffectManifestParameter::LinkType::LinkedRight:
+        if (parameter >= 0.5 && parameter <= 1.0) {
+            parameter -= 0.5;
+            parameter *= 2;
+        } else if (parameter >= 0.0 && parameter < 0.5) {
+            parameter = 0.0;
+        } else {
+            return;
+        }
+        break;
+    case EffectManifestParameter::LinkType::LinkedLeftRight:
+        if (parameter >= 0.5 && parameter <= 1.0) {
+            parameter -= 0.5;
+            parameter *= 2;
+        } else if (parameter >= 0.0 && parameter < 0.5) {
+            parameter *= 2;
             parameter = 1.0 - parameter;
+        } else {
+            return;
         }
+        break;
+    case EffectManifestParameter::LinkType::None:
+    default:
+        return;
+    }
 
-        //qDebug() << "onEffectMetaParameterChanged" << debugString() << parameter << "force?" << force;
-        if (force) {
-            m_pControlValue->setParameterFrom(parameter, nullptr);
-            // This ensures that softtakover is in sync for following updates
-            m_pMetaknobSoftTakeover->ignore(m_pControlValue.get(), parameter);
-        } else if (!m_pMetaknobSoftTakeover->ignore(m_pControlValue.get(), parameter)) {
-            m_pControlValue->setParameterFrom(parameter, nullptr);
-        }
+    if (inverse) {
+        parameter = 1.0 - parameter;
+    }
+
+    // qDebug() << "onEffectMetaParameterChanged" << debugString() << parameter
+    // << "force?" << force;
+    if (force) {
+        m_pControlValue->setParameterFrom(parameter, nullptr);
+        // This ensures that softtakover is in sync for following updates
+        m_metaknobSoftTakeover.ignore(*m_pControlValue, parameter);
+    } else if (!m_metaknobSoftTakeover.ignore(*m_pControlValue, parameter)) {
+        m_pControlValue->setParameterFrom(parameter, nullptr);
     }
 }
 
 void EffectKnobParameterSlot::syncSofttakeover() {
     double parameter = m_pControlValue->getParameter();
-    m_pMetaknobSoftTakeover->ignore(m_pControlValue.get(), parameter);
+    m_metaknobSoftTakeover.ignore(*m_pControlValue, parameter);
 }
 
 double EffectKnobParameterSlot::getValueParameter() const {
