@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QVarLengthArray>
 #include <atomic>
+#include <gsl/pointers>
 #include <memory>
 
 #include "audio/types.h"
@@ -54,7 +55,7 @@ class EngineMixer : public QObject, public AudioSource {
     }
 
     // Register the sound I/O that does not correspond to any EngineChannel object
-    void registerNonEngineChannelSoundIO(SoundManager* pSoundManager);
+    void registerNonEngineChannelSoundIO(gsl::not_null<SoundManager*> pSoundManager);
 
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when

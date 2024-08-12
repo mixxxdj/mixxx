@@ -197,8 +197,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_talkover.clear();
     m_talkoverHeadphones.clear();
     m_sidechainMix.clear();
-
-    // Setup the output buses
     for (auto& buffer : m_outputBusBuffers) {
         buffer.clear();
     }
@@ -1027,7 +1025,7 @@ void EngineMixer::onInputDisconnected(const AudioInput& input) {
     }
 }
 
-void EngineMixer::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
+void EngineMixer::registerNonEngineChannelSoundIO(gsl::not_null<SoundManager*> pSoundManager) {
     pSoundManager->registerInput(AudioInput(AudioPathType::RecordBroadcast,
                                          0,
                                          mixxx::audio::ChannelCount::stereo()),
