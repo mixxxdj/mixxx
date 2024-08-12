@@ -21,7 +21,7 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
                 "gain%(i)dout == CSAMPLE_GAIN_ZERO) {"
                     "pSrc%(i)d, gain%(i)din, gain%(i)dout" % {"i": j}
                 "(gain%(i)dout - gain%(i)din) / (iNumSamples / 2);"
-    MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
+    MOCK_METHOD(void, process, (CSAMPLE * pInOut, const int iBufferSize), (override));
     const QString kName3 = QStringLiteral("I'm blue, da ba dee");
     float m_k2vg; // IIF factor
     float m_k2vgNew; // IIF factor

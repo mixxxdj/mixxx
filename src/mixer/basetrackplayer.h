@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gsl/pointers>
 #include <memory>
 
 #include "engine/channels/enginechannel.h"
@@ -144,6 +145,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     EngineMixer* m_pEngineMixer;
     TrackPointer m_pLoadedTrack;
     TrackId m_pPrevFailedTrackId;
+    // non-owning reference. Owned by pMixingEngine.
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;

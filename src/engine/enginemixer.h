@@ -19,6 +19,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "util/parented_ptr.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 class EngineWorkerScheduler;
 class EngineVuMeter;
@@ -47,7 +48,7 @@ class EngineMixer : public QObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* buffer(const AudioOutput& output) const override;
+    std::span<const CSAMPLE> buffer(const AudioOutput& output) const override;
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
@@ -71,8 +72,7 @@ class EngineMixer : public QObject, public AudioSource {
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
-    // TODO: take std::unique_ptr<EngineChannel> instead.
-    void addChannel(EngineChannel* pChannel);
+    void addChannel(std::unique_ptr<EngineChannel> pChannel);
     EngineChannel* getChannel(const QString& group);
     static inline CSAMPLE_GAIN gainForOrientation(EngineChannel::ChannelOrientation orientation,
             CSAMPLE_GAIN leftGain,
@@ -95,13 +95,13 @@ class EngineMixer : public QObject, public AudioSource {
     }
 
     // These are really only exposed for tests to use.
-    const CSAMPLE* getMainBuffer() const;
-    const CSAMPLE* getBoothBuffer() const;
-    const CSAMPLE* getHeadphoneBuffer() const;
-    const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
-    const CSAMPLE* getDeckBuffer(unsigned int i) const;
-    const CSAMPLE* getChannelBuffer(const QString& name) const;
-    const CSAMPLE* getSidechainBuffer() const;
+    std::span<const CSAMPLE> getMainBuffer() const;
+    std::span<const CSAMPLE> getBoothBuffer() const;
+    std::span<const CSAMPLE> getHeadphoneBuffer() const;
+    std::span<const CSAMPLE> getOutputBusBuffer(unsigned int i) const;
+    std::span<const CSAMPLE> getDeckBuffer(unsigned int i) const;
+    std::span<const CSAMPLE> getChannelBuffer(const QString& name) const;
+    std::span<const CSAMPLE> getSidechainBuffer() const;
 
     EngineSideChain* getSideChain() const {
         return m_pEngineSideChain.get();

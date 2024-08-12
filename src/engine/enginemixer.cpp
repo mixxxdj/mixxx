@@ -213,20 +213,20 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
 
 EngineMixer::~EngineMixer() = default;
 
-const CSAMPLE* EngineMixer::getMainBuffer() const {
-    return m_main.data();
+std::span<const CSAMPLE> EngineMixer::getMainBuffer() const {
+    return m_main.span();
 }
 
-const CSAMPLE* EngineMixer::getBoothBuffer() const {
-    return m_booth.data();
+std::span<const CSAMPLE> EngineMixer::getBoothBuffer() const {
+    return m_booth.span();
 }
 
-const CSAMPLE* EngineMixer::getHeadphoneBuffer() const {
-    return m_head.data();
+std::span<const CSAMPLE> EngineMixer::getHeadphoneBuffer() const {
+    return m_head.span();
 }
 
-const CSAMPLE* EngineMixer::getSidechainBuffer() const {
-    return m_sidechainMix.data();
+std::span<const CSAMPLE> EngineMixer::getSidechainBuffer() const {
+    return m_sidechainMix.span();
 }
 
 void EngineMixer::processChannels(int iBufferSize) {
@@ -833,12 +833,12 @@ void EngineMixer::processHeadphones(
     m_headphoneGainOld = headphoneGain;
 }
 
-void EngineMixer::addChannel(EngineChannel* pChannel) {
+void EngineMixer::addChannel(std::unique_ptr<EngineChannel> pChannel) {
     auto pChannelInfo = std::make_unique<ChannelInfo>(m_channels.size());
     pChannel->setChannelIndex(pChannelInfo->m_index);
-    // take ownership of the pointer explicitly
-    pChannelInfo->m_pChannel.reset(pChannel);
     const QString& group = pChannel->getGroup();
+    // take ownership of the pointer explicitly
+    pChannelInfo->m_pChannel = std::move(pChannel);
     pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);
     pChannelInfo->m_pVolumeControl = std::make_unique<ControlAudioTaperPot>(
             ConfigKey(group, "volume"), -20, 0, 1);
@@ -888,27 +888,27 @@ CSAMPLE_GAIN EngineMixer::getMainGain(int channelIndex) const {
     return CSAMPLE_GAIN_ZERO;
 }
 
-const CSAMPLE* EngineMixer::getDeckBuffer(unsigned int i) const {
+std::span<const CSAMPLE> EngineMixer::getDeckBuffer(unsigned int i) const {
     return getChannelBuffer(PlayerManager::groupForDeck(i));
 }
 
-const CSAMPLE* EngineMixer::getOutputBusBuffer(unsigned int i) const {
+std::span<const CSAMPLE> EngineMixer::getOutputBusBuffer(unsigned int i) const {
     if (i <= EngineChannel::RIGHT) {
-        return m_outputBusBuffers[i].data();
+        return m_outputBusBuffers[i].span();
     }
-    return nullptr;
+    return {};
 }
 
-const CSAMPLE* EngineMixer::getChannelBuffer(const QString& group) const {
+std::span<const CSAMPLE> EngineMixer::getChannelBuffer(const QString& group) const {
     for (const auto& pChannelInfo : m_channels) {
         if (pChannelInfo->m_pChannel->getGroup() == group) {
-            return pChannelInfo->m_pBuffer.data();
+            return pChannelInfo->m_pBuffer.span();
         }
     }
-    return nullptr;
+    return {};
 }
 
-const CSAMPLE* EngineMixer::buffer(const AudioOutput& output) const {
+std::span<const CSAMPLE> EngineMixer::buffer(const AudioOutput& output) const {
     switch (output.getType()) {
     case AudioPathType::Main:
         return getMainBuffer();
@@ -929,7 +929,7 @@ const CSAMPLE* EngineMixer::buffer(const AudioOutput& output) const {
         return getSidechainBuffer();
         break;
     default:
-        return nullptr;
+        return {};
     }
 }
 
