@@ -727,6 +727,45 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
+            const QVariant keyCodeValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            if (keyCodeValue.isNull()) {
+                return QVariant();
+            }
+            bool ok;
+            const auto keyCode = keyCodeValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            const auto key = KeyUtils::keyFromNumericValue(keyCode);
+
+            const QVariant rawBpm = rawSiblingValue(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+            mixxx::Bpm bpm;
+            if (rawBpm.isNull()) {
+                return QVariant();
+            }
+            if (rawBpm.canConvert<mixxx::Bpm>()) {
+                bpm = rawBpm.value<mixxx::Bpm>();
+            } else {
+                VERIFY_OR_DEBUG_ASSERT(rawBpm.canConvert<double>()) {
+                    return QVariant();
+                }
+                bool ok;
+                const auto bpmValue = rawBpm.toDouble(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok) {
+                    return QVariant();
+                }
+                bpm = mixxx::Bpm(bpmValue);
+            }
+
+            const auto targetKey = KeyUtils::tonicToKey(0, true);
+            const auto targetBpm = mixxx::Bpm(100);
+
+            const auto similarity = KeyUtils::trackSimilarity(targetKey, targetBpm, key, bpm);
+            return QVariant(similarity);
+        }
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
