@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QMimeType>
 
 #include "sources/soundsourceproviderregistry.h"
@@ -201,7 +203,7 @@ class SoundSourceProxy {
     static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
-    friend class TrackMetadataExportTest_keepWithespaceKey_Test;
+    FRIEND_TEST(TrackMetadataExportTest, keepWithespaceKey);
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             const SyncTrackMetadataParams& syncParams);
