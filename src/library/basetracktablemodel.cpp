@@ -727,6 +727,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+#ifdef __TRACKSIMILARITY__
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             const QVariant keyCodeValue = rawSiblingValue(
                     index,
@@ -766,6 +767,7 @@ QVariant BaseTrackTableModel::roleValue(
             const auto similarity = KeyUtils::trackSimilarity(targetKey, targetBpm, key, bpm);
             return QVariant(similarity);
         }
+#endif
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
