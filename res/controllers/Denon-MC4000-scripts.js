@@ -117,7 +117,7 @@ MC4000.Deck = function (channel) {
     // adds this jog value to an internal 25 sample buffer, and then sets the jog value to zero.
     // The engine takes the average of the 25 sample buffer, divides by 10, and adds this to the rate at
     // which the song is playing (e.g. determined by the pitch fader). Since the effect of this depends on many factors
-    // we can only really give an empirical senstivity which makes jog work "how we like it".
+    // we can only really give an empirical sensitivity which makes jog work "how we like it".
     this.jogWheel = function (channel, control, value, status, group) {
         var numTicks = (value < 0x40) ? value: (value - 0x80);
         if (engine.isScratching(this.engineChannel)) {

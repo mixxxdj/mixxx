@@ -179,7 +179,7 @@ class Track : public QObject {
 
     // Returns the content of the year library column.
     // This was original only the four digit (gregorian) calendar year of the release date
-    // but allows to store any user string. Now it is altenatively used as
+    // but allows to store any user string. Now it is alternatively used as
     // recording date/time in the ISO 8601 yyyy-MM-ddTHH:mm:ss format tunkated at any point,
     // following the TDRC ID3v2.4 frame or if not exists, TYER + TDAT.
     QString getYear() const;

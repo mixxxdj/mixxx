@@ -447,7 +447,7 @@ midi_for_light.volumeBeatOnDelay = function() { // allow deck change with volume
     midi_for_light.volumebeat = true;
 };
 
-midi_for_light.crossfaderChange = function() { // crossfader chenge, check deck change
+midi_for_light.crossfaderChange = function() { // crossfader change, check deck change
     // if fader prevent, go out
     if (midi_for_light.crossfader_block === true) return;
 
