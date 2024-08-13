@@ -1,5 +1,6 @@
 #include "engine/enginemixer.h"
 
+#include "audio/types.h"
 #include "control/controlaudiotaperpot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -143,29 +144,28 @@ EngineMixer::EngineMixer(
     m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
 
     // Allocate buffers
-    m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pMain = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pBooth = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pTalkover = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pTalkoverHeadphones = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pSidechainMix = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pMain, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pBooth, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pTalkover, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pTalkoverHeadphones, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pSidechainMix, MAX_BUFFER_LEN);
+    m_head = mixxx::SampleBuffer(kMaxEngineSamples);
+    m_main = mixxx::SampleBuffer(kMaxEngineSamples);
+    m_booth = mixxx::SampleBuffer(kMaxEngineSamples);
+    m_talkover = mixxx::SampleBuffer(kMaxEngineSamples);
+    m_talkoverHeadphones = mixxx::SampleBuffer(kMaxEngineSamples);
+    m_sidechainMix = mixxx::SampleBuffer(kMaxEngineSamples);
+    m_head.clear();
+    m_main.clear();
+    m_booth.clear();
+    m_talkover.clear();
+    m_talkoverHeadphones.clear();
+    m_sidechainMix.clear();
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
-        m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
-        SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
+        m_outputBusBuffers[o] = mixxx::SampleBuffer(kMaxEngineSamples);
+        m_outputBusBuffers[o].clear();
     }
 
     // Starts a thread for recording and broadcast
     m_pEngineSideChain =
-            bEnableSidechain ?
-                    new EngineSideChain(pConfig, m_pSidechainMix) : nullptr;
+            bEnableSidechain ? new EngineSideChain(pConfig, m_sidechainMix.data()) : nullptr;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
@@ -183,8 +183,9 @@ EngineMixer::EngineMixer(
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")));
-    m_pKeylockEngine->set(pConfig->getValue(ConfigKey(group, "keylock_engine"),
-            static_cast<double>(EngineBuffer::defaultKeylockEngine())));
+    m_pKeylockEngine->set(static_cast<double>(
+            pConfig->getValue(ConfigKey(group, "keylock_engine"),
+                    EngineBuffer::defaultKeylockEngine())));
 
     // TODO: Make this read only and make EngineMixer decide whether
     // processing the main mix is necessary.
@@ -242,21 +243,10 @@ EngineMixer::~EngineMixer() {
     delete m_pMicMonitorMode;
     delete m_pHeadphoneEnabled;
 
-    SampleUtil::free(m_pHead);
-    SampleUtil::free(m_pMain);
-    SampleUtil::free(m_pBooth);
-    SampleUtil::free(m_pTalkover);
-    SampleUtil::free(m_pTalkoverHeadphones);
-    SampleUtil::free(m_pSidechainMix);
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        SampleUtil::free(m_pOutputBusBuffers[o]);
-    }
-
     delete m_pWorkerScheduler;
 
     for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
-        SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo->m_pMuteControl;
@@ -265,19 +255,19 @@ EngineMixer::~EngineMixer() {
 }
 
 const CSAMPLE* EngineMixer::getMainBuffer() const {
-    return m_pMain;
+    return m_main.data();
 }
 
 const CSAMPLE* EngineMixer::getBoothBuffer() const {
-    return m_pBooth;
+    return m_booth.data();
 }
 
 const CSAMPLE* EngineMixer::getHeadphoneBuffer() const {
-    return m_pHead;
+    return m_head.data();
 }
 
 const CSAMPLE* EngineMixer::getSidechainBuffer() const {
-    return m_pSidechainMix;
+    return m_sidechainMix.data();
 }
 
 void EngineMixer::processChannels(int iBufferSize) {
@@ -291,7 +281,7 @@ void EngineMixer::processChannels(int iBufferSize) {
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
-    // ScopedTimer timer("EngineMixer::processChannels");
+    // ScopedTimer timer(QStringLiteral("EngineMixer::processChannels"));
     EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the main channel which
     // should be processed first
@@ -373,7 +363,8 @@ void EngineMixer::processChannels(int iBufferSize) {
              i < m_activeChannels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-        pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
+        DEBUG_ASSERT(pChannelInfo->m_pBuffer.size() >= iBufferSize);
+        pChannel->process(pChannelInfo->m_pBuffer.data(), iBufferSize);
 
         // Collect metadata for effects
         if (m_pEngineEffectsManager) {
@@ -409,6 +400,8 @@ void EngineMixer::processChannels(int iBufferSize) {
 }
 
 void EngineMixer::process(const int iBufferSize) {
+    DEBUG_ASSERT(iBufferSize <= static_cast<int>(kMaxEngineSamples));
+
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
@@ -455,10 +448,10 @@ void EngineMixer::process(const int iBufferSize) {
                 m_headphoneGain,
                 m_activeHeadphoneChannels,
                 &m_channelHeadphoneGainCache,
-                m_pHead,
+                m_head.data(),
                 m_headphoneHandle.handle(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 m_pEngineEffectsManager);
 
         // Process headphone channel effects
@@ -476,9 +469,9 @@ void EngineMixer::process(const int iBufferSize) {
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_headphoneHandle.handle(),
                     m_headphoneHandle.handle(),
-                    m_pHead,
+                    m_head.data(),
                     iBufferSize,
-                    static_cast<int>(m_sampleRate.value()),
+                    m_sampleRate,
                     headphoneFeatures);
         }
     }
@@ -489,10 +482,10 @@ void EngineMixer::process(const int iBufferSize) {
             m_talkoverGain,
             m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
-            m_pTalkover,
+            m_talkover.data(),
             m_mainHandle.handle(),
             iBufferSize,
-            static_cast<int>(m_sampleRate.value()),
+            m_sampleRate,
             m_pEngineEffectsManager);
 
     // Process effects on all microphones mixed together
@@ -502,9 +495,9 @@ void EngineMixer::process(const int iBufferSize) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busTalkoverHandle.handle(),
                 m_mainHandle.handle(),
-                m_pTalkover,
+                m_talkover.data(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -516,7 +509,7 @@ void EngineMixer::process(const int iBufferSize) {
         m_pTalkoverDucking->setAboveThreshold(false);
         break;
     case EngineTalkoverDucking::AUTO:
-        m_pTalkoverDucking->processKey(m_pTalkover, iBufferSize);
+        m_pTalkoverDucking->processKey(m_talkover.data(), iBufferSize);
         break;
     case EngineTalkoverDucking::MANUAL:
         m_pTalkoverDucking->setAboveThreshold(!m_activeTalkoverChannels.isEmpty());
@@ -549,10 +542,10 @@ void EngineMixer::process(const int iBufferSize) {
                 m_activeBusChannels[o],
                 &m_channelMainGainCache, // no [o] because the old gain
                                          // follows an orientation switch
-                m_pOutputBusBuffers[o],
+                m_outputBusBuffers[o].data(),
                 m_mainHandle.handle(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 m_pEngineEffectsManager);
     }
 
@@ -561,9 +554,9 @@ void EngineMixer::process(const int iBufferSize) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderLeftHandle.handle(),
                 m_mainHandle.handle(),
-                m_pOutputBusBuffers[EngineChannel::LEFT],
+                m_outputBusBuffers[EngineChannel::LEFT].data(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -571,9 +564,9 @@ void EngineMixer::process(const int iBufferSize) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderCenterHandle.handle(),
                 m_mainHandle.handle(),
-                m_pOutputBusBuffers[EngineChannel::CENTER],
+                m_outputBusBuffers[EngineChannel::CENTER].data(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -581,9 +574,9 @@ void EngineMixer::process(const int iBufferSize) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderRightHandle.handle(),
                 m_mainHandle.handle(),
-                m_pOutputBusBuffers[EngineChannel::RIGHT],
+                m_outputBusBuffers[EngineChannel::RIGHT].data(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -592,12 +585,12 @@ void EngineMixer::process(const int iBufferSize) {
 
     if (mainEnabled) {
         // Mix the crossfader orientation buffers together into the main mix
-        SampleUtil::copy3WithGain(m_pMain,
-                m_pOutputBusBuffers[EngineChannel::LEFT],
+        SampleUtil::copy3WithGain(m_main.data(),
+                m_outputBusBuffers[EngineChannel::LEFT].data(),
                 1.0,
-                m_pOutputBusBuffers[EngineChannel::CENTER],
+                m_outputBusBuffers[EngineChannel::CENTER].data(),
                 1.0,
-                m_pOutputBusBuffers[EngineChannel::RIGHT],
+                m_outputBusBuffers[EngineChannel::RIGHT].data(),
                 1.0,
                 iBufferSize);
 
@@ -624,8 +617,8 @@ void EngineMixer::process(const int iBufferSize) {
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(
-                        m_pBooth,
-                        m_pMain,
+                        m_booth.data(),
+                        m_main.data(),
                         m_boothGainOld,
                         boothGain,
                         iBufferSize);
@@ -634,17 +627,17 @@ void EngineMixer::process(const int iBufferSize) {
 
             // Mix talkover into main mix
             if (m_numMicsConfigured > 0) {
-                SampleUtil::add(m_pMain, m_pTalkover, iBufferSize);
+                SampleUtil::add(m_main.data(), m_talkover.data(), iBufferSize);
             }
 
             // Apply main gain
             CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
-            SampleUtil::applyRampingGain(m_pMain, m_mainGainOld, mainGain, iBufferSize);
+            SampleUtil::applyRampingGain(m_main.data(), m_mainGainOld, mainGain, iBufferSize);
             m_mainGainOld = mainGain;
 
             // Record/broadcast signal is the same as the main output
             if (sidechainMixRequired()) {
-                SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
+                m_sidechainMix.copy(m_main, iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
             // Process main channel effects
@@ -661,15 +654,15 @@ void EngineMixer::process(const int iBufferSize) {
 
             // Mix talkover with main
             if (m_numMicsConfigured > 0) {
-                SampleUtil::add(m_pMain, m_pTalkover, iBufferSize);
+                SampleUtil::add(m_main.data(), m_talkover.data(), iBufferSize);
             }
 
             // Copy main mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(
-                        m_pBooth,
-                        m_pMain,
+                        m_booth.data(),
+                        m_main.data(),
                         m_boothGainOld,
                         boothGain,
                         iBufferSize);
@@ -679,7 +672,7 @@ void EngineMixer::process(const int iBufferSize) {
             // Apply main gain
             CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(
-                    m_pMain,
+                    m_main.data(),
                     m_mainGainOld,
                     mainGain,
                     iBufferSize);
@@ -687,7 +680,7 @@ void EngineMixer::process(const int iBufferSize) {
 
             // Record/broadcast signal is the same as the main output
             if (sidechainMixRequired()) {
-                SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
+                m_sidechainMix.copy(m_main, iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DirectMonitor) {
             // Skip mixing talkover with the main and booth outputs
@@ -699,8 +692,8 @@ void EngineMixer::process(const int iBufferSize) {
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(
-                        m_pBooth,
-                        m_pMain,
+                        m_booth.data(),
+                        m_main.data(),
                         m_boothGainOld,
                         boothGain,
                         iBufferSize);
@@ -720,13 +713,13 @@ void EngineMixer::process(const int iBufferSize) {
             // Apply main gain
             CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(
-                    m_pMain,
+                    m_main.data(),
                     m_mainGainOld,
                     mainGain,
                     iBufferSize);
             m_mainGainOld = mainGain;
             if (sidechainMixRequired()) {
-                SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
+                m_sidechainMix.copy(m_main, iBufferSize);
 
                 if (m_numMicsConfigured > 0) {
                     // The talkover signal Mixxx receives is delayed by the round trip latency.
@@ -747,8 +740,8 @@ void EngineMixer::process(const int iBufferSize) {
 
                     // Copy the main mix to a separate buffer before delaying it
                     // to avoid delaying the main output.
-                    m_pLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
-                    SampleUtil::add(m_pSidechainMix, m_pTalkover, iBufferSize);
+                    m_pLatencyCompensationDelay->process(m_sidechainMix.data(), iBufferSize);
+                    SampleUtil::add(m_sidechainMix.data(), m_talkover.data(), iBufferSize);
                 }
             }
         }
@@ -761,7 +754,7 @@ void EngineMixer::process(const int iBufferSize) {
         // EngineSideChain::receiveBuffer has copied the input buffer to m_pSidechainMix
         // via before (called by SoundManager::pushInputBuffers())
         if (m_pEngineSideChain) {
-            m_pEngineSideChain->writeSamples(m_pSidechainMix, iFrames);
+            m_pEngineSideChain->writeSamples(m_sidechainMix.data(), iFrames);
         }
 
         // Process effects that apply to main hardware output only but not
@@ -773,9 +766,9 @@ void EngineMixer::process(const int iBufferSize) {
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_mainOutputHandle.handle(),
                     m_mainHandle.handle(),
-                    m_pMain,
+                    m_main.data(),
                     iBufferSize,
-                    static_cast<int>(m_sampleRate.value()),
+                    m_sampleRate,
                     mainFeatures);
         }
 
@@ -790,7 +783,7 @@ void EngineMixer::process(const int iBufferSize) {
         }
 
         // Perform balancing on main out
-        SampleUtil::applyRampingAlternatingGain(m_pMain,
+        SampleUtil::applyRampingAlternatingGain(m_main.data(),
                 balleft,
                 balright,
                 m_balleftOld,
@@ -803,24 +796,24 @@ void EngineMixer::process(const int iBufferSize) {
         // Update VU meter (it does not return anything). Needs to be here so that
         // main balance and talkover is reflected in the VU meter.
         if (m_pVumeter != nullptr) {
-            m_pVumeter->process(m_pMain, iBufferSize);
+            m_pVumeter->process(m_main.data(), iBufferSize);
         }
     }
 
     if (m_pMainMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_pMain, iBufferSize);
+        SampleUtil::mixStereoToMono(m_main.data(), iBufferSize);
     }
 
     if (mainEnabled) {
-        m_pMainDelay->process(m_pMain, iBufferSize);
+        m_pMainDelay->process(m_main.data(), iBufferSize);
     } else {
-        SampleUtil::clear(m_pMain, iBufferSize);
+        m_main.clear(iBufferSize);
     }
     if (headphoneEnabled) {
-        m_pHeadDelay->process(m_pHead, iBufferSize);
+        m_pHeadDelay->process(m_head.data(), iBufferSize);
     }
     if (boothEnabled) {
-        m_pBoothDelay->process(m_pBooth, iBufferSize);
+        m_pBoothDelay->process(m_booth.data(), iBufferSize);
     }
 
     // We're close to the end of the callback. Wake up the engine worker
@@ -836,9 +829,9 @@ void EngineMixer::applyMainEffects(int bufferSize) {
         mainFeatures.gain = m_pMainGain->get();
         m_pEngineEffectsManager->processPostFaderInPlace(m_mainHandle.handle(),
                 m_mainHandle.handle(),
-                m_pMain,
+                m_main.data(),
                 bufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 mainFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -851,8 +844,8 @@ void EngineMixer::processHeadphones(
         int iBufferSize) {
     // Add main mix to headphones
     SampleUtil::addWithRampingGain(
-            m_pHead,
-            m_pMain,
+            m_head.data(),
+            m_main.data(),
             m_headphoneMainGainOld,
             mainMixGainInHeadphones,
             iBufferSize);
@@ -864,16 +857,18 @@ void EngineMixer::processHeadphones(
     if (m_pHeadSplitEnabled->toBool()) {
         // note: NOT VECTORIZED because of in place copy
         // with all compilers, except clang >= 14.
+        auto* const ph = m_head.data();
+        auto* const pm = m_main.data();
         for (SINT i = 0; i + 1 < iBufferSize; i += 2) {
-            m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
-            m_pHead[i + 1] = (m_pMain[i] + m_pMain[i + 1]) / 2;
+            ph[i] = (ph[i] + ph[i + 1]) / 2;
+            ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
         }
     }
 
     // Apply headphone gain
     CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain->get());
     SampleUtil::applyRampingGain(
-            m_pHead,
+            m_head.data(),
             m_headphoneGainOld,
             headphoneGain,
             iBufferSize);
@@ -893,8 +888,8 @@ void EngineMixer::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pMuteControl = new ControlPushButton(
             ConfigKey(group, "mute"));
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
-    pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
+    pChannelInfo->m_pBuffer = mixxx::SampleBuffer(kMaxEngineSamples);
+    pChannelInfo->m_pBuffer.clear();
     m_channels.append(pChannelInfo);
     constexpr GainCache gainCacheDefault = {0, false};
     m_channelHeadphoneGainCache.append(gainCacheDefault);
@@ -918,8 +913,7 @@ void EngineMixer::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMixer::getChannel(const QString& group) {
-    for (int i = 0; i < m_channels.size(); ++i) {
-        ChannelInfo* pChannelInfo = m_channels[i];
+    for (const ChannelInfo* pChannelInfo : m_channels) {
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
         }
@@ -940,16 +934,15 @@ const CSAMPLE* EngineMixer::getDeckBuffer(unsigned int i) const {
 
 const CSAMPLE* EngineMixer::getOutputBusBuffer(unsigned int i) const {
     if (i <= EngineChannel::RIGHT) {
-        return m_pOutputBusBuffers[i];
+        return m_outputBusBuffers[i].data();
     }
     return nullptr;
 }
 
 const CSAMPLE* EngineMixer::getChannelBuffer(const QString& group) const {
-    for (int i = 0; i < m_channels.size(); ++i) {
-        const ChannelInfo* pChannelInfo = m_channels[i];
+    for (const ChannelInfo* pChannelInfo : m_channels) {
         if (pChannelInfo->m_pChannel->getGroup() == group) {
-            return pChannelInfo->m_pBuffer;
+            return pChannelInfo->m_pBuffer.data();
         }
     }
     return nullptr;
@@ -1073,16 +1066,35 @@ void EngineMixer::onInputDisconnected(const AudioInput& input) {
 }
 
 void EngineMixer::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
-    pSoundManager->registerInput(AudioInput(AudioPathType::RecordBroadcast, 0, 2),
+    pSoundManager->registerInput(AudioInput(AudioPathType::RecordBroadcast,
+                                         0,
+                                         mixxx::audio::ChannelCount::stereo()),
             m_pEngineSideChain);
 
-    pSoundManager->registerOutput(AudioOutput(AudioPathType::Main, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioPathType::Headphones, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioPathType::Booth, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::Main,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::Headphones,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::Booth,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        pSoundManager->registerOutput(AudioOutput(AudioPathType::Bus, 0, 2, o), this);
+        pSoundManager->registerOutput(
+                AudioOutput(AudioPathType::Bus,
+                        0,
+                        mixxx::audio::ChannelCount::stereo(),
+                        o),
+                this);
     }
-    pSoundManager->registerOutput(AudioOutput(AudioPathType::RecordBroadcast, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::RecordBroadcast,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
 }
 
 bool EngineMixer::sidechainMixRequired() const {

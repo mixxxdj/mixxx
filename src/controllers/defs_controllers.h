@@ -25,5 +25,4 @@ inline QString userMappingsPath(UserSettingsPointer pConfig) {
 #define HID_MAPPING_EXTENSION ".hid.xml"
 #define MIDI_MAPPING_EXTENSION ".midi.xml"
 #define BULK_MAPPING_EXTENSION ".bulk.xml"
-#define REQUIRED_SCRIPT_FILE "common-controller-scripts.js"
 #define XML_SCHEMA_VERSION "1"

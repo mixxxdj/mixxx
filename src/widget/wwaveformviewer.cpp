@@ -102,7 +102,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         if (!isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
-                m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
+                m_pCueMenuPopup->setTrackCueGroup(currentTrack, cueAtClickPos, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_pCueMenuPopup->popup(event->globalPosition().toPoint());
 #else
@@ -303,7 +303,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 #endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type
-        if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
+        if (m_waveformWidget->getType() == WaveformWidgetType::Empty) {
             return;
         }
         connect(this,

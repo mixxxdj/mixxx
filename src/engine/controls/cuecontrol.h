@@ -35,6 +35,7 @@ enum class SeekOnLoadMode {
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
     IntroStart = 3, // Use intro start cue point
+    FirstHotcue = 4,
 };
 
 /// Used for requesting a specific hotcue type when activating/setting a

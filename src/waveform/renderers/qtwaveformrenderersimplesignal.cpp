@@ -23,12 +23,12 @@ void QtWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 
     QColor borderColor = m_pColors->getSignalColor().lighter(125);
-    borderColor.setAlphaF(0.5);
+    borderColor.setAlphaF(0.5f);
     m_borderPen.setColor(borderColor);
-    m_borderPen.setWidthF(1.25);
+    m_borderPen.setWidthF(1.25f);
 
     QColor signalColor = m_pColors->getSignalColor();
-    signalColor.setAlphaF(0.8);
+    signalColor.setAlphaF(0.8f);
     m_brush = QBrush(signalColor);
 }
 

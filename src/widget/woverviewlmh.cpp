@@ -18,7 +18,7 @@ WOverviewLMH::WOverviewLMH(
 }
 
 bool WOverviewLMH::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewLMH::drawNextPixmapPart");
+    ScopedTimer t(QStringLiteral("WOverviewLMH::drawNextPixmapPart"));
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 

@@ -5,6 +5,7 @@
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 
 namespace {
@@ -43,7 +44,12 @@ void Controller::startEngine()
         qCWarning(m_logBase) << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this, m_logBase);
+    m_pScriptEngineLegacy = std::make_shared<ControllerScriptEngineLegacy>(this, m_logBase);
+    QObject::connect(m_pScriptEngineLegacy.get(),
+            &ControllerScriptEngineBase::beforeShutdown,
+            this,
+            &Controller::slotBeforeEngineShutdown);
+    emit engineStarted(m_pScriptEngineLegacy.get());
 }
 
 void Controller::stopEngine() {
@@ -52,11 +58,11 @@ void Controller::stopEngine() {
         qCWarning(m_logBase) << "Controller::stopEngine(): No engine exists!";
         return;
     }
-    delete m_pScriptEngineLegacy;
-    m_pScriptEngineLegacy = nullptr;
+    m_pScriptEngineLegacy.reset();
+    emit engineStopped();
 }
 
-bool Controller::applyMapping() {
+bool Controller::applyMapping(const QString& resourcePath) {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
     const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
@@ -76,6 +82,15 @@ bool Controller::applyMapping() {
     }
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+
+    m_pScriptEngineLegacy->setSettings(pMapping->getSettings());
+#ifdef MIXXX_USE_QML
+    m_pScriptEngineLegacy->setModulePaths(pMapping->getModules());
+    m_pScriptEngineLegacy->setInfoScreens(pMapping->getInfoScreens());
+    m_pScriptEngineLegacy->setResourcePath(resourcePath);
+#else
+    Q_UNUSED(resourcePath);
+#endif
     return m_pScriptEngineLegacy->initialize();
 }
 
@@ -122,7 +137,9 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (m_logInput().isDebugEnabled()) {
+    if (CmdlineArgs::Instance()
+                    .getControllerDebug() &&
+            m_logInput().isDebugEnabled()) {
         // Formatted packet display
         QString message = QString("t:%2, %3 bytes:\n")
                                   .arg(timestamp.formatMillisWithUnit(),
@@ -146,4 +163,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     }
 
     m_pScriptEngineLegacy->handleIncomingData(data);
+}
+void Controller::slotBeforeEngineShutdown() {
+    /* Override this to get called before the JS engine shuts down */
+    qCDebug(m_logInput) << "Engine shutdown";
 }

@@ -5,6 +5,9 @@
 #include <QRegularExpression>
 #include <QtDebug>
 
+#include "util/color/colorpalette.h"
+#include "util/color/predefinedcolorpalettes.h"
+#include "util/color/rgbcolor.h"
 #include "util/compatibility/qmutex.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -463,6 +466,19 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 }
 
 // static
+QColor KeyUtils::keyToColor(ChromaticKey key, const ColorPalette& palette) {
+    int openKeyNumber = keyToOpenKeyNumber(key);
+
+    if (openKeyNumber != 0) {
+        DEBUG_ASSERT(openKeyNumber <= palette.size() && openKeyNumber >= 1);
+        const auto rgbColor = palette.at(openKeyNumber - 1); // Open Key numbers start from 1
+        return mixxx::RgbColor::toQColor(rgbColor);
+    } else {
+        return {}; // return invalid color
+    }
+}
+
+// static
 QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double octave_change) {
     // Convert the octave_change from percentage of octave to the nearest
     // integer of key changes. We need the rounding to be in the same direction
@@ -508,7 +524,7 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-        const KeyChangeList& key_changes, SINT totalFrames, int iSampleRate) {
+        const KeyChangeList& key_changes, SINT totalFrames, mixxx::audio::SampleRate sampleRate) {
     if (key_changes.size() == 1) {
         qDebug() << keyDebugName(key_changes[0].first);
         return key_changes[0].first;
@@ -530,7 +546,7 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     qDebug() << "Key Histogram";
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
-        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / iSampleRate;
+        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / sampleRate;
         if (it.value() > max_delta) {
             max_key = it.key();
             max_delta = it.value();

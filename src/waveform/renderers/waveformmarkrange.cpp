@@ -122,7 +122,7 @@ void WaveformMarkRange::generateImage(int weidth, int height) {
     m_disabledImage.fill(QColor(0,0,0,0).rgba());
 
     QColor activeColor = m_activeColor;
-    activeColor.setAlphaF(0.3);
+    activeColor.setAlphaF(0.3f);
     QBrush brush(activeColor);
 
     QPainter painter;
@@ -131,7 +131,7 @@ void WaveformMarkRange::generateImage(int weidth, int height) {
     painter.end();
 
     QColor disabledColor = m_disabledColor;
-    disabledColor.setAlphaF(0.3);
+    disabledColor.setAlphaF(0.3f);
     brush = QBrush(disabledColor);
 
     painter.begin(&m_disabledImage);

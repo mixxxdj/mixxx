@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QStack>
 #include <QUrl>
 #include <memory>
 
@@ -10,11 +11,16 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#ifdef __STEM__
+#include "track/steminfo.h"
+#include "track/steminfoimporter.h"
+#endif
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
+#include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {
@@ -105,7 +111,7 @@ class Track : public QObject {
     QString getType() const;
 
     // Get number of channels
-    int getChannels() const;
+    mixxx::audio::ChannelCount getChannels() const;
 
     mixxx::audio::SampleRate getSampleRate() const;
 
@@ -326,6 +332,21 @@ class Track : public QObject {
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
+#ifdef __STEM__
+    QList<StemInfo> getStemInfo() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return m_stemInfo;
+    }
+    // Setter is only available internally. See setStemPointsWhileLocked
+
+    bool hasStem() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return !m_stemInfo.isEmpty();
+    }
+#endif
+
     enum class ImportStatus {
         Pending,
         Complete,
@@ -347,6 +368,11 @@ class Track : public QObject {
     // Set the track's Beats if not locked
     bool trySetBeats(mixxx::BeatsPointer pBeats);
     bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
+
+    void undoBeatsChange();
+    bool canUndoBeatsChange() const {
+        return !m_pBeatsUndoStack.isEmpty();
+    }
 
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!
@@ -425,6 +451,7 @@ class Track : public QObject {
     void trackTotalChanged(const QString&);
     void commentChanged(const QString&);
     void bpmChanged();
+    void bpmLockChanged(bool locked);
     void keyChanged();
     void timesPlayedChanged();
     void durationChanged();
@@ -441,6 +468,9 @@ class Track : public QObject {
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void ratingUpdated(int rating);
     void cuesUpdated();
+#ifdef __STEM__
+    void stemsUpdated();
+#endif
     void loopRemove();
     void analyzed();
 
@@ -494,6 +524,17 @@ class Track : public QObject {
     /// indicate if cues were updated. Only supposed to be called while the
     /// caller guards this a lock.
     bool importPendingCueInfosWhileLocked();
+
+#ifdef __STEM__
+    /// Sets stem info and returns a boolean to indicate if stems were updated.
+    /// Only supposed to be called while the caller guards this a lock.
+    bool setStemInfosWhileLocked(QList<StemInfo> stemInfo);
+
+    /// Imports pending stem info from a stemInfoImporter and returns a boolean to
+    /// indicate if stems were updated. Only supposed to be called while the
+    /// caller guards this a lock.
+    bool importPendingStemInfosWhileLocked();
+#endif
 
     mixxx::Bpm getBpmWhileLocked() const;
     bool trySetBpmWhileLocked(mixxx::Bpm bpm);
@@ -559,8 +600,16 @@ class Track : public QObject {
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
 
+#ifdef __STEM__
+    // The list of stem info
+    QList<StemInfo> m_stemInfo;
+#endif
+
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;
+    QStack<mixxx::BeatsPointer> m_pBeatsUndoStack;
+    bool m_undoingBeatsChange;
+    PerformanceTimer m_beatChangeTimer;
 
     // Visual waveform data
     ConstWaveformPointer m_waveform;

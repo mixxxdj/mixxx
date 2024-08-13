@@ -46,10 +46,6 @@ BrowseFeature::BrowseFeature(
           m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)),
           m_pLastRightClickedItem(nullptr) {
-    connect(this,
-            &BrowseFeature::requestAddDir,
-            pLibrary,
-            &Library::slotRequestAddDir);
     connect(&m_browseModel,
             &BrowseTableModel::restoreModelState,
             this,
@@ -72,6 +68,12 @@ BrowseFeature::BrowseFeature(
             &QAction::triggered,
             this,
             &BrowseFeature::slotAddToLibrary);
+
+    m_pRefreshDirTreeAction = new QAction(tr("Refresh directory tree"), this);
+    connect(m_pRefreshDirTreeAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotRefreshDirectoryTree);
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -178,7 +180,9 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit requestAddDir(spath);
+    if (!m_pLibrary->requestAddDir(spath)) {
+        return;
+    }
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -224,6 +228,24 @@ void BrowseFeature::slotRemoveQuickLink() {
 
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
+}
+
+void BrowseFeature::slotRefreshDirectoryTree() {
+    if (!m_pLastRightClickedItem) {
+        return;
+    }
+
+    const auto* pItem = m_pLastRightClickedItem;
+    if (!pItem->getData().isValid()) {
+        return;
+    }
+
+    const QString path = pItem->getData().toString();
+    m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
+
+    // Update child items
+    const QModelIndex index = m_pSidebarModel->index(pItem->parentRow(), 0);
+    onLazyChildExpandation(index);
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
@@ -303,28 +325,29 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     QMenu menu(m_pSidebarWidget);
 
-    // If this a QuickLink show only the Remove action
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
+        // This is a QuickLink
         menu.addAction(m_pRemoveQuickLinkAction);
+        menu.addAction(m_pRefreshDirTreeAction);
         menu.exec(globalPos);
         onLazyChildExpandation(index);
         return;
     }
 
-    // If path is in the QuickLinks list show only the Remove action
-    foreach (const QString& str, m_quickLinkList) {
-        if (str == path) {
-            menu.addAction(m_pRemoveQuickLinkAction);
-            menu.exec(globalPos);
-            onLazyChildExpandation(index);
-            return;
-        }
-     }
+    if (m_quickLinkList.contains(path)) {
+        // Path is in the Quick Link list
+        menu.addAction(m_pRemoveQuickLinkAction);
+        menu.addAction(m_pRefreshDirTreeAction);
+        menu.exec(globalPos);
+        onLazyChildExpandation(index);
+        return;
+    }
 
-     menu.addAction(m_pAddQuickLinkAction);
-     menu.addAction(m_pAddtoLibraryAction);
-     menu.exec(globalPos);
-     onLazyChildExpandation(index);
+    menu.addAction(m_pAddQuickLinkAction);
+    menu.addAction(m_pAddtoLibraryAction);
+    menu.addAction(m_pRefreshDirTreeAction);
+    menu.exec(globalPos);
+    onLazyChildExpandation(index);
 }
 
 namespace {
@@ -423,34 +446,44 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 #endif
         folders = createRemovableDevices();
     } else {
-        // we assume that the path refers to a folder in the file system
-        // populate children
-        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
-
-        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
-                QDir::Dirs | QDir::NoDotAndDotDot);
-
-        // loop through all the item and construct the children
-        foreach (QFileInfo one, all) {
-            // Skip folders that end with .app on OS X
-#if defined(__APPLE__)
-            if (one.isDir() && one.fileName().endsWith(".app"))
-                continue;
-#endif
-            // We here create new items for the sidebar models
-            // Once the items are added to the TreeItemModel,
-            // the models takes ownership of them and ensures their deletion
-            folders.push_back(std::make_unique<TreeItem>(
-                    one.fileName(),
-                    QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
-        }
+        folders = getChildDirectoryItems(path);
     }
-    // we need to check here if subfolders are found
-    // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
-    // has no subfolders
+
     if (!folders.empty()) {
         m_pSidebarModel->insertTreeItemRows(std::move(folders), 0, index);
     }
+}
+
+std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
+        const QString& path) const {
+    std::vector<std::unique_ptr<TreeItem>> items;
+
+    if (path.isEmpty()) {
+        return items;
+    }
+    // we assume that the path refers to a folder in the file system
+    // populate children
+    const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+
+    QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+            QDir::Dirs | QDir::NoDotAndDotDot);
+
+    // loop through all the item and construct the children
+    foreach (QFileInfo one, all) {
+        // Skip folders that end with .app on OS X
+#if defined(__APPLE__)
+        if (one.isDir() && one.fileName().endsWith(".app"))
+            continue;
+#endif
+        // We here create new items for the sidebar models
+        // Once the items are added to the TreeItemModel,
+        // the models takes ownership of them and ensures their deletion
+        items.push_back(std::make_unique<TreeItem>(
+                one.fileName(),
+                QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
+    }
+
+    return items;
 }
 
 QString BrowseFeature::getRootViewHtml() const {

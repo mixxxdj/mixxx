@@ -248,18 +248,6 @@ void DlgAutoDJ::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
 
-void DlgAutoDJ::activateSelectedTrack() {
-    m_pTrackTableView->activateSelectedTrack();
-}
-
-void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAutoDJ::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
 void DlgAutoDJ::shufflePlaylistButton(bool) {
     QModelIndexList indexList = m_pTrackTableView->selectionModel()->selectedRows();
 
@@ -356,8 +344,7 @@ void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
     ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
-void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
-    bool checked = static_cast<bool>(checkState);
+void DlgAutoDJ::slotRepeatPlaylistChanged(bool checked) {
     m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
             checked);
 }
@@ -389,6 +376,10 @@ bool DlgAutoDJ::hasFocus() const {
 
 void DlgAutoDJ::setFocus() {
     m_pTrackTableView->setFocus();
+}
+
+void DlgAutoDJ::pasteFromSidebar() {
+    m_pTrackTableView->pasteFromSidebar();
 }
 
 void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {

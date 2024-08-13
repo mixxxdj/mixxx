@@ -176,10 +176,8 @@ AutoDJProcessor::AutoDJProcessor(
         m_transitionTime = str_autoDjTransition.toDouble();
     }
 
-    int configuredTransitionMode = m_pConfig->getValue(
-            ConfigKey(kConfigKey, kTransitionModePreferenceName),
-            static_cast<int>(TransitionMode::FullIntroOutro));
-    m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
+    m_transitionMode = m_pConfig->getValue(
+            ConfigKey(kConfigKey, kTransitionModePreferenceName), TransitionMode::FullIntroOutro);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -579,6 +577,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &AutoDJProcessor::crossfaderChanged);
         for (const auto& pDeck : std::as_const(m_decks)) {
             pDeck->disconnect(this);
+        }
+        if (m_pConfig->getValue<bool>(ConfigKey(kConfigKey,
+                    QStringLiteral("center_xfader_when_disabling")))) {
+            m_pCOCrossfader->set(0);
         }
         emitAutoDJStateChanged(m_eState);
     }

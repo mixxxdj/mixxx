@@ -48,7 +48,7 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
 
   Refer to [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/) for more details.
 
-* Install [pre-commit](https://pre-commit.com/#install) to automatically ensure that your commits comply with our code style for both C++ and JavaScript. Note this is currently not working on Windows. This saves time reviewing so we don't have to point out nitpicky style issues. Once you have pre-commit installed on your computer, set it up in your local Git repository:
+* Install [pre-commit](https://pre-commit.com/#install) to automatically ensure that your commits comply with our code style for both C++ and JavaScript. This saves time reviewing so we don't have to point out nitpicky style issues. Once you have pre-commit installed on your computer, set it up in your local Git repository:
 
       cd /path/to/your/git/repo
       pre-commit install

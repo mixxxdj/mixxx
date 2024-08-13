@@ -4,6 +4,7 @@
 
 #include "effects/backends/effectprocessor.h"
 #include "util/class.h"
+#include "util/samplebuffer.h"
 #include "util/types.h"
 
 namespace RubberBand {
@@ -19,7 +20,7 @@ class PitchShiftGroupState : public EffectState {
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
-    CSAMPLE* m_retrieveBuffer[2];
+    mixxx::SampleBuffer m_retrieveBuffer[2];
 };
 
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {

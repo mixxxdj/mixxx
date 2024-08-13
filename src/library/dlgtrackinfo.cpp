@@ -294,13 +294,11 @@ void DlgTrackInfo::slotApply() {
 }
 
 void DlgTrackInfo::slotOk() {
-    slotApply();
-    clear();
+    saveTrack();
     accept();
 }
 
 void DlgTrackInfo::slotCancel() {
-    clear();
     reject();
 }
 

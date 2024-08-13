@@ -39,11 +39,7 @@
             <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit_FxNum"/>],enabled</SetVariable>
           </Template>
 
-          <Template src="skins:LateNight/fx/meta_knob.xml">
-            <SetVariable name="Group">[<Variable name="FxRack_FxUnit_FxNum"/>]</SetVariable>
-            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="Control">meta</SetVariable>
-          </Template>
+          <Template src="skins:LateNight/fx/meta_knob.xml"/>
 
           <EffectSelector>
             <MinimumSize>60,24</MinimumSize>

@@ -7,12 +7,16 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/defs_controllers.h"
-#include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 #include "util/time.h"
+
+#ifdef __PORTMIDI__
+#include "controllers/midi/portmidienumerator.h"
+#endif
+
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif
@@ -148,7 +152,9 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
+#ifdef __PORTMIDI__
     m_enumerators.append(new PortMidiEnumerator());
+#endif
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator(m_pConfig));
 #endif
@@ -276,6 +282,7 @@ void ControllerManager::slotSetUpDevices() {
         if (!pMapping) {
             continue;
         }
+        pMapping->loadSettings(m_pConfig, pController->getName());
 
         // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
         pController->setMapping(pMapping->clone());
@@ -293,7 +300,7 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyMapping();
+        pController->applyMapping(m_pConfig->getResourcePath());
     }
 
     pollIfAnyControllersOpen();
@@ -385,7 +392,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
     if (result == 0) {
-        pController->applyMapping();
+        pController->applyMapping(m_pConfig->getResourcePath());
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(

@@ -683,8 +683,8 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
     } else {
         // Create a temporary table model since the main one might have another
         // crate selected which is not the crate that received the right-click.
-        QScopedPointer<CrateTableModel> pCrateTableModel(
-                new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+        std::unique_ptr<CrateTableModel> pCrateTableModel =
+                std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
         pCrateTableModel->selectCrate(crateId);
         pCrateTableModel->select();
         pCrateTableModel->addTracks(QModelIndex(), locations);
@@ -808,15 +808,15 @@ void CrateFeature::slotExportPlaylist() {
 
     // Create list of files of the crate
     // Create a new table model since the main one might have an active search.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
     pCrateTableModel->selectCrate(crateId);
     pCrateTableModel->select();
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.get(), useRelativePath);
     } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
-        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.data(), false);
+        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.get(), false);
     } else {
         // populate a list of files of the crate
         QList<QString> playlistItems;
@@ -834,8 +834,8 @@ void CrateFeature::slotExportPlaylist() {
 
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 

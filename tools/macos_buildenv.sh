@@ -19,29 +19,22 @@ realpath() {
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-if [ -n "${BUILDENV_ARM64}" ] || [ "$(uname -m)" = "arm64" ]; then
-    if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-        BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-07b9859"
-        BUILDENV_SHA256="2ea804641b6ca973d246cdea9b3ce7913521e49e8e0845c95bbc1cdb6842d6a7"
-    else
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
-        BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-ecdfdcd"
-        BUILDENV_SHA256="9c80be159aede678cea0a2a643e064374e3badd93c264b772d6c9665a976dde8"
-    fi
+if [ -n "${BUILDENV_ARM64}" ]; then
+    VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
+    BUILDENV_BRANCH="2.5-rel"
+    BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-5dd1f25"
+    BUILDENV_SHA256="366cdf780e8d2d3af6b81f63e92df9ab7cb1cac1bb868a8e6a90dd39bf2a00b2"
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="x64-osx-min1012-release"
-        BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-07b9859"
-        BUILDENV_SHA256="efe301c8b07aac90713143ae2c533f0ad793472e24b5d06be793d1d9824cbeb0"
+        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+        BUILDENV_BRANCH="2.5-rel"
+        BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-5dd1f25"
+        BUILDENV_SHA256="60f47011dd0809891c172ec0d346a938daa74e83d0558fb2ca985cbc2aa43156"
     else
-        VCPKG_TARGET_TRIPLET="x64-osx-min1012"
-        BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-ecdfdcd"
-        BUILDENV_SHA256="eb8b1111399e5f169e2299120342760a0a7fcb817b6ced705e6bdd3b0c7dbbf5"
+        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
+        BUILDENV_BRANCH="2.5"
+        BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-06fe9b5"
+        BUILDENV_SHA256="5a5cb4d986cd288e216fe3a31f8acdbe4bc7b5b8624688aa18ca132c5cfb39b2"
     fi
 fi
 

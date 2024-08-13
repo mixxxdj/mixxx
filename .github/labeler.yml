@@ -107,6 +107,12 @@ preferences:
       - any-glob-to-any-file:
           - src/preferences/**
 
+qml:
+  - changed-files:
+      - any-glob-to-any-file:
+          - res/qml/**
+          - src/qml/**
+
 skins:
   - changed-files:
       - any-glob-to-any-file:
