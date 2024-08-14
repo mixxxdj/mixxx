@@ -33,12 +33,9 @@ ControlDoublePrivate::ControlDoublePrivate()
         : m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_bTrack(false),
           // default CO is read only
-          m_confirmRequired(true),
-          m_bPersistInConfiguration(false),
-          m_bIgnoreNops(true),
-          m_kbdRepeatable(false) {
+          m_configFlags(ControlConfigFlag::Default),
+          m_confirmRequired(true) {
     m_value.setValue(0.0);
 }
 
@@ -54,17 +51,14 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_bTrack(bTrack),
-          m_confirmRequired(false),
-          m_bPersistInConfiguration(bPersist),
-          m_bIgnoreNops(bIgnoreNops),
-          m_kbdRepeatable(false) {
+          m_configFlags(ControlDoublePrivate::configFlagFromBools(bIgnoreNops, bTrack, bPersist)),
+          m_confirmRequired(false) {
     initialize(defaultValue);
 }
 
 void ControlDoublePrivate::initialize(double defaultValue) {
     double value = defaultValue;
-    if (m_bPersistInConfiguration) {
+    if (m_configFlags.testFlag(ControlConfigFlag::Persist)) {
         UserSettingsPointer pConfig = s_pUserConfig;
         if (pConfig) {
             value = pConfig->getValue(m_key, defaultValue);
@@ -77,7 +71,7 @@ void ControlDoublePrivate::initialize(double defaultValue) {
 
     //qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
 
-    if (m_bTrack) {
+    if (m_configFlags.testFlag(ControlConfigFlag::Track)) {
         // TODO(rryan): Make configurable.
         m_trackKey = "control " + m_key.group + "," + m_key.item;
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
@@ -92,7 +86,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHash.remove(m_key);
     s_qCOHashMutex.unlock();
 
-    if (m_bPersistInConfiguration) {
+    if (m_configFlags.testFlag(ControlConfigFlag::Persist)) {
         UserSettingsPointer pConfig = s_pUserConfig;
         VERIFY_OR_DEBUG_ASSERT(pConfig) {
             return;
@@ -291,13 +285,13 @@ void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
 }
 
 void ControlDoublePrivate::setInner(double value, QObject* pSender) {
-    if (m_bIgnoreNops && get() == value) {
+    if (m_configFlags.testFlag(ControlConfigFlag::IgnoreNops) && get() == value) {
         return;
     }
     m_value.setValue(value);
     emit valueChanged(value, pSender);
 
-    if (m_bTrack) {
+    if (m_configFlags.testFlag(ControlConfigFlag::Track)) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
                     static_cast<Stat::ComputeFlags>(m_trackFlags), value);
     }
