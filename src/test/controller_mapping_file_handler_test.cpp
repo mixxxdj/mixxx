@@ -13,6 +13,7 @@
 
 using ::testing::_;
 using ::testing::FieldsAre;
+using namespace std::chrono_literals;
 
 class LegacyControllerMappingFileHandlerTest
         : public LegacyControllerMappingFileHandler,
@@ -20,7 +21,7 @@ class LegacyControllerMappingFileHandlerTest
   public:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         SETUP_LOG_CAPTURE();
     }
 

@@ -763,7 +763,7 @@ WTrackTableViewHeader {
 /*	Library header 'buttons'	*/
 WTrackTableViewHeader::section {
   height: 1.1em;
-  padding: 0.1em;
+  padding: 0.1em -0.7em 0.1em 0.1em;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;

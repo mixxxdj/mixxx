@@ -1512,23 +1512,6 @@ WEffectSelector:!editable,
     border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
 
-  WTrackTableViewHeader {
-    border-bottom-right-radius: 1px solid #000;
-    outline: none;
-  }
-  WTrackTableViewHeader::section {
-    outline: none;
-    border-width: 1px 2px 1px 1px;
-    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
-  }
-  WTrackTableViewHeader::up-arrow,
-  WTrackTableViewHeader::down-arrow {
-    outline: none;
-    /* ToDo: restore image
-    border-width: 1px 2px 1px 0px;
-    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
-  }
-
   #LibraryFeatureControls QPushButton:!enabled {
     outline: none;
     border-width: 2px;
@@ -2734,16 +2717,40 @@ WTrackPropertyEditor {
 /*********** table header styles *********************************/
 
 WTrackTableViewHeader {
+  border-bottom-right-radius: 1px solid #000;
+  outline: none;
+}
+
+WTrackTableViewHeader::section {
+/* Setting an image causes QHeaderView to reserve space for the sort indicator,
+   i.e. column titles are truncated, even where no indicators are shown.
+   The arrow width and padding are set in style.qss (0.8em + .15em),
+   so let's set a negative padding-right to shift the text. This will push the
+   reserved space out of the visible region, but the actual arrow will still be visible.
+   Now the arrow overlaps the column title again like in Qt5 (bug), so the arrow images
+   could use a background-color to cover the text, or a gradient to fade it out gently. */
+  padding: 2px -0.95em 0px 3px;
+  outline: none;
+  border-width: 1px 2px 1px 1px;
+  border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
+}
+
+WTrackTableViewHeader::up-arrow,
+WTrackTableViewHeader::down-arrow {
+  outline: none;
+  /* horizontal gradient to fade out the text */
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 transparent,
+    stop: 0.2 #171719,
+    stop: 1 #171719);
   }
-  WTrackTableViewHeader::section {
-    padding: 2px 1px 0px 3px;
-    }
-    WTrackTableViewHeader::up-arrow {
-      image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_up.svg);
-    }
-    WTrackTableViewHeader::down-arrow {
-      image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_down.svg);
-    }
+  WTrackTableViewHeader::up-arrow {
+    image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_up.svg);
+  }
+  WTrackTableViewHeader::down-arrow {
+    image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_down.svg);
+  }
+
 
 
 

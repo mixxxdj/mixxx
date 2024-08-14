@@ -1606,6 +1606,10 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
                     BaseTrackTableModel::kKeyColorsEnabledDefault);
     BaseTrackTableModel::setKeyColorsEnabled(keyColorsEnabled);
 
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    BaseTrackTableModel::setKeyColorPalette(colorPaletteSettings.getConfigKeyColorPalette());
+
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
                     mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,

@@ -25,7 +25,7 @@ class EffectParameterSlotBase : public QObject {
             const unsigned int iParameterSlotNumber,
             const EffectParameterType parameterType);
 
-    virtual ~EffectParameterSlotBase();
+    ~EffectParameterSlotBase() override;
 
     virtual void loadParameter(EffectParameterPointer pEffectParameter) = 0;
 
@@ -75,8 +75,8 @@ class EffectParameterSlotBase : public QObject {
     EffectParameterType m_parameterType;
 
     // Controls exposed to the rest of Mixxx
-    ControlObject* m_pControlLoaded;
-    ControlObject* m_pControlType;
+    std::unique_ptr<ControlObject> m_pControlLoaded;
+    std::unique_ptr<ControlObject> m_pControlType;
     double m_dChainParameter;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlotBase);
