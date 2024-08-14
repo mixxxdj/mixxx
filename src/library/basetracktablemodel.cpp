@@ -1061,7 +1061,7 @@ QVariant BaseTrackTableModel::roleValue(
             return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette));
         }
         default:
-            break;
+            return QVariant();
         }
         break;
     }
