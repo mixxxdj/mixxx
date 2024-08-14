@@ -73,9 +73,7 @@ class ControlDoublePrivate : public QObject {
             const ConfigKey& key,
             ControlFlags flags = ControlFlag::None,
             ControlObject* pCreatorCO = nullptr,
-            bool bIgnoreNops = true,
-            bool bTrack = false,
-            bool bPersist = false,
+            ControlConfigFlags configFlags = ControlConfigFlag::Default,
             double defaultValue = 0.0);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
@@ -204,9 +202,7 @@ class ControlDoublePrivate : public QObject {
     ControlDoublePrivate(
             const ConfigKey& key,
             ControlObject* pCreatorCO,
-            bool bIgnoreNops,
-            bool bTrack,
-            bool bPersist,
+            ControlConfigFlags configFlags,
             double defaultValue);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;

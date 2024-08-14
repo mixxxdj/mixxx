@@ -20,9 +20,7 @@ ControlObject::ControlObject(const ConfigKey& key,
         m_pControl = ControlDoublePrivate::getControl(m_key,
                 ControlFlag::None,
                 this,
-                bIgnoreNops,
-                bTrack,
-                bPersist,
+                ControlDoublePrivate::configFlagFromBools(bIgnoreNops, bTrack, bPersist),
                 defaultValue);
     }
 

@@ -42,16 +42,14 @@ ControlDoublePrivate::ControlDoublePrivate()
 ControlDoublePrivate::ControlDoublePrivate(
         const ConfigKey& key,
         ControlObject* pCreatorCO,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
+        ControlConfigFlags configFlags,
         double defaultValue)
         : m_key(key),
           m_pCreatorCO(pCreatorCO),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_configFlags(ControlDoublePrivate::configFlagFromBools(bIgnoreNops, bTrack, bPersist)),
+          m_configFlags(configFlags),
           m_confirmRequired(false) {
     initialize(defaultValue);
 }
@@ -130,9 +128,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key,
         ControlFlags flags,
         ControlObject* pCreatorCO,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
+        ControlConfigFlags configFlags,
         double defaultValue) {
     if (!key.isValid()) {
         if (!flags.testFlag(ControlFlag::AllowInvalidKey)) {
@@ -178,12 +174,11 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     }
 
     if (pCreatorCO) {
+        // can't use QSharedPointer::create here because ctor is private
         auto pControl = QSharedPointer<ControlDoublePrivate>(
                 new ControlDoublePrivate(key,
                         pCreatorCO,
-                        bIgnoreNops,
-                        bTrack,
-                        bPersist,
+                        configFlags,
                         defaultValue));
         const MMutexLocker locker(&s_qCOHashMutex);
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
