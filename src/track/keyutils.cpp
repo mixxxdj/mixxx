@@ -831,6 +831,7 @@ double KeyUtils::trackSimilarity(mixxx::track::io::key::ChromaticKey key1,
     // invert so 1.0 means most compatible
     const double normKWSteps = (1 - keyWheelSteps / 7.0);
     // this 1-16x^4 curve forgives the effect of lower detune values on the similarity
+    // we're considering 20 ct off to still be mostly in tune
     const double normCents = (1 - 16 * pow(cents, 4)); // 0-1
 
     // calculate final similarity and return it
