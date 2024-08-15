@@ -203,7 +203,8 @@ class ControlDoublePrivate : public QObject {
             const ConfigKey& key,
             ControlObject* pCreatorCO,
             ControlConfigFlags configFlags,
-            double defaultValue);
+            double defaultValue,
+            bool confirmRequired);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;
