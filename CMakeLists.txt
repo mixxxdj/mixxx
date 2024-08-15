@@ -2165,6 +2165,7 @@ add_executable(mixxx-test
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
   src/test/trackmetadata_test.cpp
+  src/test/trackmetadataexport_test.cpp
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
