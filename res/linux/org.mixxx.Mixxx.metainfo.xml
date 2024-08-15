@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-07-29" timestamp="1722231413">
+    <release version="2.5.0" type="development" date="2024-08-13" timestamp="1723570900">
       <description>
  <p>
   Waveforms
@@ -1097,7 +1097,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.2" type="development" date="2024-07-29" timestamp="1722231413">
+    <release version="2.4.2" type="development" date="2024-08-13" timestamp="1723570900">
       <description>
  <p>
   Controller Mappings
@@ -1570,7 +1570,7 @@
    #11872
   </li>
   <li>
-   Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
+   Add support for overriding analysis settings about variable/constant BPM on a per-track basis
    #10931
   </li>
   <li>
@@ -3554,7 +3554,7 @@
    #11397
   </li>
   <li>
-   Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+   Fix drift in analysis data after exporting metadata to MP3 files with ID3v1.1 tags
    #11168
    #11159
   </li>
@@ -4961,7 +4961,7 @@
    #2743
   </li>
   <li>
-   Only apply ducking gain in manual ducking mode when talkover is enabed
+   Only apply ducking gain in manual ducking mode when talkover is enabled
    #7668
    #8995
    #8795
