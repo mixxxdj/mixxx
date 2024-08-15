@@ -9,7 +9,7 @@
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
 #include "preferences/usersettings.h"
-#include "util/mutex.h"
+#include "util/stat.h"
 
 class ControlObject;
 
@@ -203,8 +203,8 @@ class ControlDoublePrivate : public QObject {
     // Note: keep the order of the members below to not introduce gaps due to
     // memory alignment in this often used class. Whether to track value changes
     // with the stats framework.
-    int m_trackType;
-    int m_trackFlags;
+    Stat::StatType m_trackType;
+    Stat::ComputeFlags m_trackFlags;
     bool m_bTrack;
     bool m_confirmRequired;
 
