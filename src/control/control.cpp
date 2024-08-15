@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "moc_control.cpp"
+#include "util/mutex.h"
 #include "util/stat.h"
 
 namespace {
@@ -72,9 +73,7 @@ void ControlDoublePrivate::initialize(double defaultValue) {
     if (m_configFlags.testFlag(ControlConfigFlag::Track)) {
         // TODO(rryan): Make configurable.
         m_trackKey = "control " + m_key.group + "," + m_key.item;
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags),
-                    m_value.getValue());
+        Stat::track(m_trackKey, m_trackType, m_trackFlags, m_value.getValue());
     }
 }
 
@@ -287,8 +286,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
     emit valueChanged(value, pSender);
 
     if (m_configFlags.testFlag(ControlConfigFlag::Track)) {
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), value);
+        Stat::track(m_trackKey, m_trackType, m_trackFlags, value);
     }
 }
 
