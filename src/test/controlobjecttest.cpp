@@ -3,10 +3,13 @@
 #include <QtDebug>
 #include <memory>
 
+#include "control/control.h"
 #include "control/controlobject.h"
 #include "test/mixxxtest.h"
 
 namespace {
+
+using enum ControlConfigFlag;
 
 class ControlObjectTest : public MixxxTest {
   protected:
@@ -54,7 +57,7 @@ TEST_F(ControlObjectTest, AliasRetrieval) {
 TEST_F(ControlObjectTest, Persistence_NotPresent) {
     ConfigKey ck("[Test]", "persist");
     ASSERT_FALSE(m_pConfig->exists(ck));
-    ControlObject co(ck, true, false, true, 3.0);
+    ControlObject co(ck, {}, 3.0);
     // Should be initialized to default value with no valid value in config
     EXPECT_DOUBLE_EQ(3.0, co.get());
 }
@@ -64,7 +67,7 @@ TEST_F(ControlObjectTest, Persistence_InvalidValue) {
     m_pConfig->set(ck, QString("NotANumber"));
     saveAndReloadConfig();
 
-    ControlObject co(ck, true, false, true, 3.0);
+    ControlObject co(ck, {IgnoreNops, Persist}, 3.0);
     EXPECT_DOUBLE_EQ(3.0, co.get());
 }
 
@@ -73,7 +76,7 @@ TEST_F(ControlObjectTest, Persistence_EmptyValue) {
     m_pConfig->set(ck, QString(""));
     saveAndReloadConfig();
 
-    ControlObject co(ck, true, false, true, 3.0);
+    ControlObject co(ck, {IgnoreNops, Persist}, 3.0);
     EXPECT_DOUBLE_EQ(3.0, co.get());
 }
 
@@ -82,7 +85,7 @@ TEST_F(ControlObjectTest, Persistence_ValidValue) {
     m_pConfig->set(ck, QString("5"));
     saveAndReloadConfig();
 
-    ControlObject co(ck, true, false, true, 3.0);
+    ControlObject co(ck, {IgnoreNops, Persist}, 3.0);
     EXPECT_DOUBLE_EQ(5.0, co.get());
 }
 

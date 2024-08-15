@@ -54,6 +54,10 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(ControlConfigFlags)
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
+    // TODO: don't expose/rely on this implementation detail
+    // in the consumer classes (ControlObject, etc).
+    static constexpr double kDefaultValue = 0.0;
+
     ~ControlDoublePrivate() override;
 
     // Used to implement control persistence. All controls that are marked

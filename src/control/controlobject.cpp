@@ -10,9 +10,7 @@ ControlObject::ControlObject()
 }
 
 ControlObject::ControlObject(const ConfigKey& key,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
+        ControlConfigFlags configFlags,
         double defaultValue)
         : m_key(key) {
     // Don't bother looking up the control if key is invalid. Prevents log spew.
@@ -20,7 +18,7 @@ ControlObject::ControlObject(const ConfigKey& key,
         m_pControl = ControlDoublePrivate::getControl(m_key,
                 ControlFlag::None,
                 this,
-                ControlDoublePrivate::configFlagFromBools(bIgnoreNops, bTrack, bPersist),
+                configFlags,
                 defaultValue);
     }
 

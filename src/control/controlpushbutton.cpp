@@ -1,5 +1,6 @@
 #include "control/controlpushbutton.h"
 
+#include "control/control.h"
 #include "moc_controlpushbutton.cpp"
 
 /* -------- ------------------------------------------------------
@@ -7,7 +8,10 @@
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(const ConfigKey& key, bool bPersist, double defaultValue)
-        : ControlObject(key, false, false, bPersist, defaultValue),
+        : ControlObject(key,
+                  bPersist ? ControlConfigFlag::Persist
+                           : ControlConfigFlag::None,
+                  defaultValue),
           m_buttonMode(mixxx::control::ButtonMode::Push),
           m_iNoStates(2) {
     updateBehavior();

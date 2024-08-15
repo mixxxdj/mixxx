@@ -93,7 +93,7 @@ EffectChain::EffectChain(const QString& group,
             &EffectChain::sendParameterUpdate);
 
     m_pControlLoadedChainPreset = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "loaded_chain_preset"), false);
+            ConfigKey(m_group, "loaded_chain_preset"), ControlConfigFlag::None);
     m_pControlLoadedChainPreset->connectValueChangeRequest(
             this,
             &EffectChain::slotControlLoadedChainPresetRequest);

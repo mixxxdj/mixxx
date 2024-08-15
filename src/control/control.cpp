@@ -16,8 +16,6 @@ UserSettingsPointer s_pUserConfig;
 
 const QString statTrackKey = QStringLiteral("control %1,%2"); // CO group,key
 
-constexpr double kDefaultValue = 0.0;
-
 /// Mutex guarding access to s_qCOHash and s_qCOAliasHash.
 MMutex s_qCOHashMutex;
 
@@ -285,6 +283,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
     }
 }
 
+// TODO pointer is owning, take as unique_ptr
 void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     // This marks the old mpBehavior for deletion. It is deleted once it is not
     // used in any other function

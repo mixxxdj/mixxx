@@ -21,7 +21,10 @@ ControlPotmeter::ControlPotmeter(const ConfigKey& key,
         bool bTrack,
         bool bPersist,
         double defaultValue)
-        : ControlObject(key, bIgnoreNops, bTrack, bPersist, defaultValue),
+        : ControlObject(key,
+                  ControlDoublePrivate::configFlagFromBools(
+                          bIgnoreNops, bTrack, bPersist),
+                  defaultValue),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
     double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);

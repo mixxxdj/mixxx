@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "control/control.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
@@ -127,7 +128,7 @@ LoopingControl::LoopingControl(const QString& group,
 
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
     // Activates a beatloop of a specified number of beats.
-    m_pCOBeatLoop = new ControlObject(ConfigKey(group, "beatloop"), false);
+    m_pCOBeatLoop = new ControlObject(ConfigKey(group, "beatloop"), ControlConfigFlag::None);
     connect(
             m_pCOBeatLoop,
             &ControlObject::valueChanged,
@@ -140,7 +141,8 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOLoopAnchor->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
-                                          true, false, false, 4.0);
+            ControlConfigFlag::Default,
+            4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             &LoopingControl::slotBeatLoopSizeChangeRequest, Qt::DirectConnection);
     m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
@@ -169,11 +171,12 @@ LoopingControl::LoopingControl(const QString& group,
         m_beatLoops.append(pBeatLoop);
     }
 
-    m_pCOBeatJump = new ControlObject(ConfigKey(group, "beatjump"), false);
+    m_pCOBeatJump = new ControlObject(ConfigKey(group, "beatjump"), ControlConfigFlag::None);
     connect(m_pCOBeatJump, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
-                                          true, false, false, 4.0);
+            ControlConfigFlag::Default,
+            4.0);
     m_pCOBeatJumpSize->connectValueChangeRequest(this,
             &LoopingControl::slotBeatJumpSizeChangeRequest,
             Qt::DirectConnection);
@@ -210,7 +213,7 @@ LoopingControl::LoopingControl(const QString& group,
         m_beatJumps.append(pBeatJump);
     }
 
-    m_pCOLoopMove = new ControlObject(ConfigKey(group, "loop_move"), false);
+    m_pCOLoopMove = new ControlObject(ConfigKey(group, "loop_move"), ControlConfigFlag::None);
     connect(m_pCOLoopMove, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopMove, Qt::DirectConnection);
 
@@ -224,7 +227,7 @@ LoopingControl::LoopingControl(const QString& group,
         m_loopMoves.append(pLoopMove);
     }
 
-    m_pCOLoopScale = new ControlObject(ConfigKey(group, "loop_scale"), false);
+    m_pCOLoopScale = new ControlObject(ConfigKey(group, "loop_scale"), ControlConfigFlag::None);
     connect(m_pCOLoopScale, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopScale);
     m_pLoopHalveButton = new ControlPushButton(ConfigKey(group, "loop_halve"));
