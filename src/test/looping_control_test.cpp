@@ -1253,7 +1253,7 @@ TEST_F(LoopingControlTest, LoopResizeUsingAnchor) {
 
     ProcessBuffer();
 
-    // The loop is resized its end oint this time
+    // The loop is resized and its end joint this time
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{175}, m_pLoopStartPoint);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{625}, m_pLoopEndPoint);
     ProcessBuffer();

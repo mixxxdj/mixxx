@@ -117,7 +117,7 @@ const BeatLoopRolls = [
 ];
 
 
-// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
+// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the scratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
 const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;

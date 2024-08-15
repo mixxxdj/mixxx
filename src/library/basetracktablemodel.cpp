@@ -820,7 +820,7 @@ QVariant BaseTrackTableModel::roleValue(
                 return dt;
             }
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
-                // Timstamp column in history feature:
+                // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
                 return mixxx::displayLocalDateTime(dt);
             }
