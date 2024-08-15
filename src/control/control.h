@@ -34,6 +34,9 @@ class ControlDoublePrivate : public QObject {
   public:
     ~ControlDoublePrivate() override;
 
+    // TODO: don't expose this implementation detail
+    constexpr static double kDefaultValue = 0.0;
+
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
@@ -54,7 +57,7 @@ class ControlDoublePrivate : public QObject {
             bool bIgnoreNops = true,
             bool bTrack = false,
             bool bPersist = false,
-            double defaultValue = 0.0);
+            double defaultValue = kDefaultValue);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
     // Returns a list of all existing instances.
@@ -172,7 +175,8 @@ class ControlDoublePrivate : public QObject {
             bool bIgnoreNops,
             bool bTrack,
             bool bPersist,
-            double defaultValue);
+            double defaultValue,
+            bool confirmRequired);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;

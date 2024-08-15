@@ -14,6 +14,10 @@ namespace {
 /// configuration object would be arduous.
 UserSettingsPointer s_pUserConfig;
 
+const QString statTrackKey = QStringLiteral("control %1,%2"); // CO group,key
+
+constexpr double kDefaultValue = 0.0;
+
 /// Mutex guarding access to s_qCOHash and s_qCOAliasHash.
 MMutex s_qCOHashMutex;
 
@@ -30,18 +34,9 @@ QHash<ConfigKey, ConfigKey> s_qCOAliasHash
 QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
 } // namespace
 
+// TODO: re-evaluate whether this is needed.
 ControlDoublePrivate::ControlDoublePrivate()
-        : m_trackType(Stat::UNSPECIFIED),
-          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                  Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_bTrack(false),
-          // default CO is read only
-          m_confirmRequired(true),
-          m_bPersistInConfiguration(false),
-          m_bIgnoreNops(true),
-          m_kbdRepeatable(false) {
-    m_value.setValue(0.0);
-}
+        : ControlDoublePrivate({}, nullptr, true, false, false, kDefaultValue, true){};
 
 ControlDoublePrivate::ControlDoublePrivate(
         const ConfigKey& key,
@@ -49,38 +44,35 @@ ControlDoublePrivate::ControlDoublePrivate(
         bool bIgnoreNops,
         bool bTrack,
         bool bPersist,
-        double defaultValue)
+        double defaultValue,
+        bool confirmRequired = false)
         : m_key(key),
+          m_pBehavior(nullptr),
+          m_name(QString()),
+          m_description(QString()),
+          m_value(defaultValue),
+          m_defaultValue(defaultValue),
           m_pCreatorCO(pCreatorCO),
+          m_trackKey(QString()),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           m_bTrack(bTrack),
-          m_confirmRequired(false),
+          m_confirmRequired(confirmRequired),
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
           m_kbdRepeatable(false) {
-    initialize(defaultValue);
-}
-
-void ControlDoublePrivate::initialize(double defaultValue) {
-    double value = defaultValue;
-    if (m_bPersistInConfiguration) {
+    if (bPersist) {
         UserSettingsPointer pConfig = s_pUserConfig;
         if (pConfig) {
-            value = pConfig->getValue(m_key, defaultValue);
+            m_value.setValue(pConfig->getValue(m_key, defaultValue));
         } else {
             DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
         }
     }
-    m_defaultValue.setValue(defaultValue);
-    m_value.setValue(value);
-
-    //qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
 
     if (m_bTrack) {
-        // TODO(rryan): Make configurable.
-        m_trackKey = "control " + m_key.group + "," + m_key.item;
+        m_trackKey = statTrackKey.arg(key.group, key.item);
         Stat::track(m_trackKey, m_trackType, m_trackFlags, m_value.getValue());
     }
 }
