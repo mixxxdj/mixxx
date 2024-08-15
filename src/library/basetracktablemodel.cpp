@@ -750,9 +750,6 @@ QVariant BaseTrackTableModel::roleValue(
             if (rawBpm.canConvert<mixxx::Bpm>()) {
                 bpm = rawBpm.value<mixxx::Bpm>();
             } else {
-                VERIFY_OR_DEBUG_ASSERT(rawBpm.canConvert<double>()) {
-                    return QVariant();
-                }
                 bool ok;
                 const auto bpmValue = rawBpm.toDouble(&ok);
                 VERIFY_OR_DEBUG_ASSERT(ok) {
