@@ -772,6 +772,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                     label = fetchPlaylistLabel(id);
                     pChild->setLabel(label);
                     decorateChild(pChild, id);
+                    markTreeItem(pChild);
                 }
             }
         } else {
@@ -780,6 +781,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                 label = fetchPlaylistLabel(id);
                 pTreeItem->setLabel(label);
                 decorateChild(pTreeItem, id);
+                markTreeItem(pTreeItem);
             }
         }
     }
