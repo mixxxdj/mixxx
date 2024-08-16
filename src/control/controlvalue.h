@@ -2,16 +2,15 @@
 
 #include <atomic>
 #include <bit>
+#include <cstddef>
 #include <limits>
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
-constexpr int kDefaultRingSize = 8;
+constexpr std::size_t kDefaultRingSize = 8;
 // there are basically unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
-// NOTE(rryan): Wrapping max with parentheses avoids conflict with the max macro
-// defined in windows.h.
-constexpr int kMaxReaderSlots = (std::numeric_limits<int>::max)();
+constexpr std::size_t kMaxReaderSlots = std::numeric_limits<std::size_t>::max();
 
 // A single instance of a value of type T along with an atomic integer which
 // tracks the current number of readers or writers of the slot. The value
@@ -46,7 +45,7 @@ class ControlRingValue {
 
     bool trySet(const T& value) {
         // try to lock this element entirely for reading
-        int expected = kMaxReaderSlots;
+        std::size_t expected = kMaxReaderSlots;
         if (m_readerSlots.compare_exchange_strong(expected, 0, std::memory_order_acquire)) {
             m_value = value;
             // We need to re-add kMaxReaderSlots instead of storing it
@@ -60,7 +59,7 @@ class ControlRingValue {
 
   private:
     T m_value;
-    mutable std::atomic<int> m_readerSlots;
+    mutable std::atomic<std::size_t> m_readerSlots;
 };
 
 // Ring buffer based implementation for all Types sizeof(T) > sizeof(void*)
@@ -69,17 +68,15 @@ class ControlRingValue {
 // ring-buffer of ControlRingValues and a read pointer and write pointer to
 // provide getValue()/setValue() methods which *sacrifice perfect consistency*
 // for the benefit of wait-free read/write access to a value.
-template <typename T, int cRingSize, bool ATOMIC = false>
+template<typename T, std::size_t cRingSize, bool ATOMIC = false>
 class ControlValueAtomicBase {
-    static_assert(std::has_single_bit(static_cast<unsigned int>(cRingSize)),
+    static_assert(std::has_single_bit(cRingSize),
             "cRingSize is not a power of two; required for optimal alignment");
 
   public:
     inline T getValue() const {
         T value;
-        unsigned int index = static_cast<unsigned int>(m_readIndex.load(
-                                     std::memory_order_relaxed)) %
-                cRingSize;
+        std::size_t index = m_readIndex.load(std::memory_order_relaxed) % cRingSize;
         while (!m_ring[index].tryGet(&value)) {
             // We are here if
             // 1) there are more then kMaxReaderSlots reader (get) reading the same value or
@@ -97,11 +94,9 @@ class ControlValueAtomicBase {
     inline void setValue(const T& value) {
         // Test if we can read atomic
         // This test is const and will be mad only at compile time
-        unsigned int index;
+        std::size_t index;
         do {
-            index = static_cast<unsigned int>(m_writeIndex.fetch_add(
-                            1, std::memory_order_acquire)) %
-                    cRingSize;
+            index = m_writeIndex.fetch_add(1, std::memory_order_acquire) % cRingSize;
             // This will be repeated if the value is locked
             // 1) by another writer writing at the same time or
             // 2) a delayed reader is still blocking the formerly current value
@@ -118,14 +113,14 @@ class ControlValueAtomicBase {
     // In worst case, each reader can consume a reader slot from a different ring element.
     // In this case there is still one ring element available for writing.
     ControlRingValue<T> m_ring[cRingSize];
-    std::atomic<int> m_readIndex;
-    std::atomic<int> m_writeIndex;
+    std::atomic<std::size_t> m_readIndex;
+    std::atomic<std::size_t> m_writeIndex;
 };
 
 // Specialized template for types that are deemed to be atomic on the target
 // architecture. Instead of using a read/write ring to guarantee atomicity,
 // direct assignment/read of an aligned member variable is used.
-template<typename T, int cRingSize>
+template<typename T, std::size_t cRingSize>
 class ControlValueAtomicBase<T, cRingSize, true> {
   public:
     inline T getValue() const {
@@ -144,7 +139,7 @@ class ControlValueAtomicBase<T, cRingSize, true> {
     std::atomic<T> m_value;
 };
 
-template<typename T, int cRingSize = kDefaultRingSize>
+template<typename T, std::size_t cRingSize = kDefaultRingSize>
 class ControlValueAtomic : public ControlValueAtomicBase<T,
                                    cRingSize,
                                    std::atomic<T>::is_always_lock_free> {
