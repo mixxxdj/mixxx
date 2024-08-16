@@ -5,12 +5,16 @@
 #include <cstddef>
 #include <limits>
 
+namespace {
+
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 constexpr std::size_t kDefaultRingSize = 8;
 // there are basically unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
 constexpr std::size_t kMaxReaderSlots = std::numeric_limits<std::size_t>::max();
+
+} // namespace
 
 // A single instance of a value of type T along with an atomic integer which
 // tracks the current number of readers or writers of the slot. The value
