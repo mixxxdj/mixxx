@@ -3,9 +3,9 @@
 #include <QAtomicInt>
 #include <QObject>
 #include <atomic>
+#include <bit>
 #include <limits>
 
-#include "util/assert.h"
 #include "util/compatibility/qatomic.h"
 
 // for lock free access, this value has to be >= the number of value using threads
@@ -74,6 +74,9 @@ class ControlRingValue {
 // for the benefit of wait-free read/write access to a value.
 template <typename T, int cRingSize, bool ATOMIC = false>
 class ControlValueAtomicBase {
+    static_assert(std::has_single_bit(static_cast<unsigned int>(cRingSize)),
+            "cRingSize is not a power of two; required for optimal alignment");
+
   public:
     inline T getValue() const {
         T value;
@@ -108,9 +111,6 @@ class ControlValueAtomicBase {
 
   protected:
     ControlValueAtomicBase() : m_readIndex(0), m_writeIndex(1) {
-        // NOTE(rryan): Wrapping max with parentheses avoids conflict with the
-        // max macro defined in windows.h.
-        DEBUG_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) == (cRingSize - 1));
     }
 
   private:
