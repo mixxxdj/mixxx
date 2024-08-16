@@ -111,6 +111,10 @@ class ControlValueAtomicBase {
         // max macro defined in windows.h.
         DEBUG_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) == (cRingSize - 1));
     }
+    ControlValueAtomicBase(const T& value)
+            : ControlValueAtomicBase() {
+        setValue(value);
+    }
 
   private:
     // In worst case, each reader can consume a reader slot from a different ring element.
@@ -137,6 +141,8 @@ class ControlValueAtomicBase<T, cRingSize, true> {
 
   protected:
     ControlValueAtomicBase() = default;
+    ControlValueAtomicBase(const T& value)
+            : m_value(value){};
 
   private:
 #if defined(__GNUC__)
@@ -159,6 +165,10 @@ class ControlValueAtomicBase<T, cRingSize, true> {
 // atomic on the architecture is used.
 template <typename T, int cRingSize = kDefaultRingSize>
 class ControlValueAtomic : public ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)> {
+    using ParentT = ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)>;
+
   public:
     ControlValueAtomic() = default;
+    ControlValueAtomic(const T& value)
+            : ParentT(value){};
 };
