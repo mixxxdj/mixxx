@@ -2,6 +2,7 @@
 
 #include <QAtomicInt>
 #include <QObject>
+#include <atomic>
 #include <limits>
 
 #include "util/assert.h"
@@ -152,13 +153,10 @@ class ControlValueAtomicBase<T, cRingSize, true> {
 #endif
 };
 
-// ControlValueAtomic is a wrapper around ControlValueAtomicBase which uses the
-// sizeof(T) to determine which underlying implementation of
-// ControlValueAtomicBase to use. For types where sizeof(T) <= sizeof(void*),
-// the specialized implementation of ControlValueAtomicBase for types that are
-// atomic on the architecture is used.
-template <typename T, int cRingSize = kDefaultRingSize>
-class ControlValueAtomic : public ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)> {
+template<typename T, int cRingSize = kDefaultRingSize>
+class ControlValueAtomic : public ControlValueAtomicBase<T,
+                                   cRingSize,
+                                   std::atomic<T>::is_always_lock_free> {
   public:
     ControlValueAtomic() = default;
 };
