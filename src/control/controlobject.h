@@ -185,8 +185,4 @@ class ControlObject : public QObject {
     ControlObject(const ControlObject&) = delete;
     ControlObject& operator=(ControlObject&&) = delete;
     ControlObject& operator=(const ControlObject&) = delete;
-
-    inline bool ignoreNops() const {
-        return m_pControl ? m_pControl->ignoreNops() : true;
-    }
 };
