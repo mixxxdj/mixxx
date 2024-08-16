@@ -112,6 +112,10 @@ class ControlValueAtomicBase {
   protected:
     ControlValueAtomicBase() : m_readIndex(0), m_writeIndex(1) {
     }
+    ControlValueAtomicBase(const T& value)
+            : ControlValueAtomicBase() {
+        setValue(value);
+    }
 
   private:
     // In worst case, each reader can consume a reader slot from a different ring element.
@@ -137,6 +141,8 @@ class ControlValueAtomicBase<T, cRingSize, true> {
 
   protected:
     ControlValueAtomicBase() = default;
+    ControlValueAtomicBase(const T& value)
+            : m_value(value){};
 
   private:
     std::atomic<T> m_value;
@@ -146,6 +152,12 @@ template<typename T, std::size_t cRingSize = kDefaultRingSize>
 class ControlValueAtomic : public ControlValueAtomicBase<T,
                                    cRingSize,
                                    std::atomic<T>::is_always_lock_free> {
+    // naming the parent class is tedious because all template parameters have to be specified,
+    // so this alias makes it a little more manageable.
+    using ParentT = ControlValueAtomicBase<T, cRingSize, std::atomic<T>::is_always_lock_free>;
+
   public:
     ControlValueAtomic() = default;
+    ControlValueAtomic(const T& value)
+            : ParentT(value){};
 };
