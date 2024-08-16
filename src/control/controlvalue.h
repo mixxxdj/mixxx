@@ -1,12 +1,8 @@
 #pragma once
 
-#include <QAtomicInt>
-#include <QObject>
 #include <atomic>
 #include <bit>
 #include <limits>
-
-#include "util/compatibility/qatomic.h"
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
@@ -36,26 +32,27 @@ class ControlRingValue {
     // slot, because the stored value is preserved.
     bool tryGet(T* value) const {
         // Read while consuming one readerSlot
-        if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
+        if (m_readerSlots.fetch_sub(1, std::memory_order_acquire) > 0) {
             // Reader slot has been acquired, no writer is active
             *value = m_value;
-            m_readerSlots.fetchAndAddRelease(1);
+            m_readerSlots.fetch_add(1, std::memory_order_release);
             // We need the early return here to make the compiler
             // aware that *value is initialised in the true case.
             return true;
         }
-        m_readerSlots.fetchAndAddRelease(1);
+        m_readerSlots.fetch_add(1, std::memory_order_release);
         return false;
     }
 
     bool trySet(const T& value) {
         // try to lock this element entirely for reading
-        if (m_readerSlots.testAndSetAcquire(kMaxReaderSlots, 0)) {
+        int expected = kMaxReaderSlots;
+        if (m_readerSlots.compare_exchange_strong(expected, 0, std::memory_order_acquire)) {
             m_value = value;
             // We need to re-add kMaxReaderSlots instead of storing it
             // to keep the balance if readers have decreased the number
             // of slots in the meantime!
-            m_readerSlots.fetchAndAddRelease(kMaxReaderSlots);
+            m_readerSlots.fetch_add(kMaxReaderSlots, std::memory_order_release);
             return true;
         }
         return false;
@@ -63,7 +60,7 @@ class ControlRingValue {
 
   private:
     T m_value;
-    mutable QAtomicInt m_readerSlots;
+    mutable std::atomic<int> m_readerSlots;
 };
 
 // Ring buffer based implementation for all Types sizeof(T) > sizeof(void*)
@@ -80,7 +77,9 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value;
-        unsigned int index = static_cast<unsigned int>(atomicLoadRelaxed(m_readIndex)) % cRingSize;
+        unsigned int index = static_cast<unsigned int>(m_readIndex.load(
+                                     std::memory_order_relaxed)) %
+                cRingSize;
         while (!m_ring[index].tryGet(&value)) {
             // We are here if
             // 1) there are more then kMaxReaderSlots reader (get) reading the same value or
@@ -100,7 +99,9 @@ class ControlValueAtomicBase {
         // This test is const and will be mad only at compile time
         unsigned int index;
         do {
-            index = static_cast<unsigned int>(m_writeIndex.fetchAndAddAcquire(1)) % cRingSize;
+            index = static_cast<unsigned int>(m_writeIndex.fetch_add(
+                            1, std::memory_order_acquire)) %
+                    cRingSize;
             // This will be repeated if the value is locked
             // 1) by another writer writing at the same time or
             // 2) a delayed reader is still blocking the formerly current value
@@ -117,8 +118,8 @@ class ControlValueAtomicBase {
     // In worst case, each reader can consume a reader slot from a different ring element.
     // In this case there is still one ring element available for writing.
     ControlRingValue<T> m_ring[cRingSize];
-    QAtomicInt m_readIndex;
-    QAtomicInt m_writeIndex;
+    std::atomic<int> m_readIndex;
+    std::atomic<int> m_writeIndex;
 };
 
 // Specialized template for types that are deemed to be atomic on the target
@@ -140,17 +141,7 @@ class ControlValueAtomicBase<T, cRingSize, true> {
     ControlValueAtomicBase() = default;
 
   private:
-#if defined(__GNUC__)
-    T m_value __attribute__((aligned(sizeof(void*))));
-#elif defined(_MSC_VER)
-#ifdef _WIN64
-    T __declspec(align(8)) m_value;
-#else
-    T __declspec(align(4)) m_value;
-#endif
-#else
-    T m_value;
-#endif
+    std::atomic<T> m_value;
 };
 
 template<typename T, int cRingSize = kDefaultRingSize>
