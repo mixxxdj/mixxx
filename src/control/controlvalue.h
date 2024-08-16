@@ -78,7 +78,7 @@ class ControlValueAtomicBase {
             "cRingSize is not a power of two; required for optimal alignment");
 
   public:
-    inline T getValue() const {
+    T getValue() const {
         T value;
         std::size_t index = m_readIndex.load(std::memory_order_relaxed) % cRingSize;
         while (!m_ring[index].tryGet(&value)) {
@@ -95,7 +95,7 @@ class ControlValueAtomicBase {
         return value;
     }
 
-    inline void setValue(const T& value) {
+    void setValue(const T& value) {
         // Test if we can read atomic
         // This test is const and will be mad only at compile time
         std::size_t index;
@@ -127,12 +127,11 @@ class ControlValueAtomicBase {
 template<typename T, std::size_t cRingSize>
 class ControlValueAtomicBase<T, cRingSize, true> {
   public:
-    inline T getValue() const {
+    T getValue() const {
         return m_value;
     }
 
-
-    inline void setValue(const T& value) {
+    void setValue(const T& value) {
         m_value = value;
     }
 
