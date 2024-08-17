@@ -967,6 +967,9 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool
     }
     transaction.commit();
 
+    // We may now have empty history playlists. Remove them.
+    deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG, 1);
+
     // update the sidebar
     emit playlistContentChanged(playlistIds);
     // If this is called by TrackCollection::purgeTracks() it will call
