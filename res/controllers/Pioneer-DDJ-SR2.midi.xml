@@ -280,7 +280,7 @@
                 <options>
                     <script-binding/>
                 </options>
-	    </control> 
+	    </control>
 		    <control>
                 <group>[Channel1]</group>
                 <key>DDJSR2.deck[0].jog.inputWheel</key>

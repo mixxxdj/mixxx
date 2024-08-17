@@ -40,7 +40,7 @@ var DDJSR2 = {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
-// Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
+// Sets the jogwheels sensitivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
 DDJSR2.jogwheelSensitivity = 2;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
@@ -163,7 +163,7 @@ DDJSR2.init = function() {
 
     DDJSR2.seratoHeartbeatTimer = engine.beginTimer(250, DDJSR2.doSeratoHeartbeatTimer, false);
 
-// After 500 ms have elapsed, after the serato heartbeat has occured, then poll controls. Calling this before time results in an unsuccessful poll.
+    // After 500 ms have elapsed, after the serato heartbeat has occurred, then poll controls. Calling this before time results in an unsuccessful poll.
 
  engine.beginTimer(500, function(){
 	midi.sendSysexMsg(DDJSR2.seratoControlsPoll, DDJSR2.seratoControlsPoll.length)}
@@ -258,7 +258,7 @@ DDJSR2.BrowserContainer = function(){
 	shiftPress: new components.Button({
 	    group: "[Library]",
 	    input: function (channel, control, value, status, group) {
-                if(!value){ // On release, not press. Allws for track color cycling.
+                if (!value) { // On release, not press. Allows for track color cycling.
 		     this.trackColorCycleEnabled = false;
 		    if (!this.trackColorCycleHappened){
                         if (!engine.getValue("[PreviewDeck1]", "play")) {
