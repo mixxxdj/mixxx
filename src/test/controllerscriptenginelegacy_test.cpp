@@ -26,6 +26,7 @@
 #include "util/time.h"
 
 using ::testing::_;
+using namespace std::chrono_literals;
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
@@ -47,7 +48,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
 
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
         initialize();
     }
@@ -209,7 +210,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
     // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -240,8 +241,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
-    // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).

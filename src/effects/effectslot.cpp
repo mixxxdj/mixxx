@@ -559,7 +559,7 @@ double EffectSlot::getMetaParameter() const {
 // This function is for the superknob to update individual effects' meta knobs
 // slotEffectMetaParameter does not need to update m_pControlMetaParameter's value
 void EffectSlot::setMetaParameter(double v, bool force) {
-    if (!m_metaknobSoftTakeover.ignore(m_pControlMetaParameter.get(), v) ||
+    if (!m_metaknobSoftTakeover.ignore(*m_pControlMetaParameter, v) ||
             !m_pControlEnabled->toBool() || force) {
         m_pControlMetaParameter->set(v);
         slotEffectMetaParameter(v, force);

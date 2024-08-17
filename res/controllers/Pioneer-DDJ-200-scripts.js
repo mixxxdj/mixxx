@@ -233,7 +233,7 @@ DDJ200.rateMSB = function(channel, control, value, status, group) {
 DDJ200.rateLSB = function(channel, control, value, status, group) {
     var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
     var vgroup = "[Channel" + vDeckNo + "]";
-    // calculte rate value from its most and least significant bytes
+    // calculate rate value from its most and least significant bytes
     var rateMSB = DDJ200.vDeck[vDeckNo]["rateMSB"];
     var rate = 1 - (((rateMSB << 7) + value) / 0x1FFF);
     engine.setValue(vgroup, "rate", rate);
@@ -248,7 +248,7 @@ DDJ200.volumeMSB = function(channel, control, value, status, group) {
 DDJ200.volumeLSB = function(channel, control, value, status, group) {
     var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
     var vgroup = "[Channel" + vDeckNo + "]";
-    // calculte volume value from its most and least significant bytes
+    // calculate volume value from its most and least significant bytes
     var volMSB = DDJ200.vDeck[vDeckNo]["volMSB"];
     var vol = ((volMSB << 7) + value) / 0x3FFF;
     //var vol = ((volMSB << 7) + value); // use for linear correction
