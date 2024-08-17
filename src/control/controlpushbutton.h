@@ -23,7 +23,9 @@ class ControlPushButton : public ControlObject {
         return "Unknown";
     }
 
-    ControlPushButton(const ConfigKey& key, bool bPersist = false, double defaultValue = 0.0);
+    ControlPushButton(const ConfigKey& key,
+            double defaultValue = ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlags configFlags = ControlConfigFlag::None);
     virtual ~ControlPushButton();
 
     inline mixxx::control::ButtonMode getButtonMode() const {

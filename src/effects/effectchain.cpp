@@ -305,9 +305,9 @@ void EffectChain::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
     }
 
     auto pEnableControl = std::make_shared<ControlPushButton>(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name())),
-            true,
-            initialValue);
+            ConfigKey(m_group, QStringLiteral("group_%1_enable").arg(handleGroup.name())),
+            initialValue,
+            ControlConfigFlag::Persist);
     m_channelEnableButtons.insert(handleGroup, pEnableControl);
     pEnableControl->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     if (pEnableControl->toBool()) {

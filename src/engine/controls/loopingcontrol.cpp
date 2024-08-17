@@ -136,8 +136,8 @@ LoopingControl::LoopingControl(const QString& group,
             [this](double value) { slotBeatLoop(value); },
             Qt::DirectConnection);
     m_pCOLoopAnchor = new ControlPushButton(ConfigKey(group, "loop_anchor"),
-            true,
-            static_cast<double>(LoopAnchorPoint::Start));
+            static_cast<double>(LoopAnchorPoint::Start),
+            ControlConfigFlag::Persist);
     m_pCOLoopAnchor->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),

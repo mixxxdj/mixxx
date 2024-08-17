@@ -7,10 +7,10 @@
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(const ConfigKey& key, bool bPersist, double defaultValue)
+ControlPushButton::ControlPushButton(
+        const ConfigKey& key, double defaultValue, ControlConfigFlags configFlags)
         : ControlObject(key,
-                  bPersist ? ControlConfigFlag::Persist
-                           : ControlConfigFlag::None,
+                  configFlags,
                   defaultValue),
           m_buttonMode(mixxx::control::ButtonMode::Push),
           m_iNoStates(2) {

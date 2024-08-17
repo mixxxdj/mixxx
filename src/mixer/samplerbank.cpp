@@ -29,13 +29,13 @@ SamplerBank::SamplerBank(UserSettingsPointer pConfig,
           m_pPlayerManager(pPlayerManager) {
     DEBUG_ASSERT(m_pPlayerManager);
 
-    m_pCOLoadBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "LoadSamplerBank"), this);
+    m_pCOLoadBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "LoadSamplerBank"));
     connect(m_pCOLoadBank.get(),
             &ControlObject::valueChanged,
             this,
             &SamplerBank::slotLoadSamplerBank);
 
-    m_pCOSaveBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "SaveSamplerBank"), this);
+    m_pCOSaveBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "SaveSamplerBank"));
     connect(m_pCOSaveBank.get(),
             &ControlObject::valueChanged,
             this,
