@@ -96,17 +96,17 @@ MC7000.jogParams = {
     // set to 0.5 with audio buffer set to 50ms
     // set to 1 with audio buffer set to 25ms
     // set to 3 with audio buffer set to 5ms
-    sensitivity: 1,
+    sensitivity: engine.getSetting("jogSensitivity") || 1,
     // Acceleration settings for the jog wheel in vinyl mode
     // If enabled, the track speed will accelerate faster than the physical jogheel movement. Be aware, that the absolute track position will drift relative to the jogwheel position in  this mode!
     // (exponent: 0 and coefficient: 1 = no acceleration)
     acceleration: {
         // Toggles acceleration entirely.
-        enabled: false,
+        enabled: engine.getSetting("jogAccelerationEnabled") || false,
         // Acceleration function exponent
-        exponent: 0.8,
+        exponent: engine.getSetting("jogAccelerationExponent") || 0.8,
         // Acceleration function scaling factor
-        coefficient: 1
+        coefficient: engine.getSetting("jogAccelerationCoefficient") || 1
     }
 };
 
