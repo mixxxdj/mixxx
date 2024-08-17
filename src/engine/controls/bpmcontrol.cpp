@@ -1,5 +1,6 @@
 #include "engine/controls/bpmcontrol.h"
 
+#include "control/control.h"
 #include "control/controlencoder.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlproxy.h"
@@ -79,32 +80,36 @@ BpmControl::BpmControl(const QString& group,
 
     m_pLocalBpm = std::make_unique<ControlObject>(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "beats_adjust_faster"), false);
-    m_pAdjustBeatsFaster->setKbdRepeatable(true);
+            ConfigKey(group, "beats_adjust_faster"),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pAdjustBeatsFaster.get(),
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotAdjustBeatsFaster,
             Qt::DirectConnection);
     m_pAdjustBeatsSlower = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "beats_adjust_slower"), false);
-    m_pAdjustBeatsSlower->setKbdRepeatable(true);
+            ConfigKey(group, "beats_adjust_slower"),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pAdjustBeatsSlower.get(),
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotAdjustBeatsSlower,
             Qt::DirectConnection);
     m_pTranslateBeatsEarlier = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "beats_translate_earlier"), false);
-    m_pTranslateBeatsEarlier->setKbdRepeatable(true);
+            ConfigKey(group, "beats_translate_earlier"),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pTranslateBeatsEarlier.get(),
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotTranslateBeatsEarlier,
             Qt::DirectConnection);
     m_pTranslateBeatsLater = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "beats_translate_later"), false);
-    m_pTranslateBeatsLater->setKbdRepeatable(true);
+            ConfigKey(group, "beats_translate_later"),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pTranslateBeatsLater.get(),
             &ControlObject::valueChanged,
             this,

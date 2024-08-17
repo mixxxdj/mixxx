@@ -69,22 +69,33 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
         : m_control(key, this),
           // When adding an additional control here, do not forget to also add
           // it to the `PotmeterControls::addAlias()` method, too.
-          m_controlUp(configKeyFromBaseKey(key, QStringLiteral("_up"))),
-          m_controlDown(configKeyFromBaseKey(key, QStringLiteral("_down"))),
-          m_controlUpSmall(configKeyFromBaseKey(key, QStringLiteral("_up_small"))),
-          m_controlDownSmall(configKeyFromBaseKey(key, QStringLiteral("_down_small"))),
-          m_controlSetDefault(configKeyFromBaseKey(key, QStringLiteral("_set_default"))),
-          m_controlSetZero(configKeyFromBaseKey(key, QStringLiteral("_set_zero"))),
-          m_controlSetOne(configKeyFromBaseKey(key, QStringLiteral("_set_one"))),
-          m_controlSetMinusOne(configKeyFromBaseKey(key, QStringLiteral("_set_minus_one"))),
+          m_controlUp(configKeyFromBaseKey(key, QStringLiteral("_up")),
+                  ControlDoublePrivate::kDefaultValue,
+                  ControlConfigFlag::KeyboardRepeatable),
+          m_controlDown(configKeyFromBaseKey(key, QStringLiteral("_down")),
+                  ControlDoublePrivate::kDefaultValue,
+                  ControlConfigFlag::KeyboardRepeatable),
+          m_controlUpSmall(
+                  configKeyFromBaseKey(key, QStringLiteral("_up_small")),
+                  ControlDoublePrivate::kDefaultValue,
+                  ControlConfigFlag::KeyboardRepeatable),
+          m_controlDownSmall(
+                  configKeyFromBaseKey(key, QStringLiteral("_down_small")),
+                  ControlDoublePrivate::kDefaultValue,
+                  ControlConfigFlag::KeyboardRepeatable),
+          m_controlSetDefault(
+                  configKeyFromBaseKey(key, QStringLiteral("_set_default"))),
+          m_controlSetZero(
+                  configKeyFromBaseKey(key, QStringLiteral("_set_zero"))),
+          m_controlSetOne(
+                  configKeyFromBaseKey(key, QStringLiteral("_set_one"))),
+          m_controlSetMinusOne(
+                  configKeyFromBaseKey(key, QStringLiteral("_set_minus_one"))),
           m_controlToggle(configKeyFromBaseKey(key, QStringLiteral("_toggle"))),
-          m_controlMinusToggle(configKeyFromBaseKey(key, QStringLiteral("_minus_toggle"))),
+          m_controlMinusToggle(
+                  configKeyFromBaseKey(key, QStringLiteral("_minus_toggle"))),
           m_stepCount(10),
           m_smallStepCount(100) {
-    m_controlUp.setKbdRepeatable(true);
-    m_controlDown.setKbdRepeatable(true);
-    m_controlUpSmall.setKbdRepeatable(true);
-    m_controlDownSmall.setKbdRepeatable(true);
     connect(&m_controlUp, &ControlPushButton::valueChanged, this, &PotmeterControls::incValue);
     connect(&m_controlDown, &ControlPushButton::valueChanged, this, &PotmeterControls::decValue);
     connect(&m_controlUpSmall,
@@ -95,10 +106,6 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::decSmallValue);
-    m_controlUp.setKbdRepeatable(true);
-    m_controlUpSmall.setKbdRepeatable(true);
-    m_controlDown.setKbdRepeatable(true);
-    m_controlDownSmall.setKbdRepeatable(true);
 
     connect(&m_controlSetDefault,
             &ControlPushButton::valueChanged,

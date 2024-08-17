@@ -117,10 +117,6 @@ class ControlDoublePrivate : public QObject {
         m_description = description;
     }
 
-    void setKbdRepeatable(bool enable) {
-        m_configFlags.setFlag(ControlConfigFlag::KeyboardRepeatable, enable);
-    }
-
     bool getKbdRepeatable() const {
         return m_configFlags.testFlag(ControlConfigFlag::KeyboardRepeatable);
     }

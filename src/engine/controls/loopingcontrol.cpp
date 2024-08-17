@@ -181,25 +181,33 @@ LoopingControl::LoopingControl(const QString& group,
             &LoopingControl::slotBeatJumpSizeChangeRequest,
             Qt::DirectConnection);
 
-    m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
-    m_pCOBeatJumpSizeHalve->setKbdRepeatable(true);
+    m_pCOBeatJumpSizeHalve =
+            new ControlPushButton(ConfigKey(group, "beatjump_size_halve"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pCOBeatJumpSizeHalve,
             &ControlObject::valueChanged,
             this,
             &LoopingControl::slotBeatJumpSizeHalve);
-    m_pCOBeatJumpSizeDouble = new ControlPushButton(ConfigKey(group, "beatjump_size_double"));
-    m_pCOBeatJumpSizeDouble->setKbdRepeatable(true);
+    m_pCOBeatJumpSizeDouble =
+            new ControlPushButton(ConfigKey(group, "beatjump_size_double"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pCOBeatJumpSizeDouble,
             &ControlObject::valueChanged,
             this,
             &LoopingControl::slotBeatJumpSizeDouble);
 
-    m_pCOBeatJumpForward = new ControlPushButton(ConfigKey(group, "beatjump_forward"));
-    m_pCOBeatJumpForward->setKbdRepeatable(true);
+    m_pCOBeatJumpForward =
+            new ControlPushButton(ConfigKey(group, "beatjump_forward"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pCOBeatJumpForward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpForward);
-    m_pCOBeatJumpBackward = new ControlPushButton(ConfigKey(group, "beatjump_backward"));
-    m_pCOBeatJumpBackward->setKbdRepeatable(true);
+    m_pCOBeatJumpBackward =
+            new ControlPushButton(ConfigKey(group, "beatjump_backward"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pCOBeatJumpBackward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpBackward);
 
@@ -230,12 +238,14 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOLoopScale = new ControlObject(ConfigKey(group, "loop_scale"), ControlConfigFlag::None);
     connect(m_pCOLoopScale, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopScale);
-    m_pLoopHalveButton = new ControlPushButton(ConfigKey(group, "loop_halve"));
-    m_pLoopHalveButton->setKbdRepeatable(true);
+    m_pLoopHalveButton = new ControlPushButton(ConfigKey(group, "loop_halve"),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pLoopHalveButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopHalve);
-    m_pLoopDoubleButton = new ControlPushButton(ConfigKey(group, "loop_double"));
-    m_pLoopDoubleButton->setKbdRepeatable(true);
+    m_pLoopDoubleButton = new ControlPushButton(ConfigKey(group, "loop_double"),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pLoopDoubleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopDouble);
 
@@ -1948,14 +1958,16 @@ mixxx::audio::FramePos LoopingControl::adjustedPositionInsideAdjustedLoop(
 BeatJumpControl::BeatJumpControl(const QString& group, double size)
         : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
-            keyForControl(group, "beatjump_%1_forward", size));
-    m_pJumpForward->setKbdRepeatable(true);
+            keyForControl(group, "beatjump_%1_forward", size),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pJumpForward, &ControlObject::valueChanged,
             this, &BeatJumpControl::slotJumpForward,
             Qt::DirectConnection);
     m_pJumpBackward = new ControlPushButton(
-            keyForControl(group, "beatjump_%1_backward", size));
-    m_pJumpBackward->setKbdRepeatable(true);
+            keyForControl(group, "beatjump_%1_backward", size),
+            ControlDoublePrivate::kDefaultValue,
+            ControlConfigFlag::KeyboardRepeatable);
     connect(m_pJumpBackward, &ControlObject::valueChanged,
             this, &BeatJumpControl::slotJumpBackward,
             Qt::DirectConnection);
