@@ -129,14 +129,14 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     struct RowInfo {
         TrackId trackId;
         int row;
-        QVector<QVariant> metadata;
+        QVector<QVariant> columnValues;
 
         int getPosition(int posCol) const {
             if (posCol < 0) {
                 return -1;
             }
             bool ok = false;
-            int pos = metadata.at(posCol).toInt(&ok);
+            int pos = columnValues.at(posCol).toInt(&ok);
             if (ok) {
                 return pos;
             }

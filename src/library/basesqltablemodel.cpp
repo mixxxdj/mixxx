@@ -283,9 +283,9 @@ void BaseSqlTableModel::select() {
         rowInfo.trackId = trackId;
         rowInfo.row = rowInfos.size();
 
-        rowInfo.metadata.reserve(sqlRecord.count());
+        rowInfo.columnValues.reserve(sqlRecord.count());
         for (int i = 0; i < m_tableColumns.size(); ++i) {
-            rowInfo.metadata.push_back(sqlRecord.value(i));
+            rowInfo.columnValues.push_back(sqlRecord.value(i));
         }
         rowInfos.push_back(rowInfo);
     }
@@ -674,13 +674,13 @@ QVariant BaseSqlTableModel::rawValue(
             return previewDeckTrackId() == trackId;
         }
 
-        const QVector<QVariant>& columns = rowInfo.metadata;
+        const QVector<QVariant>& columnValues = rowInfo.columnValues;
         if (sDebug) {
             qDebug() << "Returning table-column value"
-                    << columns.at(column)
-                    << "for column" << column;
+                     << columnValues.at(column)
+                     << "for column" << column;
         }
-        return columns[column];
+        return columnValues[column];
     }
 
     // Otherwise, return the information from the track record cache for the
