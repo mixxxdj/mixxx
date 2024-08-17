@@ -1,5 +1,6 @@
 #include "effects/effectchain.h"
 
+#include "control/control.h"
 #include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -61,8 +62,10 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::sendParameterUpdate);
 
+    constexpr static ControlConfigFlags kIgnoreNopsAndPersist = {
+            ControlConfigFlag::IgnoreNops, ControlConfigFlag::Persist};
     m_pControlChainMix = std::make_unique<ControlPotmeter>(
-            ConfigKey(m_group, "mix"), 0.0, 1.0, false, true, false, true, 1.0);
+            ConfigKey(m_group, "mix"), 0.0, 1.0, false, kIgnoreNopsAndPersist, 1.0);
     m_pControlChainMix->setDefaultValue(0.0);
     connect(m_pControlChainMix.get(),
             &ControlObject::valueChanged,

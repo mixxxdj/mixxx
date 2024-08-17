@@ -17,19 +17,16 @@ ControlPotmeter::ControlPotmeter(const ConfigKey& key,
         double dMinValue,
         double dMaxValue,
         bool allowOutOfBounds,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
+        ControlConfigFlags configFlags,
         double defaultValue)
         : ControlObject(key,
-                  ControlDoublePrivate::configFlagFromBools(
-                          bIgnoreNops, bTrack, bPersist),
+                  configFlags,
                   defaultValue),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
     double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
     setDefaultValue(default_value);
-    if (!bPersist) {
+    if (!configFlags.testFlag(ControlConfigFlag::Persist)) {
         set(default_value);
     }
     //qDebug() << "" << this << ", min " << dMinValue << ", max " << dMaxValue << ", default " << default_value;
