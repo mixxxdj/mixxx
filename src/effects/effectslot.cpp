@@ -68,7 +68,7 @@ EffectSlot::EffectSlot(const QString& group,
     // Default to disabled to prevent accidental activation of effects
     // at the beginning of a set.
     m_pControlEnabled = std::make_unique<ControlPushButton>(ConfigKey(m_group, "enabled"));
-    m_pControlEnabled->setButtonMode(ControlButtonMode::POWERWINDOW);
+    m_pControlEnabled->setButtonMode(ControlButtonMode::PowerWindow);
     connect(m_pControlEnabled.get(),
             &ControlObject::valueChanged,
             this,

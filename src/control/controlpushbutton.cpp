@@ -8,7 +8,7 @@
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(const ConfigKey& key, bool bPersist, double defaultValue)
         : ControlObject(key, false, false, bPersist, defaultValue),
-          m_buttonMode(ControlButtonMode::PUSH),
+          m_buttonMode(ControlButtonMode::Push),
           m_iNoStates(2) {
     updateBehavior();
 }

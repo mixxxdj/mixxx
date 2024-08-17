@@ -1,9 +1,9 @@
 #pragma once
 
 enum class ControlButtonMode {
-    PUSH = 0,
-    TOGGLE,
-    POWERWINDOW,
-    LONGPRESSLATCHING,
-    TRIGGER
+    Push,
+    Toggle,
+    PowerWindow,
+    LongPressLatching,
+    Trigger
 };

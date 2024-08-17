@@ -22,7 +22,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
-    m_pBroadcastEnabled->setButtonMode(ControlButtonMode::TOGGLE);
+    m_pBroadcastEnabled->setButtonMode(ControlButtonMode::Toggle);
     connect(m_pBroadcastEnabled,
             &ControlPushButton::valueChanged,
             this,

@@ -30,15 +30,15 @@ class ControlPushButton : public ControlObject {
   public:
     static QString buttonModeToString(ControlButtonMode mode) {
         switch(mode) {
-        case ControlButtonMode::PUSH:
+        case ControlButtonMode::Push:
             return "PUSH";
-        case ControlButtonMode::TOGGLE:
+        case ControlButtonMode::Toggle:
             return "TOGGLE";
-        case ControlButtonMode::POWERWINDOW:
+        case ControlButtonMode::PowerWindow:
             return "POWERWINDOW";
-        case ControlButtonMode::LONGPRESSLATCHING:
+        case ControlButtonMode::LongPressLatching:
             return "LONGPRESSLATCHING";
-        case ControlButtonMode::TRIGGER:
+        case ControlButtonMode::Trigger:
             return "TRIGGER";
         default:
             return "UNKNOWN";

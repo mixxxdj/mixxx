@@ -138,9 +138,9 @@ CueControl::~CueControl() {
 
 void CueControl::createControls() {
     m_pCueSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_set"));
-    m_pCueSet->setButtonMode(ControlButtonMode::TRIGGER);
+    m_pCueSet->setButtonMode(ControlButtonMode::Trigger);
     m_pCueClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_clear"));
-    m_pCueClear->setButtonMode(ControlButtonMode::TRIGGER);
+    m_pCueClear->setButtonMode(ControlButtonMode::Trigger);
     m_pCueGoto = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_goto"));
     m_pCueGotoAndPlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_gotoandplay"));
     m_pCuePlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_play"));

@@ -53,9 +53,9 @@ KeyControl::KeyControl(const QString& group,
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
 
-    m_keylockMode->setButtonMode(ControlButtonMode::TOGGLE);
+    m_keylockMode->setButtonMode(ControlButtonMode::Toggle);
 
-    m_keyunlockMode->setButtonMode(ControlButtonMode::TOGGLE);
+    m_keyunlockMode->setButtonMode(ControlButtonMode::Toggle);
 
     connect(m_pPitch.get(),
             &ControlObject::valueChanged,
