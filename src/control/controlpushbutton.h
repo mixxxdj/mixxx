@@ -18,11 +18,9 @@ class ControlPushButton : public ControlObject {
             return QStringLiteral("LongPressLatching");
         case ControlButtonMode::Trigger:
             return QStringLiteral("Trigger");
-        default:
-            // Without the default branch we get compiler warnings
-            DEBUG_ASSERT(false);
-            return "Unknown";
         }
+        DEBUG_ASSERT(false);
+        return "Unknown";
     }
 
     ControlPushButton(const ConfigKey& key, bool bPersist = false, double defaultValue = 0.0);
