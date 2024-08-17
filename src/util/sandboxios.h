@@ -13,7 +13,7 @@ namespace mixxx {
 ///
 ///     /private/var/mobile/Containers/Data/Application/<uuid>
 ///
-QString updateiOSSandboxPath(const QString& path);
+QString updateIOSSandboxPath(const QString& path);
 
 #endif
 

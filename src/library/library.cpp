@@ -694,7 +694,7 @@ bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
 }
 
 #ifdef Q_OS_IOS
-void Library::requestRelocateiOSSandboxDirs() {
+void Library::requestRelocateIOSSandboxDirs() {
     // TODO: If the user selects a different app sandbox than ours (which is
     // possible via the file picker) relinking will point those directories to
     // our sandbox. This is not a supported scenario, however, and we should probably
@@ -707,7 +707,7 @@ void Library::requestRelocateiOSSandboxDirs() {
     QStringList rootDirs = m_pTrackCollectionManager->internalCollection()->getRootDirStrings();
 
     for (const QString& dir : rootDirs) {
-        QString newDir = mixxx::updateiOSSandboxPath(dir);
+        QString newDir = mixxx::updateIOSSandboxPath(dir);
 
         if (dir == newDir) {
             // Sandbox directory did not move

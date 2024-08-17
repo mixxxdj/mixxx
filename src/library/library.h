@@ -111,7 +111,7 @@ class Library: public QObject {
     /// Updates the iOS sandbox path prefix on all music directories.
     /// This prefix may change after reinstalls or updates, therefore
     /// this method is called during startup.
-    void requestRelocateiOSSandboxDirs();
+    void requestRelocateIOSSandboxDirs();
 #endif
 
 #ifdef __ENGINEPRIME__

@@ -35,7 +35,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 #ifdef Q_OS_IOS
         // On iOS the sandbox prefix may have changed, so we may need to update
         // the recordings path.
-        QString newPath = mixxx::updateiOSSandboxPath(recordingsPath);
+        QString newPath = mixxx::updateIOSSandboxPath(recordingsPath);
         if (newPath != recordingsPath) {
             qInfo() << "Updating recordings directory since iOS sandbox has "
                        "moved:"

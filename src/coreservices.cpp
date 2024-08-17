@@ -401,7 +401,7 @@ void CoreServices::initialize(QApplication* pApp) {
         // (/private/var/mobile/Containers/Data/Application/<uuid>/Documents)
         // may change its UUID across reinstalls and updates, so we have to
         // relink any music directories in the sandbox on startup.
-        m_pLibrary->requestRelocateiOSSandboxDirs();
+        m_pLibrary->requestRelocateIOSSandboxDirs();
 #endif
     }
 

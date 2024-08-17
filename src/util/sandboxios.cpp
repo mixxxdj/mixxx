@@ -14,7 +14,7 @@ static const QRegularExpression sandboxPrefixRegex = QRegularExpression(
         QStringLiteral("^/private/var/mobile/Containers/Data/Application/"
                        "[a-zA-Z0-9\\-]+(/.*)"));
 
-QString updateiOSSandboxPath(const QString& path) {
+QString updateIOSSandboxPath(const QString& path) {
     QRegularExpressionMatch match = sandboxPrefixRegex.match(path);
     if (!match.hasMatch()) {
         qWarning() << "Tried updating iOS sandbox prefix in path outside sandbox:"
