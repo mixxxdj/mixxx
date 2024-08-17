@@ -51,9 +51,9 @@ class ControlPushButton : public ControlObject {
     inline ControlButtonMode getButtonMode() const {
         return m_buttonMode;
     }
-    void setButtonMode(enum ControlButtonMode mode);
+    void setButtonMode(ControlButtonMode mode);
     void setStates(int num_states);
-    void setBehavior(enum ControlButtonMode mode, int num_states);
+    void setBehavior(ControlButtonMode mode, int num_states);
 
   private:
     void updateBehavior();
