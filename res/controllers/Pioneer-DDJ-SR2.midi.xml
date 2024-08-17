@@ -201,7 +201,8 @@
                     <script-binding/>
                 </options>
             </control>
-		    <control>
+			    <!--	Not needed
+				    <control>
                 <group>[Channel1]</group>
                 <key>DDJSR2.deck[0].needleSearchTouch</key>
                 <description>DECK 1 NEEDLE SEARCH TOUCH</description>
@@ -220,10 +221,10 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+			    </control> -->
 			<control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[0].needleSearchStripPosition.input</key>
                 <description>DECK 1 NEEDLE SEARCH STRIP POSITION</description>
                 <status>0xB0</status>
                 <midino>0x03</midino>
@@ -233,7 +234,7 @@
             </control>
 			<control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[0].needleSearchStripPositionShifted.input</key>
                 <description>DECK 1 NEEDLE SEARCH STRIP POSITION Shift pressed</description>
                 <status>0xB0</status>
                 <midino>0x28</midino>
@@ -270,19 +271,19 @@
                 </options>
             </control>
             <!-- jog wheels -->
-            <control>
+	                <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].platterTouch</key>
+                <key>DDJSR2.deck[0].jog.inputTouch</key>
                 <description>DECK 1 PLATTER TOUCH</description>
                 <status>0x90</status>
                 <midino>0x36</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+	    </control> 
 		    <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].vinylPlatterTick</key>
+                <key>DDJSR2.deck[0].jog.inputWheel</key>
                 <description>Jog Platter movement (Vinyl Mode) Deck 1, left JOGDIAL (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x22</midino>
@@ -292,7 +293,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].jogPlatterTick</key>
+                <key>DDJSR2.deck[0].jog.inputWheel</key>
                 <description>Jog Platter movement (CDJ Mode) Deck 1, left JOGDIAL (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x23</midino>
@@ -427,7 +428,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].pregain.inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].pregain.inputMSB</key>
                 <description>DECK 1 TRIM (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x04</midino>
@@ -437,7 +438,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].pregain.inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].pregain.inputLSB</key>
                 <description>DECK 1 TRIM (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x24</midino>
@@ -447,7 +448,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.deck[0].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[3].inputMSB</key>
                 <description>DECK 1 EQ HI (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x07</midino>
@@ -457,7 +458,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.deck[0].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[3].inputLSB</key>
                 <description>DECK 1 EQ HI (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x27</midino>
@@ -467,7 +468,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.deck[0].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[2].inputMSB</key>
                 <description>DECK 1 EQ MID (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
@@ -477,7 +478,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.deck[0].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[2].inputLSB</key>
                 <description>DECK 1 EQ MID (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x2B</midino>
@@ -487,7 +488,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.deck[0].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[1].inputMSB</key>
                 <description>DECK 1 EQ LOW (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
@@ -497,7 +498,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.deck[0].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[1].inputLSB</key>
                 <description>DECK 1 EQ LOW (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x2F</midino>
@@ -507,7 +508,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>DDJSR2.deck[0].filter.inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].filter.inputMSB</key>
                 <description>DECK 1 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x17</midino>
@@ -517,7 +518,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>DDJSR2.deck[0].filter.inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].filter.inputLSB</key>
                 <description>DECK 1 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x37</midino>
@@ -527,7 +528,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].pfl.input</key>
+                <key>DDJSR2.mixer.channels[0].pfl.input</key>
                 <description>DECK 1 CUE/PFL</description>
                 <status>0x90</status>
                 <midino>0x54</midino>
@@ -536,7 +537,7 @@
                 </options>
             </control>            <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].tapBPM.input</key>
+                <key>DDJSR2.mixer.channels[0].tapBPM.input</key>
                 <description>DECK 1 TAP</description>
                 <status>0x90</status>
                 <midino>0x68</midino>
@@ -546,7 +547,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].volume.inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].volume.inputMSB</key>
                 <description>DECK 1 VOLUME (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x13</midino>
@@ -556,7 +557,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].volume.inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].volume.inputLSB</key>
                 <description>DECK 1 VOLUME (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x33</midino>
@@ -841,7 +842,7 @@
                     <script-binding/>
                 </options>
             </control>
- 		    <control>
+<!-- 		    <control>
                 <group>[Channel2]</group>
                 <key>DDJSR2.deck[1].needleSearchTouch</key>
                 <description>DECK 2 NEEDLE SEARCH TOUCH</description>
@@ -860,10 +861,10 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+</control> -->
 			<control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[1].needleSearchStripPosition.input</key>
                 <description>DECK 2 NEEDLE SEARCH STRIP POSITION</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
@@ -873,7 +874,7 @@
             </control>
 			<control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[1].needleSearchStripPositionShifted.input</key>
                 <description>DECK 2 NEEDLE SEARCH STRIP POSITION Shift pressed</description>
                 <status>0xB1</status>
                 <midino>0x28</midino>
@@ -909,10 +910,10 @@
                     <script-binding/>
                 </options>
             </control>
-            <!-- jog wheels -->
-            <control>
+	    <!-- jog wheels -->
+	            <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].platterTouch</key>
+                <key>DDJSR2.deck[1].jog.inputTouch</key>
                 <description>DECK 2 PLATTER TOUCH</description>
                 <status>0x91</status>
                 <midino>0x36</midino>
@@ -920,10 +921,10 @@
                     <script-binding/>
                 </options>
             </control>
-		    <control>
+	    <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].vinylPlatterTick</key>
-                <description>Jog Platter movement (Vinyl Mode) Deck 2, left JOGDIAL (Deck 2 active)</description>
+                <key>DDJSR2.deck[1].jog.inputWheel</key>
+                <description>Jog Platter movement (Vinyl Mode) Deck 2, right JOGDIAL (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x22</midino>
                 <options>
@@ -932,8 +933,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].jogPlatterTick</key>
-                <description>Jog Platter movement (CDJ Mode) Deck 2, left JOGDIAL (Deck 2 active)</description>
+                <key>DDJSR2.deck[1].jog.inputWheel</key>
+                <description>Jog Platter movement (CDJ Mode) Deck 2, right JOGDIAL (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x23</midino>
                 <options>
@@ -964,7 +965,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].pregain.inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].pregain.inputMSB</key>
                 <description>DECK 2 TRIM (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>
@@ -974,7 +975,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].pregain.inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].pregain.inputLSB</key>
                 <description>DECK 2 TRIM (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x24</midino>
@@ -984,7 +985,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.deck[1].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[3].inputMSB</key>
                 <description>DECK 2 EQ HI (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x07</midino>
@@ -994,7 +995,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.deck[1].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[3].inputLSB</key>
                 <description>DECK 2 EQ HI (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x27</midino>
@@ -1004,7 +1005,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.deck[1].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[2].inputMSB</key>
                 <description>DECK 2 EQ MID (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
@@ -1014,7 +1015,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.deck[1].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[2].inputLSB</key>
                 <description>DECK 2 EQ MID (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x2B</midino>
@@ -1024,7 +1025,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.deck[1].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[1].inputMSB</key>
                 <description>DECK 2 EQ LOW (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x0F</midino>
@@ -1034,7 +1035,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.deck[1].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[1].inputLSB</key>
                 <description>DECK 2 EQ LOW (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x2F</midino>
@@ -1044,7 +1045,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>DDJSR2.deck[1].filter.inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].filter.inputMSB</key>
                 <description>DECK 2 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x18</midino>
@@ -1054,7 +1055,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>DDJSR2.deck[1].filter.inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].filter.inputLSB</key>
                 <description>DECK 2 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x38</midino>
@@ -1064,7 +1065,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].pfl.input</key>
+                <key>DDJSR2.mixer.channels[1].pfl.input</key>
                 <description>DECK 2 CUE/PFL</description>
                 <status>0x91</status>
                 <midino>0x54</midino>
@@ -1073,7 +1074,7 @@
                 </options>
             </control>            <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].tapBPM.input</key>
+                <key>DDJSR2.mixer.channels[1].tapBPM.input</key>
                 <description>DECK 2 TAP</description>
                 <status>0x91</status>
                 <midino>0x68</midino>
@@ -1083,7 +1084,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].volume.inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].volume.inputMSB</key>
                 <description>DECK 2 VOLUME (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x13</midino>
@@ -1093,7 +1094,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].volume.inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].volume.inputLSB</key>
                 <description>DECK 2 VOLUME (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x33</midino>
@@ -1273,7 +1274,7 @@
                     <script-binding/>
                 </options>
             </control>
-		    <control>
+<!--		    <control>
                 <group>[Channel3]</group>
                 <key>DDJSR2.deck[2].needleSearchTouch</key>
                 <description>DECK 3 NEEDLE SEARCH TOUCH</description>
@@ -1292,10 +1293,10 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+</control> -->
 			<control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[2].needleSearchStripPosition.input</key>
                 <description>DECK 3 NEEDLE SEARCH STRIP POSITION</description>
                 <status>0xB2</status>
                 <midino>0x03</midino>
@@ -1305,7 +1306,7 @@
             </control>
 			<control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[2].needleSearchStripPositionShifted.input</key>
                 <description>DECK 3 NEEDLE SEARCH STRIP POSITION Shift pressed</description>
                 <status>0xB2</status>
                 <midino>0x28</midino>
@@ -1341,10 +1342,10 @@
                     <script-binding/>
                 </options>
             </control>
-            <!-- jog wheels -->
-            <control>
+	    <!-- jog wheels -->
+		                <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].platterTouch</key>
+                <key>DDJSR2.deck[2].jog.inputTouch</key>
                 <description>DECK 3 PLATTER TOUCH</description>
                 <status>0x92</status>
                 <midino>0x36</midino>
@@ -1354,8 +1355,8 @@
             </control>
 		    <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].vinylPlatterTick</key>
-                <description>Jog Platter movement (Vinyl Mode) Deck 1, left JOGDIAL (Deck 1 active)</description>
+                <key>DDJSR2.deck[2].jog.inputWheel</key>
+                <description>Jog Platter movement (Vinyl Mode) Deck 3, left JOGDIAL (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x22</midino>
                 <options>
@@ -1364,8 +1365,8 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].jogPlatterTick</key>
-                <description>Jog Platter movement (CDJ Mode) Deck 1, left JOGDIAL (Deck 1 active)</description>
+		<key>DDJSR2.deck[2].jog.inputWheel</key>
+                <description>Jog Platter movement (CDJ Mode) Deck 3, left JOGDIAL (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x23</midino>
                 <options>
@@ -1499,7 +1500,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].pregain.inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].pregain.inputMSB</key>
                 <description>DECK 3 TRIM (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x04</midino>
@@ -1509,7 +1510,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].pregain.inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].pregain.inputLSB</key>
                 <description>DECK 3 TRIM (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x24</midino>
@@ -1519,7 +1520,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.deck[2].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[3].inputMSB</key>
                 <description>DECK 3 EQ HI (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x07</midino>
@@ -1529,7 +1530,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.deck[2].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[3].inputLSB</key>
                 <description>DECK 3 EQ HI (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x27</midino>
@@ -1539,7 +1540,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.deck[2].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[2].inputMSB</key>
                 <description>DECK 3 EQ MID (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x0B</midino>
@@ -1549,7 +1550,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.deck[2].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[2].inputLSB</key>
                 <description>DECK 3 EQ MID (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x2B</midino>
@@ -1559,7 +1560,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.deck[2].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[1].inputMSB</key>
                 <description>DECK 3 EQ LOW (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x0F</midino>
@@ -1569,7 +1570,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.deck[2].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[1].inputLSB</key>
                 <description>DECK 3 EQ LOW (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x2F</midino>
@@ -1579,7 +1580,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel3]]</group>
-                <key>DDJSR2.deck[2].filter.inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].filter.inputMSB</key>
                 <description>DECK 3 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x19</midino>
@@ -1589,7 +1590,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel3]]</group>
-                <key>DDJSR2.deck[2].filter.inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].filter.inputLSB</key>
                 <description>DECK 3 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x39</midino>
@@ -1599,7 +1600,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].pfl.input</key>
+                <key>DDJSR2.mixer.channels[2].pfl.input</key>
                 <description>DECK 3 CUE/PFL</description>
                 <status>0x92</status>
                 <midino>0x54</midino>
@@ -1608,7 +1609,7 @@
                 </options>
             </control>            <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].tapBPM.input</key>
+                <key>DDJSR2.mixer.channels[2].tapBPM.input</key>
                 <description>DECK 3 TAP</description>
                 <status>0x92</status>
                 <midino>0x68</midino>
@@ -1618,7 +1619,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].volume.inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].volume.inputMSB</key>
                 <description>DECK 3 VOLUME (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x13</midino>
@@ -1628,7 +1629,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].volume.inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].volume.inputLSB</key>
                 <description>DECK 3 VOLUME (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x33</midino>
@@ -1913,7 +1914,7 @@
                     <script-binding/>
                 </options>
             </control>
- 		    <control>
+	    <!-- 		    <control>
                 <group>[Channel4]</group>
                 <key>DDJSR2.deck[3].needleSearchTouch</key>
                 <description>DECK 4 NEEDLE SEARCH TOUCH</description>
@@ -1932,10 +1933,10 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+	    </control> -->
 			<control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].needleSearchStripPosition</key>
+		<key>DDJSR2.deck[3].needleSearchStripPosition.input</key>
                 <description>DECK 4 NEEDLE SEARCH STRIP POSITION</description>
                 <status>0xB3</status>
                 <midino>0x03</midino>
@@ -1945,7 +1946,7 @@
             </control>
 			<control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].needleSearchStripPosition</key>
+                <key>DDJSR2.deck[3].needleSearchStripPositionShifted.input</key>
                 <description>DECK 4 NEEDLE SEARCH STRIP POSITION Shift pressed</description>
                 <status>0xB3</status>
                 <midino>0x28</midino>
@@ -1981,10 +1982,10 @@
                     <script-binding/>
                 </options>
             </control>
-            <!-- jog wheels -->
-            <control>
+	    <!-- jog wheels -->
+	    <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].platterTouch</key>
+                <key>DDJSR2.deck[3].jog.inputTouch</key>
                 <description>DECK 4 PLATTER TOUCH</description>
                 <status>0x93</status>
                 <midino>0x36</midino>
@@ -1994,8 +1995,8 @@
             </control>
 		    <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].vinylPlatterTick</key>
-                <description>Jog Platter movement (Vinyl Mode) Deck 2, left JOGDIAL (Deck 2 active)</description>
+                <key>DDJSR2.deck[3].jog.inputWheel</key>
+                <description>Jog Platter movement (Vinyl Mode) Deck 4, right JOGDIAL (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x22</midino>
                 <options>
@@ -2004,8 +2005,8 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].jogPlatterTick</key>
-                <description>Jog Platter movement (CDJ Mode) Deck 2, left JOGDIAL (Deck 2 active)</description>
+                <key>DDJSR2.deck[3].jog.inputWheel</key>
+                <description>Jog Platter movement (CDJ Mode) Deck 4, right JOGDIAL (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x23</midino>
                 <options>
@@ -2036,7 +2037,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].pregain.inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].pregain.inputMSB</key>
                 <description>DECK 4 TRIM (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x04</midino>
@@ -2046,7 +2047,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].pregain.inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].pregain.inputLSB</key>
                 <description>DECK 4 TRIM (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x24</midino>
@@ -2056,7 +2057,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.deck[3].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[3].inputMSB</key>
                 <description>DECK 4 EQ HI (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x07</midino>
@@ -2066,7 +2067,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.deck[3].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[3].inputLSB</key>
                 <description>DECK 4 EQ HI (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x27</midino>
@@ -2076,7 +2077,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.deck[3].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[2].inputMSB</key>
                 <description>DECK 4 EQ MID (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x0B</midino>
@@ -2086,7 +2087,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.deck[3].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[2].inputLSB</key>
                 <description>DECK 4 EQ MID (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x2B</midino>
@@ -2096,7 +2097,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.deck[3].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[1].inputMSB</key>
                 <description>DECK 4 EQ LOW (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x0F</midino>
@@ -2106,7 +2107,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.deck[3].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[1].inputLSB</key>
                 <description>DECK 4 EQ LOW (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x2F</midino>
@@ -2116,7 +2117,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel4]]</group>
-                <key>DDJSR2.deck[3].filter.inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].filter.inputMSB</key>
                 <description>DECK 4 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x1A</midino>
@@ -2126,7 +2127,7 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel4]]</group>
-                <key>DDJSR2.deck[3].filter.inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].filter.inputLSB</key>
                 <description>DECK 4 FILTER</description>
                 <status>0xB6</status>
                 <midino>0x3A</midino>
@@ -2136,7 +2137,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].pfl.input</key>
+                <key>DDJSR2.mixer.channels[3].pfl.input</key>
                 <description>DECK 4 CUE/PFL</description>
                 <status>0x93</status>
                 <midino>0x54</midino>
@@ -2145,7 +2146,7 @@
                 </options>
             </control>            <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].tapBPM.input</key>
+                <key>DDJSR2.mixer.channels[3].tapBPM.input</key>
                 <description>DECK 4 TAP</description>
                 <status>0x93</status>
                 <midino>0x68</midino>
@@ -2155,7 +2156,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].volume.inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].volume.inputMSB</key>
                 <description>DECK 4 VOLUME (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x13</midino>
@@ -2165,7 +2166,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].volume.inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].volume.inputLSB</key>
                 <description>DECK 4 VOLUME (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x33</midino>
@@ -2175,7 +2176,7 @@
             </control>
  			<control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].loadTrackButton.input</key>
+                <key>DDJSR2.browser.loadButtons[0].input</key>
                 <description>DECK 1 LOAD</description>
                 <status>0x96</status>
                 <midino>0x46</midino>
@@ -2185,7 +2186,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].loadTrackButton.input</key>
+                <key>DDJSR2.browser.loadButtons[1].input</key>
                 <description>DECK 2 LOAD</description>
                 <status>0x96</status>
                 <midino>0x47</midino>
@@ -2195,7 +2196,7 @@
             </control>
 			<control>
                 <group>[Library]</group>
-                <key>DDJSR2.sortLibrary</key>
+                <key>DDJSR2.browser.sortLibrary</key>
                 <description>BPM</description>
                 <status>0x96</status>
                 <midino>0x58</midino>
@@ -2205,7 +2206,7 @@
             </control>
 			<control>
                 <group>[Library]</group>
-                <key>DDJSR2.sortLibrary</key>
+                <key>DDJSR2.browser.sortLibrary</key>
                 <description>ARTIST</description>
                 <status>0x96</status>
                 <midino>0x59</midino>
@@ -2214,28 +2215,8 @@
                 </options>
             </control>
 			<control>
-                <group>[Library]</group>
-                <key>DDJSR2.sortLibrary</key>
-                <description>BPM</description>
-                <status>0x96</status>
-                <midino>0x60</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-			<control>
-                <group>[Library]</group>
-                <key>DDJSR2.sortLibrary</key>
-                <description>ARTIST</description>
-                <status>0x96</status>
-                <midino>0x61</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-			<control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].loadTrackButton.input</key>
+                <key>DDJSR2.browser.loadButtons[2].input</key>
                 <description>DECK 3 LOAD</description>
                 <status>0x96</status>
                 <midino>0x48</midino>
@@ -2246,7 +2227,7 @@
 
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].loadTrackButton.input</key>
+                <key>DDJSR2.browser.loadButtons[3].input</key>
                 <description>DECK 4 LOAD</description>
                 <status>0x96</status>
                 <midino>0x49</midino>
@@ -2259,7 +2240,7 @@
 <!-- Encoder control cluster -->
           <control>
                 <group>[Library]</group>
-                <key>DDJSR2.BrowseEncoder.input</key>
+                <key>DDJSR2.browser.browseKnob.turn.input</key>
                 <description>Knob: BROWSER</description>
                 <status>0xB6</status>
                 <midino>0x40</midino>
@@ -2269,17 +2250,37 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DDJSR2.BrowseEncoder.input</key>
+                <key>DDJSR2.browser.browseKnob.press.input</key>
                 <description>Knob: BROWSER PRESS</description>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+	    </control>
+	    <control>
+		<group>[Library]</group>
+	        <key>DDJSR2.browser.browseKnob.shiftTurn.input</key>
+	        <description>Knob: BROWSER SHIFT TURN</description>
+		<status>0xB6</status>
+		<midino>0x64</midino>
+                <options>
+                    <script-binding/>
+                </options>
+	    </control>
+            <control>
+		<group>[Library]</group>
+	        <key>DDJSR2.browser.browseKnob.shiftPress.input</key>
+		<description>Knob: BROWSER SHIFT PRESS</description>
+	        <status>0x96</status>
+		<midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+	    </control>
             <control>
                 <group>[Library]</group>
-                <key>DDJSR2.loadPrepareButton</key>
+                <key>DDJSR2.browser.loadPrepareButton</key>
                 <description>AutoDJ Add to Bottom</description>
 				<status>0x96</status>
 				<midino>0x67</midino>
@@ -2289,7 +2290,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DDJSR2.loadPrepareButtonShifted</key>
+                <key>DDJSR2.browser.loadPrepareButtonShifted</key>
                 <description>AutoDJ Add to top</description>
 				<status>0x96</status>
 				<midino>0x68</midino>
@@ -2299,7 +2300,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DDJSR2.backButton</key>
+                <key>DDJSR2.browser.backButton.input</key>
                 <description>Move focus backward in Library, Button: BACK</description>
                 <status>0x96</status>
                 <midino>0x65</midino>
@@ -2308,8 +2309,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>DDJSR2.shiftBackButton</key>
+                <group>[Library]</group>
+                <key>DDJSR2.browser.shiftBackButton.input</key>
                 <description>Toggle maximized view of Library, Button: SHIFT &amp; BACK</description>
                 <status>0x96</status>
                 <midino>0x66</midino>
@@ -2319,7 +2320,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DDJSR2.panelSelectButton</key>
+                <key>DDJSR2.mixer.panelSelectButton</key>
                 <description>Show/hide EffectRack/Sampler, Button: left PANEL SELECT</description>
                 <status>0x96</status>
                 <midino>0x78</midino>
@@ -2329,7 +2330,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DDJSR2.shiftPanelSelectButton</key>
+                <key>DDJSR2.mixer.shiftPanelSelectButton</key>
                 <description>Show/hide EffectRack/Sampler reverse cycle, Button: left SHIFT + PANEL SELECT</description>
                 <status>0x96</status>
                 <midino>0x79</midino>
@@ -2496,7 +2497,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 1 Deck 1, Button: SHIFT &amp; PAD1 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x08</midino>
@@ -2506,7 +2507,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 2 Deck 1, Button: SHIFT &amp; PAD2 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x09</midino>
@@ -2516,7 +2517,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 3 Deck 1, Button: SHIFT &amp; PAD3 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x0A</midino>
@@ -2526,7 +2527,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 4 Deck 1, Button: SHIFT &amp; PAD4 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x0B</midino>
@@ -2536,7 +2537,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 5 Deck 1, Button: SHIFT &amp; PAD5 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x0C</midino>
@@ -2546,7 +2547,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 6 Deck 1, Button: SHIFT &amp; PAD6 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x0D</midino>
@@ -2556,7 +2557,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 7 Deck 1, Button: SHIFT &amp; PAD7 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x0E</midino>
@@ -2566,7 +2567,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 8 Deck 1, Button: SHIFT &amp; PAD8 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x0F</midino>
@@ -2821,7 +2822,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+		<key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 1 Deck 1, Button: SHIFT &amp; PAD1 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x38</midino>
@@ -2831,7 +2832,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 2 Deck 1, Button: SHIFT &amp; PAD2 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x39</midino>
@@ -2841,7 +2842,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 3 Deck 1, Button: SHIFT &amp; PAD3 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x3A</midino>
@@ -2851,7 +2852,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 4 Deck 1, Button: SHIFT &amp; PAD4 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x3B</midino>
@@ -2861,7 +2862,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 5 Deck 1, Button: SHIFT &amp; PAD5 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x3C</midino>
@@ -2871,7 +2872,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 6 Deck 1, Button: SHIFT &amp; PAD6 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x3D</midino>
@@ -2881,7 +2882,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 7 Deck 1, Button: SHIFT &amp; PAD7 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x3E</midino>
@@ -2891,7 +2892,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.deck[0].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[0].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 8 Deck 1, Button: SHIFT &amp; PAD8 (in Sampler-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x3F</midino>
@@ -3258,7 +3259,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 1 DECK 2, Button: SHIFT &amp; PAD1 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x08</midino>
@@ -3268,7 +3269,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 2 DECK 2, Button: SHIFT &amp; PAD2 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x09</midino>
@@ -3278,7 +3279,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 3 DECK 2, Button: SHIFT &amp; PAD3 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x0A</midino>
@@ -3288,7 +3289,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 4 DECK 2, Button: SHIFT &amp; PAD4 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x0B</midino>
@@ -3298,7 +3299,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 5 DECK 2, Button: SHIFT &amp; PAD5 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x0C</midino>
@@ -3308,7 +3309,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 6 DECK 2, Button: SHIFT &amp; PAD6 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x0D</midino>
@@ -3318,7 +3319,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 7 DECK 2, Button: SHIFT &amp; PAD7 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x0E</midino>
@@ -3328,7 +3329,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 8 DECK 2, Button: SHIFT &amp; PAD8 (in HOT-CUE-Mode, DECK 2 active)</description>
                 <status>0x98</status>
                 <midino>0x0F</midino>
@@ -3581,7 +3582,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 1 Deck 2, Button: SHIFT &amp; PAD1 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x38</midino>
@@ -3591,7 +3592,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 2 Deck 2, Button: SHIFT &amp; PAD2 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x39</midino>
@@ -3601,7 +3602,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 3 Deck 2, Button: SHIFT &amp; PAD3 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x3A</midino>
@@ -3611,7 +3612,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 4 Deck 2, Button: SHIFT &amp; PAD4 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x3B</midino>
@@ -3621,7 +3622,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 5 Deck 2, Button: SHIFT &amp; PAD5 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x3C</midino>
@@ -3631,7 +3632,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 6 Deck 2, Button: SHIFT &amp; PAD6 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x3D</midino>
@@ -3641,7 +3642,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 7 Deck 2, Button: SHIFT &amp; PAD7 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x3E</midino>
@@ -3651,7 +3652,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.deck[1].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[1].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 8 Deck 2, Button: SHIFT &amp; PAD8 (in Sampler-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x3F</midino>
@@ -4029,7 +4030,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 1 Deck 1, Button: SHIFT &amp; PAD1 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x08</midino>
@@ -4039,7 +4040,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 2 Deck 1, Button: SHIFT &amp; PAD2 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x09</midino>
@@ -4049,7 +4050,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 3 Deck 1, Button: SHIFT &amp; PAD3 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x0A</midino>
@@ -4059,7 +4060,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 4 Deck 1, Button: SHIFT &amp; PAD4 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x0B</midino>
@@ -4069,7 +4070,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 5 Deck 1, Button: SHIFT &amp; PAD5 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x0C</midino>
@@ -4079,7 +4080,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 6 Deck 1, Button: SHIFT &amp; PAD6 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x0D</midino>
@@ -4089,7 +4090,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 7 Deck 1, Button: SHIFT &amp; PAD7 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x0E</midino>
@@ -4099,7 +4100,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 8 Deck 1, Button: SHIFT &amp; PAD8 (in HOT-CUE-Mode, Deck 1 active)</description>
                 <status>0x99</status>
                 <midino>0x0F</midino>
@@ -4353,7 +4354,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 1 Deck 3, Button: SHIFT &amp; PAD1 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x38</midino>
@@ -4363,7 +4364,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 2 Deck 3, Button: SHIFT &amp; PAD2 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x39</midino>
@@ -4373,7 +4374,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 3 Deck 3, Button: SHIFT &amp; PAD3 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x3A</midino>
@@ -4383,7 +4384,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 4 Deck 3, Button: SHIFT &amp; PAD4 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x3B</midino>
@@ -4393,7 +4394,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 5 Deck 3, Button: SHIFT &amp; PAD5 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x3C</midino>
@@ -4403,7 +4404,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 6 Deck 3, Button: SHIFT &amp; PAD6 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x3D</midino>
@@ -4413,7 +4414,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 7 Deck 3, Button: SHIFT &amp; PAD7 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x3E</midino>
@@ -4423,7 +4424,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.deck[2].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[2].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 8 Deck 3, Button: SHIFT &amp; PAD8 (in Sampler-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x3F</midino>
@@ -4801,7 +4802,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 1 DECK 4, Button: SHIFT &amp; PAD1 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x08</midino>
@@ -4811,7 +4812,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 2 DECK 4, Button: SHIFT &amp; PAD2 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x09</midino>
@@ -4821,7 +4822,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 3 DECK 4, Button: SHIFT &amp; PAD3 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x0A</midino>
@@ -4831,7 +4832,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 4 DECK 4, Button: SHIFT &amp; PAD4 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x0B</midino>
@@ -4841,7 +4842,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 5 DECK 4, Button: SHIFT &amp; PAD5 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x0C</midino>
@@ -4851,7 +4852,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 6 DECK 4, Button: SHIFT &amp; PAD6 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x0D</midino>
@@ -4861,7 +4862,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 7 DECK 4, Button: SHIFT &amp; PAD7 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x0E</midino>
@@ -4871,7 +4872,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.clearHotcueButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.clearHotcueButton.input</key>
                 <description>Clear Hot-Cue 8 DECK 4, Button: SHIFT &amp; PAD8 (in HOT-CUE-Mode, DECK 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x0F</midino>
@@ -5125,7 +5126,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 1 Deck 4, Button: SHIFT &amp; PAD1 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x38</midino>
@@ -5135,7 +5136,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 2 Deck 4, Button: SHIFT &amp; PAD2 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x39</midino>
@@ -5145,7 +5146,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 3 Deck 4, Button: SHIFT &amp; PAD3 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x3A</midino>
@@ -5155,7 +5156,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 4 Deck 4, Button: SHIFT &amp; PAD4 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x3B</midino>
@@ -5165,7 +5166,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 5 Deck 4, Button: SHIFT &amp; PAD5 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x3C</midino>
@@ -5175,7 +5176,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 6 Deck 4, Button: SHIFT &amp; PAD6 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x3D</midino>
@@ -5185,7 +5186,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 7 Deck 4, Button: SHIFT &amp; PAD7 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x3E</midino>
@@ -5195,7 +5196,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.deck[3].padSection.stopSamplerButton</key>
+                <key>DDJSR2.deck[3].padSection.currentMode.stopSamplerButton.input</key>
                 <description>Clear Sampler 8 Deck 4, Button: SHIFT &amp; PAD8 (in Sampler-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x3F</midino>
@@ -5447,7 +5448,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DDJSR2.crossfader.inputMSB</key>
+                <key>DDJSR2.mixer.crossfader.inputMSB</key>
                 <description>CROSS FADER (MSB)</description>
                 <status>0xB6</status>
                 <midino>0x1F</midino>
@@ -5457,7 +5458,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DDJSR2.crossfader.inputLSB</key>
+                <key>DDJSR2.mixer.crossfader.inputLSB</key>
                 <description>CROSS FADER (LSB)</description>
                 <status>0xB6</status>
                 <midino>0x3F</midino>
@@ -5468,7 +5469,7 @@
 <!-- Effects -->
            <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].dryWetKnob.input</key>
+                <key>DDJSR2.effectUnits[1].dryWetKnob.input</key>
                 <description>Dry/Wet Mixing Ratio of Effect Unit 1, Knob: FX1 BEATS</description>
                 <status>0xB4</status>
                 <midino>0x00</midino>
@@ -5478,7 +5479,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].dryWetKnob.input</key>
+                <key>DDJSR2.effectUnits[2].dryWetKnob.input</key>
                 <description>Dry/Wet Mixing Ratio of Effect Unit 2, Knob: FX2 BEATS</description>
                 <status>0xB5</status>
                 <midino>0x00</midino>
@@ -5488,7 +5489,7 @@
             </control>
 			<control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[1].inputMSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[1].inputMSB</key>
                 <description>FX1 Effect 1 Meta (MSB), Knob: FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x02</midino>
@@ -5498,7 +5499,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[1].inputMSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[1].inputMSB</key>
                 <description>FX2 Effect 1 Meta (MSB), Knob: FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x02</midino>
@@ -5508,7 +5509,7 @@
             </control>
            <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[2].inputMSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[2].inputMSB</key>
                 <description>FX1 Effect 2 Meta (MSB), Knob: FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x04</midino>
@@ -5518,7 +5519,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[2].inputMSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[2].inputMSB</key>
                 <description>FX2 Effect 2 Meta (MSB), Knob: FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x04</midino>
@@ -5528,7 +5529,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[3].inputMSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[3].inputMSB</key>
                 <description>FX1 Effect 3 Meta (MSB), Knob: FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x06</midino>
@@ -5538,7 +5539,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[3].inputMSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[3].inputMSB</key>
                 <description>FX2 Effect 3 Meta (MSB), Knob: FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x06</midino>
@@ -5548,7 +5549,7 @@
             </control>
            <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].dryWetKnob.input</key>
+                <key>DDJSR2.effectUnits[1].dryWetKnob.input</key>
                 <description>Super1 Parameter of Effect Unit 1, Knob: SHIFT &amp; FX1 BEATS</description>
                 <status>0xB4</status>
                 <midino>0x10</midino>
@@ -5558,7 +5559,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].dryWetKnob.input</key>
+                <key>DDJSR2.effectUnits[2].dryWetKnob.input</key>
                 <description>Super1 Parameter of Effect Unit 2, Knob: SHIFT &amp; FX2 BEATS</description>
                 <status>0xB5</status>
                 <midino>0x10</midino>
@@ -5568,7 +5569,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[1].inputMSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[1].inputMSB</key>
                 <description>FX1 Effect 1 Select (MSB), Knob: SHIFT + FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x12</midino>
@@ -5578,7 +5579,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[1].inputMSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[1].inputMSB</key>
                 <description>FX2 Effect 1 Select (MSB), Knob: SHIFT + FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x12</midino>
@@ -5588,7 +5589,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[2].inputMSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[2].inputMSB</key>
                 <description>FX1 Effect 2 Select (MSB), Knob: SHIFT + FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x14</midino>
@@ -5598,7 +5599,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[2].inputMSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[2].inputMSB</key>
                 <description>FX2 Effect 2 Select (MSB), Knob: SHIFT + FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x14</midino>
@@ -5608,7 +5609,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[3].inputMSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[3].inputMSB</key>
                 <description>FX1 Effect 3 Select (MSB), Knob: SHIFT + FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x16</midino>
@@ -5618,7 +5619,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[3].inputMSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[3].inputMSB</key>
                 <description>FX2 Effect 3 Select (MSB), Knob: SHIFT + FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x16</midino>
@@ -5628,7 +5629,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[1].inputLSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[1].inputLSB</key>
                 <description>FX1 Effect 1 Meta (LSB), Knob: FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x22</midino>
@@ -5638,7 +5639,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[1].inputLSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[1].inputLSB</key>
                 <description>FX2 Effect 1 Meta (LSB), Knob: FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x22</midino>
@@ -5648,7 +5649,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[2].inputLSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[2].inputLSB</key>
                 <description>FX1 Effect 2 Meta (LSB), Knob: FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x24</midino>
@@ -5658,7 +5659,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[2].inputLSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[2].inputLSB</key>
                 <description>FX2 Effect 2 Meta (LSB), Knob: FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x24</midino>
@@ -5668,7 +5669,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[3].inputLSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[3].inputLSB</key>
                 <description>FX1 Effect 3 Meta (LSB), Knob: FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x26</midino>
@@ -5678,7 +5679,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[3].inputLSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[3].inputLSB</key>
                 <description>FX2 Effect 3 Meta (LSB), Knob: FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x26</midino>
@@ -5688,7 +5689,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[1].inputLSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[1].inputLSB</key>
                 <description>FX1 Effect 1 Select (LSB), Knob: SHIFT + FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x32</midino>
@@ -5698,7 +5699,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[1].inputLSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[1].inputLSB</key>
                 <description>FX2 Effect 1 Select (LSB), Knob: SHIFT + FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x32</midino>
@@ -5708,7 +5709,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[2].inputLSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[2].inputLSB</key>
                 <description>FX1 Effect 2 Select (LSB), Knob: SHIFT + FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x34</midino>
@@ -5718,7 +5719,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[2].inputLSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[2].inputLSB</key>
                 <description>FX2 Effect 2 Select (LSB), Knob: SHIFT + FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x34</midino>
@@ -5728,7 +5729,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].knobs[3].inputLSB</key>
+                <key>DDJSR2.effectUnits[1].knobs[3].inputLSB</key>
                 <description>FX1 Effect 3 Select (LSB), Knob: SHIFT + FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x36</midino>
@@ -5738,7 +5739,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].knobs[3].inputLSB</key>
+                <key>DDJSR2.effectUnits[2].knobs[3].inputLSB</key>
                 <description>FX2 Effect 3 Select (LSB), Knob: SHIFT + FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x36</midino>
@@ -5748,7 +5749,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].enableButtons[1].input</key>
+                <key>DDJSR2.effectUnits[1].enableButtons[1].input</key>
                 <description>Enable (if effectFocusButton pressed: Focus) Effect 1 of Effect Unit 1, Button: FX1-1 ON</description>
                 <status>0x94</status>
                 <midino>0x47</midino>
@@ -5758,7 +5759,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].enableButtons[1].input</key>
+                <key>DDJSR2.effectUnits[2].enableButtons[1].input</key>
                 <description>Enable (if effectFocusButton pressed: Focus) Effect 1 of Effect Unit 2, Button: FX2-1 ON</description>
                 <status>0x95</status>
                 <midino>0x47</midino>
@@ -5768,7 +5769,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].enableButtons[2].input</key>
+                <key>DDJSR2.effectUnits[1].enableButtons[2].input</key>
                 <description>Enable (if effectFocusButton pressed: Focus) Effect 2 of Effect Unit 1, Button: FX1-2 ON</description>
                 <status>0x94</status>
                 <midino>0x48</midino>
@@ -5778,7 +5779,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].enableButtons[2].input</key>
+                <key>DDJSR2.effectUnits[2].enableButtons[2].input</key>
                 <description>Enable (if effectFocusButton pressed: Focus) Effect 2 of Effect Unit 2, Button: FX2-2 ON</description>
                 <status>0x95</status>
                 <midino>0x48</midino>
@@ -5788,7 +5789,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].enableButtons[3].input</key>
+                <key>DDJSR2.effectUnits[1].enableButtons[3].input</key>
                 <description>Enable (if effectFocusButton pressed: Focus) Effect 3 of Effect Unit 1, Button: FX1-3 ON</description>
                 <status>0x94</status>
                 <midino>0x49</midino>
@@ -5798,7 +5799,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].enableButtons[3].input</key>
+                <key>DDJSR2.effectUnits[2].enableButtons[3].input</key>
                 <description>Enable (if effectFocusButton pressed: Focus) Effect 3 of Effect Unit 2, Button: FX2-3 ON</description>
                 <status>0x95</status>
                 <midino>0x49</midino>
@@ -5808,7 +5809,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].effectFocusButton.input</key>
+                <key>DDJSR2.effectUnits[1].effectFocusButton.input</key>
                 <description>Press hold: Enables effect focus selection, Shortpress: Toggles effect focus mode of EffectUnit 1, Button: FX1 TAP</description>
                 <status>0x94</status>
                 <midino>0x4A</midino>
@@ -5818,7 +5819,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].effectFocusButton.input</key>
+                <key>DDJSR2.effectUnits[2].effectFocusButton.input</key>
                 <description>Press hold: Enables effect focus selection, Shortpress: Toggles effect focus mode of EffectUnit 2, Button: FX2 TAP</description>
                 <status>0x95</status>
                 <midino>0x4A</midino>
@@ -5828,7 +5829,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.fx1AssignButton</key>
+                <key>DDJSR2.effectUnits[1].enableOnChannelButtons.Channel1.input</key>
                 <description>Effect Unit 1 assign Channel 1 Button: FX1 assign 1</description>
                 <status>0x96</status>
                 <midino>0x4C</midino>
@@ -5838,7 +5839,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DDJSR2.fx2AssignButton</key>
+                <key>DDJSR2.effectUnits[2].enableOnChannelButtons.Channel1.input</key>
                 <description>Effect Unit 2 assignment channel 1, Button: FX2 assign Button 1</description>
                 <status>0x96</status>
                 <midino>0x4D</midino>
@@ -5848,7 +5849,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.fx1AssignButton</key>
+                <key>DDJSR2.effectUnits[1].enableOnChannelButtons.Channel2.input</key>
                 <description>Effect Unit 1 assign Channel 2  Button: FX1 assign 2</description>
                 <status>0x96</status>
                 <midino>0x50</midino>
@@ -5858,7 +5859,7 @@
             </control>
            <control>
                 <group>[Channel2]</group>
-                <key>DDJSR2.fx2AssignButton</key>
+                <key>DDJSR2.effectUnits[2].enableOnChannelButtons.Channel2.input</key>
                 <description>Effect Unit 2 assignment channel 2, Button: FX2 assign Button 2</description>
                 <status>0x96</status>
                 <midino>0x51</midino>
@@ -5868,7 +5869,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.fx1AssignButton</key>
+                <key>DDJSR2.effectUnits[1].enableOnChannelButtons.Channel4.input</key>
                 <description>Effect Unit 1 assignment Channel 4, Button: FX1 assign SHIFT 2</description>
                 <status>0x96</status>
                 <midino>0x54</midino>
@@ -5878,7 +5879,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DDJSR2.fx2AssignButton</key>
+                <key>DDJSR2.effectUnits[2].enableOnChannelButtons.Channel4.input</key>
                 <description>Effect Unit 2 assignment channel 4, Button: Shift &amp; FX2 assign Button 2</description>
                 <status>0x96</status>
                 <midino>0x55</midino>
@@ -5888,7 +5889,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>DDJSR2.effectUnit[1].effectFocusButton.input</key>
+                <key>DDJSR2.effectUnits[1].effectFocusButton.input</key>
                 <description>Switch between EffectUnits, Button: SHIFT &amp; FX1 TAP</description>
                 <status>0x94</status>
                 <midino>0x66</midino>
@@ -5898,7 +5899,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>DDJSR2.effectUnit[2].effectFocusButton.input</key>
+                <key>DDJSR2.effectUnits[2].effectFocusButton.input</key>
                 <description>Switch between EffectUnits, Button: SHIFT &amp; FX2 TAP</description>
                 <status>0x95</status>
                 <midino>0x66</midino>
@@ -5908,7 +5909,7 @@
             </control>
            <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.fx1AssignButton</key>
+                <key>DDJSR2.effectUnits[1].enableOnChannelButtons.Channel3.input</key>
                 <description>Effect Unit 1 assign Channel 3, Button: FX1 assign SHIFT 1</description>
                 <status>0x96</status>
                 <midino>0x70</midino>
@@ -5918,7 +5919,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DDJSR2.fx2AssignButton</key>
+                <key>DDJSR2.effectUnits[2].enableOnChannelButtons.Channel3.input</key>
                 <description>Effect Unit 2 assignment channel 3, Button: Shift &amp; FX2 assign Button 1</description>
                 <status>0x96</status>
                 <midino>0x71</midino>
@@ -5928,7 +5929,7 @@
             </control>
 		    <control>
                 <group>[Master]</group>
-                <key>DDJSR2.effectUnit[1].effectFocusButton.input</key>
+                <key>DDJSR2.effectUnits[1].effectFocusButton.input</key>
                 <description>FX 1 TAP</description>
                 <status>0x94</status>
                 <midino>0x43</midino>
@@ -5938,7 +5939,7 @@
             </control>
 			<control>
                 <group>[Master]</group>
-                <key>DDJSR2.effectUnit[2].effectFocusButton.input</key>
+                <key>DDJSR2.effectUnits[2].effectFocusButton.input</key>
                 <description>FX 1 TAP</description>
                 <status>0x95</status>
                 <midino>0x43</midino>
