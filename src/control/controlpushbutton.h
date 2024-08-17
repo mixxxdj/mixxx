@@ -1,29 +1,7 @@
-/***************************************************************************
-                          controlpushbutton.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef CONTROLPUSHBUTTON_H
-#define CONTROLPUSHBUTTON_H
+#pragma once
 
 #include "control/controlbuttonmode.h"
 #include "control/controlobject.h"
-
-/**
-  *@author Tue and Ken Haste Andersen
-  */
 
 class ControlPushButton : public ControlObject {
     Q_OBJECT
@@ -31,17 +9,19 @@ class ControlPushButton : public ControlObject {
     static QString buttonModeToString(ControlButtonMode mode) {
         switch(mode) {
         case ControlButtonMode::Push:
-            return "PUSH";
+            return QStringLiteral("Push");
         case ControlButtonMode::Toggle:
-            return "TOGGLE";
+            return QStringLiteral("Toggle");
         case ControlButtonMode::PowerWindow:
-            return "POWERWINDOW";
+            return QStringLiteral("PowerWindow");
         case ControlButtonMode::LongPressLatching:
-            return "LONGPRESSLATCHING";
+            return QStringLiteral("LongPressLatching");
         case ControlButtonMode::Trigger:
-            return "TRIGGER";
+            return QStringLiteral("Trigger");
         default:
-            return "UNKNOWN";
+            // Without the default branch we get compiler warnings
+            DEBUG_ASSERT(false);
+            return "Unknown";
         }
     }
 
@@ -60,5 +40,3 @@ class ControlPushButton : public ControlObject {
     enum ControlButtonMode m_buttonMode;
     int m_iNoStates;
 };
-
-#endif
