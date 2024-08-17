@@ -51,7 +51,7 @@ void ControlPushButton::updateBehavior() {
     if (m_pControl) {
         m_pControl->setBehavior(
                 new ControlPushButtonBehavior(
-                        static_cast<ControlButtonMode>(m_buttonMode),
+                        m_buttonMode,
                         m_iNoStates));
     }
 }
