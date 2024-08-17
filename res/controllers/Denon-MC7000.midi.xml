@@ -14,9 +14,8 @@
                 <option
                     variable="jogSensitivity"
                     type="real"
-                    precision="2"
                     min="0.05"
-                    max="3.0"
+                    max="10.0"
                     default="1.0"
                     label="Jogwheel sensitivity">
                     <description>
