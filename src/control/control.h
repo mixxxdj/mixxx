@@ -88,19 +88,6 @@ class ControlDoublePrivate : public QObject {
 
     static QHash<ConfigKey, ConfigKey> getControlAliases();
 
-    // used as a transitional tool from the boolean-based APIs to the
-    // QFlag-based one.
-    constexpr static ControlConfigFlags configFlagFromBools(
-            bool bIgnoreNops,
-            bool bTrack,
-            bool bPersist) {
-        using enum ControlConfigFlag;
-        return ControlConfigFlags()
-                .setFlag(IgnoreNops, bIgnoreNops)
-                .setFlag(Track, bTrack)
-                .setFlag(Persist, bPersist);
-    };
-
     const QString& name() const {
         return m_name;
     }
