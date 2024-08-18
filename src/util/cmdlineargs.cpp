@@ -38,7 +38,7 @@ bool calcUseColorsAuto() {
 
     // Check if terminal is known to support ANSI colors
     QString term = QProcessEnvironment::systemEnvironment().value("TERM");
-    return term == "ansi" || term == "cygwin" || term == "linux" ||
+    return term == "alacritty" || term == "ansi" || term == "cygwin" || term == "linux" ||
             term.startsWith("screen") || term.startsWith("xterm") ||
             term.startsWith("vt100") || term.startsWith("rxvt") ||
             term.endsWith("color");
