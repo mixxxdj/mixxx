@@ -3,10 +3,10 @@
 #include "control/control.h"
 #include "moc_controlencoder.cpp"
 
-using enum ControlConfigFlag;
-
 ControlEncoder::ControlEncoder(const ConfigKey& key, bool bIgnoreNops)
-        : ControlObject(key, ControlConfigFlags(Default).setFlag(IgnoreNops, bIgnoreNops)) {
+        : ControlObject(key,
+                  bIgnoreNops ? ControlConfigFlag::IgnoreNops
+                              : ControlConfigFlag::None) {
     if (m_pControl) {
         m_pControl->setBehavior(new ControlEncoderBehavior());
     }
