@@ -15,6 +15,7 @@ namespace mixxx {
 class TrackMetadata;
 
 namespace taglib {
+Q_NAMESPACE
 
 enum class FileType {
     Unknown,
@@ -27,6 +28,7 @@ enum class FileType {
     WAV,
     WV
 };
+Q_ENUM_NS(FileType);
 
 QDebug operator<<(QDebug debug, FileType fileType);
 
