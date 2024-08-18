@@ -956,8 +956,8 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool
                 ++it) {
             if (it.key() == trackId) {
                 const auto playlistId = it.value();
-                // keep tracks in history playlists
-                if (getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+                // keep hidden tracks in history playlists, remove purged tracks
+                if (!purged && getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
                     continue;
                 }
                 removeTracksFromPlaylistByIdInner(playlistId, trackId);
@@ -966,6 +966,9 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool
         }
     }
     transaction.commit();
+
+    // We may now have empty history playlists. Remove them.
+    deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG, 1);
 
     // update the sidebar
     emit playlistContentChanged(playlistIds);
