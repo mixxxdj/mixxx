@@ -37,7 +37,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
             static_cast<unsigned int>(m_pSampleRate->get() / 2));
 
     m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
-    m_pTalkoverDucking->setBehavior(ControlButtonMode::Toggle, 3);
+    m_pTalkoverDucking->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pTalkoverDucking->set(
             m_pConfig->getValue<double>(
                 ConfigKey(m_group, "duckMode"), AUTO));

@@ -43,18 +43,18 @@ SkinControls::SkinControls()
           m_showVinylControl(ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
                   true,
                   false) {
-    m_showEffectRack.setButtonMode(ControlButtonMode::Toggle);
-    m_showLibraryCoverArt.setButtonMode(ControlButtonMode::Toggle);
-    m_showMicrophones.setButtonMode(ControlButtonMode::Toggle);
-    m_showPreviewDecks.setButtonMode(ControlButtonMode::Toggle);
-    m_showSamplers.setButtonMode(ControlButtonMode::Toggle);
-    m_show4EffectUnits.setButtonMode(ControlButtonMode::Toggle);
-    m_showCoverArt.setButtonMode(ControlButtonMode::Toggle);
-    m_showMaximizedLibrary.setButtonMode(ControlButtonMode::Toggle);
-    m_showMixer.setButtonMode(ControlButtonMode::Toggle);
-    m_showSettings.setButtonMode(ControlButtonMode::Toggle);
-    m_showSpinnies.setButtonMode(ControlButtonMode::Toggle);
-    m_showVinylControl.setButtonMode(ControlButtonMode::Toggle);
+    m_showEffectRack.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showLibraryCoverArt.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showMicrophones.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showPreviewDecks.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showSamplers.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_show4EffectUnits.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showCoverArt.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showMaximizedLibrary.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showMixer.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showSettings.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showSpinnies.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showVinylControl.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_showEffectRack.addAlias(ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")));
     m_showLibraryCoverArt.addAlias(ConfigKey(

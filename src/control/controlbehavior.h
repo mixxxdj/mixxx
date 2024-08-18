@@ -131,7 +131,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     static const int kPowerWindowTimeMillis;
     static const int kLongPressLatchingTimeMillis;
 
-    ControlPushButtonBehavior(ControlButtonMode buttonMode, int iNumStates);
+    ControlPushButtonBehavior(mixxx::control::ButtonMode buttonMode, int iNumStates);
     void setValueFromMidi(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
                 override;
@@ -145,7 +145,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
         }
         return m_pushTimer.data();
     }
-    ControlButtonMode m_buttonMode;
+    mixxx::control::ButtonMode m_buttonMode;
     int m_iNumStates;
     QScopedPointer<QTimer> m_pushTimer;
 };

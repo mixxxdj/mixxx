@@ -33,7 +33,7 @@ class FakeMixer {
     FakeMixer()
             : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
               crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
-        crossfaderReverse.setButtonMode(ControlButtonMode::Toggle);
+        crossfaderReverse.setButtonMode(mixxx::control::ButtonMode::Toggle);
     }
 
     ControlPotmeter crossfader;
@@ -55,8 +55,8 @@ class FakeDeck : public BaseTrackPlayer {
               outroStartPos(ConfigKey(group, "outro_start_position")),
               outroEndPos(ConfigKey(group, "outro_end_position")),
               orientation(ConfigKey(group, "orientation")) {
-        play.setButtonMode(ControlButtonMode::Toggle);
-        repeat.setButtonMode(ControlButtonMode::Toggle);
+        play.setButtonMode(mixxx::control::ButtonMode::Toggle);
+        repeat.setButtonMode(mixxx::control::ButtonMode::Toggle);
         outroStartPos.set(Cue::kNoPosition);
         outroEndPos.set(Cue::kNoPosition);
         orientation.set(orient);

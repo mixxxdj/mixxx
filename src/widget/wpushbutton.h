@@ -20,8 +20,8 @@ class WPushButton : public WWidget {
     explicit WPushButton(QWidget* pParent = nullptr);
     // Used by WPushButtonTest.
     WPushButton(QWidget* pParent,
-            ControlButtonMode leftButtonMode,
-            ControlButtonMode rightButtonMode);
+            mixxx::control::ButtonMode leftButtonMode,
+            mixxx::control::ButtonMode rightButtonMode);
 
     Q_PROPERTY(bool pressed READ isPressed);
 
@@ -110,8 +110,8 @@ class WPushButton : public WWidget {
     PaintablePointer m_pPixmapBack;
 
     // short click toggle button long click push button
-    ControlButtonMode m_leftButtonMode;
-    ControlButtonMode m_rightButtonMode;
+    mixxx::control::ButtonMode m_leftButtonMode;
+    mixxx::control::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
     QVector<int> m_align;
 

@@ -38,7 +38,7 @@ EngineDeck::EngineDeck(
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
     // Set up passthrough utilities and fields
-    m_pPassing->setButtonMode(ControlButtonMode::PowerWindow);
+    m_pPassing->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     m_bPassthroughIsActive = false;
     m_bPassthroughWasActive = false;
 

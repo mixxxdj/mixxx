@@ -52,7 +52,7 @@ EffectChain::EffectChain(const QString& group,
 
     m_pControlChainEnabled =
             std::make_unique<ControlPushButton>(ConfigKey(m_group, "enabled"));
-    m_pControlChainEnabled->setButtonMode(ControlButtonMode::PowerWindow);
+    m_pControlChainEnabled->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     // Default to enabled. The skin might not show these buttons.
     m_pControlChainEnabled->setDefaultValue(true);
     m_pControlChainEnabled->set(true);
@@ -82,7 +82,8 @@ EffectChain::EffectChain(const QString& group,
 
     m_pControlChainMixMode =
             std::make_unique<ControlPushButton>(ConfigKey(m_group, "mix_mode"));
-    m_pControlChainMixMode->setBehavior(ControlButtonMode::Toggle, EffectChainMixMode::kNumModes);
+    m_pControlChainMixMode->setBehavior(
+            mixxx::control::ButtonMode::Toggle, EffectChainMixMode::kNumModes);
     double mixModeCODefault = static_cast<double>(EffectChainMixMode::DrySlashWet);
     m_pControlChainMixMode->setDefaultValue(mixModeCODefault);
     m_pControlChainMixMode->set(mixModeCODefault);
@@ -126,21 +127,21 @@ EffectChain::EffectChain(const QString& group,
     // Refer to comment in header for full explanation.
     m_pControlChainShowFocus = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "show_focus"));
-    m_pControlChainShowFocus->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlChainShowFocus->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pControlChainHasControllerFocus = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "controller_input_active"));
-    m_pControlChainHasControllerFocus->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlChainHasControllerFocus->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pControlChainShowParameters = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "show_parameters"),
             true);
-    m_pControlChainShowParameters->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlChainShowParameters->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pControlChainFocusedEffect = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "focused_effect"),
             true);
-    m_pControlChainFocusedEffect->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlChainFocusedEffect->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     addToEngine();
 }
@@ -305,7 +306,7 @@ void EffectChain::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
             true,
             initialValue);
     m_channelEnableButtons.insert(handleGroup, pEnableControl);
-    pEnableControl->setButtonMode(ControlButtonMode::PowerWindow);
+    pEnableControl->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     if (pEnableControl->toBool()) {
         enableForInputChannel(handleGroup);
     }

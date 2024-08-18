@@ -137,7 +137,7 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOLoopAnchor = new ControlPushButton(ConfigKey(group, "loop_anchor"),
             true,
             static_cast<double>(LoopAnchorPoint::Start));
-    m_pCOLoopAnchor->setButtonMode(ControlButtonMode::Toggle);
+    m_pCOLoopAnchor->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
@@ -237,7 +237,7 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotLoopDouble);
 
     m_pLoopRemoveButton = new ControlPushButton(ConfigKey(group, "loop_remove"));
-    m_pLoopRemoveButton->setButtonMode(ControlButtonMode::Trigger);
+    m_pLoopRemoveButton->setButtonMode(mixxx::control::ButtonMode::Trigger);
     connect(m_pLoopRemoveButton,
             &ControlObject::valueChanged,
             this,
@@ -2013,7 +2013,7 @@ BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
     // is the state of the beatloop control (1 for enabled, 0 for disabled).
     m_pLegacy = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1", size));
-    m_pLegacy->setButtonMode(ControlButtonMode::Toggle);
+    m_pLegacy->setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(m_pLegacy.get(),
             &ControlObject::valueChanged,
             this,

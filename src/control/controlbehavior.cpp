@@ -342,7 +342,7 @@ double ControlLinSteppedIntPotBehavior::parameterToValue(double dParam) {
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
 const int ControlPushButtonBehavior::kLongPressLatchingTimeMillis = 300;
 
-ControlPushButtonBehavior::ControlPushButtonBehavior(ControlButtonMode buttonMode,
+ControlPushButtonBehavior::ControlPushButtonBehavior(mixxx::control::ButtonMode buttonMode,
         int iNumStates)
         : m_buttonMode(buttonMode),
           m_iNumStates(iNumStates) {
@@ -364,7 +364,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
     }
 
     // This block makes push-buttons act as power window buttons.
-    if (m_buttonMode == ControlButtonMode::PowerWindow && m_iNumStates == 2) {
+    if (m_buttonMode == mixxx::control::ButtonMode::PowerWindow && m_iNumStates == 2) {
         auto* timer = getTimer();
         if (pressed) {
             // Toggle on press
@@ -376,8 +376,8 @@ void ControlPushButtonBehavior::setValueFromMidi(
             // Disable after releasing a long press
             pControl->set(0., nullptr);
         }
-    } else if (m_buttonMode == ControlButtonMode::Toggle ||
-            m_buttonMode == ControlButtonMode::LongPressLatching) {
+    } else if (m_buttonMode == mixxx::control::ButtonMode::Toggle ||
+            m_buttonMode == mixxx::control::ButtonMode::LongPressLatching) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNumStates > 1) { // multistate button
             if (pressed) {
@@ -388,14 +388,14 @@ void ControlPushButtonBehavior::setValueFromMidi(
                 double value = pControl->get();
                 value = (int)(value + 1.) % m_iNumStates;
                 pControl->set(value, nullptr);
-                if (m_buttonMode == ControlButtonMode::LongPressLatching) {
+                if (m_buttonMode == mixxx::control::ButtonMode::LongPressLatching) {
                     auto* timer = getTimer();
                     timer->setSingleShot(true);
                     timer->start(kLongPressLatchingTimeMillis);
                 }
             } else {
                 double value = pControl->get();
-                if (m_buttonMode == ControlButtonMode::LongPressLatching &&
+                if (m_buttonMode == mixxx::control::ButtonMode::LongPressLatching &&
                         getTimer()->isActive() && value >= 1.) {
                     // revert toggle if button is released too early
                     value = (int)(value - 1.) % m_iNumStates;

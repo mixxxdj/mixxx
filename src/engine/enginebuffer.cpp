@@ -116,7 +116,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
-    m_playButton->setButtonMode(ControlButtonMode::Toggle);
+    m_playButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_playButton->connectValueChangeRequest(
             this, &EngineBuffer::slotControlPlayRequest,
             Qt::DirectConnection);
@@ -141,7 +141,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
-    m_startButton->setButtonMode(ControlButtonMode::Trigger);
+    m_startButton->setButtonMode(mixxx::control::ButtonMode::Trigger);
     connect(m_startButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStart,
             Qt::DirectConnection);
@@ -153,7 +153,7 @@ EngineBuffer::EngineBuffer(const QString& group,
             Qt::DirectConnection);
 
     m_pSlipButton = new ControlPushButton(ConfigKey(m_group, "slip_enabled"));
-    m_pSlipButton->setButtonMode(ControlButtonMode::Toggle);
+    m_pSlipButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
@@ -165,7 +165,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_visualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
 
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
-    m_pRepeat->setButtonMode(ControlButtonMode::Toggle);
+    m_pRepeat->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
 
@@ -173,7 +173,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
-    m_pKeylock->setButtonMode(ControlButtonMode::Toggle);
+    m_pKeylock->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pReplayGain = new ControlProxy(m_group, QStringLiteral("replaygain"), this);
 

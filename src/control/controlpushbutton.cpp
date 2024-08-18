@@ -8,14 +8,14 @@
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(const ConfigKey& key, bool bPersist, double defaultValue)
         : ControlObject(key, false, false, bPersist, defaultValue),
-          m_buttonMode(ControlButtonMode::Push),
+          m_buttonMode(mixxx::control::ButtonMode::Push),
           m_iNoStates(2) {
     updateBehavior();
 }
 
 ControlPushButton::~ControlPushButton() = default;
 
-void ControlPushButton::setButtonMode(ControlButtonMode mode) {
+void ControlPushButton::setButtonMode(mixxx::control::ButtonMode mode) {
     if (m_buttonMode != mode) {
         m_buttonMode = mode;
         updateBehavior();
@@ -29,7 +29,7 @@ void ControlPushButton::setStates(int num_states) {
     }
 }
 
-void ControlPushButton::setBehavior(ControlButtonMode mode, int num_states) {
+void ControlPushButton::setBehavior(mixxx::control::ButtonMode mode, int num_states) {
     bool shouldUpdate = false;
     if (m_buttonMode != mode) {
         m_buttonMode = mode;

@@ -31,20 +31,20 @@ VinylControlControl::VinylControlControl(const QString& group, UserSettingsPoint
     m_pControlVinylRate = new ControlObject(ConfigKey(group, "vinylcontrol_rate"));
     m_pControlVinylScratching = new ControlPushButton(ConfigKey(group, "vinylcontrol_scratching"));
     m_pControlVinylScratching->set(0);
-    m_pControlVinylScratching->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlVinylScratching->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pControlVinylEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
-    m_pControlVinylEnabled->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlVinylEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_wantenabled"));
     m_pControlVinylWantEnabled->set(0);
-    m_pControlVinylWantEnabled->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlVinylWantEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pControlVinylMode = new ControlPushButton(ConfigKey(group, "vinylcontrol_mode"));
-    m_pControlVinylMode->setBehavior(ControlButtonMode::Toggle, 3);
+    m_pControlVinylMode->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pControlVinylCueing = new ControlPushButton(ConfigKey(group, "vinylcontrol_cueing"));
-    m_pControlVinylCueing->setBehavior(ControlButtonMode::Toggle, 3);
+    m_pControlVinylCueing->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_signal_enabled"));
     m_pControlVinylSignalEnabled->set(1);
-    m_pControlVinylSignalEnabled->setButtonMode(ControlButtonMode::Toggle);
+    m_pControlVinylSignalEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pPlayEnabled = new ControlProxy(group, "play", this);
 }
