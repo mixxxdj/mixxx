@@ -6,6 +6,7 @@
 #include <QWindow>
 #include <QtDebug>
 
+#include "control/control.h"
 #include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -313,7 +314,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
         // Font sizes
         m_pFontSizeKnob = std::make_unique<ControlObject>(
-                ConfigKey("[Library]", "font_size_knob"), false);
+                ConfigKey("[Library]", "font_size_knob"), ControlConfigFlag::None);
         connect(m_pFontSizeKnob.get(),
                 &ControlObject::valueChanged,
                 this,
@@ -445,7 +446,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pSelectTrack = std::make_unique<ControlObject>(
-            ConfigKey("[Playlist]", "SelectTrackKnob"), false);
+            ConfigKey("[Playlist]", "SelectTrackKnob"), ControlConfigFlag::None);
     connect(m_pSelectTrack.get(),
             &ControlObject::valueChanged,
             this,
@@ -464,7 +465,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &LibraryControl::slotSelectPrevSidebarItem);
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectSidebarItem = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "SelectPlaylist"), false);
+    m_pSelectSidebarItem = std::make_unique<ControlObject>(
+            ConfigKey("[Playlist]", "SelectPlaylist"), ControlConfigFlag::None);
     connect(m_pSelectSidebarItem.get(),
             &ControlObject::valueChanged,
             this,

@@ -1,5 +1,6 @@
 #include "enginedelay.h"
 
+#include "control/control.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "engine/engine.h"
@@ -19,7 +20,13 @@ EngineDelay::EngineDelay(const ConfigKey& delayControl, bool bPersist)
           m_iDelayPos(0),
           m_iDelay(0) {
     m_delayBuffer.clear();
-    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, bPersist);
+    m_pDelayPot = new ControlPotmeter(delayControl,
+            0,
+            kdMaxDelayPot,
+            false,
+            {ControlConfigFlag::Default,
+                    bPersist ? ControlConfigFlag::Persist
+                             : ControlConfigFlag::None});
     m_pDelayPot->setDefaultValue(0);
     connect(m_pDelayPot,
             &ControlObject::valueChanged,

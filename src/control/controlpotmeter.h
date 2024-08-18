@@ -67,9 +67,7 @@ class ControlPotmeter : public ControlObject {
             double dMinValue = 0.0,
             double dMaxValue = 1.0,
             bool allowOutOfBounds = false,
-            bool bIgnoreNops = true,
-            bool bTrack = false,
-            bool bPersist = false,
+            ControlConfigFlags = ControlConfigFlag::Default,
             double defaultValue = 0.0);
     ~ControlPotmeter() override = default;
 

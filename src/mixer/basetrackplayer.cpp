@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QMetaMethod>
 
+#include "control/control.h"
 #include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
@@ -160,7 +161,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     // Deck cloning
     m_pCloneFromDeck = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "CloneFromDeck"),
-            false);
+            ControlConfigFlag::None);
     connect(m_pCloneFromDeck.get(),
             &ControlObject::valueChanged,
             this,
@@ -169,7 +170,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     // Sampler cloning
     m_pCloneFromSampler = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "CloneFromSampler"),
-            false);
+            ControlConfigFlag::None);
     connect(m_pCloneFromSampler.get(),
             &ControlObject::valueChanged,
             this,
@@ -178,14 +179,14 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     // Load track from other deck/sampler
     m_pLoadTrackFromDeck = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "LoadTrackFromDeck"),
-            false);
+            ControlConfigFlag::None);
     connect(m_pLoadTrackFromDeck.get(),
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotLoadTrackFromDeck);
     m_pLoadTrackFromSampler = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "LoadTrackFromSampler"),
-            false);
+            ControlConfigFlag::None);
     connect(m_pLoadTrackFromSampler.get(),
             &ControlObject::valueChanged,
             this,

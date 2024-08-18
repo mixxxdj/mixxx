@@ -6,6 +6,7 @@
 #include <QScopedPointer>
 #include <QString>
 
+#include "control/control.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -46,7 +47,7 @@ class FakeDeck : public BaseTrackPlayer {
             : BaseTrackPlayer(NULL, group),
               trackSamples(ConfigKey(group, "track_samples")),
               samplerate(ConfigKey(group, "track_samplerate")),
-              rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
+              rateratio(ConfigKey(group, "rate_ratio"), ControlConfigFlag::Default, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
@@ -126,10 +127,13 @@ class FakeDeck : public BaseTrackPlayer {
 class MockPlayerManager : public PlayerManagerInterface {
   public:
     MockPlayerManager()
-            : numDecks(ConfigKey(kAppGroup, QStringLiteral("num_decks")), true),
-              numSamplers(ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true),
-              numPreviewDecks(ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")),
-                      true) {
+            : numDecks(ConfigKey(kAppGroup, QStringLiteral("num_decks")),
+                      ControlConfigFlag::IgnoreNops),
+              numSamplers(ConfigKey(kAppGroup, QStringLiteral("num_samplers")),
+                      ControlConfigFlag::IgnoreNops),
+              numPreviewDecks(
+                      ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")),
+                      ControlConfigFlag::IgnoreNops) {
     }
 
     virtual ~MockPlayerManager() {

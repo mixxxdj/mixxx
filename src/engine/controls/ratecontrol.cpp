@@ -45,7 +45,8 @@ RateControl::RateControl(const QString& group,
     // This is the resulting rate ratio that can be used for display or calculations.
     // The track original rate ratio is 1.
     m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
-                  true, false, false, 1.0);
+            ControlConfigFlag::Default,
+            1.0);
     connect(m_pRateRatio, &ControlObject::valueChanged,
             this, &RateControl::slotRateRatioChanged,
             Qt::DirectConnection);
@@ -103,32 +104,36 @@ RateControl::RateControl(const QString& group,
 
     // Permanent rate-change buttons
     m_pButtonRatePermDown =
-        new ControlPushButton(ConfigKey(group,"rate_perm_down"));
+            new ControlPushButton(ConfigKey(group, "rate_perm_down"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pButtonRatePermDown, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermDown,
             Qt::DirectConnection);
-    m_pButtonRatePermDown->setKbdRepeatable(true);
 
     m_pButtonRatePermDownSmall =
-        new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
+            new ControlPushButton(ConfigKey(group, "rate_perm_down_small"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pButtonRatePermDownSmall, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermDownSmall,
             Qt::DirectConnection);
-    m_pButtonRatePermDownSmall->setKbdRepeatable(true);
 
     m_pButtonRatePermUp =
-        new ControlPushButton(ConfigKey(group,"rate_perm_up"));
+            new ControlPushButton(ConfigKey(group, "rate_perm_up"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pButtonRatePermUp, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermUp,
             Qt::DirectConnection);
-    m_pButtonRatePermUp->setKbdRepeatable(true);
 
     m_pButtonRatePermUpSmall =
-        new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
+            new ControlPushButton(ConfigKey(group, "rate_perm_up_small"),
+                    ControlDoublePrivate::kDefaultValue,
+                    ControlConfigFlag::KeyboardRepeatable);
     connect(m_pButtonRatePermUpSmall, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermUpSmall,
             Qt::DirectConnection);
-    m_pButtonRatePermUpSmall->setKbdRepeatable(true);
 
     // Temporary rate-change buttons
     m_pButtonRateTempDown =

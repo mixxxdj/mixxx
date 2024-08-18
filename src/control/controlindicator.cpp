@@ -1,5 +1,6 @@
 #include "control/controlindicator.h"
 
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "moc_controlindicator.cpp"
 
@@ -8,7 +9,7 @@ const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
 ControlIndicator::ControlIndicator(const ConfigKey& key)
-        : ControlObject(key, false),
+        : ControlObject(key, ControlConfigFlag::None),
           m_blinkValue(OFF),
           m_pCOIndicator250millis(make_parented<ControlProxy>(
                   kAppGroup, QStringLiteral("indicator_250ms"), this)),

@@ -9,7 +9,7 @@
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
 #include "preferences/usersettings.h"
-#include "util/mutex.h"
+#include "util/stat.h"
 
 class ControlObject;
 
@@ -29,9 +29,35 @@ enum class ControlFlag {
 Q_DECLARE_FLAGS(ControlFlags, ControlFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ControlFlags)
 
+// note that this could fit into a std::uint8_t, but when using this with QFlags,
+// the resulting type has sizeof(int) anyways. See QTBUG-128105
+enum class ControlConfigFlag {
+    None = 0,
+    // Whether to ignore sets which would have no effect.
+    IgnoreNops = 1,
+    // Whether to track value changes with the stats framework.
+    Track = 1 << 1,
+    // Whether the control should persist in the Mixxx user configuration. The
+    // value is loaded from configuration when the control is created and
+    // written to the configuration when the control is deleted.
+    Persist = 1 << 2,
+    // Whether this control will be issued repeatedly if the keyboard key is held.
+    KeyboardRepeatable = 1 << 3,
+
+    // Default configuration as used commonly throughout mixxx (may be subject to change)
+    Default = IgnoreNops,
+};
+
+Q_DECLARE_FLAGS(ControlConfigFlags, ControlConfigFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(ControlConfigFlags)
+
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
+    // TODO: don't expose/rely on this implementation detail
+    // in the consumer classes (ControlObject, etc).
+    static constexpr double kDefaultValue = 0.0;
+
     ~ControlDoublePrivate() override;
 
     // Used to implement control persistence. All controls that are marked
@@ -51,9 +77,7 @@ class ControlDoublePrivate : public QObject {
             const ConfigKey& key,
             ControlFlags flags = ControlFlag::None,
             ControlObject* pCreatorCO = nullptr,
-            bool bIgnoreNops = true,
-            bool bTrack = false,
-            bool bPersist = false,
+            ControlConfigFlags configFlags = ControlConfigFlag::Default,
             double defaultValue = 0.0);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
@@ -80,12 +104,8 @@ class ControlDoublePrivate : public QObject {
         m_description = description;
     }
 
-    void setKbdRepeatable(bool enable) {
-        m_kbdRepeatable = enable;
-    }
-
     bool getKbdRepeatable() const {
-        return m_kbdRepeatable;
+        return m_configFlags.testFlag(ControlConfigFlag::KeyboardRepeatable);
     }
 
     // Sets the control value.
@@ -117,7 +137,7 @@ class ControlDoublePrivate : public QObject {
     double getMidiParameter() const;
 
     bool ignoreNops() const {
-        return m_bIgnoreNops;
+        return m_configFlags.testFlag(ControlConfigFlag::IgnoreNops);
     }
 
     void setDefaultValue(double dValue) {
@@ -169,10 +189,9 @@ class ControlDoublePrivate : public QObject {
     ControlDoublePrivate(
             const ConfigKey& key,
             ControlObject* pCreatorCO,
-            bool bIgnoreNops,
-            bool bTrack,
-            bool bPersist,
-            double defaultValue);
+            ControlConfigFlags configFlags,
+            double defaultValue,
+            bool confirmRequired);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;
@@ -203,22 +222,10 @@ class ControlDoublePrivate : public QObject {
     // Note: keep the order of the members below to not introduce gaps due to
     // memory alignment in this often used class. Whether to track value changes
     // with the stats framework.
-    int m_trackType;
-    int m_trackFlags;
-    bool m_bTrack;
+    Stat::StatType m_trackType;
+    Stat::ComputeFlags m_trackFlags;
+    ControlConfigFlags m_configFlags;
     bool m_confirmRequired;
-
-    // Whether the control should persist in the Mixxx user configuration. The
-    // value is loaded from configuration when the control is created and
-    // written to the configuration when the control is deleted.
-    bool m_bPersistInConfiguration;
-
-    // Whether to ignore sets which would have no effect.
-    bool m_bIgnoreNops;
-
-
-    // If true, this control will be issued repeatedly if the keyboard key is held.
-    bool m_kbdRepeatable;
 
 };
 

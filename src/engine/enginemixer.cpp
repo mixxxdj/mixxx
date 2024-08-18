@@ -1,6 +1,7 @@
 #include "engine/enginemixer.h"
 
 #include "audio/types.h"
+#include "control/control.h"
 #include "control/controlaudiotaperpot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -69,15 +70,15 @@ EngineMixer::EngineMixer(
 
     // Main sample rate
     m_pSampleRate = new ControlObject(
-            ConfigKey(kAppGroup, QStringLiteral("samplerate")), true, true);
+            ConfigKey(kAppGroup, QStringLiteral("samplerate")),
+            {ControlConfigFlag::IgnoreNops, ControlConfigFlag::Track});
     m_pSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
     m_pSampleRate->set(44100.);
 
     // Latency control
     m_pOutputLatencyMs = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
-            true,
-            true); // reported latency (sometimes correct)
+            {ControlConfigFlag::IgnoreNops, ControlConfigFlag::Track});
     m_pOutputLatencyMs->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("latency")));
     m_pAudioLatencyOverloadCount = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_count")));
@@ -190,17 +191,13 @@ EngineMixer::EngineMixer(
     // TODO: Make this read only and make EngineMixer decide whether
     // processing the main mix is necessary.
     m_pMainEnabled = new ControlObject(ConfigKey(group, "enabled"),
-            true,
-            false,
-            true); // persist = true
+            {ControlConfigFlag::IgnoreNops, ControlConfigFlag::Persist});
     m_pBoothEnabled = new ControlObject(ConfigKey(group, "booth_enabled"));
     m_pBoothEnabled->setReadOnly();
     m_pMainMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
-            true,
-            false,
-            true); // persist = true
+            {ControlConfigFlag::IgnoreNops, ControlConfigFlag::Persist});
     m_pMicMonitorMode = new ControlObject(ConfigKey(group, "talkover_mix"),
-            true, false, true);  // persist = true
+            {ControlConfigFlag::IgnoreNops, ControlConfigFlag::Persist});
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
     m_pHeadphoneEnabled->setReadOnly();
 

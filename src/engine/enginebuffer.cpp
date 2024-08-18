@@ -177,7 +177,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pReplayGain = new ControlProxy(m_group, QStringLiteral("replaygain"), this);
 
-    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), ControlConfigFlag::None);
     m_pTrackLoaded->setReadOnly();
 
     // Quantization Controller for enabling and disabling the

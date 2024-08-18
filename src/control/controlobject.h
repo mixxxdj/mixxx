@@ -12,16 +12,11 @@ class ControlObject : public QObject {
   public:
     ControlObject();
 
-    // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
-    // bTrack: Record statistics about this control.
-    // bPersist: Store value on exit, load on startup.
     // defaultValue: default value of CO. If CO is persistent and there is no valid
     //               value found in the config, this is also the initial value.
     ControlObject(const ConfigKey& key,
-            bool bIgnoreNops = true,
-            bool bTrack = false,
-            bool bPersist = false,
-            double defaultValue = 0.0);
+            ControlConfigFlags configFlags = ControlConfigFlag::Default,
+            double defaultValue = ControlDoublePrivate::kDefaultValue);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
@@ -53,12 +48,6 @@ class ControlObject : public QObject {
     void setDescription(const QString& description) {
         if (m_pControl) {
             m_pControl->setDescription(description);
-        }
-    }
-
-    void setKbdRepeatable(bool enable) {
-        if (m_pControl) {
-            m_pControl->setKbdRepeatable(enable);
         }
     }
 
@@ -190,8 +179,4 @@ class ControlObject : public QObject {
     ControlObject(const ControlObject&) = delete;
     ControlObject& operator=(ControlObject&&) = delete;
     ControlObject& operator=(const ControlObject&) = delete;
-
-    inline bool ignoreNops() const {
-        return m_pControl ? m_pControl->ignoreNops() : true;
-    }
 };

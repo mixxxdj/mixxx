@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 
 #include "audio/types.h"
+#include "control/control.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -91,6 +92,9 @@ inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
     return pConfig->getSettingsPath() + QStringLiteral("/samplers.xml");
 }
 
+constexpr ControlConfigFlags kIgnoreNopsAndTrack = {
+        ControlConfigFlag::IgnoreNops, ControlConfigFlag::Track};
+
 } // anonymous namespace
 
 //static
@@ -112,15 +116,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("num_decks")), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_decks")), kIgnoreNopsAndTrack)),
           m_pCONumSamplers(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_samplers")), kIgnoreNopsAndTrack)),
           m_pCONumPreviewDecks(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), kIgnoreNopsAndTrack)),
           m_pCONumMicrophones(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_microphones")), kIgnoreNopsAndTrack)),
           m_pCONumAuxiliaries(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), kIgnoreNopsAndTrack)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,

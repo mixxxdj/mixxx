@@ -1,5 +1,6 @@
 #include "engine/channels/enginechannel.h"
 
+#include "control/control.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
@@ -26,7 +27,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
     m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
     // crossfader assignment is persistent
     m_pOrientation = new ControlPushButton(
-            ConfigKey(getGroup(), "orientation"), true, defaultOrientation);
+            ConfigKey(getGroup(), "orientation"), defaultOrientation, ControlConfigFlag::Persist);
     m_pOrientation->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
     connect(m_pOrientationLeft, &ControlObject::valueChanged,

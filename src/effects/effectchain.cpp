@@ -1,5 +1,6 @@
 #include "effects/effectchain.h"
 
+#include "control/control.h"
 #include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -61,8 +62,10 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::sendParameterUpdate);
 
+    constexpr static ControlConfigFlags kIgnoreNopsAndPersist = {
+            ControlConfigFlag::IgnoreNops, ControlConfigFlag::Persist};
     m_pControlChainMix = std::make_unique<ControlPotmeter>(
-            ConfigKey(m_group, "mix"), 0.0, 1.0, false, true, false, true, 1.0);
+            ConfigKey(m_group, "mix"), 0.0, 1.0, false, kIgnoreNopsAndPersist, 1.0);
     m_pControlChainMix->setDefaultValue(0.0);
     connect(m_pControlChainMix.get(),
             &ControlObject::valueChanged,
@@ -93,7 +96,7 @@ EffectChain::EffectChain(const QString& group,
             &EffectChain::sendParameterUpdate);
 
     m_pControlLoadedChainPreset = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "loaded_chain_preset"), false);
+            ConfigKey(m_group, "loaded_chain_preset"), ControlConfigFlag::None);
     m_pControlLoadedChainPreset->connectValueChangeRequest(
             this,
             &EffectChain::slotControlLoadedChainPresetRequest);
@@ -302,9 +305,9 @@ void EffectChain::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
     }
 
     auto pEnableControl = std::make_shared<ControlPushButton>(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name())),
-            true,
-            initialValue);
+            ConfigKey(m_group, QStringLiteral("group_%1_enable").arg(handleGroup.name())),
+            initialValue,
+            ControlConfigFlag::Persist);
     m_channelEnableButtons.insert(handleGroup, pEnableControl);
     pEnableControl->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     if (pEnableControl->toBool()) {
