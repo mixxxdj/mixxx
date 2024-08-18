@@ -117,7 +117,7 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
     ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
-    controlButton->setButtonMode(ControlPushButton::TOGGLE);
+    controlButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     if (pCreated) {
         *pCreated = true;

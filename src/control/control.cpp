@@ -30,14 +30,14 @@ QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
 } // namespace
 
 ControlDoublePrivate::ControlDoublePrivate()
-        : m_bPersistInConfiguration(false),
-          m_bIgnoreNops(true),
-          m_bTrack(false),
-          m_trackType(Stat::UNSPECIFIED),
+        : m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_bTrack(false),
           // default CO is read only
           m_confirmRequired(true),
+          m_bPersistInConfiguration(false),
+          m_bIgnoreNops(true),
           m_kbdRepeatable(false) {
     m_value.setValue(0.0);
 }
@@ -51,13 +51,13 @@ ControlDoublePrivate::ControlDoublePrivate(
         double defaultValue)
         : m_key(key),
           m_pCreatorCO(pCreatorCO),
-          m_bPersistInConfiguration(bPersist),
-          m_bIgnoreNops(bIgnoreNops),
-          m_bTrack(bTrack),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_bTrack(bTrack),
           m_confirmRequired(false),
+          m_bPersistInConfiguration(bPersist),
+          m_bIgnoreNops(bIgnoreNops),
           m_kbdRepeatable(false) {
     initialize(defaultValue);
 }
