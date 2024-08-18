@@ -64,6 +64,8 @@ class ControlRingValue {
   private:
     T m_value;
     mutable std::atomic<std::size_t> m_readerSlots;
+    static_assert(std::atomic<std::size_t>::is_always_lock_free,
+            "atomics used for lock-free data storage are not lock-free");
 };
 
 // Ring buffer based implementation for all Types sizeof(T) > sizeof(void*)
@@ -123,6 +125,8 @@ class ControlValueAtomicBase {
     ControlRingValue<T> m_ring[cRingSize];
     std::atomic<std::size_t> m_readIndex;
     std::atomic<std::size_t> m_writeIndex;
+    static_assert(std::atomic<std::size_t>::is_always_lock_free,
+            "atomics used for lock-free data storage are not lock-free");
 };
 
 // Specialized template for types that are deemed to be atomic on the target
@@ -146,6 +150,7 @@ class ControlValueAtomicBase<T, cRingSize, true> {
 
   private:
     std::atomic<T> m_value;
+    static_assert(std::atomic<T>::is_always_lock_free);
 };
 
 template<typename T, std::size_t cRingSize = kDefaultRingSize>
@@ -155,6 +160,12 @@ class ControlValueAtomic : public ControlValueAtomicBase<T,
     // naming the parent class is tedious because all template parameters have to be specified,
     // so this alias makes it a little more manageable.
     using ParentT = ControlValueAtomicBase<T, cRingSize, std::atomic<T>::is_always_lock_free>;
+
+    static_assert(!(!std::atomic<T>::is_always_lock_free &&
+                          sizeof(T) <= sizeof(void*)),
+            "T is not lock free even though it is smaller than void*! Consider "
+            "using `std::atomic<T>::is_lock_free()` to only fallback to the "
+            "eventually-consistent ControlValueAtomicBase when necessary");
 
   public:
     ControlValueAtomic() = default;
