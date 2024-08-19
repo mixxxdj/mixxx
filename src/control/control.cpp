@@ -16,7 +16,14 @@ UserSettingsPointer s_pUserConfig;
 
 const QString statTrackKey = QStringLiteral("control %1,%2"); // CO group,key
 
-constexpr double kDefaultValue = 0.0;
+constexpr Stat::StatType kStatType = Stat::UNSPECIFIED;
+
+constexpr Stat::ComputeFlags kComputeFlags = {Stat::COUNT,
+        Stat::SUM,
+        Stat::AVERAGE,
+        Stat::SAMPLE_VARIANCE,
+        Stat::MIN,
+        Stat::MAX};
 
 /// Mutex guarding access to s_qCOHash and s_qCOAliasHash.
 MMutex s_qCOHashMutex;
@@ -53,11 +60,7 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_value(defaultValue),
           m_defaultValue(defaultValue),
           m_pCreatorCO(pCreatorCO),
-          m_trackKey(QString()),
-          m_trackType(Stat::UNSPECIFIED),
-          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                  Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_bTrack(bTrack),
+          m_trackKey(bTrack ? statTrackKey.arg(key.group, key.item) : QString()),
           m_confirmRequired(confirmRequired),
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
@@ -71,9 +74,8 @@ ControlDoublePrivate::ControlDoublePrivate(
         }
     }
 
-    if (m_bTrack) {
-        m_trackKey = statTrackKey.arg(key.group, key.item);
-        Stat::track(m_trackKey, m_trackType, m_trackFlags, m_value.getValue());
+    if (!m_trackKey.isNull()) {
+        Stat::track(m_trackKey, kStatType, kComputeFlags, m_value.getValue());
     }
 }
 
@@ -288,9 +290,8 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
     m_value.setValue(value);
     emit valueChanged(value, pSender);
 
-    if (m_bTrack) {
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), value);
+    if (!m_trackKey.isNull()) {
+        Stat::track(m_trackKey, kStatType, kComputeFlags, value);
     }
 }
 
