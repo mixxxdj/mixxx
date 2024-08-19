@@ -36,6 +36,19 @@ class ControlDoublePrivate : public QObject {
     // TODO: don't expose this implementation detail
     constexpr static double kDefaultValue = 0.0;
 
+    struct Parameters {
+        ConfigKey key;
+        ControlObject* pCreatorCO = nullptr;
+        QString name{};
+        QString description{};
+        ControlNumericBehavior* behavior = nullptr;
+        double defaultValue = kDefaultValue;
+        bool ignoreNops = true;
+        bool track = false;
+        bool persist = false;
+        bool keyboardRepeatable = false;
+    };
+
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
@@ -168,14 +181,10 @@ class ControlDoublePrivate : public QObject {
     ControlDoublePrivate();
 
   private:
-    ControlDoublePrivate(
-            const ConfigKey& key,
-            ControlObject* pCreatorCO,
-            bool bIgnoreNops,
-            bool bTrack,
-            bool bPersist,
-            double defaultValue,
-            bool confirmRequired);
+    struct ParametersWithConfirm : public Parameters {
+        bool confirmRequired = false;
+    };
+    ControlDoublePrivate(const ParametersWithConfirm& params);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;

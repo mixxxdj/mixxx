@@ -39,41 +39,37 @@ QHash<ConfigKey, ConfigKey> s_qCOAliasHash
 
 /// is used instead of a nullptr, helps to omit null checks everywhere
 QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
+
+double maybeLoadDefaultValueFromConfig(const ConfigKey& key, bool persist, double defaultValue) {
+    if (!persist) {
+        return defaultValue;
+    }
+    if (!s_pUserConfig) {
+        DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
+        return defaultValue;
+    }
+    return s_pUserConfig->getValue(key, defaultValue);
+}
+
 } // namespace
 
 // TODO: re-evaluate whether this is needed.
 ControlDoublePrivate::ControlDoublePrivate()
-        : ControlDoublePrivate({}, nullptr, true, false, false, kDefaultValue, true){};
+        : ControlDoublePrivate({{}, true}){};
 
-ControlDoublePrivate::ControlDoublePrivate(
-        const ConfigKey& key,
-        ControlObject* pCreatorCO,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
-        double defaultValue,
-        bool confirmRequired = false)
-        : m_key(key),
-          m_pBehavior(nullptr),
-          m_name(QString()),
-          m_description(QString()),
-          m_value(defaultValue),
-          m_defaultValue(defaultValue),
-          m_pCreatorCO(pCreatorCO),
-          m_trackingKey(bTrack ? statTrackingKey.arg(key.group, key.item) : QString()),
-          m_confirmRequired(confirmRequired),
-          m_bPersistInConfiguration(bPersist),
-          m_bIgnoreNops(bIgnoreNops),
-          m_kbdRepeatable(false) {
-    if (bPersist) {
-        UserSettingsPointer pConfig = s_pUserConfig;
-        if (pConfig) {
-            m_value.setValue(pConfig->getValue(m_key, defaultValue));
-        } else {
-            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
-        }
-    }
-
+ControlDoublePrivate::ControlDoublePrivate(const ParametersWithConfirm& params)
+        : m_key(params.key),
+          m_pBehavior(params.behavior),
+          m_name(params.name),
+          m_description(params.description),
+          m_value(maybeLoadDefaultValueFromConfig(params.key, params.persist, params.defaultValue)),
+          m_defaultValue(params.defaultValue),
+          m_pCreatorCO(params.pCreatorCO),
+          m_trackingKey(params.track ? statTrackingKey.arg(m_key.group, m_key.item) : QString()),
+          m_confirmRequired(params.confirmRequired),
+          m_bPersistInConfiguration(params.persist),
+          m_bIgnoreNops(params.ignoreNops),
+          m_kbdRepeatable(params.keyboardRepeatable) {
     if (!m_trackingKey.isNull()) {
         Stat::track(m_trackingKey, kStatType, kComputeFlags, m_value.getValue());
     }
@@ -178,12 +174,14 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
     if (pCreatorCO) {
         auto pControl = QSharedPointer<ControlDoublePrivate>(
-                new ControlDoublePrivate(key,
-                        pCreatorCO,
-                        bIgnoreNops,
-                        bTrack,
-                        bPersist,
-                        defaultValue));
+                new ControlDoublePrivate(ParametersWithConfirm{{
+                        .key = key,
+                        .pCreatorCO = pCreatorCO,
+                        .defaultValue = defaultValue,
+                        .ignoreNops = bIgnoreNops,
+                        .track = bTrack,
+                        .persist = bPersist,
+                }}));
         const MMutexLocker locker(&s_qCOHashMutex);
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
         s_qCOHash.insert(key, pControl);
