@@ -230,14 +230,8 @@ class ControlDoublePrivateConst : public ControlDoublePrivate {
   public:
     ~ControlDoublePrivateConst() override = default;
 
-    void setInner(double value, QObject* pSender) override {
-        Q_UNUSED(value)
-        Q_UNUSED(pSender)
+  private:
+    void setInner(double, QObject*) override {
         DEBUG_ASSERT(!"Trying to modify a default constructed (const) control object");
     };
-
-  protected:
-    ControlDoublePrivateConst() = default;
-
-    friend ControlDoublePrivate;
 };
