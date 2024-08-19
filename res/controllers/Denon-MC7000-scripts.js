@@ -89,13 +89,26 @@ MC7000.scratchParams = {
     beta: (1.0/10)/32
 };
 
-// Sensitivity factor of the jog wheel (also depends on audio latency)
-// 0.5 for half, 2 for double sensitivity - Recommendation:
-// set to 0.5 with audio buffer set to 50ms
-// set to 1 with audio buffer set to 25ms
-// set to 3 with audio buffer set to 5ms
-MC7000.jogSensitivity = 1;
-
+// Jog wheel parameters
+MC7000.jogParams = {
+    // Sensitivity factor of the jog wheel (also depends on audio latency)
+    // 0.5 for half, 2 for double sensitivity - Recommendation:
+    // set to 0.5 with audio buffer set to 50ms
+    // set to 1 with audio buffer set to 25ms
+    // set to 3 with audio buffer set to 5ms
+    sensitivity: engine.getSetting("jogSensitivity") || 1,
+    // Acceleration settings for the jog wheel in vinyl mode
+    // If enabled, the track speed will accelerate faster than the physical jogwheel movement. Be aware that the absolute track position will drift relative to the jogwheel position in this mode!
+    // (exponent: 0 and coefficient: 1 = no acceleration)
+    acceleration: {
+        // Toggles acceleration entirely.
+        enabled: engine.getSetting("jogAccelerationEnabled") || false,
+        // Acceleration function exponent
+        exponent: engine.getSetting("jogAccelerationExponent") || 0.8,
+        // Acceleration function scaling factor
+        coefficient: engine.getSetting("jogAccelerationCoefficient") || 1
+    }
+};
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
@@ -705,7 +718,8 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
 
     // A: For a control that centers on 0:
     const numTicks = (value < 0x64) ? value : (value - 128);
-    const adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
+    const baseSpeed = numTicks * MC7000.jogParams.sensitivity;
+    const adjustedSpeed = baseSpeed / 10;
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
     const libraryMaximized = engine.getValue("[Skin]", "show_maximized_library");
@@ -714,8 +728,14 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     } else if (libraryMaximized === 1 && numTicks < 0) {
         engine.setValue("[Library]", "MoveUp", 1);
     } else if (engine.isScratching(deckNumber)) {
-    // Scratch!
-        engine.scratchTick(deckNumber, numTicks * MC7000.jogSensitivity);
+        // Scratch!
+        let scratchSpeed = baseSpeed;
+        const acceleration = MC7000.jogParams.acceleration;
+        if (acceleration && acceleration.enabled) {
+            const accelerationFactor = Math.pow(Math.abs(baseSpeed), acceleration.exponent) * acceleration.coefficient;
+            scratchSpeed *= accelerationFactor;
+        }
+        engine.scratchTick(deckNumber, scratchSpeed);
     } else {
         if (MC7000.shift[deckIndex]) {
             // While Shift Button pressed -> Search through track
