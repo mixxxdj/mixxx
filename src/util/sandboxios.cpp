@@ -11,7 +11,7 @@ namespace mixxx {
 #ifdef Q_OS_IOS
 
 static const QRegularExpression sandboxPrefixRegex = QRegularExpression(
-        QStringLiteral("^/private/var/mobile/Containers/Data/Application/"
+        QStringLiteral("^(?:/private)?/var/mobile/Containers/Data/Application/"
                        "[a-zA-Z0-9\\-]+(/.*)"));
 
 QString updateIOSSandboxPath(const QString& path) {
