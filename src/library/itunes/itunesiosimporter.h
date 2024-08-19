@@ -22,4 +22,6 @@ class ITunesIOSImporter : public ITunesImporter {
 
   private:
     std::unique_ptr<ITunesDAO> m_dao;
+    
+    void requestAuthorization();
 };
