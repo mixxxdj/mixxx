@@ -49,6 +49,10 @@ class ControlDoublePrivate : public QObject {
         bool keyboardRepeatable = false;
     };
 
+    struct ParametersWithFlags : public Parameters {
+        ControlFlags flags = ControlFlag::None;
+    };
+
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
@@ -62,14 +66,7 @@ class ControlDoublePrivate : public QObject {
     // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
     // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
     // one does not exist.
-    static QSharedPointer<ControlDoublePrivate> getControl(
-            const ConfigKey& key,
-            ControlFlags flags = ControlFlag::None,
-            ControlObject* pCreatorCO = nullptr,
-            bool bIgnoreNops = true,
-            bool bTrack = false,
-            bool bPersist = false,
-            double defaultValue = kDefaultValue);
+    static QSharedPointer<ControlDoublePrivate> getControl(const ParametersWithFlags& params);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
     // Returns a list of all existing instances.

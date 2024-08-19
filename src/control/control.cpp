@@ -122,17 +122,11 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 
 // static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
-        const ConfigKey& key,
-        ControlFlags flags,
-        ControlObject* pCreatorCO,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
-        double defaultValue) {
-    if (!key.isValid()) {
-        if (!flags.testFlag(ControlFlag::AllowInvalidKey)) {
+        const ParametersWithFlags& params) {
+    if (!params.key.isValid()) {
+        if (!params.flags.testFlag(ControlFlag::AllowInvalidKey)) {
             qWarning() << "ControlDoublePrivate::getControl returning nullptr"
-                       << "for invalid ConfigKey" << key;
+                       << "for invalid ConfigKey" << params.key;
             DEBUG_ASSERT(!"Unexpected invalid key");
         }
         return nullptr;
@@ -141,25 +135,25 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     // Scope for MMutexLocker.
     {
         const MMutexLocker locker(&s_qCOHashMutex);
-        const auto it = s_qCOHash.constFind(key);
+        const auto it = s_qCOHash.constFind(params.key);
         if (it != s_qCOHash.constEnd()) {
             auto pControl = it.value().lock();
             if (pControl) {
                 auto actualKey = pControl->getKey();
-                if (actualKey != key) {
+                if (actualKey != params.key) {
                     qWarning()
                             << "ControlObject accessed via deprecated key"
-                            << key.group << key.item
+                            << params.key.group << params.key.item
                             << "- use"
                             << actualKey.group << actualKey.item
                             << "instead";
                 }
 
                 // Control object already exists
-                if (pCreatorCO) {
+                if (params.pCreatorCO) {
                     qWarning()
                             << "ControlObject"
-                            << key.group << key.item
+                            << params.key.group << params.key.item
                             << "already created";
                     DEBUG_ASSERT(!"pCreatorCO != nullptr, ControlObject already created");
                     return nullptr;
@@ -172,26 +166,19 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         }
     }
 
-    if (pCreatorCO) {
+    if (params.pCreatorCO) {
         auto pControl = QSharedPointer<ControlDoublePrivate>(
-                new ControlDoublePrivate(ParametersWithConfirm{{
-                        .key = key,
-                        .pCreatorCO = pCreatorCO,
-                        .defaultValue = defaultValue,
-                        .ignoreNops = bIgnoreNops,
-                        .track = bTrack,
-                        .persist = bPersist,
-                }}));
+                new ControlDoublePrivate({params}));
         const MMutexLocker locker(&s_qCOHashMutex);
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
-        s_qCOHash.insert(key, pControl);
+        s_qCOHash.insert(params.key, pControl);
         return pControl;
     }
 
-    if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
+    if (!params.flags.testFlag(ControlFlag::NoWarnIfMissing)) {
         qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                   << key.group << "," << key.item << ")";
-        DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
+                   << params.key.group << "," << params.key.item << ")";
+        DEBUG_ASSERT(params.flags.testFlag(ControlFlag::NoAssertIfMissing));
     }
     return nullptr;
 }

@@ -19,7 +19,7 @@ class PollingControlProxy {
     }
 
     PollingControlProxy(const ConfigKey& key, ControlFlags flags = ControlFlag::None) {
-        m_pControl = ControlDoublePrivate::getControl(key, flags);
+        m_pControl = ControlDoublePrivate::getControl({{key}, flags});
         if (!m_pControl) {
             DEBUG_ASSERT(flags & ControlFlag::AllowMissingOrInvalid);
             m_pControl = ControlDoublePrivate::getDefaultControl();

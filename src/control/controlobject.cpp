@@ -17,13 +17,12 @@ ControlObject::ControlObject(const ConfigKey& key,
         : m_key(key) {
     // Don't bother looking up the control if key is invalid. Prevents log spew.
     if (m_key.isValid()) {
-        m_pControl = ControlDoublePrivate::getControl(m_key,
-                ControlFlag::None,
-                this,
-                bIgnoreNops,
-                bTrack,
-                bPersist,
-                defaultValue);
+        m_pControl = ControlDoublePrivate::getControl({{.key = m_key,
+                .pCreatorCO = this,
+                .defaultValue = defaultValue,
+                .ignoreNops = bIgnoreNops,
+                .track = bTrack,
+                .persist = bPersist}});
     }
 
     // getControl can fail and return a NULL control even with the create flag.
@@ -56,7 +55,8 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
 // static
 ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flags) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, flags);
+    QSharedPointer<ControlDoublePrivate> pCDP =
+            ControlDoublePrivate::getControl({{.key = key}, flags});
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
@@ -64,7 +64,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flag
 }
 
 bool ControlObject::exists(const ConfigKey& key) {
-    return !ControlDoublePrivate::getControl(key, ControlFlag::NoWarnIfMissing).isNull();
+    return !ControlDoublePrivate::getControl({{.key = key}, ControlFlag::NoWarnIfMissing}).isNull();
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
@@ -77,7 +77,7 @@ double ControlObject::getMidiParameter() const {
 
 // static
 double ControlObject::get(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl({{key}});
     return pCop ? pCop->get() : 0.0;
 }
 
@@ -103,7 +103,7 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl({{key}});
     if (pCop) {
         pCop->set(value, nullptr);
     }
