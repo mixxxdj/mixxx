@@ -216,11 +216,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::settingChanged);
+#ifdef __RUBBERBAND__
     connect(keylockComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::updateKeylockDualThreadingCheckbox);
-#ifdef __RUBBERBAND__
     connect(keylockDualthreadedCheckBox,
             &QCheckBox::clicked,
             this,
@@ -365,7 +365,9 @@ void DlgPrefSound::slotApply() {
     m_bSkipConfigClear = true;
     loadSettings(); // in case SM decided to change anything it didn't like
     checkLatencyCompensation();
+#ifdef __RUBBERBAND__
     updateKeylockDualThreadingCheckbox();
+#endif
     m_bSkipConfigClear = false;
 }
 
@@ -749,10 +751,9 @@ void DlgPrefSound::settingChanged() {
         return; // doesn't count if we're just loading prefs
     }
     m_settingsModified = true;
-
-#ifdef __RUBBERBAND__
 }
 
+#ifdef __RUBBERBAND__
 void DlgPrefSound::updateKeylockDualThreadingCheckbox() {
     bool supportedScaler = keylockComboBox->currentData()
                                    .value<EngineBuffer::KeylockEngine>() !=
@@ -790,8 +791,8 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
     keylockDualthreadedCheckBox->setChecked(msg.clickedButton() == pYesBtn);
 
     updateKeylockDualThreadingCheckbox();
-#endif
 }
+#endif
 
 /// Slot called when a device from the config can not be selected, i.e. is
 /// currently not available. This may happen during startup when MixxxMainWindow
@@ -910,7 +911,9 @@ void DlgPrefSound::slotResetToDefaults() {
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
     settingChanged();
+#ifdef __RUBBERBAND__
     updateKeylockDualThreadingCheckbox();
+#endif
 }
 
 void DlgPrefSound::bufferUnderflow(double count) {

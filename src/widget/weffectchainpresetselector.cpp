@@ -139,7 +139,7 @@ void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
     // Quick effect controls in the mixer.
     QStylePainter painter(this);
     QStyleOptionComboBox comboStyle;
-    // Inititialize the style and draw the frame, down-arrow etc.
+    // Initialize the style and draw the frame, down-arrow etc.
     // Note: using 'comboStyle.initFrom(this)' and 'painter.drawComplexControl(...)
     // here would not paint the hover style of the down arrow.
     initStyleOption(&comboStyle);

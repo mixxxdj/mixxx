@@ -149,7 +149,7 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_pEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
-    m_pEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
+    m_pEnabledAutoDJ->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pEnabledAutoDJ->connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 

@@ -1333,6 +1333,7 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/control/control.h
   src/control/controlaudiotaperpot.h
   src/control/controlbehavior.h
+  src/control/controlbuttonmode.h
   src/control/controlcompressingproxy.h
   src/control/controleffectknob.h
   src/control/controlencoder.h
@@ -3681,7 +3682,7 @@ else()
   check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
   if(NOT HAVE_GSL_GSL)
     unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
-    message(FATAL_ERROR "ms-gsl deveopment headers (libmsgsl-dev) not found")
+    message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
   endif()
 endif()
 
