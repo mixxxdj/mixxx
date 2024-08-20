@@ -1057,21 +1057,21 @@ void importTrackMetadataFromTag(
                     tag,
                     kFrameDescriptionSeratoBeatGrid);
     if (!seratoBeatGrid.isEmpty()) {
-        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MP3);
+        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MPEG);
     }
     const QByteArray seratoMarkers =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers);
     if (!seratoMarkers.isEmpty()) {
-        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MP3);
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MPEG);
     }
     const QByteArray seratoMarkers2 =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers2);
     if (!seratoMarkers2.isEmpty()) {
-        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MP3);
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MPEG);
     }
 }
 
@@ -1342,15 +1342,15 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoBeatGrid,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers2,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MPEG));
     }
 
     return true;
