@@ -14,7 +14,7 @@ namespace {
 /// configuration object would be arduous.
 UserSettingsPointer s_pUserConfig;
 
-const QString statTrackKey = QStringLiteral("control %1,%2"); // CO group,key
+const QString statTrackingKey = QStringLiteral("control %1,%2"); // CO group,key
 
 constexpr Stat::StatType kStatType = Stat::UNSPECIFIED;
 
@@ -60,7 +60,7 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_value(defaultValue),
           m_defaultValue(defaultValue),
           m_pCreatorCO(pCreatorCO),
-          m_trackKey(bTrack ? statTrackKey.arg(key.group, key.item) : QString()),
+          m_trackingKey(bTrack ? statTrackingKey.arg(key.group, key.item) : QString()),
           m_confirmRequired(confirmRequired),
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
@@ -74,8 +74,8 @@ ControlDoublePrivate::ControlDoublePrivate(
         }
     }
 
-    if (!m_trackKey.isNull()) {
-        Stat::track(m_trackKey, kStatType, kComputeFlags, m_value.getValue());
+    if (!m_trackingKey.isNull()) {
+        Stat::track(m_trackingKey, kStatType, kComputeFlags, m_value.getValue());
     }
 }
 
@@ -290,8 +290,8 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
     m_value.setValue(value);
     emit valueChanged(value, pSender);
 
-    if (!m_trackKey.isNull()) {
-        Stat::track(m_trackKey, kStatType, kComputeFlags, value);
+    if (!m_trackingKey.isNull()) {
+        Stat::track(m_trackingKey, kStatType, kComputeFlags, value);
     }
 }
 

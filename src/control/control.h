@@ -201,8 +201,8 @@ class ControlDoublePrivate : public QObject {
 
     QAtomicPointer<ControlObject> m_pCreatorCO;
 
-    // name of the key to track using stats framework, unless the trackKey isNull().
-    QString m_trackKey;
+    // name of the key to track using stats framework, unless the m_trackingKey isNull().
+    QString m_trackingKey;
 
     // Note: keep the order of the members below to not introduce gaps due to
     // memory alignment in this often used class.
