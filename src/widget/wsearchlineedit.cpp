@@ -241,7 +241,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
                     "Shows/hides the search history entries") +
             "\n" +
             tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
-            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+            tr("Esc or Ctrl+Return") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
 void WSearchLineEdit::loadQueriesFromConfig() {
@@ -397,6 +397,11 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     case Qt::Key_Enter:
     case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
+            return;
+        }
+        if (keyEvent->modifiers() & Qt::ControlModifier) {
+            // Esc and Ctrl+Enter should have the same effect
+            emit setLibraryFocus(FocusWidget::TracksTable);
             return;
         }
         if (hasCompletionAvailable()) {
