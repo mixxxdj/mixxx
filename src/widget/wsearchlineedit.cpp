@@ -220,9 +220,9 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Clear the search bar input field"));
 
     setBaseTooltip(tr("Search", "noun") + "\n" +
-            tr("Enter a string to search for") + "\n" +
-            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
-            "\n" + tr("For more information see User Manual > Mixxx Library") +
+            tr("Enter a string to search for.") + " " +
+            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990.") +
+            "\n" + tr("See User Manual > Mixxx Library for more information.") +
             "\n\n" +
             tr("Ctrl+F") + ": " +
             tr("Focus", "Give search bar input focus") + "\n\n" +
