@@ -909,12 +909,6 @@ FocusWidget LibraryControl::getFocusedWidget() {
 }
 
 void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget, Qt::FocusReason focusReason) {
-    if (!QApplication::focusWindow()) {
-        qInfo() << "No Mixxx window, popup or menu has focus."
-                << "Don't attempt to focus a specific widget.";
-        return;
-    }
-
     // The search box wants to do special handling when the Ctrl+f is used
     // while it is already focused. Non-shortcut cases should still be a
     // no-op when a control is already focused.
