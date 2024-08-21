@@ -229,11 +229,12 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Additional Shortcuts When Focused:") + "\n" +
             tr("Return") + ": " +
             tr("Trigger search before search-as-you-type timeout or "
-               "jump to tracks view afterwards") +
+               "focus tracks view afterwards") +
             "\n" +
             tr("Esc or Ctrl+Return") + ": " +
-            tr("Exit search and jump to tracks view", "Exit search bar and leave focus") + "\n" +
-            tr("Ctrl+Space") + ": " +
+            tr("Immediately trigger search and focus tracks view",
+                    "Exit search bar and leave focus") +
+            "\n" + tr("Ctrl+Space") + ": " +
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
