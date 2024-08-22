@@ -73,6 +73,10 @@
                     <value label="Change Star Rating (Shift: Track Color)">starsAndColor</value>
                     <value label="Perform Beat Jump (Shift: Adjust Jump Size)">beatjump</value>
                     <value label="Set Intro/Outro (Shift: Clear Intro/Outro)">introOutro</value>
+                    <description>
+                        Change the functionality of the orange parameter buttons
+                        in the bottom left/right corner of the controller.
+                    </description>
                 </option>
             </group>
         </group>
