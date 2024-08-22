@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QUrl>
+#include <QtGlobal>
 
 #include "control/controlproxy.h"
 #include "defs_urls.h"
@@ -86,6 +87,10 @@ DlgPrefLibrary::DlgPrefLibrary(
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
+
+#ifdef Q_OS_IOS
+    checkBox_edit_metadata_selected_clicked->setEnabled(false);
+#endif
 
     comboBox_search_bpm_fuzzy_range->clear();
     comboBox_search_bpm_fuzzy_range->addItem("25 %", 25);
