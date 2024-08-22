@@ -78,6 +78,18 @@
                         in the bottom left/right corner of the controller.
                     </description>
                 </option>
+                <option
+                    variable="parameterButtonPitchPlayOverrideEnabled"
+                    label="Override parameter button mode during pitch play to set pitch range"
+                    type="boolean"
+                    default="true">
+                    <description>
+                        Whether to use the parameter buttons to change the pitch
+                        range during pitch play mode. If this option is enabled,
+                        the pitch change functionality overrides the normal
+                        parameter button mode during pitch play.
+                    </description>
+                </option>
             </group>
         </group>
     </settings>

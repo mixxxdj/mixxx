@@ -110,9 +110,14 @@ MC7000.jogParams = {
     }
 };
 
-// Parameter button mode. See Denon-MC7000.midi.xml for documentation of the available modes.
+// Parameter button settings (the orange buttons at the bottom left/right of the controller).
 MC7000.parameterButtonSettings = {
+    // Parameter button mode. Available modes are `starsAndColor`, `beatjump` and `introOutro`.
     mode: engine.getSetting("parameterButtonMode") || "starsAndColor",
+    // Whether to use the parameter buttons to change the pitch range during
+    // pitch play mode. If this option is enabled, the pitch change
+    // functionality overrides the normal parameter button mode during pitch play.
+    parameterButtonPitchPlayOverrideEnabled: engine.getSetting("parameterButtonPitchPlayOverrideEnabled"),
 };
 
 /*/////////////////////////////////
@@ -963,14 +968,15 @@ MC7000.parameterButton = function(value, group, {isLeftButton, isShiftPressed}) 
 
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
+    const settings = MC7000.parameterButtonSettings;
 
-    if (MC7000.PADMode[deckIndex] === "Pitch") {
+    if (settings.parameterButtonPitchPlayOverrideEnabled && MC7000.PADMode[deckIndex] === "Pitch") {
         const pitchDelta = isLeftButton ? -8 : 8;
         for (let padIdx = 0; padIdx < 8; padIdx++) {
             MC7000.halftoneToPadMap[deckIndex][padIdx] += pitchDelta;
         }
     } else {
-        switch (MC7000.parameterButtonSettings.mode) {
+        switch (settings.mode) {
         case "starsAndColor":
             if (isShiftPressed) {
                 script.triggerControl(group, `track_color_${isLeftButton ? "prev" : "next"}`);
