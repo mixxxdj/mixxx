@@ -113,11 +113,11 @@ MC7000.jogParams = {
 // Parameter button settings (the orange buttons at the bottom left/right of the controller).
 MC7000.parameterButtonSettings = {
     // Parameter button mode. Available modes are `starsAndColor`, `beatjump` and `introOutro`.
-    mode: engine.getSetting("parameterButtonMode") || "starsAndColor",
+    mode: engine.getSetting("parameterButtonMode") ?? "starsAndColor",
     // Whether to use the parameter buttons to change the pitch range during
     // pitch play mode. If this option is enabled, the pitch change
     // functionality overrides the normal parameter button mode during pitch play.
-    parameterButtonPitchPlayOverrideEnabled: engine.getSetting("parameterButtonPitchPlayOverrideEnabled"),
+    parameterButtonPitchPlayOverrideEnabled: engine.getSetting("parameterButtonPitchPlayOverrideEnabled") ?? true,
 };
 
 /*/////////////////////////////////
