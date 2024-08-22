@@ -162,9 +162,6 @@ MC7000.prevVuLevel = [0, 0, 0, 0];
 MC7000.prevJogLED = [0, 0, 0, 0];
 MC7000.prevPadLED = [0, 0, 0, 0];
 
-// Param Buttons for Pitch Play
-MC7000.paramButton = [0, 0, 0, 0];
-
 /*
 Color Codes:
 Colors are encoded using the following schema: Take the individual components of the color (R, G, B). Then use
