@@ -104,12 +104,11 @@ class CachingReaderWorker : public EngineWorker {
     ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
-    void newTrack(TrackPointer pTrack
 #ifdef __STEM__
-            ,
-            uint stemIdx
+    void newTrack(TrackPointer pTrack, uint stemMask);
+#else
+    void newTrack(TrackPointer pTrack);
 #endif
-    );
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
@@ -130,7 +129,7 @@ class CachingReaderWorker : public EngineWorker {
 #ifdef __STEM__
     struct NewTrackRequest {
         TrackPointer track;
-        uint stemIdx;
+        uint stemMask;
     };
 #endif
     const QString m_group;
@@ -162,12 +161,11 @@ class CachingReaderWorker : public EngineWorker {
     void unloadTrack();
 
     /// Internal method to load a track. Emits trackLoaded when finished.
-    void loadTrack(const TrackPointer& pTrack
 #ifdef __STEM__
-            ,
-            uint stemIdx
+    void loadTrack(const TrackPointer& pTrack, uint stemMask);
+#else
+    void loadTrack(const TrackPointer& pTrack);
 #endif
-    );
 
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);

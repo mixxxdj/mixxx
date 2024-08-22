@@ -206,7 +206,7 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 
 // Invoked from the UI thread!!
 #ifdef __STEM__
-void CachingReader::newTrack(TrackPointer pTrack, uint stemIdx) {
+void CachingReader::newTrack(TrackPointer pTrack, uint stemMask) {
 #else
 void CachingReader::newTrack(TrackPointer pTrack) {
 #endif
@@ -224,12 +224,11 @@ void CachingReader::newTrack(TrackPointer pTrack) {
         kLogger.warning()
                 << "Loading a new track while loading a track may lead to inconsistent states";
     }
-    m_worker.newTrack(std::move(pTrack)
 #ifdef __STEM__
-                              ,
-            stemIdx
+    m_worker.newTrack(std::move(pTrack), stemMask);
+#else
+    m_worker.newTrack(std::move(pTrack));
 #endif
-    );
 }
 
 // Called from the engine thread

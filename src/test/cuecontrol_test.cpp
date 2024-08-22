@@ -50,7 +50,7 @@ class CueControlTest : public BaseSignalPathTest {
     void unloadTrack() {
         m_pMixerDeck1->slotLoadTrack(TrackPointer(),
 #ifdef __STEM__
-                mixxx::kNoStemSelectedIdx,
+                mixxx::kNoStemSelected,
 #endif
                 false);
     }

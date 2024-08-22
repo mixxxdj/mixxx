@@ -38,11 +38,14 @@ class WTrackTableView : public WLibraryTableView {
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
     void activateSelectedTrack();
-    void loadSelectedTrackToGroup(const QString& group,
 #ifdef __STEM__
-            uint stemIdx,
-#endif
+    void loadSelectedTrackToGroup(const QString& group,
+            uint stemMask,
             bool play);
+#else
+    void loadSelectedTrackToGroup(const QString& group,
+            bool play);
+#endif
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;

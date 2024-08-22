@@ -76,7 +76,7 @@ void WaveformRendererStem::paintGL() {
         return;
     }
 
-    uint selectedStem = m_waveformRenderer->getSelectedStem();
+    uint selectedStems = m_waveformRenderer->getSelectedStems();
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
@@ -160,8 +160,8 @@ void WaveformRendererStem::paintGL() {
                 // Apply the gains
                 if (layerIdx) {
                     max *= m_pStemMute[stemIdx]->toBool() ||
-                                    (selectedStem &&
-                                            selectedStem != stemIdx + 1)
+                                    (selectedStems &&
+                                            !(selectedStems & 1 << stemIdx))
                             ? 0.f
                             : static_cast<float>(m_pStemGain[stemIdx]->get());
                 }

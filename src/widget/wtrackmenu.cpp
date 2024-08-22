@@ -50,6 +50,9 @@
 // WStarRating is required for DlgTrackInfo
 #include "widget/wstarrating.h"
 #include "widget/wstarratingaction.h"
+#ifdef __STEM__
+#include "widget/wtrackstemmenu.h"
+#endif
 
 constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 
@@ -891,24 +894,14 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
         SoundSourceProxy(pTrack).openAudioSource(config);
     }
     if (enabled && pTrack && pTrack->hasStem()) {
-        QMenu* pStemMenu = new QMenu(label, pParentMenu);
-
-        QAction* pAction = new QAction(tr("Load as a stem deck"), this);
-        pStemMenu->addAction(pAction);
-        connect(pAction, &QAction::triggered, this, [this, group] { loadSelectionToGroup(group); });
-        pStemMenu->addSeparator();
-
-        auto stemInfo = pTrack->getStemInfo();
-        for (uint stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
-            QAction* pAction =
-                    new QAction(tr("Load the \"%1\" stem")
-                                        .arg(stemInfo.at(stemIdx).getLabel()),
-                            this);
-            pStemMenu->addAction(pAction);
-            connect(pAction, &QAction::triggered, this, [this, group, stemIdx] {
-                loadSelectionToGroup(group, stemIdx + 1);
-            });
-        }
+        auto* pStemMenu = new WTrackStemMenu(label, pParentMenu, group, pTrack->getStemInfo());
+        connect(pStemMenu,
+                &WTrackStemMenu::selectedStem,
+                this,
+                [this](const QString& group, uint stemMask) {
+                    loadSelectionToGroup(group, stemMask);
+                    close();
+                });
         pParentMenu->addMenu(pStemMenu);
     } else {
 #endif
@@ -926,7 +919,9 @@ void WTrackMenu::updateMenus() {
         return;
     }
 
-    m_pLoadToMenu->clear();
+    if (m_pLoadToMenu) {
+        m_pLoadToMenu->clear();
+    }
 
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
@@ -1864,11 +1859,14 @@ void WTrackMenu::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     hide();
 }
 
-void WTrackMenu::loadSelectionToGroup(const QString& group,
 #ifdef __STEM__
-        uint stemIdx,
-#endif
+void WTrackMenu::loadSelectionToGroup(const QString& group,
+        uint stemMask,
         bool play) {
+#else
+void WTrackMenu::loadSelectionToGroup(const QString& group,
+        bool play) {
+#endif
     TrackPointer pTrack = getFirstTrackPointer();
     if (!pTrack) {
         return;
@@ -1888,11 +1886,11 @@ void WTrackMenu::loadSelectionToGroup(const QString& group,
 
     // TODO: load track from this class without depending on
     // external slot to load track
-    emit loadTrackToPlayer(pTrack, group,
 #ifdef __STEM__
-            stemIdx,
+    emit loadTrackToPlayer(pTrack, group, stemMask, play);
+#else
+    emit loadTrackToPlayer(pTrack, group, play);
 #endif
-            play);
 }
 
 namespace {

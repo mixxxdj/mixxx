@@ -215,7 +215,7 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                         m_pPlayerManager->slotLoadTrackToPlayer(
                                 TrackPointer(), group,
 #ifdef __STEM__
-                                mixxx::kNoStemSelectedIdx,
+                                mixxx::kNoStemSelected,
 #endif
                                 false);
                     } else {

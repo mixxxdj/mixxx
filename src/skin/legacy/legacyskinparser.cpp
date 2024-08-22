@@ -1096,6 +1096,17 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &BaseTrackPlayer::loadingTrack,
             viewer,
             &WWaveformViewer::slotLoadingTrack);
+#ifdef __STEM__
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::selectedStems,
+            viewer,
+            &WWaveformViewer::slotSelectStem);
+#endif
+
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            viewer,
+            &WWaveformViewer::slotTrackUnloaded);
 
     connect(viewer,
             &WWaveformViewer::trackDropped,

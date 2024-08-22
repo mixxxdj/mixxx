@@ -151,7 +151,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_TRUE(testId1.isValid());
     deck1->slotLoadTrack(pTrack1,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
@@ -168,7 +168,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
 
@@ -193,7 +193,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     ASSERT_TRUE(testId1.isValid());
     deck1->slotLoadTrack(pTrack1,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
@@ -206,7 +206,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
     m_pEngine->process(1024);
@@ -246,7 +246,7 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     ASSERT_TRUE(testId1.isValid());
     deck1->slotLoadTrack(pTrack1,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
     m_pEngine->process(1024);
@@ -258,7 +258,7 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2,
 #ifdef __STEM__
-            mixxx::kNoStemSelectedIdx,
+            mixxx::kNoStemSelected,
 #endif
             false);
     m_pEngine->process(1024);
