@@ -360,10 +360,16 @@ class SampleUtil {
 
     // Copies and strips interleaved multi-channel sample data in pSrc with
     // numChannels >= 2 down to stereo samples into pDest. Samples from
-    // the selected two consecutive channels will be read and written. Samples from all other
-    // channels will be ignored.
-    // pSrc must contain (numFrames * numChannels) samples
-    // (numFrames * 2) samples will be written into pDest
+    // the selected two consecutive channels will be read and written. Samples
+    // from all other channels will be ignored. pSrc must contain (numFrames *
+    // numChannels) samples (numFrames * 2) samples will be written into pDest
+    // src buffer is expected to interleave each stereo channel one by one, for
+    // example with 4 stereo channels:
+    //   1L1R2L2R3L3R4L4R
+    // With sourceChannel=0, dst will take the value of
+    //    1L1R
+    // With sourceChannel=3, dst will take the value of
+    //    4L4R
     static void copyOneStereoFromMulti(CSAMPLE* pDest,
             const CSAMPLE* pSrc,
             SINT numFrames,
@@ -375,7 +381,16 @@ class SampleUtil {
     // channel pointed by channelOffset. Samples from all other channels will be
     // ignored. pDst must contain (numFrames * numChannels) samples (numFrames *
     // 2) samples will be written into pDest
-    static void copyStereoToMulti(CSAMPLE* pDest,
+    // Consider the following dst buffer, with 4 stereo channels (numChannels=8)
+    // and a single frame (numFrames=1) (SSSSSSSS, structured in
+    // 1L1R2L2R3L3R4L4R) Inserting a first stereo buffer (LR) dst (1L1R) at the
+    // start (channelOffset=0) will yield the following result
+    //    11SSSSSS
+    // Meaning that the second, third and forth channel will remain untouched
+    // (..SSSSSS). Now assuming we are inserting a second stereo buffer (LR) dst
+    // (2L2R) at the end (channelOffset=3), it will yield the following result
+    //    11SSSS22
+    static void insertStereoToMulti(CSAMPLE* pDest,
             const CSAMPLE* pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,

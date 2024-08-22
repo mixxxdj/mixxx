@@ -19,7 +19,8 @@ const QHash<int, QByteArray> kRoleNames = {
 QmlChainPresetModel::QmlChainPresetModel(
         EffectChainPresetManagerPointer effectChainPresetManager,
         QObject* parent)
-        : QAbstractListModel(parent), m_pEffectChainPresetManager(effectChainPresetManager) {
+        : QAbstractListModel(parent),
+          m_pEffectChainPresetManager(effectChainPresetManager) {
     slotUpdated();
     connect(m_pEffectChainPresetManager.get(),
             &EffectChainPresetManager::quickEffectChainPresetListUpdated,

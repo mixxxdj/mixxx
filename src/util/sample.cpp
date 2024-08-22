@@ -883,7 +883,7 @@ void SampleUtil::copyOneStereoFromMulti(
 }
 
 // static
-void SampleUtil::copyStereoToMulti(
+void SampleUtil::insertStereoToMulti(
         CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         SINT numFrames,

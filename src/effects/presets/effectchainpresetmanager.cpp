@@ -864,7 +864,8 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     const QDomNodeList quickStemEffectNodeList =
             quickStemEffectPresetsElement.elementsByTagName(
                     EffectXml::kChainPresetName);
-    for (int i = 0; i < quickStemEffectNodeList.count(); ++i) {
+    quickStemEffectPresets.reserve(quickStemEffectNodeList.count());
+    for (const auto& qseNode : quickStemEffectNodeList) {
         QDomElement presetNameElement = quickStemEffectNodeList.at(i).toElement();
         if (!presetNameElement.isNull()) {
             QString deckStemGroup = presetNameElement.attribute(QStringLiteral("group"));

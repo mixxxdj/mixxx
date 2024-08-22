@@ -144,22 +144,30 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
     m_pBuffer->process(m_stemBuffer.data(), allChannelBufferSize);
 
     CSAMPLE* pIn = m_stemBuffer.data();
+
+    // TODO(XXX): process stem DSP
+
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
+        // We will now mix each stem (stereo channel) into a single "output"
+        // stereo channel. In order to mix the steam, we will use the engine
+        // effect manager so we can also apply the individual stem quick FX
         GroupFeatureState featureState;
         collectFeatures(&featureState);
         for (int stemIdx = 0; stemIdx < stemCount;
                 stemIdx++) {
             int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
-            float gain = m_stemMute[stemIdx]->toBool()
+            float stemGain = m_stemMute[stemIdx]->toBool()
                     ? 0.0f
                     : static_cast<float>(m_stemGain[stemIdx]->get());
+            // Extract the stem frames into the output buffer (LR......LR...... -> LRLR)
             SampleUtil::copyOneStereoFromMulti(
                     pOut,
                     pIn,
                     numFrames,
                     chCount,
                     chOffset);
+            // Mix the stem frames with the right gain after proceeding its effect.
             pEngineEffectsManager->processPostFaderInPlace(m_stems[stemIdx].handle(),
                     m_pEffectsManager->getMainHandle(),
                     pOut,
@@ -167,10 +175,15 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
                     sampleRate,
                     featureState,
                     m_stemsGainCache[stemIdx],
-                    gain,
+                    stemGain,
                     false);
-            m_stemsGainCache[stemIdx] = gain;
-            SampleUtil::copyStereoToMulti(
+            // We cache the current gain so we can use it to fade the frame on
+            // next iteration. Without this, (e.g using a static "previous"
+            // gain) gain changes will yield to audio cracks.
+            m_stemsGainCache[stemIdx] = stemGain;
+
+            // Put back the stem frames into the steam buffer (LRLR -> LR......LR......)
+            SampleUtil::insertStereoToMulti(
                     pIn,
                     pOut,
                     numFrames,
@@ -179,8 +192,8 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
         }
     }
 
+    // Mixxx all the stem tracks together
     SampleUtil::mixMultichannelToStereo(pOut, pIn, numFrames, chCount);
-    // TODO(XXX): process stem DSP
 }
 
 void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
