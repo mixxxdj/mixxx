@@ -323,10 +323,10 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
 
     AVStream* firstAudioStream = nullptr;
     int stemCount = 0;
-    uint selectedStem = params.stemIdx();
-    VERIFY_OR_DEBUG_ASSERT(selectedStem <= mixxx::kMaxSupportedStems) {
+    uint selectedStemMask = params.stemMask();
+    VERIFY_OR_DEBUG_ASSERT(selectedStemMask <= 2 << mixxx::kMaxSupportedStems) {
         kLogger.warning().noquote()
-                << "Invalid selected stem Idx" << selectedStem;
+                << "Invalid selected stem mask" << selectedStemMask;
         return OpenResult::Failed;
     }
     OpenParams stemParam = params;
@@ -371,7 +371,8 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
             stemCount++;
         }
 
-        if (selectedStem && selectedStem != streamIdx) {
+        // StemIdx is equal to StreamIdx -1 (the main mix)
+        if (selectedStemMask && !(selectedStemMask & 1 << (streamIdx - 1))) {
             continue;
         }
 
@@ -390,9 +391,16 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         return OpenResult::Failed;
     }
 
+    VERIFY_OR_DEBUG_ASSERT(!m_pStereoStreams.empty()) {
+        kLogger.warning().noquote()
+                << "no stem track were selected";
+        close();
+        return OpenResult::Failed;
+    }
+
     if (params.getSignalInfo().getChannelCount() ==
                     mixxx::audio::ChannelCount::stereo() ||
-            selectedStem) {
+            selectedStemMask) {
         // Requesting a stereo stream (used for samples and preview decks)
         m_requestedChannelCount = mixxx::audio::ChannelCount::stereo();
         initChannelCountOnce(mixxx::audio::ChannelCount::stereo());

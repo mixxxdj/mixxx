@@ -195,36 +195,37 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
       public:
 #ifdef __STEM__
         OpenParams()
-                : m_signalInfo(), m_stemIdx(mixxx::kNoStemSelectedIdx) {
+                : m_signalInfo(), m_stemMask(mixxx::kNoStemSelected) {
+        }
+
+        OpenParams(
+                audio::ChannelCount channelCount,
+                audio::SampleRate sampleRate,
+                uint stemMask = mixxx::kNoStemSelected)
+                : m_signalInfo(
+                          channelCount,
+                          sampleRate),
+                  m_stemMask(stemMask) {
         }
 #else
         OpenParams() = default;
-#endif
+
         OpenParams(
                 audio::ChannelCount channelCount,
-                audio::SampleRate sampleRate
-#ifdef __STEM__
-                ,
-                uint stemIdx = mixxx::kNoStemSelectedIdx
-#endif
-                )
+                audio::SampleRate sampleRate)
                 : m_signalInfo(
                           channelCount,
-                          sampleRate)
-#ifdef __STEM__
-                  ,
-                  m_stemIdx(stemIdx)
-#endif
-        {
+                          sampleRate) {
         }
+#endif
 
         const audio::SignalInfo& getSignalInfo() const {
             return m_signalInfo;
         }
 
 #ifdef __STEM__
-        uint stemIdx() const {
-            return m_stemIdx;
+        uint stemMask() const {
+            return m_stemMask;
         }
 #endif
 
@@ -234,12 +235,12 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         }
 
 #ifdef __STEM__
-        void setStemIdx(
-                uint stemIdx) {
-            VERIFY_OR_DEBUG_ASSERT(stemIdx <= mixxx::kMaxSupportedStems) {
+        void setStemMask(
+                uint stemMask) {
+            VERIFY_OR_DEBUG_ASSERT(stemMask <= 2 << mixxx::kMaxSupportedStems) {
                 return;
             }
-            m_stemIdx = stemIdx;
+            m_stemMask = stemMask;
         }
 #endif
 
@@ -251,7 +252,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
       private:
         audio::SignalInfo m_signalInfo;
 #ifdef __STEM__
-        uint m_stemIdx;
+        uint m_stemMask;
 #endif
     };
 

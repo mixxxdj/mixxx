@@ -37,11 +37,11 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, const QString& group,
 #ifdef __STEM__
-            uint stemIdx,
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, uint stemMask, bool);
+#else
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
 #endif
-            bool play);
     void restoreSearch(const QString& search);
     void restoreModelState();
 

@@ -110,12 +110,16 @@ class WTrackMenu : public QMenu {
     const QString getDeckGroup() const;
 
   signals:
+#ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
-#ifdef __STEM__
-            uint stemIdx,
-#endif
+            uint stemMask,
             bool play = false);
+#else
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            bool play = false);
+#endif
     void trackMenuVisible(bool visible);
     void saveCurrentViewState();
     void restoreCurrentViewStateOrIndex();
@@ -236,11 +240,14 @@ class WTrackMenu : public QMenu {
     void clearBeats();
     void lockBpm(bool lock);
 
-    void loadSelectionToGroup(const QString& group,
 #ifdef __STEM__
-            uint stemIdx = mixxx::kNoStemSelectedIdx,
-#endif
+    void loadSelectionToGroup(const QString& group,
+            uint stemMask = mixxx::kNoStemSelected,
             bool play = false);
+#else
+    void loadSelectionToGroup(const QString& group,
+            bool play = false);
+#endif
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;

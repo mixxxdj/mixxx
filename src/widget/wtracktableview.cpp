@@ -1247,11 +1247,14 @@ void WTrackTableView::activateSelectedTrack() {
     slotMouseDoubleClicked(indices.at(0));
 }
 
-void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
 #ifdef __STEM__
-        uint stemIdx,
-#endif
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+        uint stemMask,
         bool play) {
+#else
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+        bool play) {
+#endif
     auto indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
@@ -1286,8 +1289,8 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
     TrackPointer pTrack;
     if (trackModel && (pTrack = trackModel->getTrack(index))) {
 #ifdef __STEM__
-        DEBUG_ASSERT(!stemIdx || pTrack->hasStem());
-        emit loadTrackToPlayer(pTrack, group, stemIdx, play);
+        DEBUG_ASSERT(!stemMask || pTrack->hasStem());
+        emit loadTrackToPlayer(pTrack, group, stemMask, play);
 #else
         emit loadTrackToPlayer(pTrack, group, play);
 #endif

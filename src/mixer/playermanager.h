@@ -185,11 +185,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group,
 #ifdef __STEM__
-            uint stemIdx,
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, uint stemMask, bool play);
+#else
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
 #endif
-            bool play);
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
 

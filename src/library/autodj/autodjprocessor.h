@@ -201,11 +201,11 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group,
 #ifdef __STEM__
-            uint stemIdx,
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, uint stemMask, bool play);
+#else
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
 #endif
-            bool play);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void autoDJError(AutoDJProcessor::AutoDJError error);
     void transitionTimeChanged(int time);
@@ -235,7 +235,7 @@ class AutoDJProcessor : public QObject {
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
         emit loadTrackToPlayer(pTrack, group,
 #ifdef __STEM__
-                mixxx::kNoStemSelectedIdx,
+                mixxx::kNoStemSelected,
 #endif
                 play);
     }

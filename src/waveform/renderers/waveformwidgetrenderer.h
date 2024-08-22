@@ -47,8 +47,8 @@ class WaveformWidgetRenderer {
     }
 
 #ifdef __STEM__
-    uint getSelectedStem() const {
-        return m_selectedStem;
+    uint getSelectedStems() const {
+        return m_selectedStems;
     }
 #endif
 
@@ -177,7 +177,7 @@ class WaveformWidgetRenderer {
     }
 
 #ifdef __STEM__
-    void selectStem(uint stemIdx);
+    void selectStem(uint stemMask);
 #endif
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
@@ -205,7 +205,7 @@ class WaveformWidgetRenderer {
     const QString m_group;
     TrackPointer m_pTrack;
 #ifdef __STEM__
-    uint m_selectedStem;
+    uint m_selectedStems;
 #endif
     QList<WaveformRendererAbstract*> m_rendererStack;
     Qt::Orientation m_orientation;

@@ -59,7 +59,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
 #ifdef __STEM__
-            uint stemIdx,
+            uint stemMask,
 #endif
             bool play = false);
     void trackSelected(TrackPointer pTrack);
