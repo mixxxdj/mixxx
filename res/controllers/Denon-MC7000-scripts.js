@@ -110,6 +110,11 @@ MC7000.jogParams = {
     }
 };
 
+// Parameter button mode. See Denon-MC7000.midi.xml for documentation of the available modes.
+MC7000.parameterButtonSettings = {
+    mode: engine.getSetting("parameterButtonMode") || "starsAndColor",
+};
+
 /*/////////////////////////////////
 //      USER VARIABLES END       //
 /////////////////////////////////*/
@@ -949,77 +954,77 @@ MC7000.censor = function(channel, control, value, status, group) {
         }
     }
 };
-// Param Button for Pitch Play to decrease pitch, or decrease star rating otherwise
-MC7000.StarsDown = function(channel, control, value, status, group) {
-    const deckNumber = script.deckFromGroup(group);
-    const deckIndex = deckNumber - 1;
-    if (value > 0x00) {
-        if (MC7000.PADMode[deckIndex] === "Pitch") {
-            for (let padIdx = 0; padIdx < 8; padIdx++) {
-                MC7000.halftoneToPadMap[deckIndex][padIdx] = MC7000.halftoneToPadMap[deckIndex][padIdx] - 8; // pitch down
-            }
-        } else {
-            engine.setValue(group, "stars_down", true); // stars down
-        }
+
+// Parameter Buttons
+MC7000.parameterButton = function(value, group, {isLeftButton, isShiftPressed}) {
+    if (value === 0) {
+        return;
     }
-};
-// Param Button for Pitch Play to increase pitch, or increase star rating otherwise
-MC7000.StarsUp = function(channel, control, value, status, group) {
+
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
-    if (value > 0x00) {
-        if (MC7000.PADMode[deckIndex] === "Pitch") {
-            for (let padIdx = 0; padIdx < 8; padIdx++) {
-                MC7000.halftoneToPadMap[deckIndex][padIdx] = MC7000.halftoneToPadMap[deckIndex][padIdx] + 8; // pitch up
+
+    if (MC7000.PADMode[deckIndex] === "Pitch") {
+        const pitchDelta = isLeftButton ? -8 : 8;
+        for (let padIdx = 0; padIdx < 8; padIdx++) {
+            MC7000.halftoneToPadMap[deckIndex][padIdx] += pitchDelta;
+        }
+    } else {
+        switch (MC7000.parameterButtonSettings.mode) {
+        case "starsAndColor":
+            if (isShiftPressed) {
+                script.triggerControl(group, `track_color_${isLeftButton ? "prev" : "next"}`);
+            } else {
+                script.triggerControl(group, `stars_${isLeftButton ? "down" : "up"}`);
             }
-        } else {
-            engine.setValue(group, "stars_up", true); // stars up
+            break;
+        case "beatjump":
+            if (isShiftPressed) {
+                const beatJumpSize = engine.getValue(group, "beatjump_size");
+                const indexDelta = isLeftButton ? -1 : 1;
+                const newIndex = Math.max(0, Math.min(MC7000.beatJump.length - 1, MC7000.beatJump.indexOf(beatJumpSize) + indexDelta));
+                const newBeatJumpSize = MC7000.beatJump[newIndex];
+                engine.setValue(group, "beatjump_size", newBeatJumpSize);
+            } else {
+                script.triggerControl(group, `beatjump_${isLeftButton ? "backward" : "forward"}`);
+            }
+            break;
+        default:
+            break;
         }
     }
 };
 
 // Parameter Button '<'
-MC7000.parameterButtonDown = function(channel, control, value, status, group) {
-    if (value === 0) {
-        return;
-    }
-    script.triggerControl(group, "beatjump_backward");
+MC7000.parameterButtonLeft = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: true,
+        isShiftPressed: false
+    });
 };
 
 // Parameter Button '>'
-MC7000.parameterButtonUp = function(channel, control, value, status, group) {
-    if (value === 0) {
-        return;
-    }
-    script.triggerControl(group, "beatjump_forward");
+MC7000.parameterButtonRight = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: false,
+        isShiftPressed: false
+    });
 };
 
 // Parameter Button '<' + 'SHIFT'
-MC7000.parameterButtonDownShifted = function(channel, control, value, status, group) {
-    if (value === 0) {
-        return;
-    }
-    const beatJumpSize = engine.getValue(group, "beatjump_size");
-    let decreasedIndex = MC7000.beatJump.indexOf(beatJumpSize) - 1;
-    if (decreasedIndex < 0) {
-        decreasedIndex = 0;
-    }
-    const newBeatJumpSize = MC7000.beatJump[decreasedIndex];
-    engine.setValue(group, "beatjump_size", newBeatJumpSize);
+MC7000.parameterButtonLeftShifted = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: true,
+        isShiftPressed: true
+    });
 };
 
 // Parameter Button '>' + 'SHIFT'
-MC7000.parameterButtonUpShifted = function(channel, control, value, status, group) {
-    if (value === 0) {
-        return;
-    }
-    const beatjumpSize = engine.getValue(group, "beatjump_size");
-    let increasedIndex = MC7000.beatJump.indexOf(beatjumpSize) + 1;
-    if (increasedIndex >= MC7000.beatJump.length) {
-        increasedIndex = MC7000.beatJump.length === 0 ? 0 : MC7000.beatJump.length - 1;
-    }
-    const newBeatJumpSize = MC7000.beatJump[increasedIndex];
-    engine.setValue(group, "beatjump_size", newBeatJumpSize);
+MC7000.parameterButtonRightShifted = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: false,
+        isShiftPressed: true
+    });
 };
 
 // Set Crossfader Curve

@@ -64,6 +64,17 @@
                 </option>
             </group>
         </group>
+        <group label="Alternative Mapping">
+            <group label="Parameter Buttons">
+                <option
+                    variable="parameterButtonMode"
+                    type="enum"
+                    label="Parameter Button Mode">
+                    <value label="Change Star Rating (Shift: Track Color)">starsAndColor</value>
+                    <value label="Perform Beat Jump (Shift: Adjust Jump Size)">beatjump</value>
+                </option>
+            </group>
+        </group>
     </settings>
     <controller id="DENON MC7000">
         <scriptfiles>
@@ -1984,7 +1995,7 @@
 <!-- PARAMETER BUTTONS -->
 			<control>
                 <group>[Channel1]</group>
-                <key>MC7000.parameterButtonDown</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x28</midino>
@@ -1994,7 +2005,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.parameterButtonUp</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x29</midino>
@@ -2004,7 +2015,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.parameterButtonDownShifted</key>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x2A</midino>
@@ -2014,7 +2025,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.parameterButtonUpShifted</key>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x2B</midino>
@@ -2024,7 +2035,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.parameterButtonDown</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x28</midino>
@@ -2034,7 +2045,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.parameterButtonUp</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x29</midino>
@@ -2044,7 +2055,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.parameterButtonDownShifted</key>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x2A</midino>
@@ -2054,7 +2065,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.parameterButtonUpShifted</key>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x2B</midino>
@@ -2064,7 +2075,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.parameterButtonDown</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x28</midino>
@@ -2074,7 +2085,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.parameterButtonUp</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x29</midino>
@@ -2084,7 +2095,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.parameterButtonDownShifted</key>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x2A</midino>
@@ -2094,7 +2105,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.parameterButtonUpShifted</key>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x2B</midino>
@@ -2104,7 +2115,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.parameterButtonDown</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x28</midino>
@@ -2114,7 +2125,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.parameterButtonUp</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x29</midino>
@@ -2124,7 +2135,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.parameterButtonDownShifted</key>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x2A</midino>
@@ -2134,7 +2145,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.parameterButtonUpShifted</key>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x2B</midino>
