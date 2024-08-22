@@ -989,6 +989,13 @@ MC7000.parameterButton = function(value, group, {isLeftButton, isShiftPressed}) 
                 script.triggerControl(group, `beatjump_${isLeftButton ? "backward" : "forward"}`);
             }
             break;
+        case "introOutro":
+            {
+                const cue = isLeftButton ? "intro_end" : "outro_start";
+                const action = isShiftPressed ? "clear" : "activate";
+                script.triggerControl(group, `${cue}_${action}`);
+            }
+            break;
         default:
             break;
         }
