@@ -227,6 +227,7 @@ class WTrackMenu : public QMenu {
             const QString& label,
             TrackPointer pTrack,
             QMenu* pParentMenu,
+            bool primaryDeck,
             bool enabled = true);
 
     bool featureIsEnabled(Feature flag) const;
