@@ -39,7 +39,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void setupToolTip(const QString& searchInCurrentViewShortcut,
             const QString& searchInAllTracksShortcut);
 
-    void handleSetFocus(Qt::FocusReason focusReason);
+    void setFocus(Qt::FocusReason focusReason);
 
   protected:
     void resizeEvent(QResizeEvent*) override;

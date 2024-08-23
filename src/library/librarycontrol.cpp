@@ -921,7 +921,7 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget, Qt::FocusReason
         VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
             return;
         }
-        m_pSearchbox->handleSetFocus(focusReason);
+        m_pSearchbox->setFocus(focusReason);
         return;
     case FocusWidget::Sidebar:
         VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
