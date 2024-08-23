@@ -309,12 +309,12 @@ QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
         QString text = currentText();
-        QCompleter* pCompleter = completer();
-        if (pCompleter && hasCompletionAvailable()) {
+        QString completionPrefix;
+        if (hasCompletionAvailable(&completionPrefix)) {
             // Search for the entered text until the user has accepted the
             // completion by pressing Enter or changed/deselected the selected
             // completion text with Right or Left key
-            return pCompleter->completionPrefix();
+            return completionPrefix;
         }
         return text;
     } else {
@@ -817,9 +817,16 @@ bool WSearchLineEdit::hasSelectedText() const {
     return lineEdit()->hasSelectedText();
 }
 
-bool WSearchLineEdit::hasCompletionAvailable() const {
+bool WSearchLineEdit::hasCompletionAvailable(QString* completionPrefix) const {
     QCompleter* pCompleter = completer();
-    return pCompleter && hasSelectedText() &&
-            lineEdit()->text().startsWith(pCompleter->completionPrefix()) &&
-            pCompleter->completionPrefix().size() == lineEdit()->cursorPosition();
+    QString prefix = pCompleter ? pCompleter->completionPrefix() : QString();
+    if (!prefix.isEmpty() && hasSelectedText() &&
+            lineEdit()->text().startsWith(prefix) &&
+            prefix.size() == lineEdit()->cursorPosition()) {
+        if (completionPrefix) {
+            *completionPrefix = prefix;
+        }
+        return true;
+    }
+    return false;
 }

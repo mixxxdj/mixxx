@@ -96,7 +96,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void deleteSelectedListItem();
     void triggerSearchDebounced();
     bool hasSelectedText() const;
-    bool hasCompletionAvailable() const;
+    bool hasCompletionAvailable(QString* completionPrefix = nullptr) const;
 
     inline int findCurrentTextIndex() {
         return findData(currentText(), Qt::DisplayRole);
