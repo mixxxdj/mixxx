@@ -900,6 +900,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/analysis/dlganalysis.ui
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
+  src/library/autodj/autofadecontroller.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
   src/library/banshee/bansheedbconnection.cpp
