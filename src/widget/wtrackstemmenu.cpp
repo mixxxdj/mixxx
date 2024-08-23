@@ -7,6 +7,7 @@
 
 WTrackStemMenu::WTrackStemMenu(const QString& label,
         QWidget* parent,
+        bool primaryDeck,
         const QString& group,
         const QList<StemInfo>& stemInfo)
         : QMenu(label, parent),
@@ -14,10 +15,18 @@ WTrackStemMenu::WTrackStemMenu(const QString& label,
           m_selectMode(false),
           m_stemInfo(stemInfo),
           m_currentSelection(mixxx::kNoStemSelected) {
-    QAction* pAction = new QAction(tr("Load as a stem deck"), this);
+    if (primaryDeck) {
+        QAction* pAction = new QAction(tr("Load for stem mixing"), this);
+        addAction(pAction);
+        connect(pAction, &QAction::triggered, this, [this, group] {
+            emit selectedStem(group, mixxx::kNoStemSelected);
+        });
+    }
+
+    QAction* pAction = new QAction(tr("Load pre-mixed stereo track"), this);
     addAction(pAction);
     connect(pAction, &QAction::triggered, this, [this, group] {
-        emit selectedStem(group, mixxx::kNoStemSelected);
+        emit selectedStem(group, 0xf);
     });
     addSeparator();
 

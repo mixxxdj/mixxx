@@ -882,6 +882,7 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
         const QString& label,
         TrackPointer pTrack,
         QMenu* pParentMenu,
+        bool primaryDeck,
         bool enabled) {
 #ifdef __STEM__
     if (pTrack && !pTrack->hasStreamInfoFromSource()) {
@@ -894,7 +895,8 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
         SoundSourceProxy(pTrack).openAudioSource(config);
     }
     if (enabled && pTrack && pTrack->hasStem()) {
-        auto* pStemMenu = new WTrackStemMenu(label, pParentMenu, group, pTrack->getStemInfo());
+        auto* pStemMenu = new WTrackStemMenu(
+                label, pParentMenu, primaryDeck, group, pTrack->getStemInfo());
         connect(pStemMenu,
                 &WTrackStemMenu::selectedStem,
                 this,
@@ -960,6 +962,7 @@ void WTrackMenu::updateMenus() {
                         tr("Deck %1").arg(i),
                         getFirstTrackPointer(),
                         m_pDeckMenu,
+                        true,
                         deckEnabled);
             }
         }
@@ -991,6 +994,7 @@ void WTrackMenu::updateMenus() {
                         samplerTrString(i),
                         pTrack,
                         pMenu,
+                        false,
                         samplerEnabled);
             }
         }
@@ -1001,7 +1005,8 @@ void WTrackMenu::updateMenus() {
             generateTrackLoadMenu(PlayerManager::groupForPreviewDeck(0),
                     tr("Preview Deck"),
                     getFirstTrackPointer(),
-                    m_pLoadToMenu);
+                    m_pLoadToMenu,
+                    false);
         }
     }
 

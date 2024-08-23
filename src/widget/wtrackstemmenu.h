@@ -13,6 +13,7 @@ class WTrackStemMenu : public QMenu {
   public:
     WTrackStemMenu(const QString& label,
             QWidget* parent,
+            bool primaryDeck,
             const QString& group,
             const QList<StemInfo>& stemInfo);
 
