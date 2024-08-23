@@ -180,22 +180,27 @@ ITunesIOSImporter::ITunesIOSImporter(
 void ITunesIOSImporter::requestAuthorization() {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-    [MPMediaLibrary requestAuthorization:^(MPMediaLibraryAuthorizationStatus status){
+    [MPMediaLibrary requestAuthorization:^(
+            MPMediaLibraryAuthorizationStatus status) {
         switch (status) {
         case MPMediaLibraryAuthorizationStatusAuthorized:
             qInfo() << "Successfully authorized iOS media library access";
             break;
         case MPMediaLibraryAuthorizationStatusRestricted:
-            qWarning() << "iOS media library access is restricted, Mixxx may not be able to access all tracks";
+            qWarning() << "iOS media library access is restricted, Mixxx may "
+                          "not be able to access all tracks";
             break;
         case MPMediaLibraryAuthorizationStatusDenied:
-            qWarning() << "iOS media library access is denied, Mixxx will not be able to access any tracks";
+            qWarning() << "iOS media library access is denied, Mixxx will not "
+                          "be able to access any tracks";
             break;
         case MPMediaLibraryAuthorizationStatusNotDetermined:
-            qWarning() << "iOS media library access is not determined, Mixxx may not be able to access any tracks";
+            qWarning() << "iOS media library access is not determined, Mixxx "
+                          "may not be able to access any tracks";
             break;
         default:
-            qWarning() << "Unknown iOS media library authorization status:" << status;
+            qWarning() << "Unknown iOS media library authorization status:"
+                       << status;
             break;
         }
         dispatch_semaphore_signal(semaphore);
@@ -207,7 +212,7 @@ void ITunesIOSImporter::requestAuthorization() {
 
 ITunesImport ITunesIOSImporter::importLibrary() {
     requestAuthorization();
-    
+
     ITunesImport iTunesImport;
 
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(m_pParentFeature);
