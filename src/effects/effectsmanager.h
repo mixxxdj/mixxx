@@ -78,6 +78,7 @@ class EffectsManager {
     }
 
     bool isAdoptMetaknobSettingEnabled() const;
+    bool isAdoptSuperknobSettingEnabled() const;
 
   private:
     void addStandardEffectChains();
