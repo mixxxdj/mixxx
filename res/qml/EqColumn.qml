@@ -35,7 +35,7 @@ Column {
                     required property int index
 
                     id: stem
-                    stemGroup: stemGroup(root.group, index)
+                    stemGroup: root.stemGroup(root.group, index)
                     property alias color: stem.stemColor
                 }
             }
