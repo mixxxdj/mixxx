@@ -1,0 +1,25 @@
+#pragma once
+
+#pragma once
+
+#include <QString>
+#include <QImage>
+#include <initializer_list>
+#include <memory>
+
+namespace rendergraph {
+struct Attribute;
+class AttributeSet;
+struct Uniform;
+class UniformSet;
+class UniformsCache;
+class MaterialType;
+class MaterialShader;
+class Texture;
+class Material;
+class Geometry;
+class Node;
+class GeometryNode;
+class RenderGraph;
+class Context;
+}

@@ -3,10 +3,10 @@
 
 #include <QApplication>
 #include <QWheelEvent>
+#include <iostream>
 
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
-#include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
 #include "waveform/renderers/allshader/waveformrendererfiltered.h"
 #include "waveform/renderers/allshader/waveformrendererhsv.h"
@@ -20,6 +20,15 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
+namespace {
+void appendChildTo(std::unique_ptr<rendergraph::Node>& pNode, rendergraph::Node* pChild) {
+    pNode->appendChildNode(std::unique_ptr<rendergraph::Node>(pChild));
+}
+void appendChildTo(std::unique_ptr<rendergraph::OpacityNode>& pNode, rendergraph::Node* pChild) {
+    pNode->appendChildNode(std::unique_ptr<rendergraph::Node>(pChild));
+}
+} // namespace
+
 namespace allshader {
 
 WaveformWidget::WaveformWidget(QWidget* parent,
@@ -27,47 +36,64 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         const QString& group,
         WaveformRendererSignalBase::Options options)
         : WGLWidget(parent), WaveformWidgetAbstract(group) {
-    addRenderer<WaveformRenderBackground>();
-    addRenderer<WaveformRendererEndOfTrack>();
-    addRenderer<WaveformRendererPreroll>();
-    addRenderer<WaveformRenderMarkRange>();
+    auto pTopNode = std::make_unique<rendergraph::Node>();
+    auto pOpacityNode = std::make_unique<rendergraph::OpacityNode>();
+
+    appendChildTo(pTopNode, addRenderer<WaveformRenderBackground>());
+    appendChildTo(pOpacityNode, addRenderer<WaveformRendererEndOfTrack>());
+    appendChildTo(pOpacityNode, addRenderer<WaveformRendererPreroll>());
+    appendChildTo(pOpacityNode, addRenderer<WaveformRenderMarkRange>());
 
 #ifdef __STEM__
     // The following two renderers work in tandem: if the rendered waveform is
     // for a stem track, WaveformRendererSignalBase will skip rendering and let
     // WaveformRendererStem do the rendering, and vice-versa.
-    addRenderer<WaveformRendererStem>();
+    appendChildTo(pOpacityNode, addRenderer<WaveformRendererStem>());
 #endif
     allshader::WaveformRendererSignalBase* waveformSignalRenderer =
             addWaveformSignalRenderer(
                     type, options, ::WaveformRendererAbstract::Play);
+    appendChildTo(pOpacityNode, waveformSignalRenderer);
 
-    addRenderer<WaveformRenderBeat>();
-    addRenderer<WaveformRenderMark>();
+    appendChildTo(pOpacityNode, addRenderer<WaveformRenderBeat>());
+    appendChildTo(pOpacityNode, addRenderer<WaveformRenderMark>());
 
     // if the signal renderer supports slip, we add it again, now for slip, together with the
     // other slip renderers
     if (waveformSignalRenderer && waveformSignalRenderer->supportsSlip()) {
         // The following renderer will add an overlay waveform if a slip is in progress
-        addRenderer<WaveformRendererSlipMode>();
-        addRenderer<WaveformRendererPreroll>(::WaveformRendererAbstract::Slip);
+        appendChildTo(pOpacityNode, addRenderer<WaveformRendererSlipMode>());
+        appendChildTo(pOpacityNode,
+                addRenderer<WaveformRendererPreroll>(
+                        ::WaveformRendererAbstract::Slip));
 #ifdef __STEM__
-        addRenderer<WaveformRendererStem>(::WaveformRendererAbstract::Slip);
+        appendChildTo(pOpacityNode,
+                addRenderer<WaveformRendererStem>(
+                        ::WaveformRendererAbstract::Slip));
 #endif
-        addWaveformSignalRenderer(type, options, ::WaveformRendererAbstract::Slip);
-        addRenderer<WaveformRenderBeat>(::WaveformRendererAbstract::Slip);
-        addRenderer<WaveformRenderMark>(::WaveformRendererAbstract::Slip);
+        appendChildTo(pOpacityNode,
+                addWaveformSignalRenderer(
+                        type, options, ::WaveformRendererAbstract::Slip));
+        appendChildTo(pOpacityNode,
+                addRenderer<WaveformRenderBeat>(
+                        ::WaveformRendererAbstract::Slip));
+        appendChildTo(pOpacityNode,
+                addRenderer<WaveformRenderMark>(
+                        ::WaveformRendererAbstract::Slip));
     }
 
     m_initSuccess = init();
+
+    m_pOpacityNode = pOpacityNode.get();
+    pTopNode->appendChildNode(std::move(pOpacityNode));
+
+    m_pGraph = std::make_unique<rendergraph::Graph>(std::move(pTopNode));
 }
 
 WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
-    for (auto* pRenderer : std::as_const(m_rendererStack)) {
-        delete pRenderer;
-    }
     m_rendererStack.clear();
+    m_pGraph.reset();
     doneCurrent();
 }
 
@@ -117,15 +143,11 @@ mixxx::Duration WaveformWidget::render() {
 }
 
 void WaveformWidget::paintGL() {
-    if (shouldOnlyDrawBackground()) {
-        if (!m_rendererStack.empty()) {
-            m_rendererStack[0]->allshaderWaveformRenderer()->paintGL();
-        }
-    } else {
-        for (auto* pRenderer : std::as_const(m_rendererStack)) {
-            pRenderer->allshaderWaveformRenderer()->paintGL();
-        }
-    }
+    // opacity of 0.f effectively skips the subtree rendering
+    m_pOpacityNode->setOpacity(shouldOnlyDrawBackground() ? 0.f : 1.f);
+
+    m_pGraph->preprocess();
+    m_pGraph->render();
 }
 
 void WaveformWidget::castToQWidget() {
@@ -133,15 +155,11 @@ void WaveformWidget::castToQWidget() {
 }
 
 void WaveformWidget::initializeGL() {
-    for (auto* pRenderer : std::as_const(m_rendererStack)) {
-        pRenderer->allshaderWaveformRenderer()->initializeGL();
-    }
+    m_pGraph->initialize();
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
-    for (auto* pRenderer : std::as_const(m_rendererStack)) {
-        pRenderer->allshaderWaveformRenderer()->resizeGL(w, h);
-    }
+    m_pGraph->resize(w, h);
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rendergraph/opacitynode.h"
+#include "rendergraph/opengl/graph.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "waveform/widgets/waveformwidgetvars.h"
@@ -48,6 +50,8 @@ class allshader::WaveformWidget final : public ::WGLWidget,
             ::WaveformRendererAbstract::PositionSource positionSource);
 
     WaveformWidgetType::Type m_type;
+    std::unique_ptr<rendergraph::Graph> m_pGraph;
+    rendergraph::OpacityNode* m_pOpacityNode;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformWidget);
 };

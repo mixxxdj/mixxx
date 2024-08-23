@@ -1514,6 +1514,7 @@ if(QOPENGL)
     src/shaders/vinylqualityshader.cpp
     src/util/opengltexture2d.cpp
     src/waveform/renderers/allshader/digitsrenderer.cpp
+    src/waveform/renderers/allshader/endoftrackmaterial.cpp
     src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
     src/waveform/renderers/allshader/waveformrenderbackground.cpp
     src/waveform/renderers/allshader/waveformrenderbeat.cpp
@@ -3809,6 +3810,10 @@ if(VINYLCONTROL)
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
+
+# rendergraph
+add_subdirectory(src/rendergraph)
+target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 
 # WavPack audio file support
 find_package(wavpack)

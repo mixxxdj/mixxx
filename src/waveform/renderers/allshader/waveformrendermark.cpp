@@ -75,7 +75,6 @@ bool allshader::WaveformRenderMark::init() {
 }
 
 void allshader::WaveformRenderMark::initializeGL() {
-    allshader::WaveformRendererAbstract::initializeGL();
     m_digitsRenderer.init();
     m_rgbaShader.init();
     m_textureShader.init();

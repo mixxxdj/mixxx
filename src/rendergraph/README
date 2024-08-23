@@ -1,0 +1,29 @@
+rendergraph is an abstraction layer that can be compiled to be used with QtQuick scene graph classes
+or with QOpenGL classes. This abstraction layer follows the design of the QtQuick scene graph, with
+classes such as Material, Geometry, Node and GeometryNode, but it only gives access to a subset of
+its functionality.
+
+The rendergraph/scenegraph implementation calls the underlying scenegraph classes directly or almost
+directly. The opengl/layer implementation class implements classes that mimic the behaviour of the
+scenegraph classes.
+
+The objective is to be able to write code that can be used both within the context of a QWidgets
+applications and of a QML application. This includes using the same Vulkan-style GLSL shader code for
+both. (The QSGMaterialShader uses the qsb files, QOpenGLShader uses the OpenGL shader code generated
+by qsb)
+
+The common code is in library rendergraph, src/rendergraph
+
+The scene graph implementation is in library rendergraph_sg, src/rendergraph/scenegraph
+
+The OpenGL implementation is in library rendergraph_gl, src/rendergraph/opengl
+
+Example shader and nodes are in library rendergraph_examples, in src/rendergraph/examples.
+Note that this code is agnostic of the layer that it will be linked against.
+
+Example applications are in src/rendergraph/example/sg_example and src/rendergraph/examples/gl_example,
+which each link with rendergraph_examples and respectively with rendergraph_gl and rendergraph_sg.
+
+This is still very much work in progress!
+
+m0dB

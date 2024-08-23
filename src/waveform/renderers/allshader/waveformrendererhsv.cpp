@@ -19,7 +19,6 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererHSV::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 

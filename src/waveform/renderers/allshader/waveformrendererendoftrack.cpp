@@ -1,9 +1,12 @@
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
 
 #include <QDomNode>
+#include <QVector4D>
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "endoftrackmaterial.h"
+#include "rendergraph/geometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
@@ -11,19 +14,31 @@
 namespace {
 
 constexpr int kBlinkingPeriodMillis = 1000;
-constexpr float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
-constexpr float verticalGradientArray[] = {1.f, 1.f, -1.f, -1.f};
-constexpr float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
 
 } // anonymous namespace
+
+using namespace rendergraph;
 
 namespace allshader {
 
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget),
+        : ::WaveformRendererAbstract(waveformWidget),
           m_pEndOfTrackControl(nullptr),
           m_pTimeRemainingControl(nullptr) {
+    setGeometry(std::make_unique<Geometry>(EndOfTrackMaterial::attributes(), 4));
+    setMaterial(std::make_unique<EndOfTrackMaterial>());
+    setUsePreprocess(true);
+
+    geometry().setAttributeValues(0, positionArray, 4);
+    geometry().setAttributeValues(1, horizontalGradientArray, 4);
+    material().setUniform(0, QVector4D{1.f, 0.f, 0.f, 1.f});
+}
+
+void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
 }
 
 bool WaveformRendererEndOfTrack::init() {
@@ -46,43 +61,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
     }
 }
 
-void WaveformRendererEndOfTrack::initializeGL() {
-    WaveformRenderer::initializeGL();
-    m_shader.init();
-}
-
-void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    const int colorLocation = m_shader.colorLocation();
-    const int positionLocation = m_shader.positionLocation();
-    const int gradientLocation = m_shader.gradientLocation();
-
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-    m_shader.enableAttributeArray(gradientLocation);
-
-    m_shader.setUniformValue(colorLocation, color);
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, positionArray, 2);
-    m_shader.setAttributeArray(gradientLocation,
-            GL_FLOAT,
-            m_waveformRenderer->getOrientation() == Qt::Vertical
-                    ? verticalGradientArray
-                    : horizontalGradientArray,
-            1);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.disableAttributeArray(gradientLocation);
-    m_shader.release();
-}
-
-void WaveformRendererEndOfTrack::paintGL() {
-    if (!m_pEndOfTrackControl->toBool()) {
-        return;
-    }
-
+void WaveformRendererEndOfTrack::preprocess() {
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
     const double blinkIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
@@ -100,11 +79,16 @@ void WaveformRendererEndOfTrack::paintGL() {
         QColor color = m_color;
         color.setAlphaF(static_cast<float>(alpha));
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        fillWithGradient(color);
+        material().setUniform(0,
+                QVector4D{color.redF(),
+                        color.greenF(),
+                        color.blueF(),
+                        color.alphaF()});
     }
+}
+
+bool WaveformRendererEndOfTrack::isSubtreeBlocked() const {
+    return !m_pEndOfTrackControl->toBool();
 }
 
 } // namespace allshader

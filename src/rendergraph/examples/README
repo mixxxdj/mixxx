@@ -1,0 +1,6 @@
+Build examples with
+
+$ cd ../../../
+$ mkdir build-rendergraph_examples
+$ cd build-rendergraph_examples
+$ cmake -DCMAKE_PREFIX_PATH=~/Qt/6.7.2/macos/ ../src/rendergraph/examples

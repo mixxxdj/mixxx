@@ -3,10 +3,11 @@
 #include <QColor>
 #include <memory>
 
-#include "shaders/endoftrackshader.h"
+#include "rendergraph/geometrynode.h"
+#include "rendergraph/opacitynode.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
-#include "waveform/renderers/allshader/waveformrenderer.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class ControlProxy;
 class QDomNode;
@@ -16,22 +17,29 @@ namespace allshader {
 class WaveformRendererEndOfTrack;
 }
 
-class allshader::WaveformRendererEndOfTrack final : public allshader::WaveformRenderer {
+class allshader::WaveformRendererEndOfTrack final
+        : public ::WaveformRendererAbstract,
+          public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidget);
+
+    // Pure virtual from WaveformRendererAbstract, not used
+    void draw(QPainter* painter, QPaintEvent* event) override final;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
     bool init() override;
 
-    void initializeGL() override;
-    void paintGL() override;
+    // Virtual for rendergraph::Node
+    void preprocess() override;
+    bool isSubtreeBlocked() const override;
 
   private:
-    void fillWithGradient(QColor color);
+    static constexpr float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
+    static constexpr float verticalGradientArray[] = {1.f, 1.f, -1.f, -1.f};
+    static constexpr float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
 
-    mixxx::EndOfTrackShader m_shader;
     std::unique_ptr<ControlProxy> m_pEndOfTrackControl;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
