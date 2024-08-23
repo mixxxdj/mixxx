@@ -50,8 +50,10 @@ void WaveformRendererStem::paintGL() {
     }
 
     auto stemInfo = pTrack->getStemInfo();
-    // If this track isn't a stem track, skip the rendering
-    if (stemInfo.isEmpty()) {
+    uint selectedStems = m_waveformRenderer->getSelectedStems();
+
+    // If this track isn't a stem track, or if it is fully loaded as stereo, skip the rendering
+    if (stemInfo.isEmpty() || selectedStems == 0xf) {
         return;
     }
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -75,8 +77,6 @@ void WaveformRendererStem::paintGL() {
     if (!waveform->hasStem()) {
         return;
     }
-
-    uint selectedStems = m_waveformRenderer->getSelectedStems();
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);

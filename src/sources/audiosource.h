@@ -195,7 +195,8 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
       public:
 #ifdef __STEM__
         OpenParams()
-                : m_signalInfo(), m_stemMask(mixxx::kNoStemSelected) {
+                : m_signalInfo(),
+                  m_stemMask(mixxx::kNoStemSelected) {
         }
 
         OpenParams(
