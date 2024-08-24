@@ -138,8 +138,7 @@ TEST_F(StemControlTest, Volume) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlSilence");
+            QStringLiteral("StemVolumeControlSilence"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -147,8 +146,7 @@ TEST_F(StemControlTest, Volume) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlDrumOnly");
+            QStringLiteral("StemVolumeControlDrumOnly"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -156,8 +154,7 @@ TEST_F(StemControlTest, Volume) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlDrumAndBass");
+            QStringLiteral("StemVolumeControlDrumAndBass"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -167,8 +164,7 @@ TEST_F(StemControlTest, Volume) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlFull");
+            QStringLiteral("StemVolumeControlFull"));
 }
 
 TEST_F(StemControlTest, VolumeResetOnLoad) {
@@ -221,8 +217,7 @@ TEST_F(StemControlTest, Mute) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlSilence"); // Same than volume test
+            QStringLiteral("StemVolumeControlSilence")); // Same than volume test
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -230,8 +225,7 @@ TEST_F(StemControlTest, Mute) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlDrumOnly"); // Same than volume test
+            QStringLiteral("StemVolumeControlDrumOnly")); // Same than volume test
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -239,8 +233,7 @@ TEST_F(StemControlTest, Mute) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemMuteControlDrumAndBass");
+            QStringLiteral("StemMuteControlDrumAndBass"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -249,6 +242,5 @@ TEST_F(StemControlTest, Mute) {
 
     m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemMuteControlFull");
+            QStringLiteral("StemMuteControlFull"));
 }

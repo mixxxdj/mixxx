@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QtGlobal>
+#include <gsl/pointers>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -292,7 +293,7 @@ void CoreServices::initialize(QApplication* pApp) {
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
     // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
     m_pSoundManager = std::make_shared<SoundManager>(pConfig, m_pEngine.get());
-    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+    m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
 
     m_pRecordingManager = std::make_shared<RecordingManager>(pConfig, m_pEngine.get());
 
