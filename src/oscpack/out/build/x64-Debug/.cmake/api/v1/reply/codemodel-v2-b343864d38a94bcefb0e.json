@@ -1,0 +1,114 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.6"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "TestOscpack",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "OscDump::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-OscDump-Debug-8a81b52fa97662e46d36.json",
+					"name" : "OscDump",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "OscReceiveTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-OscReceiveTest-Debug-fd7185727e37d7020c79.json",
+					"name" : "OscReceiveTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "OscSendTests::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-OscSendTests-Debug-c37792eb2ef629be35b9.json",
+					"name" : "OscSendTests",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "OscUnitTests::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-OscUnitTests-Debug-443e4c2d9a39e73bc477.json",
+					"name" : "OscUnitTests",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SimpleReceive::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SimpleReceive-Debug-5c4de3983afe562f9ea5.json",
+					"name" : "SimpleReceive",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SimpleSend::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SimpleSend-Debug-b51276a10e7daf7ab2cc.json",
+					"name" : "SimpleSend",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "oscpack::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-oscpack-Debug-24061a71824c20d24a76.json",
+					"name" : "oscpack",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/QOSC/libs/oscpack/out/build/x64-Debug",
+		"source" : "D:/QOSC/libs/oscpack"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

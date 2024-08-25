@@ -1,0 +1,60 @@
+version: 1.0.{build}
+
+install:
+  - ps: wget https://s3.amazonaws.com/biibinaries/thirdparty/cmake-3.0.2-win32-x86.zip -OutFile cmake.zip
+  - cmd: echo "Unzipping cmake..."
+  - cmd: 7z x cmake.zip -o"C:\Program Files (x86)\" -y > nul
+  - cmd: set PATH=%PATH:CMake 2.8\bin=%;C:\Program Files (x86)\cmake-3.0.2-win32-x86\bin
+  - cmd: cmake --version
+  - cmd: echo "Downloading biicode..."
+  - ps: wget http://www.biicode.com/downloads/latest/win -OutFile bii-win.exe
+  - cmd: bii-win.exe /VERYSILENT
+  - cmd: set PATH=%PATH%;C:\Program Files (x86)\BiiCode\bii
+  - cmd: bii -v
+  - cmd: del bii-win.exe
+  - cmd: del cmake.zip
+
+before_build:
+  - cmd: bii init -L
+  - cmd: bii configure -G "Visual Studio 12"
+
+build_script:
+  - cmd: bii build
+test_script:
+  - cmd: cd bin
+  - cmd: dir
+
+deploy_script:
+  - cmd: bii user %block_user% -p %secured_passwd%
+  - if defined APPVEYOR_REPO_TAG_NAME set VERSION=%APPVEYOR_REPO_TAG_NAME%
+  - if defined APPVEYOR_REPO_TAG_NAME bii publish -r --tag=STABLE --versiontag=%VERSION%
+  - if not defined APPVEYOR_REPO_TAG_NAME bii publish -r
+
+on_success:
+  - ps: |
+         git checkout "$env:APPVEYOR_REPO_BRANCH"
+         git config --global core.autocrlf true
+         git config --global credential.helper store
+         Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+         git remote add neworigin "$env:github_repo"
+         git config --global user.email "$env:github_email"
+         git config --global user.name "$env:github_user"
+         git add biicode.conf
+         git commit -m "Updated biicode parents [skip ci]"
+         git push neworigin "$env:APPVEYOR_REPO_BRANCH"
+
+environment:
+  block_user:
+    "Maria"
+  block_name:
+    "oscpack"
+  secured_passwd:
+    secure: ZMvgETfLAUo7kISnvrinBA==
+  access_token:
+    secure: GdIDIRkmsM9blqS143lQErkxguMYgJBs74GzWw+lgzjvl/NoLs4ErcOZ2JBAEmkr
+  github_user:
+    "MariadeAnton"
+  github_email:
+    "maria.deanton@biicode.com"
+  github_repo:
+    "git@github.com:MariadeAnton/oscpack-biicode.git"

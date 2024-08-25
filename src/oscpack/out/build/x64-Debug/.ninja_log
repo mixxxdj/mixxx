@@ -1,0 +1,23 @@
+# ninja log v5
+15	499	7461364887131263	CMakeFiles/oscpack.dir/osc/OscTypes.cpp.obj	f398cc0880574124
+2	545	7461364887285070	CMakeFiles/oscpack.dir/ip/IpEndpointName.cpp.obj	ca208bd26e10d205
+20	564	7461364887441528	CMakeFiles/oscpack.dir/osc/OscReceivedElements.cpp.obj	52b2d2711fa40680
+501	940	7461364891503037	CMakeFiles/oscpack.dir/osc/OscOutboundPacketStream.cpp.obj	5ffa9f0945267b1e
+546	957	7461364891816872	CMakeFiles/SimpleSend.dir/examples/SimpleSend.cpp.obj	98253e540e6f63e0
+24	1070	7461364892909796	CMakeFiles/oscpack.dir/osc/OscPrintReceivedElements.cpp.obj	4fbfda5374558627
+7	1081	7461364893066470	CMakeFiles/oscpack.dir/ip/win32/NetworkingUtils.cpp.obj	e8d264cc3cd4e2
+11	1292	7461364895097177	CMakeFiles/oscpack.dir/ip/win32/UdpSocket.cpp.obj	cb1aeeb5b5c97494
+1292	1353	7461364895722776	oscpack.lib	b74549a4bc3d8037
+1354	1701	7461364899058248	SimpleSend.exe	26ce195ec680d629
+3	155	7461365672096227	CMakeFiles/SimpleSend.dir/examples/SimpleSend.cpp.obj	98253e540e6f63e0
+156	308	7461365673204240	SimpleSend.exe	26ce195ec680d629
+16	538	7461366125919266	CMakeFiles/SimpleReceive.dir/examples/SimpleReceive.cpp.obj	6289ae40f422b41c
+538	893	7461366129200202	SimpleReceive.exe	5fa5843d4a54ac73
+18	531	7461366791273540	CMakeFiles/SimpleReceive.dir/examples/SimpleReceive.cpp.obj	6289ae40f422b41c
+531	707	7461366792680082	SimpleReceive.exe	5fa5843d4a54ac73
+3	490	7461370338578012	CMakeFiles/SimpleReceive.dir/examples/SimpleReceive.cpp.obj	6289ae40f422b41c
+491	665	7461370339832889	SimpleReceive.exe	5fa5843d4a54ac73
+20	506	7461371856918942	CMakeFiles/SimpleReceive.dir/examples/SimpleReceive.cpp.obj	6289ae40f422b41c
+507	670	7461371858168287	SimpleReceive.exe	5fa5843d4a54ac73
+3	152	7461384260198156	CMakeFiles/SimpleSend.dir/examples/SimpleSend.cpp.obj	98253e540e6f63e0
+153	320	7461384261449276	SimpleSend.exe	26ce195ec680d629
