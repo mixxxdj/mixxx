@@ -1,9 +1,0 @@
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/oscpack.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/OscUnitTests.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/OscSendTests.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/OscReceiveTest.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/OscDump.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/SimpleReceive.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/SimpleSend.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-D:/QOSC/libs/oscpack/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
