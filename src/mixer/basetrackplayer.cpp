@@ -18,6 +18,41 @@
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+// EVE OSC
+#include "osc/OscOutboundPacketStream.h"
+#include "ip/UdpSocket.h"
+//#include "osc/OscTypes.h"
+
+#define ADDRESS "192.168.0.125"
+#define PORT 9000
+
+#define OUTPUT_BUFFER_SIZE 1024
+
+
+// EVE OSC
+
+void AAeveOSC() {
+    //    (void) argc; // suppress unused parameter warnings
+    //    (void) argv; // suppress unused parameter warnings
+
+    UdpTransmitSocket transmitSocket( IpEndpointName( ADDRESS, PORT ) );
+
+    char buffer[OUTPUT_BUFFER_SIZE];
+    osc::OutboundPacketStream p( buffer, OUTPUT_BUFFER_SIZE );
+
+    p << osc::BeginBundleImmediate
+      << osc::BeginMessage( "/test1" )
+      << true << 23 << (float)3.1415 << "hello" << osc::EndMessage
+      << osc::BeginMessage( "/test2" )
+      << true << 24 << (float)10.8 << "world" << osc::EndMessage
+      << osc::EndBundle;
+
+    transmitSocket.Send( p.Data(), p.Size() );
+    //    return 1;
+}
+
+
+
 
 namespace {
 
@@ -791,7 +826,11 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     DeckStatusTxt << DeckStatusTxtLine4 << "\n";
     DeckStatusTxt << DeckStatusTxtLine5 << "\n";
     DeckStatusFile.close();
+    
+    AAeveOSC();
 }
+
+
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
