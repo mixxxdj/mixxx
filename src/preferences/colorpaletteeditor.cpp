@@ -146,7 +146,9 @@ void ColorPaletteEditor::initialize(
     m_resetPalette = paletteName;
     QString saveName = paletteName;
 
-    for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
+    const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
+
+    for (const ColorPalette& palette : kPalettes.palettes) {
         if (paletteName == palette.getName()) {
             saveName = paletteName + QStringLiteral(" (") + tr("Edited") + QChar(')');
             ColorPaletteSettings colorPaletteSettings(m_pConfig);
@@ -206,7 +208,8 @@ void ColorPaletteEditor::slotRemoveColor() {
 void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     bool bPaletteIsReadOnly = false;
     bool bPaletteExists = false;
-    for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
+    const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
+    for (const ColorPalette& palette : kPalettes.palettes) {
         if (text == palette.getName()) {
             bPaletteExists = true;
             bPaletteIsReadOnly = true;
@@ -222,7 +225,7 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     if (bPaletteExists) {
         if (!m_pModel->isDirty()) {
             bool bPaletteFound = false;
-            for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
+            for (const ColorPalette& palette : kPalettes.palettes) {
                 if (text == palette.getName()) {
                     bPaletteFound = true;
                     m_pModel->setColorPalette(palette);
@@ -231,7 +234,7 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
             }
             if (!bPaletteFound) {
                 m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(
-                        text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
+                        text, kPalettes.defaultHotcueColorPalette));
             }
         }
     }
@@ -277,7 +280,7 @@ void ColorPaletteEditor::slotResetButtonClicked() {
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     ColorPalette palette = colorPaletteSettings.getColorPalette(
             m_resetPalette,
-            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
+            mixxx::predefinedcolorpalettes::get().defaultHotcueColorPalette);
     m_pModel->setColorPalette(palette);
     slotUpdateButtons();
 }

@@ -932,7 +932,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     int hotcueIndex = pControl->getHotcueIndex();
 
-    mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor;
+    mixxx::RgbColor color = mixxx::predefinedcolorpalettes::kDefaultCueColor;
     if (cueType == mixxx::CueType::Loop) {
         ConfigKey autoLoopColorsKey("[Controls]", "auto_loop_colors");
         if (getConfig()->getValue(autoLoopColorsKey, false)) {

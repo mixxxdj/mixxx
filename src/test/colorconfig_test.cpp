@@ -100,8 +100,9 @@ TEST_F(ColorConfigTest, LoadSavePalettes) {
 
 TEST_F(ColorConfigTest, DefaultColorPalette) {
     ColorPaletteSettings colorPaletteSettings(config());
-    ASSERT_EQ(mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette,
+    const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
+    ASSERT_EQ(kPalettes.defaultHotcueColorPalette,
             colorPaletteSettings.getHotcueColorPalette());
-    ASSERT_EQ(mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette,
+    ASSERT_EQ(kPalettes.defaultTrackColorPalette,
             colorPaletteSettings.getTrackColorPalette());
 }

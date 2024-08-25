@@ -1,37 +1,55 @@
 #pragma once
 #include "util/color/colorpalette.h"
 
+namespace {
+
+constexpr mixxx::RgbColor kColorMixxxWhite(0xF2F2FF);
+
+// Replaces "no color" values and is used for new cues if auto_hotcue_colors is
+// disabled
+constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
+} // namespace
 namespace mixxx {
+namespace predefinedcolorpalettes {
 
-class PredefinedColorPalettes {
-  public:
-    static const ColorPalette kMixxxHotcueColorPalette;
-    static const ColorPalette kSeratoTrackMetadataHotcueColorPalette;
-    static const ColorPalette kSeratoDJProHotcueColorPalette;
-    static const ColorPalette kRekordboxCOLD1HotcueColorPalette;
-    static const ColorPalette kRekordboxCOLD2HotcueColorPalette;
-    static const ColorPalette kRekordboxCOLORFULHotcueColorPalette;
+constexpr static mixxx::RgbColor kDefaultCueColor = kSchemaMigrationReplacementColor;
+constexpr static mixxx::RgbColor kDefaultLoopColor = kColorMixxxWhite;
 
-    static const ColorPalette kMixxxTrackColorPalette;
-    static const ColorPalette kRekordboxTrackColorPalette;
-    static const ColorPalette kSeratoDJProTrackColorPalette;
-    static const ColorPalette kTraktorProTrackColorPalette;
-    static const ColorPalette kVirtualDJTrackColorPalette;
+struct PredefinedColorPalettes {
+    ColorPalette mixxxHotcueColorPalette;
+    ColorPalette seratoTrackMetadataHotcueColorPalette;
+    ColorPalette seratoDJProHotcueColorPalette;
+    ColorPalette rekordboxCOLD1HotcueColorPalette;
+    ColorPalette rekordboxCOLD2HotcueColorPalette;
+    ColorPalette rekordboxCOLORFULHotcueColorPalette;
 
-    static const ColorPalette kMixxxKeyColorPalette;
-    static const ColorPalette kTraktorKeyColorPalette;
-    static const ColorPalette kMIKKeyColorPalette;
-    static const ColorPalette kProtKeyColorPalette;
-    static const ColorPalette kDeutKeyColorPalette;
-    static const ColorPalette kTritKeyColorPalette;
+    ColorPalette mixxxTrackColorPalette;
+    ColorPalette rekordboxTrackColorPalette;
+    ColorPalette seratoDJProTrackColorPalette;
+    ColorPalette traktorProTrackColorPalette;
+    ColorPalette virtualDJTrackColorPalette;
 
-    static const ColorPalette kDefaultHotcueColorPalette;
-    static const ColorPalette kDefaultTrackColorPalette;
-    static const ColorPalette kDefaultKeyColorPalette;
+    ColorPalette mixxxKeyColorPalette;
+    ColorPalette traktorKeyColorPalette;
+    ColorPalette MIKKeyColorPalette;
+    ColorPalette protKeyColorPalette;
+    ColorPalette deutKeyColorPalette;
+    ColorPalette tritKeyColorPalette;
 
-    static const QList<ColorPalette> kPalettes;
-    static const mixxx::RgbColor kDefaultCueColor;
-    static const mixxx::RgbColor kDefaultLoopColor;
+    ColorPalette defaultHotcueColorPalette;
+    ColorPalette defaultTrackColorPalette;
+    ColorPalette defaultKeyColorPalette;
+
+    QList<ColorPalette> palettes;
 };
 
+// since the palettes used here are supposed to be used in other translation
+// units we can't make these global statics without getting involved in the
+// "global initialization order fiasco". So instead we employ this getter which
+// internally implements "initialization on first use". when accessing more than
+// one member of the returned struct, its recommended to store the reference
+// instead of repeatedly calling `get()`.
+const PredefinedColorPalettes& get();
+
+} // namespace predefinedcolorpalettes
 } // namespace mixxx

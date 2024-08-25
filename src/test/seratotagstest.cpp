@@ -256,14 +256,14 @@ TEST_F(SeratoTagsTest, SetIncompatibleCueInfos) {
 }
 
 TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
-    for (const auto color : mixxx::PredefinedColorPalettes::
-                    kSeratoTrackMetadataHotcueColorPalette) {
+    const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
+    for (const auto color : kPalettes.seratoTrackMetadataHotcueColorPalette) {
         const auto displayedColor = mixxx::SeratoStoredHotcueColor(color).toDisplayedColor();
         const auto storedColor = mixxx::SeratoStoredHotcueColor::fromDisplayedColor(displayedColor);
         EXPECT_EQ(color, storedColor.toQRgb());
     }
 
-    for (const auto color : mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette) {
+    for (const auto color : kPalettes.seratoDJProHotcueColorPalette) {
         const auto storedColor = mixxx::SeratoStoredHotcueColor::fromDisplayedColor(color);
         const auto displayedColor = storedColor.toDisplayedColor();
         EXPECT_EQ(color, displayedColor);
