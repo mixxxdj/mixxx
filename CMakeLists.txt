@@ -2163,6 +2163,7 @@ add_executable(mixxx-test
   src/util/moc_included_test.cpp
   src/test/helpers/log_test.cpp
 )
+	
 if (QML)
   target_sources(mixxx-test PRIVATE
     src/test/controller_mapping_file_handler_test.cpp
@@ -2282,6 +2283,9 @@ if(WIN32)
   )
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
+# liblo
+find_package(liblo REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE liblo::liblo)
 
 # Chromaprint
 find_package(Chromaprint REQUIRED)
@@ -3941,3 +3945,4 @@ if(APPLE AND MACOS_BUNDLE)
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
     install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
+
