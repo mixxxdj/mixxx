@@ -1047,3 +1047,19 @@ WRateRange {
   font-size: 10px;
   qproperty-alignment: 'AlignCenter';
 }
+
+/** Stem control **/
+WStemControlBox {
+  background-color: transparent;
+}
+WStemControl WLabel {
+  padding-left: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+WStemControl WKnob {
+  background-color: #717171;
+}
+WStemControl {
+  margin: 10px 15px 10px 15px;
+}

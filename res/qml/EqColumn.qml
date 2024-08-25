@@ -22,6 +22,7 @@ Column {
         Column {
             id: stem
             spacing: 4
+            width: 10
             visible: opacity != 0
             Repeater {
                 model: root.player.stemsModel
@@ -59,11 +60,8 @@ Column {
                 knob.color: Theme.eqLowColor
             }
 
-            Skin.EqKnob {
-                knob.group: "[QuickEffectRack1_" + root.group + "]"
-                knob.key: "super1"
-                statusGroup: "[QuickEffectRack1_" + root.group + "_Effect1]"
-                statusKey: "enabled"
+            Skin.QuickFxKnob {
+                group: "[QuickEffectRack1_" + root.group + "]"
                 knob.arcStyle: ShapePath.DashLine
                 knob.arcStylePattern: [2, 2]
                 knob.color: Theme.eqFxColor

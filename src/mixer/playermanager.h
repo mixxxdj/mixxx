@@ -154,6 +154,13 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
     }
 
+    // Returns the group for the ith deck and jth stem where i and j is zero indexed
+    static QString groupForDeckStem(int i, int j) {
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Channel") + QString::number(i + 1) +
+                QStringLiteral("Stem") + QString::number(j + 1) + ']';
+    }
+
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
         DEBUG_ASSERT(i >= 0);
@@ -185,7 +192,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group,
+#ifdef __STEM__
+            uint stemIdx,
+#endif
+            bool play);
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
 

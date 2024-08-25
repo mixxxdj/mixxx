@@ -2,7 +2,9 @@
 
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
+#include "engine/controls/bpmcontrol.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
@@ -12,8 +14,6 @@
 
 #ifdef __STEM__
 namespace {
-constexpr int kMaxSupportedStems = 4;
-
 QString getGroupForStem(const QString& deckGroup, int stemIdx) {
     DEBUG_ASSERT(deckGroup.endsWith("]"));
     return QStringLiteral("%1Stem%2]")
@@ -72,9 +72,9 @@ EngineDeck::EngineDeck(
     m_pStemCount = std::make_unique<ControlObject>(ConfigKey(getGroup(), "stem_count"));
     m_pStemCount->setReadOnly();
 
-    m_stemGain.reserve(kMaxSupportedStems);
-    m_stemMute.reserve(kMaxSupportedStems);
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+    m_stemGain.reserve(mixxx::kMaxSupportedStems);
+    m_stemMute.reserve(mixxx::kMaxSupportedStems);
+    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
                 ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
         // The default value is ignored and override with the medium value by
@@ -96,7 +96,7 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
     }
     if (m_pConfig->getValue(
                 ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
-        for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
+        for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
             ;
@@ -118,31 +118,66 @@ EngineDeck::~EngineDeck() {
 }
 
 #ifdef __STEM__
+void EngineDeck::addStemHandle(const ChannelHandleAndGroup& stemHandleGroup) {
+    m_stems.emplace_back(ChannelHandleAndGroup(stemHandleGroup.handle(), stemHandleGroup.name()));
+    m_stemsGainCache.push_back(CSAMPLE_GAIN_ONE);
+    if (m_pEffectsManager != nullptr) {
+        m_pEffectsManager->registerInputChannel(stemHandleGroup);
+    }
+}
+
 void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
-    int stemCount = m_pBuffer->getChannelCount() / mixxx::kEngineChannelOutputCount;
+    mixxx::audio::ChannelCount chCount = m_pBuffer->getChannelCount();
+    VERIFY_OR_DEBUG_ASSERT(m_stems.size() <= chCount &&
+            m_stemMute.size() <= chCount && m_stemGain.size() <= chCount) {
+        return;
+    };
+    mixxx::audio::SampleRate sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
+    int stemCount = chCount / mixxx::kEngineChannelOutputCount;
+    int numFrames = iBufferSize / mixxx::kEngineChannelOutputCount;
     auto allChannelBufferSize = iBufferSize * stemCount;
     if (m_stemBuffer.size() < allChannelBufferSize) {
         m_stemBuffer = mixxx::SampleBuffer(allChannelBufferSize);
     }
     m_pBuffer->process(m_stemBuffer.data(), allChannelBufferSize);
 
-    // TODO(XXX): process effects per stems
-    SampleUtil::clear(pOut, iBufferSize);
-    const CSAMPLE* pIn = m_stemBuffer.data();
-    for (int i = 0; i < iBufferSize; i += mixxx::kEngineChannelOutputCount) {
+    CSAMPLE* pIn = m_stemBuffer.data();
+    EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
+    if (pEngineEffectsManager != nullptr) {
+        GroupFeatureState featureState;
+        collectFeatures(&featureState);
         for (int stemIdx = 0; stemIdx < stemCount;
                 stemIdx++) {
-            if (m_stemMute[stemIdx]->toBool()) {
-                continue;
-            }
-            float gain = static_cast<float>(m_stemGain[stemIdx]->get());
-            pOut[i] += pIn[stemCount * i + mixxx::kEngineChannelOutputCount * stemIdx] * gain;
-            pOut[i + 1] +=
-                    pIn[stemCount * i +
-                            mixxx::kEngineChannelOutputCount * stemIdx + 1] *
-                    gain;
+            int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
+            float gain = m_stemMute[stemIdx]->toBool()
+                    ? 0.0f
+                    : static_cast<float>(m_stemGain[stemIdx]->get());
+            SampleUtil::copyOneStereoFromMulti(
+                    pOut,
+                    pIn,
+                    numFrames,
+                    chCount,
+                    chOffset);
+            pEngineEffectsManager->processPostFaderInPlace(m_stems[stemIdx].handle(),
+                    m_pEffectsManager->getMainHandle(),
+                    pOut,
+                    iBufferSize,
+                    sampleRate,
+                    featureState,
+                    m_stemsGainCache[stemIdx],
+                    gain,
+                    false);
+            m_stemsGainCache[stemIdx] = gain;
+            SampleUtil::copyStereoToMulti(
+                    pIn,
+                    pOut,
+                    numFrames,
+                    chCount,
+                    chOffset);
         }
     }
+
+    SampleUtil::mixMultichannelToStereo(pOut, pIn, numFrames, chCount);
     // TODO(XXX): process stem DSP
 }
 
@@ -150,7 +185,7 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     VERIFY_OR_DEBUG_ASSERT(deckToClone) {
         return;
     }
-    for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }
