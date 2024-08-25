@@ -883,6 +883,23 @@ void SampleUtil::copyOneStereoFromMulti(
 }
 
 // static
+void SampleUtil::insertStereoToMulti(
+        CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames,
+        mixxx::audio::ChannelCount numChannels,
+        int channelOffset) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo() &&
+            channelOffset - 1 < numFrames);
+    // forward loop
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numFrames; ++i) {
+        pDest[i * numChannels + channelOffset] = pSrc[i * 2];
+        pDest[i * numChannels + channelOffset + 1] = pSrc[i * 2 + 1];
+    }
+}
+
+// static
 void SampleUtil::reverse(CSAMPLE* pBuffer, SINT numSamples) {
     for (SINT j = 0; j < numSamples / 4; ++j) {
         const SINT endpos = (numSamples - 1) - j * 2 ;

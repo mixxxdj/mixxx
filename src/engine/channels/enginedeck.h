@@ -70,6 +70,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // check if the loaded track is a stem so this should only be used in case
     // of stem track
     void cloneStemState(const EngineDeck* deckToClone);
+    void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
 #endif
 
   signals:
@@ -87,6 +88,9 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Process multiple channels and mix them together into the passed buffer
     void processStem(CSAMPLE* pOutput, const int iBufferSize);
 #endif
+
+    std::vector<ChannelHandleAndGroup> m_stems;
+    std::vector<CSAMPLE_GAIN> m_stemsGainCache;
 
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
