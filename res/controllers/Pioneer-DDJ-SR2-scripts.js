@@ -63,39 +63,39 @@ DDJSR2.wheelLedCircle = {
 };
 
 // The following variables controls the wheel ring colors.
-// If set to OFF - no ring color. 
+// If set to OFF - no ring color.
 // If set to a color that's in the wheelLedCircleColor list (has to be in caps), sets the deck color to that. 
 // If set to TRACK - sets the color to what the track column says.
 // If set to POSITION - Changes color as playposition changes.
 DDJSR2.wheelColor =[];
-DDJSR2.wheelColor[1] = "POSITION"; // Deck 1
+DDJSR2.wheelColor[1] = "TRACK"; // Deck 1
 DDJSR2.wheelColor[2] = "ORANGE"; // Deck 2
 DDJSR2.wheelColor[3] = "CYAN"; // Deck 3
 DDJSR2.wheelColor[4] = "BRIGHTBLUE"; // Deck 4
 
 DDJSR2.wheelLedCircleColor = {
-    OFF:20,
-    TRACK:127,
-    POSITION:128,
-    PURPLE:1,
-    MAGENTA:2,
-    RED:3,
-    BROWN:4,
-    ORANGE:5,
-    YELLOW:6,
-    LIMEGREEN:7,
-    GREEN:8,
-    BRIGHTGREEN:9,
-    CELESTE:10,
-    CYAN:11,
-    TURQUOISE:12,
-    BRIGHTBLUE:13,
-    AZURE:14,
-    DARKBLUE:15,
-    VIOLET:16,
-    ULTRAVIOLET:17,
-    WHITE:18,
-    DIMWHITE:19
+    OFF: 20,
+    TRACK: 127,
+    POSITION: 128,
+    PURPLE: 1,
+    MAGENTA: 2,
+    RED: 3,
+    BROWN: 4,
+    ORANGE: 5,
+    YELLOW: 6,
+    LIMEGREEN: 7,
+    GREEN: 8,
+    BRIGHTGREEN: 9,
+    CELESTE: 10,
+    CYAN: 11,
+    TURQUOISE: 12,
+    BRIGHTBLUE: 13,
+    AZURE: 14,
+    DARKBLUE: 15,
+    VIOLET: 16,
+    ULTRAVIOLET: 17,
+    WHITE: 18,
+    DIMWHITE: 19
 };
 
 DDJSR2.wheelColorMap = new ColorMapper({
@@ -126,7 +126,7 @@ DDJSR2.init = function() {
     DDJSR2.browser = new DDJSR2.BrowserContainer();
 
     DDJSR2.deck = [];
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         DDJSR2.deck[i] = new DDJSR2.Deck(i);
         DDJSR2.deck[i].setCurrentDeck(`[Channel${i+1}]`);
     }
@@ -137,11 +137,11 @@ DDJSR2.init = function() {
 
     // Performance pads are part of the Deck specs, as are Illumination Controls
 
-    DDJSR2.seratoHeartbeatTimer = engine.beginTimer(250, DDJSR2.doSeratoHeartbeatTimer, false);
+    DDJSR2.seratoHeartbeatTimer = engine.beginTimer(200, DDJSR2.doSeratoHeartbeatTimer, false);
 
     // After 500 ms have elapsed, after the serato heartbeat has occurred, then poll controls. Calling this before time results in an unsuccessful poll.
 
-    engine.beginTimer(500, function() {
+    engine.beginTimer(300, function() {
         midi.sendSysexMsg(DDJSR2.seratoControlsPoll, DDJSR2.seratoControlsPoll.length);
     }, true);
 
@@ -157,8 +157,8 @@ DDJSR2.doSeratoHeartbeatTimer = function() {
 
 
 DDJSR2.getRotaryDelta = function(value) {
-    let delta = 0x40 - Math.abs(0x40 - value),
-        isCounterClockwise = value > 0x40;
+    let delta = 0x40 - Math.abs(0x40 - value);
+    const isCounterClockwise = value > 0x40;
     // BrowserKnob returns 1-30 going down, and 127-98 going up.
 
     if (isCounterClockwise) {
@@ -201,12 +201,12 @@ DDJSR2.RingBufferView = class {
     previous() {
         return this.advanceBy(-1);
     }
-	current() {
+    current() {
         return this.indexable[this.index];
     }
 };
 
-DDJSR2.BrowserContainer = function(){
+DDJSR2.BrowserContainer = function() {
     this.browseKnob  = new components.ComponentContainer({
         longPressTimer: 0,
         longPressTimeout: 250,
@@ -220,17 +220,17 @@ DDJSR2.BrowserContainer = function(){
                 const rotateValue = DDJSR2.getRotaryDelta(value);
                 engine.setValue("[Library]", "MoveVertical", rotateValue);
             }
-	}),
-	press: new components.Button({
+        }),
+        press: new components.Button({
+            group: "[Library]",
+            key: "GoToItem"
+        }),
+        shiftPress: new components.Button({
 	    group: "[Library]",
-	    key: "GoToItem"
-	}),
-	shiftPress: new components.Button({
-	    group: "[Library]",
-	    input: function (channel, control, value, status, group) {
+            input: function(channel, control, value, _status, _group) {
                 if (!value) { // On release, not press. Allows for track color cycling.
                     this.trackColorCycleEnabled = false;
-		    if (!this.trackColorCycleHappened){
+                    if (!this.trackColorCycleHappened) {
                         if (!engine.getValue("[PreviewDeck1]", "play")) {
                             engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
                         } else
@@ -244,12 +244,12 @@ DDJSR2.BrowserContainer = function(){
 		    this.trackColorCycleEnabled = true;
 		}
             }.bind(this)
-	}),
-	shiftTurn: new components.Encoder({
+        }),
+        shiftTurn: new components.Encoder({
 	    group: "[PreviewDeck1]",
-	    input: function (channel, control, value, status, group) {
-                var rotateValue = DDJSR2.getRotaryDelta(value);
-                if (!this.trackColorCycleEnabled){
+            input: function(channel, control, value, _status, _group) {
+                const rotateValue = DDJSR2.getRotaryDelta(value);
+                if (!this.trackColorCycleEnabled) {
                     const oldPos = engine.getValue("[PreviewDeck1]", "playposition");
                     const newPos = Math.max(0, oldPos + (0.05 * rotateValue));
                     engine.setValue("[PreviewDeck1]", "playposition", newPos);
@@ -262,19 +262,19 @@ DDJSR2.BrowserContainer = function(){
         }),
     });
     this.loadButtons = [];
-    for (var channelOffset = 0; channelOffset < 4; channelOffset++){
+    for (let channelOffset = 0; channelOffset < 4; channelOffset++) {
         const group = `[Channel${channelOffset+1}]`;
-	this.loadButtons[channelOffset] = new components.Button({
-	    group: group,
-	    key: "LoadSelectedTrack",
-	    midi: [0x9B, 0x0+channelOffset]
-	});
+        this.loadButtons[channelOffset] = new components.Button({
+            group: group,
+            key: "LoadSelectedTrack",
+            midi: [0x9B, 0x0+channelOffset]
+        });
         this.ejectTrackButton = new components.Button({
             inKey: "eject",
             outKey: "track_loaded",
             midi: [0x96, 0x46+channelOffset]
         });
-    };
+    }
 
     this.sortLibrary = function(channel, control, value, _status, _group) {
         if (value === 0) {
@@ -283,15 +283,15 @@ DDJSR2.BrowserContainer = function(){
 
         let sortColumn;
         switch (control) {
-            case 0x58:  // BPM
+        case 0x58:  // BPM
             sortColumn = script.LIBRARY_COLUMNS.BPM;
-                break;
-            case 0x59:  // ARTIST
+            break;
+        case 0x59:  // ARTIST
             sortColumn = script.LIBRARY_COLUMNS.ARTIST;
-                break;
-            default:
-              // unknown sort column
-              return;
+            break;
+        default:
+            // unknown sort column
+            return;
         }
         engine.setValue("[Library]", "sort_column", sortColumn);
     };
@@ -322,10 +322,10 @@ DDJSR2.BrowserContainer = function(){
 DDJSR2.BrowserContainer.prototype = new components.ComponentContainer();
 DDJSR2.ticks = 0;
 DDJSR2.Deck = function(channelOffset) {
-    var deckNumber = channelOffset + 1;
+    const deckNumber = channelOffset + 1;
     this.deckNumber = deckNumber;
     this.group = "[Channel" + deckNumber + "]";
-    var theDeck = this;
+    const theDeck = this;
     components.Deck.call(this, deckNumber);
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton({
@@ -333,7 +333,7 @@ DDJSR2.Deck = function(channelOffset) {
     });
     this.stutter = new components.Button({
         midi: [0x90+channelOffset, 0x47],
-	key: "play_stutter"
+        key: "play_stutter"
     });
     this.cue = new components.CueButton({
         midi: [0x90 + channelOffset, 0x0C]
@@ -347,8 +347,8 @@ DDJSR2.Deck = function(channelOffset) {
         wheelResolution: DDJSR2.scratchSettings.wheelResolution,
         alpha: DDJSR2.scratchSettings.alpha,
         beta: DDJSR2.scratchSettings.beta,
-        vinylMode: true, // Set the default to match the SR2's default.
-        inValueScale: function (value) { 
+        vinylMode: false, // Set the default to match the SR2's default.
+        inValueScale: function(value) {
             if (!this.vinylMode) {
                 const delta = DDJSR2.getJogWheelDelta(value);
                 const newvalue = delta / 5 * DDJSR2.jogwheelSensitivity;
@@ -385,8 +385,8 @@ DDJSR2.Deck = function(channelOffset) {
         type: components.Button.prototype.types.toggle
     });
     this.needleSearchStripPositionShifted = new components.Pot({
-            group: theDeck.group,
-            key: "playposition"
+        group: theDeck.group,
+        key: "playposition"
     });
     this.needleSearchStripPosition = new components.Pot({
         key: "playposition",
@@ -406,15 +406,15 @@ DDJSR2.Deck = function(channelOffset) {
     this.syncOff = new components.Button({
         midi: [0x90 + channelOffset, 0x5C],
         key: "sync_enabled",
-	input:  function(channel, control, value, status, group) {
+        input: function(_channel, _control, _value, _status, _group) {
 	    this.inSetValue(false);
 	}
     });
     this.autoLoop = new components.Button({
         midi: [0x90 + channelOffset, 0x14],
         outKey: "loop_enabled",
-	input: function(channel, control, value, status, group) {
-			    if (value) {
+        input: function(channel, control, value, status, group) {
+            if (value) {
                 if (engine.getValue(group, "loop_enabled")) {
                     engine.setValue(group, "reloop_toggle", true);
                     engine.setValue(group, "reloop_toggle", false);
@@ -423,7 +423,7 @@ DDJSR2.Deck = function(channelOffset) {
                     engine.setValue(group, "beatloop_activate", false);
                 }
             }
-	}
+        }
     });
 
     this.loopActive = new components.Button({
@@ -480,7 +480,7 @@ DDJSR2.Deck = function(channelOffset) {
 
     this.reverse = new components.Button({
         midi: [0x90+channelOffset, 0x38],
-	key: "reverse",
+        key: "reverse",
         type: components.Button.prototype.types.toggle
     });
 
@@ -500,8 +500,6 @@ DDJSR2.Deck = function(channelOffset) {
             }
         }
     });
-
-    this.vinylButton.trigger();
 
     this.brakeStopButton = function(channel, control, value, status, group) {
         const activate = value > 0;
@@ -538,8 +536,8 @@ DDJSR2.Deck = function(channelOffset) {
     });
 
     this.keyReset = new components.Button({
-        // midi: [x,x], no light
-        key: "reset_key"
+        midi: [0x90 + channelOffset, 0x71],
+        inKey: "reset_key"
     });
     this.wheelRing = new WheelRing({
         color: DDJSR2.wheelColor[deckNumber],
@@ -556,7 +554,7 @@ DDJSR2.Deck.prototype = Object.create(components.Deck.prototype);
 
 DDJSR2.MixerContainer = function(){
     this.channels = [];
-    for (let i = 0; i < 4; i++){
+    for (let i = 0; i < 4; i++) {
         this.channels[i] = new DDJSR2.Channel(i);
     }
 
@@ -611,7 +609,7 @@ DDJSR2.Channel = function(channelOffset) {
     });
 
     this.eqKnob = [];
-    // EQ High, Mid and Low 
+    // EQ High, Mid and Low
     for (let k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
             group: `[EqualizerRack1_${  deck  }_Effect1]`,
@@ -639,7 +637,7 @@ DDJSR2.Channel = function(channelOffset) {
 
     this.volume = new components.Pot({
         inKey: "volume",
-	group: deck
+        group: deck
     });
 
     // Master level is handled at hardware level for the SR2, same with Booth Monitor Level, Headphones Mixing, and Sampler Volume
@@ -647,17 +645,15 @@ DDJSR2.Channel = function(channelOffset) {
     let lastVuLevel = 0;
     this.vuMeter = new components.Component({
         outKey: "vu_meter",
-	group: deck,
+        group: deck,
+        midi: [0xB0, 0x02],
         output: function(value, group, _control) {
             // Remark: Only deck vu meters can be controlled! Master vu meter is handled by hardware!
-            let midiBaseAddress = 0xB0,
-                channel = 0x02,
-                midiOut = 0x00;
 
             value = parseInt(value * 0x76); //full level indicator: 0x7F
 
             if (engine.getValue(group, "peak_indicator")) {
-                value = value + 0x09;
+                value = 0x7F;
             }
 
             if (value === lastVuLevel){
@@ -666,11 +662,7 @@ DDJSR2.Channel = function(channelOffset) {
             } else {
                 lastVuLevel = value;
 
-                midi.sendShortMsg(
-                    midiBaseAddress + channelOffset,
-                    channel,
-                    value
-                );
+                this.send(value);
             }
         }
     });
@@ -679,8 +671,8 @@ DDJSR2.Channel.prototype = new components.ComponentContainer();
 
 DDJSR2.createEffectUnits = function(){
     DDJSR2.effectUnits = [];
-    var fxLeds = [0x4C, 0x50, 0x70, 0x54];
-    for (var i = 1; i <= 2; i++) {
+    const fxLeds = [0x4C, 0x50, 0x70, 0x54];
+    for (let i = 1; i <= 2; i++) {
         DDJSR2.effectUnits[i] = new components.EffectUnit(i);
         DDJSR2.effectUnits[i].enableButtons[1].midi = [0x93 + i, 0x47];
         DDJSR2.effectUnits[i].enableButtons[2].midi = [0x93 + i, 0x48];
@@ -688,12 +680,12 @@ DDJSR2.createEffectUnits = function(){
         DDJSR2.effectUnits[i].dryWetKnob.input = function(channel, control, value, _status, _group) {
             this.inSetParameter(this.inGetParameter() + DDJSR2.getRotaryDelta(value) / 30);
         };
-            for (var j = 1; j <= 4; j++) {
-		const channel = `Channel${j}`;
-                DDJSR2.effectUnits[i].enableOnChannelButtons.addButton(channel);
-                const midiout = fxLeds[j-1]+(i-1);
-                DDJSR2.effectUnits[i].enableOnChannelButtons[channel].midi = [0x96, midiout];
-            }
+        for (let j = 1; j <= 4; j++) {
+            const channel = `Channel${j}`;
+            DDJSR2.effectUnits[i].enableOnChannelButtons.addButton(channel);
+            const midiout = fxLeds[j-1]+(i-1);
+            DDJSR2.effectUnits[i].enableOnChannelButtons[channel].midi = [0x96, midiout];
+        }
 
         DDJSR2.effectUnits[i].init();
     }
@@ -732,6 +724,7 @@ DDJSR2.PadColor = {
 };
 
 DDJSR2.PadColorMap = new ColorMapper({
+    0x000000: DDJSR2.PadColor.OFF,
     0xCC0000: DDJSR2.PadColor.RED,
     0x008000: DDJSR2.PadColor.GREEN,
     0x0000CC: DDJSR2.PadColor.BLUE,
@@ -977,21 +970,19 @@ DDJSR2.HotcueMode = function(deck, offset) {
     for (let i = 0; i <= 7; i++) {
         this.pads[i] = new components.HotcueButton({
             midi: [0x97 + offset, 0x0 + i],
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
+            sendShifted: false,
+            shiftControl: false,
             number: i + 1,
             group: deck.currentDeck,
-            on: this.color,
             off: DDJSR2.PadColor.OFF,
             colorMapper: DDJSR2.PadColorMap,
             outConnect: false,
         });
     }
     this.clearHotcueButton = new components.Button({
-	input: function(channel, control, value, status, group) {
-          const index = control - 0x08 + 1;
-          script.toggleControl(group, `hotcue_${  index  }_clear`);
+        input: function(channel, control, value, status, group) {
+            const index = control - 0x08 + 1;
+            script.toggleControl(group, `hotcue_${  index  }_clear`);
         }
     });
 
@@ -1167,15 +1158,15 @@ DDJSR2.SamplerMode = function(deck, offset) {
             loaded: DDJSR2.PadColor.PURPLE+DDJSR2.PadColor.DIM_MODIFIER,
             off: DDJSR2.PadColor.OFF,
         });
-    };
+    }
     this.stopSamplerButton = new components.Button({
 	    input: function(channel, control, value, status, group) {
 	        DDJSR2.selectedSamplerBank = 0;
-                const index = control - 0x38 + 1,
+            const index = control - 0x38 + 1,
                 deckOffset = DDJSR2.selectedSamplerBank * 8,
                 sampleDeck = `[Sampler${  index + deckOffset  }]`,
                 trackLoaded = engine.getValue(sampleDeck, "track_loaded"),
-                playing = engine.getValue(sampleDeck, "play");                
+                playing = engine.getValue(sampleDeck, "play");
 
             if (trackLoaded && playing) {
                 script.toggleControl(sampleDeck, "stop");
@@ -1184,7 +1175,7 @@ DDJSR2.SamplerMode = function(deck, offset) {
             }
         }
     });
-}
+};
 DDJSR2.SamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DDJSR2.PitchPlayMode = function(deck, offset) {
@@ -1361,6 +1352,7 @@ const WheelRing = function(options) { components.Component.call(this, options); 
 
 WheelRing.prototype = new components.Component({
     blinkStatus: 0,
+    colorMapper: DDJSR2.wheelColorMap,
     outKey: "playposition",
     output: function(value) {
         if (this.color === "POSITION") {
@@ -1393,18 +1385,25 @@ WheelRing.prototype = new components.Component({
                 this.blinkStatus++;
             }
             if (this.wheelPos === wheelPos) {
-                // Do nothing.
+
             } else {
                 this.wheelPos = wheelPos;
                 DDJSR2.wheelLedControl(this.channelOffset, Math.round(wheelPos));
             }
         } else if (this.color === "TRACK") {
-            // TO do once colormapper is understood.
+            const colorRGB = engine.getValue(this.group, "track_color");
+            const colorCode = this.colorMapper.getValueForNearestColor(colorRGB);
+            if (this.colorCode === colorCode) {
+                // Do nothing.
+            } else {
+                this.colorCode = colorCode;
+                DDJSR2.wheelLedControl(this.channelOffset, colorCode);
+            }
         } else {
             const colorName = this.color;
             const colorCode = DDJSR2.wheelLedCircleColor[colorName];
             if (this.colorCode === colorCode) {
-                // Do nothing
+
             } else {
                 this.colorCode = colorCode;
                 DDJSR2.wheelLedControl(this.channelOffset, colorCode);
