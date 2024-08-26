@@ -24,7 +24,7 @@ EngineVuMeter::EngineVuMeter(const QString& group, const QString& legacyGroup)
           m_peakIndicator(ConfigKey(group, QStringLiteral("peak_indicator"))),
           m_peakIndicatorLeft(ConfigKey(group, QStringLiteral("peak_indicator_left"))),
           m_peakIndicatorRight(ConfigKey(group, QStringLiteral("peak_indicator_right"))),
-          m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
+          m_sampleRate({QStringLiteral("[App]"), QStringLiteral("samplerate")}) {
     const QString& aliasGroup = legacyGroup.isEmpty() ? group : legacyGroup;
     m_vuMeter.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeter"))),
             m_vuMeterLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterL"))),

@@ -38,7 +38,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
-          m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
+          m_audioLatencyUsage({kAppGroup, QStringLiteral("audio_latency_usage")}),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
           m_targetTime(0) {

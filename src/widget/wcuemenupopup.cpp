@@ -113,19 +113,19 @@ void WCueMenuPopup::setTrackCueGroup(
     m_pCue = pCue;
 
     if (m_pBeatLoopSize.getKey().group != group) {
-        m_pBeatLoopSize = PollingControlProxy(group, "beatloop_size");
+        m_pBeatLoopSize = PollingControlProxy({group, "beatloop_size"});
     }
 
     if (m_pPlayPos.getKey().group != group) {
-        m_pPlayPos = PollingControlProxy(group, "playposition");
+        m_pPlayPos = PollingControlProxy({group, "playposition"});
     }
 
     if (m_pTrackSample.getKey().group != group) {
-        m_pTrackSample = PollingControlProxy(group, "track_samples");
+        m_pTrackSample = PollingControlProxy({group, "track_samples"});
     }
 
     if (m_pQuantizeEnabled.getKey().group != group) {
-        m_pQuantizeEnabled = PollingControlProxy(group, "quantize");
+        m_pQuantizeEnabled = PollingControlProxy({group, "quantize"});
     }
     slotUpdate();
 }

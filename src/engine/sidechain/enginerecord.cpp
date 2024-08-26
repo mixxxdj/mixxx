@@ -13,7 +13,7 @@ constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_sampleRateControl(QStringLiteral("[App]"), QStringLiteral("samplerate")),
+          m_sampleRateControl({QStringLiteral("[App]"), QStringLiteral("samplerate")}),
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),

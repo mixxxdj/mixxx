@@ -35,10 +35,6 @@ class PollingControlProxy {
             : m_pControl(ControlDoublePrivate::getDefaultControl()) {
     }
 
-    PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)
-            : PollingControlProxy({{{.key = ConfigKey(g, i)}, flags}}) {
-    }
-
     PollingControlProxy(const Parameters& params)
             : m_pControl(fromParams(params)) {
     }
