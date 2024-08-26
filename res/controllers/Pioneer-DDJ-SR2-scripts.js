@@ -26,7 +26,7 @@ Author: Waylon Robertson
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
     the GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License along with this program; if
     not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -122,7 +122,7 @@ DDJSR2.seratoControlsPoll=[0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7]; // Serato 
 
 DDJSR2.init = function() {
     // Browser section is part of Mixer container for now.
-    
+
     DDJSR2.browser = new DDJSR2.BrowserContainer();
 
     DDJSR2.deck = [];
@@ -245,7 +245,7 @@ DDJSR2.BrowserContainer = function() {
             }.bind(this)
         }),
         shiftTurn: new components.Encoder({
-	    group: "[PreviewDeck1]",
+            group: "[PreviewDeck1]",
             input: function(channel, control, value, _status, _group) {
                 const rotateValue = DDJSR2.getRotaryDelta(value);
                 if (!this.trackColorCycleEnabled) {
@@ -655,7 +655,7 @@ DDJSR2.Channel = function(channelOffset) {
                 value = 0x7F;
             }
 
-            if (value === lastVuLevel){
+            if (value === lastVuLevel) {
                 // return early if value hasn't changed
                 return
             } else {
