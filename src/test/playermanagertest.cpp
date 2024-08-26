@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QTest>
+#include <gsl/pointers>
 
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
@@ -64,7 +65,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 true);
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
-        m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+        m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
 
         CoverArtCache::createInstance();
 

@@ -17,22 +17,12 @@ class SampleRate;
 
 class Encoder {
   public:
-        class Format {
-            public:
-              Format(const QString& labelIn,
-                      const QString& nameIn,
-                      bool losslessIn,
-                      const QString& fileExtIn)
-                      : label(labelIn),
-                        internalName(nameIn),
-                        lossless(losslessIn),
-                        fileExtension(fileExtIn) {
-              }
-            QString label;
-            QString internalName;
-            bool lossless;
-            QString fileExtension;
-        };
+    struct Format {
+        QString label;
+        QString internalName;
+        bool lossless;
+        QString fileExtension;
+    };
 
     Encoder() {}
     virtual ~Encoder() = default;

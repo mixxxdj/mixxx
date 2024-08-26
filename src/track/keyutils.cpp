@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QtDebug>
 
+#include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/color/rgbcolor.h"
 #include "util/compatibility/qmutex.h"
@@ -465,11 +466,10 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 }
 
 // static
-QColor KeyUtils::keyToColor(ChromaticKey key) {
+QColor KeyUtils::keyToColor(ChromaticKey key, const ColorPalette& palette) {
     int openKeyNumber = keyToOpenKeyNumber(key);
 
     if (openKeyNumber != 0) {
-        const auto& palette = mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
         DEBUG_ASSERT(openKeyNumber <= palette.size() && openKeyNumber >= 1);
         const auto rgbColor = palette.at(openKeyNumber - 1); // Open Key numbers start from 1
         return mixxx::RgbColor::toQColor(rgbColor);

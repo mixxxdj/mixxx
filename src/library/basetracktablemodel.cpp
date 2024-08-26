@@ -7,12 +7,12 @@
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
+#include "library/tabledelegates/checkboxdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
 #include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
-#include "library/tabledelegates/playcountdelegate.h"
 #include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
@@ -24,6 +24,8 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/clipboard.h"
+#include "util/color/colorpalette.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -106,6 +108,8 @@ constexpr bool BaseTrackTableModel::kKeyColorsEnabledDefault;
 int BaseTrackTableModel::s_bpmColumnPrecision =
         kBpmColumnPrecisionDefault;
 bool BaseTrackTableModel::s_keyColorsEnabled = kKeyColorsEnabledDefault;
+ColorPalette BaseTrackTableModel::s_keyColorPalette =
+        mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
 
 // static
 void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
@@ -120,8 +124,12 @@ void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
 
 // static
 void BaseTrackTableModel::setKeyColorsEnabled(bool keyColorsEnabled) {
-    // todo: need to refresh the key column when this setting changes
     s_keyColorsEnabled = keyColorsEnabled;
+}
+
+// static
+void BaseTrackTableModel::setKeyColorPalette(const ColorPalette& palette) {
+    s_keyColorPalette = palette;
 }
 
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
@@ -492,7 +500,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-        return new PlayCountDelegate(pTableView);
+        return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
@@ -589,7 +597,7 @@ QVariant BaseTrackTableModel::data(
             role != Qt::ToolTipRole &&
             role != kDataExportRole &&
             role != Qt::TextAlignmentRole &&
-            role != Qt::UserRole) {
+            role != Qt::DecorationRole) {
         return QVariant();
     }
 
@@ -720,7 +728,7 @@ QVariant BaseTrackTableModel::roleValue(
         int role) const {
     const auto field = mapColumn(index.column());
     if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-        return std::move(rawValue);
+        return rawValue;
     }
     switch (role) {
     case Qt::ToolTipRole:
@@ -734,7 +742,7 @@ QVariant BaseTrackTableModel::roleValue(
             return QVariant();
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
-            return std::move(rawValue);
+            return rawValue;
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -812,7 +820,7 @@ QVariant BaseTrackTableModel::roleValue(
                 return dt;
             }
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
-                // Timstamp column in history feature:
+                // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
                 return mixxx::displayLocalDateTime(dt);
             }
@@ -880,7 +888,7 @@ QVariant BaseTrackTableModel::roleValue(
             }
             if (rawValue.canConvert<mixxx::audio::Bitrate>()) {
                 // return value as is
-                return std::move(rawValue);
+                return rawValue;
             } else {
                 VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
                     return QVariant();
@@ -892,7 +900,7 @@ QVariant BaseTrackTableModel::roleValue(
                 }
                 if (mixxx::audio::Bitrate(bitrateValue).isValid()) {
                     // return value as is
-                    return std::move(rawValue);
+                    return rawValue;
                 } else {
                     // clear invalid values
                     return QVariant();
@@ -902,13 +910,14 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // If we know the semantic key via the LIBRARYTABLE_KEY_ID
             // column (as opposed to the string representation of the key
-            // currently stored in the DB) then lookup the key and return it
+            // currently stored in the DB) then lookup the key and render it
+            // using the user's selected notation.
             const QVariant keyCodeValue = rawSiblingValue(
                     index,
                     ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
             if (keyCodeValue.isNull()) {
                 // Otherwise, just use the column value as is
-                return std::move(rawValue);
+                return rawValue;
             }
             bool ok;
             const auto keyCode = keyCodeValue.toInt(&ok);
@@ -919,7 +928,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID) {
                 return QVariant();
             }
-            return QVariant::fromValue(key);
+            return QVariant::fromValue(KeyUtils::keyToString(key));
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
@@ -1027,14 +1036,32 @@ QVariant BaseTrackTableModel::roleValue(
             return QVariant(); // default AlignLeft for all other columns
         }
     }
-    case Qt::UserRole: {
+    case Qt::DecorationRole: {
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
-            // return whether or not to display the color rectangle
-            return QVariant::fromValue(s_keyColorsEnabled);
+            // return color of key
+            if (!s_keyColorsEnabled) {
+                return QVariant();
+            }
+            const QVariant keyCodeValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            if (keyCodeValue.isNull()) {
+                return QVariant();
+            }
+            bool ok;
+            const auto keyCode = keyCodeValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            const auto key = KeyUtils::keyFromNumericValue(keyCode);
+            if (key == mixxx::track::io::key::INVALID) {
+                return QVariant();
+            }
+            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette));
         }
         default:
-            DEBUG_ASSERT(!"unexpected field for UserRole");
+            return QVariant();
         }
         break;
     }
@@ -1042,7 +1069,7 @@ QVariant BaseTrackTableModel::roleValue(
         DEBUG_ASSERT(!"unexpected role");
         break;
     }
-    return std::move(rawValue);
+    return rawValue;
 }
 
 bool BaseTrackTableModel::isBpmLocked(

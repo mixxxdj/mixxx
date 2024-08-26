@@ -254,7 +254,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     setLibraryFont(QApplication::font());
     spinBox_search_debouncing_timeout->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    checkBox_enable_search_history_shortcuts->setChecked(
+    checkBox_enable_search_completions->setChecked(
             WSearchLineEdit::kCompletionsEnabledDefault);
     checkBox_enable_search_history_shortcuts->setChecked(
             WSearchLineEdit::kHistoryShortcutsEnabledDefault);
@@ -341,7 +341,7 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_edit_metadata_selected_clicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMetadataSelectedClick(editMetadataSelectedClick);
 
-    checkBox_enable_search_history_shortcuts->setChecked(m_pConfig->getValue(
+    checkBox_enable_search_completions->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
             WSearchLineEdit::kCompletionsEnabledDefault));
     checkBox_enable_search_history_shortcuts->setChecked(m_pConfig->getValue(
@@ -520,7 +520,7 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
     m_pConfig->set(kEnableSearchCompletionsConfigKey,
-            ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
+            ConfigValue(checkBox_enable_search_completions->isChecked()));
     m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
             ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
     updateSearchLineEditHistoryOptions();
