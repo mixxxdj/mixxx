@@ -108,8 +108,7 @@ constexpr bool BaseTrackTableModel::kKeyColorsEnabledDefault;
 int BaseTrackTableModel::s_bpmColumnPrecision =
         kBpmColumnPrecisionDefault;
 bool BaseTrackTableModel::s_keyColorsEnabled = kKeyColorsEnabledDefault;
-ColorPalette BaseTrackTableModel::s_keyColorPalette =
-        mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
+std::optional<ColorPalette> BaseTrackTableModel::s_keyColorPalette;
 
 // static
 void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
@@ -1055,10 +1054,10 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             const auto key = KeyUtils::keyFromNumericValue(keyCode);
-            if (key == mixxx::track::io::key::INVALID) {
+            if (key == mixxx::track::io::key::INVALID || !s_keyColorPalette.has_value()) {
                 return QVariant();
             }
-            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette));
+            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette.value()));
         }
         default:
             return QVariant();

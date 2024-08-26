@@ -3,6 +3,7 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
+#include <optional>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
@@ -300,7 +301,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static int s_bpmColumnPrecision;
     static bool s_keyColorsEnabled;
-    static ColorPalette s_keyColorPalette;
+    // The value need to be left uninitialized (std::nullopt) to avoid static
+    // initialization order issues
+    static std::optional<ColorPalette> s_keyColorPalette;
 
     static bool s_bApplyPlayedTrackColor;
 };
