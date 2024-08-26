@@ -29,9 +29,10 @@ class PollingControlProxy {
   public:
     // convenience constructor. Prefer the `Parameter` version if you want to pass options
     PollingControlProxy(const ConfigKey& key)
-            : PollingControlProxy(Parameters{{{key}}}){};
-    PollingControlProxy(ControlFlags flags = ControlFlag::None)
-            : PollingControlProxy({{{ConfigKey()}, flags}}) {
+            : PollingControlProxy(Parameters{{{key}}}) {
+    }
+    PollingControlProxy()
+            : m_pControl(ControlDoublePrivate::getDefaultControl()) {
     }
 
     PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)

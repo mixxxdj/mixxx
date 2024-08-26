@@ -18,10 +18,10 @@ void CueTypePushButton::mousePressEvent(QMouseEvent* e) {
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
         : QWidget(parent),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
-          m_pBeatLoopSize(ControlFlag::AllowMissingOrInvalid),
-          m_pPlayPos(ControlFlag::AllowMissingOrInvalid),
-          m_pTrackSample(ControlFlag::AllowMissingOrInvalid),
-          m_pQuantizeEnabled(ControlFlag::AllowMissingOrInvalid) {
+          m_pBeatLoopSize(),
+          m_pPlayPos(),
+          m_pTrackSample(),
+          m_pQuantizeEnabled() {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_StyledBackground);
