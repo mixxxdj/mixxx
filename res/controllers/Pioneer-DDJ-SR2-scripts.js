@@ -64,7 +64,7 @@ DDJSR2.wheelLedCircle = {
 
 // The following variables controls the wheel ring colors.
 // If set to OFF - no ring color.
-// If set to a color that's in the wheelLedCircleColor list (has to be in caps), sets the deck color to that. 
+// If set to a color that's in the wheelLedCircleColor list (has to be in caps), sets the deck color to that.
 // If set to TRACK - sets the color to what the track column says.
 // If set to POSITION - Changes color as playposition changes.
 DDJSR2.wheelColor =[];
@@ -226,23 +226,22 @@ DDJSR2.BrowserContainer = function() {
             key: "GoToItem"
         }),
         shiftPress: new components.Button({
-	    group: "[Library]",
+            group: "[Library]",
             input: function(channel, control, value, _status, _group) {
                 if (!value) { // On release, not press. Allows for track color cycling.
                     this.trackColorCycleEnabled = false;
                     if (!this.trackColorCycleHappened) {
                         if (!engine.getValue("[PreviewDeck1]", "play")) {
                             engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
-                        } else
-   		        { 
-	                    script.triggerControl("[PreviewDeck1]", "stop");
-		        } 
-	            } else {
-		        this.trackColorCycleHappened = false;
-		    }
+                        } else {
+                            script.triggerControl("[PreviewDeck1]", "stop");
+                        }
+                    } else {
+                        this.trackColorCycleHappened = false;
+                    }
                 } else {
-		    this.trackColorCycleEnabled = true;
-		}
+                    this.trackColorCycleEnabled = true;
+                }
             }.bind(this)
         }),
         shiftTurn: new components.Encoder({
@@ -324,7 +323,7 @@ DDJSR2.ticks = 0;
 DDJSR2.Deck = function(channelOffset) {
     const deckNumber = channelOffset + 1;
     this.deckNumber = deckNumber;
-    this.group = "[Channel" + deckNumber + "]";
+    this.group = `[Channel${ deckNumber }]`;
     const theDeck = this;
     components.Deck.call(this, deckNumber);
     // ============================= TRANSPORT ==================================
@@ -407,8 +406,8 @@ DDJSR2.Deck = function(channelOffset) {
         midi: [0x90 + channelOffset, 0x5C],
         key: "sync_enabled",
         input: function(_channel, _control, _value, _status, _group) {
-	    this.inSetValue(false);
-	}
+            this.inSetValue(false);
+        }
     });
     this.autoLoop = new components.Button({
         midi: [0x90 + channelOffset, 0x14],
@@ -501,14 +500,14 @@ DDJSR2.Deck = function(channelOffset) {
         }
     });
 
-    this.brakeStopButton = function(channel, control, value, status, group) {
+    this.brakeStopButton = function(channel, control, value, _status, _group) {
         const activate = value > 0;
         if (activate) { // act on button press
             engine.brake(deckNumber, true); // slow down the track
         }
     };
 
-    this.softStartButton = function(channel, control, value, status, group) {
+    this.softStartButton = function(channel, control, value, _status, _group) {
         const activate = value > 0;
         if (activate) { // act on button press
             engine.softStart(deckNumber, true);
@@ -552,7 +551,7 @@ DDJSR2.Deck = function(channelOffset) {
 DDJSR2.Deck.prototype = Object.create(components.Deck.prototype);
 
 
-DDJSR2.MixerContainer = function(){
+DDJSR2.MixerContainer = function() {
     this.channels = [];
     for (let i = 0; i < 4; i++) {
         this.channels[i] = new DDJSR2.Channel(i);
@@ -580,7 +579,7 @@ DDJSR2.MixerContainer = function(){
         }
     };
 
-    this.shiftPanelSelectButton = function(channel, control, value, status, group) {
+    this.shiftPanelSelectButton = function(channel, control, value, _status, _group) {
         if (value) {
             if ((DDJSR2.panels[0] === false) && (DDJSR2.panels[1] === false)) {
                 DDJSR2.panels[1] = true;
@@ -669,7 +668,7 @@ DDJSR2.Channel = function(channelOffset) {
 };
 DDJSR2.Channel.prototype = new components.ComponentContainer();
 
-DDJSR2.createEffectUnits = function(){
+DDJSR2.createEffectUnits = function() {
     DDJSR2.effectUnits = [];
     const fxLeds = [0x4C, 0x50, 0x70, 0x54];
     for (let i = 1; i <= 2; i++) {
@@ -831,12 +830,12 @@ DDJSR2.PadSection = function(deck, offset) {
         "sampler": new DDJSR2.SamplerMode(deck, offset),
         "roll": new DDJSR2.RollMode(deck, offset),
         "pitchplay": new DDJSR2.PitchPlayMode(deck, offset),
-        /*        "slicer":     new DDJSR2.SlicerMode(deck, offset),
-		"cueloop":    new DDJSR2.CueLoopMode(deck, offset),
-		"savedloop":  new DDJSR2.SavedLoop(deck, offset),
-		"slicerloop": new DDJSR2.SlicerLoop(deck, offset),
+        /*      "slicer":     new DDJSR2.SlicerMode(deck, offset),
+                "cueloop":    new DDJSR2.CueLoopMode(deck, offset),
+                "savedloop":  new DDJSR2.SavedLoop(deck, offset),
+                "slicerloop": new DDJSR2.SlicerLoop(deck, offset),
 
-		"trans":      new DDJSR2.TransMode(deck, offset)
+                "trans":      new DDJSR2.TransMode(deck, offset)
 */
     };
     this.offset = offset;
@@ -867,19 +866,19 @@ DDJSR2.PadSection.prototype.controlToPadMode = function(control) {
     switch (control) {
     case DDJSR2.PadMode.HOTCUE:
         mode = this.modes.hotcue;
-   	    break;
+        break;
     case DDJSR2.PadMode.ROLL:
-	    mode = this.modes.roll;
-	    break;
+        mode = this.modes.roll;
+        break;
     case DDJSR2.PadMode.SAMPLER:
-	    mode = this.modes.sampler;
-	    break;
+        mode = this.modes.sampler;
+        break;
     case DDJSR2.PadMode.SAMPLER2:
-	    mode = this.modes.sampler;
-	    break;
-    	case DDJSR2.PadMode.PITCHPLAY:
-	    mode = this.modes.pitchplay;
-	    break;
+        mode = this.modes.sampler;
+        break;
+    case DDJSR2.PadMode.PITCHPLAY:
+        mode = this.modes.pitchplay;
+        break;
 /*		case DDJSR2.PadMode.SLICR:
 		    mode = this.modes.slicer;
 			break;
@@ -1160,8 +1159,8 @@ DDJSR2.SamplerMode = function(deck, offset) {
         });
     }
     this.stopSamplerButton = new components.Button({
-	    input: function(channel, control, value, status, group) {
-	        DDJSR2.selectedSamplerBank = 0;
+        input: function(channel, control, value, _status, _group) {
+            DDJSR2.selectedSamplerBank = 0;
             const index = control - 0x38 + 1,
                 deckOffset = DDJSR2.selectedSamplerBank * 8,
                 sampleDeck = `[Sampler${  index + deckOffset  }]`,
@@ -1385,7 +1384,7 @@ WheelRing.prototype = new components.Component({
                 this.blinkStatus++;
             }
             if (this.wheelPos === wheelPos) {
-
+                // Do nothing;
             } else {
                 this.wheelPos = wheelPos;
                 DDJSR2.wheelLedControl(this.channelOffset, Math.round(wheelPos));
@@ -1403,7 +1402,7 @@ WheelRing.prototype = new components.Component({
             const colorName = this.color;
             const colorCode = DDJSR2.wheelLedCircleColor[colorName];
             if (this.colorCode === colorCode) {
-
+                // Do nothing.
             } else {
                 this.colorCode = colorCode;
                 DDJSR2.wheelLedControl(this.channelOffset, colorCode);
