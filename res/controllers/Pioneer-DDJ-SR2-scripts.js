@@ -656,8 +656,7 @@ DDJSR2.Channel = function(channelOffset) {
             }
 
             if (value === lastVuLevel) {
-                // return early if value hasn't changed
-                return
+                // Do nothing.
             } else {
                 lastVuLevel = value;
 
