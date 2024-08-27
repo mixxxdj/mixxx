@@ -157,14 +157,7 @@ DDJSR2.doSeratoHeartbeatTimer = function() {
 
 
 DDJSR2.getRotaryDelta = function(value) {
-    let delta = 0x40 - Math.abs(0x40 - value);
-    const isCounterClockwise = value > 0x40;
-    // BrowserKnob returns 1-30 going down, and 127-98 going up.
-
-    if (isCounterClockwise) {
-        delta *= -1;
-    }
-    return delta;
+    return value > 0x40 ? value - 0x80: value;
 };
 
 DDJSR2.getJogWheelDelta = function(value) {
@@ -216,10 +209,8 @@ DDJSR2.BrowserContainer = function() {
         previewSeekHappened: false,
         turn: new components.Encoder({
             group: "[Library]",
-            input: function(channel, control, value, _status, _group) {
-                const rotateValue = DDJSR2.getRotaryDelta(value);
-                engine.setValue("[Library]", "MoveVertical", rotateValue);
-            }
+            inKey: "MoveVertical",
+            inValueScale: DDJSR2.getRotaryDelta
         }),
         press: new components.Button({
             group: "[Library]",
@@ -349,9 +340,7 @@ DDJSR2.Deck = function(channelOffset) {
         vinylMode: false, // Set the default to match the SR2's default.
         inValueScale: function(value) {
             if (!this.vinylMode) {
-                const delta = DDJSR2.getJogWheelDelta(value);
-                const newvalue = delta / 5 * DDJSR2.jogwheelSensitivity;
-                return newvalue;
+                return (DDJSR2.getJogWheelDelta(value) / 5) * DDJSR2.jogwheelSensitivity;
             } else {
                 return value < 0x40 ? value - (this.max + 1) : value;
             }
@@ -359,7 +348,7 @@ DDJSR2.Deck = function(channelOffset) {
     });
     this.tempoFader = new components.Pot({
         invert: true,
-        key: "rate"
+        inKey: "rate"
     });
     const rates = new DDJSR2.RingBufferView(DDJSR2.rateRanges);
     this.tempoRange = new components.Button({
@@ -385,10 +374,10 @@ DDJSR2.Deck = function(channelOffset) {
     });
     this.needleSearchStripPositionShifted = new components.Pot({
         group: theDeck.group,
-        key: "playposition"
+        inKey: "playposition"
     });
     this.needleSearchStripPosition = new components.Pot({
-        key: "playposition",
+        inKey: "playposition",
         group: theDeck.group,
         input: function(channel, control, value, _status, _group) {
             if (!engine.getParameter(this.group, "play")) {
@@ -404,7 +393,7 @@ DDJSR2.Deck = function(channelOffset) {
     });
     this.syncOff = new components.Button({
         midi: [0x90 + channelOffset, 0x5C],
-        key: "sync_enabled",
+        inKey: "sync_enabled",
         input: function(_channel, _control, _value, _status, _group) {
             this.inSetValue(false);
         }
@@ -413,13 +402,11 @@ DDJSR2.Deck = function(channelOffset) {
         midi: [0x90 + channelOffset, 0x14],
         outKey: "loop_enabled",
         input: function(channel, control, value, status, group) {
-            if (value) {
+            if (this.isPress(channel, control, value, status, group)) {
                 if (engine.getValue(group, "loop_enabled")) {
-                    engine.setValue(group, "reloop_toggle", true);
-                    engine.setValue(group, "reloop_toggle", false);
+                    script.triggerControl(group, "reloop_toggle");
                 } else {
-                    engine.setValue(group, "beatloop_activate", true);
-                    engine.setValue(group, "beatloop_activate", false);
+                    script.triggerControl(group, "beatloop_activate");
                 }
             }
         }
@@ -492,6 +479,9 @@ DDJSR2.Deck = function(channelOffset) {
     this.vinylButton = new components.Button({
         midi: [0x90+channelOffset, 0x17],
         type: components.Button.prototype.types.toggle,
+        trigger: function() {
+            this.output(theDeck.jog.vinylMode);
+        },
         input: function(channel, control, value, status, group) {
             if (this.isPress(channel, control, value, status, group)) {
                 theDeck.jog.vinylMode = !theDeck.jog.vinylMode;
@@ -499,6 +489,7 @@ DDJSR2.Deck = function(channelOffset) {
             }
         }
     });
+    this.vinylButton.trigger();
 
     this.brakeStopButton = function(channel, control, value, _status, _group) {
         const activate = value > 0;
@@ -516,7 +507,7 @@ DDJSR2.Deck = function(channelOffset) {
 
     this.gridSetButton = new components.Button({
         midi: [0x90 + channelOffset, 0x64],
-        key: "beats_translate_curpos"
+        inKey: "beats_translate_curpos"
     });
 
     this.keySync = new components.Button({
@@ -561,40 +552,21 @@ DDJSR2.MixerContainer = function() {
         group: "[Master]",
         inKey: "crossfader",
     });
-    DDJSR2.panels = [false, false];
-    this.panelSelectButton = function(channel, control, value, _status, _group) {
-        if (value) {
-            if ((DDJSR2.panels[0] === false) && (DDJSR2.panels[1] === false)) {
-                DDJSR2.panels[0] = true;
-            } else if ((DDJSR2.panels[0] === true) && (DDJSR2.panels[1] === false)) {
-                DDJSR2.panels[1] = true;
-            } else if ((DDJSR2.panels[0] === true) && (DDJSR2.panels[1] === true)) {
-                DDJSR2.panels[0] = false;
-            } else if ((DDJSR2.panels[0] === false) && (DDJSR2.panels[1] === true)) {
-                DDJSR2.panels[1] = false;
-            }
 
-            engine.setValue("[Samplers]", "show_samplers", DDJSR2.panels[0]);
-            engine.setValue("[EffectRack1]", "show", DDJSR2.panels[1]);
+    const panelStates = new DDJSR2.RingBufferView([[false, false], [true, false], [true, true], [false, true]]);
+
+    const makePanelSelectButton = method => function(channel, control, value, _status, _group) {
+        if (value) {
+            const [showSamplers, showFX] = method(); // Call method as a function
+
+            engine.setValue("[Samplers]", "show_samplers", showSamplers);
+            engine.setValue("[EffectRack1]", "show", showFX);
         }
     };
 
-    this.shiftPanelSelectButton = function(channel, control, value, _status, _group) {
-        if (value) {
-            if ((DDJSR2.panels[0] === false) && (DDJSR2.panels[1] === false)) {
-                DDJSR2.panels[1] = true;
-            } else if ((DDJSR2.panels[1] === true) && (DDJSR2.panels[0] === false)) {
-                DDJSR2.panels[0] = true;
-            } else if ((DDJSR2.panels[0] === true) && (DDJSR2.panels[1] === true)) {
-                DDJSR2.panels[1] = false;
-            } else if ((DDJSR2.panels[1] === false) && (DDJSR2.panels[0] === true)) {
-                DDJSR2.panels[0] = false;
-            }
-
-            engine.setValue("[Samplers]", "show_samplers", DDJSR2.panels[0]);
-            engine.setValue("[EffectRack1]", "show", DDJSR2.panels[1]);
-        }
-    };
+    // Pass the bound method reference
+    this.panelSelectButton = makePanelSelectButton(panelStates.next.bind(panelStates));
+    this.shiftPanelSelectButton = makePanelSelectButton(panelStates.previous.bind(panelStates));
 };
 
 DDJSR2.MixerContainer.prototype = new components.ComponentContainer();
@@ -611,8 +583,8 @@ DDJSR2.Channel = function(channelOffset) {
     // EQ High, Mid and Low
     for (let k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
-            group: `[EqualizerRack1_${  deck  }_Effect1]`,
-            inKey: `parameter${  k}`,
+            group: `[EqualizerRack1_${deck}_Effect1]`,
+            inKey: `parameter${k}`,
         });
     }
 
@@ -649,7 +621,7 @@ DDJSR2.Channel = function(channelOffset) {
         output: function(value, group, _control) {
             // Remark: Only deck vu meters can be controlled! Master vu meter is handled by hardware!
 
-            value = parseInt(value * 0x76); //full level indicator: 0x7F
+            value = value * 0x76; //full level indicator: 0x7F
 
             if (engine.getValue(group, "peak_indicator")) {
                 value = 0x7F;
