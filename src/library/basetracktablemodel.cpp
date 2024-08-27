@@ -747,16 +747,13 @@ QVariant BaseTrackTableModel::roleValue(
             if (rawBpm.isNull()) {
                 return QVariant();
             }
-            if (rawBpm.canConvert<mixxx::Bpm>()) {
-                bpm = rawBpm.value<mixxx::Bpm>();
-            } else {
-                bool ok;
-                const auto bpmValue = rawBpm.toDouble(&ok);
-                VERIFY_OR_DEBUG_ASSERT(ok) {
-                    return QVariant();
-                }
-                bpm = mixxx::Bpm(bpmValue);
+
+            // reuse ok variable from key
+            const auto bpmValue = rawBpm.toDouble(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
             }
+            bpm = mixxx::Bpm(bpmValue);
 
             const auto targetKey = KeyUtils::tonicToKey(0, true);
             const auto targetBpm = mixxx::Bpm(100);
