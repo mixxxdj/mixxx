@@ -1,11 +1,12 @@
 #pragma once
 
 #include <QColor>
+#include <memory>
 
-#include "shaders/unicolorshader.h"
+#include "rendergraph/geometrynode.h"
+#include "rendergraph/opacitynode.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/vertexdata.h"
-#include "waveform/renderers/allshader/waveformrenderer.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class QDomNode;
 class SkinContext;
@@ -14,21 +15,24 @@ namespace allshader {
 class WaveformRenderBeat;
 }
 
-class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
+class allshader::WaveformRenderBeat final
+        : public ::WaveformRendererAbstract,
+          public rendergraph::GeometryNode {
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
+    // Pure virtual from WaveformRendererAbstract, not used
+    void draw(QPainter* painter, QPaintEvent* event) override final;
+
     void setup(const QDomNode& node, const SkinContext& context) override;
-    void paintGL() override;
-    void initializeGL() override;
+
+    // Virtual for rendergraph::Node
+    void preprocess() override;
 
   private:
-    mixxx::UnicolorShader m_shader;
     QColor m_color;
-    VertexData m_vertices;
-
     bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);

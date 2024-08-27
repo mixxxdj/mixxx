@@ -20,6 +20,13 @@ class rendergraph::Geometry {
     void setAttributeValues(int attributePosition, const float* data, int numTuples);
     Impl& impl() const;
 
+    float* vertexData();
+
+    template<typename T>
+    T* vertexDataAs();
+
+    void allocate(int vertexCount);
+
     DrawingMode drawingMode() const;
     void setDrawingMode(DrawingMode mode);
 

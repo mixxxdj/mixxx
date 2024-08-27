@@ -27,6 +27,12 @@ add_library(rendergraph_sg
     ../uniformscache.h
     ../uniformset.cpp
     ../uniformset.h
+    ../material/endoftrackmaterial.cpp
+    ../material/endoftrackmaterial.h
+    ../material/texturematerial.cpp
+    ../material/texturematerial.h
+    ../material/unicolormaterial.cpp
+    ../material/unicolormaterial.h
     materialshader_impl.cpp
     private/attributeset_impl.h
     private/context_impl.h

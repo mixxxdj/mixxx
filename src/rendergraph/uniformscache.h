@@ -1,6 +1,9 @@
 #pragma once
 
 #include <QByteArray>
+#include <QColor>
+#include <QMatrix4x4>
+#include <QVector4D>
 
 #include "rendergraph/types.h"
 
@@ -16,7 +19,17 @@ class rendergraph::UniformsCache {
 
     template<typename T>
     void set(int uniformIndex, const T& value) {
-        set(uniformIndex, typeOf<T>(), static_cast<const void*>(&value), sizeof(T));
+        set(uniformIndex, typeOf<T>(), static_cast<const void*>(&value), sizeOf(typeOf<T>()));
+    }
+
+    template<>
+    void set<QColor>(int uniformIndex, const QColor& color) {
+        set(uniformIndex, QVector4D{color.redF(), color.greenF(), color.blueF(), color.alphaF()});
+    }
+
+    template<>
+    void set<QMatrix4x4>(int uniformIndex, const QMatrix4x4& matrix) {
+        set(uniformIndex, typeOf<QMatrix4x4>(), matrix.constData(), sizeOf(typeOf<QMatrix4x4>()));
     }
 
     template<typename T>

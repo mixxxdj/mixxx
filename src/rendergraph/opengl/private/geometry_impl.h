@@ -9,10 +9,19 @@ class rendergraph::Geometry::Impl {
             : m_drawingMode(Geometry::DrawingMode::TriangleStrip) // to mimic sg default
               ,
               m_vertexCount(vertexCount) {
+        int offset = 0;
         for (const auto& attribute : attributeSet.impl().attributes()) {
-            m_data.emplace_back(std::vector<float>(m_vertexCount * attribute.m_tupleSize));
+            m_offsets.push_back(offset);
+            offset += attribute.m_tupleSize;
             m_tupleSizes.push_back(attribute.m_tupleSize);
         }
+        m_stride = offset * sizeof(float);
+        m_data.resize(offset * vertexCount);
+    }
+
+    void allocate(int vertexCount) {
+        m_vertexCount = vertexCount;
+        m_data.resize((m_stride / sizeof(float)) * m_vertexCount);
     }
 
     int attributeCount() const {
@@ -23,18 +32,41 @@ class rendergraph::Geometry::Impl {
         return m_vertexCount;
     }
 
-    float const* vertexData(int attributeIndex) const {
-        return m_data[attributeIndex].data();
+    float* vertexData() {
+        return m_data.data();
+    }
+
+    template<typename T>
+    T* vertexDataAs() {
+        return reinterpret_cast<T*>(vertexData());
+    }
+
+    int offset(int attributeIndex) const {
+        return m_offsets[attributeIndex];
     }
 
     int tupleSize(int attributeIndex) const {
         return m_tupleSizes[attributeIndex];
     }
 
+    int stride() const {
+        return m_stride;
+    }
+
     void setAttributeValues(int attributePosition, const float* from, int numTuples) {
-        memcpy(m_data[attributePosition].data(),
-                from,
-                numTuples * m_tupleSizes[attributePosition] * sizeof(float));
+        const int offset = m_offsets[attributePosition];
+        const int tupleSize = m_tupleSizes[attributePosition];
+        const int skip = m_stride / sizeof(float) - tupleSize;
+
+        float* to = m_data.data();
+        to += offset;
+        while (numTuples--) {
+            int k = tupleSize;
+            while (k--) {
+                *to++ = *from++;
+            }
+            to += skip;
+        }
     }
 
     void setDrawingMode(Geometry::DrawingMode mode) {
@@ -49,5 +81,7 @@ class rendergraph::Geometry::Impl {
     Geometry::DrawingMode m_drawingMode;
     int m_vertexCount;
     std::vector<int> m_tupleSizes;
-    std::vector<std::vector<float>> m_data;
+    std::vector<int> m_offsets;
+    int m_stride;
+    std::vector<float> m_data;
 };

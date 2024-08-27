@@ -25,13 +25,13 @@ int rendergraph::sizeOf(Type type) {
     case Type::Float:
         return sizeof(GLfloat);
     case Type::Vector2D:
-        return sizeof(QVector2D);
+        return sizeof(GLfloat) * 2;
     case Type::Vector3D:
-        return sizeof(QVector3D);
+        return sizeof(GLfloat) * 3;
     case Type::Vector4D:
-        return sizeof(QVector4D);
+        return sizeof(GLfloat) * 4;
     case Type::Matrix4x4:
-        return sizeof(QMatrix4x4);
+        return sizeof(GLfloat) * 4 * 4;
     }
     return 0;
 }

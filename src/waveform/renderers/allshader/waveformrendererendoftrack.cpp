@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "control/controlproxy.h"
-#include "endoftrackmaterial.h"
 #include "rendergraph/geometry.h"
+#include "rendergraph/material/endoftrackmaterial.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
@@ -32,7 +32,7 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
 
     geometry().setAttributeValues(0, positionArray, 4);
     geometry().setAttributeValues(1, horizontalGradientArray, 4);
-    material().setUniform(0, QVector4D{1.f, 0.f, 0.f, 1.f});
+    material().setUniform(0, QVector4D{0.f, 0.f, 0.f, 0.f});
 }
 
 void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
@@ -79,11 +79,7 @@ void WaveformRendererEndOfTrack::preprocess() {
         QColor color = m_color;
         color.setAlphaF(static_cast<float>(alpha));
 
-        material().setUniform(0,
-                QVector4D{color.redF(),
-                        color.greenF(),
-                        color.blueF(),
-                        color.alphaF()});
+        material().setUniform(0, color);
     }
 }
 

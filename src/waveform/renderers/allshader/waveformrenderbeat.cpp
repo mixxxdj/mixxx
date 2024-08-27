@@ -2,22 +2,27 @@
 
 #include <QDomNode>
 
+#include "rendergraph/geometry.h"
+#include "rendergraph/material/unicolormaterial.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "vertexupdater.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
+
+using namespace rendergraph;
 
 namespace allshader {
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRenderer(waveformWidget),
+        : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
-}
-
-void WaveformRenderBeat::initializeGL() {
-    m_shader.init();
+    setGeometry(std::make_unique<Geometry>(UniColorMaterial::attributes(), 0));
+    setMaterial(std::make_unique<UniColorMaterial>());
+    setUsePreprocess(true);
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
@@ -25,7 +30,13 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
-void WaveformRenderBeat::paintGL() {
+void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
+}
+
+void WaveformRenderBeat::preprocess() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
@@ -47,13 +58,12 @@ void WaveformRenderBeat::paintGL() {
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     m_color.setAlphaF(alpha / 100.0f);
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
-    if (trackSamples <= 0) {
+    if (trackSamples <= 0.0) {
+        geometry().allocate(0);
+        // TODO set dirty for scenegraph
         return;
     }
 
@@ -87,8 +97,10 @@ void WaveformRenderBeat::paintGL() {
     }
 
     const int reserved = numBeatsInRange * numVerticesPerLine;
-    m_vertices.clear();
-    m_vertices.reserve(reserved);
+    geometry().allocate(reserved);
+    // TODO set dirty for scenegraph
+
+    VertexUpdater vertexUpdater{geometry().vertexDataAs<QVector2D>()};
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -103,33 +115,18 @@ void WaveformRenderBeat::paintGL() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_vertices.addRectangle(x1,
+        vertexUpdater.addRectangle(x1,
                 0.f,
                 x2,
                 m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth);
     }
 
-    DEBUG_ASSERT(reserved == m_vertices.size());
-
-    const int positionLocation = m_shader.positionLocation();
-    const int matrixLocation = m_shader.matrixLocation();
-    const int colorLocation = m_shader.colorLocation();
-
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-    m_shader.setUniformValue(colorLocation, m_color);
-
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.release();
+    material().setUniform(0, matrix);
+    material().setUniform(1, m_color);
 }
 
 } // namespace allshader

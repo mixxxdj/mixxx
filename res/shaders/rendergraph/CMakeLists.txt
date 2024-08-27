@@ -3,6 +3,8 @@ set(shaders
     endoftrack.frag
     texture.vert
     texture.frag
+    unicolor.vert
+    unicolor.frag
 )
 
 qt6_add_shaders(rendergraph_sg "shaders-sg"
@@ -10,7 +12,7 @@ qt6_add_shaders(rendergraph_sg "shaders-sg"
     PRECOMPILE
     OPTIMIZED
     PREFIX
-        /rendergraph_sg/shaders
+        /shaders/rendergraph
     FILES
         ${shaders}
 )
@@ -19,7 +21,7 @@ include(generated_shaders_gl.cmake)
 
 qt_add_resources(rendergraph_gl "shaders-gl"
     PREFIX
-        /rendergraph_gl/shaders
+        /shaders/rendergraph
     FILES
         ${generated_shaders_gl}
 )

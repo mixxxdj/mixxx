@@ -57,7 +57,10 @@ void GeometryNode::Impl::render() {
     for (int i = 0; i < geometry.attributeCount(); i++) {
         int location = material.attributeLocation(i);
         shader.enableAttributeArray(location);
-        shader.setAttributeArray(location, geometry.vertexData(i), geometry.tupleSize(i));
+        shader.setAttributeArray(location,
+                geometry.vertexData() + geometry.offset(i),
+                geometry.tupleSize(i),
+                geometry.stride());
     }
 
     // TODO multiple textures

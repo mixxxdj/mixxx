@@ -45,6 +45,15 @@ class rendergraph::Geometry::Impl : public QSGGeometry {
         return fromSgDrawingMode(QSGGeometry::drawingMode());
     }
 
+    float* vertexData() {
+        return static_cast<float*>(QSGGeometry::vertexData());
+    }
+
+    template<typename T>
+    T* vertexDataAs() {
+        return static_cast<T*>(QSGGeometry::vertexData());
+    }
+
   private:
     const int m_stride;
 
