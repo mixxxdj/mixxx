@@ -200,6 +200,7 @@ DDJSR2.RingBufferView = class {
 };
 
 DDJSR2.BrowserContainer = function() {
+    const Browser = this;
     this.browseKnob  = new components.ComponentContainer({
         longPressTimer: 0,
         longPressTimeout: 250,
@@ -218,37 +219,36 @@ DDJSR2.BrowserContainer = function() {
         }),
         shiftPress: new components.Button({
             group: "[Library]",
-            input: function(channel, control, value, _status, _group) {
-                if (!value) { // On release, not press. Allows for track color cycling.
-                    this.trackColorCycleEnabled = false;
-                    if (!this.trackColorCycleHappened) {
-                        if (!engine.getValue("[PreviewDeck1]", "play")) {
-                            engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
-                        } else {
-                            script.triggerControl("[PreviewDeck1]", "stop");
-                        }
-                    } else {
-                        this.trackColorCycleHappened = false;
-                    }
-                } else {
-                    this.trackColorCycleEnabled = true;
+            input: function(channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status, group)) {
+                    Browser.browseKnob.trackColorCycleEnabled = true;
+                    return;
                 }
-            }.bind(this)
+                // On release, not press. Allows for track color cycling.
+                Browser.browseKnob.trackColorCycleEnabled = false;
+                if (Browser.browseKnob.trackColorCycleHappened) {
+                    Browser.browseKnob.trackColorCycleHappened = false;
+                    return;
+                }
+                if (!engine.getValue("[PreviewDeck1]", "play")) {
+                    engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+                } else {
+                    script.triggerControl("[PreviewDeck1]", "stop");
+                }
+            }
         }),
         shiftTurn: new components.Encoder({
             group: "[PreviewDeck1]",
             input: function(channel, control, value, _status, _group) {
                 const rotateValue = DDJSR2.getRotaryDelta(value);
-                if (!this.trackColorCycleEnabled) {
-                    const oldPos = engine.getValue("[PreviewDeck1]", "playposition");
-                    const newPos = Math.max(0, oldPos + (0.05 * rotateValue));
-                    engine.setValue("[PreviewDeck1]", "playposition", newPos);
+                if (!Browser.browseKnob.trackColorCycleEnabled) {
+                    engine.setValue("[PreviewDeck1]", "beatjump", rotateValue*8);
                 } else {
                     const key = (rotateValue > 0) ? "track_color_next" : "track_color_prev";
                     engine.setValue("[Library]", key, 1.0);
-                    this.trackColorCycleHappened = true;
+                    Browser.browseKnob.trackColorCycleHappened = true;
                 }
-            }.bind(this)
+            }
         }),
     });
     this.loadButtons = [];
@@ -565,8 +565,8 @@ DDJSR2.MixerContainer = function() {
     };
 
     // Pass the bound method reference
-    this.panelSelectButton = makePanelSelectButton(panelStates.next.bind(panelStates));
-    this.shiftPanelSelectButton = makePanelSelectButton(panelStates.previous.bind(panelStates));
+    this.panelSelectButton = makePanelSelectButton(() => panelStates.next());
+    this.shiftPanelSelectButton = makePanelSelectButton(() => panelStates.previous());
 };
 
 DDJSR2.MixerContainer.prototype = new components.ComponentContainer();
