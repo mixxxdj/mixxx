@@ -1588,6 +1588,7 @@ WPushButton#CueDeck[displayValue="0"],
 WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
+WPushButton#StemMuteButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
@@ -1708,6 +1709,10 @@ QPushButton#pushButtonRecording:checked,
   background-color: #a80000;
 }
 
+/* Orange for Stem Ch Mute buttons */
+WPushButton#StemMuteButton{
+  background-color: #b24c12;
+}
 /* Green for Fx toggles, QuickEffect + Fx12 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
@@ -2219,6 +2224,10 @@ WPushButton#PlayDeck[value="0"] {
   #PflButton[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
   }
+
+#StemMuteButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__stem_mute.svg) no-repeat center center;
+}
 
 #QuickEffectButton[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__star.svg) no-repeat center center;

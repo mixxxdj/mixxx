@@ -24,7 +24,7 @@
 
 
 				<PushButton>
-					<ObjectName>QuickEffectButton</ObjectName>
+					<ObjectName>StemMuteButton</ObjectName>
 					<Pos>36,4</Pos>
 					<Size>18f,18f</Size>
 					<NumberStates>2</NumberStates>
