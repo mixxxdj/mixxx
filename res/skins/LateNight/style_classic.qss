@@ -1421,6 +1421,7 @@ WPushButton#LibExpand,
 WPushButton#CueDeck[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
 WPushButton#LoopActivate[displayValue="0"],
+WPushButton#StemMuteButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
@@ -1484,6 +1485,10 @@ QPushButton#pushButtonRecording:checked {
     border-radius: 0px;
   }
 
+/* Orange for Stem Ch Mute buttons */
+WPushButton#StemMuteButton{
+  background-color: #db7700;
+}
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
@@ -1815,6 +1820,10 @@ WPushButton#BpmLockToggle[value="1"] {
 /* Mixer buttons */
 #PflButton {
   image: url(skins:LateNight/classic/buttons/btn__pfl.svg) no-repeat center center;
+}
+
+#StemMuteButton[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_mute.svg) no-repeat center center;
 }
 
 #QuickEffectButton[displayValue="0"] {
