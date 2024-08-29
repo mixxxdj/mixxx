@@ -983,6 +983,13 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
 
     QString group = lookupNodeGroup(element);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(element,
+                *m_pContext,
+                QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+
     connect(pPlayer,
             &BaseTrackPlayer::newTrackLoaded,
             pLabel,
@@ -992,6 +999,13 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
             &BaseTrackPlayer::trackUnloaded,
             pLabel,
             &WStemLabel::slotTrackUnloaded);
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        // Set the trackpoinnter to the already loaded track,
+        // needed at skin change
+        pLabel->slotTrackLoaded(pTrack);
+    }
 
     return pLabel;
 }
