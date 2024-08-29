@@ -5,25 +5,16 @@
   <SetVariable name="CoverName">BeatEditCover</SetVariable>
   <SetVariable name="CoverConfigKey"><Variable name="Group"/>,bpmlock</SetVariable>
 
-    <SetVariable name="EqFxUnit">
-	    [EqualizerRack1_<Variable name="Group"/>]
-    </SetVariable>
-    <SetVariable name="EqEffect">
-	    [EqualizerRack1_<Variable name="Group"/>_Effect1]
-    </SetVariable>
+	<SetVariable name="KnobBg">regular</SetVariable>
+	<SetVariable name="KnobIndicator">regular</SetVariable>
+	<SetVariable name="ArcRadius">
+		<Variable name="ArcRadiusBig"/>
+	</SetVariable>
+	<SetVariable name="ArcThickness">
+		<Variable name="ArcThicknessBig"/>
+	</SetVariable>
 
-    <SetVariable name="KnobBg">regular</SetVariable>
-    <SetVariable name="KnobIndicator">regular</SetVariable>
-    <SetVariable name="ArcRadius">
-	    <Variable name="ArcRadiusBig"/>
-    </SetVariable>
-    <SetVariable name="ArcThickness">
-	    <Variable name="ArcThicknessBig"/>
-    </SetVariable>
-
-
-
-  <WidgetGroup>
+	<WidgetGroup>
     <ObjectName>Waveform</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
@@ -38,7 +29,7 @@
 				</WidgetGroup>
 
 				<WidgetGroup>
-					<!-- beat grid & hotcue shift buttons row -->
+					<!-- StemControlsInner -->
 					<Layout>horizontal</Layout>
 					<SizePolicy>f,f</SizePolicy>
 					<Children>
@@ -48,11 +39,11 @@
 						</WidgetGroup>
 
 						<WidgetGroup>
-							<!-- beats earlier & faster -->
+							<!-- StemControls 4ch -->
 							<Layout>vertical</Layout>
 							<Children>
 								<WidgetGroup>
-									<!-- Curr. pos & Lock -->
+									<!-- StemCh1 controls  -->
 									<Layout>horizontal</Layout>
 									<Children>
 										<WidgetGroup>
@@ -67,7 +58,7 @@
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
-									<!-- Curr. pos & Lock -->
+									<!-- StemCh2 controls  -->
 									<Layout>horizontal</Layout>
 									<Children>
 										<WidgetGroup>
@@ -82,7 +73,7 @@
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
-									<!-- Curr. pos & Lock -->
+									<!-- StemCh3 controls  -->
 									<Layout>horizontal</Layout>
 									<Children>
 										<WidgetGroup>
@@ -97,7 +88,7 @@
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
-									<!-- Curr. pos & Lock -->
+									<!-- StemCh4 controls  -->
 									<Layout>horizontal</Layout>
 									<Children>
 										<WidgetGroup>
@@ -113,11 +104,11 @@
 								</WidgetGroup>
 							</Children>
 						</WidgetGroup>
-						<!-- /beats earlier & faster -->
+						<!-- /StemControls 4ch -->
 
 					</Children>
 				</WidgetGroup>
-				<!-- /beat grid & hotcue shift buttons row -->
+				<!-- /StemControlsInner -->
 
 				<WidgetGroup>
 					<Size>1me,1me</Size>
@@ -127,8 +118,7 @@
 				<ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
 				<BindProperty>visible</BindProperty>
 			</Connection>
-		</WidgetGroup>
-		<!-- StemControls -->
+		</WidgetGroup><!-- StemControls -->
 
 
 		<WidgetGroup>
