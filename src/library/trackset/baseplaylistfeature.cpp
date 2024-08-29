@@ -632,7 +632,11 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     TrackPointerList tracks;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistTableModel->index(i, 0);
-        tracks.push_back(pPlaylistTableModel->getTrack(index));
+        auto pTrack = pPlaylistTableModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
+        tracks.push_back(pTrack);
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, tracks);

@@ -26,6 +26,9 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
     // efficiently.
     QMap<QString, mixxx::FileInfo> copylist;
     for (const auto& pTrack : tracks) {
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
         auto fileInfo = pTrack->getFileInfo();
         if (fileInfo.resolveCanonicalLocation().isEmpty()) {
             qWarning()
