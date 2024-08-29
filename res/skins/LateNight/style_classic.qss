@@ -195,6 +195,16 @@ WSearchLineEdit,
     border: 1px solid red;
   }
 
+#BeatgridControls,
+#StemControls {
+  border-top: 1px solid #222;
+  border-left: 1px solid #222;
+  border-bottom: 1px solid #111;
+  border-right: 1px solid #111;
+  border-radius: 2px;
+  background-color: #171717;
+  }
+
 #VuMainCover {
   background-color: rgba(21, 21, 21, 150);
 }
