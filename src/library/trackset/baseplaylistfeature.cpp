@@ -639,6 +639,10 @@ void BasePlaylistFeature::slotExportTrackFiles() {
         tracks.push_back(pTrack);
     }
 
+    if (tracks.isEmpty()) {
+        return;
+    }
+
     TrackExportWizard track_export(nullptr, m_pConfig, tracks);
     track_export.exportTracks();
 }

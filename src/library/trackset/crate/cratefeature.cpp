@@ -854,6 +854,10 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(pTrack);
     }
 
+    if (trackpointers.isEmpty()) {
+        return;
+    }
+
     TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
     track_export.exportTracks();
 }
