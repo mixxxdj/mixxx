@@ -95,7 +95,7 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
 
 SoundSource::SoundSource(const QUrl& url, const QString& type)
         : AudioSource(validateLocalFileUrl(url)),
-          MetadataSourceTagLib(getLocalFileName()),
+          MetadataSourceTagLib(getLocalFileName(), type),
           m_type(type) {
 }
 
