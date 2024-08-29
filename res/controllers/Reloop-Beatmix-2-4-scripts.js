@@ -332,7 +332,7 @@ ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
     if (value === DOWN) {
         loadButtonLongPressed[group] = false;
         loadButtonTimers[group] = engine.beginTimer(1000,
-            () => {RegloopBeatmix24.LoadButtonEject(group); }, true);
+            () => { ReloopBeatmix24.LoadButtonEject(group); }, true);
     } else { // UP
         if (!loadButtonLongPressed[group]) { // Short press
             engine.stopTimer(loadButtonTimers[group]);
