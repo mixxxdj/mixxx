@@ -254,7 +254,7 @@
             </control>
 			<control>
 			    <group>[Channel1]</group>
-				<key>DDJSR2.deck[0].brakeStopButton</key> // Originally Grid Adjust, replaced due to poor functionality.
+				<key>DDJSR2.deck[0].brakeStopButton.input</key> // Originally Grid Adjust, replaced due to poor functionality.
                 <status>0x90</status>
                 <midino>0x79</midino>
                 <options>
@@ -263,7 +263,7 @@
             </control>
 			<control>
 			    <group>[Channel1]</group>
-				<key>DDJSR2.deck[0].softStartButton</key> // Originally Grid Slide, replaced due to poor functionality.
+				<key>DDJSR2.deck[0].softStartButton.input</key> // Originally Grid Slide, replaced due to poor functionality.
                 <status>0x90</status>
                 <midino>0x0A</midino>
                 <options>
@@ -2196,7 +2196,7 @@
             </control>
 			<control>
                 <group>[Library]</group>
-                <key>DDJSR2.browser.sortLibrary</key>
+                <key>DDJSR2.browser.sortLibraryBpm.input</key>
                 <description>BPM</description>
                 <status>0x96</status>
                 <midino>0x58</midino>
@@ -2206,7 +2206,7 @@
             </control>
 			<control>
                 <group>[Library]</group>
-                <key>DDJSR2.browser.sortLibrary</key>
+                <key>DDJSR2.browser.sortLibraryArtist.input</key>
                 <description>ARTIST</description>
                 <status>0x96</status>
                 <midino>0x59</midino>
