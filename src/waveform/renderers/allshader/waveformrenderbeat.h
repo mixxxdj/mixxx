@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "rendergraph/geometrynode.h"
-#include "rendergraph/opacitynode.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
@@ -34,6 +33,8 @@ class allshader::WaveformRenderBeat final
   private:
     QColor m_color;
     bool m_isSlipRenderer;
+
+    bool preprocessSelf();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

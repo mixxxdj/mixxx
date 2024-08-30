@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QVector2D>
 #include <memory>
 
 namespace rendergraph {
@@ -9,6 +10,22 @@ class AttributeSet;
 
 class rendergraph::Geometry {
   public:
+    struct Point2D {
+        QVector2D position2D;
+        Point2D(float x, float y)
+                : position2D{x, y} {
+        }
+    };
+
+    struct TexturedPoint2D {
+        QVector2D position2D;
+        QVector2D texcoord2D;
+        TexturedPoint2D(float x, float y, float tx, float ty)
+                : position2D{x, y},
+                  texcoord2D{tx, ty} {
+        }
+    };
+
     enum class DrawingMode {
         Triangles,
         TriangleStrip

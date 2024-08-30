@@ -5,6 +5,8 @@ set(shaders
     texture.frag
     unicolor.vert
     unicolor.frag
+    pattern.vert
+    pattern.frag
 )
 
 qt6_add_shaders(rendergraph_sg "shaders-sg"

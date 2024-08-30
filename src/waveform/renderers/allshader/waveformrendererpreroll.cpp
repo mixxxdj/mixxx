@@ -1,11 +1,14 @@
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
 
 #include <QDomNode>
-#include <QOpenGLTexture>
 #include <QPainterPath>
 #include <array>
 
+#include "rendergraph/context.h"
+#include "rendergraph/geometry.h"
+#include "rendergraph/material/patternmaterial.h"
 #include "skin/legacy/skincontext.h"
+#include "texturedvertexupdater.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
@@ -20,7 +23,7 @@ QImage drawPrerollImage(float markerLength,
     const float imageW = static_cast<float>(imagePixelW) / devicePixelRatio;
     const float imageH = static_cast<float>(imagePixelH) / devicePixelRatio;
 
-    QImage image(imagePixelW, imagePixelH, QImage::Format_ARGB32_Premultiplied);
+    QImage image(imagePixelW, imagePixelH, QImage::Format_RGBA8888_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
 
     const float penWidth = 1.5f;
@@ -47,7 +50,7 @@ QImage drawPrerollImage(float markerLength,
     path.lineTo(p0);
     path.closeSubpath();
     QColor fillColor = color;
-    fillColor.setAlphaF(0.5f);
+    fillColor.setAlphaF(0.25f);
     painter.fillPath(path, QBrush(fillColor));
 
     painter.drawPath(path);
@@ -57,13 +60,19 @@ QImage drawPrerollImage(float markerLength,
 }
 } // anonymous namespace
 
+using namespace rendergraph;
+
 namespace allshader {
 
 WaveformRendererPreroll::WaveformRendererPreroll(
         WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRenderer(waveformWidget),
+        : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+    setGeometry(std::make_unique<Geometry>(PatternMaterial::attributes(), 0));
+    setMaterial(std::make_unique<PatternMaterial>());
+    setUsePreprocess(true);
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
 }
 
 WaveformRendererPreroll::~WaveformRendererPreroll() = default;
@@ -74,14 +83,23 @@ void WaveformRendererPreroll::setup(
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
-void WaveformRendererPreroll::initializeGL() {
-    m_shader.init();
+void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
 }
 
-void WaveformRendererPreroll::paintGL() {
-    const TrackPointer track = m_waveformRenderer->getTrackInfo();
-    if (!track || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
-        return;
+void WaveformRendererPreroll::preprocess() {
+    if (!preprocessSelf()) {
+        geometry().allocate(0);
+    }
+}
+
+bool WaveformRendererPreroll::preprocessSelf() {
+    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+
+    if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+        return false;
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -95,10 +113,14 @@ void WaveformRendererPreroll::paintGL() {
     // to indicate the respective zones.
     const bool preRollVisible = firstDisplayedPosition < 0;
     const bool postRollVisible = lastDisplayedPosition > 1;
+    const int numVerticesPerRectangle = 6;
 
-    if (!(preRollVisible || postRollVisible)) {
-        return;
+    if (!preRollVisible && !postRollVisible) {
+        return false;
     }
+
+    const int reserved = (preRollVisible ? numVerticesPerRectangle : 0) +
+            (postRollVisible ? numVerticesPerRectangle : 0);
 
     const double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
     const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
@@ -125,35 +147,24 @@ void WaveformRendererPreroll::paintGL() {
         // has changed size last time.
         m_markerLength = markerLength;
         m_markerBreadth = markerBreadth;
-        m_texture.setData(drawPrerollImage(m_markerLength,
-                m_markerBreadth,
-                m_waveformRenderer->getDevicePixelRatio(),
-                m_color));
+        Context context;
+        dynamic_cast<PatternMaterial&>(material())
+                .setTexture(std::make_unique<Texture>(context,
+                        drawPrerollImage(m_markerLength,
+                                m_markerBreadth,
+                                m_waveformRenderer->getDevicePixelRatio(),
+                                m_color)));
     }
 
-    if (!m_texture.isStorageAllocated()) {
-        return;
+    if (!dynamic_cast<PatternMaterial&>(material()).texture(0)) {
+        return false;
     }
 
-    const int matrixLocation = m_shader.matrixLocation();
-    const int textureLocation = m_shader.textureLocation();
-    const int positionLocation = m_shader.positionLocation();
-    const int texcoordLocation = m_shader.texcoordLocation();
-
-    // Set up the shader
-    m_shader.bind();
-
-    m_shader.enableAttributeArray(positionLocation);
-    m_shader.enableAttributeArray(texcoordLocation);
-
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-    m_shader.setUniformValue(textureLocation, 0);
-
-    m_texture.bind();
+    geometry().allocate(reserved);
 
     const float end = m_waveformRenderer->getLength();
+
+    TexturedVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
 
     if (preRollVisible) {
         // VSample position of the right-most triangle's tip
@@ -168,11 +179,17 @@ void WaveformRendererPreroll::paintGL() {
             x -= std::ceil((x - limit) / markerLength) * markerLength;
         }
 
-        drawPattern(x,
+        const float repetitions = x / markerLength;
+
+        vertexUpdater.addRectangle(x,
                 halfBreadth - halfMarkerBreadth,
+                0,
+                m_isSlipRenderer ? halfBreadth
+                                 : halfBreadth + halfMarkerBreadth,
                 0.f,
-                m_isSlipRenderer ? halfBreadth : halfBreadth + halfMarkerBreadth,
-                x / markerLength);
+                0.f,
+                repetitions,
+                m_isSlipRenderer ? 0.5 : 1.f);
     }
 
     if (postRollVisible) {
@@ -189,44 +206,26 @@ void WaveformRendererPreroll::paintGL() {
             x += std::ceil((limit - x) / markerLength) * markerLength;
         }
 
-        drawPattern(x,
+        const float repetitions = (end - x) / markerLength;
+
+        vertexUpdater.addRectangle(x,
                 halfBreadth - halfMarkerBreadth,
                 end,
-                m_isSlipRenderer ? halfBreadth : halfBreadth + halfMarkerBreadth,
-                (end - x) / markerLength);
+                m_isSlipRenderer ? halfBreadth
+                                 : halfBreadth + halfMarkerBreadth,
+                0.f,
+                0.f,
+                repetitions,
+                m_isSlipRenderer ? 0.5 : 1.f);
     }
 
-    m_texture.release();
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.disableAttributeArray(texcoordLocation);
-    m_shader.release();
-}
+    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-void WaveformRendererPreroll::drawPattern(
-        float x1, float y1, float x2, float y2, float repetitions) {
-    // Draw a large rectangle with a repeating pattern of the texture
-    const int repetitionsLocation = m_shader.repetitionsLocation();
-    const int positionLocation = m_shader.positionLocation();
-    const int texcoordLocation = m_shader.texcoordLocation();
+    material().setUniform(0, matrix);
 
-    const std::array<float, 8> positionArray = {x1, y1, x2, y1, x1, y2, x2, y2};
-    const std::array<float, 8> texcoordArray = {0.f,
-            0.f,
-            1.f,
-            0.f,
-            0.f,
-            m_isSlipRenderer ? 0.5f : 1.f,
-            1.f,
-            m_isSlipRenderer ? 0.5f : 1.f};
-    m_shader.setUniformValue(repetitionsLocation, QVector2D(repetitions, 1.0));
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, positionArray.data(), 2);
-    m_shader.setAttributeArray(
-            texcoordLocation, GL_FLOAT, texcoordArray.data(), 2);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    return true;
 }
 
 } // namespace allshader

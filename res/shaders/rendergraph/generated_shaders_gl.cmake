@@ -1,8 +1,10 @@
 set(generated_shaders_gl
     endoftrack.vert.gl
+    pattern.vert.gl
     texture.vert.gl
     unicolor.vert.gl
     endoftrack.frag.gl
+    pattern.frag.gl
     texture.frag.gl
     unicolor.frag.gl
 )

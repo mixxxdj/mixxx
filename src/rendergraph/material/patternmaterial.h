@@ -4,12 +4,12 @@
 #include "rendergraph/uniformset.h"
 
 namespace rendergraph {
-class TextureMaterial;
+class PatternMaterial;
 }
 
-class rendergraph::TextureMaterial : public rendergraph::Material {
+class rendergraph::PatternMaterial : public rendergraph::Material {
   public:
-    TextureMaterial();
+    PatternMaterial();
 
     static const AttributeSet& attributes();
 

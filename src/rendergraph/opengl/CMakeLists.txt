@@ -29,6 +29,8 @@ add_library(rendergraph_gl
     ../uniformset.h
     ../material/endoftrackmaterial.cpp
     ../material/endoftrackmaterial.h
+    ../material/patternmaterial.cpp
+    ../material/patternmaterial.h
     ../material/texturematerial.cpp
     ../material/texturematerial.h
     ../material/unicolormaterial.cpp

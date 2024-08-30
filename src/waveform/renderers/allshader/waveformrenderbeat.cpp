@@ -37,10 +37,16 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformRenderBeat::preprocess() {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    if (!preprocessSelf()) {
+        geometry().allocate(0);
+    }
+}
+
+bool WaveformRenderBeat::preprocessSelf() {
+    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
-        return;
+        return false;
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -48,12 +54,12 @@ void WaveformRenderBeat::preprocess() {
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
-        return;
+        return false;
     }
 
     int alpha = m_waveformRenderer->getBeatGridAlpha();
     if (alpha == 0) {
-        return;
+        return false;
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
@@ -62,9 +68,7 @@ void WaveformRenderBeat::preprocess() {
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0.0) {
-        geometry().allocate(0);
-        // TODO set dirty for scenegraph
-        return;
+        return false;
     }
 
     const double firstDisplayedPosition =
@@ -78,7 +82,7 @@ void WaveformRenderBeat::preprocess() {
             lastDisplayedPosition * trackSamples);
 
     if (!startPosition.isValid() || !endPosition.isValid()) {
-        return;
+        return false;
     }
 
     const float rendererBreadth = m_waveformRenderer->getBreadth();
@@ -100,7 +104,7 @@ void WaveformRenderBeat::preprocess() {
     geometry().allocate(reserved);
     // TODO set dirty for scenegraph
 
-    VertexUpdater vertexUpdater{geometry().vertexDataAs<QVector2D>()};
+    VertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::Point2D>()};
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -127,6 +131,8 @@ void WaveformRenderBeat::preprocess() {
 
     material().setUniform(0, matrix);
     material().setUniform(1, m_color);
+
+    return true;
 }
 
 } // namespace allshader

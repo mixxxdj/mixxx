@@ -32,6 +32,16 @@ QVector2D* Geometry::vertexDataAs<QVector2D>() {
     return m_pImpl->vertexDataAs<QVector2D>();
 }
 
+template<>
+Geometry::Point2D* Geometry::vertexDataAs<Geometry::Point2D>() {
+    return m_pImpl->vertexDataAs<Geometry::Point2D>();
+}
+
+template<>
+Geometry::TexturedPoint2D* Geometry::vertexDataAs<Geometry::TexturedPoint2D>() {
+    return m_pImpl->vertexDataAs<Geometry::TexturedPoint2D>();
+}
+
 void Geometry::allocate(int vertexCount) {
     m_pImpl->allocate(vertexCount);
 }
