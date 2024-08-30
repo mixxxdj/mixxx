@@ -18,18 +18,18 @@ NodeImplBase& Node::impl() const {
     return *m_pImpl;
 }
 
-void Node::appendChildNode(std::unique_ptr<Node> pChild) {
-    impl().appendChildNode(std::move(pChild));
-}
-
-void Node::removeAllChildNodes() {
-    impl().removeAllChildNodes();
-}
-
 void Node::setUsePreprocess(bool value) {
     impl().setUsePreprocess(value);
 }
 
-Node* Node::lastChild() const {
-    return impl().lastChild();
+void Node::onAppendChildNode(Node* pChild) {
+    impl().onAppendChildNode(pChild);
+}
+
+void Node::onRemoveChildNode(Node* pChild) {
+    impl().onRemoveChildNode(pChild);
+}
+
+void Node::onRemoveAllChildNodes() {
+    impl().onRemoveAllChildNodes();
 }

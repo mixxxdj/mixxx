@@ -4,8 +4,8 @@
 #include <QMatrix4x4>
 #include <QVector2D>
 
-#include "endoftrackmaterial.h"
 #include "rendergraph/geometry.h"
+#include "rendergraph/material/endoftrackmaterial.h"
 #include "rendergraph/material/texturematerial.h"
 
 using namespace rendergraph;
@@ -53,7 +53,6 @@ ExampleNode3::ExampleNode3() {
 
     matrix.scale(0.3);
     material().setUniform(0, matrix);
-    material().setUniform(1, QVector4D{1.f, 0.5f, 0.2f, 0.7f});
 }
 
 void ExampleNode3::setTexture(std::unique_ptr<Texture> texture) {

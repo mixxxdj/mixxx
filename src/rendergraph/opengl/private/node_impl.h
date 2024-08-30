@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <list>
 
 #include "rendergraph/node.h"
 
@@ -11,26 +11,14 @@ class rendergraph::NodeImplBase {
     }
     virtual ~NodeImplBase() = default;
 
-    void appendChildNode(std::unique_ptr<Node> pChild) {
-        m_pChildren.emplace_back(std::move(pChild));
-    }
-
-    void removeAllChildNodes() {
-        m_pChildren.clear();
-    }
-
-    Node* lastChild() const {
-        return m_pChildren.back().get();
-    }
-
     virtual void initialize() {
-        for (auto& pChild : m_pChildren) {
+        for (auto& pChild : *m_pOwner) {
             pChild->impl().initialize();
         }
     }
 
     virtual void render() {
-        for (auto& pChild : m_pChildren) {
+        for (auto& pChild : *m_pOwner) {
             if (!pChild->impl().isSubtreeBlocked()) {
                 pChild->impl().render();
             }
@@ -38,7 +26,7 @@ class rendergraph::NodeImplBase {
     }
 
     virtual void resize(int w, int h) {
-        for (auto& pChild : m_pChildren) {
+        for (auto& pChild : *m_pOwner) {
             pChild->impl().resize(w, h);
         }
     }
@@ -55,7 +43,7 @@ class rendergraph::NodeImplBase {
         if (m_usePreprocess) {
             preprocessNodes->push_back(m_pOwner);
         }
-        for (auto& pChild : m_pChildren) {
+        for (auto& pChild : *m_pOwner) {
             pChild->impl().addToPreprocessNodes(preprocessNodes);
         }
     }
@@ -64,9 +52,15 @@ class rendergraph::NodeImplBase {
         m_usePreprocess = value;
     }
 
+    void onAppendChildNode(Node*) {
+    }
+    void onRemoveChildNode(Node*) {
+    }
+    void onRemoveAllChildNodes() {
+    }
+
   private:
     Node* const m_pOwner;
-    std::vector<std::unique_ptr<Node>> m_pChildren;
     bool m_usePreprocess{};
 };
 

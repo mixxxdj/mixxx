@@ -11,19 +11,6 @@ class rendergraph::NodeImplBase {
     }
     virtual ~NodeImplBase() = default;
 
-    void appendChildNode(std::unique_ptr<Node> pChild) {
-        sgNode()->appendChildNode(pChild->impl().sgNode());
-        m_pChildren.emplace_back(std::move(pChild));
-    }
-    void removeAllChildNodes() {
-        sgNode()->removeAllChildNodes();
-        m_pChildren.clear();
-    }
-
-    Node* lastChild() const {
-        return m_pChildren.back().get();
-    }
-
     virtual QSGNode* sgNode() = 0;
 
     Node* owner() const {
@@ -34,9 +21,18 @@ class rendergraph::NodeImplBase {
         sgNode()->setFlag(QSGNode::UsePreprocess, value);
     }
 
+    void onAppendChildNode(Node* pChild) {
+        sgNode()->appendChildNode(pChild->impl().sgNode());
+    }
+    void onRemoveAllChildNodes() {
+        sgNode()->removeAllChildNodes();
+    }
+    void onRemoveChildNode(Node* pChild) {
+        sgNode()->removeChildNode(pChild->impl().sgNode());
+    }
+
   private:
     Node* m_pOwner;
-    std::vector<std::unique_ptr<Node>> m_pChildren;
 };
 
 class rendergraph::Node::Impl : public QSGNode, public rendergraph::NodeImplBase {
