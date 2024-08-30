@@ -10,6 +10,7 @@ class rendergraph::GeometryNode::Impl : public QSGGeometryNode, public rendergra
     Impl(GeometryNode* pOwner)
             : NodeImplBase(pOwner) {
     }
+
     QSGNode* sgNode() override {
         return this;
     }

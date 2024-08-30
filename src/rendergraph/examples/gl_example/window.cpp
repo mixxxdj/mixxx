@@ -7,7 +7,12 @@
 Window::Window() {
 }
 
-Window::~Window() {
+Window::~Window() = default;
+
+void Window::closeEvent(QCloseEvent*) {
+    // since this is the only and last window, we need to cleanup before destruction,
+    // because at destruction the context can't be used anymore
+    m_rendergraph.reset();
 }
 
 void Window::initializeGL() {

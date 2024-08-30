@@ -80,8 +80,8 @@ class rendergraph::Node {
     Node(NodeImplBase* impl);
 
   private:
-    std::list<std::unique_ptr<Node>> m_pChildren;
     const std::unique_ptr<NodeImplBase> m_pImpl;
+    std::list<std::unique_ptr<Node>> m_pChildren;
 
     void onAppendChildNode(Node* pChild);
     void onRemoveChildNode(Node* pChild);

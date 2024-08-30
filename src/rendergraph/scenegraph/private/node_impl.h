@@ -9,6 +9,7 @@ class rendergraph::NodeImplBase {
     NodeImplBase(Node* pOwner)
             : m_pOwner(pOwner) {
     }
+
     virtual ~NodeImplBase() = default;
 
     virtual QSGNode* sgNode() = 0;
@@ -40,6 +41,8 @@ class rendergraph::Node::Impl : public QSGNode, public rendergraph::NodeImplBase
     Impl(Node* pOwner)
             : NodeImplBase(pOwner) {
     }
+    virtual ~Impl() = default;
+
     QSGNode* sgNode() override {
         return this;
     }
