@@ -591,7 +591,6 @@ DDJSR2.Channel = function(channelOffset) {
 
     // Master level is handled at hardware level for the SR2, same with Booth Monitor Level, Headphones Mixing, and Sampler Volume
 
-    let lastVuLevel = 0;
     this.vuMeter = new components.Component({
         outKey: "vu_meter",
         group: deck,
