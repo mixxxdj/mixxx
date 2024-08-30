@@ -796,6 +796,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
         emit trackAdded(playlistId, trackId, insertPositon++);
     }
     emit tracksAdded(QSet<int>{playlistId});
+    emit playlistContentChanged(QSet<int>{playlistId});
     return numTracksAdded;
 }
 
