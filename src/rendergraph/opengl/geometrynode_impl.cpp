@@ -27,7 +27,8 @@ void GeometryNode::Impl::render() {
     QOpenGLShaderProgram& shader = material.glShader();
     shader.bind();
 
-    if (m_pMaterial->clearUniformsCacheDirty()) {
+    if (m_pMaterial->clearUniformsCacheDirty() || !material.isLastModifierOfShader()) {
+        material.modifyShader();
         const UniformsCache& cache = m_pMaterial->uniformsCache();
         for (int i = 0; i < cache.count(); i++) {
             int location = material.uniformLocation(i);

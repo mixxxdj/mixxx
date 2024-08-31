@@ -4,6 +4,10 @@
 
 #include "rendergraph/materialshader.h"
 
+namespace rendergraph {
+class Material;
+}
+
 class rendergraph::MaterialShader::Impl : private QOpenGLShaderProgram {
   public:
     Impl(MaterialShader* pOwner,
@@ -24,6 +28,13 @@ class rendergraph::MaterialShader::Impl : private QOpenGLShaderProgram {
         return m_uniformLocations[uniformIndex];
     }
 
+    Material* lastModifiedByMaterial() const {
+        return m_pLastModifiedByMaterial;
+    }
+    void setLastModifiedByMaterial(Material* pMaterial) {
+        m_pLastModifiedByMaterial = pMaterial;
+    }
+
   private:
     static QString resource(const char* filename) {
         return QString(":/shaders/rendergraph/") + QString(filename) + QString(".gl");
@@ -31,4 +42,5 @@ class rendergraph::MaterialShader::Impl : private QOpenGLShaderProgram {
     MaterialShader* const m_pOwner;
     std::vector<int> m_attributeLocations;
     std::vector<int> m_uniformLocations;
+    Material* m_pLastModifiedByMaterial{};
 };

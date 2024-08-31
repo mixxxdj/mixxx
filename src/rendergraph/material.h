@@ -19,7 +19,7 @@ class rendergraph::Material {
     Material(const UniformSet& uniformSet);
     virtual ~Material();
     virtual int compare(const Material* other) const = 0;
-    virtual std::shared_ptr<MaterialShader> createShader() const = 0;
+    virtual std::unique_ptr<MaterialShader> createShader() const = 0;
     virtual MaterialType* type() const = 0;
 
     template<typename T>

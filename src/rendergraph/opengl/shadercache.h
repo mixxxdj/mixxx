@@ -3,6 +3,7 @@
 #include <map>
 
 #include "rendergraph/material.h"
+#include "rendergraph/materialshader.h"
 
 namespace rendergraph {
 class ShaderCache;
@@ -21,7 +22,7 @@ class rendergraph::ShaderCache {
         if (iter != map().end()) {
             return iter->second;
         }
-        auto pResult = pMaterial->createShader();
+        auto pResult = std::shared_ptr<MaterialShader>(pMaterial->createShader().release());
         map().insert(std::pair<MaterialType*, std::shared_ptr<MaterialShader>>{
                 pMaterial->type(), pResult});
         return pResult;

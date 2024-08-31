@@ -41,7 +41,8 @@ class rendergraph::Material::Impl : public QSGMaterial {
     }
 
     QSGMaterialShader* createShader(QSGRendererInterface::RenderMode) const override {
-        return m_pOwner->createShader()->impl().sgMaterialShader();
+        auto pShader = m_pOwner->createShader().release(); // This leaks
+        return pShader->impl().sgMaterialShader();
     }
 
     Material* m_pOwner;

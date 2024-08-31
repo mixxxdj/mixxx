@@ -27,6 +27,14 @@ class rendergraph::Material::Impl {
         return m_pOwner->texture(binding)->impl().glTexture();
     }
 
+    void modifyShader() {
+        m_pShader->impl().setLastModifiedByMaterial(m_pOwner);
+    }
+
+    bool isLastModifierOfShader() const {
+        return m_pOwner == m_pShader->impl().lastModifiedByMaterial();
+    }
+
     int uniformLocation(int uniformIndex) const {
         return m_pShader->impl().uniformLocation(uniformIndex);
     }
