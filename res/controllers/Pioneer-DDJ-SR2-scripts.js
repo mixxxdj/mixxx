@@ -92,12 +92,12 @@ DDJSR2.wheelLedCircleColor = {
     DIMWHITE: 19
 };
 
-DDJSR2.wheelLedCircle = {
+// minVal is the minimum value of the color ring, maxVal is the value of the last color possible, before the ring returns to white.
+DDJSR2.wheelLedCircle = Object.freeze({
     minVal: 0,
     maxVal: 0x14,
     blink: 0x3
-};
-Object.freeze(DDJSR2.wheelLedCircle);
+});
 
 DDJSR2.wheelColorMap = new ColorMapper({
     0xCC0000: DDJSR2.wheelLedCircleColor.RED,
@@ -166,20 +166,6 @@ DDJSR2.getJogWheelDelta = function(value) {
     return value - 0x40;
 };
 
-DDJSR2.wheelLedControl = function(channelOffset, color) {
-    const wheelLedBaseChannel = 0xBB;
-    midi.sendShortMsg(
-        wheelLedBaseChannel,
-        0x20+(channelOffset),
-        color
-    );
-};
-
-
-DDJSR2.pitchBendFromJog = function(group, movement) {
-    engine.setValue(group, "jog", movement / 5 * DDJSR2.jogwheelSensitivity);
-};
-
 DDJSR2.RingBufferView = class {
     constructor(indexable, startIndex = 0) {
         this.indexable = indexable;
@@ -201,7 +187,7 @@ DDJSR2.RingBufferView = class {
 };
 
 DDJSR2.BrowserContainer = function() {
-    const Browser = this;
+    const browserInstance = this;
     this.browseKnob  = new components.ComponentContainer({
         turn: new components.Encoder({
             group: "[Library]",
@@ -215,12 +201,12 @@ DDJSR2.BrowserContainer = function() {
         shiftPress: new components.Button({
             group: "[Library]",
             input: function(channel, control, value, status, _group) {
-                Browser.browseKnob.isPressed = this.isPress(channel, control, value, status);
-                if (Browser.browseKnob.isPressed) {
+                browserInstance.browseKnob.isPressed = this.isPress(channel, control, value, status);
+                if (browserInstance.browseKnob.isPressed) {
                     return;
                 }
-                if (Browser.browseKnob.trackColorChangeHappened) {
-                    Browser.browseKnob.trackColorChangeHappened = false;
+                if (browserInstance.browseKnob.trackColorChangeHappened) {
+                    browserInstance.browseKnob.trackColorChangeHappened = false;
                     return;
                 }
                 if (!engine.getValue("[PreviewDeck1]", "play")) {
@@ -234,10 +220,10 @@ DDJSR2.BrowserContainer = function() {
             beatJumpSize: 8,
             inValueScale: DDJSR2.getRotaryDelta,
             inSetParameter: function(rotateValue) {
-                if (Browser.browseKnob.isPressed) {
+                if (browserInstance.browseKnob.isPressed) {
                     const direction = rotateValue > 0 ? "next" : "prev";
                     script.toggleControl("[Library]", `track_color_${direction}`);
-                    Browser.browseKnob.trackColorChangeHappened = true;
+                    browserInstance.browseKnob.trackColorChangeHappened = true;
                 } else {
                     engine.setValue("[PreviewDeck1]", "beatjump", rotateValue*this.beatJumpSize);
                 }
@@ -357,11 +343,11 @@ DDJSR2.Deck = function(channelOffset) {
     this.needleSearchStripPosition = new components.Pot({
         inKey: "playposition",
         group: theDeck.group,
-        input: function(channel, control, value, _status, _group) {
-            if (!engine.getParameter(this.group, "play")) {
-                const newValue = this.inValueScale(value);
-                this.inSetParameter(newValue);
+        input: function(channel, control, value, status, group) {
+            if (engine.getParameter(this.group, "play")) {
+                return;
             }
+            components.Pot.prototype.input.call(this, channel, control, value, status, group);
         }
     });
     this.sync = new components.Button({
@@ -468,7 +454,7 @@ DDJSR2.Deck = function(channelOffset) {
     this.vinylButton.trigger();
 
     this.brakeStopButton = new components.Button({
-        midi: [0x90 + channelOffset, 0x79], // please fill out just for documentation sake
+        midi: [0x90 + channelOffset, 0x79],
         type: components.Button.prototype.types.toggle,
         inToggle: function() {
             // slow down the track
@@ -476,7 +462,7 @@ DDJSR2.Deck = function(channelOffset) {
         }
     });
     this.softStartButton = new components.Button({
-        midi: [0x90 + channelOffset, 0x0A], // please fill out just for documentation sake
+        midi: [0x90 + channelOffset, 0x0A],
         type: components.Button.prototype.types.toggle,
         inToggle: function() {
             engine.softStart(deckNumber, true);
@@ -521,11 +507,7 @@ DDJSR2.Deck.prototype = Object.create(components.Deck.prototype);
 
 
 DDJSR2.MixerContainer = function() {
-    this.channels = [];
-    for (let i = 0; i < 4; i++) {
-        this.channels[i] = new DDJSR2.Channel(i);
-    }
-
+    this.channels = [0, 1, 2, 3].map(channelIndex => new DDJSR2.Channel(channelIndex));
     this.crossfader = new components.Pot({
         group: "[Master]",
         inKey: "crossfader",
