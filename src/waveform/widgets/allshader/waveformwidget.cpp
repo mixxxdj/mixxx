@@ -42,7 +42,8 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     appendChildTo(pTopNode, addRenderer<WaveformRenderBackground>());
     appendChildTo(pOpacityNode, addRenderer<WaveformRendererEndOfTrack>());
     appendChildTo(pOpacityNode, addRenderer<WaveformRendererPreroll>());
-    appendChildTo(pOpacityNode, addRenderer<WaveformRenderMarkRange>());
+    m_pWaveformRenderMarkRange = addRenderer<WaveformRenderMarkRange>();
+    appendChildTo(pOpacityNode, m_pWaveformRenderMarkRange);
 
 #ifdef __STEM__
     // The following two renderers work in tandem: if the rendered waveform is
@@ -145,6 +146,8 @@ mixxx::Duration WaveformWidget::render() {
 void WaveformWidget::paintGL() {
     // opacity of 0.f effectively skips the subtree rendering
     m_pOpacityNode->setOpacity(shouldOnlyDrawBackground() ? 0.f : 1.f);
+
+    m_pWaveformRenderMarkRange->updateNode();
 
     m_pGraph->preprocess();
     m_pGraph->render();

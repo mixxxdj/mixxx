@@ -9,6 +9,7 @@
 
 namespace allshader {
 class WaveformWidget;
+class WaveformRenderMarkRange;
 }
 
 class allshader::WaveformWidget final : public ::WGLWidget,
@@ -52,6 +53,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     WaveformWidgetType::Type m_type;
     std::unique_ptr<rendergraph::Graph> m_pGraph;
     rendergraph::OpacityNode* m_pOpacityNode;
+    WaveformRenderMarkRange* m_pWaveformRenderMarkRange;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformWidget);
 };

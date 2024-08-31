@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QColor>
-#include <vector>
+#include <memory>
 
-#include "shaders/unicolorshader.h"
+#include "rendergraph/node.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/waveformrenderer.h"
 #include "waveform/renderers/waveformmarkrange.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class QDomNode;
 class SkinContext;
@@ -15,19 +15,19 @@ namespace allshader {
 class WaveformRenderMarkRange;
 }
 
-class allshader::WaveformRenderMarkRange final : public allshader::WaveformRenderer {
+class allshader::WaveformRenderMarkRange final : public ::WaveformRendererAbstract,
+                                                 public rendergraph::Node {
   public:
     explicit WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget);
 
+    // Pure virtual from WaveformRendererAbstract, not used
+    void draw(QPainter* painter, QPaintEvent* event) override final;
+
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-    void initializeGL() override;
-    void paintGL() override;
+    void updateNode();
 
   private:
-    void fillRect(const QRectF& rect, QColor color);
-
-    mixxx::UnicolorShader m_shader;
     std::vector<WaveformMarkRange> m_markRanges;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMarkRange);

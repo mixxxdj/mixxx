@@ -18,6 +18,7 @@ void Graph::initialize() {
 
 void Graph::render() {
     if (!m_pTopNode->impl().isSubtreeBlocked()) {
+        m_pTopNode->impl().initializeIfNeeded();
         m_pTopNode->impl().render();
     }
 }

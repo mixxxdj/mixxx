@@ -18,9 +18,6 @@ class rendergraph::Node {
                 : m_pOwner(pOwner),
                   m_iterator(iter) {
         }
-        void operator++() {
-            m_iterator++;
-        }
         const std::unique_ptr<Node>& operator*() const {
             return *m_iterator;
         }
@@ -30,7 +27,16 @@ class rendergraph::Node {
         bool operator!=(const Iterator& other) const {
             return m_iterator != other.m_iterator;
         }
-        std::unique_ptr<Node> nextAfterRemove() {
+        Iterator& operator++() {
+            ++m_iterator;
+            return *this;
+        }
+        Iterator operator++(int) {
+            Iterator result = *this;
+            ++(*this);
+            return result;
+        }
+        std::unique_ptr<Node> incrementAfterRemove() {
             std::unique_ptr<Node> result = std::move(*m_iterator);
             m_pOwner->onRemoveChildNode(result.get());
             m_iterator = m_pOwner->m_pChildren.erase(m_iterator);
@@ -62,7 +68,7 @@ class rendergraph::Node {
         m_pChildren.clear();
         onRemoveAllChildNodes();
     }
-    Node* lastChild() const {
+    Node* lastChildNode() const {
         return m_pChildren.back().get();
     }
     NodeImplBase& impl() const;

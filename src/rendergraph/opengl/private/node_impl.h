@@ -15,13 +15,21 @@ class rendergraph::NodeImplBase {
         for (auto& pChild : *m_pOwner) {
             pChild->impl().initialize();
         }
+        m_initialized = true;
     }
 
     virtual void render() {
         for (auto& pChild : *m_pOwner) {
             if (!pChild->impl().isSubtreeBlocked()) {
+                pChild->impl().initializeIfNeeded();
                 pChild->impl().render();
             }
+        }
+    }
+
+    void initializeIfNeeded() {
+        if (!m_initialized) {
+            initialize();
         }
     }
 
@@ -62,6 +70,7 @@ class rendergraph::NodeImplBase {
   private:
     Node* const m_pOwner;
     bool m_usePreprocess{};
+    bool m_initialized{};
 };
 
 class rendergraph::Node::Impl : public rendergraph::NodeImplBase {
