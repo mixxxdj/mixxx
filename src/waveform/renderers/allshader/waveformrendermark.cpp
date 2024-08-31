@@ -349,24 +349,12 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
         }
     }
 
-    if (untilMarkShowBeats) {
-        const auto w = m_digitsRenderer.draw(matrix,
-                x,
-                y,
-                QString::number(m_beatsUntilMark));
-        if (multiLine) {
-            y += ch;
-        } else {
-            x += w + ch * 0.75f;
-        }
-    }
-
-    if (untilMarkShowTime) {
-        m_digitsRenderer.draw(matrix,
-                x,
-                y,
-                timeSecToString(m_timeUntilMark));
-    }
+    m_digitsRenderer.draw(matrix,
+            x,
+            y,
+            multiLine,
+            untilMarkShowBeats ? QString::number(m_beatsUntilMark) : QString{},
+            untilMarkShowTime ? timeSecToString(m_timeUntilMark) : QString{});
 }
 
 // Generate the texture used to draw the play position marker.

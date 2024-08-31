@@ -205,6 +205,32 @@ void allshader::DigitsRenderer::updateTexture(
     m_texture.setData(image);
 }
 
+void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
+        float x,
+        float y,
+        bool multiLine,
+        const QString& s1,
+        const QString& s2) {
+    const float ch = height();
+    if (!s1.isEmpty()) {
+        const auto w = draw(matrix,
+                x,
+                y,
+                s1);
+        if (multiLine) {
+            y += ch;
+        } else {
+            x += w + ch * 0.75f;
+        }
+    }
+    if (!s2.isEmpty()) {
+        draw(matrix,
+                x,
+                y,
+                s2);
+    }
+}
+
 float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float x,
         float y,

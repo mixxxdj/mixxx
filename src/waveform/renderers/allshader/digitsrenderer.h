@@ -16,13 +16,21 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
 
     void init();
     void updateTexture(float fontPointSize, float maxHeight, float devicePixelRatio);
+
+    void draw(const QMatrix4x4& matrix,
+            float x,
+            float y,
+            bool multiLine,
+            const QString& s1,
+            const QString& s2);
+    float height() const;
+
+  private:
     float draw(const QMatrix4x4& matrix,
             float x,
             float y,
             const QString& s);
-    float height() const;
 
-  private:
     mixxx::TextureShader m_shader;
     OpenGLTexture2D m_texture;
     int m_penWidth;
