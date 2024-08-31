@@ -19,7 +19,7 @@ class rendergraph::TextureMaterial : public rendergraph::Material {
 
     int compare(const Material* other) const override;
 
-    MaterialShader* createShader() const override;
+    std::shared_ptr<MaterialShader> createShader() const override;
 
     Texture* texture(int /*binding*/) const override {
         return m_pTexture.get();

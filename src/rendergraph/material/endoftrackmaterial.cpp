@@ -33,6 +33,7 @@ int EndOfTrackMaterial::compare(const Material* other) const {
     return otherCasted == this ? 0 : 1;
 }
 
-MaterialShader* EndOfTrackMaterial::createShader() const {
-    return new MaterialShader("endoftrack.vert", "endoftrack.frag", uniforms(), attributes());
+std::shared_ptr<MaterialShader> EndOfTrackMaterial::createShader() const {
+    return std::make_shared<MaterialShader>(
+            "endoftrack.vert", "endoftrack.frag", uniforms(), attributes());
 }

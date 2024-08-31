@@ -33,6 +33,7 @@ int TextureMaterial::compare(const Material* other) const {
     return otherCasted == this ? 0 : 1;
 }
 
-MaterialShader* TextureMaterial::createShader() const {
-    return new MaterialShader("texture.vert", "texture.frag", uniforms(), attributes());
+std::shared_ptr<MaterialShader> TextureMaterial::createShader() const {
+    return std::make_shared<MaterialShader>(
+            "texture.vert", "texture.frag", uniforms(), attributes());
 }

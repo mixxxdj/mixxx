@@ -5,6 +5,7 @@
 #include <QWheelEvent>
 #include <iostream>
 
+#include "rendergraph/opengl/shadercache.h"
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
@@ -95,6 +96,7 @@ WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
     m_rendererStack.clear();
     m_pGraph.reset();
+    rendergraph::ShaderCache::purge();
     doneCurrent();
 }
 

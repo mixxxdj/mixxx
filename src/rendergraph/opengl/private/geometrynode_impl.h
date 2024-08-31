@@ -5,6 +5,7 @@
 #include "material_impl.h"
 #include "node_impl.h"
 #include "rendergraph/geometrynode.h"
+#include "rendergraph/opengl/shadercache.h"
 
 class rendergraph::GeometryNode::Impl : public rendergraph::Node::Impl, public QOpenGLFunctions {
   public:
@@ -22,7 +23,7 @@ class rendergraph::GeometryNode::Impl : public rendergraph::Node::Impl, public Q
 
     void initialize() override {
         initializeOpenGLFunctions();
-        m_pMaterial->impl().setShader(m_pMaterial->createShader());
+        m_pMaterial->impl().setShader(ShaderCache::getShaderForMaterial(m_pMaterial));
         Node::Impl::initialize();
     }
 

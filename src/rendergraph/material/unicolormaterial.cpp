@@ -33,6 +33,7 @@ int UniColorMaterial::compare(const Material* other) const {
     return otherCasted == this ? 0 : 1;
 }
 
-MaterialShader* UniColorMaterial::createShader() const {
-    return new MaterialShader("unicolor.vert", "unicolor.frag", uniforms(), attributes());
+std::shared_ptr<MaterialShader> UniColorMaterial::createShader() const {
+    return std::make_shared<MaterialShader>(
+            "unicolor.vert", "unicolor.frag", uniforms(), attributes());
 }

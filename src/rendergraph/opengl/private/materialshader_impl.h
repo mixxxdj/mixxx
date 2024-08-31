@@ -11,6 +11,7 @@ class rendergraph::MaterialShader::Impl : private QOpenGLShaderProgram {
             const char* fragmentShaderFile,
             const UniformSet& uniformSet,
             const AttributeSet& attributeSet);
+
     QOpenGLShaderProgram& glShader() {
         return *this;
     }
@@ -27,7 +28,7 @@ class rendergraph::MaterialShader::Impl : private QOpenGLShaderProgram {
     static QString resource(const char* filename) {
         return QString(":/shaders/rendergraph/") + QString(filename) + QString(".gl");
     }
+    MaterialShader* const m_pOwner;
     std::vector<int> m_attributeLocations;
     std::vector<int> m_uniformLocations;
-    MaterialShader* const m_pOwner;
 };

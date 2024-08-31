@@ -2,6 +2,7 @@
 
 #include "materialshader_impl.h"
 #include "rendergraph/material.h"
+#include "rendergraph/opengl/shadercache.h"
 #include "texture_impl.h"
 
 class rendergraph::Material::Impl {
@@ -10,7 +11,11 @@ class rendergraph::Material::Impl {
             : m_pOwner(pOwner) {
     }
 
-    void setShader(MaterialShader* pShader) {
+    ~Impl() {
+        m_pShader.reset();
+    }
+
+    void setShader(std::shared_ptr<MaterialShader> pShader) {
         m_pShader = pShader;
     }
 
@@ -31,6 +36,6 @@ class rendergraph::Material::Impl {
     }
 
   private:
-    MaterialShader* m_pShader{};
+    std::shared_ptr<MaterialShader> m_pShader;
     Material* const m_pOwner;
 };
