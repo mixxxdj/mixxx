@@ -3,6 +3,12 @@
 #include <QOpenGLTexture>
 #include <QPainterPath>
 
+#include "rendergraph/context.h"
+#include "rendergraph/geometry.h"
+#include "rendergraph/geometrynode.h"
+#include "rendergraph/material/texturematerial.h"
+#include "rendergraph/texture.h"
+#include "texturedvertexupdater.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
@@ -10,6 +16,8 @@
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
+
+using namespace rendergraph;
 
 // On the use of QPainter:
 //
@@ -66,6 +74,11 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_timeUntilMark(0.0),
           m_pTimeRemainingControl(nullptr),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+    appendChildNode(std::make_unique<GeometryNode>());
+    m_pPlayPosNode = static_cast<GeometryNode*>(lastChild());
+    m_pPlayPosNode->setGeometry(std::make_unique<Geometry>(TextureMaterial::attributes(), 6));
+    m_pPlayPosNode->setMaterial(std::make_unique<TextureMaterial>());
+    m_pPlayPosNode->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
 }
 
 bool allshader::WaveformRenderMark::init() {
@@ -301,11 +314,23 @@ void allshader::WaveformRenderMark::paintGL() {
                     devicePixelRatio) /
             devicePixelRatio;
 
-    if (m_playPosMarkTexture.isStorageAllocated()) {
-        const float markHalfWidth = m_playPosMarkTexture.width() / devicePixelRatio / 2.f;
+    {
+        const float markHalfWidth = 11.f / 2.f;
         const float drawOffset = currentMarkPoint - markHalfWidth;
 
-        drawTexture(matrix, drawOffset, 0.f, &m_playPosMarkTexture);
+        m_pPlayPosNode->material().setUniform(0, matrix);
+
+        TexturedVertexUpdater vertexUpdater{
+                m_pPlayPosNode->geometry()
+                        .vertexDataAs<Geometry::TexturedPoint2D>()};
+        vertexUpdater.addRectangle(drawOffset,
+                0.f,
+                drawOffset + 11.f,
+                m_waveformRenderer->getBreadth(),
+                0.f,
+                0.f,
+                1.f,
+                1.f);
     }
 
     if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
@@ -421,7 +446,9 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     }
     painter.end();
 
-    m_playPosMarkTexture.setData(image);
+    Context context;
+    dynamic_cast<TextureMaterial&>(m_pPlayPosNode->material())
+            .setTexture(std::make_unique<Texture>(context, image));
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,

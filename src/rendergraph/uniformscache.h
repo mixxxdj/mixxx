@@ -22,16 +22,6 @@ class rendergraph::UniformsCache {
         set(uniformIndex, typeOf<T>(), static_cast<const void*>(&value), sizeOf(typeOf<T>()));
     }
 
-    template<>
-    void set<QColor>(int uniformIndex, const QColor& color) {
-        set(uniformIndex, QVector4D{color.redF(), color.greenF(), color.blueF(), color.alphaF()});
-    }
-
-    template<>
-    void set<QMatrix4x4>(int uniformIndex, const QMatrix4x4& matrix) {
-        set(uniformIndex, typeOf<QMatrix4x4>(), matrix.constData(), sizeOf(typeOf<QMatrix4x4>()));
-    }
-
     template<typename T>
     T get(int uniformIndex) const {
         T value;
@@ -64,3 +54,14 @@ class rendergraph::UniformsCache {
     std::vector<Info> m_infos;
     QByteArray m_byteArray;
 };
+
+template<>
+inline void rendergraph::UniformsCache::set<QColor>(int uniformIndex, const QColor& color) {
+    set(uniformIndex, QVector4D{color.redF(), color.greenF(), color.blueF(), color.alphaF()});
+}
+
+template<>
+inline void rendergraph::UniformsCache::set<QMatrix4x4>(
+        int uniformIndex, const QMatrix4x4& matrix) {
+    set(uniformIndex, typeOf<QMatrix4x4>(), matrix.constData(), sizeOf(typeOf<QMatrix4x4>()));
+}

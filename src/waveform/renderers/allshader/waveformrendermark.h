@@ -11,7 +11,10 @@
 
 class QDomNode;
 class SkinContext;
-class QOpenGLTexture;
+
+namespace rendergraph {
+class GeometryNode;
+}
 
 namespace allshader {
 class WaveformRenderMark;
@@ -54,7 +57,6 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
-    OpenGLTexture2D m_playPosMarkTexture;
     DigitsRenderer m_digitsRenderer;
     int m_beatsUntilMark;
     double m_timeUntilMark;
@@ -63,6 +65,8 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     bool m_isSlipRenderer;
+
+    rendergraph::GeometryNode* m_pPlayPosNode;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
