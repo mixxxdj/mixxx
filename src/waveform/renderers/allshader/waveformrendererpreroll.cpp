@@ -156,10 +156,6 @@ bool WaveformRendererPreroll::preprocessSelf() {
                                 m_color)));
     }
 
-    if (!dynamic_cast<PatternMaterial&>(material()).texture(0)) {
-        return false;
-    }
-
     geometry().allocate(reserved);
 
     const float end = m_waveformRenderer->getLength();

@@ -3811,7 +3811,8 @@ if(VINYLCONTROL)
 endif()
 
 # rendergraph
-add_subdirectory(src/rendergraph)
+add_subdirectory(src/rendergraph/opengl)
+add_subdirectory(res/shaders/rendergraph)
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 
 # WavPack audio file support

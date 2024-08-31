@@ -11,6 +11,7 @@
 #include "texturedvertexupdater.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
+#include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -74,11 +75,15 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_timeUntilMark(0.0),
           m_pTimeRemainingControl(nullptr),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+    // TODO move to PlayPosNode derived from GeometryNode
     appendChildNode(std::make_unique<GeometryNode>());
     m_pPlayPosNode = static_cast<GeometryNode*>(lastChild());
     m_pPlayPosNode->setGeometry(std::make_unique<Geometry>(TextureMaterial::attributes(), 6));
     m_pPlayPosNode->setMaterial(std::make_unique<TextureMaterial>());
     m_pPlayPosNode->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+
+    appendChildNode(std::make_unique<DigitsRenderNode>());
+    m_pDigitsRenderNode = static_cast<DigitsRenderNode*>(lastChild());
 }
 
 bool allshader::WaveformRenderMark::init() {
@@ -88,7 +93,6 @@ bool allshader::WaveformRenderMark::init() {
 }
 
 void allshader::WaveformRenderMark::initializeGL() {
-    m_digitsRenderer.init();
     m_rgbaShader.init();
     m_textureShader.init();
 
@@ -97,7 +101,7 @@ void allshader::WaveformRenderMark::initializeGL() {
     updatePlayPosMarkTexture();
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
-    m_digitsRenderer.updateTexture(untilMarkTextPointSize,
+    m_pDigitsRenderNode->updateTexture(untilMarkTextPointSize,
             getMaxHeightForText(),
             m_waveformRenderer->getDevicePixelRatio());
 }
@@ -347,14 +351,14 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
 
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
-    m_digitsRenderer.updateTexture(untilMarkTextPointSize,
+    m_pDigitsRenderNode->updateTexture(untilMarkTextPointSize,
             getMaxHeightForText(),
             m_waveformRenderer->getDevicePixelRatio());
 
     if (m_timeUntilMark == 0.0) {
         return;
     }
-    const float ch = m_digitsRenderer.height();
+    const float ch = m_pDigitsRenderNode->height();
 
     float y = untilMarkAlign == Qt::AlignTop ? 0.f
             : untilMarkAlign == Qt::AlignBottom
@@ -374,7 +378,7 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
         }
     }
 
-    m_digitsRenderer.draw(matrix,
+    m_pDigitsRenderNode->update(matrix,
             x,
             y,
             multiLine,

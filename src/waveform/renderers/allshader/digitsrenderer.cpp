@@ -5,16 +5,20 @@
 #include <QGraphicsBlurEffect>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
-#include <QOpenGLTexture>
 #include <QPainter>
 #include <QPainterPath>
 #include <cmath>
 
 #include "./util/assert.h"
+#include "rendergraph/context.h"
+#include "rendergraph/geometry.h"
+#include "rendergraph/material/texturematerial.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/renderers/allshader/vertexdata.h"
+#include "waveform/renderers/allshader/texturedvertexupdater.h"
 
 // Render digits using a texture (generated) with digits with blurred dark outline
+
+using namespace rendergraph;
 
 namespace {
 
@@ -56,18 +60,19 @@ static_assert(checkCharToIndex());
 
 } // namespace
 
-allshader::DigitsRenderer::~DigitsRenderer() = default;
-
-void allshader::DigitsRenderer::init() {
-    initializeOpenGLFunctions();
-    m_shader.init();
+allshader::DigitsRenderNode::DigitsRenderNode() {
+    setGeometry(std::make_unique<Geometry>(TextureMaterial::attributes(), 0));
+    setMaterial(std::make_unique<TextureMaterial>());
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
 }
 
-float allshader::DigitsRenderer::height() const {
+allshader::DigitsRenderNode::~DigitsRenderNode() = default;
+
+float allshader::DigitsRenderNode::height() const {
     return m_height;
 }
 
-void allshader::DigitsRenderer::updateTexture(
+void allshader::DigitsRenderNode::updateTexture(
         float fontPointSize, float maxHeight, float devicePixelRatio) {
     if (fontPointSize == m_fontPointSize && maxHeight == m_maxHeight) {
         return;
@@ -202,18 +207,25 @@ void allshader::DigitsRenderer::updateTexture(
         m_offset[NUM_CHARS] = 1.f;
     }
 
-    m_texture.setData(image);
+    Context context;
+    dynamic_cast<TextureMaterial&>(material())
+            .setTexture(std::make_unique<Texture>(context, image));
 }
 
-void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
+void allshader::DigitsRenderNode::update(const QMatrix4x4& matrix,
         float x,
         float y,
         bool multiLine,
         const QString& s1,
         const QString& s2) {
+    const int numVerticesPerRectangle = 6;
+    const int reserved = (s1.length() + s2.length()) * numVerticesPerRectangle;
+    geometry().allocate(reserved);
+    TexturedVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
+
     const float ch = height();
     if (!s1.isEmpty()) {
-        const auto w = draw(matrix,
+        const auto w = addVertices(vertexUpdater,
                 x,
                 y,
                 s1);
@@ -224,26 +236,23 @@ void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         }
     }
     if (!s2.isEmpty()) {
-        draw(matrix,
+        addVertices(vertexUpdater,
                 x,
                 y,
                 s2);
     }
+
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
+
+    material().setUniform(0, matrix);
 }
 
-float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
+float allshader::DigitsRenderNode::addVertices(TexturedVertexUpdater& vertexUpdater,
         float x,
         float y,
         const QString& s) {
-    const int n = s.length();
     const float x0 = x;
     const float space = static_cast<float>(m_penWidth) / 2;
-
-    VertexData posVertices;
-    VertexData texVertices;
-
-    posVertices.reserve(n * 6); // two triangles per character
-    texVertices.reserve(n * 6);
 
     for (QChar c : s) {
         if (x != x0) {
@@ -251,41 +260,16 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         }
         int index = charToIndex(c);
 
-        texVertices.addRectangle(m_offset[index], 0.f, m_offset[index + 1], 1.f);
-        posVertices.addRectangle(x,
+        vertexUpdater.addRectangle(x,
                 y,
                 x + m_width[index],
-                y + height());
+                y + height(),
+                m_offset[index],
+                0.f,
+                m_offset[index + 1],
+                1.f);
         x += m_width[index];
     }
-
-    m_shader.bind();
-
-    const int matrixLocation = m_shader.uniformLocation("matrix");
-    const int textureLocation = m_shader.uniformLocation("texture");
-    const int positionLocation = m_shader.attributeLocation("position");
-    const int texcoordLocation = m_shader.attributeLocation("texcoord");
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-
-    m_shader.enableAttributeArray(positionLocation);
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, posVertices.constData(), 2);
-    m_shader.enableAttributeArray(texcoordLocation);
-    m_shader.setAttributeArray(
-            texcoordLocation, GL_FLOAT, texVertices.constData(), 2);
-
-    m_shader.setUniformValue(textureLocation, 0);
-
-    m_texture.bind();
-
-    glDrawArrays(GL_TRIANGLES, 0, posVertices.size());
-
-    m_texture.release();
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.disableAttributeArray(texcoordLocation);
-    m_shader.release();
 
     return x - x0;
 }

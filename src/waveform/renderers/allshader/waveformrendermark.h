@@ -6,7 +6,6 @@
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
 #include "util/opengltexture2d.h"
-#include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
@@ -17,6 +16,7 @@ class GeometryNode;
 }
 
 namespace allshader {
+class DigitsRenderNode;
 class WaveformRenderMark;
 }
 
@@ -57,7 +57,6 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
-    DigitsRenderer m_digitsRenderer;
     int m_beatsUntilMark;
     double m_timeUntilMark;
     double m_currentBeatPosition;
@@ -66,6 +65,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     bool m_isSlipRenderer;
 
+    DigitsRenderNode* m_pDigitsRenderNode;
     rendergraph::GeometryNode* m_pPlayPosNode;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);

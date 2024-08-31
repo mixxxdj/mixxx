@@ -1,23 +1,26 @@
 #pragma once
 
-#include <QOpenGLFunctions>
+#include <QMatrix4x4>
 
-#include "shaders/textureshader.h"
-#include "util/opengltexture2d.h"
+#include "rendergraph/geometrynode.h"
+#include "util/class.h"
 
-namespace allshader {
-class DigitsRenderer;
+namespace rendergraph {
+class TexturedVertexUpdater;
 }
 
-class allshader::DigitsRenderer : public QOpenGLFunctions {
-  public:
-    DigitsRenderer() = default;
-    ~DigitsRenderer();
+namespace allshader {
+class DigitsRenderNode;
+}
 
-    void init();
+class allshader::DigitsRenderNode : public rendergraph::GeometryNode {
+  public:
+    DigitsRenderNode();
+    ~DigitsRenderNode();
+
     void updateTexture(float fontPointSize, float maxHeight, float devicePixelRatio);
 
-    void draw(const QMatrix4x4& matrix,
+    void update(const QMatrix4x4& matrix,
             float x,
             float y,
             bool multiLine,
@@ -26,13 +29,11 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
     float height() const;
 
   private:
-    float draw(const QMatrix4x4& matrix,
+    float addVertices(rendergraph::TexturedVertexUpdater& vertexUpdater,
             float x,
             float y,
             const QString& s);
 
-    mixxx::TextureShader m_shader;
-    OpenGLTexture2D m_texture;
     int m_penWidth;
     float m_offset[13];
     float m_width[12];
@@ -40,5 +41,5 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
     float m_height{};
     float m_maxHeight{};
     float m_adjustedFontPointSize{};
-    DISALLOW_COPY_AND_ASSIGN(DigitsRenderer);
+    DISALLOW_COPY_AND_ASSIGN(DigitsRenderNode);
 };
