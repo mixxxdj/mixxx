@@ -12,64 +12,62 @@ class rendergraph::Node {
   public:
     class Impl;
 
-    class Iterator {
-      public:
-        Iterator(Node* pOwner, std::list<std::unique_ptr<Node>>::iterator iter)
-                : m_pOwner(pOwner),
-                  m_iterator(iter) {
-        }
-        const std::unique_ptr<Node>& operator*() const {
-            return *m_iterator;
-        }
-        bool operator==(const Iterator& other) const {
-            return m_iterator == other.m_iterator;
-        }
-        bool operator!=(const Iterator& other) const {
-            return m_iterator != other.m_iterator;
-        }
-        Iterator& operator++() {
-            ++m_iterator;
-            return *this;
-        }
-        Iterator operator++(int) {
-            Iterator result = *this;
-            ++(*this);
-            return result;
-        }
-        std::unique_ptr<Node> incrementAfterRemove() {
-            std::unique_ptr<Node> result = std::move(*m_iterator);
-            m_pOwner->onRemoveChildNode(result.get());
-            m_iterator = m_pOwner->m_pChildren.erase(m_iterator);
-            return result;
-        }
-
-      private:
-        Node* m_pOwner;
-        std::list<std::unique_ptr<Node>>::iterator m_iterator;
-    };
-
     Node();
 
     virtual ~Node();
 
-    Iterator begin() {
-        return Iterator(this, m_pChildren.begin());
+    void appendChildNode(std::unique_ptr<Node>&& pChild) {
+        auto pChildRawPtr = pChild.get();
+        if (m_pLastChild) {
+            pChild->m_pPreviousSibling = m_pLastChild;
+            m_pLastChild->m_pNextSibling = std::move(pChild);
+        } else {
+            m_pFirstChild = std::move(pChild);
+        }
+        m_pLastChild = pChildRawPtr;
+        m_pLastChild->m_pParent = this;
+        onAppendChildNode(m_pLastChild);
     }
-
-    Iterator end() {
-        return Iterator(this, m_pChildren.end());
-    }
-
-    void appendChildNode(std::unique_ptr<Node> pChild) {
-        onAppendChildNode(pChild.get());
-        m_pChildren.push_back(std::move(pChild));
-    }
-    void removeAllChildNodes() {
-        m_pChildren.clear();
+    std::unique_ptr<Node> removeAllChildNodes() {
         onRemoveAllChildNodes();
+        m_pLastChild = nullptr;
+        Node* pChild = m_pFirstChild.get();
+        while (pChild) {
+            pChild->m_pParent = nullptr;
+            pChild = pChild->m_pNextSibling.get();
+        }
+        return std::move(m_pFirstChild);
     }
-    Node* lastChildNode() const {
-        return m_pChildren.back().get();
+    std::unique_ptr<Node> removeChildNode(Node* pChild) {
+        std::unique_ptr<Node> pRemoved;
+        if (pChild == m_pFirstChild.get()) {
+            pRemoved = std::move(m_pFirstChild);
+            m_pFirstChild = std::move(pChild->m_pNextSibling);
+        } else {
+            pRemoved = std::move(pChild->m_pPreviousSibling->m_pNextSibling);
+            pChild->m_pPreviousSibling->m_pNextSibling = std::move(pChild->m_pNextSibling);
+            pChild->m_pPreviousSibling = nullptr;
+        }
+        if (pChild == m_pLastChild) {
+            m_pLastChild = nullptr;
+        }
+        pChild->m_pParent = nullptr;
+        return pRemoved;
+    }
+    Node* parent() const {
+        return m_pParent;
+    }
+    Node* firstChild() const {
+        return m_pFirstChild.get();
+    }
+    Node* lastChild() const {
+        return m_pLastChild;
+    }
+    Node* nextSibling() const {
+        return m_pNextSibling.get();
+    }
+    Node* previousSibling() const {
+        return m_pPreviousSibling;
     }
     NodeImplBase& impl() const;
 
@@ -87,7 +85,11 @@ class rendergraph::Node {
 
   private:
     const std::unique_ptr<NodeImplBase> m_pImpl;
-    std::list<std::unique_ptr<Node>> m_pChildren;
+    Node* m_pParent{};
+    std::unique_ptr<Node> m_pFirstChild;
+    Node* m_pLastChild{};
+    std::unique_ptr<Node> m_pNextSibling;
+    Node* m_pPreviousSibling{};
 
     void onAppendChildNode(Node* pChild);
     void onRemoveChildNode(Node* pChild);

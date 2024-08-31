@@ -12,18 +12,22 @@ class rendergraph::NodeImplBase {
     virtual ~NodeImplBase() = default;
 
     virtual void initialize() {
-        for (auto& pChild : *m_pOwner) {
+        Node* pChild = m_pOwner->firstChild();
+        while (pChild) {
             pChild->impl().initialize();
+            pChild = pChild->nextSibling();
         }
         m_initialized = true;
     }
 
     virtual void render() {
-        for (auto& pChild : *m_pOwner) {
+        Node* pChild = m_pOwner->firstChild();
+        while (pChild) {
             if (!pChild->impl().isSubtreeBlocked()) {
                 pChild->impl().initializeIfNeeded();
                 pChild->impl().render();
             }
+            pChild = pChild->nextSibling();
         }
     }
 
@@ -34,8 +38,10 @@ class rendergraph::NodeImplBase {
     }
 
     virtual void resize(int w, int h) {
-        for (auto& pChild : *m_pOwner) {
+        Node* pChild = m_pOwner->firstChild();
+        while (pChild) {
             pChild->impl().resize(w, h);
+            pChild = pChild->nextSibling();
         }
     }
 
@@ -51,8 +57,10 @@ class rendergraph::NodeImplBase {
         if (m_usePreprocess) {
             preprocessNodes->push_back(m_pOwner);
         }
-        for (auto& pChild : *m_pOwner) {
+        Node* pChild = m_pOwner->firstChild();
+        while (pChild) {
             pChild->impl().addToPreprocessNodes(preprocessNodes);
+            pChild = pChild->nextSibling();
         }
     }
 

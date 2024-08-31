@@ -42,7 +42,7 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
 void WaveformRenderMarkRange::updateNode() {
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    Iterator iter = begin();
+    GeometryNode* pChild = static_cast<GeometryNode*>(firstChild());
 
     for (const auto& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.
@@ -76,32 +76,31 @@ void WaveformRenderMarkRange::updateNode() {
         QColor color = markRange.enabled() ? markRange.m_activeColor : markRange.m_disabledColor;
         color.setAlphaF(0.3f);
 
-        GeometryNode* pNode;
-        if (iter == end()) {
+        if (!pChild) {
             qDebug() << "Appended new node for mark range";
             appendChildNode(std::make_unique<GeometryNode>());
-            pNode = static_cast<GeometryNode*>(lastChildNode());
-            pNode->setGeometry(std::make_unique<Geometry>(UniColorMaterial::attributes(), 0));
-            pNode->setMaterial(std::make_unique<UniColorMaterial>());
-            pNode->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
-            pNode->geometry().allocate(6);
-
-            iter = end();
-        } else {
-            pNode = static_cast<GeometryNode*>((*iter++).get());
+            pChild = static_cast<GeometryNode*>(lastChild());
+            pChild->setGeometry(std::make_unique<Geometry>(UniColorMaterial::attributes(), 0));
+            pChild->setMaterial(std::make_unique<UniColorMaterial>());
+            pChild->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+            pChild->geometry().allocate(6);
         }
 
-        VertexUpdater vertexUpdater{pNode->geometry().vertexDataAs<Geometry::Point2D>()};
+        VertexUpdater vertexUpdater{pChild->geometry().vertexDataAs<Geometry::Point2D>()};
         vertexUpdater.addRectangle(static_cast<float>(startPosition),
                 0.f,
                 static_cast<float>(endPosition) + 1.f,
                 m_waveformRenderer->getBreadth());
-        pNode->material().setUniform(0, matrix);
-        pNode->material().setUniform(1, color);
+        pChild->material().setUniform(0, matrix);
+        pChild->material().setUniform(1, color);
+
+        pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
-    while (iter != end()) {
+    while (pChild) {
         qDebug() << "Remove unused node for mark range";
-        iter.incrementAfterRemove();
+        auto pNext = static_cast<GeometryNode*>(pChild->nextSibling());
+        removeChildNode(pChild);
+        pChild = pNext;
     }
 }
 
