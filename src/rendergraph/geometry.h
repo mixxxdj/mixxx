@@ -26,6 +26,24 @@ class rendergraph::Geometry {
         }
     };
 
+    struct RGBColoredPoint2D {
+        QVector2D position2D;
+        QVector3D color3D;
+        RGBColoredPoint2D(float x, float y, float r, float g, float b)
+                : position2D{x, y},
+                  color3D{r, g, b} {
+        }
+    };
+
+    struct RGBAColoredPoint2D {
+        QVector2D position2D;
+        QVector4D color4D;
+        RGBAColoredPoint2D(float x, float y, float r, float g, float b, float a)
+                : position2D{x, y},
+                  color4D{r, g, b, a} {
+        }
+    };
+
     enum class DrawingMode {
         Triangles,
         TriangleStrip
@@ -34,6 +52,7 @@ class rendergraph::Geometry {
 
     Geometry(const AttributeSet& attributeSet, int vertexCount);
     ~Geometry();
+
     void setAttributeValues(int attributePosition, const float* data, int numTuples);
     Impl& impl() const;
 

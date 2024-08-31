@@ -28,11 +28,6 @@ float* Geometry::vertexData() {
 }
 
 template<>
-QVector2D* Geometry::vertexDataAs<QVector2D>() {
-    return m_pImpl->vertexDataAs<QVector2D>();
-}
-
-template<>
 Geometry::Point2D* Geometry::vertexDataAs<Geometry::Point2D>() {
     return m_pImpl->vertexDataAs<Geometry::Point2D>();
 }
@@ -40,6 +35,16 @@ Geometry::Point2D* Geometry::vertexDataAs<Geometry::Point2D>() {
 template<>
 Geometry::TexturedPoint2D* Geometry::vertexDataAs<Geometry::TexturedPoint2D>() {
     return m_pImpl->vertexDataAs<Geometry::TexturedPoint2D>();
+}
+
+template<>
+Geometry::RGBColoredPoint2D* Geometry::vertexDataAs<Geometry::RGBColoredPoint2D>() {
+    return m_pImpl->vertexDataAs<Geometry::RGBColoredPoint2D>();
+}
+
+template<>
+Geometry::RGBAColoredPoint2D* Geometry::vertexDataAs<Geometry::RGBAColoredPoint2D>() {
+    return m_pImpl->vertexDataAs<Geometry::RGBAColoredPoint2D>();
 }
 
 void Geometry::allocate(int vertexCount) {

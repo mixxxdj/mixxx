@@ -27,14 +27,14 @@ class allshader::WaveformRenderBeat final
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-    // Virtual for rendergraph::Node
+    // Virtuals for rendergraph::Node
     void preprocess() override;
 
   private:
     QColor m_color;
     bool m_isSlipRenderer;
 
-    bool preprocessSelf();
+    bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

@@ -39,7 +39,7 @@ class rendergraph::UniformsCache {
         return m_byteArray.size();
     }
     int count() const {
-        return m_infos.size();
+        return static_cast<int>(m_infos.size());
     }
 
   private:

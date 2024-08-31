@@ -26,6 +26,9 @@ class allshader::DigitsRenderNode : public rendergraph::GeometryNode {
             bool multiLine,
             const QString& s1,
             const QString& s2);
+
+    void clear();
+
     float height() const;
 
   private:

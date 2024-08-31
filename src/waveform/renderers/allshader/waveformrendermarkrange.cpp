@@ -39,10 +39,10 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
     DEBUG_ASSERT(false);
 }
 
-void WaveformRenderMarkRange::updateNode() {
+void WaveformRenderMarkRange::update() {
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    GeometryNode* pChild = static_cast<GeometryNode*>(firstChild());
+    Node* pChild = firstChild();
 
     for (const auto& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.
@@ -77,31 +77,36 @@ void WaveformRenderMarkRange::updateNode() {
         color.setAlphaF(0.3f);
 
         if (!pChild) {
-            qDebug() << "Appended new node for mark range";
             appendChildNode(std::make_unique<GeometryNode>());
-            pChild = static_cast<GeometryNode*>(lastChild());
-            pChild->setGeometry(std::make_unique<Geometry>(UniColorMaterial::attributes(), 0));
-            pChild->setMaterial(std::make_unique<UniColorMaterial>());
-            pChild->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
-            pChild->geometry().allocate(6);
+            pChild = lastChild();
+            static_cast<GeometryNode*>(pChild)->initForRectangles<UniColorMaterial>(1);
         }
 
-        VertexUpdater vertexUpdater{pChild->geometry().vertexDataAs<Geometry::Point2D>()};
-        vertexUpdater.addRectangle(static_cast<float>(startPosition),
-                0.f,
-                static_cast<float>(endPosition) + 1.f,
-                m_waveformRenderer->getBreadth());
-        pChild->material().setUniform(0, matrix);
-        pChild->material().setUniform(1, color);
+        updateNode(static_cast<GeometryNode*>(pChild),
+                matrix,
+                color,
+                {static_cast<float>(startPosition), 0.f},
+                {static_cast<float>(endPosition) + 1.f,
+                        static_cast<float>(m_waveformRenderer->getBreadth())});
 
         pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
     while (pChild) {
-        qDebug() << "Remove unused node for mark range";
-        auto pNext = static_cast<GeometryNode*>(pChild->nextSibling());
+        auto pNext = pChild->nextSibling();
         removeChildNode(pChild);
         pChild = pNext;
     }
+}
+
+void WaveformRenderMarkRange::updateNode(GeometryNode* pChild,
+        const QMatrix4x4& matrix,
+        QColor color,
+        QVector2D lt,
+        QVector2D rb) {
+    VertexUpdater vertexUpdater{pChild->geometry().vertexDataAs<Geometry::Point2D>()};
+    vertexUpdater.addRectangle(lt, rb);
+    pChild->material().setUniform(0, matrix);
+    pChild->material().setUniform(1, color);
 }
 
 } // namespace allshader

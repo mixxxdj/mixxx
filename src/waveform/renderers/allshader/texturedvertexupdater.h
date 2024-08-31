@@ -12,16 +12,12 @@ class rendergraph::TexturedVertexUpdater {
             : m_pData(pData),
               m_pWrite(pData) {
     }
-
     void addRectangle(
-            float x1,
-            float y1,
-            float x2,
-            float y2,
-            float tx1,
-            float ty1,
-            float tx2,
-            float ty2) {
+            QVector2D lt, QVector2D rb, QVector2D tlr, QVector2D trb) {
+        addRectangle(lt.x(), lt.y(), rb.x(), rb.y(), tlr.x(), tlr.y(), trb.x(), trb.y());
+    }
+    void addRectangle(
+            float x1, float y1, float x2, float y2, float tx1, float ty1, float tx2, float ty2) {
         addTriangle(x1, y1, x2, y1, x1, y2, tx1, ty1, tx2, ty1, tx1, ty2);
         addTriangle(x1, y2, x2, y2, x2, y1, tx1, ty2, tx2, ty2, tx2, ty1);
     }

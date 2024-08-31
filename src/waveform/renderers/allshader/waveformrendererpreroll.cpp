@@ -90,12 +90,12 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformRendererPreroll::preprocess() {
-    if (!preprocessSelf()) {
+    if (!preprocessInner()) {
         geometry().allocate(0);
     }
 }
 
-bool WaveformRendererPreroll::preprocessSelf() {
+bool WaveformRendererPreroll::preprocessInner() {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
@@ -177,15 +177,12 @@ bool WaveformRendererPreroll::preprocessSelf() {
 
         const float repetitions = x / markerLength;
 
-        vertexUpdater.addRectangle(x,
-                halfBreadth - halfMarkerBreadth,
-                0,
-                m_isSlipRenderer ? halfBreadth
-                                 : halfBreadth + halfMarkerBreadth,
-                0.f,
-                0.f,
-                repetitions,
-                m_isSlipRenderer ? 0.5 : 1.f);
+        vertexUpdater.addRectangle({x, halfBreadth - halfMarkerBreadth},
+                {0,
+                        m_isSlipRenderer ? halfBreadth
+                                         : halfBreadth + halfMarkerBreadth},
+                {0.f, 0.f},
+                {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
     }
 
     if (postRollVisible) {
@@ -204,15 +201,12 @@ bool WaveformRendererPreroll::preprocessSelf() {
 
         const float repetitions = (end - x) / markerLength;
 
-        vertexUpdater.addRectangle(x,
-                halfBreadth - halfMarkerBreadth,
-                end,
-                m_isSlipRenderer ? halfBreadth
-                                 : halfBreadth + halfMarkerBreadth,
-                0.f,
-                0.f,
-                repetitions,
-                m_isSlipRenderer ? 0.5 : 1.f);
+        vertexUpdater.addRectangle({x, halfBreadth - halfMarkerBreadth},
+                {end,
+                        m_isSlipRenderer ? halfBreadth
+                                         : halfBreadth + halfMarkerBreadth},
+                {0.f, 0.f},
+                {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());

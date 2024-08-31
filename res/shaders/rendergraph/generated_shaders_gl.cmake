@@ -1,10 +1,14 @@
 set(generated_shaders_gl
     endoftrack.vert.gl
     pattern.vert.gl
+    rgb.vert.gl
+    rgba.vert.gl
     texture.vert.gl
     unicolor.vert.gl
     endoftrack.frag.gl
     pattern.frag.gl
+    rgb.frag.gl
+    rgba.frag.gl
     texture.frag.gl
     unicolor.frag.gl
 )

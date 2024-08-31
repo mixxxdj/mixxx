@@ -58,7 +58,8 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     appendChildTo(pOpacityNode, waveformSignalRenderer);
 
     appendChildTo(pOpacityNode, addRenderer<WaveformRenderBeat>());
-    appendChildTo(pOpacityNode, addRenderer<WaveformRenderMark>());
+    m_pWaveformRenderMark = addRenderer<WaveformRenderMark>();
+    appendChildTo(pOpacityNode, m_pWaveformRenderMark);
 
     // if the signal renderer supports slip, we add it again, now for slip, together with the
     // other slip renderers
@@ -149,7 +150,8 @@ void WaveformWidget::paintGL() {
     // opacity of 0.f effectively skips the subtree rendering
     m_pOpacityNode->setOpacity(shouldOnlyDrawBackground() ? 0.f : 1.f);
 
-    m_pWaveformRenderMarkRange->updateNode();
+    m_pWaveformRenderMark->update();
+    m_pWaveformRenderMarkRange->update();
 
     m_pGraph->preprocess();
     m_pGraph->render();
@@ -161,10 +163,13 @@ void WaveformWidget::castToQWidget() {
 
 void WaveformWidget::initializeGL() {
     m_pGraph->initialize();
+    m_pWaveformRenderMark->initialize();
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
     m_pGraph->resize(w, h);
+
+    m_pWaveformRenderMark->resize();
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {

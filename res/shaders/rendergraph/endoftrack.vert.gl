@@ -1,12 +1,12 @@
 #version 120
 //// GENERATED - EDITS WILL BE OVERWRITTEN
 
-varying float vgradient;
+varying float vGradient;
 attribute float gradient;
 attribute vec4 position;
 
 void main()
 {
-    vgradient = gradient;
+    vGradient = gradient;
     gl_Position = position;
 }

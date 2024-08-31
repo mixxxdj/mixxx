@@ -1,12 +1,16 @@
 set(shaders
-    endoftrack.vert
     endoftrack.frag
-    texture.vert
-    texture.frag
-    unicolor.vert
-    unicolor.frag
-    pattern.vert
+    endoftrack.vert
     pattern.frag
+    pattern.vert
+    rgb.frag
+    rgb.vert
+    rgba.frag
+    rgba.vert
+    texture.frag
+    texture.vert
+    unicolor.frag
+    unicolor.vert
 )
 
 qt6_add_shaders(rendergraph_sg "shaders-sg"

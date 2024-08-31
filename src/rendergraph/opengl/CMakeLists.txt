@@ -33,6 +33,10 @@ add_library(rendergraph_gl
     ../material/patternmaterial.h
     ../material/texturematerial.cpp
     ../material/texturematerial.h
+    ../material/rgbamaterial.cpp
+    ../material/rgbamaterial.h
+    ../material/rgbmaterial.cpp
+    ../material/rgbmaterial.h
     ../material/unicolormaterial.cpp
     ../material/unicolormaterial.h
     geometrynode_impl.cpp

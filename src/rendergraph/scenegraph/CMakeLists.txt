@@ -31,6 +31,10 @@ add_library(rendergraph_sg
     ../material/endoftrackmaterial.h
     ../material/patternmaterial.cpp
     ../material/patternmaterial.h
+    ../material/rgbamaterial.cpp
+    ../material/rgbamaterial.h
+    ../material/rgbmaterial.cpp
+    ../material/rgbmaterial.h
     ../material/texturematerial.cpp
     ../material/texturematerial.h
     ../material/unicolormaterial.cpp

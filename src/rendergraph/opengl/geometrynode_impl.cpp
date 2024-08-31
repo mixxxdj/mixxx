@@ -16,13 +16,18 @@ GLenum toGlDrawingMode(Geometry::DrawingMode mode) {
 } // namespace
 
 void GeometryNode::Impl::render() {
+    Geometry::Impl& geometry = m_pGeometry->impl();
+
+    if (geometry.vertexCount() == 0) {
+        return;
+    }
+
+    Material::Impl& material = m_pMaterial->impl();
+
     glEnable(GL_BLEND);
     // qt scene graph uses premultiplied alpha color in the shader,
     // so we need to do the same
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    Material::Impl& material = m_pMaterial->impl();
-    Geometry::Impl& geometry = m_pGeometry->impl();
 
     QOpenGLShaderProgram& shader = material.glShader();
     shader.bind();

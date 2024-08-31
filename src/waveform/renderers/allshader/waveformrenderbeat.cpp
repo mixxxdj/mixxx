@@ -19,10 +19,8 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
-    setGeometry(std::make_unique<Geometry>(UniColorMaterial::attributes(), 0));
-    setMaterial(std::make_unique<UniColorMaterial>());
+    initForRectangles<UniColorMaterial>(0);
     setUsePreprocess(true);
-    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
@@ -37,12 +35,12 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformRenderBeat::preprocess() {
-    if (!preprocessSelf()) {
+    if (!preprocessInner()) {
         geometry().allocate(0);
     }
 }
 
-bool WaveformRenderBeat::preprocessSelf() {
+bool WaveformRenderBeat::preprocessInner() {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
@@ -119,10 +117,8 @@ bool WaveformRenderBeat::preprocessSelf() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        vertexUpdater.addRectangle(x1,
-                0.f,
-                x2,
-                m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth);
+        vertexUpdater.addRectangle({x1, 0.f},
+                {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth});
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());

@@ -2,10 +2,7 @@
 
 #include <QColor>
 
-#include "rendergraph/opengl/openglnode.h"
-#include "shaders/rgbashader.h"
-#include "shaders/textureshader.h"
-#include "util/opengltexture2d.h"
+#include "rendergraph/node.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
@@ -21,22 +18,23 @@ class WaveformRenderMark;
 }
 
 class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
-                                      public rendergraph::OpenGLNode {
+                                      public rendergraph::Node {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
-    void draw(QPainter* painter, QPaintEvent* event) override {
-        Q_UNUSED(painter);
-        Q_UNUSED(event);
-    }
+    // Pure virtual from WaveformRendererAbstract, not used
+    void draw(QPainter* painter, QPaintEvent* event) override final;
 
     bool init() override;
 
-    void initializeGL() override;
-    void paintGL() override;
-    void resizeGL(int w, int h) override;
+    void initialize();
+    void resize();
+    void update();
+
+    // Virtual for rendergraph::Node
+    bool isSubtreeBlocked() const override;
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
@@ -50,13 +48,14 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p3);
 
     void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
-    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
     void updateUntilMark(double playPosition, double markerPosition);
     void drawUntilMark(const QMatrix4x4& matrix, float x);
     float getMaxHeightForText() const;
+    void updateRangeNode(rendergraph::GeometryNode* pNode,
+            const QMatrix4x4& matrix,
+            const QRectF& rect,
+            QColor color);
 
-    mixxx::RGBAShader m_rgbaShader;
-    mixxx::TextureShader m_textureShader;
     int m_beatsUntilMark;
     double m_timeUntilMark;
     double m_currentBeatPosition;
@@ -65,8 +64,10 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     bool m_isSlipRenderer;
 
-    DigitsRenderNode* m_pDigitsRenderNode;
+    rendergraph::Node* m_pRangeNodesParent{};
+    rendergraph::Node* m_pMarkNodesParent{};
     rendergraph::GeometryNode* m_pPlayPosNode;
+    DigitsRenderNode* m_pDigitsRenderNode{};
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

@@ -10,7 +10,10 @@ class rendergraph::VertexUpdater {
             : m_pData(pData),
               m_pWrite(pData) {
     }
-
+    void addRectangle(
+            QVector2D lt, QVector2D rb) {
+        addRectangle(lt.x(), lt.y(), rb.x(), rb.y());
+    }
     void addRectangle(
             float x1,
             float y1,

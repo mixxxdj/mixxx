@@ -38,7 +38,7 @@ class allshader::WaveformRendererPreroll final
     float m_markerLength{};
     bool m_isSlipRenderer;
 
-    bool preprocessSelf();
+    bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };

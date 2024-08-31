@@ -247,6 +247,10 @@ void allshader::DigitsRenderNode::update(const QMatrix4x4& matrix,
     material().setUniform(0, matrix);
 }
 
+void allshader::DigitsRenderNode::clear() {
+    geometry().allocate(0);
+}
+
 float allshader::DigitsRenderNode::addVertices(TexturedVertexUpdater& vertexUpdater,
         float x,
         float y,
@@ -260,14 +264,10 @@ float allshader::DigitsRenderNode::addVertices(TexturedVertexUpdater& vertexUpda
         }
         int index = charToIndex(c);
 
-        vertexUpdater.addRectangle(x,
-                y,
-                x + m_width[index],
-                y + height(),
-                m_offset[index],
-                0.f,
-                m_offset[index + 1],
-                1.f);
+        vertexUpdater.addRectangle({x, y},
+                {x + m_width[index], y + height()},
+                {m_offset[index], 0.f},
+                {m_offset[index + 1], 1.f});
         x += m_width[index];
     }
 
