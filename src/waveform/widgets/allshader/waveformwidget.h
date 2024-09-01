@@ -1,7 +1,7 @@
 #pragma once
 
+#include "rendergraph/graph.h"
 #include "rendergraph/opacitynode.h"
-#include "rendergraph/opengl/graph.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "waveform/widgets/waveformwidgetvars.h"

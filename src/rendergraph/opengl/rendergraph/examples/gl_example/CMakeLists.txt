@@ -3,7 +3,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL)
 qt_add_executable(gl_example
     window.cpp window.h
     main.cpp
-    ../common/examplenodes.cpp
 )
 
 set_target_properties(gl_example PROPERTIES
@@ -13,11 +12,11 @@ set_target_properties(gl_example PROPERTIES
 
 target_link_libraries(gl_example PRIVATE
     rendergraph_gl
+    rendergraph_examples
     Qt6::Core
     Qt6::Gui
     Qt6::OpenGL
 )
-target_include_directories(gl_example PRIVATE ../common)
 
 qt_add_resources(gl_example "gl_example"
     PREFIX

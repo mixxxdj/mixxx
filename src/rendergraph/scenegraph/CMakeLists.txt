@@ -1,44 +1,44 @@
 add_library(rendergraph_sg
-    ../attribute.h
-    ../attributeset.cpp
-    ../attributeset.h
-    ../context.cpp
-    ../context.h
-    ../geometry.cpp
-    ../geometry.h
-    ../geometrynode.cpp
-    ../geometrynode.h
-    ../material.cpp
-    ../material.h
-    ../materialshader.cpp
-    ../materialshader.h
-    ../materialtype.cpp
-    ../materialtype.h
-    ../node.cpp
-    ../node.h
-    ../opacitynode.cpp
-    ../opacitynode.h
-    ../texture.cpp
-    ../texture.h
-    ../types.cpp
-    ../types.h
-    ../uniform.h
-    ../uniformscache.cpp
-    ../uniformscache.h
-    ../uniformset.cpp
-    ../uniformset.h
-    ../material/endoftrackmaterial.cpp
-    ../material/endoftrackmaterial.h
-    ../material/patternmaterial.cpp
-    ../material/patternmaterial.h
-    ../material/rgbamaterial.cpp
-    ../material/rgbamaterial.h
-    ../material/rgbmaterial.cpp
-    ../material/rgbmaterial.h
-    ../material/texturematerial.cpp
-    ../material/texturematerial.h
-    ../material/unicolormaterial.cpp
-    ../material/unicolormaterial.h
+    rendergraph/attribute.h
+    rendergraph/attributeset.cpp
+    rendergraph/attributeset.h
+    rendergraph/context.cpp
+    rendergraph/context.h
+    rendergraph/geometry.cpp
+    rendergraph/geometry.h
+    rendergraph/geometrynode.cpp
+    rendergraph/geometrynode.h
+    rendergraph/material.cpp
+    rendergraph/material.h
+    rendergraph/materialshader.cpp
+    rendergraph/materialshader.h
+    rendergraph/materialtype.cpp
+    rendergraph/materialtype.h
+    rendergraph/node.cpp
+    rendergraph/node.h
+    rendergraph/opacitynode.cpp
+    rendergraph/opacitynode.h
+    rendergraph/texture.cpp
+    rendergraph/texture.h
+    rendergraph/types.cpp
+    rendergraph/types.h
+    rendergraph/uniform.h
+    rendergraph/uniformscache.cpp
+    rendergraph/uniformscache.h
+    rendergraph/uniformset.cpp
+    rendergraph/uniformset.h
+    ../common/rendergraph/material/endoftrackmaterial.cpp
+    ../common/rendergraph/material/endoftrackmaterial.h
+    ../common/rendergraph/material/patternmaterial.cpp
+    ../common/rendergraph/material/patternmaterial.h
+    ../common/rendergraph/material/rgbamaterial.cpp
+    ../common/rendergraph/material/rgbamaterial.h
+    ../common/rendergraph/material/rgbmaterial.cpp
+    ../common/rendergraph/material/rgbmaterial.h
+    ../common/rendergraph/material/texturematerial.cpp
+    ../common/rendergraph/material/texturematerial.h
+    ../common/rendergraph/material/unicolormaterial.cpp
+    ../common/rendergraph/material/unicolormaterial.h
     materialshader_impl.cpp
     private/attributeset_impl.h
     private/context_impl.h
@@ -50,8 +50,8 @@ add_library(rendergraph_sg
     private/node_impl.h
     private/opacitynode_impl.h
     private/texture_impl.h
-    scenegraph.cpp
-    scenegraph.h
+    rendergraph/scenegraph.cpp
+    rendergraph/scenegraph.h
     texture_impl.cpp
 )
 
@@ -62,4 +62,4 @@ target_link_libraries(rendergraph_sg PUBLIC
     Qt6::Quick
 )
 
-target_include_directories(rendergraph_sg PUBLIC ../.. PRIVATE private)
+target_include_directories(rendergraph_sg PUBLIC . ../common PRIVATE private)

@@ -29,11 +29,11 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     bool init() override;
 
-    void initialize();
-    void resize();
     void update();
 
     // Virtual for rendergraph::Node
+    void initialize() override;
+    void resize(int, int) override;
     bool isSubtreeBlocked() const override;
 
   private:

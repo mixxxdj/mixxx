@@ -8,7 +8,7 @@
 
 #include "examplenodes.h"
 #include "rendergraph/context.h"
-#include "rendergraph/scenegraph.h"
+#include "rendergraph/scenegraph/scenegraph.h"
 
 CustomItem::CustomItem(QQuickItem* parent)
         : QQuickItem(parent) {

@@ -2,13 +2,12 @@ qt_add_executable(sg_example WIN32 MACOSX_BUNDLE
     customitem.cpp
     customitem.h
     main.cpp
-    ../common/examplenodes.cpp
 )
 
 target_link_libraries(sg_example PRIVATE
     rendergraph_sg
+    rendergraph_examples
 )
-target_include_directories(sg_example PRIVATE ../common)
 
 qt_add_qml_module(sg_example
     URI RenderGraph

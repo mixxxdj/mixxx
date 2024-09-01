@@ -5,7 +5,7 @@
 #include <QWheelEvent>
 #include <iostream>
 
-#include "rendergraph/opengl/shadercache.h"
+#include "rendergraph/shadercache.h"
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
@@ -163,13 +163,10 @@ void WaveformWidget::castToQWidget() {
 
 void WaveformWidget::initializeGL() {
     m_pGraph->initialize();
-    m_pWaveformRenderMark->initialize();
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
     m_pGraph->resize(w, h);
-
-    m_pWaveformRenderMark->resize();
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {

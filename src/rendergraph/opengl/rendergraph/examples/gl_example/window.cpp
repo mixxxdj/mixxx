@@ -2,7 +2,7 @@
 
 #include "examplenodes.h"
 #include "rendergraph/context.h"
-#include "rendergraph/graph.h"
+#include "rendergraph/opengl/graph.h"
 
 Window::Window() {
 }

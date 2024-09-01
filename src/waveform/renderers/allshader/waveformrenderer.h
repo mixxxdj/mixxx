@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendergraph/opengl/openglnode.h"
+#include "rendergraph/openglnode.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
 class WaveformWidgetRenderer;

@@ -167,6 +167,7 @@ void allshader::WaveformRenderMark::initialize() {
     m_pDigitsRenderNode->updateTexture(untilMarkTextPointSize,
             getMaxHeightForText(),
             m_waveformRenderer->getDevicePixelRatio());
+    Node::initialize();
 }
 
 void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
@@ -507,7 +508,7 @@ void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
     painter->fillPath(triangle, fillColor);
 }
 
-void allshader::WaveformRenderMark::resize() {
+void allshader::WaveformRenderMark::resize(int, int) {
     // Will create textures so requires OpenGL context
     updateMarkImages();
     updatePlayPosMarkTexture();
