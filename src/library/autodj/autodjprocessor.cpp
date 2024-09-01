@@ -566,6 +566,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 setCrossfader(1.0);
             }
         }
+        m_crossfaderStartCenter = m_pConfig->getValue<bool>(ConfigKey(kConfigKey,
+                QStringLiteral("center_xfader_when_starting_xfade")));
         emitAutoDJStateChanged(m_eState);
     } else { // Disable Auto DJ
         m_pEnabledAutoDJ->setAndConfirm(0.0);
@@ -832,6 +834,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         double crossfaderTarget;
         if (m_eState == ADJ_LEFT_FADING) {
             crossfaderTarget = 1.0;
+
         } else if (m_eState == ADJ_RIGHT_FADING) {
             crossfaderTarget = -1.0;
         } else {
@@ -859,17 +862,29 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             double transitionProgress = (thisPlayPosition - thisDeck->fadeBeginPos) /
                     (thisDeck->fadeEndPos - thisDeck->fadeBeginPos);
             double transitionStep = transitionProgress - m_transitionProgress;
+
+            if ((transitionProgress == 0.0)  && 
+                (m_crossfaderStartCenter))
+                {
+                setCrossfader(0.0); // So we start at the mid point before we make any fader moves.
+                }
             if (transitionStep > 0.0) {
                 // We have made progress.
                 // Backward seeks pause the transitions; forward seeks speed up
                 // the transitions. If there has been a seek beyond endPos, end
                 // the transition immediately.
-                double remainingCrossfader = crossfaderTarget - currentCrossfader;
-                double adjustment = remainingCrossfader /
-                        (1.0 - m_transitionProgress) * transitionStep;
-                // we move the crossfader linearly with
-                // movements in this track's play position.
-                setCrossfader(currentCrossfader + adjustment);
+                if ((m_crossfaderStartCenter) &&
+                    (transitionProgress <= ((thisDeck->fadeEndPos - thisDeck->fadeBeginPos)/2))) {
+                    // We want the cross fader to remain in the middle.
+                    setCrossfader(0.0);
+                } else {
+                    double remainingCrossfader = crossfaderTarget - currentCrossfader;
+                    double adjustment = remainingCrossfader /
+                            (1.0 - m_transitionProgress) * transitionStep;
+                    // we move the crossfader linearly with
+                    // movements in this track's play position.
+                    setCrossfader(currentCrossfader + adjustment);
+                }
             }
             m_transitionProgress = transitionProgress;
             // if we are at 1.0 here, we need an additional callback until the last
@@ -1343,6 +1358,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 
     switch (m_transitionMode) {
+//    case TransitionMode::RadioFullIntroOutro:
     case TransitionMode::FullIntroOutro: {
         // Use the outro or intro length for the transition time, whichever is
         // shorter. Let the full outro and intro play; do not cut off any part

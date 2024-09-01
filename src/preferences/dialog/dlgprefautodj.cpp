@@ -61,6 +61,10 @@ void DlgPrefAutoDJ::slotUpdate() {
     // Re-center the crossfader instantly when AutoDJ is disabled
     CenterXfaderCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "center_xfader_when_disabling"), false));
+
+    CrossfaderStartCenterCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "center_xfader_when_starting_xfade"), false));
+
 }
 
 void DlgPrefAutoDJ::slotApply() {
@@ -81,7 +85,10 @@ void DlgPrefAutoDJ::slotApply() {
 
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "center_xfader_when_disabling"),
             CenterXfaderCheckBox->isChecked());
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "center_xfader_when_starting_xfade"),
+            CrossfaderStartCenterCheckBox->isChecked());
 }
+
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
     MinimumAvailableSpinBox->setValue(20);
@@ -96,6 +103,7 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     RandomQueueMinimumSpinBox->setValue(5);
 
     CenterXfaderCheckBox->setChecked(false);
+    CrossfaderStartCenterCheckBox->setChecked(false);
 }
 
 void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {

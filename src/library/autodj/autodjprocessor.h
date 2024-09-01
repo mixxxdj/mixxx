@@ -285,9 +285,11 @@ class AutoDJProcessor : public QObject {
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
+    bool m_crossfaderStartCenter;
 
     QList<DeckAttributes*> m_decks;
 
+    
     ControlProxy* m_pCOCrossfader;
     ControlProxy* m_pCOCrossfaderReverse;
 
