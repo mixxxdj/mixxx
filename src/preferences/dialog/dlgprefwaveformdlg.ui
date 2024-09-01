@@ -18,7 +18,7 @@
    <item>
     <widget class="QGroupBox" name="waveform_groupbox">
      <property name="title">
-      <string>Waveform</string>
+      <string>Scrolling Waveforms</string>
      </property>
      <layout class="QGridLayout" name="waveform_layout">
 
@@ -586,7 +586,7 @@ Select from different types of displays for the waveform, which differ primarily
    <item>
     <widget class="QGroupBox" name="overview_groupbox">
      <property name="title">
-      <string>Waveform Overview</string>
+      <string>Waveform Overviews</string>
      </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
