@@ -54,64 +54,44 @@
       </item>
 
       <item row="1" column="1" colspan="3">
-       <layout class="QHBoxLayout" name="waveform_type_layout">
+       <widget class="QComboBox" name="waveformTypeComboBox">
+        <property name="toolTip">
+         <string>The waveform shows the waveform envelope of the track near the current playback position.
+Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="2" column="1" colspan="3">
+       <layout class="QHBoxLayout" name="waveform_options_layout">
+
         <item>
-         <widget class="QComboBox" name="waveformTypeComboBox">
-          <property name="toolTip">
-           <string>The waveform shows the waveform envelope of the track near the current playback position.
- Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+         <widget class="QCheckBox" name="useAccelerationCheckBox">
+          <property name="text">
+           <string>Use acceleration</string>
           </property>
          </widget>
         </item>
+
         <item>
-         <spacer name="waveformSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="useAccelerationCheckBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QCheckBox" name="splitLeftRightCheckBox">
           <property name="text">
-           <string>Use acceleration</string>
+           <string>Stereo coloration</string>
+          </property>
+         </widget>
+        </item>
+
+        <item>
+         <widget class="QCheckBox" name="highDetailCheckBox">
+          <property name="text">
+           <string>High details</string>
           </property>
          </widget>
         </item>
        </layout>
       </item>
 
-      <item row="2" column="1">
-       <widget class="QCheckBox" name="splitLeftRightCheckBox">
-        <property name="text">
-         <string>Stereo coloration</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="2" column="2">
-       <widget class="QCheckBox" name="highDetailCheckBox">
-        <property name="text">
-         <string>High details</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="4" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="frameRateLabel">
         <property name="text">
          <string>Frame rate</string>
@@ -125,7 +105,7 @@
        </widget>
       </item>
 
-      <item row="4" column="1" colspan="2">
+      <item row="3" column="1" colspan="2">
        <widget class="QSlider" name="frameRateSlider">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -154,7 +134,7 @@
        </widget>
       </item>
 
-      <item row="4" column="3">
+      <item row="3" column="3">
        <widget class="QSpinBox" name="frameRateSpinBox">
         <property name="toolTip">
          <string/>
@@ -174,7 +154,7 @@
        </widget>
       </item>
 
-      <item row="5" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="endOfTrackWarningTimeLabel">
         <property name="text">
          <string>End of track warning</string>
@@ -188,7 +168,7 @@
        </widget>
       </item>
 
-      <item row="5" column="1" colspan="2">
+      <item row="4" column="1" colspan="2">
        <widget class="QSlider" name="endOfTrackWarningTimeSlider">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -217,7 +197,7 @@
        </widget>
       </item>
 
-      <item row="5" column="3">
+      <item row="4" column="3">
        <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
         <property name="toolTip">
          <string>Highlight the waveforms when the last seconds of a track remains.</string>
@@ -237,7 +217,7 @@
        </widget>
       </item>
 
-      <item row="6" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="BeatgridWaveform">
         <property name="toolTip">
          <string/>
@@ -254,7 +234,7 @@
        </widget>
       </item>
 
-      <item row="6" column="1" colspan="2">
+      <item row="5" column="1" colspan="2">
        <widget class="QSlider" name="beatGridAlphaSlider">
         <property name="maximum">
          <number>100</number>
@@ -268,7 +248,7 @@
        </widget>
       </item>
 
-      <item row="6" column="3">
+      <item row="5" column="3">
        <widget class="QSpinBox" name="beatGridAlphaSpinBox">
         <property name="toolTip">
          <string>Set amount of opacity on beat grid lines.</string>
@@ -285,7 +265,7 @@
        </widget>
       </item>
 
-      <item row="7" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Play marker position</string>
@@ -293,7 +273,7 @@
        </widget>
       </item>
 
-      <item row="7" column="1" colspan="3">
+      <item row="6" column="1" colspan="3">
        <widget class="QSlider" name="playMarkerPositionSlider">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -325,7 +305,7 @@
        </widget>
       </item>
 
-      <item row="8" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="defaultZoomLabel">
         <property name="text">
          <string extracomment="Waveform zoom">Default zoom level</string>
@@ -339,11 +319,11 @@
        </widget>
       </item>
 
-      <item row="8" column="1" colspan="3">
+      <item row="7" column="1" colspan="3">
        <widget class="QComboBox" name="defaultZoomComboBox"/>
       </item>
 
-      <item row="9" column="1" colspan="3">
+      <item row="8" column="1" colspan="3">
        <widget class="QCheckBox" name="synchronizeZoomCheckBox">
         <property name="toolTip">
          <string>Synchronize zoom level across all waveform displays.</string>
@@ -354,7 +334,7 @@
        </widget>
       </item>
 
-      <item row="10" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="visualGainLabel">
         <property name="text">
          <string>Visual gain</string>
@@ -368,7 +348,7 @@
        </widget>
       </item>
 
-      <item row="10" column="1" colspan="3">
+      <item row="9" column="1" colspan="3">
        <layout class="QGridLayout" name="gain_layout">
 
         <item row="1" column="2">
@@ -503,7 +483,7 @@
        </layout>
       </item>
 
-      <item row="11" column="0">
+      <item row="10" column="0">
        <widget class="QLabel" name="untilMarkLabel">
         <property name="text">
          <string>Play marker hints</string>
@@ -514,7 +494,7 @@
        </widget>
       </item>
 
-      <item row="11" column="1" colspan="3">
+      <item row="10" column="1" colspan="3">
        <widget class="QCheckBox" name="untilMarkShowBeatsCheckBox">
         <property name="text">
          <string>Beats until next marker</string>
@@ -522,7 +502,7 @@
        </widget>
       </item>
 
-      <item row="12" column="1" colspan="3">
+      <item row="11" column="1" colspan="3">
        <widget class="QCheckBox" name="untilMarkShowTimeCheckBox">
         <property name="text">
          <string>Time until next marker</string>
@@ -530,7 +510,7 @@
        </widget>
       </item>
 
-      <item row="13" column="1" colspan="3">
+      <item row="12" column="1" colspan="3">
        <layout class="QGridLayout" name="marker_options_layout">
 
         <item row="0" column="0">
