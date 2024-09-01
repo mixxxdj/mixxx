@@ -96,7 +96,9 @@ void MetronomeEffect::processChannel(
                 engineParameters.sampleRate() * 60 / m_pBpmParameter->value());
     }
 
-    SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+    if (pOutput != pInput) {
+        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+    }
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.

@@ -141,7 +141,9 @@ void LoudnessContourEffect::processChannel(
     if (filterGainDb == 0) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        }
     } else {
         pState->m_low->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         pState->m_high->process(pOutput, pState->m_pBuf, engineParameters.samplesPerBuffer());
