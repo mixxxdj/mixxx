@@ -1107,6 +1107,7 @@ void EngineBuffer::processTrackLocked(
     }
 
     for (const auto& pControl : std::as_const(m_engineControls)) {
+        // m_playPos is already updated here and points to the end of the played buffer
         pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
         pControl->process(rate, m_playPos, iBufferSize);
     }

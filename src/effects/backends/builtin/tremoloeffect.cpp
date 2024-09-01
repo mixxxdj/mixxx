@@ -139,7 +139,7 @@ void TremoloEffect::processChannel(
 
     if (enableState == EffectEnableState::Enabling || quantizeEnabling || tripletDisabling) {
         if (gf.has_beat_length_sec && gf.has_beat_fraction) {
-            currentFrame = static_cast<unsigned int>(gf.beat_fraction *
+            currentFrame = static_cast<unsigned int>(gf.beat_fraction_buffer_end *
                     gf.beat_length_sec * engineParameters.sampleRate());
         } else {
             currentFrame = 0;

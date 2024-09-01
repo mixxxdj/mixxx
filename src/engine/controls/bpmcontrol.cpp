@@ -1115,7 +1115,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
         }
 
         pGroupFeatures->has_beat_fraction = true;
-        pGroupFeatures->beat_fraction = beatFraction;
+        pGroupFeatures->beat_fraction_buffer_end = beatFraction;
     }
 }
 
