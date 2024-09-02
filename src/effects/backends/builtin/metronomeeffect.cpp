@@ -77,9 +77,8 @@ void MetronomeEffect::processChannel(
     }
 
     SINT maxFrames;
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = static_cast<SINT>(
-                engineParameters.sampleRate() * groupFeatures.beat_length_sec);
+    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_frames) {
+        maxFrames = static_cast<SINT>(groupFeatures.beat_length_frames);
         if (groupFeatures.has_beat_fraction) {
             const auto currentFrame = static_cast<SINT>(
                     maxFrames * groupFeatures.beat_fraction_buffer_end);
