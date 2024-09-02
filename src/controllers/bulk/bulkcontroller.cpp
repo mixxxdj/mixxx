@@ -2,6 +2,8 @@
 
 #include <libusb.h>
 
+#include <algorithm>
+
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
@@ -148,23 +150,20 @@ int BulkController::open() {
     }
 
     /* Look up endpoint addresses in supported database */
-    int i;
-    for (i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == m_vendorId) &&
-                (bulk_supported[i].product_id == m_productId)) {
-            m_inEndpointAddr = bulk_supported[i].in_epaddr;
-            m_outEndpointAddr = bulk_supported[i].out_epaddr;
-#if defined(__WINDOWS__) || defined(__APPLE__)
-            m_interfaceNumber = bulk_supported[i].interface_number;
-#endif
-            break;
-        }
-    }
 
-    if (bulk_supported[i].vendor_id == 0) {
+    const bulk_supported_t* pDevice = std::find_if(
+            std::cbegin(bulk_supported), std::cend(bulk_supported), [this](const auto& dev) {
+                return dev.vendor_id == m_vendorId && dev.product_id == m_productId;
+            });
+    if (pDevice == std::cend(bulk_supported)) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
+    m_inEndpointAddr = pDevice->in_epaddr;
+    m_outEndpointAddr = pDevice->out_epaddr;
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    m_interfaceNumber = pDevice->interface_number;
+#endif
 
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == nullptr) {
