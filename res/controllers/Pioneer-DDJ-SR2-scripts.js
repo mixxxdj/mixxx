@@ -539,14 +539,12 @@ DDJSR2.Channel = function(channelOffset) {
         inKey: "pregain",
     });
 
-    this.eqKnob = [];
     // EQ High, Mid and Low
-    for (let k = 1; k <= 3; k++) {
-        this.eqKnob[k] = new components.Pot({
-            group: `[EqualizerRack1_${deck}_Effect1]`,
-            inKey: `parameter${k}`,
-        });
-    }
+    this.eqKnob = [1, 2, 3].map(parameterIndex => new components.Pot({
+        // midi: [0xB0 + channelOffset, 0x07+(parameterIndex-1)*4+(20 if LSB otherwise 0)]
+        group: `[EqualizerRack1_${deck}_Effect1]`,
+        inKey: `parameter${parameterIndex}`,
+    }));
 
     this.pfl = new components.Button({
         midi: [0x90 + channelOffset, 0x54],

@@ -448,7 +448,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[0].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[2].inputMSB</key>
                 <description>DECK 1 EQ HI (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x07</midino>
@@ -458,7 +458,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[0].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[2].inputLSB</key>
                 <description>DECK 1 EQ HI (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x27</midino>
@@ -468,7 +468,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[0].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[1].inputMSB</key>
                 <description>DECK 1 EQ MID (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
@@ -478,7 +478,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[0].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[1].inputLSB</key>
                 <description>DECK 1 EQ MID (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x2B</midino>
@@ -488,7 +488,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[0].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[0].inputMSB</key>
                 <description>DECK 1 EQ LOW (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
@@ -498,7 +498,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[0].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[0].eqKnob[0].inputLSB</key>
                 <description>DECK 1 EQ LOW (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x2F</midino>
@@ -985,7 +985,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[1].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[2].inputMSB</key>
                 <description>DECK 2 EQ HI (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x07</midino>
@@ -995,7 +995,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[1].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[2].inputLSB</key>
                 <description>DECK 2 EQ HI (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x27</midino>
@@ -1005,7 +1005,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[1].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[1].inputMSB</key>
                 <description>DECK 2 EQ MID (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
@@ -1015,7 +1015,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[1].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[1].inputLSB</key>
                 <description>DECK 2 EQ MID (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x2B</midino>
@@ -1025,7 +1025,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[1].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[0].inputMSB</key>
                 <description>DECK 2 EQ LOW (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x0F</midino>
@@ -1035,7 +1035,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[1].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[1].eqKnob[0].inputLSB</key>
                 <description>DECK 2 EQ LOW (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x2F</midino>
@@ -1520,7 +1520,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[2].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[2].inputMSB</key>
                 <description>DECK 3 EQ HI (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x07</midino>
@@ -1530,7 +1530,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[2].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[2].inputLSB</key>
                 <description>DECK 3 EQ HI (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x27</midino>
@@ -1540,7 +1540,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[2].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[1].inputMSB</key>
                 <description>DECK 3 EQ MID (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x0B</midino>
@@ -1550,7 +1550,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[2].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[1].inputLSB</key>
                 <description>DECK 3 EQ MID (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x2B</midino>
@@ -1560,7 +1560,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[2].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[0].inputMSB</key>
                 <description>DECK 3 EQ LOW (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x0F</midino>
@@ -1570,7 +1570,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[2].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[2].eqKnob[0].inputLSB</key>
                 <description>DECK 3 EQ LOW (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x2F</midino>
@@ -2057,7 +2057,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[3].eqKnob[3].inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[2].inputMSB</key>
                 <description>DECK 4 EQ HI (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x07</midino>
@@ -2067,7 +2067,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[3].eqKnob[3].inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[2].inputLSB</key>
                 <description>DECK 4 EQ HI (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x27</midino>
@@ -2077,7 +2077,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[3].eqKnob[2].inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[1].inputMSB</key>
                 <description>DECK 4 EQ MID (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x0B</midino>
@@ -2087,7 +2087,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[3].eqKnob[2].inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[1].inputLSB</key>
                 <description>DECK 4 EQ MID (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x2B</midino>
@@ -2097,7 +2097,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[3].eqKnob[1].inputMSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[0].inputMSB</key>
                 <description>DECK 4 EQ LOW (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x0F</midino>
@@ -2107,7 +2107,7 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DDJSR2.mixer.channels[3].eqKnob[1].inputLSB</key>
+                <key>DDJSR2.mixer.channels[3].eqKnob[0].inputLSB</key>
                 <description>DECK 4 EQ LOW (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x2F</midino>
