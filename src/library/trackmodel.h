@@ -217,7 +217,6 @@ class TrackModel {
 
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key
-    /// @param baseOnly return only a identifier for the whole subsystem
     virtual QString modelKey(bool noSearch) const = 0;
 
     virtual bool getRequireConfirmationToHideRemoveTracks() {
