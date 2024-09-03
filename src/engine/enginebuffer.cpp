@@ -1571,7 +1571,7 @@ double EngineBuffer::getRateRatio() const {
 
 void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (m_pBpmControl != nullptr) {
-        m_pBpmControl->collectFeatures(pGroupFeatures);
+        m_pBpmControl->collectFeatures(pGroupFeatures, m_speed_old);
     }
 }
 

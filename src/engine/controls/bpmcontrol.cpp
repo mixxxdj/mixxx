@@ -1085,7 +1085,7 @@ void BpmControl::resetSyncAdjustment() {
     m_resetSyncAdjustment = true;
 }
 
-void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures, double speed) const {
     // Without a beatgrid we don't know any beat details.
     FrameInfo info = frameInfo();
     if (!info.sampleRate.isValid() || !m_pBeats) {
@@ -1109,6 +1109,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
         const double rateRatio = m_pRateRatio->get();
         if (rateRatio != 0.0) {
             pGroupFeatures->beat_length_frames = beatLengthFrames / rateRatio;
+            pGroupFeatures->scratch_rate = speed / rateRatio;
         }
         pGroupFeatures->beat_fraction_buffer_end = beatFraction;
     }
