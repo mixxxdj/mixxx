@@ -1,7 +1,5 @@
 #pragma once
 
-#include "proto/keys.pb.h"
-
 /// GroupFeatureState communicates metadata about EngineChannels to EffectProcessors.
 struct GroupFeatureState {
     GroupFeatureState()
