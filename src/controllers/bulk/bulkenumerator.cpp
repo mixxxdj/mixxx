@@ -2,23 +2,28 @@
 
 #include <libusb.h>
 
+#include <QDebug>
+#include <algorithm>
+#include <memory>
+#include <span>
+
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
 #include "moc_bulkenumerator.cpp"
+#include "util/assert.h"
 
 BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
         : ControllerEnumerator(),
-          m_context(nullptr),
+          m_context(nullptr, &libusb_exit),
           m_pConfig(pConfig) {
-    libusb_init(&m_context);
+    // TODO: use C++23 std::out_ptr instead
+    libusb_context* ctx;
+    libusb_init(&ctx);
+    m_context.reset(ctx);
 }
 
 BulkEnumerator::~BulkEnumerator() {
     qDebug() << "Deleting USB Bulk devices...";
-    while (m_devices.size() > 0) {
-        delete m_devices.takeLast();
-    }
-    libusb_exit(m_context);
 }
 
 static bool is_interesting(const libusb_device_descriptor& desc) {
@@ -33,29 +38,38 @@ static bool is_interesting(const libusb_device_descriptor& desc) {
 
 QList<Controller*> BulkEnumerator::queryDevices() {
     qDebug() << "Scanning USB Bulk devices:";
-    libusb_device **list;
-    ssize_t cnt = libusb_get_device_list(m_context, &list);
-    ssize_t i = 0;
-    int err = 0;
+    libusb_device** listPtr; // contiguous array of pointers to libusb_device
+    ssize_t cnt = libusb_get_device_list(m_context.get(), &listPtr);
+    VERIFY_OR_DEBUG_ASSERT(cnt >= 0) {
+        // this assumes that if libusb_get_device_list returned an error, no memory was allocated
+        // and listPtr is still uninitialized. Unfortunately the libusb docs don't specify the state
+        // of the arguments in the case of errors.
+        qWarning() << "Error retrieving devicelist: " << libusb_error_name(cnt);
+    }
+    auto list = std::unique_ptr<libusb_device*[],
+            decltype([](libusb_device** list) {
+                libusb_free_device_list(list, true);
+            })>(listPtr);
 
-    for (i = 0; i < cnt; i++) {
-        libusb_device *device = list[i];
+    for (libusb_device* device : std::span(list.get(), cnt)) {
         struct libusb_device_descriptor desc;
 
         libusb_get_device_descriptor(device, &desc);
-        if (is_interesting(desc)) {
-            struct libusb_device_handle* handle = nullptr;
-            err = libusb_open(device, &handle);
-            if (err) {
-                qWarning() << "Error opening a device:" << libusb_error_name(err);
-                continue;
-            }
-
-            BulkController* currentDevice =
-                    new BulkController(m_context, handle, &desc);
-            m_devices.push_back(currentDevice);
+        if (!is_interesting(desc)) {
+            continue;
         }
+        struct libusb_device_handle* handle = nullptr;
+        int err = libusb_open(device, &handle);
+        if (err) {
+            qWarning() << "Error opening a device:" << libusb_error_name(err);
+            continue;
+        }
+        m_devices.push_back(std::make_unique<BulkController>(m_context.get(), handle, &desc));
     }
-    libusb_free_device_list(list, 1);
-    return m_devices;
+    QList<Controller*> devices;
+    devices.reserve(m_devices.size());
+    for (const auto& pController : std::as_const(m_devices)) {
+        devices.push_back(pController.get());
+    }
+    return devices;
 }
