@@ -69,20 +69,8 @@ const QString kSettingsGroup = QLatin1String("[ControllerPreset]");
 
 } // anonymous namespace
 
-QString firstAvailableFilename(QSet<QString>& filenames,
-        const QString& originalFilename) {
-    QString filename = originalFilename;
-    int i = 1;
-    while (filenames.contains(filename)) {
-        i++;
-        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
-    }
-    filenames.insert(filename);
-    return filename;
-}
-
-bool controllerCompare(Controller *a,Controller *b) {
-    return a->getName() < b->getName();
+bool controllerCompare(const Controller& lhs, const Controller& rhs) {
+    return lhs.getName() < rhs.getName();
 }
 
 ControllerManager::ControllerManager(UserSettingsPointer pConfig)

@@ -17,7 +17,7 @@ class LegacyControllerMapping;
 class ControllerEnumerator;
 
 /// Function to sort controllers by name
-bool controllerCompare(Controller *a, Controller *b);
+bool controllerCompare(const Controller& lhs, const Controller& rhs);
 
 /// Manages enumeration/operation/deletion of hardware controllers.
 class ControllerManager : public QObject {
