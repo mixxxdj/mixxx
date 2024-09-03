@@ -59,12 +59,12 @@ void MetronomeEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(pInput);
 
-    MetronomeGroupState* gs = pGroupState;
-
     if (enableState == EffectEnableState::Disabled) {
-        gs->m_framesSinceClickStart = 0;
+        // assume click is fully played
         return;
     }
+
+    MetronomeGroupState* gs = pGroupState;
 
     SINT clickSize = kClickSize44100;
     const CSAMPLE* click = kClick44100;
@@ -76,53 +76,60 @@ void MetronomeEffect::processChannel(
         click = kClick48000;
     }
 
-    SINT maxFrames;
-    if (m_pSyncParameter->toBool() && groupFeatures.beat_length_frames.has_value()) {
-        maxFrames = static_cast<SINT>(groupFeatures.beat_length_frames.value());
-        if (groupFeatures.beat_fraction_buffer_end.has_value()) {
-            const auto currentFrame = static_cast<SINT>(
-                    maxFrames * groupFeatures.beat_fraction_buffer_end.value());
-            if (maxFrames > clickSize &&
-                    currentFrame > clickSize &&
-                    currentFrame < maxFrames - clickSize &&
-                    gs->m_framesSinceClickStart > clickSize) {
-                // plays a single click on low speed
-                gs->m_framesSinceClickStart = currentFrame;
-            }
-        }
-    } else {
-        maxFrames = static_cast<SINT>(
-                engineParameters.sampleRate() * 60 / m_pBpmParameter->value());
-    }
-
     if (pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 
+    if (enableState == EffectEnableState::Enabling) {
+        if (m_pSyncParameter->toBool() && groupFeatures.beat_fraction_buffer_end.has_value()) {
+            // Skip first click and sync phase
+            gs->m_framesSinceClickStart = clickSize;
+        } else {
+            // click right away after enabling
+            gs->m_framesSinceClickStart = 0;
+        }
+    }
+
     if (gs->m_framesSinceClickStart < clickSize) {
-        // still in click region, write remaining click frames.
+        // In click region, write remaining click frames.
         const SINT copyFrames =
                 math_min(engineParameters.framesPerBuffer(),
                         clickSize - gs->m_framesSinceClickStart);
         SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart], copyFrames);
     }
 
-    gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
+    double bufferEnd = gs->m_framesSinceClickStart + engineParameters.framesPerBuffer();
 
-    if (gs->m_framesSinceClickStart > maxFrames) {
-        // overflow, all overflowed frames are the start of a new click sound
-        gs->m_framesSinceClickStart -= maxFrames;
-        while (gs->m_framesSinceClickStart > engineParameters.framesPerBuffer()) {
-            // loop into a valid region, this happens if the maxFrames was lowered
-            gs->m_framesSinceClickStart -= engineParameters.framesPerBuffer();
+    double nextClickStart = bufferEnd; // default to "no new click";
+    if (m_pSyncParameter->toBool() && groupFeatures.beat_length_frames.has_value()) {
+        if (groupFeatures.beat_fraction_buffer_end.has_value()) {
+            double beatToBufferEnd =
+                    groupFeatures.beat_length_frames.value() *
+                    groupFeatures.beat_fraction_buffer_end.value();
+            if (bufferEnd > beatToBufferEnd) {
+                // We have a new beat before the current buffer ends
+                nextClickStart = bufferEnd - beatToBufferEnd;
+            }
+        } else {
+            nextClickStart = groupFeatures.beat_length_frames.value();
         }
+    } else {
+        nextClickStart = engineParameters.sampleRate() * 60 / m_pBpmParameter->value();
+    }
 
-        // gs->m_framesSinceClickStart matches now already at the first frame
-        // of next pOutput.
-        const unsigned int outputOffset =
-                engineParameters.framesPerBuffer() - gs->m_framesSinceClickStart;
-        const unsigned int copyFrames =
-                math_min(gs->m_framesSinceClickStart, clickSize);
-        SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], click, copyFrames);
+    if (bufferEnd > nextClickStart) {
+        // We need to start a new click
+        SINT outputOffset = static_cast<SINT>(nextClickStart) - gs->m_framesSinceClickStart;
+        if (outputOffset > 0) {
+            if (outputOffset < engineParameters.framesPerBuffer()) {
+                const SINT copyFrames =
+                        math_min(engineParameters.framesPerBuffer() - outputOffset, clickSize);
+                SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], &click[0], copyFrames);
+                gs->m_framesSinceClickStart = -outputOffset;
+            }
+        }
+    }
+    if (gs->m_framesSinceClickStart < engineParameters.framesPerBuffer() + clickSize) {
+        gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
     }
 }
