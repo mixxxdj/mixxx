@@ -88,10 +88,10 @@ void AutoPanEffect::processChannel(
     double period = m_pPeriodParameter->value();
     const auto smoothing = static_cast<float>(0.5 - m_pSmoothingParameter->value());
 
-    if (groupFeatures.has_beat_length_frames) {
+    if (groupFeatures.beat_length_frames.has_value()) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        period = beats * groupFeatures.beat_length_frames;
+        period = beats * groupFeatures.beat_length_frames.value();
 
         // TODO(xxx) sync phase
         //if (groupFeatures.has_beat_fraction) {

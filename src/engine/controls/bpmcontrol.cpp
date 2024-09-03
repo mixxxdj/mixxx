@@ -1109,12 +1109,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
         const double rateRatio = m_pRateRatio->get();
         if (rateRatio != 0.0) {
             pGroupFeatures->beat_length_frames = beatLengthFrames / rateRatio;
-            pGroupFeatures->has_beat_length_frames = true;
-        } else {
-            pGroupFeatures->has_beat_length_frames = false;
         }
-
-        pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction_buffer_end = beatFraction;
     }
 }

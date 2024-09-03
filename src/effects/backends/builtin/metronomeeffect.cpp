@@ -77,11 +77,11 @@ void MetronomeEffect::processChannel(
     }
 
     SINT maxFrames;
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_frames) {
-        maxFrames = static_cast<SINT>(groupFeatures.beat_length_frames);
-        if (groupFeatures.has_beat_fraction) {
+    if (m_pSyncParameter->toBool() && groupFeatures.beat_length_frames.has_value()) {
+        maxFrames = static_cast<SINT>(groupFeatures.beat_length_frames.value());
+        if (groupFeatures.beat_fraction_buffer_end.has_value()) {
             const auto currentFrame = static_cast<SINT>(
-                    maxFrames * groupFeatures.beat_fraction_buffer_end);
+                    maxFrames * groupFeatures.beat_fraction_buffer_end.value());
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&
                     currentFrame < maxFrames - clickSize &&

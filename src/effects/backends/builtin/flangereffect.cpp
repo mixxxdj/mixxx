@@ -117,13 +117,13 @@ void FlangerEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
-    if (groupFeatures.has_beat_length_frames) {
+    if (groupFeatures.beat_length_frames.has_value()) {
         // lfoPeriodParameter is a number of beats
         lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), kMinLfoBeats);
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_frames;
+        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_frames.value();
     } else {
         // lfoPeriodParameter is a number of seconds
         lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) *

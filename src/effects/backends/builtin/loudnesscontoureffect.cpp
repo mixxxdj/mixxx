@@ -109,9 +109,9 @@ void LoudnessContourEffect::processChannel(
     auto gain = static_cast<CSAMPLE_GAIN>(pState->m_oldGain);
 
     if (enableState != EffectEnableState::Disabling) {
-        bool useGain = m_pUseGain->toBool() && groupFeatures.has_gain;
+        bool useGain = m_pUseGain->toBool() && groupFeatures.gain.has_value();
         double loudness = m_pLoudness->value();
-        double gainKnob = groupFeatures.gain;
+        double gainKnob = groupFeatures.gain.value();
 
         filterGainDb = loudness;
 
