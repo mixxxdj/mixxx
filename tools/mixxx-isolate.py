@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
+import platform
 import signal
 import re
 
@@ -10,6 +11,7 @@ try:
     from cpuset import cset
     from cpuset.commands import proc
     from cpuset.util import CpusetExists
+    from os import system
 
 except ImportError as e:
     sys.stderr.write(e.msg)
@@ -130,6 +132,10 @@ def teardown(args, isolate):
     deleteCpuset(args.cpuset_engine, args.debug)
     deleteCpuset(args.cpuset_isolation, args.debug)
     deleteCpuset(args.cpuset_system, args.debug)
+
+    if prev_gov is not None:
+        log.info(" Restore governor %s" % prev_gov)
+        system("sudo cpufreq-set -g %s" % prev_gov)
 
     log.info(" Cleanup finished")
     print("STATUS: CLEAN")
@@ -351,6 +357,12 @@ def startHelper(args):
     sys.exit(0)
 
 
+def isCpufreqSetAvailable():
+    from shutil import which
+
+    return which("cpufreq-set") is not None
+
+
 def main():
     defaultMixxx = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "mixxx"
@@ -455,6 +467,26 @@ def main():
         if not args.uid:
             log.critical(" No uid passed to worker.")
             sys.exit(1)
+
+        global prev_gov
+        if isCpufreqSetAvailable():
+            prev_gov = subprocess.run(
+                [
+                    "cat",
+                    "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
+                ],
+                capture_output=True,
+            ).stdout.decode()
+            if prev_gov is not None:
+                log.info(" Current governor is '%s'" % prev_gov)
+                log.info(" Set 'performance' governor for all CPUs")
+                system("sudo cpufreq-set -g performance")
+        elif platform.system() == "Linux":
+            log.info(" Command 'cpufreq-set' not found.")
+            log.info(
+                " Required for changing CPU scaling governor to 'performance'."
+            )
+
         isolateSystem(args)
     else:
         startHelper(args)
