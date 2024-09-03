@@ -2,6 +2,9 @@
 
 #include <hidapi.h>
 
+#include <memory>
+#include <unordered_set>
+
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
 #include "controllers/hid/hiddevice.h"
@@ -75,29 +78,30 @@ bool recognizeDevice(const hid_device_info& device_info) {
 
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
-    while (m_devices.size() > 0) {
-        delete m_devices.takeLast();
-    }
+    // devices must be released before hid_exit
+    m_devices.clear();
     hid_exit();
 }
 
 QList<Controller*> HidEnumerator::queryDevices() {
     qInfo() << "Scanning USB HID devices";
 
-    QStringList enumeratedDevices;
-    hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
-    for (const auto* device_info = device_info_list;
+    std::unordered_set<std::string> enumeratedDevices;
+    auto device_info_list = std::unique_ptr<hid_device_info,
+            decltype([](hid_device_info* dev) { hid_free_enumeration(dev); })>(
+            hid_enumerate(0x0, 0x0));
+    for (const auto* device_info = device_info_list.get();
             device_info;
             device_info = device_info->next) {
         auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
         // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
         // so filter them out.
         // https://github.com/libusb/hidapi/issues/298
-        if (enumeratedDevices.contains(deviceInfo.pathRaw())) {
+        bool duplicateDevice = !enumeratedDevices.emplace(deviceInfo.pathRaw()).second;
+        if (duplicateDevice) {
             qInfo() << "Duplicate HID device, excluding" << deviceInfo;
             continue;
         }
-        enumeratedDevices.append(QString(deviceInfo.pathRaw()));
 
         if (!recognizeDevice(*device_info)) {
             qInfo()
@@ -114,10 +118,13 @@ QList<Controller*> HidEnumerator::queryDevices() {
             continue;
         }
 
-        HidController* newDevice = new HidController(std::move(deviceInfo));
-        m_devices.push_back(newDevice);
+        m_devices.push_back(std::make_unique<HidController>(std::move(deviceInfo)));
     }
-    hid_free_enumeration(device_info_list);
+    QList<Controller*> devices;
+    devices.reserve(m_devices.size());
+    for (const auto& pDevice : m_devices) {
+        devices.push_back(pDevice.get());
+    }
 
-    return m_devices;
+    return devices;
 }
