@@ -12,11 +12,12 @@ class Controller;
 class ControllerEnumerator : public QObject {
     Q_OBJECT
   public:
-    ControllerEnumerator();
+    ControllerEnumerator() = default;
     // In this function, the inheriting class must delete the Controllers it
     // creates
-    virtual ~ControllerEnumerator();
+    ~ControllerEnumerator() override = default;
 
+    // Controller pointers are borrowed and instead tied to the lifetime of the enumerator
     virtual QList<Controller*> queryDevices() = 0;
 
     // Sub-classes return true here if their devices must be polled to get data
