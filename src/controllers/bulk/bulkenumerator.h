@@ -7,7 +7,7 @@
 #include "preferences/usersettings.h"
 
 struct libusb_context;
-struct BulkController;
+class BulkController;
 
 /// Locate supported USB bulk controllers
 class BulkEnumerator : public ControllerEnumerator {
