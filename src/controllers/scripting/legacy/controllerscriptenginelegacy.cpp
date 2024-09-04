@@ -245,8 +245,9 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
         // issue). Translating this will help users to fix the issue even
         // when they don't speak english.
         props->setDetails(tr("File:") + QStringLiteral(" ") + filename +
-                QStringLiteral("\n") + tr("Error:") + QStringLiteral(" ") +
-                input.errorString());
+                        QStringLiteral("\n") + tr("Error:") + QStringLiteral(" ") +
+                        input.errorString(),
+                true /* use monospace font / expand Details box */);
 
         // Ask above layer to display the dialog & handle user response
         ErrorDialogHandler::instance()->requestErrorDialog(props);
