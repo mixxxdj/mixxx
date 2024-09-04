@@ -868,7 +868,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // the transition immediately.
                 if ((m_crossfaderStartCenter) &&
                         (transitionProgress <= ((thisDeck->fadeEndPos - thisDeck->fadeBeginPos) / 2))) {
-                    // We want the cross fader to remain in the middle.
+                    // For the first half of the transition we want the "from" deck
+                    // to play at full volume like with a full crossfade transition,
+                    // hence we keep the crossfader in the middle.
                     setCrossfader(0.0);
                 } else {
                     double remainingCrossfader = crossfaderTarget - currentCrossfader;
