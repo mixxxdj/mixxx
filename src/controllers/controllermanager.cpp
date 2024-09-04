@@ -2,6 +2,7 @@
 
 #include <QSet>
 #include <QThread>
+#include <chrono>
 
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -29,15 +30,17 @@
 #include "controllers/bulk/bulkenumerator.h"
 #endif
 
-// http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
+namespace {
+
+using namespace std::literals;
 
 // Poll every 1ms (where possible) for good controller response
 #ifdef __LINUX__
 // Many Linux distros ship with the system tick set to 250Hz so 1ms timer
 // reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
-const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(5);
+constexpr auto kPollInterval = 5ms;
 #else
-const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(1);
+constexpr auto kPollInterval = 1ms;
 #endif
 
 namespace {
@@ -62,10 +65,6 @@ QFileInfo findMappingFile(const QString& pathOrFilename, const QStringList& path
 
     return QFileInfo();
 }
-
-// Legacy code referred to mappings as "presets", so "[ControllerPreset]" must be
-// kept for backwards compatibility.
-const QString kSettingsGroup = QLatin1String("[ControllerPreset]");
 
 } // anonymous namespace
 
@@ -92,7 +91,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         QDir().mkpath(userMappings);
     }
 
-    m_pollTimer.setInterval(kPollInterval.toIntegerMillis());
+    m_pollTimer.setInterval(kPollInterval);
     connect(&m_pollTimer, &QTimer::timeout, this, &ControllerManager::pollDevices);
 
     m_pThread = new QThread;
@@ -353,14 +352,14 @@ void ControllerManager::pollDevices() {
         return;
     }
 
-    mixxx::Duration start = mixxx::Time::elapsed();
+    const auto start = mixxx::Time::now();
     for (Controller* pDevice : std::as_const(m_controllers)) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
     }
 
-    mixxx::Duration duration = mixxx::Time::elapsed() - start;
+    std::chrono::nanoseconds duration = mixxx::Time::now() - start;
     if (duration > kPollInterval) {
         m_skipPoll = true;
     }
