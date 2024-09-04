@@ -2,7 +2,10 @@
 
 #include <QSet>
 #include <QThread>
+#include <algorithm>
 #include <chrono>
+#include <iterator>
+#include <memory>
 
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -43,11 +46,17 @@ constexpr auto kPollInterval = 5ms;
 constexpr auto kPollInterval = 1ms;
 #endif
 
-namespace {
+// Legacy code referred to mappings as "presets", so "[ControllerPreset]" must be
+// kept for backwards compatibility.
+const QString kSettingsGroup = QStringLiteral("[ControllerPreset]");
+
 /// Strip slashes and spaces from device name, so that it can be used as config
 /// key or a filename.
 QString sanitizeDeviceName(QString name) {
-    return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
+    constexpr static QChar kReplacementChar = u'_';
+    return name.replace(' ', kReplacementChar)
+            .replace('/', kReplacementChar)
+            .replace("\\", kReplacementChar);
 }
 
 QFileInfo findMappingFile(const QString& pathOrFilename, const QStringList& paths) {
@@ -78,8 +87,14 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           // WARNING: Do not parent m_pControllerLearningEventFilter to
           // ControllerManager because the CM is moved to its own thread and runs
           // its own event loop.
-          m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
+          m_pControllerLearningEventFilter(std::make_unique<ControllerLearningEventFilter>()),
           m_pollTimer(this),
+          m_mutex(),
+          m_enumerators(),
+          m_controllers({}),
+          m_pThread(nullptr),
+          m_pMainThreadUserMappingEnumerator(nullptr),
+          m_pMainThreadSystemMappingEnumerator(nullptr),
           m_skipPoll(false) {
     qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
             "std::shared_ptr<LegacyControllerMapping>");
@@ -120,11 +135,10 @@ ControllerManager::~ControllerManager() {
     emit requestShutdown();
     m_pThread->wait();
     delete m_pThread;
-    delete m_pControllerLearningEventFilter;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
-    return m_pControllerLearningEventFilter;
+    return m_pControllerLearningEventFilter.get();
 }
 
 void ControllerManager::slotInitialize() {
@@ -132,24 +146,26 @@ void ControllerManager::slotInitialize() {
 
     // Initialize mapping info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
-    m_pMainThreadUserMappingEnumerator = QSharedPointer<MappingInfoEnumerator>(
-            new MappingInfoEnumerator(userMappingsPath(m_pConfig)));
-    m_pMainThreadSystemMappingEnumerator = QSharedPointer<MappingInfoEnumerator>(
-            new MappingInfoEnumerator(resourceMappingsPath(m_pConfig)));
+    m_pMainThreadUserMappingEnumerator =
+            QSharedPointer<MappingInfoEnumerator>::create(
+                    userMappingsPath(m_pConfig));
+    m_pMainThreadSystemMappingEnumerator =
+            QSharedPointer<MappingInfoEnumerator>::create(
+                    resourceMappingsPath(m_pConfig));
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
 #ifdef __PORTMIDI__
-    m_enumerators.append(new PortMidiEnumerator());
+    m_enumerators.push_back(std::make_unique<PortMidiEnumerator>());
 #endif
 #ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator(m_pConfig));
+    m_enumerators.push_back(std::make_unique<Hss1394Enumerator>(m_pConfig));
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator(m_pConfig));
+    m_enumerators.push_back(std::make_unique<BulkEnumerator>(m_pConfig));
 #endif
 #ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
+    m_enumerators.push_back(std::make_unique<HidEnumerator>());
 #endif
 }
 
@@ -159,14 +175,11 @@ void ControllerManager::slotShutdown() {
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them.
     auto locker = lockMutex(&m_mutex);
-    QList<ControllerEnumerator*> enumerators = m_enumerators;
-    m_enumerators.clear();
+    std::vector<std::unique_ptr<ControllerEnumerator>> enumerators = std::move(m_enumerators);
     locker.unlock();
 
     // Delete enumerators and they'll delete their Devices
-    for (ControllerEnumerator* pEnumerator : enumerators) {
-        delete pEnumerator;
-    }
+    enumerators.clear();
 
     // Stop the processor after the enumerators since the engines live in it
     m_pThread->quit();
@@ -177,29 +190,26 @@ void ControllerManager::updateControllerList() {
     // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
     // and possible crashes.
     auto locker = lockMutex(&m_mutex);
-    if (m_enumerators.isEmpty()) {
+    if (m_enumerators.empty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
     }
-    QList<ControllerEnumerator*> enumerators = m_enumerators;
+    std::vector<std::unique_ptr<ControllerEnumerator>> enumerators = std::move(m_enumerators);
+    DEBUG_ASSERT(m_enumerators.empty());
     locker.unlock();
 
     QList<Controller*> newDeviceList;
-    for (ControllerEnumerator* pEnumerator : enumerators) {
+    for (auto& pEnumerator : enumerators) {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
     locker.relock();
-    if (newDeviceList != m_controllers) {
-        m_controllers = newDeviceList;
-        locker.unlock();
-        emit devicesChanged();
+    if (newDeviceList == m_controllers) {
+        return;
     }
-}
-
-QList<Controller*> ControllerManager::getControllers() const {
-    const auto locker = lockMutex(&m_mutex);
-    return m_controllers;
+    m_controllers = std::move(newDeviceList);
+    locker.unlock();
+    emit devicesChanged();
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
@@ -212,13 +222,14 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     // Create a list of controllers filtered to match the given input/output
     // options.
     QList<Controller*> filteredDeviceList;
-
-    for (Controller* device : controllers) {
-        if ((bOutputDevices == device->isOutputDevice()) ||
-            (bInputDevices == device->isInputDevice())) {
-            filteredDeviceList.push_back(device);
-        }
-    }
+    filteredDeviceList.reserve(controllers.size());
+    std::copy_if(controllers.cbegin(),
+            controllers.cend(),
+            std::back_inserter(filteredDeviceList),
+            [&](Controller* device) {
+                return device->isOutputDevice() == bOutputDevices ||
+                        device->isInputDevice() == bInputDevices;
+            });
     return filteredDeviceList;
 }
 
@@ -298,12 +309,12 @@ void ControllerManager::pollIfAnyControllersOpen() {
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
-    bool shouldPoll = false;
-    for (Controller* pController : controllers) {
-        if (pController->isOpen() && pController->isPolling()) {
-            shouldPoll = true;
-        }
-    }
+    const bool shouldPoll = std::any_of(controllers.cbegin(),
+            controllers.cend(),
+            [](Controller* pController) {
+                return pController->isOpen() && pController->isPolling();
+            });
+
     if (shouldPoll) {
         startPolling();
     } else {
@@ -438,8 +449,5 @@ void ControllerManager::slotApplyMapping(Controller* pController,
 
 // static
 QList<QString> ControllerManager::getMappingPaths(UserSettingsPointer pConfig) {
-    QList<QString> scriptPaths;
-    scriptPaths.append(userMappingsPath(pConfig));
-    scriptPaths.append(resourceMappingsPath(pConfig));
-    return scriptPaths;
+    return {userMappingsPath(pConfig), resourceMappingsPath(pConfig)};
 }
