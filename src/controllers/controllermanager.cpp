@@ -14,7 +14,7 @@
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
-#include "util/duration.h"
+#include "util/logger.h"
 #include "util/time.h"
 
 #ifdef __PORTMIDI__
@@ -49,6 +49,8 @@ constexpr auto kPollInterval = 1ms;
 // Legacy code referred to mappings as "presets", so "[ControllerPreset]" must be
 // kept for backwards compatibility.
 const QString kSettingsGroup = QStringLiteral("[ControllerPreset]");
+
+const mixxx::Logger kLogger("ControllerManager");
 
 /// Strip slashes and spaces from device name, so that it can be used as config
 /// key or a filename.
@@ -102,7 +104,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     // Create controller mapping paths in the user's home directory.
     QString userMappings = userMappingsPath(m_pConfig);
     if (!QDir(userMappings).exists()) {
-        qDebug() << "Creating user controller mappings directory:" << userMappings;
+        kLogger.debug() << "Creating user controller mappings directory:" << userMappings;
         QDir().mkpath(userMappings);
     }
 
@@ -142,7 +144,7 @@ ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilt
 }
 
 void ControllerManager::slotInitialize() {
-    qDebug() << "ControllerManager:slotInitialize";
+    kLogger.debug() << "slotInitialize";
 
     // Initialize mapping info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
@@ -191,7 +193,7 @@ void ControllerManager::updateControllerList() {
     // and possible crashes.
     auto locker = lockMutex(&m_mutex);
     if (m_enumerators.empty()) {
-        qWarning() << "updateControllerList called but no enumerators have been added!";
+        kLogger.warning() << "updateControllerList called but no enumerators have been added!";
         return;
     }
     std::vector<std::unique_ptr<ControllerEnumerator>> enumerators = std::move(m_enumerators);
@@ -213,7 +215,7 @@ void ControllerManager::updateControllerList() {
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
-    qDebug() << "ControllerManager::getControllerList";
+    kLogger.debug() << "getControllerList";
 
     auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
@@ -238,7 +240,7 @@ QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name
 }
 
 void ControllerManager::slotSetUpDevices() {
-    qDebug() << "ControllerManager: Setting up devices";
+    kLogger.debug() << "Setting up devices";
 
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
@@ -265,11 +267,11 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        qDebug() << "Searching for controller mapping" << mappingFilePath
-                 << "in paths:" << mappingPaths.join(",");
+        kLogger.debug() << "Searching for controller mapping" << mappingFilePath
+                        << "in paths:" << mappingPaths.join(",");
         QFileInfo mappingFile = findMappingFile(mappingFilePath, mappingPaths);
         if (!mappingFile.exists()) {
-            qDebug() << "Could not find" << mappingFilePath << "in any mapping path.";
+            kLogger.debug() << "Could not find" << mappingFilePath << "in any mapping path.";
             continue;
         }
 
@@ -287,15 +289,15 @@ void ControllerManager::slotSetUpDevices() {
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
-            qDebug() << "We are in safe mode -- skipping opening controller.";
+            kLogger.debug() << "We are in safe mode -- skipping opening controller.";
             continue;
         }
 
-        qDebug() << "Opening controller:" << name;
+        kLogger.debug() << "Opening controller:" << name;
 
         int value = pController->open();
         if (value != 0) {
-            qWarning() << "There was a problem opening" << name;
+            kLogger.warning() << "There was a problem opening" << name;
             continue;
         }
         pController->applyMapping(m_pConfig->getResourcePath());
@@ -326,13 +328,13 @@ void ControllerManager::startPolling() {
     // Start the polling timer.
     if (!m_pollTimer.isActive()) {
         m_pollTimer.start();
-        qDebug() << "Controller polling started.";
+        kLogger.debug() << "Controller polling started.";
     }
 }
 
 void ControllerManager::stopPolling() {
     m_pollTimer.stop();
-    qDebug() << "Controller polling stopped.";
+    kLogger.debug() << "Controller polling stopped.";
 }
 
 void ControllerManager::pollDevices() {
@@ -359,7 +361,7 @@ void ControllerManager::pollDevices() {
     if (m_skipPoll) {
         // skip poll in overload situation
         m_skipPoll = false;
-        //qDebug() << "ControllerManager::pollDevices() skip";
+        // kLogger.debug() << "ControllerManager::pollDevices() skip";
         return;
     }
 
@@ -374,7 +376,7 @@ void ControllerManager::pollDevices() {
     if (duration > kPollInterval) {
         m_skipPoll = true;
     }
-    //qDebug() << "ControllerManager::pollDevices()" << duration << start;
+    // kLogger.debug() << "ControllerManager::pollDevices()" << duration << start;
 }
 
 void ControllerManager::openController(Controller* pController) {
@@ -413,7 +415,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
     VERIFY_OR_DEBUG_ASSERT(pController) {
-        qWarning() << "slotApplyMapping got invalid controller!";
+        kLogger.warning() << "slotApplyMapping got invalid controller!";
         return;
     }
 
@@ -427,7 +429,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     }
 
     VERIFY_OR_DEBUG_ASSERT(!pMapping->isDirty()) {
-        qWarning() << "Mapping is dirty, changes might be lost on restart!";
+        kLogger.warning() << "Mapping is dirty, changes might be lost on restart!";
     }
 
 
