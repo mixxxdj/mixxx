@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QString>
 #include <string>
-#include <string_view>
 
 struct ProductInfo;
 struct hid_device_info;
@@ -52,12 +51,12 @@ class DeviceInfo final {
     }
 
     /// The raw path, needed for subsequent HIDAPI requests.
-    std::string_view pathRaw() const {
-        return m_pathRaw;
+    const char* pathRaw() const {
+        return m_pathRaw.c_str();
     }
     /// The raw serial number, needed for subsequent HIDAPI requests.
-    std::wstring_view serialNumberRaw() const {
-        return m_serialNumberRaw;
+    const wchar_t* serialNumberRaw() const {
+        return m_serialNumberRaw.c_str();
     }
 
     const QString& manufacturerString() const {

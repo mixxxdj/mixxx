@@ -64,7 +64,7 @@ int HidController::open() {
     qCInfo(m_logBase) << "Opening HID device" << getName() << "by HID path"
                       << m_deviceInfo.pathRaw();
 
-    hid_device* pHidDevice = hid_open_path(m_deviceInfo.pathRaw().data());
+    hid_device* pHidDevice = hid_open_path(m_deviceInfo.pathRaw());
 
     // If that fails, try to open device with vendor/product/serial #
     if (!pHidDevice) {
@@ -74,7 +74,7 @@ int HidController::open() {
         pHidDevice = hid_open(
                 m_deviceInfo.vendorId(),
                 m_deviceInfo.productId(),
-                m_deviceInfo.serialNumberRaw().data());
+                m_deviceInfo.serialNumberRaw());
     }
 
     // If it does fail, try without serial number WARNING: This will only open
