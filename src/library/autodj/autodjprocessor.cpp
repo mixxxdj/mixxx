@@ -560,7 +560,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             }
         }
         m_crossfaderStartCenter = m_pConfig->getValue<bool>(ConfigKey(kConfigKey,
-                QStringLiteral("center_xfader_when_starting_xfade")));
+                QStringLiteral("center_xfader_when_starting_xfade")),
+                false);
         emitAutoDJStateChanged(m_eState);
     } else { // Disable Auto DJ
         m_pEnabledAutoDJ->setAndConfirm(0.0);
