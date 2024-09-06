@@ -51,15 +51,14 @@ class ControllerManager : public QObject {
     void mappingApplied(bool applied);
 
   public slots:
-    void updateControllerList();
-
     void slotApplyMapping(Controller* pController,
             std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
-    void openController(Controller* pController);
-    void closeController(Controller* pController);
 
   private slots:
+    void updateControllerList();
+    void openController(Controller* pController);
+    void closeController(Controller* pController);
     /// Perform initialization that should be delayed until the ControllerManager
     /// thread is started.
     void slotInitialize();
