@@ -15,6 +15,7 @@
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
 #include "util/logger.h"
+#include "util/thread_affinity.h"
 #include "util/time.h"
 
 #ifdef __PORTMIDI__
@@ -98,6 +99,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_pMainThreadUserMappingEnumerator(nullptr),
           m_pMainThreadSystemMappingEnumerator(nullptr),
           m_skipPoll(false) {
+    DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
     qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
             "std::shared_ptr<LegacyControllerMapping>");
 
@@ -133,11 +135,13 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
 }
 
 ControllerManager::~ControllerManager() {
+    DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
     emit requestShutdown();
     m_pThread->wait();
 }
 
 void ControllerManager::slotInitialize() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     kLogger.debug() << "slotInitialize";
 
     // Initialize mapping info parsers. This object is only for use in the main
@@ -166,6 +170,7 @@ void ControllerManager::slotInitialize() {
 }
 
 void ControllerManager::slotShutdown() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     stopPolling();
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
@@ -185,6 +190,7 @@ void ControllerManager::updateControllerList() {
     // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
     // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
     // and possible crashes.
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     auto locker = lockMutex(&m_mutex);
     if (m_enumerators.empty()) {
         kLogger.warning() << "updateControllerList called but no enumerators have been added!";
@@ -209,6 +215,7 @@ void ControllerManager::updateControllerList() {
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
+    // can run in any thread
     kLogger.debug() << "getControllerList";
 
     auto locker = lockMutex(&m_mutex);
@@ -234,6 +241,7 @@ QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name
 }
 
 void ControllerManager::slotSetUpDevices() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     kLogger.debug() << "Setting up devices";
 
     updateControllerList();
@@ -301,6 +309,7 @@ void ControllerManager::slotSetUpDevices() {
 }
 
 void ControllerManager::pollIfAnyControllersOpen() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
@@ -319,6 +328,7 @@ void ControllerManager::pollIfAnyControllersOpen() {
 }
 
 void ControllerManager::startPolling() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     // Start the polling timer.
     if (!m_pollTimer.isActive()) {
         m_pollTimer.start();
@@ -327,11 +337,13 @@ void ControllerManager::startPolling() {
 }
 
 void ControllerManager::stopPolling() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     m_pollTimer.stop();
     kLogger.debug() << "Controller polling stopped.";
 }
 
 void ControllerManager::pollDevices() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     // Note: this function is called from a high priority thread which
     // may stall the GUI or may reduce the available CPU time for other
     // High Priority threads like caching reader or broadcasting more
@@ -374,6 +386,7 @@ void ControllerManager::pollDevices() {
 }
 
 void ControllerManager::openController(Controller* pController) {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     if (!pController) {
         return;
     }
@@ -395,6 +408,7 @@ void ControllerManager::openController(Controller* pController) {
 }
 
 void ControllerManager::closeController(Controller* pController) {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     if (!pController) {
         return;
     }
@@ -408,6 +422,7 @@ void ControllerManager::closeController(Controller* pController) {
 void ControllerManager::slotApplyMapping(Controller* pController,
         std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     VERIFY_OR_DEBUG_ASSERT(pController) {
         kLogger.warning() << "slotApplyMapping got invalid controller!";
         return;
