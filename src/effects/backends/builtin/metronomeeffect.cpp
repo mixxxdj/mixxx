@@ -103,9 +103,26 @@ void MetronomeEffect::processChannel(
     double nextClickStart = bufferEnd; // default to "no new click";
     if (m_pSyncParameter->toBool() && groupFeatures.beat_length_frames.has_value()) {
         if (groupFeatures.beat_fraction_buffer_end.has_value()) {
-            double beatToBufferEnd =
-                    groupFeatures.beat_length_frames.value() *
-                    groupFeatures.beat_fraction_buffer_end.value();
+            double beatLength = groupFeatures.beat_length_frames.value();
+            if (groupFeatures.scratch_rate.has_value()) {
+                if (groupFeatures.scratch_rate.value() != 0.0) {
+                    beatLength /= groupFeatures.scratch_rate.value();
+                } else {
+                    beatLength = 0;
+                }
+            }
+
+            double beatToBufferEnd;
+            if (beatLength > 0) {
+                beatToBufferEnd =
+                        beatLength *
+                        groupFeatures.beat_fraction_buffer_end.value();
+            } else {
+                beatToBufferEnd =
+                        beatLength * -1 *
+                        (1 - groupFeatures.beat_fraction_buffer_end.value());
+            }
+
             if (bufferEnd > beatToBufferEnd) {
                 // We have a new beat before the current buffer ends
                 nextClickStart = bufferEnd - beatToBufferEnd;
