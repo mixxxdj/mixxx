@@ -92,10 +92,10 @@ DDJSR2.wheelLedCircleColor = {
     DIMWHITE: 19
 };
 
-// minVal is the minimum value of the color ring, maxVal is the value of the last color possible, before the ring returns to white.
+// minVal is the minimum value of the color ring, maxVal is the value of the last color possible, before the ring goes blank.
 DDJSR2.wheelLedCircle = Object.freeze({
     minVal: 0,
-    maxVal: 0x14,
+    maxVal: 0x13,
     blink: 0x3
 });
 
@@ -1252,6 +1252,7 @@ const WheelRing = function(options) {
         options.outKey = "playposition";
         options.output = function(value) { this.sendIfChanged(this.getPositionColor(value)); };
     } else if (options.color === "TRACK") {
+        this.endWarning(options.color);
         options.outKey = "track_color";
         options.output = function(colorRGB) { this.sendIfChanged(this.colorMapper.getValueForNearestColor(colorRGB)); };
     } else {
@@ -1267,36 +1268,49 @@ WheelRing.prototype = new components.Component({
     blinkStatus: 0,
     colorMapper: DDJSR2.wheelColorMap,
     sendIfChanged: function(value) {
+        value = this.endWarning(value);
         if (this.value !== value) {
             this.value = value;
             this.send(value);
         }
     },
+    endWarning: function(colorIndex) {
+
+        // Check if we're nearing the end of the track and not scratching
+        if (engine.getValue(this.group, "end_of_track") && !engine.isScratching(this.deckNumber)) {
+            const framesPerHalfCycle = 30; // 1 second cycle, split into two half-cycles (on/off)
+
+            // Toggle between blink and maxVal states based on the half-cycle frame count
+            if (this.blinkStatus < framesPerHalfCycle) {
+                colorIndex = DDJSR2.wheelLedCircle.blink; // Blink state for half the cycle
+            } else if (this.blinkStatus < framesPerHalfCycle * 2) {
+                colorIndex = DDJSR2.wheelLedCircle.maxVal; // MaxVal state for the other half
+            } else {
+                this.blinkStatus = 0; // Reset blink status at the end of the full cycle
+            }
+            if (this.color === "TRACK") {
+                this.send(colorIndex);
+            }
+            this.blinkStatus++; // Increment frame counter
+        } else {
+            // Reset blink state when not at the end of the track
+            this.blinkStatus = 0;
+        }
+
+        return colorIndex;
+    },
     getPositionColor: function(position) {
+        let colorIndex = DDJSR2.wheelLedCircle.maxVal;
         // Every time the playposition  changes, update the wheel color.
         // Timing calculation is handled in seconds!!
         const duration = engine.getValue(this.group, "duration");
         const elapsedTime = position * duration;
-        const remainingTime = (1 - position) * duration;
-        let colorIndex = DDJSR2.wheelLedCircle.maxVal;
-        if (remainingTime > 0 && remainingTime < 30 && !engine.isScratching(this.deckNumber)) {
-            //increase blinking according time left
-            const blinkInterval = Math.max(remainingTime / 3, 3);
-            if (this.blinkStatus < blinkInterval) {
-                colorIndex = DDJSR2.wheelLedCircle.blink;
-            } else if (this.blinkStatus > (blinkInterval - parseInt(6 / blinkInterval))) {
-                this.blinkStatus = 0;
-                colorIndex = DDJSR2.wheelLedCircle.maxVal;
-            }
-            this.blinkStatus++;
-        } else {
-            const revolutionsPerSecond = DDJSR2.scratchSettings.vinylSpeed / 60;
-            const maxColorValue = DDJSR2.wheelLedCircle.maxVal;
-            // Determine the current position in the color cycle
-            // The modulo operation ensures the color value stays within the available range
-            // The multiplication by maxColorValue ensures that the position is spread over the entire range of indexed colors.
-            colorIndex = Math.round((revolutionsPerSecond * elapsedTime * maxColorValue) % maxColorValue);
-        }
+        const revolutionsPerSecond = DDJSR2.scratchSettings.vinylSpeed / 60;
+        const maxColorValue = DDJSR2.wheelLedCircle.maxVal;
+        // Determine the current position in the color cycle
+        // The modulo operation ensures the color value stays within the available range
+        // The multiplication by maxColorValue ensures that the position is spread over the entire range of indexed colors.
+        colorIndex = Math.round((revolutionsPerSecond * elapsedTime * maxColorValue) % maxColorValue);
 
         return colorIndex;
     }
