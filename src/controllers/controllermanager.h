@@ -24,7 +24,7 @@ class ControllerManager : public QObject {
     Q_OBJECT
   public:
     ControllerManager(UserSettingsPointer pConfig);
-    virtual ~ControllerManager();
+    ~ControllerManager() override;
 
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
@@ -81,7 +81,7 @@ class ControllerManager : public QObject {
     // the Controller* don't live longer than the enumerators, don't reorder
     // m_controllers above m_enumerators or else you'll get a use-after-free
     QList<Controller*> m_controllers;
-    QThread* m_pThread;
+    std::unique_ptr<QThread> m_pThread;
     QSharedPointer<MappingInfoEnumerator> m_pMainThreadUserMappingEnumerator;
     QSharedPointer<MappingInfoEnumerator> m_pMainThreadSystemMappingEnumerator;
     bool m_skipPoll;

@@ -94,7 +94,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_mutex(),
           m_enumerators(),
           m_controllers({}),
-          m_pThread(nullptr),
+          m_pThread(std::make_unique<QThread>()),
           m_pMainThreadUserMappingEnumerator(nullptr),
           m_pMainThreadSystemMappingEnumerator(nullptr),
           m_skipPoll(false) {
@@ -111,11 +111,10 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     m_pollTimer.setInterval(kPollInterval);
     connect(&m_pollTimer, &QTimer::timeout, this, &ControllerManager::pollDevices);
 
-    m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
 
     // Moves all children (including the poll timer) to m_pThread
-    moveToThread(m_pThread);
+    moveToThread(m_pThread.get());
 
     // Controller processing needs to be prioritized since it can affect the
     // audio directly, like when scratching
@@ -136,7 +135,6 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
 ControllerManager::~ControllerManager() {
     emit requestShutdown();
     m_pThread->wait();
-    delete m_pThread;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
