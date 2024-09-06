@@ -27,14 +27,16 @@ class ControllerManager : public QObject {
     ~ControllerManager() override;
 
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
-    ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    QSharedPointer<MappingInfoEnumerator> getMainThreadUserMappingEnumerator() {
+    ControllerLearningEventFilter* getControllerLearningEventFilter() const {
+        return m_pControllerLearningEventFilter.get();
+    }
+    QSharedPointer<MappingInfoEnumerator> getMainThreadUserMappingEnumerator() const {
         return m_pMainThreadUserMappingEnumerator;
     }
-    QSharedPointer<MappingInfoEnumerator> getMainThreadSystemMappingEnumerator() {
+    QSharedPointer<MappingInfoEnumerator> getMainThreadSystemMappingEnumerator() const {
         return m_pMainThreadSystemMappingEnumerator;
     }
-    QString getConfiguredMappingFileForDevice(const QString& name);
+    QString getConfiguredMappingFileForDevice(const QString& name) const;
 
     /// Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit requestSetUpDevices(); };

@@ -137,10 +137,6 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
 }
 
-ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
-    return m_pControllerLearningEventFilter.get();
-}
-
 void ControllerManager::slotInitialize() {
     kLogger.debug() << "slotInitialize";
 
@@ -233,7 +229,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name) {
+QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name) const {
     return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
