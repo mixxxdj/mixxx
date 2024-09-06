@@ -86,6 +86,18 @@ WOverview::WOverview(
     m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
     slotTypeControlChanged(m_pTypeControl->get());
 
+    // Update immediately when the normalize option or the visual gain have been
+    // changed in the preferences.
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overviewNormalizeChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overallVisualGainChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
     setAcceptDrops(true);
@@ -414,6 +426,10 @@ void WOverview::slotTypeControlChanged(double v) {
     m_type = type;
     m_pWaveform.clear();
     slotWaveformSummaryUpdated();
+}
+
+void WOverview::slotNormalizeOrVisualGainChanged() {
+    update();
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
