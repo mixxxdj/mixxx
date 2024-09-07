@@ -1,3 +1,4 @@
+#pragma comment(lib, "winmm.lib")
 #include "mixer/basetrackplayer.h"
 
 #include <QMessageBox>
@@ -21,38 +22,16 @@
 // EVE OSC
 #include "osc/OscOutboundPacketStream.h"
 #include "ip/UdpSocket.h"
-//#include "osc/OscTypes.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <cstring>
 
 #define ADDRESS "192.168.0.125"
 #define PORT 9000
-
 #define OUTPUT_BUFFER_SIZE 1024
-
-
-// EVE OSC
-
-void AAeveOSC() {
-    //    (void) argc; // suppress unused parameter warnings
-    //    (void) argv; // suppress unused parameter warnings
-
-    UdpTransmitSocket transmitSocket( IpEndpointName( ADDRESS, PORT ) );
-
-    char buffer[OUTPUT_BUFFER_SIZE];
-    osc::OutboundPacketStream p( buffer, OUTPUT_BUFFER_SIZE );
-
-    p << osc::BeginBundleImmediate
-      << osc::BeginMessage( "/test1" )
-      << true << 23 << (float)3.1415 << "hello" << osc::EndMessage
-      << osc::BeginMessage( "/test2" )
-      << true << 24 << (float)10.8 << "world" << osc::EndMessage
-      << osc::EndBundle;
-
-    transmitSocket.Send( p.Data(), p.Size() );
-    //    return 1;
-}
-
-
-
+#define IP_MTU_SIZE 1536
 
 namespace {
 
@@ -826,11 +805,41 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     DeckStatusTxt << DeckStatusTxtLine4 << "\n";
     DeckStatusTxt << DeckStatusTxtLine5 << "\n";
     DeckStatusFile.close();
+
+//  EveOSC begin
+//    char buffer[IP_MTU_SIZE];
+//    osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+//    UdpTransmitSocket transmitSocket(IpEndpointName(ADDRESS, PORT));
+   
+//    QString oscTrackInfoDeck = getGroup();
+//    oscTrackInfoDeck.replace("[", "");
+//    oscTrackInfoDeck.replace("]", "");
+
+//    QString oscMessageHeaderArtist = "/" + oscTrackInfoDeck + "@TrackArtist";
+//    QByteArray oscMessageHeaderArtistBa = oscMessageHeaderArtist.toLocal8Bit();
+//    const char* oscBeginMessageArtist = oscMessageHeaderArtistBa.data();
+
+//    QString oscTrackInfoArtist = pNewTrack->getArtist();
+//    QByteArray oscTrackInfoArtistBa = oscTrackInfoArtist.toLocal8Bit();
+//    const char* oscBodyMessageArtist = oscTrackInfoArtistBa.data();
     
-    AAeveOSC();
+//    QString oscMessageHeaderTitle = "/" + oscTrackInfoDeck + "@TrackTitle";
+//    QByteArray oscMessageHeaderTitleBa = oscMessageHeaderTitle.toLocal8Bit();
+//    const char* oscBeginMessageTitle = oscMessageHeaderTitleBa.data();
+    
+//    QString oscTrackInfoTitle = pNewTrack->getTitle();
+//    QByteArray oscTrackInfoTitleBa = oscTrackInfoTitle.toLocal8Bit();
+//    const char* oscBodyMessageTitle = oscTrackInfoTitleBa.data();
+    
+//    p.Clear();
+//    p << osc::BeginBundle();
+//    p << osc::BeginMessage(oscBeginMessageArtist) << oscBodyMessageArtist << osc::EndMessage;
+//    p << osc::BeginMessage(oscBeginMessageTitle) << oscBodyMessageTitle << osc::EndMessage;
+//    p << osc::EndBundle;
+//    transmitSocket.Send(p.Data(), p.Size());
+
+// EveOSC end
 }
-
-
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
@@ -1035,6 +1044,32 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+
+        //  EveOSC begin
+        char buffer[IP_MTU_SIZE];
+        osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+        UdpTransmitSocket transmitSocket(IpEndpointName(ADDRESS, PORT));
+
+        QString oscTrackInfoDeck = getGroup();
+        oscTrackInfoDeck.replace("[", "");
+        oscTrackInfoDeck.replace("]", "");
+
+        QString oscMessageHeaderDeckPlay = "/" + oscTrackInfoDeck + "@Play";
+        QByteArray oscMessageHeaderDeckPlayBa = oscMessageHeaderDeckPlay.toLocal8Bit();
+        const char* oscBeginMessageDeckPlay = oscMessageHeaderDeckPlayBa.data();
+
+//        double oscDeckPlayingCalc = value;
+        QString oscDeckPlay = QString("%1").arg(value);
+        QByteArray oscDeckPlayBa = oscDeckPlay.toLocal8Bit();
+        const char* oscBodyMessageDeckPlay = oscDeckPlayBa.data();
+
+        p.Clear();
+        p << osc::BeginBundle();
+        p << osc::BeginMessage(oscBeginMessageDeckPlay) << oscBodyMessageDeckPlay << osc::EndMessage;
+        p << osc::EndBundle;
+        transmitSocket.Send(p.Data(), p.Size());
+
+        // EveOSC end
     }
 }
 

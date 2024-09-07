@@ -12,6 +12,10 @@
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
+// EVE OSC
+//#include "osc/OscOutboundPacketStream.h"
+//#include "ip/UdpSocket.h"
+//#include "osc/OscTypes.h"
 
 class EngineMixer;
 class ControlObject;
