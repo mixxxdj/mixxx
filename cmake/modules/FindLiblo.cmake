@@ -49,13 +49,13 @@ if(PkgConfig_FOUND)
 endif()
 
 find_path(liblo_INCLUDE_DIR
-  NAMES liblo/liblo.h
+  NAMES lo/lo.h
   HINTS ${PC_liblo_INCLUDE_DIRS}
   DOC "liblo include directory")
 mark_as_advanced(liblo_INCLUDE_DIR)
 
 find_library(liblo_LIBRARY
-  NAMES liblo
+  NAMES lo
   HINTS ${PC_liblo_LIBRARY_DIRS}
   DOC "liblo library"
 )
