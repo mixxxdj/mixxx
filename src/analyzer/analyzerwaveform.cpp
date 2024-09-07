@@ -354,7 +354,12 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
             m_waveform,
             m_waveformSummary);
 
-    OverviewCache::instance()->onTrackSummaryChanged(tio->getId());
+    auto* pOverviewcache = OverviewCache::instance();
+    // There's no cache instance created for AnalyzerWaveformTest since there
+    // are no CoreServices
+    if (pOverviewcache) {
+        pOverviewcache->onTrackSummaryChanged(tio->getId());
+    }
 
     kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
                     << m_timer.elapsed().debugSecondsWithUnit();
