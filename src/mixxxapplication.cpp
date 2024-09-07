@@ -87,7 +87,8 @@ constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
           m_rightPressedButtons(0),
-          m_pTouchShift(nullptr) {
+          m_pTouchShift(nullptr),
+          m_isDeveloper(CmdlineArgs::Instance().getDeveloper()) {
     registerMetaTypes();
 
     // Increase the size of the global thread pool to at least
@@ -191,15 +192,14 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
 #endif
 
     PerformanceTimer time;
-    bool isDeveloper = CmdlineArgs::Instance().getDeveloper();
 
-    if (isDeveloper) {
+    if (m_isDeveloper) {
         time.start();
     }
 
     bool ret = QApplication::notify(target, event);
 
-    if (isDeveloper && time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+    if (m_isDeveloper && time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
         qDebug() << "Processing event type"
                  << event->type()
                  << "for object"
