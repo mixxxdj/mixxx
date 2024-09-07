@@ -21,6 +21,7 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "waveform/overviews/waveformoverviewrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
@@ -1368,12 +1369,44 @@ bool WOverview::drawNextPixmapPart() {
     QPainter painter(&m_waveformSourceImage);
     painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
+    // Evaluate waveform ratio peak
+    for (int currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
+    }
+
     if (m_type == Type::Filtered) {
-        drawNextPixmapPartLMH(&painter, pWaveform, nextCompletion);
+        ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartLMH"));
+        WaveformOverviewRenderer::instance()->drawWaveformPartLMH(
+                &painter,
+                pWaveform,
+                &m_actualCompletion,
+                nextCompletion,
+                m_signalColors.getLowColor(),
+                m_signalColors.getMidColor(),
+                m_signalColors.getHighColor());
     } else if (m_type == Type::HSV) {
-        drawNextPixmapPartHSV(&painter, pWaveform, nextCompletion);
+        ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
+        WaveformOverviewRenderer::instance()->drawWaveformPartHSV(
+                &painter,
+                pWaveform,
+                &m_actualCompletion,
+                nextCompletion,
+                m_signalColors.getLowColor());
     } else { // Type::RGB:
-        drawNextPixmapPartRGB(&painter, pWaveform, nextCompletion);
+        ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
+        WaveformOverviewRenderer::instance()->drawWaveformPartRGB(
+                &painter,
+                pWaveform,
+                &m_actualCompletion,
+                nextCompletion,
+                m_signalColors.getRgbLowColor(),
+                m_signalColors.getRgbMidColor(),
+                m_signalColors.getRgbHighColor());
     }
 
     m_waveformImageScaled = QImage();
@@ -1382,216 +1415,9 @@ bool WOverview::drawNextPixmapPart() {
     // Test if the complete waveform is done
     if (m_actualCompletion >= dataSize - 2) {
         m_pixmapDone = true;
-        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
     }
 
     return true;
-}
-
-void WOverview::drawNextPixmapPartHSV(QPainter* pPainter,
-        ConstWaveformPointer pWaveform,
-        const int nextCompletion) {
-    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
-
-    // Get HSV of low color.
-    float h, s, v;
-    getHsvF(m_signalColors.getLowColor(), &h, &s, &v);
-
-    QColor color;
-    float lo, hi, total;
-
-    unsigned char maxLow[2] = {0, 0};
-    unsigned char maxHigh[2] = {0, 0};
-    unsigned char maxMid[2] = {0, 0};
-    unsigned char maxAll[2] = {0, 0};
-
-    int currentCompletion = 0;
-    for (int currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        maxAll[0] = pWaveform->getAll(currentCompletion);
-        maxAll[1] = pWaveform->getAll(currentCompletion + 1);
-        if (maxAll[0] || maxAll[1]) {
-            maxLow[0] = pWaveform->getLow(currentCompletion);
-            maxLow[1] = pWaveform->getLow(currentCompletion + 1);
-            maxMid[0] = pWaveform->getMid(currentCompletion);
-            maxMid[1] = pWaveform->getMid(currentCompletion + 1);
-            maxHigh[0] = pWaveform->getHigh(currentCompletion);
-            maxHigh[1] = pWaveform->getHigh(currentCompletion + 1);
-
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
-                            maxHigh[0] + maxHigh[1]) *
-                    1.2f;
-
-            // Prevent division by zero
-            if (total > 0) {
-                // Normalize low and high
-                // (mid not need, because it not change the color)
-                lo = (maxLow[0] + maxLow[1]) / total;
-                hi = (maxHigh[0] + maxHigh[1]) / total;
-            } else {
-                lo = hi = 0.0;
-            }
-
-            // Set color
-            color.setHsvF(h, 1.0f - hi, 1.0f - lo);
-
-            pPainter->setPen(color);
-            pPainter->drawLine(QPoint(currentCompletion / 2, -maxAll[0]),
-                    QPoint(currentCompletion / 2, maxAll[1]));
-        }
-    }
-
-    // Evaluate waveform ratio peak
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        m_waveformPeak = math_max3(
-                m_waveformPeak,
-                static_cast<float>(pWaveform->getAll(currentCompletion)),
-                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
-    }
-
-    m_actualCompletion = nextCompletion;
-}
-
-void WOverview::drawNextPixmapPartLMH(QPainter* pPainter,
-        ConstWaveformPointer pWaveform,
-        const int nextCompletion) {
-    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartLMH"));
-
-    QColor lowColor = m_signalColors.getLowColor();
-    QPen lowColorPen(QBrush(lowColor), 1);
-
-    QColor midColor = m_signalColors.getMidColor();
-    QPen midColorPen(QBrush(midColor), 1);
-
-    QColor highColor = m_signalColors.getHighColor();
-    QPen highColorPen(QBrush(highColor), 1);
-
-    int currentCompletion = 0;
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        unsigned char lowNeg = pWaveform->getLow(currentCompletion);
-        unsigned char lowPos = pWaveform->getLow(currentCompletion + 1);
-        if (lowPos || lowNeg) {
-            pPainter->setPen(lowColorPen);
-            pPainter->drawLine(QPoint(currentCompletion / 2, -lowNeg),
-                    QPoint(currentCompletion / 2, lowPos));
-        }
-    }
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        pPainter->setPen(midColorPen);
-        pPainter->drawLine(QPoint(currentCompletion / 2,
-                                   -pWaveform->getMid(currentCompletion)),
-                QPoint(currentCompletion / 2,
-                        pWaveform->getMid(currentCompletion + 1)));
-    }
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        pPainter->setPen(highColorPen);
-        pPainter->drawLine(QPoint(currentCompletion / 2,
-                                   -pWaveform->getHigh(currentCompletion)),
-                QPoint(currentCompletion / 2,
-                        pWaveform->getHigh(currentCompletion + 1)));
-    }
-
-    // Evaluate waveform ratio peak
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        m_waveformPeak = math_max3(
-                m_waveformPeak,
-                static_cast<float>(pWaveform->getAll(currentCompletion)),
-                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
-    }
-
-    m_actualCompletion = nextCompletion;
-}
-
-void WOverview::drawNextPixmapPartRGB(QPainter* pPainter,
-        ConstWaveformPointer pWaveform,
-        const int nextCompletion) {
-    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
-    ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
-
-    QColor color;
-
-    float lowColor_r, lowColor_g, lowColor_b;
-    getRgbF(m_signalColors.getRgbLowColor(), &lowColor_r, &lowColor_g, &lowColor_b);
-
-    float midColor_r, midColor_g, midColor_b;
-    getRgbF(m_signalColors.getRgbMidColor(), &midColor_r, &midColor_g, &midColor_b);
-
-    float highColor_r, highColor_g, highColor_b;
-    getRgbF(m_signalColors.getRgbHighColor(), &highColor_r, &highColor_g, &highColor_b);
-
-    int currentCompletion = 0;
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        unsigned char left = pWaveform->getAll(currentCompletion);
-        unsigned char right = pWaveform->getAll(currentCompletion + 1);
-
-        // Retrieve "raw" LMH values from waveform
-        float low = static_cast<float>(pWaveform->getLow(currentCompletion));
-        float mid = static_cast<float>(pWaveform->getMid(currentCompletion));
-        float high = static_cast<float>(pWaveform->getHigh(currentCompletion));
-
-        // Do matrix multiplication
-        float red = low * lowColor_r + mid * midColor_r + high * highColor_r;
-        float green = low * lowColor_g + mid * midColor_g + high * highColor_g;
-        float blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
-
-        // Normalize and draw
-        float max = math_max3(red, green, blue);
-        if (max > 0.0) {
-            color.setRgbF(red / max, green / max, blue / max);
-            pPainter->setPen(color);
-            pPainter->drawLine(QPointF(currentCompletion / 2, -left),
-                    QPointF(currentCompletion / 2, 0));
-        }
-
-        // Retrieve "raw" LMH values from waveform
-        low = static_cast<float>(pWaveform->getLow(currentCompletion + 1));
-        mid = static_cast<float>(pWaveform->getMid(currentCompletion + 1));
-        high = static_cast<float>(pWaveform->getHigh(currentCompletion + 1));
-
-        // Do matrix multiplication
-        red = low * lowColor_r + mid * midColor_r + high * highColor_r;
-        green = low * lowColor_g + mid * midColor_g + high * highColor_g;
-        blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
-
-        // Normalize and draw
-        max = math_max3(red, green, blue);
-        if (max > 0.0) {
-            color.setRgbF(red / max, green / max, blue / max);
-            pPainter->setPen(color);
-            pPainter->drawLine(QPointF(currentCompletion / 2, 0),
-                    QPointF(currentCompletion / 2, right));
-        }
-    }
-
-    // Evaluate waveform ratio peak
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        m_waveformPeak = math_max3(
-                m_waveformPeak,
-                static_cast<float>(pWaveform->getAll(currentCompletion)),
-                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
-    }
-
-    m_actualCompletion = nextCompletion;
 }
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
