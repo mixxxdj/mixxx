@@ -27,6 +27,8 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
+#include "waveform/overviews/waveformoverviewrenderer.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
@@ -1579,6 +1581,17 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
                     mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     BaseTrackTableModel::setApplyPlayedTrackColor(applyPlayedTrackColor);
+
+    // Get colors for the different render modes of the Overview column
+    WaveformSignalColors* pSignalColors = new WaveformSignalColors();
+    pSignalColors->setup(node, *m_pContext);
+    WaveformOverviewRenderer::setRgbLowColor(pSignalColors->getRgbLowColor());
+    WaveformOverviewRenderer::setRgbMidColor(pSignalColors->getRgbMidColor());
+    WaveformOverviewRenderer::setRgbHighColor(pSignalColors->getRgbHighColor());
+    WaveformOverviewRenderer::setFilteredLowColor(pSignalColors->getLowColor());
+    WaveformOverviewRenderer::setFilteredMidColor(pSignalColors->getMidColor());
+    WaveformOverviewRenderer::setFilteredHighColor(pSignalColors->getHighColor());
+    WaveformOverviewRenderer::setSignalColor(pSignalColors->getSignalColor());
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,

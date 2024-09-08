@@ -1394,7 +1394,7 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors.getLowColor());
+                m_signalColors.getSignalColor());
     } else { // Type::RGB:
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
         WaveformOverviewRenderer::instance()->drawWaveformPartRGB(

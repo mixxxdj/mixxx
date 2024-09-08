@@ -5,6 +5,44 @@
 #include "util/colorcomponents.h"
 #include "util/math.h"
 
+QColor WaveformOverviewRenderer::s_rgbLowColor = defaultLowColor;
+QColor WaveformOverviewRenderer::s_rgbMidColor = defaultMidColor;
+QColor WaveformOverviewRenderer::s_rgbHighColor = defaultHighColor;
+
+QColor WaveformOverviewRenderer::s_filteredLowColor = defaultLowColor;
+QColor WaveformOverviewRenderer::s_filteredMidColor = defaultMidColor;
+QColor WaveformOverviewRenderer::s_filteredHighColor = defaultHighColor;
+
+QColor WaveformOverviewRenderer::s_signalColor = defaultSignalColor;
+
+void WaveformOverviewRenderer::setRgbLowColor(QColor color) {
+    s_rgbLowColor = color;
+}
+
+void WaveformOverviewRenderer::setRgbMidColor(QColor color) {
+    s_rgbMidColor = color;
+}
+
+void WaveformOverviewRenderer::setRgbHighColor(QColor color) {
+    s_rgbHighColor = color;
+}
+
+void WaveformOverviewRenderer::setFilteredLowColor(QColor color) {
+    s_filteredLowColor = color;
+}
+
+void WaveformOverviewRenderer::setFilteredMidColor(QColor color) {
+    s_filteredMidColor = color;
+}
+
+void WaveformOverviewRenderer::setFilteredHighColor(QColor color) {
+    s_filteredHighColor = color;
+}
+
+void WaveformOverviewRenderer::setSignalColor(QColor color) {
+    s_signalColor = color;
+}
+
 QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
         WOverview::Type type) {
     const int dataSize = pWaveform->getDataSize();
@@ -19,11 +57,27 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
     painter.translate(0.0, static_cast<double>(image.height()) / 2.0);
 
     if (type == WOverview::Type::HSV) {
-        drawWaveformPartHSV(&painter, pWaveform, nullptr, dataSize);
+        drawWaveformPartHSV(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                s_signalColor);
     } else if (type == WOverview::Type::Filtered) {
-        drawWaveformPartLMH(&painter, pWaveform, nullptr, dataSize);
+        drawWaveformPartLMH(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                s_filteredLowColor,
+                s_filteredMidColor,
+                s_filteredHighColor);
     } else {
-        drawWaveformPartRGB(&painter, pWaveform, nullptr, dataSize);
+        drawWaveformPartRGB(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                s_rgbLowColor,
+                s_rgbMidColor,
+                s_rgbHighColor);
     }
 
     return image;
