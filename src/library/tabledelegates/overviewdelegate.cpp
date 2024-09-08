@@ -1,5 +1,8 @@
 #include "library/tabledelegates/overviewdelegate.h"
 
+#include <QMetaEnum>
+
+#include "control/controlproxy.h"
 #include "library/dao/trackdao.h"
 #include "library/overviewcache.h"
 #include "library/trackmodel.h"
@@ -23,7 +26,8 @@ inline TrackModel* asTrackModel(
 OverviewDelegate::OverviewDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
           m_pTrackModel(asTrackModel(pTableView)),
-          m_pCache(OverviewCache::instance()) {
+          m_pCache(OverviewCache::instance()),
+          m_type(WOverview::Type::RGB) {
     VERIFY_OR_DEBUG_ASSERT(m_pCache) {
         kLogger.warning() << "Caching of overviews is not available";
         return;
@@ -39,6 +43,24 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
             this,
             &OverviewDelegate::overviewChanged,
             Qt::DirectConnection); // signal-to-signal
+
+    m_pTypeControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("WaveformOverviewType"),
+            this);
+    m_pTypeControl->connectValueChanged(this, &OverviewDelegate::slotTypeControlChanged);
+    slotTypeControlChanged(m_pTypeControl->get());
+}
+
+void OverviewDelegate::slotTypeControlChanged(double v) {
+    // Assert that v is in enum range to prevent UB.
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<WOverview::Type>().keyCount());
+    WOverview::Type type = static_cast<WOverview::Type>(static_cast<int>(v));
+    if (type == m_type) {
+        return;
+    }
+
+    m_type = type;
 }
 
 /// Maybe request repaint via dataChanged() by BaseTrackTableModel
@@ -64,10 +86,14 @@ void OverviewDelegate::paintItem(QPainter* painter,
     }
 
     const TrackId trackId(m_pTrackModel->getTrackId(index));
-
-    QPixmap pixmap = m_pCache->requestOverview(trackId, this, option.rect.size());
+    const double scaleFactor = m_pTableView->devicePixelRatioF();
+    QPixmap pixmap = m_pCache->requestOverview(m_type,
+            trackId,
+            this,
+            option.rect.size() * scaleFactor);
     if (!pixmap.isNull()) {
-        // We have a cached pixmap, paint it.
+        // We have a cached pixmap, paint it
+        pixmap.setDevicePixelRatio(scaleFactor);
         painter->drawPixmap(option.rect, pixmap);
     }
 }

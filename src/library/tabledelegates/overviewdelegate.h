@@ -6,7 +6,10 @@
 
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "track/trackid.h"
+#include "util/parented_ptr.h"
+#include "widget/woverview.h"
 
+class ControlProxy;
 class OverviewCache;
 class TrackModel;
 
@@ -27,6 +30,7 @@ class OverviewDelegate : public TableItemDelegate {
     void overviewChanged(TrackId trackId);
 
   private slots:
+    void slotTypeControlChanged(double v);
     void slotOverviewReady(const QObject* pRequester,
             const TrackId trackId,
             bool pixmapValid,
@@ -37,6 +41,8 @@ class OverviewDelegate : public TableItemDelegate {
 
   private:
     OverviewCache* const m_pCache;
+    WOverview::Type m_type;
+    parented_ptr<ControlProxy> m_pTypeControl;
 
     mutable QHash<TrackId, int> m_trackIdToRow;
 };

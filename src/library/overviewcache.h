@@ -7,6 +7,7 @@
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
+#include "widget/woverview.h"
 
 class OverviewCache : public QObject, public Singleton<OverviewCache> {
     Q_OBJECT
@@ -14,6 +15,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     void onTrackSummaryChanged(TrackId);
 
     QPixmap requestOverview(
+            const WOverview::Type type,
             const TrackId trackId,
             const QObject* pRequester,
             const QSize desiredSize);
@@ -24,6 +26,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
         }
 
         TrackId trackId;
+        WOverview::Type type;
         QImage image;
         QSize resizedToSize;
         const QObject* requester;
@@ -51,6 +54,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     static FutureResult prepareOverview(
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            const WOverview::Type type,
             const TrackId trackId,
             const QObject* pRequester,
             const QSize desiredSize);
