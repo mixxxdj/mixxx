@@ -5,7 +5,8 @@
 #include "util/colorcomponents.h"
 #include "util/math.h"
 
-QImage WaveformOverviewRenderer::renderRGB(ConstWaveformPointer pWaveform) {
+QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
+        WOverview::Type type) {
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
         return QImage();
@@ -17,7 +18,13 @@ QImage WaveformOverviewRenderer::renderRGB(ConstWaveformPointer pWaveform) {
     QPainter painter(&image);
     painter.translate(0.0, static_cast<double>(image.height()) / 2.0);
 
-    drawWaveformPartRGB(&painter, pWaveform, nullptr, dataSize);
+    if (type == WOverview::Type::HSV) {
+        drawWaveformPartHSV(&painter, pWaveform, nullptr, dataSize);
+    } else if (type == WOverview::Type::Filtered) {
+        drawWaveformPartLMH(&painter, pWaveform, nullptr, dataSize);
+    } else {
+        drawWaveformPartRGB(&painter, pWaveform, nullptr, dataSize);
+    }
 
     return image;
 }
