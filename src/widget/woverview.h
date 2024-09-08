@@ -74,6 +74,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotCueMenuPopupAboutToHide();
 
     void slotTypeControlChanged(double v);
+    void slotNormalizeOrVisualGainChanged();
 
   private:
     // Append the waveform overview pixmap according to available data
