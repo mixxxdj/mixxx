@@ -18,8 +18,9 @@ namespace {
 
 mixxx::Logger kLogger("OverviewCache");
 
-QString pixmapCacheKey(TrackId trackId, QSize size) {
-    return QString("Overview_%1_%2_%3")
+QString pixmapCacheKey(TrackId trackId, QSize size, WOverview::Type type) {
+    return QString("Overview_%1_%2_%3_%4")
+            .arg(static_cast<int>(type))
             .arg(trackId.toString())
             .arg(size.width())
             .arg(size.height());
@@ -57,7 +58,9 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
     emit overviewChanged(trackId);
 }
 
-QPixmap OverviewCache::requestOverview(const TrackId trackId,
+QPixmap OverviewCache::requestOverview(
+        WOverview::Type type,
+        const TrackId trackId,
         const QObject* pRequester,
         const QSize desiredSize) {
     if (!trackId.isValid()) {
@@ -75,7 +78,7 @@ QPixmap OverviewCache::requestOverview(const TrackId trackId,
     kLogger.info() << "requestOverview()" << trackId << pRequester << desiredSize;
 
     // request overview
-    const QString cacheKey = pixmapCacheKey(trackId, desiredSize);
+    const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         return pixmap;
@@ -89,6 +92,7 @@ QPixmap OverviewCache::requestOverview(const TrackId trackId,
             &OverviewCache::prepareOverview,
             m_pConfig,
             m_pDbConnectionPool,
+            type,
             trackId,
             pRequester,
             desiredSize);
@@ -105,11 +109,13 @@ QPixmap OverviewCache::requestOverview(const TrackId trackId,
 OverviewCache::FutureResult OverviewCache::prepareOverview(
         const UserSettingsPointer pConfig,
         const mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        const WOverview::Type type,
         const TrackId trackId,
         const QObject* pRequester,
         const QSize desiredSize) {
     FutureResult result;
     result.trackId = trackId;
+    result.type = type;
     result.requester = pRequester;
     result.image = QImage();
     result.resizedToSize = desiredSize;
@@ -132,8 +138,8 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
                 WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
 
         if (!pLoadedTrackWaveformSummary.isNull()) {
-            QImage image = WaveformOverviewRenderer::instance()->renderRGB(
-                    pLoadedTrackWaveformSummary);
+            QImage image = WaveformOverviewRenderer::instance()->render(
+                    pLoadedTrackWaveformSummary, type);
 
             if (!image.isNull()) {
                 image = resizeImageSize(image, desiredSize);
@@ -157,7 +163,7 @@ void OverviewCache::overviewPrepared() {
         // we have to be sure that res.cover.hash is unique
         // because insert replaces the images with the same key
         const QString cacheKey = pixmapCacheKey(
-                res.trackId, res.resizedToSize);
+                res.trackId, res.resizedToSize, res.type);
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
