@@ -103,10 +103,7 @@ PortMidiEnumerator::PortMidiEnumerator() {
 
 PortMidiEnumerator::~PortMidiEnumerator() {
     qDebug() << "Deleting PortMIDI devices...";
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
+    m_devices.clear();
     PmError err = Pm_Terminate();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
@@ -174,23 +171,14 @@ bool shouldLinkInputToOutput(const QString& input_name,
 QList<Controller*> PortMidiEnumerator::queryDevices() {
     qDebug() << "Scanning PortMIDI devices:";
 
-    int iNumDevices = Pm_CountDevices();
-
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
+    int numDevices = Pm_CountDevices();
 
     m_devices.clear();
 
-    const PmDeviceInfo* inputDeviceInfo = nullptr;
-    const PmDeviceInfo* outputDeviceInfo = nullptr;
-    int inputDevIndex = -1;
-    int outputDevIndex = -1;
     QMap<int, QString> unassignedOutputDevices;
 
     // Build a complete list of output devices for later pairing
-    for (int i = 0; i < iNumDevices; i++) {
+    for (int i = 0; i < numDevices; i++) {
         const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
@@ -205,7 +193,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
     }
 
     // Search for input devices and pair them with output devices if applicable
-    for (int i = 0; i < iNumDevices; i++) {
+    for (int i = 0; i < numDevices; i++) {
         const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
@@ -219,12 +207,12 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
         qDebug() << " Found input device"
                  << "#" << i << pDeviceInfo->name;
-        inputDeviceInfo = pDeviceInfo;
-        inputDevIndex = i;
+        const PmDeviceInfo* inputDeviceInfo = pDeviceInfo;
+        int inputDevIndex = i;
 
         //Reset our output device variables before we look for one in case we find none.
-        outputDeviceInfo = nullptr;
-        outputDevIndex = -1;
+        const PmDeviceInfo* outputDeviceInfo = nullptr;
+        int outputDevIndex = -1;
 
         //Search for a corresponding output device
         QMapIterator<int, QString> j(unassignedOutputDevices);
@@ -246,16 +234,20 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
         }
 
         // So at this point, we either have an input-only MIDI device
-        // (outputDeviceInfo == NULL) or we've found a matching output MIDI
-        // device (outputDeviceInfo != NULL).
+        // (outputDeviceInfo == nullptr) or we've found a matching output MIDI
+        // device (outputDeviceInfo != nullptr).
 
         //.... so create our (aggregate) MIDI device!
-        PortMidiController* currentDevice =
-                new PortMidiController(inputDeviceInfo,
-                        outputDeviceInfo,
-                        inputDevIndex,
-                        outputDevIndex);
-        m_devices.push_back(currentDevice);
+        m_devices.push_back(std::make_unique<PortMidiController>(inputDeviceInfo,
+                outputDeviceInfo,
+                inputDevIndex,
+                outputDevIndex));
     }
-    return m_devices;
+    QList<Controller*> devices;
+    devices.reserve(m_devices.size());
+    for (const auto& pDevice : m_devices) {
+        devices.push_back(pDevice.get());
+    }
+
+    return devices;
 }
