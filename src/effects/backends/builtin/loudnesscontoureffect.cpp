@@ -111,7 +111,7 @@ void LoudnessContourEffect::processChannel(
     if (enableState != EffectEnableState::Disabling) {
         bool useGain = m_pUseGain->toBool() && groupFeatures.gain.has_value();
         double loudness = m_pLoudness->value();
-        double gainKnob = groupFeatures.gain.value();
+        double gainKnob = *groupFeatures.gain;
 
         filterGainDb = loudness;
 

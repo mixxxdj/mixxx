@@ -138,7 +138,7 @@ void PhaserEffect::processChannel(
         if (m_pTripletParameter->toBool()) {
             periodParameter /= 3.0;
         }
-        periodSamples = periodParameter * groupFeatures.beat_length_frames.value();
+        periodSamples = periodParameter * *groupFeatures.beat_length_frames;
     } else {
         // periodParameter is a number of seconds
         periodSamples = std::max(periodParameter, 1 / 4.0) * engineParameters.sampleRate();

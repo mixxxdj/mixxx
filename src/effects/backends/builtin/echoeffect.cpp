@@ -142,7 +142,7 @@ void EchoEffect::processChannel(
         } else if (period < 1 / 8.0) {
             period = 1 / 8.0;
         }
-        delay_frames = static_cast<int>(period * groupFeatures.beat_length_frames.value());
+        delay_frames = static_cast<int>(period * *groupFeatures.beat_length_frames);
     } else {
         // period is a number of seconds
         period = std::max(period, 1 / 8.0);
