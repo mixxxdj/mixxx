@@ -12,10 +12,9 @@
 #include "moc_bulkenumerator.cpp"
 #include "util/assert.h"
 
-BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
+BulkEnumerator::BulkEnumerator()
         : ControllerEnumerator(),
-          m_context(nullptr, &libusb_exit),
-          m_pConfig(pConfig) {
+          m_context(nullptr, &libusb_exit) {
     // TODO: use C++23 std::out_ptr instead
     libusb_context* pCtx;
     libusb_init(&pCtx);

@@ -162,7 +162,7 @@ void ControllerManager::slotInitialize() {
     m_enumerators.push_back(std::make_unique<Hss1394Enumerator>());
 #endif
 #ifdef __BULK__
-    m_enumerators.push_back(std::make_unique<BulkEnumerator>(m_pConfig));
+    m_enumerators.push_back(std::make_unique<BulkEnumerator>());
 #endif
 #ifdef __HID__
     m_enumerators.push_back(std::make_unique<HidEnumerator>());

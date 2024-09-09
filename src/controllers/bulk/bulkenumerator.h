@@ -13,7 +13,7 @@ class BulkController;
 class BulkEnumerator : public ControllerEnumerator {
     Q_OBJECT
   public:
-    explicit BulkEnumerator(UserSettingsPointer pConfig);
+    explicit BulkEnumerator();
     ~BulkEnumerator() override;
 
     QList<Controller*> queryDevices() override;
@@ -21,5 +21,4 @@ class BulkEnumerator : public ControllerEnumerator {
   private:
     std::unique_ptr<libusb_context, void (*)(libusb_context*)> m_context;
     std::vector<std::unique_ptr<BulkController>> m_devices;
-    UserSettingsPointer m_pConfig;
 };
