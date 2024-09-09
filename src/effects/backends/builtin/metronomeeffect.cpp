@@ -57,8 +57,6 @@ void MetronomeEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(pInput);
-
     if (enableState == EffectEnableState::Disabled) {
         // assume click is fully played
         return;
@@ -137,13 +135,11 @@ void MetronomeEffect::processChannel(
     if (bufferEnd > nextClickStart) {
         // We need to start a new click
         SINT outputOffset = static_cast<SINT>(nextClickStart) - gs->m_framesSinceClickStart;
-        if (outputOffset > 0) {
-            if (outputOffset < engineParameters.framesPerBuffer()) {
-                const SINT copyFrames =
-                        math_min(engineParameters.framesPerBuffer() - outputOffset, clickSize);
-                SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], &click[0], copyFrames);
-                gs->m_framesSinceClickStart = -outputOffset;
-            }
+        if (outputOffset > 0 && outputOffset < engineParameters.framesPerBuffer()) {
+            const SINT copyFrames =
+                    math_min(engineParameters.framesPerBuffer() - outputOffset, clickSize);
+            SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], &click[0], copyFrames);
+            gs->m_framesSinceClickStart = -outputOffset;
         }
     }
     if (gs->m_framesSinceClickStart < engineParameters.framesPerBuffer() + clickSize) {
