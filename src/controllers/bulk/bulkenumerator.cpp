@@ -50,7 +50,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
             decltype([](libusb_device** list) {
                 libusb_free_device_list(list, true);
             })>(deviceListPointers);
-
+    m_devices.clear();
     for (libusb_device* pDevice : std::span(pDeviceList.get(), cnt)) {
         struct libusb_device_descriptor desc;
 

@@ -90,6 +90,8 @@ QList<Controller*> HidEnumerator::queryDevices() {
     auto device_info_list = std::unique_ptr<hid_device_info,
             decltype([](hid_device_info* dev) { hid_free_enumeration(dev); })>(
             hid_enumerate(0x0, 0x0));
+    // clear devices created so far so we don't end up with duplicated ones.
+    m_devices.clear();
     for (const auto* pDeviceInfo = device_info_list.get();
             pDeviceInfo;
             pDeviceInfo = pDeviceInfo->next) {
