@@ -18,6 +18,7 @@ class ControllerEnumerator : public QObject {
     ~ControllerEnumerator() override = default;
 
     // Controller pointers are borrowed and instead tied to the lifetime of the enumerator
+    // calling queryDevices will invalidate all pointers received previously!!
     virtual QList<Controller*> queryDevices() = 0;
 
     // Sub-classes return true here if their devices must be polled to get data
