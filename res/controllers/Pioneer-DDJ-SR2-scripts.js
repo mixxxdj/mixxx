@@ -1252,7 +1252,6 @@ const WheelRing = function(options) {
         options.outKey = "playposition";
         options.output = function(value) { this.sendIfChanged(this.getPositionColor(value)); };
     } else if (options.color === "TRACK") {
-        this.endWarning(options.color);
         options.outKey = "track_color";
         options.output = function(colorRGB) { this.sendIfChanged(this.colorMapper.getValueForNearestColor(colorRGB)); };
     } else {
@@ -1265,41 +1264,39 @@ const WheelRing = function(options) {
 };
 
 WheelRing.prototype = new components.Component({
-    blinkStatus: 0,
+    blink: 0,
     colorMapper: DDJSR2.wheelColorMap,
     sendIfChanged: function(value) {
-        value = this.endWarning(value);
-        if (this.value !== value) {
+        if (this.value !== value && value !== "EOT") {
             this.value = value;
             this.send(value);
         }
     },
-    endWarning: function(colorIndex) {
+    endWarning: function() {
 
         // Check if we're nearing the end of the track and not scratching
-        if (engine.getValue(this.group, "end_of_track") && !engine.isScratching(this.deckNumber)) {
-            const framesPerHalfCycle = 30; // 1 second cycle, split into two half-cycles (on/off)
-
-            // Toggle between blink and maxVal states based on the half-cycle frame count
-            if (this.blinkStatus < framesPerHalfCycle) {
-                colorIndex = DDJSR2.wheelLedCircle.blink; // Blink state for half the cycle
-            } else if (this.blinkStatus < framesPerHalfCycle * 2) {
-                colorIndex = DDJSR2.wheelLedCircle.maxVal; // MaxVal state for the other half
+        if (!engine.isScratching(this.deckNumber)) {
+            let colorIndex;
+            this.blink = !this.blink;
+            if (this.blink) {
+                colorIndex = DDJSR2.wheelLedCircle.blink;
             } else {
-                this.blinkStatus = 0; // Reset blink status at the end of the full cycle
+                colorIndex = DDJSR2.wheelLedCircle.maxVal;
             }
-            if (this.color === "TRACK") {
-                this.send(colorIndex);
-            }
-            this.blinkStatus++; // Increment frame counter
-        } else {
-            // Reset blink state when not at the end of the track
-            this.blinkStatus = 0;
+
+            this.sendIfChanged(colorIndex);
         }
 
-        return colorIndex;
+    },
+    heartbeat: function() {
+        if (engine.getValue(this.group, "end_of_track")) {
+            this.endWarning();
+        }
     },
     getPositionColor: function(position) {
+        if (engine.getValue(this.group, "end_of_track")) {
+            return "EOT";
+        }
         let colorIndex = DDJSR2.wheelLedCircle.maxVal;
         // Every time the playposition  changes, update the wheel color.
         // Timing calculation is handled in seconds!!
@@ -1313,5 +1310,19 @@ WheelRing.prototype = new components.Component({
         colorIndex = Math.round((revolutionsPerSecond * elapsedTime * maxColorValue) % maxColorValue);
 
         return colorIndex;
+    },
+    fixcolor: function() {
+        const colorRGB = engine.getValue(this.group, "track_color");
+        this.send(this.colorMapper.getValueForNearestColor(colorRGB));
+    },
+    connect: function() {
+        if (typeof this.group !== "string") {
+            throw `invalid group: ${this.group}`;
+        }
+        const COs = [{}, {group: this.group, key: "end_of_track", output: this.endWarning}, {group: "[App]", key: "indicator_500ms", output: this.heartbeat}, {group: this.group, key: "track_loaded", output: this.fixcolor}];
+        if (typeof this.outKey === "string") {
+            COs[0] = {group: this.group, key: this.outKey, output: this.output};
+        }
+        this.connections = COs.map(co => engine.makeConnection(co.group, co.key, co.output.bind(this)));
     }
 });
