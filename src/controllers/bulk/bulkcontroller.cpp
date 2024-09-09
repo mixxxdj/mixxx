@@ -151,18 +151,18 @@ int BulkController::open() {
 
     /* Look up endpoint addresses in supported database */
 
-    const bulk_supported_t* pDevice = std::find_if(
+    const bulk_support_lookup* pDevice = std::find_if(
             std::cbegin(bulk_supported), std::cend(bulk_supported), [this](const auto& dev) {
-                return dev.vendor_id == m_vendorId && dev.product_id == m_productId;
+                return dev.key.vendor_id == m_vendorId && dev.key.product_id == m_productId;
             });
     if (pDevice == std::cend(bulk_supported)) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
-    m_inEndpointAddr = pDevice->in_epaddr;
-    m_outEndpointAddr = pDevice->out_epaddr;
+    m_inEndpointAddr = pDevice->endpoints.in_epaddr;
+    m_outEndpointAddr = pDevice->endpoints.out_epaddr;
 #if defined(__WINDOWS__) || defined(__APPLE__)
-    m_interfaceNumber = pDevice->interface_number;
+    m_interfaceNumber = pDevice->endpoints.interface_number;
 #endif
 
     // XXX: we should enumerate devices and match vendor, product, and serial

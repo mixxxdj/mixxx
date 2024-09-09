@@ -22,12 +22,10 @@ BulkEnumerator::~BulkEnumerator() {
 }
 
 static bool is_interesting(const libusb_device_descriptor& desc) {
-    auto vendorId = desc.idVendor;
-    auto productId = desc.idProduct;
     return std::any_of(std::cbegin(bulk_supported),
             std::cend(bulk_supported),
-            [=](const auto& dev) {
-                return dev.vendor_id == vendorId && dev.product_id == productId;
+            [&](const auto& dev) {
+                return dev.key.vendor_id == desc.idVendor && dev.key.product_id == desc.idProduct;
             });
 }
 
