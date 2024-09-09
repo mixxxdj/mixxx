@@ -159,7 +159,7 @@ void ControllerManager::slotInitialize() {
     m_enumerators.push_back(std::make_unique<PortMidiEnumerator>());
 #endif
 #ifdef __HSS1394__
-    m_enumerators.push_back(std::make_unique<Hss1394Enumerator>(m_pConfig));
+    m_enumerators.push_back(std::make_unique<Hss1394Enumerator>());
 #endif
 #ifdef __BULK__
     m_enumerators.push_back(std::make_unique<BulkEnumerator>(m_pConfig));
