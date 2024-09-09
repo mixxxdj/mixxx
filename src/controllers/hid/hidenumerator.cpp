@@ -90,10 +90,10 @@ QList<Controller*> HidEnumerator::queryDevices() {
     auto device_info_list = std::unique_ptr<hid_device_info,
             decltype([](hid_device_info* dev) { hid_free_enumeration(dev); })>(
             hid_enumerate(0x0, 0x0));
-    for (const auto* device_info = device_info_list.get();
-            device_info;
-            device_info = device_info->next) {
-        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
+    for (const auto* pDeviceInfo = device_info_list.get();
+            pDeviceInfo;
+            pDeviceInfo = pDeviceInfo->next) {
+        auto deviceInfo = mixxx::hid::DeviceInfo(*pDeviceInfo);
         // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
         // so filter them out.
         // https://github.com/libusb/hidapi/issues/298
@@ -103,7 +103,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
             continue;
         }
 
-        if (!recognizeDevice(*device_info)) {
+        if (!recognizeDevice(*pDeviceInfo)) {
             qInfo()
                     << "Excluding HID device"
                     << deviceInfo;
