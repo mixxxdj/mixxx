@@ -1,13 +1,15 @@
 #pragma once
 
+#include <QList>
 #include <QMutex>
 #include <QSharedPointer>
+#include <QThread>
 #include <QTimer>
 #include <memory>
+#include <vector>
 
 #include "controllers/controllerenumerator.h"
 #include "preferences/usersettings.h"
-#include "util/duration.h"
 
 // Forward declaration(s)
 class Controller;
