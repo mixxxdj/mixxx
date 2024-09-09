@@ -229,9 +229,9 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     std::copy_if(controllers.cbegin(),
             controllers.cend(),
             std::back_inserter(filteredDeviceList),
-            [&](Controller* device) {
-                return device->isOutputDevice() == bOutputDevices ||
-                        device->isInputDevice() == bInputDevices;
+            [&](Controller* pDevice) {
+                return pDevice->isOutputDevice() == bOutputDevices ||
+                        pDevice->isInputDevice() == bInputDevices;
             });
     return filteredDeviceList;
 }
