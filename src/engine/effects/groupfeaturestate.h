@@ -4,8 +4,7 @@
 
 /// GroupFeatureState communicates metadata about EngineChannels to EffectProcessors.
 struct GroupFeatureState {
-    GroupFeatureState() {
-    }
+    GroupFeatureState() = default;
 
     // Adjusted by the rate slider
     std::optional<double> beat_length_frames;
