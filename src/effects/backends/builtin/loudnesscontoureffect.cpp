@@ -103,15 +103,13 @@ void LoudnessContourEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
     double filterGainDb = pState->m_oldFilterGainDb;
     auto gain = static_cast<CSAMPLE_GAIN>(pState->m_oldGain);
 
     if (enableState != EffectEnableState::Disabling) {
         bool useGain = m_pUseGain->toBool() && groupFeatures.gain.has_value();
         double loudness = m_pLoudness->value();
-        double gainKnob = *groupFeatures.gain;
+        double gainKnob = groupFeatures.gain.value_or(1.0);
 
         filterGainDb = loudness;
 
