@@ -36,6 +36,30 @@ jobs:
         run: |
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           git config --global --list
+      - name: "Create compile_commands.json"
+        # this is required for clang-tidy to work
+        run: |
+          cmake \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCLANG_TIDY=clang-tidy \
+            -DWARNINGS_FATAL=ON \
+            -DQT6=ON \
+            -DBATTERY=ON \
+            -DBROADCAST=ON \
+            -DBULK=ON \
+            -DHID=ON \
+            -DLILV=ON \
+            -DOPUS=ON \
+            -DQTKEYCHAIN=ON \
+            -DVINYLCONTROL=ON \
+            -DFFMPEG=ON \
+            -DKEYFINDER=ON \
+            -DLOCALECOMPARE=ON \
+            -DMAD=ON \
+            -DMODPLUG=ON \
+            -DWAVPACK=ON \
+            ..
+        working-directory: build
 
       - name: "Detect code style issues (push)"
         uses: pre-commit/action@v3.0.1
@@ -44,7 +68,7 @@ jobs:
         # disable these checks for now when pushing directly (but still run these
         # on Pull Requests!).
         env:
-          SKIP: clang-format,eslint,no-commit-to-branch
+          SKIP: clang-format,clang-tidy,eslint,no-commit-to-branch
 
       - name: "Detect code style issues (pull_request)"
         uses: pre-commit/action@v3.0.1
