@@ -1,13 +1,11 @@
 <Template>
+  <SetVariable name="StemGroup">[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>]</SetVariable>
+
 	<WidgetGroup>
-    <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
-    <Children>
-		<WidgetGroup>
-			<ObjectName>StemChannel_ControlContainer</ObjectName>
-			<Layout>horizontal</Layout>
-			<SizePolicy>min,min</SizePolicy>
-			<Children>
+		<ObjectName>StemChannel_ControlContainer</ObjectName>
+		<Layout>horizontal</Layout>
+		<SizePolicy>min,min</SizePolicy>
+		<Children>
 
 			<StemLabel>
 				<TooltipId>StemLabel</TooltipId>
@@ -20,111 +18,107 @@
 				<Text></Text>
 			</StemLabel>
 
+			<PushButton>
+				<TooltipId>StemMuteButton</TooltipId>
+				<ObjectName>StemMuteButton</ObjectName>
+				<Size>18f,18f</Size>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+					<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+					<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+				</State>
+				<Connection>
+					<ButtonState>LeftButton</ButtonState>
+					<ConfigKey><Variable name="StemGroup"/>,mute_toggle</ConfigKey>
+					<Transform>
+						<Not/>
+					</Transform>
+				</Connection>
+				<Connection>
+					<ButtonState>LeftButton</ButtonState>
+					<ConfigKey><Variable name="StemGroup"/>,mute</ConfigKey>
+                      <ConnectValueFromWidget>true</ConnectValueFromWidget>
+					<Transform>
+						<Not/>
+					</Transform>
+				</Connection>
+			</PushButton>
 
-				<PushButton>
-					<TooltipId>StemMuteButton</TooltipId>
-					<ObjectName>StemMuteButton</ObjectName>
-					<Pos>36,4</Pos>
-					<Size>18f,18f</Size>
-					<NumberStates>2</NumberStates>
-					<State>
-						<Number>0</Number>
-						<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
-						<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
-					</State>
-					<State>
-						<Number>1</Number>
-						<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
-						<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
-					</State>
-					<Connection>
-						<ButtonState>LeftButton</ButtonState>
-						<ConfigKey>[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>],mute_toggle</ConfigKey>
-						<Transform>
-							<Not/>
-						</Transform>
-					</Connection>
-					<Connection>
-						<ButtonState>LeftButton</ButtonState>
-						<ConfigKey>[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>],mute</ConfigKey>
-                        <ConnectValueFromWidget>true</ConnectValueFromWidget>
-						<Transform>
-							<Not/>
-						</Transform>
-					</Connection>
-				</PushButton>
+	    <KnobComposed>
+        <TooltipId>StemVolumeKnob</TooltipId>
+        <Size>26f,26f</Size>
+        <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_orange.svg</Knob>
+        <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
+        <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+        <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <ArcRadius><Variable name="ArcRadiusSmall"/></ArcRadius>
+        <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
+        <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
+        <ArcColor><Variable name="ArcColorGain"/></ArcColor>
+        <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+        <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+        <!-- <KnobCenterYOffset>1.998</KnobCenterYOffset> -->
+        <Connection>
+          <ConfigKey><Variable name="StemGroup"/>,volume</ConfigKey>
+        </Connection>
+      </KnobComposed>
 
-			   <KnobComposed>
-                <TooltipId>StemVolumeKnob</TooltipId>
-				  <Pos>0,0</Pos>
-                <Size>40f,26f</Size>
-                <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_orange.svg</Knob>
-                <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
-                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
-                <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
-                <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
-                <ArcColor><Variable name="ArcColorGain"/></ArcColor>
-                <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
-                <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
-                <KnobCenterYOffset>1.998</KnobCenterYOffset>
-                <Connection>
-                  <ConfigKey>[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>],volume</ConfigKey>
-                </Connection>
-              </KnobComposed>
-
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
 			<EffectChainPresetSelector>
-				<ObjectName>QuickEffectSelectorLeft</ObjectName>
+				<ObjectName>StemQuickEffectSelector</ObjectName>
 				<Size>85f,18f</Size>
-				<EffectUnitGroup>[QuickEffectRack1_[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>]]</EffectUnitGroup>
+				<EffectUnitGroup>[QuickEffectRack1_<Variable name="StemGroup"/>]</EffectUnitGroup>
 			</EffectChainPresetSelector>
 
-				<PushButton>
-					<TooltipId>QuickEffectRack_enabled</TooltipId>
-					<ObjectName>QuickEffectButton</ObjectName>
-					<Pos>36,4</Pos>
-					<Size>18f,18f</Size>
-					<NumberStates>2</NumberStates>
-					<State>
-						<Number>0</Number>
-						<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
-						<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
-					</State>
-					<State>
-						<Number>1</Number>
-						<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
-						<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
-					</State>
-					<Connection>
-						<ConfigKey>[QuickEffectRack1_[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>]],enabled</ConfigKey>
-						<ButtonState>LeftButton</ButtonState>
-					</Connection>
-				</PushButton>
+      <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
-              <KnobComposed>
-                <TooltipId>QuickEffectRack_super1</TooltipId>
-				  <Pos>0,0</Pos>
-                <Size>40f,26f</Size>
-                <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColorQuickEffect"/>.svg</Knob>
-                <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
-                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
-                <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
-                <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
-                <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
-                <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
-                <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
-                <KnobCenterYOffset>1.998</KnobCenterYOffset>
-                <Connection>
-					<ConfigKey>[QuickEffectRack1_[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>]],super1</ConfigKey>
-                </Connection>
-              </KnobComposed>
+			<PushButton>
+				<TooltipId>QuickEffectRack_enabled</TooltipId>
+				<ObjectName>QuickEffectButton</ObjectName>
+				<Size>18f,18f</Size>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+					<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+					<Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+				</State>
+				<Connection>
+					<ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],enabled</ConfigKey>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
 
-            </Children>
-          </WidgetGroup>
+      <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+      <KnobComposed>
+        <TooltipId>QuickEffectRack_super1</TooltipId>
+        <Size>26f,26f</Size>
+        <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColorQuickEffect"/>.svg</Knob>
+        <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
+        <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+        <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <ArcRadius><Variable name="ArcRadiusSmall"/></ArcRadius>
+        <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
+        <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
+        <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
+        <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+        <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+        <Connection>
+					<ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],super1</ConfigKey>
+        </Connection>
+      </KnobComposed>
 
     </Children>
   </WidgetGroup>

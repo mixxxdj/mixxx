@@ -911,7 +911,8 @@ WEffectSelector:!editable:on {
       names start getting cut off. Adding explicit padding improves this. */
   padding: 3px 0px 1px 5px;
   margin: 0px;
-}
+  }
+
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on {
   min-height: 17px;
@@ -1685,6 +1686,7 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
+WPushButton#StemMuteButton,
 #PassthroughButton[displayValue="1"],
 #BroadcastButton[displayValue="4"], /* warning */
 QPushButton#pushButtonAutoDJ:checked,
@@ -1720,10 +1722,6 @@ QPushButton#pushButtonRecording:checked,
   background-color: #a80000;
 }
 
-/* Orange for Stem Ch Mute buttons */
-WPushButton#StemMuteButton{
-  background-color: #b24c12;
-}
 /* Green for Fx toggles, QuickEffect + Fx12 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
