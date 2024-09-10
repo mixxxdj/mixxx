@@ -63,9 +63,9 @@ DDJSR2.scratchSettings = {
 // If set to POSITION - Changes color as playposition changes.
 DDJSR2.wheelColor =[];
 DDJSR2.wheelColor[1] = "TRACK"; // Deck 1
-DDJSR2.wheelColor[2] = "POSITION"; // Deck 2
-DDJSR2.wheelColor[3] = "CYAN"; // Deck 3
-DDJSR2.wheelColor[4] = "BRIGHTBLUE"; // Deck 4
+DDJSR2.wheelColor[2] = "TRACK"; // Deck 2
+DDJSR2.wheelColor[3] = "TRACK"; // Deck 3
+DDJSR2.wheelColor[4] = "TRACK"; // Deck 4
 
 DDJSR2.wheelLedCircleColor = {
     OFF: 20,
