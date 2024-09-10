@@ -493,11 +493,41 @@ DDJSR2.Deck = function(channelOffset) {
         midi: [0x90 + channelOffset, 0x71],
         inKey: "reset_key"
     });
-    this.wheelRing = new WheelRing({
-        midi: [0xBB, 0x20 + channelOffset],
-        color: DDJSR2.wheelColor[deckNumber],
-        deckNumber: deckNumber,
-    });
+
+    switch (DDJSR2.wheelColor[deckNumber]) {
+    case "TRACK":
+        this.wheelRing = new WheelRing({
+            midi: [0xBB, 0x20 + channelOffset],
+            group: this.group,
+            outKey: "track_color",
+            output: function(colorRGB) { this.send(this.colorMapper.getValueForNearestColor(colorRGB)); }
+        });
+        break;
+    case "POSITION":
+        this.wheelRing = new WheelRing({
+            midi: [0xBB, 0x20 + channelOffset],
+            group: this.group,
+            outKey: "playposition",
+            revolutionsPerSecond: DDJSR2.scratchSettings.vinylSpeed / 60,
+            output: function(position) {
+                // Every time the playposition  changes, update the wheel color.
+                // Timing calculation is handled in seconds!!
+                const elapsedTime = position * engine.getValue(this.group, "duration");
+                const maxColorValue = DDJSR2.wheelLedCircle.maxVal;
+                // Determine the current position in the color cycle
+                // The modulo operation ensures the color value stays within the available range
+                // The multiplication by maxColorValue ensures that the position is spread over the entire range of indexed colors.
+                this.send(Math.round((this.revolutionsPerSecond * elapsedTime * maxColorValue) % maxColorValue));
+            }
+        });
+        break;
+    default:
+        this.wheelRing = new WheelRing({
+            midi: [0xBB, 0x20 + channelOffset],
+            group: this.group,
+            outValueScale: () => DDJSR2.wheelColor[deckNumber]
+        });
+    }
 
     // Attach the pads to the deck instance
     this.padSection = new DDJSR2.PadSection(this, channelOffset);
@@ -1248,81 +1278,34 @@ DDJSR2.PitchPlayMode = function(deck, offset) {
 DDJSR2.PitchPlayMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 const WheelRing = function(options) {
-    if (options.color === "POSITION") {
-        options.outKey = "playposition";
-        options.output = function(value) { this.sendIfChanged(this.getPositionColor(value)); };
-    } else if (options.color === "TRACK") {
-        options.outKey = "track_color";
-        options.output = function(colorRGB) { this.sendIfChanged(this.colorMapper.getValueForNearestColor(colorRGB)); };
-    } else {
-        options.trigger = function() {
-            this.sendIfChanged(DDJSR2.wheelLedCircleColor[options.color]);
-        };
-    }
-
     components.Component.call(this, options);
 };
-
 WheelRing.prototype = new components.Component({
-    blink: 0,
     colorMapper: DDJSR2.wheelColorMap,
-    sendIfChanged: function(value) {
-        if (this.value !== value && value !== "EOT") {
+    send: function(value) {
+        if (this.value !== value) {
             this.value = value;
-            this.send(value);
+            components.Component.prototype.send.call(this, value);
         }
     },
-    endWarning: function() {
-
-        // Check if we're nearing the end of the track and not scratching
-        if (!engine.isScratching(this.deckNumber)) {
-            let colorIndex;
-            this.blink = !this.blink;
-            if (this.blink) {
-                colorIndex = DDJSR2.wheelLedCircle.blink;
-            } else {
-                colorIndex = DDJSR2.wheelLedCircle.maxVal;
-            }
-
-            this.sendIfChanged(colorIndex);
-        }
-
-    },
-    heartbeat: function() {
+    outputMaybe: function() {
         if (engine.getValue(this.group, "end_of_track")) {
-            this.endWarning();
+            engine.getValue("[App]", "indicator_500ms") ? this.send(DDJSR2.wheelLedCircle.blink) : this.send(DDJSR2.wheelLedCircle.maxVal);
+            return;
         }
+        this.output(this.outGetValue());
     },
-    getPositionColor: function(position) {
-        if (engine.getValue(this.group, "end_of_track")) {
-            return "EOT";
-        }
-        let colorIndex = DDJSR2.wheelLedCircle.maxVal;
-        // Every time the playposition  changes, update the wheel color.
-        // Timing calculation is handled in seconds!!
-        const duration = engine.getValue(this.group, "duration");
-        const elapsedTime = position * duration;
-        const revolutionsPerSecond = DDJSR2.scratchSettings.vinylSpeed / 60;
-        const maxColorValue = DDJSR2.wheelLedCircle.maxVal;
-        // Determine the current position in the color cycle
-        // The modulo operation ensures the color value stays within the available range
-        // The multiplication by maxColorValue ensures that the position is spread over the entire range of indexed colors.
-        colorIndex = Math.round((revolutionsPerSecond * elapsedTime * maxColorValue) % maxColorValue);
-
-        return colorIndex;
-    },
-    fixcolor: function() {
-        const colorRGB = engine.getValue(this.group, "track_color");
-        this.send(this.colorMapper.getValueForNearestColor(colorRGB));
+    trigger: function() {
+        this.outputMaybe();
     },
     connect: function() {
         if (typeof this.group !== "string") {
             throw `invalid group: ${this.group}`;
         }
-        const COs = [{}, {group: this.group, key: "end_of_track", output: this.endWarning}, {group: "[App]", key: "indicator_500ms", output: this.heartbeat}, {group: this.group, key: "track_loaded", output: this.fixcolor}];
+        const COs = [{}, {group: this.group, key: "end_of_track"}, {group: "[App]", key: "indicator_500ms"}];
         if (typeof this.outKey === "string") {
-            COs[0] = {group: this.group, key: this.outKey, output: this.output};
+            COs[0] = {group: this.group, key: this.outKey};
         }
-        this.connections = COs.map(co => engine.makeConnection(co.group, co.key, co.output.bind(this)));
+        this.connections = COs.map(co => engine.makeConnection(co.group, co.key, this.outputMaybe.bind(this)));
     }
 });
