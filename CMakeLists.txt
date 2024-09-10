@@ -213,6 +213,8 @@ set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 
