@@ -689,8 +689,6 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-set(CLANG_TIDY "" CACHE STRING "CMAKE_CXX_CLANG_TIDY equivalent that only applies to mixxx sources, not bundled dependencies")
-
 # Mixxx itself
 add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
@@ -1548,7 +1546,6 @@ endif()
 
 set_source_files_properties(src/util/moc_included_test.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
-set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
@@ -1781,7 +1778,6 @@ else()
   add_executable(mixxx WIN32 src/main.cpp)
 endif()
 
-set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PRIVATE mixxx-lib mixxx-gitinfostore)
 
 #
