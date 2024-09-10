@@ -89,6 +89,10 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     logger.debug("Looking for compile_commands.json...")
     compile_commands = find_compile_commands(rootdir)
 
+    if not compile_commands:
+        logger.error("could not find compile_commands.json\n")
+        sys.exit(1)
+
     logger.debug("getting changed lines")
     changed_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
