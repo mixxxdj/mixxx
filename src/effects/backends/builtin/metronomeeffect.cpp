@@ -6,6 +6,21 @@
 #include "util/math.h"
 #include "util/sample.h"
 
+namespace {
+
+void playMonoSamples(std::span<const CSAMPLE> monoSource, std::span<CSAMPLE> output) {
+    const auto outputBufferFrames = output.size() / mixxx::kEngineChannelCount;
+    SINT framesPlayed = std::min(monoSource.size(), outputBufferFrames);
+    SampleUtil::addMonoToStereo(output.data(), monoSource.data(), framesPlayed);
+}
+
+double framesPerBeat(mixxx::audio::SampleRate sampleRate, double bpm) {
+    double framesPerMinute = sampleRate * 60;
+    return framesPerMinute / bpm;
+}
+
+} // namespace
+
 // static
 QString MetronomeEffect::getId() {
     return "org.mixxx.effects.metronome";
@@ -63,18 +78,21 @@ void MetronomeEffect::processChannel(
         return;
     }
 
+    auto output = std::span<CSAMPLE>(pOutput, engineParameters.samplesPerBuffer());
+
     MetronomeGroupState* gs = pGroupState;
 
-    std::span<const CSAMPLE> clickSpan = clickForSampleRate(engineParameters.sampleRate());
-    SINT clickSize = clickSpan.size();
-    const CSAMPLE* click = clickSpan.data();
+    const std::span<const CSAMPLE> click = clickForSampleRate(engineParameters.sampleRate());
+    SINT clickSize = click.size();
 
     if (pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 
+    const bool shouldSync = m_pSyncParameter->toBool();
+
     if (enableState == EffectEnableState::Enabling) {
-        if (m_pSyncParameter->toBool() && groupFeatures.beat_fraction_buffer_end.has_value()) {
+        if (shouldSync && groupFeatures.beat_fraction_buffer_end.has_value()) {
             // Skip first click and sync phase
             gs->m_framesSinceClickStart = clickSize;
         } else {
@@ -85,16 +103,13 @@ void MetronomeEffect::processChannel(
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // In click region, write remaining click frames.
-        const SINT copyFrames =
-                math_min(engineParameters.framesPerBuffer(),
-                        clickSize - gs->m_framesSinceClickStart);
-        SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart], copyFrames);
+        playMonoSamples(click.subspan(gs->m_framesSinceClickStart), output);
     }
 
     double bufferEnd = gs->m_framesSinceClickStart + engineParameters.framesPerBuffer();
 
     double nextClickStart = bufferEnd; // default to "no new click";
-    if (m_pSyncParameter->toBool() && groupFeatures.beat_fraction_buffer_end.has_value()) {
+    if (shouldSync && groupFeatures.beat_fraction_buffer_end.has_value()) {
         // Sync enabled and have a track with beats
         if (groupFeatures.beat_length.has_value() &&
                 groupFeatures.beat_length->scratch_rate != 0.0) {
@@ -120,16 +135,14 @@ void MetronomeEffect::processChannel(
             return;
         }
     } else {
-        nextClickStart = engineParameters.sampleRate() * 60 / m_pBpmParameter->value();
+        nextClickStart = framesPerBeat(engineParameters.sampleRate(), m_pBpmParameter->value());
     }
 
     if (bufferEnd > nextClickStart) {
         // We need to start a new click
         SINT outputOffset = static_cast<SINT>(nextClickStart) - gs->m_framesSinceClickStart;
         if (outputOffset > 0 && outputOffset < engineParameters.framesPerBuffer()) {
-            const SINT copyFrames =
-                    math_min(engineParameters.framesPerBuffer() - outputOffset, clickSize);
-            SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], &click[0], copyFrames);
+            playMonoSamples(click, output.subspan(outputOffset * 2));
         }
         // Due to seeking, we may have missed the start position of the click.
         // We pretend that it has been played to stay in phase
