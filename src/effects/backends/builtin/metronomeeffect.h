@@ -9,12 +9,10 @@
 class MetronomeGroupState final : public EffectState {
   public:
     MetronomeGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              m_framesSinceClickStart(0) {
-    }
+            : EffectState(engineParameters){};
     ~MetronomeGroupState() override = default;
 
-    SINT m_framesSinceClickStart;
+    std::size_t framesSinceLastClick = 0;
 };
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
