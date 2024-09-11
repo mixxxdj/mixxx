@@ -1,22 +1,61 @@
 #include "metronomeeffect.h"
 
+#include <cmath>
+#include <limits>
+#include <optional>
+#include <span>
+
+#include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
 #include "metronomeclick.h"
-#include "util/math.h"
 #include "util/sample.h"
+#include "util/types.h"
 
 namespace {
 
-void playMonoSamples(std::span<const CSAMPLE> monoSource, std::span<CSAMPLE> output) {
-    const auto outputBufferFrames = output.size() / mixxx::kEngineChannelOutputCount;
-    SINT framesPlayed = std::min(monoSource.size(), outputBufferFrames);
+std::size_t playMonoSamples(std::span<const CSAMPLE> monoSource, std::span<CSAMPLE> output) {
+    const std::size_t outputBufferFrames = output.size() / mixxx::kEngineChannelOutputCount;
+    std::size_t framesPlayed = std::min(monoSource.size(), outputBufferFrames);
     SampleUtil::addMonoToStereo(output.data(), monoSource.data(), framesPlayed);
+    return framesPlayed;
 }
 
-double framesPerBeat(mixxx::audio::SampleRate sampleRate, double bpm) {
-    double framesPerMinute = sampleRate * 60;
-    return framesPerMinute / bpm;
+template<class T>
+std::span<T> subspan_clamped(std::span<T> in, typename std::span<T>::size_type offset) {
+    // TODO (Swiftb0y): should we instead create a wrapper type that implements
+    // UB-free "clamped" operations?
+    return in.subspan(std::min(offset, in.size()));
+}
+
+constexpr std::size_t framesPerBeat(
+        mixxx::audio::SampleRate framesPerSecond, double beatsPerMinute) {
+    double framesPerMinute = framesPerSecond * 60;
+    return static_cast<std::size_t>(framesPerMinute / beatsPerMinute);
+}
+// returns where in the output buffer to start playing the next click.
+// If there the span is empty, no click should be played yet.
+std::span<CSAMPLE> syncedClickOutput(double beatFractionBufferEnd,
+        std::optional<GroupFeatureBeatLength> beatLengthAndScratch,
+        std::span<CSAMPLE> output) {
+    if (!beatLengthAndScratch.has_value() || beatLengthAndScratch->scratch_rate == 0.0) {
+        return {};
+    }
+    double beatLength = beatLengthAndScratch->frames / beatLengthAndScratch->scratch_rate;
+
+    const bool needsPreviousBeat = beatLength < 0;
+    double beatToBufferEndFrames = std::abs(beatLength) *
+            (needsPreviousBeat ? (1 - beatFractionBufferEnd)
+                               : beatFractionBufferEnd);
+    std::size_t beatToBufferEndSamples =
+            static_cast<std::size_t>(beatToBufferEndFrames) *
+            mixxx::kEngineChannelOutputCount;
+
+    if (beatToBufferEndSamples <= output.size()) {
+        return output.last(beatToBufferEndSamples);
+    }
+    return {};
 }
 
 } // namespace
@@ -83,73 +122,43 @@ void MetronomeEffect::processChannel(
     MetronomeGroupState* gs = pGroupState;
 
     const std::span<const CSAMPLE> click = clickForSampleRate(engineParameters.sampleRate());
-    SINT clickSize = click.size();
 
     if (pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 
     const bool shouldSync = m_pSyncParameter->toBool();
+    const bool hasBeatInfo = groupFeatures.beat_length.has_value() &&
+            groupFeatures.beat_fraction_buffer_end.has_value();
 
     if (enableState == EffectEnableState::Enabling) {
-        if (shouldSync && groupFeatures.beat_fraction_buffer_end.has_value()) {
+        if (shouldSync && hasBeatInfo) {
             // Skip first click and sync phase
-            gs->m_framesSinceClickStart = clickSize;
+            gs->framesSinceLastClick = click.size();
         } else {
-            // click right away after enabling
-            gs->m_framesSinceClickStart = 0;
+            gs->framesSinceLastClick = 0;
         }
     }
 
-    if (gs->m_framesSinceClickStart < clickSize) {
-        // In click region, write remaining click frames.
-        playMonoSamples(click.subspan(gs->m_framesSinceClickStart), output);
-    }
+    playMonoSamples(subspan_clamped(click, gs->framesSinceLastClick), output);
+    gs->framesSinceLastClick += engineParameters.framesPerBuffer();
 
-    double bufferEnd = gs->m_framesSinceClickStart + engineParameters.framesPerBuffer();
-
-    double nextClickStart = bufferEnd; // default to "no new click";
-    if (shouldSync && groupFeatures.beat_fraction_buffer_end.has_value()) {
-        // Sync enabled and have a track with beats
-        if (groupFeatures.beat_length.has_value() &&
-                groupFeatures.beat_length->scratch_rate != 0.0) {
-            double beatLength = groupFeatures.beat_length->frames /
-                    groupFeatures.beat_length->scratch_rate;
-            double beatToBufferEnd;
-            if (beatLength > 0) {
-                beatToBufferEnd =
-                        beatLength *
-                        *groupFeatures.beat_fraction_buffer_end;
-            } else {
-                beatToBufferEnd =
-                        beatLength * -1 *
-                        (1 - *groupFeatures.beat_fraction_buffer_end);
-            }
-
-            if (bufferEnd > beatToBufferEnd) {
-                // We have a new beat before the current buffer ends
-                nextClickStart = bufferEnd - beatToBufferEnd;
-            }
+    std::span<CSAMPLE> outputBufferOffset = [&] {
+        if (shouldSync && hasBeatInfo) {
+            return syncedClickOutput(*groupFeatures.beat_fraction_buffer_end,
+                    groupFeatures.beat_length,
+                    output);
         } else {
-            // no transport, continue until the current click has been fully played
-            if (gs->m_framesSinceClickStart < clickSize) {
-                gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
-            }
-            return;
+            // EngineParameters::sampleRate in reality returns the framerate.
+            mixxx::audio::SampleRate framesPerSecond = engineParameters.sampleRate();
+            std::size_t offset = gs->framesSinceLastClick %
+                    framesPerBeat(framesPerSecond,
+                            m_pBpmParameter->value());
+            return subspan_clamped(output, offset * mixxx::kEngineChannelOutputCount);
         }
-    } else {
-        nextClickStart = framesPerBeat(engineParameters.sampleRate(), m_pBpmParameter->value());
-    }
+    }();
 
-    if (bufferEnd > nextClickStart) {
-        // We need to start a new click
-        SINT outputOffset = static_cast<SINT>(nextClickStart) - gs->m_framesSinceClickStart;
-        if (outputOffset > 0 && outputOffset < engineParameters.framesPerBuffer()) {
-            playMonoSamples(click, output.subspan(outputOffset * 2));
-        }
-        // Due to seeking, we may have missed the start position of the click.
-        // We pretend that it has been played to stay in phase
-        gs->m_framesSinceClickStart = -outputOffset;
+    if (!outputBufferOffset.empty()) {
+        gs->framesSinceLastClick = playMonoSamples(click, outputBufferOffset);
     }
-    gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
 }
