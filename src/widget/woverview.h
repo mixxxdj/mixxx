@@ -23,8 +23,7 @@ class SkinContext;
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
-    WOverview(
-            const QString& group,
+    WOverview(const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
@@ -32,19 +31,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
 
-    enum class Type {
-        Filtered,
-        HSV,
-        RGB,
-    };
-    Q_ENUM(Type);
-
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void onTrackAnalyzerProgress(TrackId trackId,
-            AnalyzerProgress analyzerProgress);
+    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
@@ -73,22 +64,12 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
 
-    void slotTypeControlChanged(double v);
     void slotMinuteMarkersChanged(bool v);
 
   private:
     // Append the waveform overview pixmap according to available data
     // in waveform
     bool drawNextPixmapPart();
-    void drawNextPixmapPartHSV(QPainter* pPainter,
-            ConstWaveformPointer pWaveform,
-            const int nextCompletion);
-    void drawNextPixmapPartLMH(QPainter* pPainter,
-            ConstWaveformPointer pWaveform,
-            const int nextCompletion);
-    void drawNextPixmapPartRGB(QPainter* pPainter,
-            ConstWaveformPointer pWaveform,
-            const int nextCompletion);
 
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
@@ -142,7 +123,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
-    Type m_type;
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;
@@ -189,7 +169,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     PollingControlProxy m_trackSamplesControl;
     PollingControlProxy m_playpositionControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
-    parented_ptr<ControlProxy> m_pTypeControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
 
     QPointF m_timeRulerPos;

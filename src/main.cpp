@@ -47,7 +47,7 @@ const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 // Profiling at 100% HiDPI zoom on Windows, that with 20MByte,
 // the SVG rendering happens sometimes during normal operation.
 // An indicator that the QPixmapCache was too small.
-constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
+constexpr int kPixmapCacheLimitAt100PercentZoom = 128 * 1024; // 128 MByte
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();

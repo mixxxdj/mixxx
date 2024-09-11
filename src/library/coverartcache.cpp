@@ -9,6 +9,7 @@
 #include "track/track.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
+#include "util/timer.h"
 
 namespace {
 
@@ -188,6 +189,8 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
         TrackPointer pTrack,
         CoverInfo coverInfo,
         int desiredWidth) {
+    ScopedTimer t(QStringLiteral("CoverArtCache::loadCover"));
+
     if (kLogger.traceEnabled()) {
         kLogger.trace()
                 << "loadCover"
@@ -245,7 +248,7 @@ void CoverArtCache::coverLoaded() {
     }
 
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "coverLoaded" << res.coverArt;
+        kLogger.info() << "coverLoaded" << res.coverArt;
     }
 
     QString cacheKey = pixmapCacheKey(

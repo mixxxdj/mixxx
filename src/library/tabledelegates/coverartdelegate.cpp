@@ -10,6 +10,7 @@
 #include "track/track.h"
 #include "util/logger.h"
 #include "util/make_const_iterator.h"
+#include "util/timer.h"
 
 namespace {
 
@@ -108,6 +109,8 @@ void CoverArtDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
+    ScopedTimer t(QStringLiteral("CoverArtDelegate::paintItem"));
+
     paintItemBackground(painter, option, index);
 
     CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);

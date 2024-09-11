@@ -6,16 +6,12 @@
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
+#include "preferences/waveformoverviewsettings.h"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/overviews/overviewcache.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "widget/woverview.h"
-
-namespace {
-const ConfigKey kOverviewTypeCfgKey(QStringLiteral("[Waveform]"),
-        QStringLiteral("WaveformOverviewType"));
-} // namespace
 
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
@@ -27,27 +23,25 @@ DlgPrefWaveform::DlgPrefWaveform(
     setupUi(this);
 
     // Waveform overview init
+    WaveformOverviewSettings overviewSettings(m_pConfig);
     waveformOverviewComboBox->addItem(
-            tr("Filtered"), QVariant::fromValue(WOverview::Type::Filtered));
-    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(WOverview::Type::HSV));
-    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(WOverview::Type::RGB));
-    m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
-    m_pTypeControl->setStates(QMetaEnum::fromType<WOverview::Type>().keyCount());
-    m_pTypeControl->setReadOnly();
-    // Update the control with the config value
-    WOverview::Type overviewType =
-            m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
-    int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
+            tr("Filtered"), QVariant::fromValue(mixxx::OverviewType::Filtered));
+    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(mixxx::OverviewType::HSV));
+    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(mixxx::OverviewType::RGB));
+    //  Update the control with the config value
+    mixxx::OverviewType overviewType = overviewSettings.getOverviewType();
+    int cfgTypeIndex =
+            waveformOverviewComboBox->findData(
+                    QVariant::fromValue(overviewType));
     if (cfgTypeIndex == -1) {
         // Invalid config value, set default type RGB and write it to config
         waveformOverviewComboBox->setCurrentIndex(
-                waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
-        m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
+                waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
+        overviewSettings.setOverviewType(mixxx::OverviewType::RGB);
     } else {
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
     }
-    // Set the control used by WOverview
-    m_pTypeControl->forceSet(cfgTypeIndex);
+    normalizeOverviewCheckBox->setChecked(overviewSettings.isOverviewNormalized());
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -280,7 +274,6 @@ void DlgPrefWaveform::slotUpdate() {
     lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
-    normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
@@ -294,10 +287,10 @@ void DlgPrefWaveform::slotUpdate() {
                     factory->getUntilMarkAlign()));
     untilMarkTextPointSizeSpinBox->setValue(factory->getUntilMarkTextPointSize());
 
-    WOverview::Type cfgOverviewType =
-            m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
+    mixxx::OverviewType cfgOverviewType =
+            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
     // Assumes the combobox index is in sync with the ControlPushButton
-    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<WOverview::Type>()) {
+    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<mixxx::OverviewType>()) {
         int cfgOverviewTypeIndex =
                 waveformOverviewComboBox->findData(QVariant::fromValue(cfgOverviewType));
         waveformOverviewComboBox->setCurrentIndex(cfgOverviewTypeIndex);
@@ -358,7 +351,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
-            waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
+            waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
@@ -540,10 +533,13 @@ void DlgPrefWaveform::updateEnableUntilMark() {
 void DlgPrefWaveform::slotSetWaveformOverviewType() {
     // Apply immediately
     QVariant comboboxData = waveformOverviewComboBox->currentData();
-    DEBUG_ASSERT(comboboxData.canConvert<WOverview::Type>());
-    auto type = comboboxData.value<WOverview::Type>();
-    m_pConfig->setValue(kOverviewTypeCfgKey, type);
-    m_pTypeControl->forceSet(static_cast<double>(type));
+    DEBUG_ASSERT(comboboxData.canConvert<mixxx::OverviewType>());
+    auto type = comboboxData.value<mixxx::OverviewType>();
+    OverviewCache::instance()->setOverviewType(type);
+
+    // TODO: Move this into OverviewCache.
+    WaveformOverviewSettings overviewSettings(m_pConfig);
+    overviewSettings.setOverviewType(type);
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
@@ -571,11 +567,11 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
 }
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
-    WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+    OverviewCache::instance()->setOverviewNormalized(normalize);
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
-    m_pConfig->setValue(ConfigKey("[Waveform]", "DrawOverviewMinuteMarkers"), draw);
+    m_pConfig->setValue(ConfigKey("[Waveform]", "DraOverviewCacheMinuteMarkers"), draw);
     m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
