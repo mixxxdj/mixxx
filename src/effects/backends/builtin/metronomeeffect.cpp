@@ -64,15 +64,9 @@ void MetronomeEffect::processChannel(
 
     MetronomeGroupState* gs = pGroupState;
 
-    SINT clickSize = kClickSize44100;
-    const CSAMPLE* click = kClick44100;
-    if (engineParameters.sampleRate() >= 96000) {
-        clickSize = kClickSize96000;
-        click = kClick96000;
-    } else if (engineParameters.sampleRate() >= 48000) {
-        clickSize = kClickSize48000;
-        click = kClick48000;
-    }
+    std::span<const CSAMPLE> clickSpan = clickForSampleRate(engineParameters.sampleRate());
+    SINT clickSize = clickSpan.size();
+    const CSAMPLE* click = clickSpan.data();
 
     if (pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
