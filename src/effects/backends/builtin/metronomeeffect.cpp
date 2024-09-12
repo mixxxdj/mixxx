@@ -100,7 +100,8 @@ void MetronomeEffect::processChannel(
                 if (*groupFeatures.scratch_rate != 0.0) {
                     beatLength /= *groupFeatures.scratch_rate;
                 } else {
-                    beatLength = 0;
+                    // no transport, nothing to do.
+                    return;
                 }
             }
 
@@ -133,10 +134,10 @@ void MetronomeEffect::processChannel(
             const SINT copyFrames =
                     math_min(engineParameters.framesPerBuffer() - outputOffset, clickSize);
             SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], &click[0], copyFrames);
-            gs->m_framesSinceClickStart = -outputOffset;
         }
+        // Due to seeking, we may have missed the start position of the click.
+        // We pretend that it has been played to stay in phase
+        gs->m_framesSinceClickStart = -outputOffset;
     }
-    if (gs->m_framesSinceClickStart < engineParameters.framesPerBuffer() + clickSize) {
-        gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
-    }
+    gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
 }
