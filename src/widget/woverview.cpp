@@ -88,7 +88,7 @@ WOverview::WOverview(
 
     m_pMinuteMarkersControl = make_parented<ControlProxy>(
             QStringLiteral("[Waveform]"),
-            QStringLiteral("DrawOverviewMinuteMarkers"),
+            QStringLiteral("draw_overview_minute_markers"),
             this);
     m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
     slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
@@ -722,6 +722,10 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
     }
 
     if (!static_cast<bool>(m_pMinuteMarkersControl->get())) {
+        return;
+    }
+
+    if (m_pRateRatioControl->get() == 0) {
         return;
     }
 
@@ -1599,9 +1603,14 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 }
 
 double WOverview::samplePositionToSeconds(double sample) {
+    double rate = m_pRateRatioControl->get();
+    VERIFY_OR_DEBUG_ASSERT(rate != 0.0) {
+        return 1;
+    }
+
     double trackTime = sample /
             (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
-    return trackTime / m_pRateRatioControl->get();
+    return trackTime / rate;
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {

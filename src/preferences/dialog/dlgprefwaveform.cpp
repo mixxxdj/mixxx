@@ -73,7 +73,7 @@ DlgPrefWaveform::DlgPrefWaveform(
 
     m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
             ConfigKey(QStringLiteral("[Waveform]"),
-                    QStringLiteral("DrawOverviewMinuteMarkers")));
+                    QStringLiteral("draw_overview_minute_markers")));
     m_pOverviewMinuteMarkersControl->setReadOnly();
 
     // Populate untilMark options
@@ -304,7 +304,7 @@ void DlgPrefWaveform::slotUpdate() {
     }
 
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "DrawOverviewMinuteMarkers"), true);
+            ConfigKey("[Waveform]", "draw_overview_minute_markers"), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
     m_pOverviewMinuteMarkersControl->forceSet(drawOverviewMinuteMarkers);
 
@@ -575,7 +575,7 @@ void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
-    m_pConfig->setValue(ConfigKey("[Waveform]", "DrawOverviewMinuteMarkers"), draw);
+    m_pConfig->setValue(ConfigKey("[Waveform]", "draw_overview_minute_markers"), draw);
     m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
