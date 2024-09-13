@@ -334,6 +334,14 @@ void DlgPrefSound::slotApply() {
         ScopedWaitCursor cursor;
         const auto keylockEngine =
                 keylockComboBox->currentData().value<EngineBuffer::KeylockEngine>();
+
+        // Temporary set an empty config to force the audio thread to stop and
+        // stay off while we are swapping the keylock settings. This is
+        // necessary because the audio thread doesn't have any synchronisation
+        // mechanism due to its realtime nature and editing the RubberBand
+        // config while it is running leads to race conditions.
+        m_pSoundManager->closeActiveConfig();
+
         m_pKeylockEngine.set(static_cast<double>(keylockEngine));
         m_pSettings->set(kKeylockEngingeCfgkey,
                 ConfigValue(static_cast<int>(keylockEngine)));
