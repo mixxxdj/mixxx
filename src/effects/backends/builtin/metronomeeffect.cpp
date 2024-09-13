@@ -19,6 +19,7 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr("Adds a metronome click sound to the stream"));
+    pManifest->setEffectRampsFromDry(true);
 
     // Period
     // The maximum is at 128 + 1 allowing 128 as max value and
