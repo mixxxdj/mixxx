@@ -94,18 +94,12 @@ void MetronomeEffect::processChannel(
     double bufferEnd = gs->m_framesSinceClickStart + engineParameters.framesPerBuffer();
 
     double nextClickStart = bufferEnd; // default to "no new click";
-    if (m_pSyncParameter->toBool() && groupFeatures.beat_length_frames.has_value()) {
-        if (groupFeatures.beat_fraction_buffer_end.has_value()) {
-            double beatLength = *groupFeatures.beat_length_frames;
-            if (groupFeatures.scratch_rate.has_value()) {
-                if (*groupFeatures.scratch_rate != 0.0) {
-                    beatLength /= *groupFeatures.scratch_rate;
-                } else {
-                    // no transport, nothing to do.
-                    return;
-                }
-            }
-
+    if (m_pSyncParameter->toBool() && groupFeatures.beat_fraction_buffer_end.has_value()) {
+        // Sync enabled and have a track with beats
+        if (groupFeatures.beat_length.has_value() &&
+                groupFeatures.beat_length->scratch_rate != 0.0) {
+            double beatLength = groupFeatures.beat_length->frames /
+                    groupFeatures.beat_length->scratch_rate;
             double beatToBufferEnd;
             if (beatLength > 0) {
                 beatToBufferEnd =
@@ -122,7 +116,8 @@ void MetronomeEffect::processChannel(
                 nextClickStart = bufferEnd - beatToBufferEnd;
             }
         } else {
-            nextClickStart = *groupFeatures.beat_length_frames;
+            // no transport, nothing to do.
+            return;
         }
     } else {
         nextClickStart = engineParameters.sampleRate() * 60 / m_pBpmParameter->value();
