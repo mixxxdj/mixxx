@@ -632,7 +632,15 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     TrackPointerList tracks;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistTableModel->index(i, 0);
-        tracks.push_back(pPlaylistTableModel->getTrack(index));
+        auto pTrack = pPlaylistTableModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
+        tracks.push_back(pTrack);
+    }
+
+    if (tracks.isEmpty()) {
+        return;
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, tracks);
@@ -773,6 +781,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                     label = fetchPlaylistLabel(id);
                     pChild->setLabel(label);
                     decorateChild(pChild, id);
+                    markTreeItem(pChild);
                 }
             }
         } else {
@@ -781,6 +790,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                 label = fetchPlaylistLabel(id);
                 pTreeItem->setLabel(label);
                 decorateChild(pTreeItem, id);
+                markTreeItem(pTreeItem);
             }
         }
     }

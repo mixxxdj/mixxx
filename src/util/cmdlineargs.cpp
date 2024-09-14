@@ -24,18 +24,24 @@ bool calcUseColorsAuto() {
     // see https://no-color.org/
     if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
         return false;
-    } else {
-#ifndef __WINDOWS__
-        if (isatty(fileno(stderr))) {
-            return true;
-        }
-#else
-        if (_isatty(_fileno(stderr))) {
-            return true;
-        }
-#endif
     }
-    return false;
+
+#ifndef __WINDOWS__
+    if (!isatty(fileno(stderr))) {
+        return false;
+    }
+#else
+    if (!_isatty(_fileno(stderr))) {
+        return false;
+    }
+#endif
+
+    // Check if terminal is known to support ANSI colors
+    QString term = QProcessEnvironment::systemEnvironment().value("TERM");
+    return term == "alacritty" || term == "ansi" || term == "cygwin" || term == "linux" ||
+            term.startsWith("screen") || term.startsWith("xterm") ||
+            term.startsWith("vt100") || term.startsWith("rxvt") ||
+            term.endsWith("color");
 }
 
 } // namespace

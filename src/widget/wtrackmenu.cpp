@@ -760,7 +760,7 @@ int WTrackMenu::getCommonTrackRating() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return 0;
     }
-    int commonRating;
+    int commonRating = 0;
     if (m_pTrackModel) {
         const int column =
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_RATING);

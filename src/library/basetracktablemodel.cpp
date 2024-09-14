@@ -2,6 +2,7 @@
 
 #include <QGuiApplication>
 #include <QScreen>
+#include <QtGlobal>
 
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
@@ -108,8 +109,7 @@ constexpr bool BaseTrackTableModel::kKeyColorsEnabledDefault;
 int BaseTrackTableModel::s_bpmColumnPrecision =
         kBpmColumnPrecisionDefault;
 bool BaseTrackTableModel::s_keyColorsEnabled = kKeyColorsEnabledDefault;
-ColorPalette BaseTrackTableModel::s_keyColorPalette =
-        mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette;
+std::optional<ColorPalette> BaseTrackTableModel::s_keyColorPalette;
 
 // static
 void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
@@ -604,18 +604,6 @@ QVariant BaseTrackTableModel::data(
     return roleValue(index, rawValue(index), role);
 }
 
-QVariant BaseTrackTableModel::rawValue(
-        const QModelIndex& index) const {
-    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
-        return QVariant();
-    }
-    const auto field = mapColumn(index.column());
-    if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-        return QVariant();
-    }
-    return rawSiblingValue(index, field);
-}
-
 QVariant BaseTrackTableModel::rawSiblingValue(
         const QModelIndex& index,
         ColumnCache::Column siblingField) const {
@@ -625,17 +613,13 @@ QVariant BaseTrackTableModel::rawSiblingValue(
     VERIFY_OR_DEBUG_ASSERT(siblingField != ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
         return QVariant();
     }
-    const auto siblingColumn = fieldIndex(siblingField);
+    const int siblingColumn = fieldIndex(siblingField);
     if (siblingColumn < 0) {
         // Unsupported or unknown column/field
         // FIXME: This should never happen but it does. But why??
         return QVariant();
     }
-    VERIFY_OR_DEBUG_ASSERT(siblingColumn != index.column()) {
-        // Prevent infinite recursion
-        return QVariant();
-    }
-    const auto siblingIndex = index.sibling(index.row(), siblingColumn);
+    const QModelIndex siblingIndex = index.sibling(index.row(), siblingColumn);
     return rawValue(siblingIndex);
 }
 
@@ -1055,10 +1039,10 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             const auto key = KeyUtils::keyFromNumericValue(keyCode);
-            if (key == mixxx::track::io::key::INVALID) {
+            if (key == mixxx::track::io::key::INVALID || !s_keyColorPalette.has_value()) {
                 return QVariant();
             }
-            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette));
+            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette.value()));
         }
         default:
             return QVariant();
@@ -1136,6 +1120,12 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
         // Cells are editable by default
         itemFlags |= Qt::ItemIsEditable;
     }
+#ifdef Q_OS_IOS
+    // Make items non-editable on iOS by default, since tapping any track will
+    // otherwise trigger the on-screen keyboard (even if they cannot actually
+    // be edited).
+    itemFlags &= ~Qt::ItemIsEditable;
+#endif
     return itemFlags;
 }
 

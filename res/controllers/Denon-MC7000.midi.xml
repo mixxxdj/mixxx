@@ -8,6 +8,63 @@
     	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
         <manual>denon_mc7000</manual>
     </info>
+    <settings>
+        <group label="Jogwheels">
+            <group label="General">
+                <option
+                    variable="jogSensitivity"
+                    type="real"
+                    min="0.05"
+                    max="10.0"
+                    default="1.0"
+                    label="Jogwheel sensitivity">
+                    <description>
+                        Sensitivity factor of the jog wheel (also depends on audio latency)
+                        0.5 for half, 2 for double sensitivity - Recommendation:
+                        set to 0.5 with audio buffer set to 50ms
+                        set to 1 with audio buffer set to 25ms
+                        set to 3 with audio buffer set to 5ms
+                    </description>
+                </option>
+            </group>
+            <group label="Acceleration">
+                <option
+                    variable="jogAccelerationEnabled"
+                    type="boolean"
+                    default="false"
+                    label="Enable jogwheel acceleration">
+                    <description>
+                        If enabled, the track speed will accelerate faster than the physical jogwheel movement. Be aware that the absolute track position will drift relative to the jogwheel position in this mode!
+                        (exponent: 0 and coefficient: 1 = no acceleration)
+                    </description>
+                </option>
+                <option
+                    variable="jogAccelerationExponent"
+                    type="real"
+                    min="0"
+                    max="20.0"
+                    default="0.8"
+                    step="0.1"
+                    label="Acceleration exponent">
+                    <description>
+                        The exponent of the acceleration curve
+                    </description>
+                </option>
+                <option
+                    variable="jogAccelerationCoefficient"
+                    type="real"
+                    min="0.05"
+                    max="20.0"
+                    step="0.1"
+                    default="1.0"
+                    label="Acceleration coefficient">
+                    <description>
+                        The scaling factor of the acceleration curve
+                    </description>
+                </option>
+            </group>
+        </group>
+    </settings>
     <controller id="DENON MC7000">
         <scriptfiles>
             <file filename="Denon-MC7000-scripts.js" functionprefix="MC7000"/>

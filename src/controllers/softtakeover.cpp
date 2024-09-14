@@ -1,5 +1,7 @@
 #include "controllers/softtakeover.h"
 
+#include <cmath>
+
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 
