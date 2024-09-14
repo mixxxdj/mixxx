@@ -231,6 +231,7 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
 void WWaveformViewer::slotSelectStem(uint stemMask) {
     if (m_waveformWidget) {
         m_waveformWidget->selectStem(stemMask);
+        update();
     }
 }
 #endif
