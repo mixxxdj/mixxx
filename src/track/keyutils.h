@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
+#include "util/color/colorpalette.h"
 #include "util/math.h"
 #include "util/types.h"
 
@@ -21,7 +22,8 @@ class KeyUtils {
         Traditional = 4,
         OpenKeyAndTraditional = 5,
         LancelotAndTraditional = 6,
-        NumKeyNotations = 7
+        ID3v2 = 7,
+        NumKeyNotations = 8
     };
 
     enum class ScaleMode {
@@ -68,7 +70,7 @@ class KeyUtils {
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 
-    static QColor keyToColor(mixxx::track::io::key::ChromaticKey key);
+    static QColor keyToColor(mixxx::track::io::key::ChromaticKey key, const ColorPalette& palette);
 
     static QPair<mixxx::track::io::key::ChromaticKey, double> scaleKeyOctaves(
         mixxx::track::io::key::ChromaticKey key, double scale);
@@ -127,48 +129,7 @@ class KeyUtils {
 
     static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);
 
-    static inline int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
-        switch (key) {
-            case mixxx::track::io::key::C_MAJOR:
-            case mixxx::track::io::key::A_MINOR:
-                return 1;
-            case mixxx::track::io::key::G_MAJOR:
-            case mixxx::track::io::key::E_MINOR:
-                return 2;
-            case mixxx::track::io::key::D_MAJOR:
-            case mixxx::track::io::key::B_MINOR:
-                return 3;
-            case mixxx::track::io::key::A_MAJOR:
-            case mixxx::track::io::key::F_SHARP_MINOR:
-                return 4;
-            case mixxx::track::io::key::E_MAJOR:
-            case mixxx::track::io::key::C_SHARP_MINOR:
-                return 5;
-            case mixxx::track::io::key::B_MAJOR:
-            case mixxx::track::io::key::G_SHARP_MINOR:
-                return 6;
-            case mixxx::track::io::key::F_SHARP_MAJOR:
-            case mixxx::track::io::key::E_FLAT_MINOR:
-                return 7;
-            case mixxx::track::io::key::D_FLAT_MAJOR:
-            case mixxx::track::io::key::B_FLAT_MINOR:
-                return 8;
-            case mixxx::track::io::key::A_FLAT_MAJOR:
-            case mixxx::track::io::key::F_MINOR:
-                return 9;
-            case mixxx::track::io::key::E_FLAT_MAJOR:
-            case mixxx::track::io::key::C_MINOR:
-                return 10;
-            case mixxx::track::io::key::B_FLAT_MAJOR:
-            case mixxx::track::io::key::G_MINOR:
-                return 11;
-            case mixxx::track::io::key::F_MAJOR:
-            case mixxx::track::io::key::D_MINOR:
-                return 12;
-            default:
-                return 0;
-        }
-    }
+    static int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key);
 
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);

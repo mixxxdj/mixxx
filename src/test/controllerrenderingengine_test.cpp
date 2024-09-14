@@ -12,12 +12,13 @@
 #include "test/mixxxtest.h"
 
 using ::testing::_;
+using namespace std::chrono_literals;
 
 class ControllerRenderingEngineTest : public MixxxTest {
   public:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         SETUP_LOG_CAPTURE();
     }
 

@@ -15,14 +15,16 @@
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
+struct WaveformFilteredData {
+    unsigned char low;
+    unsigned char mid;
+    unsigned char high;
+    unsigned char all;
+};
+
 struct WaveformData {
-    struct {
-        unsigned char low;
-        unsigned char mid;
-        unsigned char high;
-        unsigned char all;
-    } filtered;
-    unsigned char stems[mixxx::kMaxSupportedStem];
+    WaveformFilteredData filtered;
+    unsigned char stems[mixxx::kMaxSupportedStems];
 };
 
 class Waveform {
@@ -126,6 +128,10 @@ class Waveform {
     // We do not lock the mutex since m_data is not resized after the
     // constructor runs.
     const WaveformData* data() const { return &m_data[0];}
+
+    bool hasStem() const {
+        return m_stemCount > 0;
+    }
 
     void dump() const;
 

@@ -64,9 +64,7 @@ void LibraryExporter::beginEnginePrimeExport(
             &EnginePrimeExportJob::failed,
             this,
             [](const QString& message) {
-                QMessageBox::critical(nullptr,
-                        tr("Export Failed"),
-                        QString{tr("Export failed: %1")}.arg(message));
+                QMessageBox::critical(nullptr, tr("Export Failed"), message);
             });
 
     // Construct a dialog to monitor job progress and offer cancellation.

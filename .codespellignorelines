@@ -21,7 +21,7 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
                 "gain%(i)dout == CSAMPLE_GAIN_ZERO) {"
                     "pSrc%(i)d, gain%(i)din, gain%(i)dout" % {"i": j}
                 "(gain%(i)dout - gain%(i)din) / (iNumSamples / 2);"
-    MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
+    MOCK_METHOD(void, process, (CSAMPLE * pInOut, const int iBufferSize), (override));
     const QString kName3 = QStringLiteral("I'm blue, da ba dee");
     float m_k2vg; // IIF factor
     float m_k2vgNew; // IIF factor
@@ -73,3 +73,4 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         QStringLiteral("caf"),
 void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
     // Note(RRyan/Max Linke):
+    // https://github.com/codders/libshout/blob/a17fb84671d3732317b0353d7281cc47e2df6cf6/src/timing/timing.c

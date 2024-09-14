@@ -7,18 +7,15 @@
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "track/track.h"
-#include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
-        : m_rgSettings(pConfig) {
-    m_pReplayGain = new ReplayGain();
+        : m_rgSettings(pConfig),
+          m_pReplayGain(std::make_unique<ReplayGain>()) {
 }
 
-AnalyzerGain::~AnalyzerGain() {
-    delete m_pReplayGain;
-}
+AnalyzerGain::~AnalyzerGain() = default;
 
 bool AnalyzerGain::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,

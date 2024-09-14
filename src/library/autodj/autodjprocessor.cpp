@@ -149,7 +149,7 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_pEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
-    m_pEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
+    m_pEnabledAutoDJ->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pEnabledAutoDJ->connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 
@@ -533,6 +533,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &DeckAttributes::rateChanged,
                 this,
                 &AutoDJProcessor::playerRateChanged);
+        connect(m_pAutoDJTableModel,
+                &PlaylistTableModel::firstTrackChanged,
+                this,
+                &AutoDJProcessor::playlistFirstTrackChanged);
 
         if (!leftDeckPlaying && !rightDeckPlaying) {
             // Both decks are stopped. Load a track into deck 1 and start it
@@ -1666,6 +1670,22 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
         return;
     }
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
+}
+
+void AutoDJProcessor::playlistFirstTrackChanged() {
+    if constexpr (sDebug) {
+        qDebug() << this << "playlistFirstTrackChanged";
+    }
+    if (m_eState != ADJ_DISABLED) {
+        DeckAttributes* pLeftDeck = getLeftDeck();
+        DeckAttributes* pRightDeck = getRightDeck();
+
+        if (!pLeftDeck->isPlaying()) {
+            loadNextTrackFromQueue(*pLeftDeck);
+        } else if (!pRightDeck->isPlaying()) {
+            loadNextTrackFromQueue(*pRightDeck);
+        }
+    }
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {

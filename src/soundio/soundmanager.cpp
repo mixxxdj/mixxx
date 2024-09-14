@@ -415,7 +415,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
             // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
-            const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
+            const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out).data();
             if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;

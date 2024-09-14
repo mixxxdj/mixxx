@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/midi/midiutils.h"
@@ -451,7 +452,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping.options.testFlag(MidiOption::SoftTakeover)) {
         // This is the only place to enable it if it isn't already.
-        m_st.enable(pCO);
+        auto* pControlPotmeter = qobject_cast<ControlPotmeter*>(pCO);
+        if (!pControlPotmeter) {
+            return;
+        }
+        m_st.enable(gsl::not_null(pControlPotmeter));
         if (m_st.ignore(pCO, pCO->getParameterForMidi(newValue))) {
             return;
         }

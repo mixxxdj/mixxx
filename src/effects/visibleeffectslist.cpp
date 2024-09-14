@@ -66,7 +66,7 @@ void VisibleEffectsList::readEffectsXml(
     for (const EffectManifestPointer& pManifest : std::as_const(manifests)) {
         if (!visibleEffects.contains(pManifest) &&
                 !hiddenEffects.contains(pManifest)) {
-            // pre-pend so un-hidden effects are discoverable
+            // prepend so un-hidden effects are discoverable
             visibleEffects.prepend(pManifest);
         }
     }

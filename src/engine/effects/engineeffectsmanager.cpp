@@ -6,8 +6,8 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffectsManager::EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe)
-        : m_pResponsePipe(std::move(pResponsePipe)),
+EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe&& responsePipe)
+        : m_responsePipe(std::move(responsePipe)),
           m_buffer1(kMaxEngineSamples),
           m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
@@ -16,13 +16,13 @@ EngineEffectsManager::EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> 
 
 void EngineEffectsManager::onCallbackStart() {
     EffectsRequest* request = nullptr;
-    while (m_pResponsePipe->readMessage(&request)) {
+    while (m_responsePipe.readMessage(&request)) {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
         case EffectsRequest::ADD_EFFECT_CHAIN:
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            if (processEffectsRequest(*request, m_pResponsePipe.get())) {
+            if (processEffectsRequest(*request, &m_responsePipe)) {
                 processed = true;
             }
             break;
@@ -44,7 +44,7 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             }
             processed = request->pTargetChain->processEffectsRequest(
-                    *request, m_pResponsePipe.get());
+                    *request, &m_responsePipe);
             if (processed) {
                 // When an effect becomes active (part of a chain), keep
                 // it in our main list so that we can respond to
@@ -71,7 +71,7 @@ void EngineEffectsManager::onCallbackStart() {
             }
 
             processed = request->pTargetEffect
-                                ->processEffectsRequest(*request, m_pResponsePipe.get());
+                                ->processEffectsRequest(*request, &m_responsePipe);
 
             if (!processed) {
                 // If we got here, the message was not handled for an
@@ -87,7 +87,7 @@ void EngineEffectsManager::onCallbackStart() {
         }
 
         if (!processed) {
-            m_pResponsePipe->writeMessage(response);
+            m_responsePipe.writeMessage(response);
         }
     }
 }
