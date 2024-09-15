@@ -49,7 +49,7 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
         ", ".join("{}-{}".format(*x) for x in file_to_format.lines),
     )
 
-    filename = os.path.join(rootdir, file_to_format.filename)
+    filename = os.path.join(rootdir, file_to_format.filename).strip()
     cmd = [
         "clang-format",
         "--style=file",
