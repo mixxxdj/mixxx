@@ -72,6 +72,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pReader(nullptr),
           m_playPos(kInitialPlayPosition),
           m_speed_old(0),
+          m_actual_speed(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
           m_reverse_old(false),
@@ -1106,7 +1107,11 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
+    m_actual_speed = (m_playPos - playpos_old) / (iBufferSize / 2);
+    // qDebug() << "Ramped Speed" << m_actual_speed / m_speed_old;
+
     for (const auto& pControl : std::as_const(m_engineControls)) {
+        // m_playPos is already updated here and points to the end of the played buffer
         pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
         pControl->process(rate, m_playPos, iBufferSize);
     }
@@ -1193,6 +1198,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         m_rate_old = 0;
         m_speed_old = 0;
+        m_actual_speed = 0;
         m_scratching_old = false;
     }
 
@@ -1570,7 +1576,7 @@ double EngineBuffer::getRateRatio() const {
 
 void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (m_pBpmControl != nullptr) {
-        m_pBpmControl->collectFeatures(pGroupFeatures);
+        m_pBpmControl->collectFeatures(pGroupFeatures, m_actual_speed);
     }
 }
 

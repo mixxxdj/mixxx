@@ -338,6 +338,11 @@ class EngineBuffer : public EngineObject {
     // need updating.
     double m_speed_old;
 
+    // The actual speed is the speed calculated from buffer start and end position
+    // It can differ form m_speed_old which holds the requested speed.
+    // It is the average of one fuffer, in case speed ramping is applied in the scalers.
+    double m_actual_speed;
+
     // The previous callback's tempo ratio.
     double m_tempo_ratio_old;
 
