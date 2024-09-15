@@ -1566,7 +1566,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 
     const auto keyColorsEnabled =
             m_pConfig->getValue(
-                    ConfigKey("[Config]", "KeyColorsEnabled"),
+                    ConfigKey("[Config]", "key_colors_enabled"),
                     BaseTrackTableModel::kKeyColorsEnabledDefault);
     BaseTrackTableModel::setKeyColorsEnabled(keyColorsEnabled);
 
