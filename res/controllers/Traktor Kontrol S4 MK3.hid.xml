@@ -10,6 +10,16 @@
         </devices>
     </info>
     <settings>
+        <row>
+            <option
+                variable="useSharedDataAPI"
+                type="boolean"
+                label="Enable the shared data API (PR#12199)">
+                <description>
+                    Use the shared data API to enable communication between the screens and the buttons. Requires a custom Mixxx build using the feature in PR#12199
+                </description>
+            </option>
+        </row>
         <group label="Deck Lighting">
             <row orientation="vertical">
                 <option
@@ -691,7 +701,7 @@
             </row>
         </group>
     </settings>
-    <controller id="Traktor">
+    <controller id="Traktor" namespace="S4MK3">
         <scriptfiles>
             <file filename="Traktor-Kontrol-S4-MK3.js" functionprefix="TraktorS4MK3"/>
         </scriptfiles>
