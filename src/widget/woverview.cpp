@@ -93,6 +93,18 @@ WOverview::WOverview(
     m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
     slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
 
+    // Update immediately when the normalize option or the visual gain have been
+    // changed in the preferences.
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overviewNormalizeChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overallVisualGainChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
     setAcceptDrops(true);
@@ -427,6 +439,10 @@ void WOverview::slotTypeControlChanged(double v) {
 }
 
 void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
+    update();
+}
+
+void WOverview::slotNormalizeOrVisualGainChanged() {
     update();
 }
 

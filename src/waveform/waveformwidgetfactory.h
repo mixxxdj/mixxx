@@ -220,6 +220,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
+    void overviewNormalizeChanged();
+    void overallVisualGainChanged();
+
   public slots:
     void slotSkinLoaded();
 
