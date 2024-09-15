@@ -215,8 +215,26 @@ void QmlPlayerProxy::slotWaveformChanged() {
     }
     const int textureWidth = pWaveform->getTextureStride();
     const int textureHeight = pWaveform->getTextureSize() / pWaveform->getTextureStride();
-    const uchar* data = reinterpret_cast<const uchar*>(pWaveform->data());
-    m_waveformTexture = QImage(data, textureWidth, textureHeight, QImage::Format_RGBA8888);
+
+    const WaveformData* data = pWaveform->data();
+    // Make a copy of the waveform data, stripping the stems portion. Note that the datasize is
+    // different from the texture size -- we want the full texture size so the upload works. See
+    // m_data in waveform/waveform.h.
+    if (m_waveformData.size() == 0 ||
+            static_cast<int>(m_waveformData.size()) !=
+                    pWaveform->getTextureSize()) {
+        m_waveformData.resize(pWaveform->getTextureSize());
+    }
+    for (int i = 0; i < pWaveform->getDataSize(); i++) {
+        m_waveformData[i] = data[i].filtered;
+    }
+
+    m_waveformTexture =
+            QImage(reinterpret_cast<const uchar*>(m_waveformData.data()),
+                    textureWidth,
+                    textureHeight,
+                    QImage::Format_RGBA8888);
+    DEBUG_ASSERT(!m_waveformTexture.isNull());
     emit waveformTextureChanged();
 }
 
