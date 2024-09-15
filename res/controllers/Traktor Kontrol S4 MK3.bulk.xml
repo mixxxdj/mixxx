@@ -1,0 +1,945 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Traktor Kontrol S4 MK3 (Screens)</name>
+        <author>A. Colombier</author>
+        <description>Mapping for Traktor Kontrol S4 MK3 screens</description>
+        <manual>native_instruments_traktor_kontrol_s4_mk3</manual>
+        <devices>
+            <!--
+                On Windows, you will need to install a libusb-ready driver.
+                https://github.com/libusb/libusb/wiki/Windows#how-to-use-libusb-on-windows
+
+                Tested with WinUSB v6.1.7600.16385 installed with Zadig (https://github.com/pbatard/libwdi/wiki/Zadig)
+            -->
+            <product protocol="bulk" vendor_id="0x17cc" product_id="0x1720" out_epaddr="0x03" interface_number="0x04" />
+        </devices>
+    </info>
+    <settings>
+        <row>
+            <option
+                variable="useSharedDataAPI"
+                type="boolean"
+                label="Enable the shared data API (PR#12199)">
+                <description>
+                    Use the shared data API to enable communication between the screens and the buttons. Requires a custom Mixxx build using the feature in PR#12199
+                </description>
+            </option>
+        </row>
+         <group label="Cosmetic">
+            <row>
+                <option
+                    variable="theme"
+                    type="enum"
+                    label="Theme use for the screen">
+                    <description>
+                        The theme used for the screens
+                    </description>
+                    <value label="Classic" default="true">stock</value>
+                    <value label="Advanced">advanced</value>
+                </option>
+            </row>
+             <row>
+                 <option
+                     variable="idleBackground"
+                     type="enum"
+                     label="Idle deck background">
+                     <description>
+                         The background used for empty decks
+                     </description>
+                     <value label="Man in a mask">mask</value>
+                     <value label="Mixxx" default="true">mixxx</value>
+                 </option>
+             </row>
+         </group>
+         <group label="Advanced theme settings">
+            <row>
+                <option
+                    variable="deckToShow"
+                    type="enum"
+                    label="Decks layout">
+                    <value label="All 4 decks">all</value>
+                    <value label="Only A and B">ab</value>
+                    <value label="Only C and D">cd</value>
+                </option>
+            </row>
+            <row>
+                <option
+                    variable="disableKnobFullBrowserCloser"
+                    type="boolean"
+                    default="false"
+                    label="disableKnobFullBrowserCloser">
+                </option>
+                <option
+                    variable="disableKnobSingleBrowserCloser"
+                    type="boolean"
+                    default="false"
+                    label="disableKnobSingleBrowserCloser">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="enableCueOnTrackLoad"
+                    type="boolean"
+                    default="false"
+                    label="enableCueOnTrackLoad">
+                </option>
+                <option
+                    variable="disableAllCueOnTrackLoad"
+                    type="boolean"
+                    default="false"
+                    label="disableAllCueOnTrackLoad">
+                </option>
+                <option
+                    variable="resetPadModeOnLoad"
+                    type="boolean"
+                    default="true"
+                    label="resetPadModeOnLoad">
+                </option>
+                <option
+                    variable="waveformEndFlashing"
+                    type="boolean"
+                    default="true"
+                    label="waveformEndFlashing">
+                </option>
+                <option
+                    variable="jogwheelEndFlashing"
+                    type="boolean"
+                    default="true"
+                    label="jogwheelEndFlashing">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="jogwheelLedCue"
+                    type="boolean"
+                    default="true"
+                    label="jogwheelLedCue">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="deckAWaveformColour"
+                    type="integer"
+                    default="0"
+                    label="deckAWaveformColour">
+                </option>
+                <option
+                    variable="deckBWaveformColour"
+                    type="integer"
+                    default="0"
+                    label="deckBWaveformColour">
+                </option>
+                <option
+                    variable="deckCWaveformColour"
+                    type="integer"
+                    default="0"
+                    label="deckCWaveformColour">
+                </option>
+                <option
+                    variable="deckDWaveformColour"
+                    type="integer"
+                    default="0"
+                    label="deckDWaveformColour">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="deckAColour"
+                    type="enum"
+                    default="10"
+                    label="deckAColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="deckBColour"
+                    type="enum"
+                    default="10"
+                    label="deckBColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="deckCColour"
+                    type="enum"
+                    default="2"
+                    label="deckCColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="deckDColour"
+                    type="enum"
+                    default="2"
+                    label="deckDColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="jogAColour"
+                    type="enum"
+                    default="10"
+                    label="jogAColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="jogBColour"
+                    type="enum"
+                    default="10"
+                    label="jogBColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="jogCColour"
+                    type="enum"
+                    default="2"
+                    label="jogCColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="jogDColour"
+                    type="enum"
+                    default="2"
+                    label="jogDColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="alwaysShowTempoInfo"
+                    type="boolean"
+                    default="false"
+                    label="alwaysShowTempoInfo">
+                </option>
+                <option
+                    variable="bpmOverlayTimer"
+                    default="5000"
+                    type="integer"
+                    min="100"
+                    max="15000"
+                    step="1000"
+                    label="amount of time the bpm overlay will stay on the screen">
+                </option>
+            </row>
+
+            <group label="BPM/Tempo displayed field">
+                <row>
+                    <option
+                        variable="tempoDisplayLeft"
+                        type="enum"
+                        label="Left item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM" default="true">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayCenter"
+                        type="enum"
+                        label="Center item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM" default="true">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayRight"
+                        type="enum"
+                        label="Right item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo" default="true">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                </row>
+
+                <row>
+                    <option
+                        variable="tempoDisplayLeftShift"
+                        type="enum"
+                        label="Shifted left item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset" default="true">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayCenterShift"
+                        type="enum"
+                        label="Shifted center item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter" default="true">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayRightShift"
+                        type="enum"
+                        label="Shifted right item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset" default="true">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                </row>
+            </group>
+
+            <row>
+                <option
+                    variable="enableBpmTextColor"
+                    type="boolean"
+                    default="false"
+                    label="enableBpmTextColor">
+                </option>
+                <option
+                    variable="enableMasterBpmTextColor"
+                    type="boolean"
+                    default="false"
+                    label="enableMasterBpmTextColor">
+                </option>
+                <option
+                    variable="enableTempoTextColor"
+                    type="boolean"
+                    default="false"
+                    label="enableTempoTextColor">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="enableBpmOffsetTextColor"
+                    type="boolean"
+                    default="false"
+                    label="enableBpmOffsetTextColor">
+                </option>
+                <option
+                    variable="enableTempoOffsetTextColor"
+                    type="boolean"
+                    default="false"
+                    label="enableTempoOffsetTextColor">
+                </option>
+                <option
+                    variable="enableMasterDeckTextColor"
+                    type="boolean"
+                    default="false"
+                    label="enableMasterDeckTextColor">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideWaveforms"
+                    type="boolean"
+                    default="false"
+                    label="hideWaveforms">
+                </option>
+                <option
+                    variable="alwaysShowLoopSize"
+                    type="boolean"
+                    default="false"
+                    label="Keep the loop size indicator visible">
+                </option>
+                <option
+                    variable="loopOverlayTimer"
+                    type="integer"
+                    default="10000"
+                    min="100"
+                    max="15000"
+                    step="1000"
+                    label="amount of time the loop overlay will stay on the screen">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="waveformPlaymarkerPosition"
+                    type="integer"
+                    min="-250"
+                    max="0"
+                    step="1"
+                    default="-250"
+                    label="move the playmarker to the left">
+                </option>
+                <option
+                    variable="hideBeatgrid"
+                    type="boolean"
+                    default="false"
+                    label="hideBeatgrid">
+                </option>
+                <option
+                    variable="beatgridVisibility"
+                    type="integer"
+                    default="25"
+                    min="0"
+                    max="100"
+                    step="1"
+                    label="visibility of the beatgrid lines">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="enableBrowserMode"
+                    type="boolean"
+                    default="true"
+                    label="enableBrowserMode">
+                </option>
+                <option
+                    variable="adjacentKeys"
+                    type="boolean"
+                    default="true"
+                    label="adjacentKeys">
+                </option>
+                <option
+                    variable="camelotKey"
+                    type="boolean"
+                    default="false"
+                    label="enable camelot key">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="disablePreviewPlayerToggle"
+                    type="boolean"
+                    default="false"
+                    label="disablePreviewPlayerToggle">
+                </option>
+                <option
+                    variable="showBrowserOnFavourites"
+                    type="boolean"
+                    default="true"
+                    label="showBrowserOnFavourites">
+                </option>
+                <option
+                    variable="swapViewButtons"
+                    type="boolean"
+                    default="false"
+                    label="swapViewButtons">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="showBrowserOnFullScreen"
+                    type="boolean"
+                    default="true"
+                    label="showBrowserOnFullScreen">
+                </option>
+                <option
+                    variable="disableSortButtonOutput"
+                    type="boolean"
+                    default="false"
+                    label="disableSortButtonOutput">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hotcueButtonSort"
+                    type="enum"
+                    default="2"
+                    label="hotcueButtonSort">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="recordButtonSort"
+                    type="enum"
+                    default="3"
+                    label="recordButtonSort">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="samplesButtonSort"
+                    type="enum"
+                    default="5"
+                    label="samplesButtonSort">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="muteButtonSort"
+                    type="enum"
+                    default="28"
+                    label="muteButtonSort">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="stemsButtonSort"
+                    type="enum"
+                    default="22"
+                    label="stemsButtonSort">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="browserEncoderShiftScroll"
+                    type="boolean"
+                    default="false"
+                    label="browserEncoderShiftScroll">
+                </option>
+                <option
+                    variable="scrollPageSize"
+                    type="enum"
+                    default="6"
+                    label="scrollPageSize">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+                <option
+                    variable="browserShift"
+                    type="boolean"
+                    default="true"
+                    label="browserShift">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="swapArtistTitleColumns"
+                    type="boolean"
+                    default="false"
+                    label="swapArtistTitleColumns">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideBPM"
+                    type="boolean"
+                    default="false"
+                    label="hideBPM">
+                </option>
+                <option
+                    variable="hideKey"
+                    type="boolean"
+                    default="false"
+                    label="hideKey">
+                </option>
+                <option
+                    variable="hideAlbumArt"
+                    type="boolean"
+                    default="false"
+                    label="hideAlbumArt">
+                </option>
+                <option
+                    variable="showArtistColumn"
+                    type="boolean"
+                    default="false"
+                    label="showArtistColumn">
+                </option>
+                <option
+                    variable="showTrackTitleColumn"
+                    type="boolean"
+                    default="true"
+                    label="showTrackTitleColumn">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="browserFontSize"
+                    type="integer"
+                    default="15"
+                    label="browserFontSize">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="raiseBrowserFooter"
+                    type="boolean"
+                    default="false"
+                    label="raiseBrowserFooter">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="bpmBrowserTextColor"
+                    type="boolean"
+                    default="true"
+                    label="determine the bpm text colour in the browser">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideStripe"
+                    type="boolean"
+                    default="false"
+                    label="hideStripe">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="shiftStripe"
+                    type="boolean"
+                    default="false"
+                    label="shiftStripe">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="shiftStripeMaster"
+                    type="boolean"
+                    default="false"
+                    label="shiftStripeMaster">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="timeBox"
+                    type="integer"
+                    default="0"
+                    label="timeBox">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="timeBoxShift"
+                    type="enum"
+                    default="1"
+                    label="timeBoxShift">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="timeTextColourChange"
+                    type="boolean"
+                    default="false"
+                    label="timeTextColourChange">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="phaseAColour"
+                    type="enum"
+                    default="3"
+                    label="phaseAColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="phaseBColour"
+                    type="enum"
+                    default="3"
+                    label="phaseBColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="phaseCColour"
+                    type="enum"
+                    default="3"
+                    label="phaseCColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="phaseDColour"
+                    type="enum"
+                    default="3"
+                    label="phaseDColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hidePhase"
+                    type="boolean"
+                    default="false"
+                    label="hidePhase">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hidePhrase"
+                    type="boolean"
+                    default="true"
+                    label="hidePhrase">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="disableGridEditToggle"
+                    type="boolean"
+                    default="false"
+                    label="disableGridEditToggle">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="showBPMGridAdjust"
+                    type="boolean"
+                    default="true"
+                    label="showBPMGridAdjust">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="rateAdjustTimer"
+                    default="2000"
+                    type="integer"
+                    min="100"
+                    max="15000"
+                    step="1000"
+                    label="Rate and waveform adjust timer">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideHotcueOverlay"
+                    type="boolean"
+                    default="false"
+                    label="hideHotcueOverlay">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hotcue1SetsGridmarker"
+                    type="boolean"
+                    default="true"
+                    label="hotcue1SetsGridmarker">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="cueCueColour"
+                    type="enum"
+                    default="10"
+                    label="cueCueColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="cueFadeInColour"
+                    type="enum"
+                    default="16"
+                    label="cueFadeInColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="cueFadeOutColour"
+                    type="enum"
+                    default="16"
+                    label="cueFadeOutColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="cueLoadColour"
+                    type="enum"
+                    default="4"
+                    label="cueLoadColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="cueGridColour"
+                    type="enum"
+                    default="3"
+                    label="cueGridColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="cueLoopColour"
+                    type="enum"
+                    default="6"
+                    label="cueLoopColour">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="fxOverlays"
+                    type="boolean"
+                    default="true"
+                    label="fxOverlays">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="fxOverlayTimer"
+                    type="integer"
+                    min="100"
+                    max="15000"
+                    step="1000"
+                    default="2000"
+                    label="fxOverlayTimer">
+                    <value label="Man in a mask">mask</value>
+                    <value label="Mixxx" default="..">mixxx</value>
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideEffectsOverlay1"
+                    type="boolean"
+                    default="false"
+                    label="hideEffectsOverlay1">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideEffectsOverlay2"
+                    type="boolean"
+                    default="false"
+                    label="hideEffectsOverlay2">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideToneOverlay"
+                    type="boolean"
+                    default="false"
+                    label="hideToneOverlay">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideLoopOverlay"
+                    type="boolean"
+                    default="false"
+                    label="hideLoopOverlay">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="hideRollOverlay"
+                    type="boolean"
+                    default="false"
+                    label="hideRollOverlay">
+                </option>
+            </row>
+
+            <row>
+                <option
+                    variable="disable the tone pads overlay appearing"
+                    type="boolean"
+                    default="false"
+                    label="hideJumpOverlay">
+                </option>
+            </row>
+         </group>
+     </settings>
+    <controller id="Traktor" direction="out" namespace="S4MK3">
+        <screens>
+            <screen identifier="leftdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+            <screen identifier="rightdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+        </screens>
+        <scriptfiles>
+            <file filename="TraktorKontrolS4MK3Screens.qml" />
+        </scriptfiles>
+        <qmllibraries>
+            <library path="TraktorKontrolS4MK3Screens" />
+        </qmllibraries>
+    </controller>
+</MixxxControllerPreset>
