@@ -259,11 +259,16 @@ class LegacyControllerNumberSetting
     /// and a strictly positive step, strictly less than max..
     /// @return true if valid
     bool valid() const override {
+        static constexpr bool typeSize = sizeof(long) == sizeof(int);
         return AbstractLegacyControllerSetting::valid() &&
                 m_defaultValue >= m_minValue && m_savedValue >= m_minValue &&
                 m_editedValue >= m_minValue && m_defaultValue <= m_maxValue &&
                 m_savedValue <= m_maxValue && m_editedValue <= m_maxValue &&
-                m_stepValue > 0 && m_stepValue < m_maxValue;
+                m_stepValue > 0 &&
+                (typeSize ||
+                        static_cast<long>(m_stepValue) <
+                                static_cast<long>(m_maxValue) -
+                                        static_cast<long>(m_minValue));
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
