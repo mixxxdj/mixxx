@@ -1,9 +1,16 @@
 #include <gtest/gtest.h>
+
+#include <QLatin1String>
 #include <QtDebug>
 
 #include "controllers/midi/portmidienumerator.h"
 
 class PortMidiEnumeratorTest : public testing::Test {};
+
+// stopgap solution to make asserts less verbose until operator""_L1 is available.
+static bool shouldLinkInputToOutput(char const* input, char const* output) {
+    return shouldLinkInputToOutput(QLatin1String(input), QLatin1String(output));
+}
 
 TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
     // Identical device names should link.
