@@ -12,8 +12,7 @@ void WStemLabel::setup(const QDomNode& node, const SkinContext& context) {
     m_stemNo = context.selectInt(node, "StemNum");
 }
 
-void WStemLabel::slotTrackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void WStemLabel::slotTrackUnloaded(TrackPointer) {
     m_stemInfo = StemInfo();
     updateLabel();
 }
