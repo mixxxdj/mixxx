@@ -220,11 +220,7 @@ void QmlPlayerProxy::slotWaveformChanged() {
     // Make a copy of the waveform data, stripping the stems portion. Note that the datasize is
     // different from the texture size -- we want the full texture size so the upload works. See
     // m_data in waveform/waveform.h.
-    if (m_waveformData.size() == 0 ||
-            static_cast<int>(m_waveformData.size()) !=
-                    pWaveform->getTextureSize()) {
-        m_waveformData.resize(pWaveform->getTextureSize());
-    }
+    m_waveformData.resize(pWaveform->getTextureSize());
     for (int i = 0; i < pWaveform->getDataSize(); i++) {
         m_waveformData[i] = data[i].filtered;
     }
