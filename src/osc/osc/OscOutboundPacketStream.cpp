@@ -679,5 +679,3 @@ OutboundPacketStream& OutboundPacketStream::operator<<( const ArrayTerminator& r
 }
 
 } // namespace osc
-
-

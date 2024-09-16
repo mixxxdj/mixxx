@@ -124,4 +124,3 @@
 #endif
 
 #endif /* INCLUDED_OSCPACK_OSCHOSTENDIANNESS_H */
-
