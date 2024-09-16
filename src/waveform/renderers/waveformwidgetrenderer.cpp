@@ -21,6 +21,9 @@ constexpr int kDefaultDimBrightThreshold = 127;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),
+#ifdef __STEM__
+          m_selectedStems(mixxx::kNoStemSelected),
+#endif
           m_orientation(Qt::Horizontal),
           m_dimBrightThreshold(kDefaultDimBrightThreshold),
           m_height(-1),
@@ -415,6 +418,12 @@ void WaveformWidgetRenderer::setZoom(double zoom) {
 void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
+
+#ifdef __STEM__
+void WaveformWidgetRenderer::selectStem(uint stemMask) {
+    m_selectedStems = stemMask;
+}
+#endif
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;

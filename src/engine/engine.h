@@ -8,6 +8,13 @@ static constexpr audio::ChannelCount kEngineChannelOutputCount =
         audio::ChannelCount::stereo();
 static constexpr audio::ChannelCount kMaxEngineChannelInputCount =
         audio::ChannelCount::stem();
+// The following constant is always defined as it used for the waveform data
+// struct, which must stay consistent, whether the STEM feature is enabled or
+// not.
+constexpr int kMaxSupportedStems = 4;
+#ifdef __STEM__
+constexpr uint kNoStemSelected = 0;
+#endif
 
 // Contains the information needed to process a buffer of audio
 class EngineParameters final {

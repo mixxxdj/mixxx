@@ -23,7 +23,14 @@ class LoadToGroupController : public QObject {
     virtual ~LoadToGroupController();
 
   signals:
-    void loadToGroup(const QString& group, bool);
+#ifdef __STEM__
+    void loadToGroup(const QString& group,
+            uint stemMask,
+            bool);
+#else
+    void loadToGroup(const QString& group,
+            bool);
+#endif
 
   public slots:
     void slotLoadToGroup(double v);
@@ -33,6 +40,10 @@ class LoadToGroupController : public QObject {
     const QString m_group;
     std::unique_ptr<ControlObject> m_pLoadControl;
     std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
+
+#ifdef __STEM__
+    std::unique_ptr<ControlPushButton> m_loadSelectedTrackStems;
+#endif
 };
 
 class LibraryControl : public QObject {
@@ -54,7 +65,11 @@ class LibraryControl : public QObject {
 
   public slots:
     // Deprecated navigation slots
+#ifdef __STEM__
+    void slotLoadSelectedTrackToGroup(const QString& group, uint stemMask, bool play);
+#else
     void slotLoadSelectedTrackToGroup(const QString& group, bool play);
+#endif
     void slotUpdateTrackMenuControl(bool visible);
 
   private slots:

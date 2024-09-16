@@ -46,7 +46,14 @@ class BaseTrackPlayer : public BasePlayer {
     };
 
   public slots:
-    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
+#ifdef __STEM__
+    virtual void slotLoadTrack(TrackPointer pTrack,
+            uint stemMask,
+            bool bPlay = false) = 0;
+#else
+    virtual void slotLoadTrack(TrackPointer pTrack,
+            bool bPlay = false) = 0;
+#endif
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
@@ -57,6 +64,9 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+#ifdef __STEM__
+    void selectedStems(uint stemMask);
+#endif
     void playerEmpty();
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
@@ -94,7 +104,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay) final;
+#ifdef __STEM__
+    void slotLoadTrack(TrackPointer track,
+            uint stemMask,
+            bool bPlay) final;
+#else
+    void slotLoadTrack(TrackPointer track,
+            bool bPlay) final;
+#endif
     void slotEjectTrack(double) final;
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;

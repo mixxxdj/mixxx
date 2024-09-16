@@ -38,6 +38,19 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             this,
             &LoadToGroupController::slotLoadToGroupAndPlay);
 
+#ifdef __STEM__
+    m_loadSelectedTrackStems =
+            std::make_unique<ControlPushButton>(ConfigKey(group, "load_selected_track_stems"));
+    connect(m_loadSelectedTrackStems.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value >= 0 && value <= 2 << mixxx::kMaxSupportedStems) {
+                    emit loadToGroup(m_group, static_cast<uint>(value), false);
+                }
+            });
+#endif
+
     connect(this,
             &LoadToGroupController::loadToGroup,
             pParent,
@@ -48,13 +61,24 @@ LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, false);
+        emit loadToGroup(m_group,
+#ifdef __STEM__
+                mixxx::kNoStemSelected,
+#endif
+                false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, true);
+#ifdef __STEM__
+        emit loadToGroup(m_group,
+                mixxx::kNoStemSelected,
+                true);
+#else
+        emit loadToGroup(m_group,
+                true);
+#endif
     }
 }
 
@@ -600,14 +624,22 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
     m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
+#ifdef __STEM__
+void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, uint stemMask, bool play) {
+#else
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
+#endif
     if (!m_pLibraryWidget) {
         return;
     }
 
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
+#ifdef __STEM__
+        pTrackTableView->loadSelectedTrackToGroup(group, stemMask, play);
+#else
         pTrackTableView->loadSelectedTrackToGroup(group, play);
+#endif
     }
 }
 

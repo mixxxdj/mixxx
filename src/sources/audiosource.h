@@ -193,7 +193,24 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     // Parameters for opening audio sources
     class OpenParams {
       public:
+#ifdef __STEM__
+        OpenParams()
+                : m_signalInfo(),
+                  m_stemMask(mixxx::kNoStemSelected) {
+        }
+
+        OpenParams(
+                audio::ChannelCount channelCount,
+                audio::SampleRate sampleRate,
+                uint stemMask = mixxx::kNoStemSelected)
+                : m_signalInfo(
+                          channelCount,
+                          sampleRate),
+                  m_stemMask(stemMask) {
+        }
+#else
         OpenParams() = default;
+
         OpenParams(
                 audio::ChannelCount channelCount,
                 audio::SampleRate sampleRate)
@@ -201,15 +218,32 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
                           channelCount,
                           sampleRate) {
         }
+#endif
 
         const audio::SignalInfo& getSignalInfo() const {
             return m_signalInfo;
         }
 
+#ifdef __STEM__
+        uint stemMask() const {
+            return m_stemMask;
+        }
+#endif
+
         void setChannelCount(
                 audio::ChannelCount channelCount) {
             m_signalInfo.setChannelCount(channelCount);
         }
+
+#ifdef __STEM__
+        void setStemMask(
+                uint stemMask) {
+            VERIFY_OR_DEBUG_ASSERT(stemMask <= 2 << mixxx::kMaxSupportedStems) {
+                return;
+            }
+            m_stemMask = stemMask;
+        }
+#endif
 
         void setSampleRate(
                 audio::SampleRate sampleRate) {
@@ -218,6 +252,9 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
 
       private:
         audio::SignalInfo m_signalInfo;
+#ifdef __STEM__
+        uint m_stemMask;
+#endif
     };
 
     // Opens the AudioSource for reading audio data.
