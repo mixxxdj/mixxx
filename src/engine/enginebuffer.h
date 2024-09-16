@@ -403,6 +403,26 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
+    // TrackType
+    ControlObject* m_pTrackType;
+    ControlObject* m_pTrackTypeLength;
+
+    // TrackArtist
+    ControlObject* m_pTrackArtistLength;
+    ControlObject* m_pTrackArtist_1;
+    ControlObject* m_pTrackArtist_2;
+    ControlObject* m_pTrackArtist_3;
+    ControlObject* m_pTrackArtist_4;
+    ControlObject* m_pTrackArtist_5;
+
+    // TrackTitle
+    ControlObject* m_pTrackTitleLength;
+    ControlObject* m_pTrackTitle_1;
+    ControlObject* m_pTrackTitle_2;
+    ControlObject* m_pTrackTitle_3;
+    ControlObject* m_pTrackTitle_4;
+    ControlObject* m_pTrackTitle_5;
+
     ControlPushButton* m_playButton;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;

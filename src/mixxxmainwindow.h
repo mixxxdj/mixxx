@@ -8,6 +8,7 @@
 #include "soundio/sounddevicestatus.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
+#include "osc/OscReceiveTest.h"
 
 class ControlObject;
 class DlgDeveloperTools;
@@ -104,6 +105,7 @@ class MixxxMainWindow : public QMainWindow {
   private:
     void initializeWindow();
     void checkDirectRendering();
+    void oscEnable();
 
     /// Load skin to a QWidget that we set as the central widget.
     bool loadConfiguredSkin();

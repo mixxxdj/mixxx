@@ -41,6 +41,21 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 #endif
 
+// EVE OSC
+#include <stdlib.h>
+#include <string.h>
+
+#include <cstring>
+#include <iostream>
+
+#include "osc/ip/UdpSocket.h"
+#include "osc/osc/OscOutboundPacketStream.h"
+
+#define oscClientAddress "192.168.0.125"
+#define oscPortOut 9000
+#define OUTPUT_BUFFER_SIZE 1024
+#define IP_MTU_SIZE 1536
+
 namespace {
 const mixxx::Logger kLogger("EngineBuffer");
 
@@ -172,6 +187,22 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
+
+    m_pTrackType = new ControlObject(ConfigKey(m_group, "track_type"));
+    m_pTrackTypeLength = new ControlObject(ConfigKey(m_group, "track_type_length"));
+    m_pTrackArtistLength = new ControlObject(ConfigKey(m_group, "track_artist_length"));
+    m_pTrackArtist_1 = new ControlObject(ConfigKey(m_group, "track_artist_1"));
+    m_pTrackArtist_2 = new ControlObject(ConfigKey(m_group, "track_artist_2"));
+    m_pTrackArtist_3 = new ControlObject(ConfigKey(m_group, "track_artist_3"));
+    m_pTrackArtist_4 = new ControlObject(ConfigKey(m_group, "track_artist_4"));
+    m_pTrackArtist_5 = new ControlObject(ConfigKey(m_group, "track_artist_5"));
+
+    m_pTrackTitleLength = new ControlObject(ConfigKey(m_group, "track_title_length"));
+    m_pTrackTitle_1 = new ControlObject(ConfigKey(m_group, "track_title_1"));
+    m_pTrackTitle_2 = new ControlObject(ConfigKey(m_group, "track_title_2"));
+    m_pTrackTitle_3 = new ControlObject(ConfigKey(m_group, "track_title_3"));
+    m_pTrackTitle_4 = new ControlObject(ConfigKey(m_group, "track_title_4"));
+    m_pTrackTitle_5 = new ControlObject(ConfigKey(m_group, "track_title_5"));
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(mixxx::control::ButtonMode::Toggle);
@@ -311,6 +342,22 @@ EngineBuffer::~EngineBuffer() {
     delete m_pTrackLoaded;
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
+
+    delete m_pTrackType;
+    delete m_pTrackTypeLength;
+    delete m_pTrackArtistLength;
+    delete m_pTrackArtist_1;
+    delete m_pTrackArtist_2;
+    delete m_pTrackArtist_3;
+    delete m_pTrackArtist_4;
+    delete m_pTrackArtist_5;
+
+    delete m_pTrackTitleLength;
+    delete m_pTrackTitle_1;
+    delete m_pTrackTitle_2;
+    delete m_pTrackTitle_3;
+    delete m_pTrackTitle_4;
+    delete m_pTrackTitle_5;
 
     delete m_pScaleLinear;
     delete m_pScaleST;
@@ -563,6 +610,169 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(trackSampleRate.toDouble());
     m_pTrackLoaded->forceSet(1);
 
+    // Eve start
+    // Type
+    QString TrackInfoType = pTrack->getType();
+    QString TrackInfoTypeTest = TrackInfoType;
+    int TrackInfoTypeTestLength = TrackInfoTypeTest.length();
+    if (TrackInfoTypeTestLength > 5) {
+        TrackInfoType = TrackInfoTypeTest.mid(0, 5);
+    };
+    m_pTrackTypeLength->set(TrackInfoTypeTestLength);
+
+    int CharType[5];
+    for (int i = 1; i <= 5; i++) {
+        CharType[i - 1] = 0;
+    }
+
+    for (int i = 1; i <= TrackInfoType.length(); i++) {
+        if ((TrackInfoType.at(i - 1).toLatin1()) < 0) {
+            CharType[i - 1] = ((TrackInfoType.at(i - 1).toLatin1()) + 300);
+        } else {
+            CharType[i - 1] = (TrackInfoType.at(i - 1).toLatin1());
+        };
+    }
+
+    double TrackTypePart = 0.0;
+    TrackTypePart = (1.0 * CharType[0] * 1000000000000) + (1.0 * CharType[1] * 1000000000) + (1.0 * CharType[2] * 1000000) + (1.0 * CharType[3] * 1000) + (1.0 * CharType[4] * 1);
+    m_pTrackType->set(TrackTypePart);
+
+    // Title
+    QString TrackInfoTitle = pTrack->getTitle();
+    QString TrackInfoTitleTest = TrackInfoTitle;
+    int TrackInfoTitleTestLength = TrackInfoTitleTest.length();
+    if (TrackInfoTitleTestLength > 200) {
+        TrackInfoTitle = TrackInfoTitleTest.mid(0, 200);
+    };
+    m_pTrackTitleLength->set(TrackInfoTitleTestLength);
+
+    int CharTitle[200];
+    for (int i = 1; i <= 200; i++) {
+        CharTitle[i - 1] = 0;
+    }
+
+    //    for (int i = 1; i <= TrackInfoTitle.length(); i++) {
+    for (int i = 1; i <= 25; i++) {
+        if ((TrackInfoTitle.at(i - 1).toLatin1()) < 0) {
+            CharTitle[i - 1] = ((TrackInfoTitle.at(i - 1).toLatin1()) + 300);
+        } else {
+            CharTitle[i - 1] = (TrackInfoTitle.at(i - 1).toLatin1());
+        };
+    }
+
+    // Artist
+    QString TrackInfoArtist = pTrack->getArtist();
+    QString TrackInfoArtistTest = TrackInfoArtist;
+    int TrackInfoArtistTestLength = TrackInfoArtistTest.length();
+    if (TrackInfoArtistTestLength > 200) {
+        TrackInfoArtist = TrackInfoArtist.mid(0, 200);
+    };
+    m_pTrackArtistLength->set(TrackInfoArtistTestLength);
+
+    int CharArtist[200];
+    for (int i = 1; i <= 200; i++) {
+        CharArtist[i - 1] = 0;
+    }
+
+    //    for (int i = 1; i <= TrackInfoArtist.length(); i++) {
+    for (int i = 1; i <= 25; i++) {
+        if ((TrackInfoArtist.at(i - 1).toLatin1()) < 0) {
+            CharArtist[i - 1] = ((TrackInfoArtist.at(i - 1).toLatin1()) + 300);
+        } else {
+            CharArtist[i - 1] = (TrackInfoArtist.at(i - 1).toLatin1());
+        };
+    }
+
+    double TrackTitlePart_1 = 0.0;
+    double TrackTitlePart_2 = 0.0;
+    double TrackTitlePart_3 = 0.0;
+    double TrackTitlePart_4 = 0.0;
+    double TrackTitlePart_5 = 0.0;
+
+    TrackTitlePart_1 = (1.0 * CharTitle[0] * 1000000000000) + (1.0 * CharTitle[1] * 1000000000) + (1.0 * CharTitle[2] * 1000000) + (1.0 * CharTitle[3] * 1000) + (1.0 * CharTitle[4] * 1);
+    TrackTitlePart_2 = (1.0 * CharTitle[5] * 1000000000000) + (1.0 * CharTitle[6] * 1000000000) + (1.0 * CharTitle[7] * 1000000) + (1.0 * CharTitle[8] * 1000) + (1.0 * CharTitle[9] * 1);
+    TrackTitlePart_3 = (1.0 * CharTitle[10] * 1000000000000) + (1.0 * CharTitle[11] * 1000000000) + (1.0 * CharTitle[12] * 1000000) + (1.0 * CharTitle[13] * 1000) + (1.0 * CharTitle[14] * 1);
+    TrackTitlePart_4 = (1.0 * CharTitle[15] * 1000000000000) + (1.0 * CharTitle[16] * 1000000000) + (1.0 * CharTitle[17] * 1000000) + (1.0 * CharTitle[18] * 1000) + (1.0 * CharTitle[19] * 1);
+    TrackTitlePart_5 = (1.0 * CharTitle[20] * 1000000000000) + (1.0 * CharTitle[21] * 1000000000) + (1.0 * CharTitle[22] * 1000000) + (1.0 * CharTitle[23] * 1000) + (1.0 * CharTitle[24] * 1);
+
+    m_pTrackTitle_1->set(TrackTitlePart_1);
+    m_pTrackTitle_2->set(TrackTitlePart_2);
+    m_pTrackTitle_3->set(TrackTitlePart_3);
+    m_pTrackTitle_4->set(TrackTitlePart_4);
+    m_pTrackTitle_5->set(TrackTitlePart_5);
+
+    double TrackArtistPart_1 = 0.0;
+    double TrackArtistPart_2 = 0.0;
+    double TrackArtistPart_3 = 0.0;
+    double TrackArtistPart_4 = 0.0;
+    double TrackArtistPart_5 = 0.0;
+
+    TrackArtistPart_1 = (1.0 * CharArtist[0] * 1000000000000) + (1.0 * CharArtist[1] * 1000000000) + (1.0 * CharArtist[2] * 1000000) + (1.0 * CharArtist[3] * 1000) + (1.0 * CharArtist[4] * 1);
+    TrackArtistPart_2 = (1.0 * CharArtist[5] * 1000000000000) + (1.0 * CharArtist[6] * 1000000000) + (1.0 * CharArtist[7] * 1000000) + (1.0 * CharArtist[8] * 1000) + (1.0 * CharArtist[9] * 1);
+    TrackArtistPart_3 = (1.0 * CharArtist[10] * 1000000000000) + (1.0 * CharArtist[11] * 1000000000) + (1.0 * CharArtist[12] * 1000000) + (1.0 * CharArtist[13] * 1000) + (1.0 * CharArtist[14] * 1);
+    TrackArtistPart_4 = (1.0 * CharArtist[15] * 1000000000000) + (1.0 * CharArtist[16] * 1000000000) + (1.0 * CharArtist[17] * 1000000) + (1.0 * CharArtist[18] * 1000) + (1.0 * CharArtist[19] * 1);
+    TrackArtistPart_5 = (1.0 * CharArtist[20] * 1000000000000) + (1.0 * CharArtist[21] * 1000000000) + (1.0 * CharArtist[22] * 1000000) + (1.0 * CharArtist[23] * 1000) + (1.0 * CharArtist[24] * 1);
+
+    m_pTrackArtist_1->set(TrackArtistPart_1);
+    m_pTrackArtist_2->set(TrackArtistPart_2);
+    m_pTrackArtist_3->set(TrackArtistPart_3);
+    m_pTrackArtist_4->set(TrackArtistPart_4);
+    m_pTrackArtist_5->set(TrackArtistPart_5);
+
+    //  EveOSC begin
+    char buffer[IP_MTU_SIZE];
+    osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+    UdpTransmitSocket transmitSocket(IpEndpointName(oscClientAddress, oscPortOut));
+
+    QString oscTrackInfoDeck = getGroup();
+    oscTrackInfoDeck.replace("[", "");
+    oscTrackInfoDeck.replace("]", "");
+
+    QString oscMessageHeaderArtist = "/" + oscTrackInfoDeck + "@TrackArtist";
+    QByteArray oscMessageHeaderArtistBa = oscMessageHeaderArtist.toLocal8Bit();
+    const char* oscBeginMessageArtist = oscMessageHeaderArtistBa.data();
+
+    QString oscTrackInfoArtist = pTrack->getArtist();
+    QByteArray oscTrackInfoArtistBa = oscTrackInfoArtist.toLocal8Bit();
+    const char* oscBodyMessageArtist = oscTrackInfoArtistBa.data();
+
+    QString oscMessageHeaderTitle = "/" + oscTrackInfoDeck + "@TrackTitle";
+    QByteArray oscMessageHeaderTitleBa = oscMessageHeaderTitle.toLocal8Bit();
+    const char* oscBeginMessageTitle = oscMessageHeaderTitleBa.data();
+
+    QString oscTrackInfoTitle = pTrack->getTitle();
+    QByteArray oscTrackInfoTitleBa = oscTrackInfoTitle.toLocal8Bit();
+    const char* oscBodyMessageTitle = oscTrackInfoTitleBa.data();
+
+    QString oscMessageHeaderDuration = "/" + oscTrackInfoDeck + "@Duration";
+    QByteArray oscMessageHeaderDurationBa = oscMessageHeaderDuration.toLocal8Bit();
+    const char* oscBeginMessageDuration = oscMessageHeaderDurationBa.data();
+
+    float oscTrackInfoDuration = pTrack->getDuration();
+    int oscTrackInfoDurationCalcMin = oscTrackInfoDuration / 60;
+    int oscTrackInfoDurationCalcSec = oscTrackInfoDuration - (oscTrackInfoDurationCalcMin * 60);
+
+    QString oscTrackInfoDurationCalc;
+
+    if (oscTrackInfoDurationCalcSec < 10) {
+        oscTrackInfoDurationCalc = QString("%1:0%2").arg(oscTrackInfoDurationCalcMin).arg(oscTrackInfoDurationCalcSec);
+    } else {
+        oscTrackInfoDurationCalc = QString("%1:%2").arg(oscTrackInfoDurationCalcMin).arg(oscTrackInfoDurationCalcSec);
+    };
+
+    QByteArray oscTrackInfoDurationBa = oscTrackInfoDurationCalc.toLocal8Bit();
+    const char* oscBodyMessageDuration = oscTrackInfoDurationBa.data();
+
+    p.Clear();
+    p << osc::BeginBundle();
+    p << osc::BeginMessage(oscBeginMessageArtist) << oscBodyMessageArtist << osc::EndMessage;
+    p << osc::BeginMessage(oscBeginMessageTitle) << oscBodyMessageTitle << osc::EndMessage;
+    p << osc::BeginMessage(oscBeginMessageDuration) << oscBodyMessageDuration << osc::EndMessage;
+    p << osc::EndBundle;
+    transmitSocket.Send(p.Data(), p.Size());
+
+    // EveOSC end
+
     // Reset slip mode
     m_pSlipButton->set(0);
     m_bSlipEnabledProcessing = false;
@@ -631,6 +841,53 @@ void EngineBuffer::ejectTrack() {
     setTrackEndPosition(mixxx::audio::kInvalidFramePos);
     m_pTrackSampleRate->set(0);
     m_pTrackLoaded->forceSet(0);
+
+        m_pTrackType->set(0);
+    m_pTrackTypeLength->set(0);
+    m_pTrackArtistLength->set(0);
+    m_pTrackArtist_1->set(0);
+    m_pTrackArtist_2->set(0);
+    m_pTrackArtist_3->set(0);
+    m_pTrackArtist_4->set(0);
+    m_pTrackArtist_5->set(0);
+
+    m_pTrackTitleLength->set(0);
+    m_pTrackTitle_1->set(0);
+    m_pTrackTitle_2->set(0);
+    m_pTrackTitle_3->set(0);
+    m_pTrackTitle_4->set(0);
+    m_pTrackTitle_5->set(0);
+
+    //  EveOSC begin
+    char buffer[IP_MTU_SIZE];
+    osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+    UdpTransmitSocket transmitSocket(IpEndpointName(oscClientAddress, oscPortOut));
+
+    QString oscTrackInfoDeck = getGroup();
+    oscTrackInfoDeck.replace("[", "");
+    oscTrackInfoDeck.replace("]", "");
+
+    QString oscMessageHeaderArtist = "/" + oscTrackInfoDeck + "@TrackArtist";
+    QByteArray oscMessageHeaderArtistBa = oscMessageHeaderArtist.toLocal8Bit();
+    const char* oscBeginMessageArtist = oscMessageHeaderArtistBa.data();
+
+    QString oscMessageHeaderTitle = "/" + oscTrackInfoDeck + "@TrackTitle";
+    QByteArray oscMessageHeaderTitleBa = oscMessageHeaderTitle.toLocal8Bit();
+    const char* oscBeginMessageTitle = oscMessageHeaderTitleBa.data();
+
+    QString oscMessageHeaderDuration = "/" + oscTrackInfoDeck + "@Duration";
+    QByteArray oscMessageHeaderDurationBa = oscMessageHeaderDuration.toLocal8Bit();
+    const char* oscBeginMessageDuration = oscMessageHeaderDurationBa.data();
+
+    p.Clear();
+    p << osc::BeginBundle();
+    p << osc::BeginMessage(oscBeginMessageArtist) << "no track loaded" << osc::EndMessage;
+    p << osc::BeginMessage(oscBeginMessageTitle) << "no track loaded" << osc::EndMessage;
+    p << osc::BeginMessage(oscBeginMessageDuration) << "0:00" << osc::EndMessage;
+    p << osc::EndBundle;
+    transmitSocket.Send(p.Data(), p.Size());
+
+    // EveOSC end
 
     m_playButton->set(0.0);
     m_playposSlider->set(0);

@@ -19,6 +19,19 @@
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+// EVE OSC
+#include "osc/osc/OscOutboundPacketStream.h"
+#include "osc/ip/UdpSocket.h"
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <cstring>
+
+#define oscAddress "192.168.0.125"
+#define oscPortOut 9000
+#define OUTPUT_BUFFER_SIZE 1024
+#define IP_MTU_SIZE 1536
+// EVE OSC
 
 namespace {
 
@@ -754,6 +767,84 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    QString trackInfoArtist = " ";
+    QString trackInfoTitle = " ";
+    QString DeckStatusTxtLine2 = " ";
+    QString DeckStatusTxtLine3 = " ";
+    QString DeckStatusTxtLine4 = " ";
+    QTime tempStatusTime = QTime::currentTime();
+    QString DeckStatusTime = tempStatusTime.toString("hh:mm:ss");
+
+    if (pNewTrack) {
+        //    QString trackInfo = pNewTrack->getInfo();
+        trackInfoArtist = pNewTrack->getArtist();
+        trackInfoTitle = pNewTrack->getTitle();
+        trackInfoArtist.replace("\"", "''");
+        trackInfoTitle.replace("\"", "''");
+        DeckStatusTxtLine2 = "Artist : \"" + trackInfoArtist + "\",";
+        DeckStatusTxtLine3 = "Title : \"" + trackInfoTitle + "\",";
+        DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
+
+    } else {
+        DeckStatusTxtLine2 = "Artist : \" \",";
+        DeckStatusTxtLine3 = "Title : \" \",";
+        DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
+    }
+    QString trackInfoDeck = getGroup();
+    trackInfoDeck.replace("[Channel", "");
+    trackInfoDeck.replace("]", "");
+    QString DeckStatusFilePath = m_pConfig->getSettingsPath();
+    DeckStatusFilePath.replace("Roaming", "Local");
+    DeckStatusFilePath.replace("\\", "/");
+    QString DeckStatusFileLocation = DeckStatusFilePath + "/controllers/Status" + getGroup() + ".js";
+    //  Different file for each Deck / Sampler
+    QString DeckStatusTxtLine1 = "var TrackDeck" + trackInfoDeck + " = { ";
+    QString DeckStatusTxtLine5 = "};";
+    QFile DeckStatusFile(DeckStatusFileLocation);
+    DeckStatusFile.remove();
+    DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    // DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    QTextStream DeckStatusTxt(&DeckStatusFile);
+    DeckStatusTxt << DeckStatusTxtLine1 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine2 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine3 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine4 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine5 << "\n";
+    DeckStatusFile.close();
+
+    //  EveOSC begin
+    //    char buffer[IP_MTU_SIZE];
+    //    osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+    //    UdpTransmitSocket transmitSocket(IpEndpointName(ADDRESS, PORT));
+
+    //    QString oscTrackInfoDeck = getGroup();
+    //    oscTrackInfoDeck.replace("[", "");
+    //    oscTrackInfoDeck.replace("]", "");
+
+    //    QString oscMessageHeaderArtist = "/" + oscTrackInfoDeck + "@TrackArtist";
+    //    QByteArray oscMessageHeaderArtistBa = oscMessageHeaderArtist.toLocal8Bit();
+    //    const char* oscBeginMessageArtist = oscMessageHeaderArtistBa.data();
+
+    //    QString oscTrackInfoArtist = pNewTrack->getArtist();
+    //    QByteArray oscTrackInfoArtistBa = oscTrackInfoArtist.toLocal8Bit();
+    //    const char* oscBodyMessageArtist = oscTrackInfoArtistBa.data();
+
+    //    QString oscMessageHeaderTitle = "/" + oscTrackInfoDeck + "@TrackTitle";
+    //    QByteArray oscMessageHeaderTitleBa = oscMessageHeaderTitle.toLocal8Bit();
+    //    const char* oscBeginMessageTitle = oscMessageHeaderTitleBa.data();
+
+    //    QString oscTrackInfoTitle = pNewTrack->getTitle();
+    //    QByteArray oscTrackInfoTitleBa = oscTrackInfoTitle.toLocal8Bit();
+    //    const char* oscBodyMessageTitle = oscTrackInfoTitleBa.data();
+
+    //    p.Clear();
+    //    p << osc::BeginBundle();
+    //    p << osc::BeginMessage(oscBeginMessageArtist) << oscBodyMessageArtist << osc::EndMessage;
+    //    p << osc::BeginMessage(oscBeginMessageTitle) << oscBodyMessageTitle << osc::EndMessage;
+    //    p << osc::EndBundle;
+    //    transmitSocket.Send(p.Data(), p.Size());
+
+    // EveOSC end
 }
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
@@ -959,6 +1050,32 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+
+        //  EveOSC begin
+        char buffer[IP_MTU_SIZE];
+        osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+        UdpTransmitSocket transmitSocket(IpEndpointName(oscAddress, oscPortOut));
+
+        QString oscTrackInfoDeck = getGroup();
+        //        oscTrackInfoDeck.replace("[", "");
+        //        oscTrackInfoDeck.replace("]", "");
+
+        QString oscMessageHeaderDeckPlay = "/" + oscTrackInfoDeck + "@Play";
+        QByteArray oscMessageHeaderDeckPlayBa = oscMessageHeaderDeckPlay.toLocal8Bit();
+        const char* oscBeginMessageDeckPlay = oscMessageHeaderDeckPlayBa.data();
+
+        //        double oscDeckPlayingCalc = value;
+        QString oscDeckPlay = QString("%1").arg(value);
+        QByteArray oscDeckPlayBa = oscDeckPlay.toLocal8Bit();
+        const char* oscBodyMessageDeckPlay = oscDeckPlayBa.data();
+
+        p.Clear();
+        p << osc::BeginBundle();
+        p << osc::BeginMessage(oscBeginMessageDeckPlay) << oscBodyMessageDeckPlay << osc::EndMessage;
+        p << osc::EndBundle;
+        transmitSocket.Send(p.Data(), p.Size());
+
+        // EveOSC end
     }
 }
 
