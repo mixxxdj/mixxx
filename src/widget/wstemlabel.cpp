@@ -1,6 +1,9 @@
 #include "wstemlabel.h"
 
 #include "moc_wstemlabel.cpp"
+#include "util/logger.h"
+
+const mixxx::Logger kLogger("WStemLabel");
 
 WStemLabel::WStemLabel(QWidget* pParent)
         : WLabel(pParent),
@@ -10,6 +13,18 @@ WStemLabel::WStemLabel(QWidget* pParent)
 
 void WStemLabel::setup(const QDomNode& node, const SkinContext& context) {
     m_stemNo = context.selectInt(node, "StemNum");
+
+    VERIFY_OR_DEBUG_ASSERT(m_stemNo >= 1 && m_stemNo <= mixxx::kMaxSupportedStems) {
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("StemNum is out of range. It should be between "
+                               "1 and %1")
+                        .arg(mixxx::kMaxSupportedStems));
+        m_stemNo = qBound(1,
+                m_stemNo,
+                mixxx::kMaxSupportedStems); // Ensure m_stemNo is within the
+                                            // valid range
+    }
 }
 
 void WStemLabel::slotTrackUnloaded(TrackPointer) {
@@ -25,6 +40,12 @@ void WStemLabel::slotTrackLoaded(TrackPointer pTrack) {
     auto stemInfo = pTrack->getStemInfo();
 
     if (stemInfo.isEmpty()) {
+        return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(m_stemNo <= stemInfo.size()) {
+        kLogger.warning() << "Stem number out of range. m_stemNo: " << m_stemNo
+                          << ", stemInfo size: " << stemInfo.size();
         return;
     }
 
