@@ -9,15 +9,6 @@
 namespace {
 template<class T>
 bool valid_range(T min, T max, T step) {
-    // Detecting overflow
-    VERIFY_OR_DEBUG_ASSERT(max + step > max) {
-        return false;
-    }
-    // Detecting overflow
-    VERIFY_OR_DEBUG_ASSERT(min - step < min) {
-        return false;
-    }
-
     return (min <= 0 && min + step <= max) ||
             (max >= 0 && max - step >= min);
 }
