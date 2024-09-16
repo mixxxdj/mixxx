@@ -1039,8 +1039,11 @@ void LibraryControl::slotGoToItem(double v) {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &pressSpace);
-        QApplication::sendEvent(QApplication::focusWindow(), &releaseSpace);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &pressSpace);
+            QApplication::sendEvent(pWindow, &releaseSpace);
+        }
         return;
     }
     case FocusWidget::ContextMenu:
@@ -1054,7 +1057,10 @@ void LibraryControl::slotGoToItem(double v) {
         // If Unknown is some other 'untrained' or unresponsive widget
         // GoToItem is inappropriate and we can't do much about that.
         QKeyEvent event = QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &event);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &event);
+        }
         return;
     }
     case FocusWidget::Searchbar:
