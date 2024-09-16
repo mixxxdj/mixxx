@@ -6,6 +6,23 @@
 #include "controllers/legacycontrollersettingslayout.h"
 #include "util/parented_ptr.h"
 
+namespace {
+template<class T>
+bool valid_range(T min, T max, T step) {
+    // Detecting overflow
+    VERIFY_OR_DEBUG_ASSERT(max + step > max) {
+        return false;
+    }
+    // Detecting overflow
+    VERIFY_OR_DEBUG_ASSERT(min - step < min) {
+        return false;
+    }
+
+    return (min <= 0 && min + step <= max) ||
+            (max >= 0 && max - step >= min);
+}
+} // namespace
+
 class QSpinBox;
 class QDoubleSpinBox;
 
@@ -259,16 +276,11 @@ class LegacyControllerNumberSetting
     /// and a strictly positive step, strictly less than max..
     /// @return true if valid
     bool valid() const override {
-        static constexpr bool typeSize = sizeof(long) == sizeof(int);
         return AbstractLegacyControllerSetting::valid() &&
                 m_defaultValue >= m_minValue && m_savedValue >= m_minValue &&
                 m_editedValue >= m_minValue && m_defaultValue <= m_maxValue &&
                 m_savedValue <= m_maxValue && m_editedValue <= m_maxValue &&
-                m_stepValue > 0 &&
-                (typeSize ||
-                        static_cast<long>(m_stepValue) <
-                                static_cast<long>(m_maxValue) -
-                                        static_cast<long>(m_minValue));
+                m_stepValue > 0 && valid_range(m_minValue, m_maxValue, m_stepValue);
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
