@@ -793,4 +793,3 @@ uint64 ReceivedBundle::TimeTag() const
 
 
 } // namespace osc
-
