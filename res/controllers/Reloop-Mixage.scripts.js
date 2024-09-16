@@ -196,7 +196,7 @@ Mixage.init = function(_id, _debugging) {
             engine.setValue(fxGroup, "show_focus", 1);
         }
 
-        // set soft takeover for filter effect
+        // set soft takeover for Quick Effect
         engine.softTakeover(`[QuickEffectRack1_${channel}]`, "super1", true);
 
         // make connections for status LEDs
