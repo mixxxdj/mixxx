@@ -12,18 +12,18 @@ void WStemLabel::setup(const QDomNode& node, const SkinContext& context) {
     m_stemNo = context.selectInt(node, "StemNum");
 }
 
-void WStemLabel::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
+void WStemLabel::slotTrackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
     m_stemInfo = StemInfo();
     updateLabel();
 }
 
-void WStemLabel::slotTrackLoaded(TrackPointer track) {
-    if (!track) {
+void WStemLabel::slotTrackLoaded(TrackPointer pTrack) {
+    if (!pTrack) {
         return;
     }
 
-    auto stemInfo = track->getStemInfo();
+    auto stemInfo = pTrack->getStemInfo();
 
     if (stemInfo.isEmpty()) {
         return;

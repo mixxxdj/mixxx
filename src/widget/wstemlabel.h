@@ -13,8 +13,8 @@ class WStemLabel : public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   public slots:
-    void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer pTrack);
+    void slotTrackUnloaded(TrackPointer pTrack);
 
   private slots:
     void updateLabel();
