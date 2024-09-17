@@ -17,12 +17,16 @@ class AutoFileReloader : public QObject {
             m_fileWatcher.removePaths(files);
         }
     }
+    // this is idempotent, so while not particularly efficient it is safe
+    // to call this on the same path multiple times.
     void addPath(const QString& path) {
         m_fileWatcher.addPath(path);
         m_pathTriggeringReload.insert(path);
     }
 
   signals:
+    // Note that once the reload was handled, any changed paths need to be added back
+    // to the watcher using `addPath`.
     void fileChanged(const QString& filepath);
 
   private slots:
