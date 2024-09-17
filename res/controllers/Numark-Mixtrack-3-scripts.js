@@ -288,7 +288,7 @@ LED.prototype.onOff = function(value) {
 //           if not set, it considers it as a switch off (default=false)
 // valueoff : like "value". That permits for instance with two colors (once red(on), once blue(off), once red(on), etc...)
 
-LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
+LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
     // stop pending timers
     this.flashOff();
 
@@ -298,8 +298,6 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
     this.valueon = value;
     this.num_ms_off = num_ms_off;
     this.flashCount = flashCount;
-    this.relight = relight;
-    this.valueoff = valueoff;
 
     // 1st flash
     // This is because the permanent timer below takes
@@ -320,7 +318,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(relight), true);
+        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(this.relight), true);
     }
 };
 
@@ -752,7 +750,7 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
     this.LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
     this.LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
-    this.LEDs.cue = new LED(0x90 + j, leds.Cue);
+    this.LEDs.cue = new LED(0x90 + j, leds.cue);
     this.LEDs.sync = new LED(0x90 + j, leds.sync);
     this.LEDs.play = new LED(0x90 + j, leds.play);
     this.LEDs.fx1 = new LED(0x90 + j, leds.fx1);
