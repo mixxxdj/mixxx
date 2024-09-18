@@ -8,6 +8,7 @@
 
 #include "examplenodes.h"
 #include "rendergraph/context.h"
+#include "rendergraph/node.h"
 #include "rendergraph/scenegraph.h"
 
 CustomItem::CustomItem(QQuickItem* parent)
@@ -43,7 +44,7 @@ QSGNode* CustomItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
                             *context, img));
         }
 
-        bgNode->appendChildNode(rendergraph::sgNode(m_node.get()));
+        bgNode->appendChildNode(dynamic_cast<rendergraph::Node*>(m_node.get()));
 
         node = bgNode;
     } else {

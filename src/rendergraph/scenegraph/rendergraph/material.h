@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QSGMaterial>
 #include <memory>
 
+#include "rendergraph/materialtype.h"
+#include "rendergraph/texture.h"
 #include "rendergraph/uniformscache.h"
 
 namespace rendergraph {
@@ -12,15 +15,12 @@ class MaterialType;
 class Texture;
 } // namespace rendergraph
 
-class rendergraph::Material {
+class rendergraph::Material : public QSGMaterial {
   public:
-    class Impl;
-
     Material(const UniformSet& uniformSet);
     virtual ~Material();
     virtual int compare(const Material* other) const = 0;
     virtual std::unique_ptr<MaterialShader> createShader() const = 0;
-    virtual MaterialType* type() const = 0;
 
     template<typename T>
     void setUniform(int uniformIndex, const T& value) {
@@ -28,7 +28,6 @@ class rendergraph::Material {
         m_uniformsCacheDirty = true;
     }
 
-    Impl& impl() const;
     const UniformsCache& uniformsCache() const {
         return m_uniformsCache;
     }
@@ -45,10 +44,11 @@ class rendergraph::Material {
         return nullptr;
     }
 
-  private:
-    Material(Impl* pImpl, const UniformSet& uniformSet);
+    QSGMaterialShader* createShader(QSGRendererInterface::RenderMode) const override;
 
-    const std::unique_ptr<Impl> m_pImpl;
+    bool updateUniformsByteArray(QByteArray* buf);
+
+  private:
     UniformsCache m_uniformsCache;
     bool m_uniformsCacheDirty{};
 };

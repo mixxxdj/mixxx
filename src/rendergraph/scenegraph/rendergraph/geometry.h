@@ -1,14 +1,15 @@
 #pragma once
 
+#include <QSGGeometry>
 #include <QVector2D>
-#include <memory>
+#include <QVector3D>
 
 namespace rendergraph {
 class Geometry;
 class AttributeSet;
 } // namespace rendergraph
 
-class rendergraph::Geometry {
+class rendergraph::Geometry : public QSGGeometry {
   public:
     struct Point2D {
         QVector2D position2D;
@@ -48,18 +49,18 @@ class rendergraph::Geometry {
         Triangles,
         TriangleStrip
     };
-    class Impl;
 
-    Geometry(const AttributeSet& attributeSet, int vertexCount);
+    Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCount);
     ~Geometry();
 
     void setAttributeValues(int attributePosition, const float* data, int numTuples);
-    Impl& impl() const;
 
     float* vertexData();
 
     template<typename T>
-    T* vertexDataAs();
+    T* vertexDataAs() {
+        return static_cast<T*>(QSGGeometry::vertexData());
+    }
 
     void allocate(int vertexCount);
 
@@ -67,7 +68,8 @@ class rendergraph::Geometry {
     void setDrawingMode(DrawingMode mode);
 
   private:
-    Geometry(Impl* pImpl);
+    static QSGGeometry::DrawingMode toSgDrawingMode(Geometry::DrawingMode mode);
+    static Geometry::DrawingMode fromSgDrawingMode(unsigned int mode);
 
-    const std::unique_ptr<Impl> m_pImpl;
+    const int m_stride;
 };

@@ -1,32 +1,44 @@
 #pragma once
 
+#include <QSGGeometry>
 #include <initializer_list>
 #include <vector>
 
 #include "rendergraph/attribute.h"
 
 namespace rendergraph {
+class AttributeSetBase;
 class AttributeSet;
 }
 
-class rendergraph::AttributeSet {
-  public:
-    class Impl;
+class rendergraph::AttributeSetBase {
+  protected:
+    int m_stride{};
 
-    AttributeSet();
-    AttributeSet(std::initializer_list<Attribute> list, const std::vector<QString>& names);
-
-    ~AttributeSet();
-
-    const std::vector<Attribute>& attributes() const;
-    Impl& impl() const;
+    AttributeSetBase(std::initializer_list<Attribute> list, const std::vector<QString>& names);
 
   private:
-    AttributeSet(Impl* pImpl);
     void add(const Attribute& attribute);
+    static int toQSGGeometryType(const rendergraph::PrimitiveType& t);
 
+  protected:
     std::vector<Attribute> m_attributes;
-    const std::unique_ptr<Impl> m_pImpl;
+    QSGGeometry::AttributeSet m_sgAttributeSet{};
+    std::vector<QSGGeometry::Attribute> m_sgAttributes;
+};
+
+class rendergraph::AttributeSet : private rendergraph::AttributeSetBase,
+                                  public QSGGeometry::AttributeSet {
+  public:
+    AttributeSet(std::initializer_list<Attribute> list, const std::vector<QString>& names);
+    ~AttributeSet();
+
+    const std::vector<Attribute>& attributes() const {
+        return m_attributes;
+    }
+    const QSGGeometry::AttributeSet& sgAttributeSet() const {
+        return *this;
+    }
 };
 
 namespace rendergraph {

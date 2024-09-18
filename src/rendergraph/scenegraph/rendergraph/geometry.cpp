@@ -1,60 +1,69 @@
 #include "rendergraph/geometry.h"
 
-#include <QVector2D>
-
-#include "geometry_impl.h"
+#include "rendergraph/attributeset.h"
 
 using namespace rendergraph;
 
-Geometry::Geometry(Impl* pImpl)
-        : m_pImpl(pImpl) {
+Geometry::Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCount)
+        : QSGGeometry(attributeSet.sgAttributeSet(), vertexCount),
+          m_stride(attributeSet.sgAttributeSet().stride) {
+    QSGGeometry::setDrawingMode(QSGGeometry::DrawTriangleStrip);
 }
-
-Geometry::Geometry(const AttributeSet& attributeSet, int vertexCount)
-        : Geometry(new Geometry::Impl(attributeSet, vertexCount)){};
 
 Geometry::~Geometry() = default;
 
-Geometry::Impl& Geometry::impl() const {
-    return *m_pImpl;
-}
+void Geometry::setAttributeValues(int attributePosition, const float* from, int numTuples) {
+    const auto attributeArray = QSGGeometry::attributes();
+    int offset = 0;
+    for (int i = 0; i < attributePosition; i++) {
+        offset += attributeArray[i].tupleSize;
+    }
+    const int tupleSize = attributeArray[attributePosition].tupleSize;
+    const int skip = m_stride / sizeof(float) - tupleSize;
 
-void Geometry::setAttributeValues(int attributePosition, const float* data, int numTuples) {
-    m_pImpl->setAttributeValues(attributePosition, data, numTuples);
+    float* to = static_cast<float*>(QSGGeometry::vertexData());
+    to += offset;
+    while (numTuples--) {
+        int k = tupleSize;
+        while (k--) {
+            *to++ = *from++;
+        }
+        to += skip;
+    }
 }
 
 float* Geometry::vertexData() {
-    return m_pImpl->vertexData();
-}
-
-template<>
-Geometry::Point2D* Geometry::vertexDataAs<Geometry::Point2D>() {
-    return m_pImpl->vertexDataAs<Geometry::Point2D>();
-}
-
-template<>
-Geometry::TexturedPoint2D* Geometry::vertexDataAs<Geometry::TexturedPoint2D>() {
-    return m_pImpl->vertexDataAs<Geometry::TexturedPoint2D>();
-}
-
-template<>
-Geometry::RGBColoredPoint2D* Geometry::vertexDataAs<Geometry::RGBColoredPoint2D>() {
-    return m_pImpl->vertexDataAs<Geometry::RGBColoredPoint2D>();
-}
-
-template<>
-Geometry::RGBAColoredPoint2D* Geometry::vertexDataAs<Geometry::RGBAColoredPoint2D>() {
-    return m_pImpl->vertexDataAs<Geometry::RGBAColoredPoint2D>();
+    return static_cast<float*>(QSGGeometry::vertexData());
 }
 
 void Geometry::allocate(int vertexCount) {
-    m_pImpl->allocate(vertexCount);
+    QSGGeometry::allocate(vertexCount);
 }
 
 void Geometry::setDrawingMode(Geometry::DrawingMode mode) {
-    m_pImpl->setDrawingMode(mode);
+    QSGGeometry::setDrawingMode(toSgDrawingMode(mode));
 }
 
 Geometry::DrawingMode Geometry::drawingMode() const {
-    return m_pImpl->Impl::drawingMode();
+    return fromSgDrawingMode(QSGGeometry::drawingMode());
+}
+
+QSGGeometry::DrawingMode Geometry::toSgDrawingMode(Geometry::DrawingMode mode) {
+    switch (mode) {
+    case Geometry::DrawingMode::Triangles:
+        return QSGGeometry::DrawTriangles;
+    case Geometry::DrawingMode::TriangleStrip:
+        return QSGGeometry::DrawTriangleStrip;
+    }
+}
+
+Geometry::DrawingMode Geometry::fromSgDrawingMode(unsigned int mode) {
+    switch (mode) {
+    case QSGGeometry::DrawTriangles:
+        return Geometry::DrawingMode::Triangles;
+    case QSGGeometry::DrawTriangleStrip:
+        return Geometry::DrawingMode::TriangleStrip;
+    default:
+        throw "not implemented";
+    }
 }

@@ -16,6 +16,8 @@ add_library(rendergraph_sg
     rendergraph/materialtype.h
     rendergraph/node.cpp
     rendergraph/node.h
+    rendergraph/nodebase.cpp
+    rendergraph/nodebase.h
     rendergraph/opacitynode.cpp
     rendergraph/opacitynode.h
     rendergraph/texture.cpp
@@ -27,6 +29,8 @@ add_library(rendergraph_sg
     rendergraph/uniformscache.h
     rendergraph/uniformset.cpp
     rendergraph/uniformset.h
+    rendergraph/scenegraph.cpp
+    rendergraph/scenegraph.h
     ../common/rendergraph/material/endoftrackmaterial.cpp
     ../common/rendergraph/material/endoftrackmaterial.h
     ../common/rendergraph/material/patternmaterial.cpp
@@ -39,20 +43,6 @@ add_library(rendergraph_sg
     ../common/rendergraph/material/texturematerial.h
     ../common/rendergraph/material/unicolormaterial.cpp
     ../common/rendergraph/material/unicolormaterial.h
-    materialshader_impl.cpp
-    private/attributeset_impl.h
-    private/context_impl.h
-    private/geometry_impl.h
-    private/geometrynode_impl.h
-    private/material_impl.h
-    private/materialshader_impl.h
-    private/materialtype_impl.h
-    private/node_impl.h
-    private/opacitynode_impl.h
-    private/texture_impl.h
-    rendergraph/scenegraph.cpp
-    rendergraph/scenegraph.h
-    texture_impl.cpp
 )
 
 target_link_libraries(rendergraph_sg PUBLIC
@@ -62,4 +52,4 @@ target_link_libraries(rendergraph_sg PUBLIC
     Qt6::Quick
 )
 
-target_include_directories(rendergraph_sg PUBLIC . ../common PRIVATE private)
+target_include_directories(rendergraph_sg PUBLIC . ../common)

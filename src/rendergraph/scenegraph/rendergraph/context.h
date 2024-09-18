@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+class QQuickWindow;
 
 namespace rendergraph {
 class Context;
@@ -8,11 +8,12 @@ class Context;
 
 class rendergraph::Context {
   public:
-    class Impl;
     Context();
     ~Context();
-    Impl& impl() const;
+
+    void setWindow(QQuickWindow* pWindow);
+    QQuickWindow* window() const;
 
   private:
-    const std::unique_ptr<Impl> m_pImpl;
+    QQuickWindow* m_pWindow;
 };

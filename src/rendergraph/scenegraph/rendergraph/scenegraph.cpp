@@ -1,16 +1,12 @@
 #include "scenegraph.h"
 
-#include "context_impl.h"
-#include "node_impl.h"
+#include "rendergraph/context.h"
+#include "rendergraph/node.h"
 
 using namespace rendergraph;
 
-QSGNode* rendergraph::sgNode(Node* pNode) {
-    return pNode->impl().sgNode();
-}
-
 std::unique_ptr<Context> rendergraph::createSgContext(QQuickWindow* window) {
     auto context = std::make_unique<Context>();
-    context->impl().setWindow(window);
+    context->setWindow(window);
     return context;
 }

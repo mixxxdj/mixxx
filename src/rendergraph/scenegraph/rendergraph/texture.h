@@ -1,22 +1,26 @@
 #pragma once
 
-#include <QImage>
+#include <memory>
+
+class QSGTexture;
+class QImage;
 
 namespace rendergraph {
 class Context;
 class Texture;
 } // namespace rendergraph
 
+// We can't use inheritance because QSGTexture has pure virtuals that we can't
+// implement, so we encapsulate instead.
 class rendergraph::Texture {
   public:
-    class Impl;
-
     Texture(Context& context, const QImage& image);
     ~Texture();
-    Impl& impl() const;
+
+    QSGTexture* sgTexture() const {
+        return m_pTexture.get();
+    }
 
   private:
-    Texture(Impl* pImpl);
-
-    const std::unique_ptr<Impl> m_pImpl;
+    std::unique_ptr<QSGTexture> m_pTexture{};
 };

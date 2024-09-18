@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QSGGeometryNode>
+
 #include "rendergraph/geometry.h"
-#include "rendergraph/node.h"
+#include "rendergraph/nodebase.h"
 
 namespace rendergraph {
 class GeometryNode;
@@ -9,10 +11,8 @@ class Geometry;
 class Material;
 } // namespace rendergraph
 
-class rendergraph::GeometryNode : public rendergraph::Node {
+class rendergraph::GeometryNode : public QSGGeometryNode, public rendergraph::NodeBase {
   public:
-    class Impl;
-
     GeometryNode();
     ~GeometryNode();
 
@@ -25,11 +25,11 @@ class rendergraph::GeometryNode : public rendergraph::Node {
 
     void setMaterial(std::unique_ptr<Material> material);
     void setGeometry(std::unique_ptr<Geometry> geometry);
+
     Geometry& geometry() const;
     Material& material() const;
 
   private:
-    GeometryNode(NodeImplBase* pImpl);
     std::unique_ptr<Material> m_material;
     std::unique_ptr<Geometry> m_geometry;
 };

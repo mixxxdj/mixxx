@@ -1,15 +1,15 @@
 #include "rendergraph/context.h"
 
-#include "context_impl.h"
-
 using namespace rendergraph;
 
-Context::Context()
-        : m_pImpl(new Context::Impl()) {
-}
+Context::Context() = default;
 
 Context::~Context() = default;
 
-Context::Impl& Context::impl() const {
-    return *m_pImpl;
+void Context::setWindow(QQuickWindow* pWindow) {
+    m_pWindow = pWindow;
+}
+
+QQuickWindow* Context::window() const {
+    return m_pWindow;
 }

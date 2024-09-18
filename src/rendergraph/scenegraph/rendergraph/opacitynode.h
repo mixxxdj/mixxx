@@ -1,19 +1,15 @@
 #pragma once
 
+#include <QSGOpacityNode>
+
 #include "rendergraph/node.h"
 
 namespace rendergraph {
 class OpacityNode;
 } // namespace rendergraph
 
-class rendergraph::OpacityNode : public rendergraph::Node {
+class rendergraph::OpacityNode : public QSGOpacityNode, public rendergraph::NodeBase {
   public:
-    class Impl;
-
     OpacityNode();
     ~OpacityNode();
-    void setOpacity(float opacity);
-
-  private:
-    OpacityNode(NodeImplBase* pImpl);
 };

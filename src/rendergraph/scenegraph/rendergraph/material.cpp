@@ -1,20 +1,25 @@
 #include "rendergraph/material.h"
 
-#include "material_impl.h"
+#include "rendergraph/materialshader.h"
 
 using namespace rendergraph;
 
-Material::Material(Impl* pImpl, const UniformSet& uniformSet)
-        : m_pImpl(pImpl),
-          m_uniformsCache(uniformSet) {
-}
-
 Material::Material(const UniformSet& uniformSet)
-        : Material(new Material::Impl(this), uniformSet) {
+        : m_uniformsCache(uniformSet) {
+    setFlag(QSGMaterial::Blending);
 }
 
 Material::~Material() = default;
 
-Material::Impl& Material::impl() const {
-    return *m_pImpl;
+bool Material::updateUniformsByteArray(QByteArray* buf) {
+    if (clearUniformsCacheDirty()) {
+        memcpy(buf->data(), uniformsCache().data(), uniformsCache().size());
+        return true;
+    }
+    return false;
+}
+
+QSGMaterialShader* Material::createShader(QSGRendererInterface::RenderMode) const {
+    auto pShader = createShader().release(); // This leaks
+    return pShader;
 }

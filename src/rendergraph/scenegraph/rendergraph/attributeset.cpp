@@ -1,36 +1,42 @@
 #include "rendergraph/attributeset.h"
 
-#include "attributeset_impl.h"
-
 using namespace rendergraph;
 
-AttributeSet::AttributeSet(AttributeSet::Impl* pImpl)
-        : m_pImpl(pImpl) {
-}
-
-AttributeSet::AttributeSet()
-        : AttributeSet(new AttributeSet::Impl()) {
-}
-
-AttributeSet::AttributeSet(std::initializer_list<Attribute> list, const std::vector<QString>& names)
-        : AttributeSet() {
+AttributeSetBase::AttributeSetBase(std::initializer_list<Attribute> list,
+        const std::vector<QString>& names) {
     int i = 0;
     for (auto item : list) {
         add(Attribute{item.m_tupleSize, item.m_primitiveType, names[i++]});
     }
 }
 
-AttributeSet::~AttributeSet() = default;
-
-AttributeSet::Impl& AttributeSet::impl() const {
-    return *m_pImpl;
-}
-
-void AttributeSet::add(const Attribute& attribute) {
+void AttributeSetBase::add(const Attribute& attribute) {
     m_attributes.push_back(attribute);
-    m_pImpl->add(attribute);
+
+    const int count = static_cast<int>(m_sgAttributes.size());
+    const bool isPosition = count == 0;
+    m_sgAttributes.push_back(QSGGeometry::Attribute::create(count,
+            attribute.m_tupleSize,
+            toQSGGeometryType(attribute.m_primitiveType),
+            isPosition));
+    m_stride += attribute.m_tupleSize * sizeOf(attribute.m_primitiveType);
 }
 
-const std::vector<Attribute>& AttributeSet::attributes() const {
-    return m_attributes;
+int AttributeSetBase::toQSGGeometryType(const rendergraph::PrimitiveType& t) {
+    switch (t) {
+    case rendergraph::PrimitiveType::Float:
+        return QSGGeometry::FloatType;
+    case rendergraph::PrimitiveType::UInt:
+        return QSGGeometry::UnsignedIntType;
+    }
 }
+
+AttributeSet::AttributeSet(std::initializer_list<Attribute> list,
+        const std::vector<QString>& names)
+        : AttributeSetBase(list, names),
+          QSGGeometry::AttributeSet{static_cast<int>(m_sgAttributes.size()),
+                  m_stride,
+                  m_sgAttributes.data()} {
+}
+
+AttributeSet::~AttributeSet() = default;

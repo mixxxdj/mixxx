@@ -1,25 +1,34 @@
 #include "rendergraph/materialshader.h"
 
-#include "materialshader_impl.h"
+#include <QSGTexture>
+
+#include "rendergraph/material.h"
 
 using namespace rendergraph;
-
-MaterialShader::MaterialShader(Impl* pImpl)
-        : m_pImpl(pImpl) {
-}
 
 MaterialShader::MaterialShader(const char* vertexShaderFile,
         const char* fragmentShaderFile,
         const UniformSet& uniformSet,
-        const AttributeSet& attributeSet)
-        : MaterialShader(new MaterialShader::Impl(this,
-                  vertexShaderFile,
-                  fragmentShaderFile,
-                  uniformSet,
-                  attributeSet)){};
+        const AttributeSet& attributeSet) {
+    (void)uniformSet;
+    (void)attributeSet;
+    setShaderFileName(VertexStage, resource(vertexShaderFile));
+    setShaderFileName(FragmentStage, resource(fragmentShaderFile));
+}
 
 MaterialShader::~MaterialShader() = default;
 
-MaterialShader::Impl& MaterialShader::impl() const {
-    return *m_pImpl;
+bool rendergraph::MaterialShader::updateUniformData(RenderState& state,
+        QSGMaterial* newMaterial,
+        QSGMaterial* oldMaterial) {
+    return static_cast<Material*>(newMaterial)->updateUniformsByteArray(state.uniformData());
+}
+
+void MaterialShader::updateSampledImage(RenderState& state,
+        int binding,
+        QSGTexture** texture,
+        QSGMaterial* newMaterial,
+        QSGMaterial* oldMaterial) {
+    *texture = static_cast<Material*>(newMaterial)->texture(binding)->sgTexture();
+    (*texture)->commitTextureOperations(state.rhi(), state.resourceUpdateBatch());
 }
