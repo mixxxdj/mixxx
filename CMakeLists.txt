@@ -2571,7 +2571,7 @@ ADD_LIBRARY(oscpack
     src/osc/ip/IpEndpointName.h
 	src/osc/ip/NetworkingUtils.h
 	${IpSystemTypePath}/NetworkingUtils.cpp
-	src/osc/ip/PacketListener.h	
+	src/osc/ip/PacketListener.h
     src/osc/ip/TimerListener.h
     src/osc/ip/UdpSocket.h
 	${IpSystemTypePath}/UdpSocket.cpp
@@ -2586,7 +2586,7 @@ ADD_LIBRARY(oscpack
     src/osc/osc/OscReceivedElements.cpp
 	src/osc/osc/OscReceivedElements.h
 	src/osc/osc/OscTypes.cpp
-	src/osc/osc/OscTypes.h	
+	src/osc/osc/OscTypes.h
 	)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 #target_link_libraries(mixxx oscpack ${LIBS})

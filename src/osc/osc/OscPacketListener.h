@@ -46,7 +46,10 @@
 namespace osc{
 
 class OscPacketListener : public PacketListener{ 
-protected:
+  public:
+    UserSettingsPointer* apointer;
+
+  protected:
     virtual void ProcessBundle( const osc::ReceivedBundle& b, 
 				const IpEndpointName& remoteEndpoint )
     {

@@ -47,4 +47,5 @@ public:
 			const IpEndpointName& remoteEndpoint ) = 0;
 };
 
+
 #endif /* INCLUDED_OSCPACK_PACKETLISTENER_H */
