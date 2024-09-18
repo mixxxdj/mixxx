@@ -152,11 +152,13 @@ public:
 // to a single socket without having to manually set up a SocketReceiveMultiplexer
 
 class UdpListeningReceiveSocket : public UdpSocket{
-    SocketReceiveMultiplexer mux_;
+	SocketReceiveMultiplexer mux_;
     PacketListener *listener_;
-public:
-	UdpListeningReceiveSocket( const IpEndpointName& localEndpoint, PacketListener *listener )
-        : listener_( listener )
+
+  public:
+    UdpListeningReceiveSocket(const IpEndpointName& localEndpoint, PacketListener* listener)
+          : listener_(listener)
+
     {
         Bind( localEndpoint );
         mux_.AttachSocketListener( this, listener_ );
