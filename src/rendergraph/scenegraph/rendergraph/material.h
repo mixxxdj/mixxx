@@ -46,6 +46,10 @@ class rendergraph::Material : public QSGMaterial {
 
     QSGMaterialShader* createShader(QSGRendererInterface::RenderMode) const override;
 
+    int compare(const QSGMaterial* other) const override {
+        return compare(dynamic_cast<const Material*>(other));
+    }
+
     bool updateUniformsByteArray(QByteArray* buf);
 
   private:

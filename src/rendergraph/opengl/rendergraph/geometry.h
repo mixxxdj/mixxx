@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QVector2D>
+#include <QVector3D>
 #include <memory>
 
 #include "rendergraph/types.h"

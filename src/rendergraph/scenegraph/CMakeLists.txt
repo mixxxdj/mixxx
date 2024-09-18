@@ -1,5 +1,4 @@
 add_library(rendergraph_sg
-    rendergraph/attribute.h
     rendergraph/attributeset.cpp
     rendergraph/attributeset.h
     rendergraph/context.cpp
@@ -23,12 +22,6 @@ add_library(rendergraph_sg
     rendergraph/texture.cpp
     rendergraph/texture.h
     rendergraph/types.cpp
-    rendergraph/types.h
-    rendergraph/uniform.h
-    rendergraph/uniformscache.cpp
-    rendergraph/uniformscache.h
-    rendergraph/uniformset.cpp
-    rendergraph/uniformset.h
     rendergraph/scenegraph.cpp
     rendergraph/scenegraph.h
     ../common/rendergraph/material/endoftrackmaterial.cpp
@@ -43,6 +36,13 @@ add_library(rendergraph_sg
     ../common/rendergraph/material/texturematerial.h
     ../common/rendergraph/material/unicolormaterial.cpp
     ../common/rendergraph/material/unicolormaterial.h
+    ../common/rendergraph/attribute.h
+    ../common/rendergraph/types.h
+    ../common/rendergraph/uniform.h
+    ../common/rendergraph/uniformscache.cpp
+    ../common/rendergraph/uniformscache.h
+    ../common/rendergraph/uniformset.cpp
+    ../common/rendergraph/uniformset.h
 )
 
 target_link_libraries(rendergraph_sg PUBLIC

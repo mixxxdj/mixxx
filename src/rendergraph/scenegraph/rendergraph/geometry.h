@@ -53,6 +53,8 @@ class rendergraph::Geometry : public QSGGeometry {
     Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCount);
     ~Geometry();
 
+    void allocate(int vertexCount);
+
     void setAttributeValues(int attributePosition, const float* data, int numTuples);
 
     float* vertexData();
@@ -61,8 +63,6 @@ class rendergraph::Geometry : public QSGGeometry {
     T* vertexDataAs() {
         return static_cast<T*>(QSGGeometry::vertexData());
     }
-
-    void allocate(int vertexCount);
 
     DrawingMode drawingMode() const;
     void setDrawingMode(DrawingMode mode);

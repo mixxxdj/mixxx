@@ -20,6 +20,9 @@ bool Material::updateUniformsByteArray(QByteArray* buf) {
 }
 
 QSGMaterialShader* Material::createShader(QSGRendererInterface::RenderMode) const {
-    auto pShader = createShader().release(); // This leaks
+    // This looks like a leak but it isn't: we pass ownership to Qt. Qt will
+    // cache and reuse the shader for all Material of the same type.
+    // TODO make sure that RenderMode is always the same.
+    auto pShader = createShader().release();
     return pShader;
 }
