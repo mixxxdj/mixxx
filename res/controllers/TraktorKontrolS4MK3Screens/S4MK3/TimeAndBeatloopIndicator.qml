@@ -27,23 +27,6 @@ Rectangle {
     border.color: timeColor
     border.width: 2
     color: timeColor
-    signal updated
-
-    function update() {
-        let newValue = "";
-        if (root.mode === TimeAndBeatloopIndicator.Mode.RemainingTime) {
-            var seconds = ((1.0 - progression.value) * duration.value);
-            var mins = parseInt(seconds / 60).toString();
-            seconds = parseInt(seconds % 60).toString();
-
-            newValue = `-${mins.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-        } else {
-            newValue = (beatjump.value < 1 ? `1/${1 / beatjump.value}` : `${beatjump.value}`);
-        }
-        if (newValue === indicator.text) return;
-        indicator.text = newValue;
-        root.updated()
-    }
 
     Text {
         id: indicator
@@ -78,16 +61,21 @@ Rectangle {
             onValueChanged: (value) => {
                 root.border.color = value ? 'red' : timeColor
                 root.color = value ? 'red' : timeColor
-                root.updated()
             }
         }
     }
 
     Component.onCompleted: {
-        progression.onValueChanged.connect(update)
-        duration.onValueChanged.connect(update)
-        beatjump.onValueChanged.connect(update)
-        update()
+        indicator.text = Qt.binding(function() {
+                let newValue = "";
+                if (root.mode === TimeAndBeatloopIndicator.Mode.RemainingTime) {
+                    var seconds = ((1.0 - progression.value) * duration.value);
+                    newValue = `-${parseInt(seconds / 60).toString().padStart(2, '0')}:${parseInt(seconds % 60).toString().padStart(2, '0')}`;
+                } else {
+                    newValue = (beatjump.value < 1 ? `1/${1 / beatjump.value}` : `${beatjump.value}`);
+                }
+                return newValue
+        });
     }
 
     states: State {
