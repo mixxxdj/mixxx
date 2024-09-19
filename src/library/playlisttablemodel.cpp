@@ -340,7 +340,6 @@ const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList&
         return {};
     }
     QList<int> positions;
-    // TODO Transpose m_trackPosToRow ?? Would it be faster?
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     for (auto idx : indices) {
         int pos = idx.siblingAtColumn(positionColumn).data().toInt();
