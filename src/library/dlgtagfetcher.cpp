@@ -481,15 +481,15 @@ void DlgTagFetcher::setPercentOfEachRecordings(int totalRecordingsFound) {
 
 void DlgTagFetcher::fetchTagFinished(
         TrackPointer pTrack,
-        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases,
+        const QString& whyEmptyMessage) {
     VERIFY_OR_DEBUG_ASSERT(pTrack == m_pTrack) {
         return;
     }
     m_data.m_tags = guessedTrackReleases;
     if (guessedTrackReleases.size() == 0) {
         loadingProgressBar->setValue(kMaximumValueOfQProgressBar);
-        QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
-        loadingProgressBar->setFormat(emptyMessage);
+        loadingProgressBar->setFormat(whyEmptyMessage);
         return;
     } else {
         btnApply->setDisabled(true);

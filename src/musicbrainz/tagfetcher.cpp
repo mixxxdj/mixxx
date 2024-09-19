@@ -116,7 +116,8 @@ void TagFetcher::slotFingerprintReady() {
     if (fingerprint.isEmpty()) {
         emit resultAvailable(
                 m_pTrack,
-                QList<mixxx::musicbrainz::TrackRelease>());
+                {},
+                tr("Reading track for fingerprinting failed."));
         return;
     }
 
@@ -165,7 +166,8 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
 
         emit resultAvailable(
                 std::move(pTrack),
-                QList<mixxx::musicbrainz::TrackRelease>());
+                {},
+                tr("Could not identify track through Acoustid."));
         return;
     }
 
@@ -299,9 +301,15 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
     auto pTrack = m_pTrack;
     terminate();
 
+    QString whyEmptyMessage;
+    if (guessedTrackReleases.empty()) {
+        whyEmptyMessage = tr("Could not find this track in the MusicBrainz database.");
+    }
+
     emit resultAvailable(
             std::move(pTrack),
-            std::move(guessedTrackReleases));
+            std::move(guessedTrackReleases),
+            whyEmptyMessage);
 }
 
 void TagFetcher::startFetchCoverArtLinks(
