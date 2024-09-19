@@ -979,7 +979,7 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 #ifdef __STEM__
 QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
     WStemLabel* pLabel = new WStemLabel(m_pParent);
-    setupStemLabelWidget(element, pLabel);
+    setupLabelWidget(element, pLabel);
 
     QString group = lookupNodeGroup(element);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
@@ -1008,20 +1008,6 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
     }
 
     return pLabel;
-}
-
-void LegacySkinParser::setupStemLabelWidget(const QDomElement& element, WStemLabel* pLabel) {
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WLabel derivatives change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
-    pLabel->setup(element, *m_pContext);
-    commonWidgetSetup(element, pLabel);
-    pLabel->installEventFilter(m_pKeyboard);
-    pLabel->installEventFilter(
-            m_pControllerManager->getControllerLearningEventFilter());
-    pLabel->Init();
 }
 #endif
 

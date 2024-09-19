@@ -79,7 +79,6 @@ class LegacySkinParser : public QObject, public SkinParser {
 
 #ifdef __STEM__
     QWidget* parseStemLabelWidget(const QDomElement& element);
-    void setupStemLabelWidget(const QDomElement& element, WStemLabel* pLabel);
 #endif
 
     QWidget* parseText(const QDomElement& node);
