@@ -5,7 +5,6 @@
 #include <QWheelEvent>
 #include <iostream>
 
-#include "rendergraph/shadercache.h"
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
@@ -22,11 +21,12 @@
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
 namespace {
-void appendChildTo(std::unique_ptr<rendergraph::Node>& pNode, rendergraph::Node* pChild) {
-    pNode->appendChildNode(std::unique_ptr<rendergraph::Node>(pChild));
+void appendChildTo(std::unique_ptr<rendergraph::Node>& pNode, rendergraph::BaseNode* pChild) {
+    pNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pChild));
 }
-void appendChildTo(std::unique_ptr<rendergraph::OpacityNode>& pNode, rendergraph::Node* pChild) {
-    pNode->appendChildNode(std::unique_ptr<rendergraph::Node>(pChild));
+void appendChildTo(std::unique_ptr<rendergraph::OpacityNode>& pNode,
+        rendergraph::BaseNode* pChild) {
+    pNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pChild));
 }
 } // namespace
 
@@ -90,14 +90,13 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     m_pOpacityNode = pOpacityNode.get();
     pTopNode->appendChildNode(std::move(pOpacityNode));
 
-    m_pGraph = std::make_unique<rendergraph::Graph>(std::move(pTopNode));
+    m_pEngine = std::make_unique<rendergraph::Engine>(std::move(pTopNode));
 }
 
 WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
     m_rendererStack.clear();
-    m_pGraph.reset();
-    rendergraph::ShaderCache::purge();
+    m_pEngine.reset();
     doneCurrent();
 }
 
@@ -153,8 +152,8 @@ void WaveformWidget::paintGL() {
     m_pWaveformRenderMark->update();
     m_pWaveformRenderMarkRange->update();
 
-    m_pGraph->preprocess();
-    m_pGraph->render();
+    m_pEngine->preprocess();
+    m_pEngine->render();
 }
 
 void WaveformWidget::castToQWidget() {
@@ -162,11 +161,11 @@ void WaveformWidget::castToQWidget() {
 }
 
 void WaveformWidget::initializeGL() {
-    m_pGraph->initialize();
+    m_pEngine->initialize();
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
-    m_pGraph->resize(w, h);
+    m_pEngine->resize(w, h);
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {

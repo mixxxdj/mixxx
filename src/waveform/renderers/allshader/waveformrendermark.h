@@ -64,8 +64,8 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     bool m_isSlipRenderer;
 
-    rendergraph::Node* m_pRangeNodesParent{};
-    rendergraph::Node* m_pMarkNodesParent{};
+    rendergraph::BaseNode* m_pRangeNodesParent{};
+    rendergraph::BaseNode* m_pMarkNodesParent{};
     rendergraph::GeometryNode* m_pPlayPosNode;
     DigitsRenderNode* m_pDigitsRenderNode{};
 

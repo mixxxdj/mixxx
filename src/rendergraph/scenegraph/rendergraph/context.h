@@ -1,6 +1,6 @@
 #pragma once
 
-class QQuickWindow;
+#include <QQuickWindow>
 
 namespace rendergraph {
 class Context;
@@ -8,10 +8,7 @@ class Context;
 
 class rendergraph::Context {
   public:
-    Context();
-    ~Context();
-
-    void setWindow(QQuickWindow* pWindow);
+    Context(QQuickWindow* pWindow);
     QQuickWindow* window() const;
 
   private:

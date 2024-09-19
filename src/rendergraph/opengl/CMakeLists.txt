@@ -1,48 +1,65 @@
 add_library(rendergraph_gl
-    rendergraph/attributeset.cpp
-    rendergraph/attributeset.h
-    rendergraph/context.cpp
-    rendergraph/context.h
-    rendergraph/geometry.cpp
-    rendergraph/geometry.h
-    rendergraph/geometrynode.cpp
-    rendergraph/geometrynode.h
-    rendergraph/material.cpp
-    rendergraph/material.h
-    rendergraph/materialshader.cpp
-    rendergraph/materialshader.h
-    rendergraph/materialtype.cpp
-    rendergraph/materialtype.h
-    rendergraph/node.cpp
-    rendergraph/node.h
-    rendergraph/opacitynode.cpp
-    rendergraph/opacitynode.h
-    rendergraph/texture.cpp
-    rendergraph/texture.h
-    rendergraph/types.cpp
-    ../common/rendergraph/material/endoftrackmaterial.cpp
-    ../common/rendergraph/material/endoftrackmaterial.h
-    ../common/rendergraph/material/patternmaterial.cpp
-    ../common/rendergraph/material/patternmaterial.h
-    ../common/rendergraph/material/texturematerial.cpp
-    ../common/rendergraph/material/texturematerial.h
-    ../common/rendergraph/material/rgbamaterial.cpp
-    ../common/rendergraph/material/rgbamaterial.h
-    ../common/rendergraph/material/rgbmaterial.cpp
-    ../common/rendergraph/material/rgbmaterial.h
-    ../common/rendergraph/material/unicolormaterial.cpp
-    ../common/rendergraph/material/unicolormaterial.h
-    ../common/rendergraph/attribute.h
-    ../common/rendergraph/types.h
-    ../common/rendergraph/uniform.h
-    ../common/rendergraph/uniformscache.cpp
-    ../common/rendergraph/uniformscache.h
-    ../common/rendergraph/uniformset.cpp
-    ../common/rendergraph/uniformset.h
-    rendergraph/graph.cpp
-    rendergraph/graph.h
-    rendergraph/openglnode.cpp
-    rendergraph/openglnode.h
+../common/attributeset.cpp
+../common/basenode.cpp
+../common/node.cpp
+../common/opacitynode.cpp
+../common/rendergraph/attribute.h
+../common/rendergraph/attributeset.h
+../common/rendergraph/basenode.h
+../common/rendergraph/geometry.h
+../common/rendergraph/geometrynode.h
+../common/rendergraph/material.h
+../common/rendergraph/material/endoftrackmaterial.cpp
+../common/rendergraph/material/endoftrackmaterial.h
+../common/rendergraph/material/patternmaterial.cpp
+../common/rendergraph/material/patternmaterial.h
+../common/rendergraph/material/rgbamaterial.cpp
+../common/rendergraph/material/rgbamaterial.h
+../common/rendergraph/material/rgbmaterial.cpp
+../common/rendergraph/material/rgbmaterial.h
+../common/rendergraph/material/texturematerial.cpp
+../common/rendergraph/material/texturematerial.h
+../common/rendergraph/material/unicolormaterial.cpp
+../common/rendergraph/material/unicolormaterial.h
+../common/rendergraph/materialshader.h
+../common/rendergraph/materialtype.h
+../common/rendergraph/node.h
+../common/rendergraph/opacitynode.h
+../common/rendergraph/texture.h
+../common/rendergraph/types.h
+../common/rendergraph/uniform.h
+../common/rendergraph/uniformscache.cpp
+../common/rendergraph/uniformscache.h
+../common/rendergraph/uniformset.cpp
+../common/rendergraph/uniformset.h
+../common/types.cpp
+backend/attributeset.cpp
+backend/attributeset.h
+backend/geometry.cpp
+backend/geometry.h
+backend/geometrynode.cpp
+backend/geometrynode.h
+backend/material.cpp
+backend/material.h
+backend/materialshader.cpp
+backend/materialtype.h
+backend/node.h
+backend/opacitynode.h
+backend/openglnode.cpp
+backend/openglnode.h
+backend/shadercache.h
+backend/texture.h
+basenode.cpp
+engine.cpp
+geometry.cpp
+geometrynode.cpp
+material.cpp
+materialshader.cpp
+openglnode.cpp
+rendergraph/context.h
+rendergraph/engine.h
+rendergraph/openglnode.h
+texture.cpp
 )
 
 target_link_libraries(rendergraph_gl PUBLIC

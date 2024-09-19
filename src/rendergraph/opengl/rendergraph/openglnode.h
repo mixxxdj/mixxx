@@ -1,17 +1,16 @@
 #pragma once
 
-#include <QOpenGLFunctions>
-
-#include "rendergraph/node.h"
+#include "backend/openglnode.h"
+#include "rendergraph/basenode.h"
 
 namespace rendergraph {
 class OpenGLNode;
 } // namespace rendergraph
 
-class rendergraph::OpenGLNode : public rendergraph::Node, public QOpenGLFunctions {
+class rendergraph::OpenGLNode : public rendergraph::backend::OpenGLNode,
+                                public rendergraph::BaseNode {
   public:
     OpenGLNode();
-    ~OpenGLNode();
 
     virtual void initializeGL() {
     }
@@ -19,7 +18,4 @@ class rendergraph::OpenGLNode : public rendergraph::Node, public QOpenGLFunction
     }
     virtual void resizeGL(int, int) {
     }
-    void initialize() override;
-    void render() override;
-    void resize(int w, int h) override;
 };

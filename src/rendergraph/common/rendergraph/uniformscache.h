@@ -6,9 +6,9 @@
 #include <QVector4D>
 
 #include "rendergraph/types.h"
+#include "rendergraph/uniformset.h"
 
 namespace rendergraph {
-class UniformSet;
 class UniformsCache;
 } // namespace rendergraph
 

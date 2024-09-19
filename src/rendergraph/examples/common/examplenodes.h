@@ -1,10 +1,12 @@
 #include "rendergraph/geometrynode.h"
+#include "rendergraph/node.h"
 #include "rendergraph/texture.h"
 
 namespace rendergraph {
 class ExampleNode1;
 class ExampleNode2;
 class ExampleNode3;
+class ExampleTopNode;
 } // namespace rendergraph
 
 class rendergraph::ExampleNode1 : public rendergraph::GeometryNode {
@@ -33,4 +35,9 @@ class rendergraph::ExampleNode3 : public rendergraph::GeometryNode {
     ExampleNode3();
 
     void setTexture(std::unique_ptr<Texture> texture);
+};
+
+class rendergraph::ExampleTopNode : public rendergraph::Node {
+  public:
+    ExampleTopNode(rendergraph::Context& context);
 };

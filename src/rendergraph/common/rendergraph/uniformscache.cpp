@@ -1,5 +1,4 @@
 #include "rendergraph/uniformscache.h"
-
 #include "rendergraph/uniformset.h"
 
 using namespace rendergraph;

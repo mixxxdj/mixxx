@@ -84,10 +84,10 @@ class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
     float textureHeight() const {
         return waveformMarkNode()->textureHeight();
     }
-    void setNode(std::unique_ptr<Node>&& pNode) {
+    void setNode(std::unique_ptr<BaseNode>&& pNode) {
         m_pNode = std::move(pNode);
     }
-    void moveNodeToChildrenOf(Node* pParent) {
+    void moveNodeToChildrenOf(BaseNode* pParent) {
         pParent->appendChildNode(std::move(m_pNode));
     }
 
@@ -96,7 +96,7 @@ class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
         return static_cast<WaveformMarkNode*>(m_pNode.get());
     }
 
-    std::unique_ptr<rendergraph::Node> m_pNode;
+    std::unique_ptr<rendergraph::BaseNode> m_pNode;
 };
 
 // Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
@@ -248,7 +248,7 @@ void allshader::WaveformRenderMark::update() {
     const double playPosition = m_waveformRenderer->getTruePosSample(positionType);
     double nextMarkPosition = std::numeric_limits<double>::max();
 
-    Node* pRangeChild = m_pRangeNodesParent->firstChild();
+    BaseNode* pRangeChild = m_pRangeNodesParent->firstChild();
 
     for (const auto& pMark : std::as_const(m_marks)) {
         if (!pMark->isValid()) {

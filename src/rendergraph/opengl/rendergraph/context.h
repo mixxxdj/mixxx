@@ -5,7 +5,4 @@ class Context;
 }
 
 class rendergraph::Context {
-  public:
-    Context();
-    ~Context();
 };

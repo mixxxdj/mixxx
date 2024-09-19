@@ -2,35 +2,23 @@
 
 #include "examplenodes.h"
 #include "rendergraph/context.h"
-#include "rendergraph/graph.h"
 
 Window::Window() {
 }
 
-Window::~Window() = default;
-
 void Window::closeEvent(QCloseEvent*) {
     // since this is the only and last window, we need to cleanup before destruction,
     // because at destruction the context can't be used anymore
-    m_rendergraph.reset();
+    m_pEngine.reset();
 }
 
 void Window::initializeGL() {
-    auto node = std::make_unique<rendergraph::Node>();
-    node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
-    node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
-    node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
+    rendergraph::Context context;
 
-    {
-        QImage img(":/example/images/test.png");
-        rendergraph::Context context;
-        static_cast<rendergraph::ExampleNode3*>(node->Node::lastChild())
-                ->setTexture(
-                        std::make_unique<rendergraph::Texture>(context, img));
-    }
+    auto node = std::make_unique<rendergraph::ExampleTopNode>(context);
 
-    m_rendergraph = std::make_unique<rendergraph::Graph>(std::move(node));
-    m_rendergraph->initialize();
+    m_pEngine = std::make_unique<rendergraph::Engine>(std::move(node));
+    m_pEngine->initialize();
 }
 
 void Window::resizeGL(int, int) {
@@ -44,5 +32,5 @@ void Window::paintGL() {
     // so we need to do the same
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_rendergraph->render();
+    m_pEngine->render();
 }

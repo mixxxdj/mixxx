@@ -3,6 +3,8 @@
 #include <QOpenGLWindow>
 #include <memory>
 
+#include "rendergraph/engine.h"
+
 namespace rendergraph {
 class Graph;
 }
@@ -10,7 +12,6 @@ class Graph;
 class Window : public QOpenGLWindow {
   public:
     Window();
-    ~Window();
 
     void initializeGL() override;
     void resizeGL(int w, int h) override;
@@ -19,5 +20,5 @@ class Window : public QOpenGLWindow {
     void closeEvent(QCloseEvent* ev) override;
 
   private:
-    std::unique_ptr<rendergraph::Graph> m_rendergraph;
+    std::unique_ptr<rendergraph::Engine> m_pEngine;
 };

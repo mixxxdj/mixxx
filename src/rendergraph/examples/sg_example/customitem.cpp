@@ -9,7 +9,6 @@
 #include "examplenodes.h"
 #include "rendergraph/context.h"
 #include "rendergraph/node.h"
-#include "rendergraph/scenegraph.h"
 
 CustomItem::CustomItem(QQuickItem* parent)
         : QQuickItem(parent) {
@@ -31,20 +30,9 @@ QSGNode* CustomItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
         bgNode->setColor(QColor(0, 0, 0, 255));
         bgNode->setRect(boundingRect());
 
-        m_node = std::make_unique<rendergraph::Node>();
-        m_node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
-        m_node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
-        m_node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
-
-        {
-            QImage img(":/example/images/test.png");
-            auto context = rendergraph::createSgContext(window());
-            static_cast<rendergraph::ExampleNode3*>(m_node->Node::lastChild())
-                    ->setTexture(std::make_unique<rendergraph::Texture>(
-                            *context, img));
-        }
-
-        bgNode->appendChildNode(m_node->sgNode());
+        rendergraph::Context context(window());
+        m_node = std::make_unique<rendergraph::ExampleTopNode>(context);
+        bgNode->appendChildNode(m_node->backendNode());
 
         node = bgNode;
     } else {

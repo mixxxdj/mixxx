@@ -58,3 +58,16 @@ ExampleNode3::ExampleNode3() {
 void ExampleNode3::setTexture(std::unique_ptr<Texture> texture) {
     dynamic_cast<TextureMaterial&>(material()).setTexture(std::move(texture));
 }
+
+ExampleTopNode::ExampleTopNode(rendergraph::Context& context) {
+    BaseNode::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
+    BaseNode::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
+    BaseNode::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
+
+    {
+        QImage img(":/example/images/test.png");
+        static_cast<rendergraph::ExampleNode3*>(BaseNode::lastChild())
+                ->setTexture(
+                        std::make_unique<rendergraph::Texture>(context, img));
+    }
+}
