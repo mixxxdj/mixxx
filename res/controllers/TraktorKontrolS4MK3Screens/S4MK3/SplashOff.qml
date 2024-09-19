@@ -10,6 +10,6 @@ Rectangle {
         width: root.width*0.8
         height: root.height
         fillMode: Image.PreserveAspectFit
-        source: engine.getSetting("idleBackground") == "mask" ? "./Screens/Images/logo.png" : "../../../images/templates/logo_mixxx.png"
+        source: engine.getSetting("idleBackground") || "../../../images/templates/logo_mixxx.png"
     }
 }
