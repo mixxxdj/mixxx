@@ -13,6 +13,7 @@ Item {
 
     required property string group
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property var currentTrack: deckPlayer.currentTrack
     property bool scrolling: true
 
     property real speed: 1.7
@@ -26,7 +27,7 @@ Item {
         x: 6
         color: 'transparent'
 
-        readonly property string fulltext: !trackLoadedControl.value || root.deckPlayer.title.trim().length + root.deckPlayer.artist.trim().length == 0 ? qsTr("No Track Loaded") : `${root.deckPlayer.title} - ${root.deckPlayer.artist}`.trim()
+        readonly property string fulltext: !trackLoadedControl.value || root.currentTrack?.title.trim().length + root.currentTrack?.artist.trim().length == 0 ? qsTr("No Track Loaded") : `${root.currentTrack?.title} - ${root.currentTrack?.artist}`.trim()
 
         Text {
             id: text1

@@ -141,8 +141,7 @@ const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMicAuxOnShi
 // Default: false
 const UseBeatloopRollInsteadOfSampler = !!engine.getSetting("useBeatloopRollInsteadOfSampler");
 
-// Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
-// last size will be ignored
+// Predefined beatlooproll sizes.
 const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize1") || 1/8,
     engine.getSetting("beatLoopRollsSize2") || 1/4,
@@ -152,6 +151,18 @@ const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize6") || 4,
     engine.getSetting("beatLoopRollsSize7") || "half",
     engine.getSetting("beatLoopRollsSize8") || "double"
+];
+
+// Predefined beatjump.
+const BeatJumps = [
+    engine.getSetting("beatJumpSize1") || 1,
+    engine.getSetting("beatJumpSize2") || 2,
+    engine.getSetting("beatJumpSize3") || 4,
+    engine.getSetting("beatJumpSize4") || 8,
+    engine.getSetting("beatJumpSize5") || 16,
+    engine.getSetting("beatJumpSize6") || 32,
+    engine.getSetting("beatJumpSize7") || 64,
+    engine.getSetting("beatJumpSize8") || "beatjump"
 ];
 
 
@@ -243,15 +254,19 @@ const wheelTimerMax = 2 ** 32 - 1;
 const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
 
 const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
-const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
 // The active tab ID. This is used when SharedDataAPI is active, to communicate with the screens which tab is currently selected.
 const ActiveTabPadID = {
-    record: 8,
+    jump: 1,
+    hotcue: 2,
+    roll: 3,
     samples: 4,
+    loop: 5,
     mute: 7,
-    stems: 5,
-    cue: 11,
+    record: 8,
+    tone: 11,
+    fxbank1: 12,
+    fxbank2: 13,
 };
 
 const wheelLEDmodes = {
@@ -533,6 +548,12 @@ class Deck extends ComponentContainer {
         this.settings = settings;
         this.secondDeckModes = null;
         this.selectedHotcue = null;
+        if (UseSharedDataAPI) {
+            const data = engine.getSharedData() || {};
+            if (!data.selectedHotcue) { return; }
+            data.selectedHotcue[this.group] = this.selectedHotcue;
+            engine.setSharedData(data);
+        }
     }
     toggleDeck() {
         if (this.decks === undefined) {
@@ -557,6 +578,14 @@ class Deck extends ComponentContainer {
         case moveModes.hotcueColor:
             this.moveMode = null;
             this.selectedHotcue = null;
+
+            if (UseSharedDataAPI) {
+                const data = engine.getSharedData() || {};
+                if (data.selectedHotcue) {
+                    data.selectedHotcue[this.group] = this.selectedHotcue;
+                    engine.setSharedData(data);
+                }
+            }
             break;
         }
 
@@ -997,18 +1026,31 @@ class StemButton extends PushButton {
             return;
         }
         if (this.shifted && pressed) {
-            script.toggleControl(stemChannel(this.group, this.number), "mute");
+            script.toggleControl(stemChannel(this.group, this.number - 1), "mute");
         }
         if (!this.shifted) {
-            this.deck.selectedStem[this.number] = pressed;
+            this.deck.selectedStem[this.number - 1] = pressed;
+            if (UseSharedDataAPI) {
+                const data = engine.getSharedData() || {};
+                if (!data.selectedStems) { return; }
+                data.selectedStems[this.group] = this.deck.selectedStem;
+                engine.setSharedData(data);
+            }
         }
         if (!this.shifted && pressed && this.deck.mixer.firstPressedFxSelector !== null) {
             const presetNumber = this.deck.mixer.calculatePresetNumber();
             this.color = QuickEffectPresetColors[presetNumber - 1];
-            engine.setValue(quickFxChannel(stemChannel(this.group, this.number)), "loaded_chain_preset", presetNumber + 1);
+            engine.setValue(quickFxChannel(stemChannel(this.group, this.number - 1)), "loaded_chain_preset", presetNumber);
             this.deck.mixer.firstPressedFxSelector = null;
             this.deck.mixer.secondPressedFxSelector = null;
             this.deck.mixer.resetFxSelectorColors();
+
+            if (!UseSharedDataAPI) { return; }
+
+            const data = engine.getSharedData() || {};
+            if (!data.selectedQuickFX) { return; }
+            data.selectedQuickFX = null;
+            engine.setSharedData(data);
         }
     }
     output() {
@@ -1020,7 +1062,7 @@ class StemButton extends PushButton {
     }
     outConnect() {
         if (undefined !== this.group) {
-            const muteConnection = engine.makeConnection(stemChannel(this.group, this.number), "mute", (mute) => {
+            const muteConnection = engine.makeConnection(stemChannel(this.group, this.number - 1), "mute", (mute) => {
                 this.muted = mute;
                 this.output();
             });
@@ -1029,7 +1071,7 @@ class StemButton extends PushButton {
             } else {
                 console.warn(`Unable to connect '${stemChannel(this.group, this.number)}.mute' to the controller output. The control appears to be unavailable.`);
             }
-            const colorConnection = engine.makeConnection(stemChannel(this.group, this.number), "color", (color) => {
+            const colorConnection = engine.makeConnection(stemChannel(this.group, this.number - 1), "color", (color) => {
                 this.color = this.colorMap.getValueForNearestColor(color);
                 this.output();
             });
@@ -1044,6 +1086,52 @@ class StemButton extends PushButton {
             });
             if (enabledConnection) {
                 this.outConnections[2] = enabledConnection;
+            } else {
+                console.warn(`Unable to connect '${this.group}.stem_count' to the controller output. The control appears to be unavailable.`);
+            }
+        }
+    }
+}
+
+class StemMuteButton extends PushButton {
+    constructor(options) {
+        if (options.number === undefined || !Number.isInteger(options.number) || options.number < 1 || options.number > 4) {
+            throw Error("StemMuteButton must have a number property of an integer between 1 and 4");
+        }
+        super(options);
+        this.color = 0;
+        this.muted = 0;
+        this.outConnect();
+    }
+    output() {
+        if (!this.enabled) {
+            this.send(0);
+        } else {
+            this.send(LedColors.white + (this.muted ? this.brightnessOff : this.brightnessOn));
+        }
+    }
+    input(pressed) {
+        if (pressed) {
+            script.toggleControl(stemChannel(this.group, this.number - 1), "mute");
+        }
+    }
+    outConnect() {
+        if (undefined !== this.group) {
+            const muteConnection = engine.makeConnection(stemChannel(this.group, this.number - 1), "mute", (mute) => {
+                this.muted = mute;
+                this.output();
+            });
+            if (muteConnection) {
+                this.outConnections[0] = muteConnection;
+            } else {
+                console.warn(`Unable to connect '${stemChannel(this.group, this.number)}.mute' to the controller output. The control appears to be unavailable.`);
+            }
+            const enabledConnection = engine.makeConnection(this.group, "stem_count", (count) => {
+                this.enabled = count >= this.number;
+                this.output();
+            });
+            if (enabledConnection) {
+                this.outConnections[1] = enabledConnection;
             } else {
                 console.warn(`Unable to connect '${this.group}.stem_count' to the controller output. The control appears to be unavailable.`);
             }
@@ -1103,6 +1191,61 @@ class BeatLoopRollButton extends TriggerButton {
             this.send(LedColors.white + (value ? this.brightnessOn : this.brightnessOff));
         } else {
             this.send(this.color);
+        }
+    }
+}
+
+/*
+ * Represent a pad button that will trigger a pre-defined beatjump as set in BeatJumps.
+ */
+class BeatJumpButton extends TriggerButton {
+    constructor(options) {
+        if (options.number === undefined || !Number.isInteger(options.number) || options.number < 0 || options.number > 7) {
+            throw Error("BeatJumpButton must have a number property of an integer between 0 and 7");
+        }
+        if (BeatJumps[options.number] === "beatjump") {
+            options.key = "beatjump_forward";
+        } else if (BeatJumps[options.number] === "half") {
+            options.key = "beatjump_size_halve";
+        } else if (BeatJumps[options.number] === "double") {
+            options.key = "beatjump_size_double";
+        } else {
+            const size = parseFloat(BeatJumps[options.number]);
+            if (isNaN(size)) {
+                throw Error(`BeatJumpButton ${options.number}'s size "${BeatJumps[options.number]}" is invalid. Must be a float, or the literal 'beatjump', 'half' or 'double'`);
+            }
+            options.key = `beatjump_${size}_forward`;
+        }
+        super(options);
+        if (this.deck === undefined) {
+            throw Error("BeatJumpButton must have a deck attached to it");
+        }
+
+        this.outConnect();
+    }
+    shift() {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.setKey("beatjump_backward");
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            const size = parseFloat(BeatJumps[this.number]);
+            this.setKey(`beatjump_${size}_backward`);
+        }
+    }
+    unshift() {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.setKey("beatjump_forward");
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            const size = parseFloat(BeatJumps[this.number]);
+            this.setKey(`beatjump_${size}_forward`);
+        }
+    }
+    output(value) {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.send(LedColors.salmon);
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            this.send(this.color + (value ? this.brightnessOn : this.brightnessOff));
+        } else {
+            this.send(LedColors.white);
         }
     }
 }
@@ -1491,8 +1634,20 @@ class FXSelect extends Button {
                 }
             }
             this.outReport.send();
+
+            if (!UseSharedDataAPI) { return; }
+
+            const data = engine.getSharedData() || {};
+            data.selectedQuickFX = this.mixer.calculatePresetNumber();
+            engine.setSharedData(data);
         } else {
             this.mixer.secondPressedFxSelector = this.number;
+
+            if (!UseSharedDataAPI) { return; }
+
+            const data = engine.getSharedData() || {};
+            data.selectedQuickFX = this.mixer.calculatePresetNumber();
+            engine.setSharedData(data);
         }
 
     }
@@ -1512,7 +1667,7 @@ class FXSelect extends Button {
         if (this.mixer.firstPressedFxSelector !== null) {
             for (const deck of [1, 2, 3, 4]) {
                 const presetNumber = this.mixer.calculatePresetNumber();
-                engine.setValue(`[QuickEffectRack1_[Channel${deck}]]`, "loaded_chain_preset", presetNumber);
+                engine.setValue(quickFxChannel(`[Channel${deck}]`), "loaded_chain_preset", presetNumber);
             }
         }
         if (this.mixer.firstPressedFxSelector === this.number) {
@@ -1523,6 +1678,13 @@ class FXSelect extends Button {
             this.mixer.comboSelected = true;
         }
         this.mixer.secondPressedFxSelector = null;
+
+        if (!UseSharedDataAPI) { return; }
+
+        const data = engine.getSharedData() || {};
+        if (!data.selectedQuickFX) { return; }
+        data.selectedQuickFX = null;
+        engine.setSharedData(data);
     }
 
 }
@@ -2124,7 +2286,7 @@ class S4Mk3Deck extends Deck {
                 this.output(true);
             },
             onPress: function() {
-                this.deck.shift.call(this.deck);
+                this.deck.shift();
 
                 if (!UseSharedDataAPI) {
                     return;
@@ -2136,7 +2298,7 @@ class S4Mk3Deck extends Deck {
                 engine.setSharedData(data);
             },
             onRelease: function() {
-                this.deck.unshift.call(this.deck);
+                this.deck.unshift();
 
                 if (!UseSharedDataAPI) {
                     return;
@@ -2314,6 +2476,18 @@ class S4Mk3Deck extends Deck {
             deck: this,
             currentSortedColumnIdx: -1,
             onChange: function(right) {
+                let fxChanged = false;
+                for (const fxButton of this.deck.effectUnit.buttons) {
+                    if (fxButton.pressed) {
+                        script.triggerControl(fxButton.group, right ? "next_effect" : "prev_effect");
+                        fxChanged = true;
+                    }
+                }
+
+                if (fxChanged) {
+                    return;
+                }
+
                 if (this.deck.libraryViewButton.pressed) {
                     this.currentSortedColumnIdx = (LibrarySortableColumns.length + this.currentSortedColumnIdx + (right ? 1 : -1)) % LibrarySortableColumns.length;
                     engine.setValue("[Library]", "sort_column", LibrarySortableColumns[this.currentSortedColumnIdx]);
@@ -2340,7 +2514,7 @@ class S4Mk3Deck extends Deck {
                         }
                     } else {
                         engine.setValue("[Library]", "focused_widget", this.shifted ? 2 : 3);
-                        engine.setValue("[Library]", "MoveVertical", right ? 1 : -1);
+                        engine.setValue("[Library]", this.deck.turntableButton.pressed ? "ScrollVertical" : "MoveVertical", right ? 1 : -1);
                     }
                 }
             }
@@ -2470,6 +2644,7 @@ class S4Mk3Deck extends Deck {
         ];
         const hotcuePage2 = Array(8).fill({});
         const hotcuePage3 = Array(8).fill({});
+        const beatJumpPage = Array(8).fill({});
         const samplerOrBeatloopRollPage = Array(8).fill({});
         const keyboard = Array(8).fill({});
         const stem = [
@@ -2489,17 +2664,17 @@ class S4Mk3Deck extends Deck {
                 number: 4,
                 deck: this,
             }),
-            new Component({
-                outConnect: function() { this.send(0); },
+            new StemMuteButton({
+                number: 1,
             }),
-            new Component({
-                outConnect: function() { this.send(0); },
+            new StemMuteButton({
+                number: 2,
             }),
-            new Component({
-                outConnect: function() { this.send(0); },
+            new StemMuteButton({
+                number: 3,
             }),
-            new Component({
-                outConnect: function() { this.send(0); },
+            new StemMuteButton({
+                number: 4,
             }),
         ];
         let i = 0;
@@ -2508,6 +2683,10 @@ class S4Mk3Deck extends Deck {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
             hotcuePage2[i] = new HotcueButton({number: i + 1, deck: this});
             hotcuePage3[i] = new HotcueButton({number: i + 13, deck: this});
+            beatJumpPage[i] = new BeatJumpButton({
+                number: i,
+                deck: this,
+            });
             if (UseBeatloopRollInsteadOfSampler) {
                 samplerOrBeatloopRollPage[i] = new BeatLoopRollButton({
                     number: i,
@@ -2584,6 +2763,7 @@ class S4Mk3Deck extends Deck {
             samplerPage: 3,
             keyboard: 5,
             stem: 6,
+            beatJump: 6,
         };
         switch (DefaultPadLayout) {
         case DefaultPadLayoutHotcue:
@@ -2591,11 +2771,15 @@ class S4Mk3Deck extends Deck {
             this.currentPadLayer = this.padLayers.hotcuePage2;
             break;
         case DefaultPadLayoutSamplerBeatloop:
+            switchPadLayer(this, beatJumpPage);
+            this.currentPadLayer = this.padLayers.beatJump;
+            break;
+        case DefaultPadLayoutSamplerBeatloop:
             switchPadLayer(this, samplerOrBeatloopRollPage);
             this.currentPadLayer = this.padLayers.samplerPage;
             break;
         case DefaultPadLayoutKeyboard:
-            switchPadLayer(this, this.keyboard);
+            switchPadLayer(this, keyboard);
             this.currentPadLayer = this.padLayers.keyboard;
             break;
         default:
@@ -2626,7 +2810,7 @@ class S4Mk3Deck extends Deck {
             onShortPress: UseSharedDataAPI ? function() {
                 const data = engine.getSharedData() || {};
                 if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = ActiveTabPadID.cue;
+                data.padsMode[this.deck.group] = ActiveTabPadID.hotcue;
                 engine.setSharedData(data);
             } : undefined,
             onLongPress: function() {
@@ -2647,9 +2831,12 @@ class S4Mk3Deck extends Deck {
         this.recordPadModeButton = new Button({
             deck: this,
             onShortPress: UseSharedDataAPI ? function() {
+                switchPadLayer(this.deck, beatJumpPage);
+                this.deck.lightPadMode();
+
                 const data = engine.getSharedData() || {};
                 if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = ActiveTabPadID.record;
+                data.padsMode[this.deck.group] = ActiveTabPadID.jump;
                 engine.setSharedData(data);
                 this.output(data.scrollingWavefom[this.deck.group]);
             } : undefined,
@@ -2669,7 +2856,7 @@ class S4Mk3Deck extends Deck {
                 }
                 const data = engine.getSharedData() || {};
                 if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = ActiveTabPadID.samples;
+                data.padsMode[this.deck.group] = UseBeatloopRollInsteadOfSampler ? ActiveTabPadID.roll : ActiveTabPadID.samples;
                 engine.setSharedData(data);
             },
             onShortRelease: function() {
@@ -2761,7 +2948,11 @@ class S4Mk3Deck extends Deck {
         this.wheelMode = wheelModes.vinyl;
         this.turntableButton = new Button({
             deck: this,
-            onPress: function() {
+            onShortPress: function() {
+            },
+            onLongRelease: function() {
+            },
+            onShortRelease: UseMotors ? function() {
                 this.deck.reverseButton.loopModeOff(true);
                 this.deck.fluxButton.loopModeOff(true);
                 if (this.deck.wheelMode === wheelModes.motor) {
@@ -2775,14 +2966,14 @@ class S4Mk3Deck extends Deck {
                     }, true);
                 }
                 this.outTrigger();
-            },
-            outTrigger: function() {
+            } : undefined,
+            outTrigger: UseMotors ? function() {
                 const motorOn = this.deck.wheelMode === wheelModes.motor;
                 this.send(this.color + (motorOn ? this.brightnessOn : this.brightnessOff));
                 const vinylModeOn = this.deck.wheelMode === wheelModes.vinyl;
                 this.deck.jogButton.send(this.color + (vinylModeOn ? this.brightnessOn : this.brightnessOff));
-            },
-        }) : undefined;
+            } : undefined,
+        });
         this.jogButton = new Button({
             deck: this,
             onPress: function() {
@@ -2912,7 +3103,6 @@ class S4Mk3Deck extends Deck {
                         engine.setValue(this.group, "scratch2", this.speed);
                     } else {
                         engine.setValue(this.group, "jog", this.speed);
-                        console.log(this.speed)
                     }
                     break;
                 default:
@@ -3299,7 +3489,6 @@ class S4Mk3MixerColumn extends ComponentContainer {
         if (!alternativeInput) {
             return;
         }
-        console.log(shifted ? alternativeInput : `[Channel${this.idx}]`);
         this.group = shifted ? alternativeInput : `[Channel${this.idx}]`;
         for (const property of ["gain", "volume", "pfl", "crossfaderSwitch"]) {
             const component = this[property];
@@ -3614,6 +3803,27 @@ class S4MK3 {
                 "[Channel2]": false,
                 "[Channel3]": false,
                 "[Channel4]": false,
+            },
+            deckColor: {
+                "[Channel1]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[0])) - 1,
+                "[Channel2]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[1])) - 1,
+                "[Channel3]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[2])) - 1,
+                "[Channel4]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[3])) - 1,
+            },
+            rollpadSize: BeatLoopRolls,
+            beatjumpSize: BeatJumps,
+            selectedQuickFX: null,
+            selectedHotcue: {
+                "[Channel1]": null,
+                "[Channel2]": null,
+                "[Channel3]": null,
+                "[Channel4]": null,
+            },
+            selectedStems: {
+                "[Channel1]": [0, 0, 0, 0],
+                "[Channel2]": [0, 0, 0, 0],
+                "[Channel3]": [0, 0, 0, 0],
+                "[Channel4]": [0, 0, 0, 0],
             },
             viewArtwork: {
                 "[Channel1]": false,
