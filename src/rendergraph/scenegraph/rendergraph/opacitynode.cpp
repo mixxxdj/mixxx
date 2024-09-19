@@ -2,5 +2,8 @@
 
 using namespace rendergraph;
 
-OpacityNode::OpacityNode() = default;
+OpacityNode::OpacityNode()
+        : Node(this) {
+}
+
 OpacityNode::~OpacityNode() = default;

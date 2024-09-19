@@ -4,7 +4,10 @@
 
 using namespace rendergraph;
 
-GeometryNode::GeometryNode() = default;
+GeometryNode::GeometryNode()
+        : Node(this) {
+}
+
 GeometryNode::~GeometryNode() = default;
 
 void GeometryNode::setGeometry(std::unique_ptr<Geometry> geometry) {

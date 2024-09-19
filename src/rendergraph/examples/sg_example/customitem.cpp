@@ -32,19 +32,19 @@ QSGNode* CustomItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
         bgNode->setRect(boundingRect());
 
         m_node = std::make_unique<rendergraph::Node>();
-        m_node->appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
-        m_node->appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
-        m_node->appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
+        m_node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
+        m_node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
+        m_node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
 
         {
             QImage img(":/example/images/test.png");
             auto context = rendergraph::createSgContext(window());
-            static_cast<rendergraph::ExampleNode3*>(m_node->lastChild())
+            static_cast<rendergraph::ExampleNode3*>(m_node->Node::lastChild())
                     ->setTexture(std::make_unique<rendergraph::Texture>(
                             *context, img));
         }
 
-        bgNode->appendChildNode(dynamic_cast<rendergraph::Node*>(m_node.get()));
+        bgNode->appendChildNode(m_node->sgNode());
 
         node = bgNode;
     } else {

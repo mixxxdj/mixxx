@@ -17,14 +17,14 @@ void Window::closeEvent(QCloseEvent*) {
 
 void Window::initializeGL() {
     auto node = std::make_unique<rendergraph::Node>();
-    node->appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
-    node->appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
-    node->appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
+    node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
+    node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
+    node->Node::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
 
     {
         QImage img(":/example/images/test.png");
         rendergraph::Context context;
-        static_cast<rendergraph::ExampleNode3*>(node->lastChild())
+        static_cast<rendergraph::ExampleNode3*>(node->Node::lastChild())
                 ->setTexture(
                         std::make_unique<rendergraph::Texture>(context, img));
     }

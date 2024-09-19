@@ -3,7 +3,7 @@
 #include <QSGGeometryNode>
 
 #include "rendergraph/geometry.h"
-#include "rendergraph/nodebase.h"
+#include "rendergraph/node.h"
 
 namespace rendergraph {
 class GeometryNode;
@@ -11,7 +11,7 @@ class Geometry;
 class Material;
 } // namespace rendergraph
 
-class rendergraph::GeometryNode : public QSGGeometryNode, public rendergraph::NodeBase {
+class rendergraph::GeometryNode : public QSGGeometryNode, public rendergraph::Node {
   public:
     GeometryNode();
     ~GeometryNode();

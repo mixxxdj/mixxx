@@ -15,8 +15,6 @@ add_library(rendergraph_sg
     rendergraph/materialtype.h
     rendergraph/node.cpp
     rendergraph/node.h
-    rendergraph/nodebase.cpp
-    rendergraph/nodebase.h
     rendergraph/opacitynode.cpp
     rendergraph/opacitynode.h
     rendergraph/texture.cpp
