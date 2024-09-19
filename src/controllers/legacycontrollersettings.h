@@ -9,8 +9,10 @@
 namespace {
 template<class T>
 bool valid_range(T min, T max, T step) {
-    return (min <= 0 && min + step <= max) ||
-            (max >= 0 && max - step >= min);
+    VERIFY_OR_DEBUG_ASSERT(step >= 0) {
+        return false;
+    }
+    return step > 0 && ((min <= 0 && min + step <= max) || (max >= 0 && max - step >= min));
 }
 } // namespace
 
@@ -226,7 +228,13 @@ class LegacyControllerNumberSetting
         }
         m_defaultValue = ValueDeserializer(element.attribute("default"), &isOk);
         if (!isOk) {
-            m_defaultValue = 0;
+            if (0 > m_maxValue) {
+                m_defaultValue = m_maxValue;
+            } else if (0 < m_minValue) {
+                m_defaultValue = m_minValue;
+            } else {
+                m_defaultValue = 0;
+            }
         }
         reset();
         save();
@@ -271,7 +279,7 @@ class LegacyControllerNumberSetting
                 m_defaultValue >= m_minValue && m_savedValue >= m_minValue &&
                 m_editedValue >= m_minValue && m_defaultValue <= m_maxValue &&
                 m_savedValue <= m_maxValue && m_editedValue <= m_maxValue &&
-                m_stepValue > 0 && valid_range(m_minValue, m_maxValue, m_stepValue);
+                valid_range(m_minValue, m_maxValue, m_stepValue);
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
