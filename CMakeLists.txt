@@ -185,7 +185,7 @@ if(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.4.0)
+project(mixxx VERSION 2.4.1)
 enable_language(C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "") # set to "alpha" "beta" or ""
@@ -775,6 +775,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/metronomeclick.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
@@ -939,8 +940,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/recording/dlgrecording.cpp
   src/library/recording/dlgrecording.ui
   src/library/recording/recordingfeature.cpp
-  src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
-  src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
   src/library/rekordbox/rekordboxfeature.cpp
   src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
@@ -1349,7 +1348,6 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/mac.h
   src/util/macros.h
   src/util/math.h
-  src/util/memory.h
   src/util/messagepipe.h
   src/util/movinginterquartilemean.h
   src/util/mutex.h
@@ -1575,26 +1573,6 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
   message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
-endif()
-
-# Disable warnings in generated source files
-if(GNU_GCC OR LLVM_CLANG)
-  set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
-  )
-  set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
-  )
-elseif(MSVC)
-  set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS /wd4244
-  )
 endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
@@ -2283,7 +2261,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.20.2)
+  set(LIBDJINTEROP_VERSION 0.21.0)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2319,7 +2297,7 @@ if(ENGINEPRIME)
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=3024b8b49bc0bd673a7f032e7da7b73ce61144951e810683ec89650fedd45b85
+      URL_HASH SHA256=160d4e09b25e859816a6b664058e7c6bc5cd889adeb188a9721c2b65d2133641
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2509,12 +2487,27 @@ target_link_libraries(mixxx-lib PRIVATE FpClassify)
 find_package(mp3lame REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE mp3lame::mp3lame)
 
+add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
+  lib/rekordbox-metadata/rekordbox_pdb.cpp
+  lib/rekordbox-metadata/rekordbox_anlz.cpp
+)
+target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
+target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
+
+#silence "enumeration values not handled in switch" in generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
+
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
-  lib/kaitai/kaitaistream.cpp
+  lib/kaitai/kaitai/kaitaistream.cpp
 )
 target_include_directories(Kaitai SYSTEM PUBLIC lib/kaitai)
 target_compile_definitions(Kaitai PRIVATE KS_STR_ENCODING_NONE)
+target_link_libraries(rekordbox_metadata PRIVATE Kaitai)
 target_link_libraries(mixxx-lib PRIVATE Kaitai)
 
 # For determining MP3 timing offset cases in Rekordbox library feature
@@ -2686,9 +2679,6 @@ endif()
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
 if(DEBUG_ASSERTIONS_FATAL)
   target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
-  if(QT6)
-    target_compile_definitions(mixxx-qml-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
-  endif()
   if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON.")
   endif()
@@ -3047,6 +3037,11 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
+  set_property(
+    SOURCE lib/apple/CAStreamBasicDescription.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-deprecated-anon-enum-enum-conversion
+  )
   target_compile_definitions(mixxx-lib PUBLIC __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
@@ -3303,7 +3298,7 @@ else()
   check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
   if(NOT HAVE_GSL_GSL)
     unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
-    message(FATAL_ERROR "ms-gsl deveopment headers (libmsgsl-dev) not found")
+    message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
   endif()
 endif()
 
@@ -3488,7 +3483,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy lunar mantic noble)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy mantic noble oracular)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

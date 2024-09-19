@@ -96,7 +96,112 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-04-23" timestamp="1713855934">
+    <release version="2.4.2" type="development" date="2024-08-13" timestamp="1723570900">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Korg Kaoss DJ: Update script
+   #12683
+  </li>
+  <li>
+   Novation Dicer: Remove flanger mapping with quickeffect toggle
+   #13196
+   #13134
+  </li>
+  <li>
+   Numark PartyMix: Fix EQ (script binding) display name
+   #13255
+  </li>
+  <li>
+   Numark Scratch: Add initial mapping
+   #4834
+   #13375
+  </li>
+  <li>
+   Sony SIXAXIS: Fix mapping
+   #13319
+  </li>
+ </ul>
+ <p>
+  Fixes
+ </p>
+ <ul>
+  <li>
+   Handle not supported files when dragging to waveforms and spinnies
+   #13208
+   #13271
+   #13275
+  </li>
+  <li>
+   Fix Sqlite 3.45 builds by using only single quotes for SQL strings
+   #13247
+   #13257
+  </li>
+  <li>
+   LateNight: Use default colors for sampler overviews (like main decks)
+   #13274
+  </li>
+  <li>
+   Library: Allow to drop files to decks with unsupported or no file extensions
+   #13209
+   #13204
+  </li>
+  <li>
+   Update build environment with libdjinterop 0.21.0
+   #13288
+  </li>
+  <li>
+   Move to GitHub workflow runner macos-12
+   #13296
+   #13248
+  </li>
+  <li>
+   Recording: with empty config, save default split size immediately
+   #13304
+  </li>
+  <li>
+   Allow to drop files with supported MIME type regardless off the file extensions
+   #13209
+   #13204
+  </li>
+  <li>
+   Add support for Ubuntu Oracular Oriole and remove Lunar Lobster
+   #13348
+  </li>
+  <li>
+   Recordbox: Fix string decoding issues
+   #13293
+   #13291
+  </li>
+  <li>
+   Mixer preferences: Don't update EQs/QuickEffects while applying
+   #13333
+  </li>
+  <li>
+   Hardware preferences: Fix UX when applying config with missing/busy devices
+   #13312
+  </li>
+  <li>
+   Fix minor 64 bit CPU performance issue
+   #13355
+  </li>
+  <li>
+   Fix clicks at loop-out when looping into lead-in
+   #13294
+  </li>
+  <li>
+   Fix wrong pitch value on startup, caused by
+   components.Pot
+   #11814
+   #13463
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.4.1" type="stable" date="2024-05-08" timestamp="1715126400">
       <description>
  <p>
   Controller Mappings
@@ -119,6 +224,14 @@
   <li>
    Hercules Inpulse 200: Configure shift-browser knob to scroll the library (quick)
    #12932
+  </li>
+  <li>
+   Nintendo Wii Remote: Fix hid script regarding addOutput
+   #12973
+  </li>
+  <li>
+   Pioneer CDJ: Fix hid script regarding addOutput
+   #12973
   </li>
   <li>
    Pioneer DDJ-FLX4: Add waveform zoom and other mapping improvements
@@ -159,6 +272,10 @@
    CMakeLists: Always prefer OpenGL framework on macOS
    #13080
   </li>
+  <li>
+   Use capitalized Mixxx in Windows installer and start menu
+   #13178
+  </li>
  </ul>
  <p>
   Skins
@@ -171,6 +288,9 @@
   <li>
    Tango: Remove unneeded waveform Singleton
    #12938
+  </li>
+  <li>
+   Tango 64: fix Main VU meter
   </li>
   <li>
    Prevent possible crash in customs skins using parallel waveforms
@@ -189,10 +309,21 @@
   <li>
    Animate long press latching of sync button
    #12990
+   #13212
   </li>
   <li>
    Polish fx chain controls
    #12805
+  </li>
+  <li>
+   Waveforms: draw loop gradient at the correct position
+   #13061
+   #13060
+  </li>
+  <li>
+   Waveform / spinnies: don't take keyboard focus on click
+   #13174
+   #13211
   </li>
  </ul>
  <p>
@@ -240,6 +371,7 @@
    Require a minimum movement before initiating the drag&amp;drop of tracks
    #13135
    #12902
+   #12979
   </li>
   <li>
    iTunes/Serato/Traktor/Rhythmbox: Print error if library file could not be opened
@@ -260,6 +392,10 @@
   <li>
    Library track menu: show Hide action also in Playlist &amp; Crates
    #11901
+  </li>
+  <li>
+   iTunes: Obtain FileAccess before accessing iTunes XML
+   #13013
   </li>
  </ul>
  <p>
@@ -315,6 +451,14 @@
    Fix FLAC recording on macOS and Windows
    #10880
    #13154
+  </li>
+  <li>
+   LV Mix EQ: Fix pops when enabling in effect rack
+   #13055
+   #13073
+  </li>
+  <li>
+   Fix hid addOutput
   </li>
  </ul>
 </description>
@@ -426,7 +570,7 @@
    #11872
   </li>
   <li>
-   Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
+   Add support for overriding analysis settings about variable/constant BPM on a per-track basis
    #10931
   </li>
   <li>
@@ -2411,7 +2555,7 @@
    #11397
   </li>
   <li>
-   Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+   Fix drift in analysis data after exporting metadata to MP3 files with ID3v1.1 tags
    #11168
    #11159
   </li>
@@ -3818,7 +3962,7 @@
    #2743
   </li>
   <li>
-   Only apply ducking gain in manual ducking mode when talkover is enabed
+   Only apply ducking gain in manual ducking mode when talkover is enabled
    #7668
    #8995
    #8795

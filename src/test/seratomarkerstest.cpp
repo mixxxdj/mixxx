@@ -4,10 +4,10 @@
 
 #include <QDir>
 #include <QtDebug>
+#include <memory>
 
 #include "test/mixxxtest.h"
 #include "track/serato/markers.h"
-#include "util/memory.h"
 
 namespace {
 
@@ -181,7 +181,7 @@ TEST_F(SeratoMarkersTest, ParseMarkersDataMP3) {
     parseMarkersDataInDirectory(
             QDir(MixxxTest::getOrInitTestDir().filePath(
                     QStringLiteral("serato/data/mp3/markers_"))),
-            mixxx::taglib::FileType::MP3);
+            mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
@@ -192,7 +192,7 @@ TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP3) {
-    parseEmptyMarkersData(mixxx::taglib::FileType::MP3);
+    parseEmptyMarkersData(mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP4) {

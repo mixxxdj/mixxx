@@ -169,6 +169,7 @@
               <WidgetGroup>
                 <ObjectName>Crossfader</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
+                <MaximumSize>200,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <SliderComposed>

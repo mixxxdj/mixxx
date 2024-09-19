@@ -26,7 +26,9 @@ doc: |
 doc-ref: https://reverseengineering.stackexchange.com/questions/4311/help-reversing-a-edb-database-file-for-pioneers-rekordbox-software
 
 seq:
-  - contents: "PMAI"
+  - id: magic
+    contents: "PMAI"
+    doc: Identifies this as an analysis file.
   - id: len_header
     type: u4
     doc: |
@@ -52,7 +54,7 @@ types:
     seq:
       - id: fourcc
         type: s4
-        # enum: section_tags  Can't use this until enums support default/unmatched value
+        enum: section_tags
         doc: |
           A tag value indicating what kind of section this is.
       - id: len_header
@@ -68,17 +70,17 @@ types:
         type:
           switch-on: fourcc
           cases:
-            0x50434f32: cue_extended_tag        #'section_tags::cues_2' (PCO2)
-            0x50434f42: cue_tag                 #'section_tags::cues' (PCOB)
-            0x50505448: path_tag                #'section_tags::path' (PPTH)
-            0x5051545a: beat_grid_tag           #'section_tags::beat_grid' (PQTZ)
-            0x50564252: vbr_tag                 #'section_tags::vbr'       (PVBR)
-            0x50574156: wave_preview_tag        #'section_tags::wave_preview' (PWAV)
-            0x50575632: wave_preview_tag        #'section_tags::wave_tiny'    (PWV2)
-            0x50575633: wave_scroll_tag         #'section_tags::wave_scroll'  (PWV3, seen in .EXT)
-            0x50575634: wave_color_preview_tag  #'section_tags::wave_color_preview' (PWV4, in .EXT)
-            0x50575635: wave_color_scroll_tag   #'section_tags::wave_color_scroll'  (PWV5, in .EXT)
-            0x50535349: song_structure_tag      #'section_tags::song_structure'  (PSSI, in .EXT)
+            'section_tags::cues_2': cue_extended_tag                    # PCO2
+            'section_tags::cues': cue_tag                               # PCOB
+            'section_tags::path': path_tag                              # PPTH
+            'section_tags::beat_grid': beat_grid_tag                    # PQTZ
+            'section_tags::vbr': vbr_tag                                # PVBR
+            'section_tags::wave_preview': wave_preview_tag              # PWAV
+            'section_tags::wave_tiny': wave_preview_tag                 # PWV2
+            'section_tags::wave_scroll': wave_scroll_tag                # PWV3, seen in .EXT
+            'section_tags::wave_color_preview': wave_color_preview_tag  # PWV4, in .EXT
+            'section_tags::wave_color_scroll': wave_color_scroll_tag    # PWV5, in .EXT
+            'section_tags::song_structure': song_structure_tag          # PSSI, in .EXT
             _: unknown_tag
     -webide-representation: '{fourcc}'
 
@@ -91,14 +93,14 @@ types:
     seq:
       - type: u4
       - type: u4  # @flesniak says this is always 0x80000
-      - id: len_beats
+      - id: num_beats
         type: u4
         doc: |
           The number of beat entries which follow.
       - id: beats
         type: beat_grid_beat
         repeat: expr
-        repeat-expr: len_beats
+        repeat-expr: num_beats
         doc: The entries of the beat grid.
 
   beat_grid_beat:
@@ -132,7 +134,7 @@ types:
         doc: |
           Identifies whether this tag stores ordinary or hot cues.
       - size: 2
-      - id: len_cues
+      - id: num_cues
         type: u2
         doc: |
           The length of the cue list.
@@ -143,13 +145,15 @@ types:
       - id: cues
         type: cue_entry
         repeat: expr
-        repeat-expr: len_cues
+        repeat-expr: num_cues
 
   cue_entry:
     doc: |
       A cue list entry. Can either represent a memory cue or a loop.
     seq:
-      - contents: "PCPT"
+      - id: magic
+        contents: "PCPT"
+        doc: Identifies this as a cue list entry (cue point).
       - id: len_header
         type: u4
       - id: len_entry
@@ -163,7 +167,7 @@ types:
         type: u4
         enum: cue_entry_status
         doc: |
-          If zero, this entry should be ignored.
+          Indicates if this is an active loop.
       - type: u4  # Seems to always be 0x10000
       - id: order_first
         type: u2
@@ -203,7 +207,7 @@ types:
         enum: cue_list_type
         doc: |
           Identifies whether this tag stores ordinary or hot cues.
-      - id: len_cues
+      - id: num_cues
         type: u2
         doc: |
           The length of the cue comment list.
@@ -211,14 +215,16 @@ types:
       - id: cues
         type: cue_extended_entry
         repeat: expr
-        repeat-expr: len_cues
+        repeat-expr: num_cues
 
   cue_extended_entry:
     doc: |
       A cue extended list entry. Can either describe a memory cue or a
       loop.
     seq:
-      - contents: "PCP2"
+      - id: magic
+        contents: "PCP2"
+        doc: Identifies this as an extended cue list entry (cue point).
       - id: len_header
         type: u4
       - id: len_entry
@@ -232,7 +238,7 @@ types:
         type: u1
         enum: cue_entry_type
         doc: |
-          Indicates whether this is a memory cue or a loop.
+          Indicates whether this is a regular cue point or a loop.
       - size: 3  # seems to always be 1000
       - id: time
         type: u4
@@ -247,8 +253,19 @@ types:
       - id: color_id
         type: u1
         doc: |
-          Color ID of memory cues and loops, same color IDs as track colors
-      - size: 11  # Loops seem to have some non-zero values in the last four bytes of this.
+          References a row in the colors table if this is a memory cue or loop
+          and has been assigned a color.
+      - size: 7
+      - id: loop_numerator
+        type: u2
+        doc: |
+          The numerator of the loop length in beats.
+          Zero if the loop is not quantized.
+      - id: loop_denominator
+        type: u2
+        doc: |
+          The denominator of the loop length in beats.
+          Zero if the loop is not quantized.
       - id: len_comment
         type: u4
         if: len_entry > 43
@@ -262,22 +279,22 @@ types:
       - id: color_code
         type: u1
         doc: |
-          A lookup value for a color table? We use this to index to the colors shown in rekordbox.
+          A lookup value for a color table? We use this to index to the hot cue colors shown in rekordbox.
         if: (len_entry - len_comment) > 44
       - id: color_red
         type: u1
         doc: |
-          The red component of the color to be displayed.
+          The red component of the hot cue color to be displayed.
         if: (len_entry - len_comment) > 45
       - id: color_green
         type: u1
         doc: |
-          The green component of the color to be displayed.
+          The green component of the hot cue color to be displayed.
         if: (len_entry - len_comment) > 46
       - id: color_blue
         type: u1
         doc: |
-          The blue component of the color to be displayed.
+          The blue component of the hot cue color to be displayed.
         if: (len_entry - len_comment) > 47
       - size: len_entry - 48 - len_comment  # The remainder after the color
         if: (len_entry - len_comment) > 48
@@ -294,6 +311,7 @@ types:
         size: len_path - 2
         encoding: utf-16be
         if: len_path > 1
+    -webide-representation: '{path}'
 
   vbr_tag:
     doc: |
@@ -311,7 +329,7 @@ types:
       Stores a waveform preview image suitable for display above
       the touch strip for jumping to a track position.
     seq:
-      - id: len_preview
+      - id: len_data
         type: u4
         doc: |
           The length, in bytes, of the preview data itself. This is
@@ -319,7 +337,7 @@ types:
           length of the tag.
       - type: u4  # This seems to always have the value 0x10000
       - id: data
-        size: len_preview
+        size: len_data
         doc: |
           The actual bytes of the waveform preview.
         if: _parent.len_tag > _parent.len_header
@@ -393,17 +411,46 @@ types:
         type: u2
         doc: |
           The number of phrases.
-      - id: style
-        type: u2
-        enum: phrase_style
+      - id: body
+        type: song_structure_body
         doc: |
-          The phrase style. 1 is the up-down style
-          (white label text in rekordbox) where the main phrases consist
-          of up, down, and chorus. 2 is the bridge-verse style
-          (black label text in rekordbox) where the main phrases consist
-          of verse, chorus, and bridge. Style 3 is mostly identical to
-          bridge-verse style except verses 1-3 are labeled VERSE1 and verses
-          4-6 are labeled VERSE2 in rekordbox.
+          The rest of the tag, which needs to be unmasked before it
+          can be parsed.
+        size-eos: true
+        # NOTE: unmasking is disabled because the C++ backend of kaitai_struct
+        # doesn't seem to support typecasting as of kaitai version 0.10?
+        # process:  'xor(is_masked ? mask : [0])'
+    instances:
+      c:
+        value: len_entries
+      # mask:
+      #   value: |
+      #     [
+      #       (0xCB+c).as<u1>, (0xE1+c).as<u1>, (0xEE+c).as<u1>, (0xFA+c).as<s1>, (0xE5+c).as<s1>, (0xEE+c).as<s1>, (0xAD+c).as<s1>, (0xEE+c).as<s1>,
+      #       (0xE9+c).as<u1>, (0xD2+c).as<u1>, (0xE9+c).as<u1>, (0xEB+c).as<s1>, (0xE1+c).as<s1>, (0xE9+c).as<s1>, (0xF3+c).as<s1>, (0xE8+c).as<s1>,
+      #       (0xE9+c).as<u1>, (0xF4+c).as<u1>, (0xE1+c).as<u1>
+      #     ].as<bytes>
+      raw_mood:
+        type: u2
+        pos: 6
+        doc: |
+          This is a way to tell whether the rest of the tag has been masked. The value is supposed
+          to range from 1 to 3, but in masked files it will be much larger.
+      is_masked:
+        value: 'raw_mood > 20'  # This is almost certainly not true for an unmasked file.
+    -webide-representation: '{body.mood}'
+
+
+  song_structure_body:
+    doc: |
+      Stores the rest of the song structure tag, which can only be
+      parsed after unmasking.
+    seq:
+      - id: mood
+        type: u2
+        enum: track_mood
+        doc: |
+          The mood which rekordbox assigns the track as a whole during phrase analysis.
       - size: 6
       - id: end_beat
         type: u2
@@ -411,59 +458,104 @@ types:
           The beat number at which the last phrase ends. The track may
           continue after the last phrase ends. If this is the case, it will
           mostly be silence.
-      - size: 4
+      - size: 2
+      - id: bank
+        type: u1
+        enum: track_bank
+        doc: |
+          The stylistic bank which can be assigned to the track in rekordbox Lighting mode.
+      - size: 1
       - id: entries
         type: song_structure_entry
         repeat: expr
-        repeat-expr: len_entries
+        repeat-expr: _parent.len_entries
 
   song_structure_entry:
     doc: |
       A song structure entry, represents a single phrase.
     seq:
-      - id: phrase_number
+      - id: index
         type: u2
         doc: |
           The absolute number of the phrase, starting at one.
-      - id: beat_number
+      - id: beat
         type: u2
         doc: |
           The beat number at which the phrase starts.
-      - id: phrase_id
+      - id: kind
         type:
-          switch-on: _parent.style
+          switch-on: _parent.mood
           cases:
-            'phrase_style::up_down': phrase_up_down
-            'phrase_style::verse_bridge': phrase_verse_bridge
-            _: phrase_verse_bridge
+            'track_mood::high': phrase_high
+            'track_mood::mid': phrase_mid
+            'track_mood::low': phrase_low
+            _: phrase_mid  # We don't recognize this mood, so pick a generic interpretation.
         doc: |
-          Identifier of the phrase label.
-      - size: _parent.len_entry_bytes - 9
-      - id: fill_in
+          The kind of phrase as displayed in rekordbox.
+      - size: 1
+      - id: k1
+        type: u1
+        doc: One of three flags that identify phrase kind variants in high-mood tracks.
+      - size: 1
+      - id: k2
+        type: u1
+        doc: One of three flags that identify phrase kind variants in high-mood tracks.
+      - size: 1
+      - id: b
         type: u1
         doc: |
-          If nonzero, fill-in is present.
-      - id: fill_in_beat_number
+          Flags how many more beat numbers are in a high-mood "Up 3" phrase.
+      - id: beat2
+        type: u2
+        doc: |
+          Extra beat number (falling within phrase) always present in high-mood "Up 3" phrases.
+      - id: beat3
+        type: u2
+        doc: |
+          Extra beat number (falling within phrase, larger than beat2)
+          present in high-mood "Up 3" phrases when b has value 1.
+      - id: beat4
+        type: u2
+        doc: |
+          Extra beat number (falling within phrase, larger than beat3)
+          present in high-mood "Up 3" phrases when b has value 1.
+      - size: 1
+      - id: k3
+        type: u1
+        doc: One of three flags that identify phrase kind variants in high-mood tracks.
+      - size: 1
+      - id: fill
+        type: u1
+        doc: |
+          If nonzero, fill-in is present at end of phrase.
+      - id: beat_fill
         type: u2
         doc: |
           The beat number at which fill-in starts.
+    -webide-representation: '{kind.id}'
 
-  phrase_up_down:
+  phrase_high:
     seq:
       - id: id
         type: u2
-        enum: phrase_up_down_id
+        enum: mood_high_phrase
 
-  phrase_verse_bridge:
+  phrase_mid:
     seq:
       - id: id
         type: u2
-        enum: phrase_verse_bridge_id
+        enum: mood_mid_phrase
+
+  phrase_low:
+    seq:
+      - id: id
+        type: u2
+        enum: mood_low_phrase
 
   unknown_tag: {}
 
 enums:
-  section_tags:  # We can't use this enum until KSC supports default/unmatched values
+  section_tags:
     0x50434f42: cues                # PCOB
     0x50434f32: cues_2              # PCO2 (seen in .EXT)
     0x50505448: path                # PPTH
@@ -487,27 +579,51 @@ enums:
   cue_entry_status:
     0: disabled
     1: enabled
+    4: active_loop
 
-  phrase_style:
-    1: up_down
-    2: verse_bridge
-    3: verse_bridge_2
+  track_mood:
+    1: high
+    2: mid
+    3: low
 
-  phrase_verse_bridge_id:
+  mood_low_phrase:
     1: intro
-    2: verse1
-    3: verse2
-    4: verse3
-    5: verse4
-    6: verse5
-    7: verse6
+    2: verse_1
+    3: verse_1b  # Just displayed as "Verse 1" in rekordbox.
+    4: verse_1c  # Just displayed as "Verse 1" in rekordbox.
+    5: verse_2
+    6: verse_2b  # Just displayed as "Verse 2" in rekordbox.
+    7: verse_2c  # Just displayed as "Verse 2" in rekordbox.
     8: bridge
     9: chorus
     10: outro
 
-  phrase_up_down_id:
+  mood_mid_phrase:
+    1: intro
+    2: verse_1
+    3: verse_2
+    4: verse_3
+    5: verse_4
+    6: verse_5
+    7: verse_6
+    8: bridge
+    9: chorus
+    10: outro
+
+  mood_high_phrase:
     1: intro
     2: up
     3: down
     5: chorus
     6: outro
+
+  track_bank:
+    0: default
+    1: cool
+    2: natural
+    3: hot
+    4: subtle
+    5: warm
+    6: vivid
+    7: club_1
+    8: club_2

@@ -8,11 +8,12 @@
 #include <pthread.h>
 #endif
 
+#include <memory>
+
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/networkoutputstreamworker.h"
 #include "soundio/sounddevice.h"
 #include "util/fifo.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate

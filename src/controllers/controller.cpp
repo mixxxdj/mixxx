@@ -36,20 +36,19 @@ ControllerJSProxy* Controller::jsProxy() {
     return new ControllerJSProxy(this);
 }
 
-void Controller::startEngine()
-{
-    qCInfo(m_logBase) << "  Starting engine";
+void Controller::startEngine() {
+    qCInfo(m_logBase) << "Starting engine";
     if (m_pScriptEngineLegacy) {
-        qCWarning(m_logBase) << "Controller: Engine already exists! Restarting:";
+        qCWarning(m_logBase) << "startEngine(): Engine already exists! Restarting:";
         stopEngine();
     }
     m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this, m_logBase);
 }
 
 void Controller::stopEngine() {
-    qCInfo(m_logBase) << "  Shutting down engine";
+    qCInfo(m_logBase) << "Shutting down engine";
     if (!m_pScriptEngineLegacy) {
-        qCWarning(m_logBase) << "Controller::stopEngine(): No engine exists!";
+        qCWarning(m_logBase) << "No engine exists!";
         return;
     }
     delete m_pScriptEngineLegacy;
@@ -59,14 +58,13 @@ void Controller::stopEngine() {
 bool Controller::applyMapping() {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
-    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
-
     // Load the script code into the engine
     if (!m_pScriptEngineLegacy) {
-        qCWarning(m_logBase) << "Controller::applyMapping(): No engine exists!";
+        qCWarning(m_logBase) << "No engine exists!";
         return false;
     }
 
+    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
     QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
     if (scriptFiles.isEmpty()) {
         qCWarning(m_logBase)
@@ -104,14 +102,14 @@ void Controller::send(const QList<int>& data, unsigned int length) {
     sendBytes(msg);
 }
 
-void Controller::triggerActivity()
-{
-     // Inhibit Updates for 1000 milliseconds
+void Controller::triggerActivity() {
+    // Inhibit Updates for 1000 milliseconds
     if (m_userActivityInhibitTimer.elapsed() > 1000) {
         mixxx::ScreenSaverHelper::triggerUserActivity();
         m_userActivityInhibitTimer.start();
     }
 }
+
 void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     if (!m_pScriptEngineLegacy) {
         //qWarning() << "Controller::receive called with no active engine!";

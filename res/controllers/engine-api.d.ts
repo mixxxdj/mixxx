@@ -18,6 +18,17 @@ declare interface ScriptConnection {
      * Note: To execute all callback functions connected to a ControlObject at once, use {@link engine.trigger} instead
      */
     trigger(): void;
+
+    /**
+     * String representation of the unique UUID of this connection instance
+     */
+    readonly id: string;
+
+    /**
+     * whether the connection instance is actually responds to changes to the ControlObject it was created for.
+     * This is always true for a newly created instance and usually false after calling {@link disconnect}
+     */
+    readonly isConnected: boolean;
 }
 
 

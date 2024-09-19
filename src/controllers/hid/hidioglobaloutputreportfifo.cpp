@@ -53,7 +53,7 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
     if (pFront == nullptr) {
         // No data in FIFO to be send
         // Return with false, to signal the caller, that no time consuming IO
-        // operation was ncessary
+        // operation was necessary
         return false;
     }
 

@@ -17,7 +17,7 @@ constexpr bool kDefaultCueEnabled = true;
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_selFormat(QString(), QString(), false, QString()) {
+          m_selFormat({QString(), QString(), false, QString()}) {
     setupUi(this);
 
     // Setting recordings path.
@@ -92,10 +92,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     if (index >= 0) {
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
-    }
-    else {
+    } else {
         //Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
+        saveSplitSize();
     }
 
     setScrollSafeGuard(comboBoxSplitting);

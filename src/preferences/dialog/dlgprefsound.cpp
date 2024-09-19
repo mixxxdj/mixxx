@@ -120,6 +120,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
 
+    // TODO These settings are applied immediately via ControlProxies.
+    // While this is handy for testing the delays, it breaks the rule to
+    // apply only in slotApply(). Add hint to UI?
     connect(latencyCompensationSpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -263,18 +266,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
 }
 
-/// Slot called when the preferences dialog is opened or this pane is
-/// selected.
+/// Slot called when the preferences dialog is opened.
 void DlgPrefSound::slotUpdate() {
-    // this is unfortunate, because slotUpdate is called every time
-    // we change to this pane, we lose changed and unapplied settings
-    // every time. There's no real way around this, just another argument
-    // for a prefs rewrite -- bkgood
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
-    m_settingsModified = false;
 }
 
 /// Slot called when the Apply or OK button is pressed.
@@ -386,6 +383,10 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSoundItem::selectedChannelsChanged,
             this,
             &DlgPrefSound::deviceChannelsChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::configuredDeviceNotFound,
+            this,
+            &DlgPrefSound::configuredDeviceNotFound);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
     if (pItem->isInput()) {
@@ -675,6 +676,18 @@ void DlgPrefSound::settingChanged() {
     if (m_loading) {
         return; // doesn't count if we're just loading prefs
     }
+    m_settingsModified = true;
+}
+
+/// Slot called when a device from the config can not be selected, i.e. is
+/// currently not available. This may happen during startup when MixxxMainWindow
+/// opens this page to allow users to make adjustments in case configured
+/// devices are busy/missing.
+/// The issue is that the visual state (combobox(es) with 'None') does not match
+/// the untouched config state. This set the modified flag so slotApply() will
+/// apply the (seemingly) unchanged configuration if users simply click Apply/Okay
+/// because they are okay to continue without these devices.
+void DlgPrefSound::configuredDeviceNotFound() {
     m_settingsModified = true;
 }
 

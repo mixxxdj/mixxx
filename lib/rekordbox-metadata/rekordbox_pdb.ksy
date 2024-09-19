@@ -70,7 +70,7 @@ seq:
   - id: next_unused_page
     type: u4
     doc: |
-      @flesinak said: "Not used as any `empty_candidate`, points
+      @flesniak said: "Not used as any `empty_candidate`, points
       past the end of the file."
   - type: u4
   - id: sequence
@@ -78,7 +78,12 @@ seq:
     doc: |
       @flesniak said: "Always incremented by at least one,
       sometimes by two or three."
-  - contents: [0, 0, 0, 0]
+  - id: gap
+    contents: [0, 0, 0, 0]
+    doc: |
+      Only exposed until
+      https://github.com/kaitai-io/kaitai_struct/issues/825 can be
+      fixed.
   - id: tables
     type: table
     repeat: expr
@@ -145,7 +150,12 @@ types:
       an index which locates all rows present in the heap via their
       offsets past the end of the page header.
     seq:
-      - contents: [0, 0, 0, 0]
+      - id: gap
+        contents: [0, 0, 0, 0]
+        doc: |
+          Only exposed until
+          https://github.com/kaitai-io/kaitai_struct/issues/825 can be
+          fixed.
       - id: page_index
         doc: Matches the index we used to look up the page, sanity check?
         type: u4
@@ -230,7 +240,7 @@ types:
           index entries there are, but some of those may not be marked
           as present in the table due to deletion).
         -webide-parse-mode: eager
-      num_groups:
+      num_row_groups:
         value: '(num_rows - 1) / 16 + 1'
         doc: |
           The number of row groups that are present in the index. Each
@@ -239,7 +249,7 @@ types:
       row_groups:
         type: 'row_group(_index)'
         repeat: expr
-        repeat-expr: num_groups
+        repeat-expr: num_row_groups
         doc: |
           The actual row groups making up the row index. Each group
           can hold up to sixteen rows. Non-data pages do not have
@@ -276,7 +286,7 @@ types:
       rows:
         type: row_ref(_index)
         repeat: expr
-        repeat-expr: '(group_index < (_parent.num_groups - 1)) ? 16 : ((_parent.num_rows - 1) % 16 + 1)'
+        repeat-expr: 16
         doc: |
           The row offsets in this group.
 
@@ -328,6 +338,8 @@ types:
             'page_type::labels': label_row
             'page_type::playlist_tree': playlist_tree_row
             'page_type::playlist_entries': playlist_entry_row
+            'page_type::history_playlists': history_playlist_row
+            'page_type::history_entries': history_entry_row
             'page_type::tracks': track_row
         if: present
         doc: |
@@ -358,7 +370,7 @@ types:
       - type: u4
       - type: u1
         doc: |
-          @flesniak says: "alwayx 0x03, maybe an unindexed empty string"
+          @flesniak says: "always 0x03, maybe an unindexed empty string"
       - id: ofs_name
         type: u1
         doc: |
@@ -544,6 +556,38 @@ types:
         doc: |
           The playlist to which this entry belongs.
 
+  history_playlist_row:
+    doc: |
+      A row that holds a history playlist ID and name, linking to
+      the track IDs captured during a performance on the player.
+    seq:
+      - id: id
+        type: u4
+        doc: |
+          The unique identifier by which this history playlist can
+          be requested.
+      - id: name
+        type: device_sql_string
+        doc: |
+          The variable-length string naming the playlist.
+
+  history_entry_row:
+    doc: |
+      A row that associates a track with a position in a history playlist.
+    seq:
+      - id: track_id
+        type: u4
+        doc: |
+          The track found at this position in the playlist.
+      - id: playlist_id
+        type: u4
+        doc: |
+          The history playlist to which this entry belongs.
+      - id: entry_index
+        type: u4
+        doc: |
+          The position within the playlist represented by this entry.
+
   track_row:
     doc: |
       A row that describes a track that can be played, with many
@@ -687,25 +731,25 @@ types:
           The location, relative to the start of this row, of a
           variety of variable-length strings.
     instances:
-      unknown_string_1:
+      isrc:
         type: device_sql_string
         pos: _parent.row_base + ofs_strings[0]
         doc: |
-          A string of unknown purpose, which has so far only been
-          empty.
+          International Standard Recording Code of track
+          when known (in mangled format).
         -webide-parse-mode: eager
       texter:
         type: device_sql_string
         pos: _parent.row_base + ofs_strings[1]
         doc: |
-          A string of unknown purpose, which @flesnik named.
+          A string of unknown purpose, which @flesniak named.
         -webide-parse-mode: eager
       unknown_string_2:
         type: device_sql_string
         pos: _parent.row_base + ofs_strings[2]
         doc: |
           A string of unknown purpose; @flesniak said "thought
-          tracknumber -> wrong!"
+          track number -> wrong!"
       unknown_string_3:
         type: device_sql_string
         pos: _parent.row_base + ofs_strings[3]
@@ -725,7 +769,7 @@ types:
         type: device_sql_string
         pos: _parent.row_base + ofs_strings[5]
         doc: |
-          A string of unknown purpose, which @flesnik named.
+          A string of unknown purpose, which @flesniak named.
         -webide-parse-mode: eager
       kuvo_public:
         type: device_sql_string
@@ -736,7 +780,7 @@ types:
           a single bit somewhere, to control whether the track
           information is visible on Kuvo.
         -webide-parse-mode: eager
-      autoload_hotcues:
+      autoload_hot_cues:
         type: device_sql_string
         pos: _parent.row_base + ofs_strings[7]
         doc: |
@@ -843,7 +887,7 @@ types:
           switch-on: length_and_kind
           cases:
             0x40: device_sql_long_ascii
-            0x90: device_sql_long_utf16be
+            0x90: device_sql_long_utf16le
             _: device_sql_short_ascii(length_and_kind)
         -webide-parse-mode: eager
     -webide-representation: '{body.text}'
@@ -852,7 +896,7 @@ types:
     doc: |
       An ASCII-encoded string up to 127 bytes long.
     params:
-      - id: mangled_length
+      - id: length_and_kind
         type: u1
         doc: |
           Contains the actual length, incremented, doubled, and
@@ -860,45 +904,46 @@ types:
     seq:
       - id: text
         type: str
-        size: length
-        encoding: ascii
-        if: '(mangled_length % 2 > 0) and (length >= 0)'  # Skip invalid strings
+        size: length - 1
+        encoding: ASCII
         doc: |
           The content of the string.
     instances:
       length:
-        value: '((mangled_length - 1) / 2) - 1'
+        value: '(length_and_kind >> 1)'
         doc: |
-          The un-mangled length of the string, in bytes.
+          the length extracted of the entire device_sql_short_ascii type
         -webide-parse-mode: eager
 
   device_sql_long_ascii:
     doc: |
-      An ASCII-encoded string preceded by a two-byte length field.
+      An ASCII-encoded string preceded by a two-byte length field in a four-byte header.
     seq:
       - id: length
         type: u2
         doc: |
           Contains the length of the string in bytes.
+      - type: u1
       - id: text
         type: str
-        size: length
-        encoding: ascii
+        size: length - 4
+        encoding: ASCII
         doc: |
           The content of the string.
 
-  device_sql_long_utf16be:
+  device_sql_long_utf16le:
     doc: |
-      A UTF-16BE-encoded string preceded by a two-byte length field.
+      A UTF-16LE-encoded string preceded by a two-byte length field in a four-byte header.
     seq:
       - id: length
         type: u2
         doc: |
-          Contains the length of the string in bytes, including two trailing nulls.
+          Contains the length of the string in bytes, plus four trailing bytes that must be ignored.
+      - type: u1
       - id: text
         type: str
         size: length - 4
-        encoding: utf-16be
+        encoding: UTF-16LE
         doc: |
           The content of the string.
 
@@ -948,11 +993,15 @@ enums:
     10:
       id: unknown_10
     11:
-      id: unknown_11
+      id: history_playlists
       doc: |
-        The rows all seem to have history file names in them, such as "HISTORY 001".
+        Holds rows that assign IDs and give names to the history playlists
+        that have been captured by the player, such as "HISTORY 001".
     12:
-      id: unknown_12
+      id: history_entries
+      doc: |
+        Holds rows that enumerate the tracks found in history playlists
+        and the playlists they belong to.
     13:
       id: artwork
       doc: |
@@ -972,4 +1021,4 @@ enums:
     19:
       id: history
       doc: |
-        Holds rows listing tracks played in performance sessions.
+        Holds information to help rekordbox sync history playlists.

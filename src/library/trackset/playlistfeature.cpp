@@ -265,6 +265,9 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
             idsToBeUpdated.insert(playlistId);
         }
     }
+    // Update the playlists set to allow toggling bold correctly after
+    // tracks have been dropped on sidebar items
+    m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
     updateChildModel(idsToBeUpdated);
 }
 

@@ -125,23 +125,29 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         return {};
     }
 
+    // Note: test for individual modifiers, don't use e->modifiers() for composing
+    // the QKeySequence because on macOS arrow key events are sent with the Num
+    // modifier for some reason. This result in a key sequence for which there
+    // would be no match in our keyseq/control hash.
+    // See https://github.com/mixxxdj/mixxx/issues/13305
+    QString modseq;
+    if (e->modifiers() & Qt::ShiftModifier) {
+        modseq += "Shift+";
+    }
+    if (e->modifiers() & Qt::ControlModifier) {
+        modseq += "Ctrl+";
+    }
+    if (e->modifiers() & Qt::AltModifier) {
+        modseq += "Alt+";
+    }
+    if (e->modifiers() & Qt::MetaModifier) {
+        modseq += "Meta+";
+    }
+
+    const QString keyseq = QKeySequence(e->key()).toString();
+    const QKeySequence k = QKeySequence(modseq + keyseq);
+
     if (CmdlineArgs::Instance().getDeveloper()) {
-        QString modseq;
-        QKeySequence k;
-        if (e->modifiers() & Qt::ShiftModifier) {
-            modseq += "Shift+";
-        }
-        if (e->modifiers() & Qt::ControlModifier) {
-            modseq += "Ctrl+";
-        }
-        if (e->modifiers() & Qt::AltModifier) {
-            modseq += "Alt+";
-        }
-        if (e->modifiers() & Qt::MetaModifier) {
-            modseq += "Meta+";
-        }
-        QString keyseq = QKeySequence(e->key()).toString();
-        k = QKeySequence(modseq + keyseq);
         if (e->type() == QEvent::KeyPress) {
             qDebug() << "keyboard press: " << k.toString();
         } else if (e->type() == QEvent::KeyRelease) {
@@ -149,11 +155,7 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         }
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    return QKeySequence(e->modifiers() | e->key());
-#else
-    return QKeySequence(e->modifiers() + e->key());
-#endif
+    return k;
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {

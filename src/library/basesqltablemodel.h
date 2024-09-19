@@ -100,7 +100,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-  protected:
     QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
 
     bool hasPositionColumn() {

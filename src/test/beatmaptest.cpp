@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <memory.h>
 
 #include <QtDebug>
+#include <memory>
 
 #include "track/beats.h"
 #include "track/track.h"

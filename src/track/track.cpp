@@ -1136,7 +1136,7 @@ bool Track::importPendingBeatsWhileLocked() {
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     const auto pBeats =
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource());
+                    getLocation(), getType(), *m_record.getStreamInfoFromSource());
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
@@ -1283,7 +1283,9 @@ bool Track::importPendingCueInfosWhileLocked() {
 
     const QList<mixxx::CueInfo> cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
-                    getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
+                    getLocation(),
+                    getType(),
+                    m_record.getStreamInfoFromSource()->getSignalInfo());
     for (const auto& cueInfo : cueInfos) {
         CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
@@ -1487,7 +1489,7 @@ bool Track::exportSeratoMetadata() {
     }
 
     const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
-            getLocation(), streamInfo->getSignalInfo());
+            getLocation(), getType(), streamInfo->getSignalInfo());
     pSeratoTags->setCueInfos(cueInfos, timingOffset);
     pSeratoTags->setBeats(m_pBeats,
             streamInfo->getSignalInfo(),

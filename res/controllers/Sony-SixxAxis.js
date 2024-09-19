@@ -10,7 +10,8 @@ function SonySixxAxisController() {
     this.controller.activeDeck = 1;
 
     this.registerInputPackets = function() {
-        packet = new HIDPacket("control",[],49);
+        const packet = new HIDPacket("control", 0);
+        packet.length = 49;
 
         // Toggle buttons
         packet.addControl("hid","select",2,"B",0x1);
@@ -138,7 +139,7 @@ SonySixxAxis.registerCallbacks = function(id) {
         return;
     }
     if (controller==undefined) {
-        HIDDebug("Error registrering callbacks: controller is undefined");
+        HIDDebug("Error registering callbacks: controller is undefined");
         return;
     }
 

@@ -77,7 +77,7 @@ const KeepDeckSelectDimmed = true;
 // 'true' will use "sync+master", 'false' will use "shift+sync". Default: false
 const UseKeylockOnMaster = false;
 
-// Define whether the grid button would blink when the playback is going over a detcted beat. Can help to adjust beat grid.
+// Define whether the grid button would blink when the playback is going over a detected beat. Can help to adjust beat grid.
 // Default: false
 const GridButtonBlinkOverBeat = false;
 
@@ -105,7 +105,7 @@ const BeatLoopRolls = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8];
 // Default: true
 const AddLoopHalveAndDoubleOnBeatloopRollTab = true;
 
-// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
+// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the scratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
 const BaseRevolutionsPerMinute = 33 + 1/3;
