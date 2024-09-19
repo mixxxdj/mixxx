@@ -27,15 +27,6 @@ public:
             float* pMidGain,
             float* highGain);
 
-    static std::span<float, 256> unscaleTable();
-    inline float unscale(unsigned char value) {
-        // The all and hi components of the waveform data are scaled with pow(value, 2.0f * 0.316f)
-        // (see analyzerwaveform.h). This function can be used to undo that scaling,
-        // but apparently it is intentional.
-        static const auto table = unscaleTable();
-        return table[value];
-    }
-
   protected:
     ControlProxy* m_pEQEnabled;
     ControlProxy* m_pLowFilterControlObject;
