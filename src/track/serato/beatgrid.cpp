@@ -441,7 +441,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
                 pBeats->getLastMarkerBpm().value();
         const auto previousBeatLengthFrames =
                 (pBeats->getLastMarkerPosition() - marker.position()) /
-                marker.beatsTillNextMarker();
+                marker.beatsTillNextMarker(pBeats->getLastMarkerPosition());
         // If the following condition holds true, the marker only exists for backwards compatibility with the legacy beatgrid format.
         //
         // TODO: Remove this when the protobuf format is changed.
@@ -457,18 +457,23 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
     }
 
     nonTerminalMarkers.reserve(static_cast<int>(markers.size()));
-    std::transform(markers.cbegin(),
-            markers.cend(),
-            std::back_inserter(nonTerminalMarkers),
-            [&signalInfo, timingOffsetSecs](const BeatMarker& marker)
-                    -> SeratoBeatGridNonTerminalMarkerPointer {
-                const float positionSecs =
-                        static_cast<float>(signalInfo.frames2secsFractional(
-                                                   marker.position().value()) -
-                                timingOffsetSecs);
-                return std::make_shared<SeratoBeatGridNonTerminalMarker>(
-                        positionSecs, marker.beatsTillNextMarker());
-            });
+
+    auto pMarker = !markers.empty() ? &markers.front() : nullptr;
+    for (std::size_t i = 1; i <= markers.size(); i++) {
+        auto pNextMarker = i < markers.size() ? &markers[i] : nullptr;
+
+        const float positionSecs =
+                static_cast<float>(signalInfo.frames2secsFractional(
+                                           pMarker->position().value()) -
+                        timingOffsetSecs);
+
+        const auto nextPosition = pNextMarker ? pNextMarker->position()
+                                              : pBeats->getLastMarkerPosition();
+
+        nonTerminalMarkers.push_back(std::make_shared<SeratoBeatGridNonTerminalMarker>(
+                positionSecs, pMarker->beatsTillNextMarker(nextPosition)));
+        pMarker = pNextMarker;
+    }
 
     const float positionSecs =
             static_cast<float>(signalInfo.frames2secsFractional(
