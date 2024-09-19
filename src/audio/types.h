@@ -244,6 +244,50 @@ class Bitrate {
 
 QDebug operator<<(QDebug dbg, Bitrate arg);
 
+// The BeatsPerBar is measured in beats and provides information
+// about the number expected within a single bar or phrase.
+class BeatsPerBar {
+  public:
+    using value_t = std::uint32_t;
+
+  private:
+    // The default value is invalid and indicates a missing or unknown value.
+    static constexpr value_t kValueDefault = 4;
+
+  public:
+    static constexpr value_t kValueMin = 2;  // lower bound (inclusive)
+    static constexpr value_t kValueMax = 32; // upper bound (inclusive)
+    static constexpr const char* unit() {
+        return "beats";
+    }
+
+    explicit constexpr BeatsPerBar(
+            value_t value = kValueDefault)
+            : m_value(value) {
+    }
+
+    constexpr bool isValid() const {
+        return m_value >= kValueMin && m_value <= kValueMax;
+    }
+
+    constexpr value_t value() const {
+        return m_value;
+    }
+    /*implicit*/ constexpr operator value_t() const {
+        return value();
+    }
+
+    BeatsPerBar operator+(std::int32_t increment) const {
+        DEBUG_ASSERT(isValid());
+        return BeatsPerBar(m_value + increment);
+    }
+
+  private:
+    value_t m_value;
+};
+
+QDebug operator<<(QDebug dbg, BeatsPerBar arg);
+
 } // namespace audio
 
 } // namespace mixxx
@@ -262,3 +306,6 @@ Q_DECLARE_METATYPE(mixxx::audio::SampleRate)
 
 Q_DECLARE_TYPEINFO(mixxx::audio::Bitrate, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::Bitrate)
+
+Q_DECLARE_TYPEINFO(mixxx::audio::BeatsPerBar, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::BeatsPerBar)

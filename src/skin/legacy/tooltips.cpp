@@ -427,13 +427,42 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tempoTapButton)
             << QString("%1: %2").arg(rightClick, bpmTapButton);
 
+    add("beats_set_change_marker")
+            << tr("Set Beat Change Marker")
+            << tr("Set a marker at the current play position, that indicates a "
+                  "bar or tempo change.");
+
+    add("beats_remove_change_marker")
+            << tr("Remove Beat Change Marker")
+            << tr("Remove the beat change marker at the current play position.");
+
+    add("beats_increase_bar_length")
+            << tr("Adjust the bar length")
+            << tr("Increment bar length by one beat, between adjacent markers.");
+
+    add("beats_decrease_bar_length")
+            << tr("Adjust the bar length")
+            << tr("Decrement the bar length by one beat between adjacent markers.");
+
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
-            << tr("When tapped, adjusts the average BPM down by a small amount.");
+            << tr("When tapped, decrease the BPM between adjacent markers around the "
+                  "current play position by a small amount.");
+
+    add("beats_adjust_much_slower")
+            << tr("Adjust BPM Down")
+            << tr("When tapped, decrease the BPM of the region around the "
+                  "current play position by a large amount.");
 
     add("beats_adjust_faster")
             << tr("Adjust BPM Up")
-            << tr("When tapped, adjusts the average BPM up by a small amount.");
+            << tr("When tapped, increases the BPM of the region around the "
+                  "current play position by a small amount.");
+
+    add("beats_adjust_much_faster")
+            << tr("Adjust BPM Up")
+            << tr("When tapped, increases the BPM of the region around the "
+                  "current play position by a large amount.");
 
     add("beats_translate_earlier")
             << tr("Adjust Beats Earlier")

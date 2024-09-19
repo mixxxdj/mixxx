@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iterator>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -20,22 +21,47 @@ struct BeatGridV1Data {
 };
 
 constexpr double kEpsilon = 0.01;
+constexpr mixxx::audio::BeatsPerBar kDefaultBeatsPerBar = mixxx::audio::BeatsPerBar(4);
+
+// The amount that `Beats::tryAdjustTempo()` changes the last marker's BPM by.
+constexpr double kBpmAdjustStep = 0.01;
+constexpr double kBpmLargeAdjustModifier = 10;
+
+int calculateBeatsTillNextMarker(const mixxx::Beats::ConstIterator& it,
+        mixxx::audio::FramePos nextMarkerPosition) {
+    const double numBeatsDouble = std::fabs(nextMarkerPosition - *it) / it.beatLengthFrames();
+    const int numBeatsInt = static_cast<int>(std::round(numBeatsDouble));
+
+    return numBeatsInt;
+}
+
+bool isBeatMarkerLessThanFramePos(const mixxx::BeatMarker& marker,
+        const mixxx::audio::FramePos& position) {
+    return marker.position() < position;
+}
+
+bool isFramePosLessThanBeatMarker(const mixxx::audio::FramePos& position,
+        const mixxx::BeatMarker& marker) {
+    return position < marker.position();
+}
 
 } // namespace
 
 namespace mixxx {
 
+int Beats::ConstIterator::beatsPerBar() const {
+    if (m_it == m_beats->m_markers.cend()) {
+        return m_beats->lastBeatsPerBar();
+    }
+
+    return m_it->beatsPerBar();
+}
+
 mixxx::audio::FrameDiff_t Beats::ConstIterator::beatLengthFrames() const {
     if (m_it == m_beats->m_markers.cend()) {
         return m_beats->lastBeatLengthFrames();
     }
-
-    const auto nextMarker = std::next(m_it);
-    const mixxx::audio::FramePos nextMarkerPosition =
-            (nextMarker != m_beats->m_markers.cend())
-            ? nextMarker->position()
-            : m_beats->m_lastMarkerPosition;
-    return (nextMarkerPosition - m_it->position()) / m_it->beatsTillNextMarker();
+    return m_it->beatsLength();
 }
 
 Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::difference_type n) {
@@ -77,8 +103,17 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
     }
 
     m_beatOffset += n;
-    while (m_it != m_beats->m_markers.cend() && m_beatOffset >= m_it->beatsTillNextMarker()) {
-        m_beatOffset -= m_it->beatsTillNextMarker();
+    while (m_it != m_beats->m_markers.cend()) {
+        const auto nextMarker = std::next(m_it);
+        const mixxx::audio::FramePos nextMarkerPosition =
+                (nextMarker != m_beats->m_markers.cend())
+                ? nextMarker->position()
+                : m_beats->m_lastMarkerPosition;
+        const auto beatsTillNextMarker = m_it->upperBoundBeatsTillNextMarker(nextMarkerPosition);
+        if (m_beatOffset < beatsTillNextMarker) {
+            break;
+        }
+        m_beatOffset -= beatsTillNextMarker;
         m_it++;
     }
     updateValue();
@@ -126,8 +161,12 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
 
     m_beatOffset -= n;
     while (m_it != m_beats->m_markers.cbegin() && m_beatOffset < 0) {
+        const mixxx::audio::FramePos currentMarkerPosition =
+                (m_it != m_beats->m_markers.cend())
+                ? m_it->position()
+                : m_beats->m_lastMarkerPosition;
         m_it--;
-        m_beatOffset += m_it->beatsTillNextMarker();
+        m_beatOffset += m_it->upperBoundBeatsTillNextMarker(currentMarkerPosition);
     }
     updateValue();
     DEBUG_ASSERT(m_value < origValue);
@@ -148,7 +187,12 @@ Beats::ConstIterator::difference_type Beats::ConstIterator::operator-(
     auto it = m_it;
     int result = -m_beatOffset + other.m_beatOffset;
     while (it != m_beats->m_markers.cend() && it != other.m_it) {
-        result += it->beatsTillNextMarker();
+        const auto nextMarker = std::next(it);
+        const mixxx::audio::FramePos nextMarkerPosition =
+                (nextMarker != m_beats->m_markers.cend())
+                ? nextMarker->position()
+                : m_beats->m_lastMarkerPosition;
+        result += it->upperBoundBeatsTillNextMarker(nextMarkerPosition);
         it++;
     }
     DEBUG_ASSERT(it == other.m_it);
@@ -156,10 +200,9 @@ Beats::ConstIterator::difference_type Beats::ConstIterator::operator-(
 }
 
 void Beats::ConstIterator::updateValue() {
-    const auto position = (m_it != m_beats->m_markers.cend())
-            ? m_it->position()
-            : m_beats->m_lastMarkerPosition;
-    m_value = position + m_beatOffset * beatLengthFrames();
+    m_value = (m_it != m_beats->m_markers.cend())
+            ? m_it->position() + m_beatOffset * m_it->beatsLength()
+            : m_beats->m_lastMarkerPosition + m_beatOffset * m_beats->lastBeatLengthFrames();
 }
 
 // static
@@ -172,7 +215,23 @@ mixxx::BeatsPointer Beats::fromConstTempo(
             lastMarkerPosition.isValid() && lastMarkerBpm.isValid()) {
         return nullptr;
     }
-    return BeatsPointer(new Beats({}, lastMarkerPosition, lastMarkerBpm, sampleRate, subVersion));
+    return BeatsPointer(new Beats({},
+            lastMarkerPosition,
+            lastMarkerBpm,
+            kDefaultBeatsPerBar,
+            sampleRate,
+            subVersion));
+}
+
+bool isDoubleBeat(const QVector<audio::FramePos>& beatPositions, int beatIdx) {
+    if (beatIdx <= 0 || beatIdx > beatPositions.size()) {
+        return false; // failed bounds check
+    }
+    return beatPositions[beatIdx - 1] == beatPositions[beatIdx];
+}
+
+double effectiveHundredthBpm(double beatLength, mixxx::audio::SampleRate sampleRate) {
+    return std::round(60 * sampleRate / beatLength * 100);
 }
 
 // static
@@ -180,6 +239,18 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
         mixxx::audio::SampleRate sampleRate,
         const QVector<audio::FramePos>& beatPositions,
         const QString& subVersion) {
+    // The beat map contains the list of beats contains between the first and
+    // the last beat with custom property (offset, BPM bar length) For example,
+    // you may have the following as input:
+    //
+    // Track: |--------------------------------------------------------|
+    //        |   |   |   |   |   ||  |  |  ||  |  |  ||   |   |   |   ||
+    // This is the result in markers:
+    // Track: |--------------------------------------------------------|
+    //                            |                   |
+    //                        Marker with            Marker with
+    //                       faster BPM and         same BPM than track
+    //                       bar count of 3      start and bar count of 4
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid() && beatPositions.size() >= 2) {
         return nullptr;
     }
@@ -189,31 +260,62 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
     VERIFY_OR_DEBUG_ASSERT(markerPosition.isValid()) {
         return nullptr;
     }
-    int beatsTillNextMarker = 0;
 
     auto previousPosition = markerPosition;
-    audio::FrameDiff_t previousBeatLengthFrames = beatPositions[1] - previousPosition;
-    for (int i = 1; i < beatPositions.size(); i++) {
+    audio::FrameDiff_t previousBeatLengthFrames = 0;
+    mixxx::audio::BeatsPerBar beatsPerBar = kDefaultBeatsPerBar;
+    bool isBeatCounting = isDoubleBeat(beatPositions, 1);
+    for (int i = isBeatCounting ? 2 : 1; i < beatPositions.size(); i++) {
         VERIFY_OR_DEBUG_ASSERT(beatPositions[i].isValid() &&
-                beatPositions[i] > beatPositions[i - 1]) {
+                beatPositions[i] >= beatPositions[i - 1]) {
             return nullptr;
         }
         auto position = beatPositions[i];
-        audio::FrameDiff_t beatLengthFrames = position - previousPosition;
+        // If the current beat is a "closing" double beat
+        if (isDoubleBeat(beatPositions, i) && isBeatCounting) {
+            isBeatCounting = false;
+            beatsPerBar = static_cast<mixxx::audio::BeatsPerBar>(
+                    std::lround((std::floor(position - markerPosition) /
+                            previousBeatLengthFrames)));
+            if (!beatsPerBar.isValid()) {
+                qWarning() << "Invalid bar definition found in the BeatMap:"
+                           << beatsPerBar << "- Ignoring";
+                beatsPerBar = kDefaultBeatsPerBar;
+            }
+            continue;
+        }
+        audio::FrameDiff_t beatLengthFrames = position - beatPositions[i - 1];
 
-        if (std::fabs(previousBeatLengthFrames - beatLengthFrames) < 1.0) {
+        if (previousBeatLengthFrames == 0) {
+            // If we are just starting over a new beat grid, we need to infer
+            // the beat length from then
+            DEBUG_ASSERT(beatLengthFrames);
+            previousBeatLengthFrames = beatLengthFrames;
+        }
+        if (
+                // If the BPM difference is less than 0.01 BPM...
+                std::fabs(effectiveHundredthBpm(
+                                  previousBeatLengthFrames, sampleRate) -
+                        effectiveHundredthBpm(beatLengthFrames, sampleRate)) <
+                        1.0 &&
+                // ...and we are not at an "opening" double beat
+                (isBeatCounting || !isDoubleBeat(beatPositions, i))) {
+            //.. we assume the current beat is part of the same marker
             previousPosition = position;
-            beatsTillNextMarker++;
             continue;
         }
 
         DEBUG_ASSERT(markerPosition.isValid());
-        DEBUG_ASSERT(beatsTillNextMarker > 0);
-        markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(), beatsTillNextMarker));
+        DEBUG_ASSERT(previousBeatLengthFrames > 0);
+        markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(),
+                previousBeatLengthFrames,
+                beatsPerBar));
+        isBeatCounting = isDoubleBeat(beatPositions, i);
         markerPosition = previousPosition;
-        previousBeatLengthFrames = beatLengthFrames;
-        beatsTillNextMarker = 1;
         previousPosition = position;
+        if (i < beatPositions.size() - 1) {
+            previousBeatLengthFrames = 0;
+        }
     }
 
     // Special case: Because we want to be able to serialize to the old beatmap
@@ -221,11 +323,28 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
     // can not reconstruct the last beats in the beatmap because we don't know
     // the length of the track.
     //
-    // This only applies if the beat positions cannot be represented by a (constant)
-    // beatgrid and require a beatmap instead. In that case, we have to insert
-    // an additional marker.
-    if (!markers.empty()) {
-        markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(), beatsTillNextMarker));
+    // This only applies if the beat positions cannot be represented by a
+    // (constant) beatgrid and require a beatmap instead. In that case, we have
+    // to insert an additional marker.
+    //
+    // If the last beat is a double beat, this means that extra beats have been
+    // generated in the beatmap to help storing the bar length of the last
+    // marker and thus we don't need to store this position as this will
+    // automatically be generated at serialisation, and the opening double beat,
+    // where the relevant marker is has already been store in the main loop
+    // above Here is an illustration of the that usecase
+    //
+    //                             track end
+    //    ...--------------------------|
+    //        |   |   |   |   |   ||   |   |   ||
+    //       beat               Marker      Double beat
+    // from marker n-1        with dbeat     end marker
+    //                            |
+    //     last relevant marker --|
+    if (!markers.empty() && !isDoubleBeat(beatPositions, beatPositions.size() - 1)) {
+        markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(),
+                previousBeatLengthFrames,
+                beatsPerBar));
         markerPosition = beatPositions.back();
     }
 
@@ -235,6 +354,7 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
     return BeatsPointer(new Beats(std::move(markers),
             markerPosition.toLowerFrameBoundary(),
             bpm,
+            beatsPerBar,
             sampleRate,
             subVersion));
 }
@@ -244,11 +364,13 @@ mixxx::BeatsPointer Beats::fromBeatMarkers(
         audio::SampleRate sampleRate,
         const std::vector<BeatMarker>& markers,
         const audio::FramePos lastMarkerPosition,
+        int lastMarkerBeatsPerBar,
         const Bpm lastMarkerBpm,
         const QString& subVersion) {
     return BeatsPointer(new Beats(markers,
             lastMarkerPosition,
             lastMarkerBpm,
+            lastMarkerBeatsPerBar,
             sampleRate,
             subVersion));
 }
@@ -366,13 +488,34 @@ QByteArray Beats::toBeatGridByteArray() const {
 
 QByteArray Beats::toBeatMapByteArray() const {
     mixxx::track::io::BeatMap map;
-    for (auto it = cfirstmarker(); it != clastmarker() + 1; it++) {
+    mixxx::audio::FramePos closingDoubleBeat;
+    int currentBeatsPerBar = clastmarker().beatsPerBar();
+    mixxx::Beats::ConstIterator it = cfirstmarker();
+    for (; it < clastmarker() + 1 || closingDoubleBeat.isValid(); it++) {
         const auto position = (*it).toLowerFrameBoundary();
+        // qDebug() << "Beat at" << position << "with bar of" << it.beatsPerBar();
         track::io::Beat beat;
         beat.set_frame_position(static_cast<google::protobuf::int32>(position.value()));
         map.add_beat()->CopyFrom(beat);
+        if (it.isMarker() && it.beatsPerBar() != currentBeatsPerBar) {
+            // This beat is a marker and the beat per bar is changing, add a double beat to mark it
+            currentBeatsPerBar = it.beatsPerBar();
+            closingDoubleBeat =
+                    (position + (it.beatLengthFrames() * currentBeatsPerBar))
+                            .toLowerFrameBoundary();
+        } else if (closingDoubleBeat.isValid() && position >= closingDoubleBeat) {
+            // Closing double beat should be strictly equal to the current beat
+            // position, otherwise something is going wrong.
+            qDebug() << "Closing double beat for bar of size"
+                     << currentBeatsPerBar << "at" << closingDoubleBeat;
+            DEBUG_ASSERT(position == closingDoubleBeat);
+            closingDoubleBeat = {};
+        } else {
+            // Otherwise, we are going, no need to duplicate the current beat
+            continue;
+        }
+        map.add_beat()->CopyFrom(beat);
     }
-
     std::string output;
     map.SerializeToString(&output);
     return QByteArray(output.data(), static_cast<int>(output.length()));
@@ -467,8 +610,27 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     } else {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
-    DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
+    // Due to precision error, it happens that `it` and `position` are equal,
+    // but `it` is slightly behind `position` so we use epsilon to prevent false alarm
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > position ||
+            std::fabs(*it - position) < kEpsilon);
     DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
+    return it;
+}
+
+Beats::ConstIterator Beats::iteratorClosestTo(audio::FramePos position) const {
+    auto it = iteratorFrom(position);
+    if (it == cbegin()) {
+        return it;
+    }
+
+    const auto deltaFrames = *it - position;
+    it--;
+    if ((position - *it) < deltaFrames) {
+        return it;
+    }
+
+    it++;
     return it;
 }
 
@@ -555,13 +717,14 @@ mixxx::Bpm Beats::getBpmInRange(audio::FramePos startPosition, audio::FramePos e
         }
 
         audio::FrameDiff_t sectionLengthFrames = nextMarkerPosition - markerIt->position();
-        const audio::FrameDiff_t beatLengthFrames =
-                sectionLengthFrames / markerIt->beatsTillNextMarker();
+        // const audio::FrameDiff_t beatLengthFrames =
+        //         sectionLengthFrames * markerIt->beatsLength();
 
-        // To mitigaste rounding issues, we save (100 * bpm) as integer, so
+        // To mitigate rounding issues, we save (100 * bpm) as integer, so
         // that we can later return the BPM with two digits after the decimal
         // point. This suffices for our use case.
-        const auto key = static_cast<int>(std::round(100 * 60.0 * m_sampleRate / beatLengthFrames));
+        const auto key = static_cast<int>(std::round(
+                100 * 60.0 * m_sampleRate / markerIt->beatsLength()));
 
         if (endPosition > markerIt->position() && endPosition < nextMarkerPosition) {
             sectionLengthFrames -= nextMarkerPosition - endPosition;
@@ -615,21 +778,56 @@ mixxx::Bpm Beats::getBpmAroundPosition(audio::FramePos position, int n) const {
     return BeatUtils::calculateAverageBpm(2 * n, m_sampleRate, startPosition, endPosition);
 }
 
-std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames) const {
+std::optional<BeatsPointer> Beats::tryTranslate(
+        audio::FrameDiff_t offsetFrames, audio::FramePos currentFrame) const {
     std::vector<BeatMarker> markers;
-    std::transform(m_markers.cbegin(),
-            m_markers.cend(),
-            std::back_inserter(markers),
-            [offsetFrames](const BeatMarker& marker) -> BeatMarker {
-                const auto translatedPosition = marker.position() + offsetFrames;
-                return BeatMarker(translatedPosition.toLowerFrameBoundary(),
-                        marker.beatsTillNextMarker());
-            });
+    auto lastMarkerPosition = m_lastMarkerPosition;
 
-    const auto lastMarkerPosition = m_lastMarkerPosition + offsetFrames;
+    // If there is no valid current frame, it means we are attempting to
+    // translate the whole grid, including all markers on the track
+    if (!currentFrame.isValid()) {
+        std::transform(m_markers.cbegin(),
+                m_markers.cend(),
+                std::back_inserter(markers),
+                [offsetFrames](const BeatMarker& marker) -> BeatMarker {
+                    const auto translatedPosition = marker.position() + offsetFrames;
+                    return BeatMarker(translatedPosition.toLowerFrameBoundary(),
+                            marker.beatsLength(),
+                            marker.beatsPerBar());
+                });
+        lastMarkerPosition += offsetFrames;
+    } else if (m_markers.empty() || currentFrame > lastMarkerPosition) {
+        lastMarkerPosition += offsetFrames;
+    } else {
+        // Otherwise, this is a localise translation and we need to only
+        // translate the marker directly before the current frame...
+        markers = m_markers;
+        auto markerIt = std::lower_bound(markers.begin(),
+                markers.end(),
+                currentFrame,
+                isBeatMarkerLessThanFramePos);
+
+        if (markerIt != markers.begin()) {
+            // except if the current frame is before the current frame. In this
+            // case, since the grid position and BPM is inferred from that first
+            // marker, we translate this one, otherwise we need to rewind to the
+            // previous marker as markerIt points to the marker directly after
+            // our position
+            markerIt--;
+        }
+        const auto marker = *markerIt;
+        const auto translatedPosition = marker.position() + offsetFrames;
+        markerIt = markers.erase(markerIt);
+        markerIt = markers.emplace(markerIt,
+                translatedPosition.toLowerFrameBoundary(),
+                marker.beatsLength(),
+                marker.beatsPerBar());
+    }
+
     return BeatsPointer(new Beats(markers,
             lastMarkerPosition.toLowerFrameBoundary(),
             m_lastMarkerBpm,
+            m_lastBeatsPerBar,
             m_sampleRate,
             m_subVersion));
 }
@@ -663,16 +861,15 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
     std::vector<BeatMarker> markers;
     markers.reserve(m_markers.size());
     for (const auto& marker : std::as_const(m_markers)) {
-        const double beatsTillNextMarkerFractional = marker.beatsTillNextMarker() * scaleFactor;
-        const int beatsTillNextMarker = static_cast<int>(std::trunc(beatsTillNextMarkerFractional));
-        if (beatsTillNextMarkerFractional != beatsTillNextMarker) {
-            qWarning() << "Marker with" << marker.beatsTillNextMarker()
-                       << "beats till next marker cannot be scaled by"
+        const double beatsLength = marker.beatsLength() / scaleFactor;
+        if (beatsLength <= 0) {
+            qWarning() << "Marker with a beat length of" << marker.beatsLength()
+                       << "cannot be scaled by"
                        << scaleFactor;
             return std::nullopt;
         }
 
-        markers.push_back({marker.position(), beatsTillNextMarker});
+        markers.push_back({marker.position(), beatsLength, marker.beatsPerBar()});
     }
 
     Bpm lastMarkerBpm = m_lastMarkerBpm * scaleFactor;
@@ -680,13 +877,243 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
     return BeatsPointer(new Beats(markers,
             m_lastMarkerPosition,
             lastMarkerBpm,
+            m_lastBeatsPerBar,
             m_sampleRate,
             m_subVersion));
 }
 
+std::optional<BeatsPointer> Beats::tryAdjustTempo(
+        audio::FramePos position, TempoAdjustment adjustment) const {
+    auto markers = m_markers;
+
+    // Retrieve the Beat Marker before the current position.
+    //
+    // Hence, we first get the marker *after* the position, then decrement the
+    // iterator.
+    // If there is no marker before the current position, the marker after the
+    // position can be used because the beats before the first marker are
+    // interpolated using the same beat length as the beats after the first
+    // marker.
+    auto markerIt = std::upper_bound(markers.begin(),
+            markers.end(),
+            position,
+            isFramePosLessThanBeatMarker);
+    if (markerIt != markers.begin() && position < m_lastMarkerPosition) {
+        markerIt--;
+    }
+
+    // At this point, `markerIt` points to the beat marker that we need to
+    // modify (or `cend()`, which means that we need to modify the BPM of the
+    // last marker).
+    Bpm lastMarkerBpm = m_lastMarkerBpm;
+    double adjustmentFactor = static_cast<int>(adjustment) & 0b100 ? kBpmLargeAdjustModifier : 1;
+    adjustment = static_cast<TempoAdjustment>(static_cast<int>(adjustment) & 0b11);
+    if (markerIt == markers.end()) {
+        lastMarkerBpm +=
+                ((adjustment == TempoAdjustment::Faster) ? kBpmAdjustStep
+                                                         : -kBpmAdjustStep) *
+                adjustmentFactor;
+        if (!lastMarkerBpm.isValid()) {
+            qWarning() << "Beats: Tempo adjustment would result in invalid Bpm!";
+            return std::nullopt;
+        }
+    } else {
+        const auto marker = *markerIt;
+        double currentMarkerBpm = (60.0 * m_sampleRate) / marker.beatsLength();
+        currentMarkerBpm += ((adjustment == TempoAdjustment::Faster)
+                                            ? kBpmAdjustStep
+                                            : -kBpmAdjustStep) *
+                adjustmentFactor;
+        const double adjustedBeatLength = (60.0 * m_sampleRate) / (currentMarkerBpm);
+
+        if (adjustedBeatLength <= 0) {
+            qWarning() << "Beats: Tempo adjustment would result in a marker "
+                          "with less than the minimum beats in one bar!";
+            return std::nullopt;
+        }
+
+        markerIt = markers.erase(markerIt);
+        markerIt = markers.emplace(markerIt,
+                marker.position(),
+                adjustedBeatLength,
+                marker.beatsPerBar());
+    }
+
+    return fromBeatMarkers(m_sampleRate,
+            std::move(markers),
+            m_lastMarkerPosition,
+            m_lastBeatsPerBar,
+            lastMarkerBpm);
+}
+
+std::optional<BeatsPointer> Beats::trySetMarker(audio::FramePos position) const {
+    auto markers = m_markers;
+    auto markerIt = std::lower_bound(markers.begin(),
+            markers.end(),
+            position,
+            isBeatMarkerLessThanFramePos);
+
+    DEBUG_ASSERT(!m_lastMarkerPosition.isFractional());
+    auto lastMarkerPosition = m_lastMarkerPosition;
+    auto lastMarkerBeatsPerBar = m_lastBeatsPerBar;
+    if (markerIt == markers.end()) {
+        const int numBeats = calculateBeatsTillNextMarker(
+                iteratorClosestTo(position), lastMarkerPosition);
+        if (numBeats == 0) {
+            // The new marker would be too close to the existing marker, so we
+            // just move the existing marker instead.
+            lastMarkerPosition = position.toLowerFrameBoundary();
+        } else if (lastMarkerPosition < position) {
+            // We are behind the last marker. We move the current last
+            // marker into the list of marker and use the current position
+            // as the new last marker.
+            markers.push_back(mixxx::BeatMarker(lastMarkerPosition,
+                    lastBeatLengthFrames(),
+                    lastMarkerBeatsPerBar));
+            lastMarkerPosition = position.toLowerFrameBoundary();
+        } else {
+            // We are between the last beat marker of additional list and the single last marker,
+            // so we can just append a new beat marker to the additional list.
+            markers.push_back(mixxx::BeatMarker(position.toLowerFrameBoundary(),
+                    lastBeatLengthFrames(),
+                    lastMarkerBeatsPerBar));
+        }
+    } else if (markerIt == markers.begin()) {
+        // We are in front of the first regular beat marker, so we can just
+        // prepend a new beat marker using the same BPM (beat length).
+        const auto marker = *markerIt;
+        markers.emplace(markerIt,
+                position.toLowerFrameBoundary(),
+                marker.beatsLength(),
+                marker.beatsPerBar());
+    } else {
+        // We found the beat marker right after the position we want to create a
+        // marker, so rewind the iterator to find the previous marker and use
+        // the same BPM (beat length)
+        if (markerIt->position() == position) {
+            // TODO if `[BPM],stretch_on_marker_duplicate`, call tryStretchBeatGrid
+            return std::nullopt;
+        }
+        markerIt--;
+        const auto previousMarker = *markerIt;
+        markers.emplace(markerIt + 1,
+                position.toLowerFrameBoundary(),
+                previousMarker.beatsLength(),
+                previousMarker.beatsPerBar());
+    }
+
+    return fromBeatMarkers(m_sampleRate,
+            std::move(markers),
+            lastMarkerPosition,
+            m_lastBeatsPerBar,
+            m_lastMarkerBpm);
+}
+
+std::optional<BeatsPointer> Beats::tryAdjustBeatsPerBar(
+        audio::FramePos position, std::int32_t adjustment) const {
+    auto markers = m_markers;
+
+    auto markerIt = std::upper_bound(markers.begin(),
+            markers.end(),
+            position,
+            isFramePosLessThanBeatMarker);
+
+    if (markerIt != markers.begin() && position < m_lastMarkerPosition) {
+        markerIt--;
+    }
+
+    int lastBeatsPerBar = m_lastBeatsPerBar;
+
+    if (markerIt == markers.end()) {
+        lastBeatsPerBar += adjustment;
+
+        if (lastBeatsPerBar < 2 || lastBeatsPerBar > 32) {
+            qWarning() << "Beats: beat per bar cannot be less than 2 and more than 32!";
+            return std::nullopt;
+        }
+    } else {
+        const auto marker = *markerIt;
+        const auto adjustedBeatsPerBar = marker.beatsPerBar() + adjustment;
+
+        if (!adjustedBeatsPerBar.isValid()) {
+            qWarning() << "Beats: beat per bar cannot be less than 2 and more than 32!";
+            return std::nullopt;
+        }
+
+        markerIt = markers.erase(markerIt);
+        markerIt = markers.emplace(markerIt,
+                marker.position(),
+                marker.beatsLength(),
+                adjustedBeatsPerBar);
+    }
+
+    return fromBeatMarkers(m_sampleRate,
+            std::move(markers),
+            m_lastMarkerPosition,
+            lastBeatsPerBar,
+            m_lastMarkerBpm);
+}
+
+std::optional<BeatsPointer> Beats::tryStretchBeatGrid(
+        audio::FramePos position) const {
+    Q_UNUSED(position);
+    // TODO implement beat stretching
+    return std::nullopt;
+}
+
+std::optional<BeatsPointer> Beats::tryRemoveMarker(audio::FramePos position) const {
+    if (m_markers.empty()) {
+        // There are no markers beside the mandatory last marker, so there is
+        // nothing to remove.
+        return std::nullopt;
+    }
+
+    auto it = iteratorClosestTo(position);
+    if (!it.isMarker()) {
+        // The position is not near a marker, don't remove anything.
+        return std::nullopt;
+    }
+    DEBUG_ASSERT(it != cbegin());
+
+    auto lastMarkerBpm = m_lastMarkerBpm;
+    auto lastMarkerPosition = m_lastMarkerPosition;
+    auto lastMarkerBeatsPerBar = m_lastBeatsPerBar;
+    auto markers = m_markers;
+    if (it == clastmarker()) {
+        // We are near the last marker. It's not possible to actually remove
+        // it, so we remove the marker *before* the last marker instead, and
+        // use it's BPM and position values for the last marker. The end result
+        // is the same.
+        it--;
+        lastMarkerBpm = mixxx::Bpm(60.0 * m_sampleRate / it.beatLengthFrames());
+        lastMarkerPosition = markers.back().position();
+        lastMarkerBeatsPerBar = markers.back().beatsPerBar();
+        markers.pop_back();
+    } else {
+        auto markerIt = std::lower_bound(markers.begin(),
+                markers.end(),
+                findClosestBeat(position),
+                isBeatMarkerLessThanFramePos);
+        // At this point we already checked that the search position is on a
+        // marker and that it is not at the last marker. This means that
+        // `markerIt` should point to a marker in any case.
+        VERIFY_OR_DEBUG_ASSERT(markerIt != markers.end()) {
+            return std::nullopt;
+        }
+
+        markerIt = markers.erase(markerIt);
+    }
+
+    return fromBeatMarkers(m_sampleRate,
+            std::move(markers),
+            lastMarkerPosition,
+            lastMarkerBeatsPerBar,
+            lastMarkerBpm);
+}
+
 std::optional<BeatsPointer> Beats::trySetBpm(mixxx::Bpm bpm) const {
     const auto it = cfirstmarker();
-    return BeatsPointer(new Beats({}, *it, bpm, m_sampleRate, m_subVersion));
+    return BeatsPointer(new Beats({}, *it, bpm, m_lastBeatsPerBar, m_sampleRate, m_subVersion));
 }
 
 bool Beats::isValid() const {
@@ -695,7 +1122,7 @@ bool Beats::isValid() const {
     }
 
     for (const BeatMarker& marker : m_markers) {
-        if (!marker.position().isValid() || marker.beatsTillNextMarker() <= 0) {
+        if (!marker.position().isValid() || marker.beatsLength() <= 0) {
             return false;
         }
     }
