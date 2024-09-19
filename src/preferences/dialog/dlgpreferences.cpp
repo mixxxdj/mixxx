@@ -34,9 +34,9 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 #endif // __BROADCAST__
 
-#include "preferences/dialog/dlgprefosc.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
+#include "preferences/dialog/dlgprefosc.h"
 #include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
 

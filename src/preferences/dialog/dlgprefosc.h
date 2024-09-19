@@ -2,7 +2,7 @@
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefoscdlg.h"
-//#include "preferences/dialog/dlgprefoscdlg.ui"
+// #include "preferences/dialog/dlgprefoscdlg.ui"
 #include "preferences/usersettings.h"
 
 class QWidget;

@@ -21,7 +21,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 // EVE OSC
-//#include "osc/oscfunctions.h"
+// #include "osc/oscfunctions.h"
 // EVE OSC
 
 namespace {
@@ -29,19 +29,12 @@ namespace {
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
-<<<<<<< HEAD
-#ifdef __STEM__
-constexpr int kMaxSupportedStems = 4;
-#endif
-=======
->>>>>>> 2d9d9ee413 (feat: add the ability to load a single stem track)
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
 }
 } // namespace
-
 
 // EveOSC
 enum DefOscBodyType {
@@ -127,7 +120,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = std::make_unique<ControlObject>(
-        ConfigKey(getGroup(), "duration"));
+            ConfigKey(getGroup(), "duration"));
 
     // Track color of the current track
     m_pTrackColor = std::make_unique<ControlObject>(
@@ -584,9 +577,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
         bool bPlay) {
 #endif
-    //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
-    // Before loading the track, ensure we have access. This uses lazy
-    // evaluation to make sure track isn't NULL before we dereference it.
+    // qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
+    //  Before loading the track, ensure we have access. This uses lazy
+    //  evaluation to make sure track isn't NULL before we dereference it.
     if (pNewTrack) {
         auto fileInfo = pNewTrack->getFileInfo();
         if (!Sandbox::askForAccess(&fileInfo)) {
@@ -650,8 +643,8 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
 }
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
-                                          TrackPointer pOldTrack) {
-    //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
+        TrackPointer pOldTrack) {
+    // qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
     if (!pNewTrack &&
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
@@ -685,8 +678,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
-        if(m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
+        if (m_pConfig->getValue(
+                    ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
             if (m_pLowFilter) {
                 m_pLowFilter->set(1.0);
             }
@@ -707,7 +700,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
         }
         if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
+                    ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
             m_pPreGain->set(1.0);
         }
 
@@ -1026,11 +1019,11 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 
-//  EveOSC begin
-//        if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-//            OscFunctionsSendFloat(getGroup(), "play", value);
-//        }
-// EveOSC end
+        //  EveOSC begin
+        //        if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+        //            OscFunctionsSendFloat(getGroup(), "play", value);
+        //        }
+        // EveOSC end
     }
 }
 
@@ -1069,8 +1062,7 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
-            && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
         m_pWaveformZoom->setAndConfirm(v);
     }
 }

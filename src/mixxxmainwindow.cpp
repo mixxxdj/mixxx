@@ -1431,7 +1431,11 @@ bool MixxxMainWindow::confirmExit() {
     }
     if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
         QMessageBox::StandardButton btn = QMessageBox::question(
-                this, tr("Confirm Exit"), tr("The preferences window is still open.") + "<br>" + tr("Discard any changes and exit Mixxx?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+                this, tr("Confirm Exit"), 
+                tr("The preferences window is still open.") + "<br>" + 
+                        tr("Discard any changes and exit Mixxx?"), 
+                QMessageBox::Yes | QMessageBox::No, 
+                QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
         } else {
@@ -1459,7 +1463,14 @@ void MixxxMainWindow::oscEnable() {
     QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
     if (m_pCoreServices->getSettings()->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
         MixxxOSCStatusTxt << QString("OSC enabled") << "\n";
-        OscFunctionsSendPtrType(m_pCoreServices->getSettings(), "[Master]", "StartReset", INTBODY, "", 1, 0, 0);
+        OscFunctionsSendPtrType(m_pCoreServices->getSettings(), 
+                "[Master]", 
+                "StartReset", 
+                INTBODY, 
+                "", 
+                1, 
+                0, 
+                0);
         OscReceiverMain(m_pCoreServices->getSettings());
     } else {
         MixxxOSCStatusTxt << QString("OSC NOT enabled") << "\n";
