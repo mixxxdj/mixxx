@@ -22,8 +22,8 @@ constexpr double kBpmRangeMax = 200.0;
 constexpr double kBpmRangeStep = 1.0;
 constexpr double kBpmRangeSmallStep = 0.1;
 
-constexpr double kBpmAdjustMin = kBpmRangeMin;
-constexpr double kBpmAdjustStep = 0.01;
+constexpr int kBpmAdjustRepeatIntervalMs = 50;
+constexpr int kBpmAdjustTimeBeforeRepeatMs = 500;
 constexpr double kBpmTapRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
@@ -86,6 +86,17 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotAdjustBeatsFaster,
             Qt::DirectConnection);
+    m_pAdjustBeatsMuchFaster = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_much_faster"), false);
+    m_pAdjustBeatsMuchFaster->setKbdRepeatable(true);
+    connect(
+            m_pAdjustBeatsMuchFaster.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double v) {
+                slotAdjustBeatsFaster(v * 10);
+            },
+            Qt::DirectConnection);
     m_pAdjustBeatsSlower = std::make_unique<ControlPushButton>(
             ConfigKey(group, "beats_adjust_slower"), false);
     m_pAdjustBeatsSlower->setKbdRepeatable(true);
@@ -93,6 +104,17 @@ BpmControl::BpmControl(const QString& group,
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotAdjustBeatsSlower,
+            Qt::DirectConnection);
+    m_pAdjustBeatsMuchSlower = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_much_slower"), false);
+    m_pAdjustBeatsMuchSlower->setKbdRepeatable(true);
+    connect(
+            m_pAdjustBeatsMuchSlower.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double v) {
+                slotAdjustBeatsSlower(v * 10);
+            },
             Qt::DirectConnection);
     m_pTranslateBeatsEarlier = std::make_unique<ControlPushButton>(
             ConfigKey(group, "beats_translate_earlier"), false);
@@ -116,6 +138,34 @@ BpmControl::BpmControl(const QString& group,
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotTranslateBeatsMove,
+            Qt::DirectConnection);
+    m_pBeatsSetMarker = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_marker"), false);
+    connect(m_pBeatsSetMarker.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsSetMarker,
+            Qt::DirectConnection);
+    m_pBeatsRemoveMarker = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_remove_marker"), false);
+    connect(m_pBeatsRemoveMarker.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsRemoveMarker,
+            Qt::DirectConnection);
+    m_pBeatsBarCountUp = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_increase_bar_length"), false);
+    connect(m_pBeatsBarCountUp.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsBarCountUp,
+            Qt::DirectConnection);
+    m_pBeatsBarCountDown = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_decrease_bar_length"), false);
+    connect(m_pBeatsBarCountDown.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsBarCountDown,
             Qt::DirectConnection);
 
     m_pBeatsHalve = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_halve"), false);
@@ -260,7 +310,33 @@ mixxx::Bpm BpmControl::getBpm() const {
     return mixxx::Bpm(m_pEngineBpm->get());
 }
 
-void BpmControl::adjustBeatsBpm(double deltaBpm) {
+void BpmControl::clearActionRepeater() {
+    m_repeatOperation.stop();
+    m_repeatOperation.disconnect();
+    return;
+}
+
+void BpmControl::activateActionRepeater(const std::function<void()>& callback) {
+    VERIFY_OR_DEBUG_ASSERT(callback) {
+        clearActionRepeater();
+        return;
+    }
+
+    if (m_repeatOperation.isActive()) {
+        m_repeatOperation.setInterval(kBpmAdjustRepeatIntervalMs);
+    } else {
+        m_repeatOperation.disconnect();
+        connect(&m_repeatOperation, &QTimer::timeout, this, callback);
+        m_repeatOperation.start(kBpmAdjustTimeBeforeRepeatMs);
+    }
+}
+
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v <= 0) {
+        clearActionRepeater();
+        return;
+    }
+
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
@@ -270,44 +346,68 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
         return;
     }
 
-    const mixxx::Bpm bpm = pBeats->getBpmInRange(
-            mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
-    // FIXME: calling bpm.value() without checking bpm.isValid()
-    const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
-    mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
-            centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
-    const auto newBeats = pBeats->trySetBpm(adjustedBpm);
-    if (!newBeats) {
-        return;
-    }
-    pTrack->trySetBeats(*newBeats);
-}
+    activateActionRepeater([this, v]() {
+        slotAdjustBeatsFaster(v);
+    });
 
-void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v <= 0) {
-        return;
+    const auto adjustedBeats =
+            pBeats->tryAdjustTempo(frameInfo().currentPosition,
+                    v > 1 ? mixxx::Beats::TempoAdjustment::MuchFaster
+                          : mixxx::Beats::TempoAdjustment::Faster);
+    if (adjustedBeats) {
+        pTrack->trySetBeats(*adjustedBeats);
     }
-    adjustBeatsBpm(kBpmAdjustStep);
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v <= 0) {
+        clearActionRepeater();
         return;
     }
-    adjustBeatsBpm(-kBpmAdjustStep);
+
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    activateActionRepeater([this, v]() {
+        slotAdjustBeatsSlower(v);
+    });
+
+    const auto adjustedBeats =
+            pBeats->tryAdjustTempo(frameInfo().currentPosition,
+                    v > 1 ? mixxx::Beats::TempoAdjustment::MuchSlower
+                          : mixxx::Beats::TempoAdjustment::Slower);
+    if (adjustedBeats) {
+        pTrack->trySetBeats(*adjustedBeats);
+    }
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
+        clearActionRepeater();
         return;
     }
+
+    activateActionRepeater([this]() {
+        slotTranslateBeatsEarlier(1);
+    });
     slotTranslateBeatsMove(-1);
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v <= 0) {
+        clearActionRepeater();
         return;
     }
+
+    activateActionRepeater([this]() {
+        slotTranslateBeatsLater(1);
+    });
     slotTranslateBeatsMove(1);
 }
 
@@ -326,7 +426,7 @@ void BpmControl::slotTranslateBeatsMove(double v) {
         const double sampleOffset = frameInfo().sampleRate * v * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset =
                 sampleOffset / mixxx::kEngineChannelOutputCount;
-        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset, frameInfo().currentPosition);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
@@ -342,6 +442,80 @@ void BpmControl::slotBeatsUndoAdjustment(double v) {
         return;
     }
     pTrack->undoBeatsChange();
+}
+
+void BpmControl::slotBeatsSetMarker(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->trySetMarker(frameInfo().currentPosition);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
+}
+
+void BpmControl::slotBeatsBarCountUp(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->tryAdjustMarkerBarCount(frameInfo().currentPosition, 1);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
+}
+void BpmControl::slotBeatsBarCountDown(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->tryAdjustMarkerBarCount(frameInfo().currentPosition, -1);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
+}
+void BpmControl::slotBeatsRemoveMarker(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->tryRemoveMarker(frameInfo().currentPosition);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
 }
 
 void BpmControl::slotBpmTap(double v) {
@@ -1155,7 +1329,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         const auto currentPosition = frameInfo().currentPosition.toLowerFrameBoundary();
         const auto closestBeat = pBeats->findClosestBeat(currentPosition);
         const mixxx::audio::FrameDiff_t frameOffset = currentPosition - closestBeat;
-        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset, currentPosition);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
