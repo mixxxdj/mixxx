@@ -13,7 +13,7 @@ Rectangle {
     required property string group
     required property string screenId
 
-    readonly property bool useSharedApi: engine.getSetting("useSharedDataAPI")
+    readonly property bool useSharedApi: engine.getSetting("useSharedDataAPI") || false
 
     anchors.fill: parent
     color: "black"
@@ -137,7 +137,7 @@ Rectangle {
 
             property var player: Mixxx.PlayerManager.getPlayer(root.group)
 
-            source: player.coverArtUrl
+            source: player.currentTrack?.coverArtUrl
             height: 100
             width: 100
             fillMode: Image.PreserveAspectFit
@@ -486,9 +486,11 @@ Rectangle {
             }
 
             Mixxx.WaveformOverview {
+                readonly property var player: Mixxx.PlayerManager.getPlayer(root.group)
                 id: waveformOverview
                 anchors.fill: parent
-                player: Mixxx.PlayerManager.getPlayer(root.group)
+
+                track: player.currentTrack
             }
 
             Mixxx.ControlProxy {

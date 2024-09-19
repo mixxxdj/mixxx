@@ -72,8 +72,7 @@ Item {
         group: `[Channel${view.deckId}]`
         x: 0
         width: 316
-        // height: (settings.alwaysShowTempoInfo || deckInfo.adjustEnabled ? (settings.hideStripe ? content.waveformHeight + display.secondRowHeight-51 : content.waveformHeight-38) : (!deckInfo.showBPMInfo ? (settings.hideStripe ? content.waveformHeight + display.secondRowHeight-13 : content.waveformHeight) : (settings.hideStripe ? content.waveformHeight + display.secondRowHeight-51 : content.waveformHeight-38))) + (settings.hidePhase && settings.hidePhrase ? 16 : 0) + (!settings.hidePhase && !settings.hidePhrase ? -16 : 0)
-        height: view.height
+        height: (settings.alwaysShowTempoInfo || deckInfo.adjustEnabled ? (settings.hideWaveformOverview ? content.waveformHeight + display.secondRowHeight-51 : content.waveformHeight-38) : (!deckInfo.showBPMInfo ? (settings.hideWaveformOverview ? content.waveformHeight + display.secondRowHeight-13 : content.waveformHeight) : (settings.hideWaveformOverview ? content.waveformHeight + display.secondRowHeight-51 : content.waveformHeight-38))) + (settings.hidePhase && settings.hidePhrase ? 16 : 0) + (!settings.hidePhase && !settings.hidePhrase ? -16 : 0)
 
         Behavior on height { PropertyAnimation { duration: 90} }
         anchors.fill: parent
@@ -82,6 +81,7 @@ Item {
 
         Mixxx.WaveformRendererEndOfTrack {
             color: 'blue'
+            endOfTrackWarningTime: 30
         }
 
         Mixxx.WaveformRendererPreroll {
@@ -124,12 +124,19 @@ Item {
             lowColor: 'red'
             midColor: 'green'
             highColor: 'blue'
+
+            gainAll: 1.5
+            gainLow: 1.0
+            gainMid: 1.0
+            gainHigh: 1.0
         }
 
-        Mixxx.WaveformRendererStem { }
+        Mixxx.WaveformRendererStem {
+            gainAll: 1.5
+        }
 
         Mixxx.WaveformRendererBeat {
-            color: '#cfcfcf'
+            color: settings.hideBeatgrid ? 'transparent' : Qt.rgba(0.81, 0.81, 0.81, settings.beatgridVisibility)
         }
 
         Mixxx.WaveformRendererMark {
@@ -142,10 +149,10 @@ Item {
                 text: " %1 "
             }
 
-            untilMark.showTime: true
-            untilMark.showBeats: true
-            untilMark.align: Qt.AlignBottom
-            untilMark.textSize: 14
+            untilMark.showTime: settings.showTimeToCue
+            untilMark.showBeats: settings.showBeatToCue
+            untilMark.align: settings.distanceToCueAlignment == "bottom" ? Qt.AlignBottom : settings.distanceToCueAlignment == "top" ? Qt.AlignTop : Qt.AlignCenter
+            untilMark.textSize: settings.distanceToCueFontSize
 
             Mixxx.WaveformMark {
                 control: "cue_point"

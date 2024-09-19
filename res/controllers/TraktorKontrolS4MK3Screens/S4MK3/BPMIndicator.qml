@@ -21,31 +21,33 @@ Rectangle {
     border.color: smallBoxBorder
     border.width: 2
 
-    signal updated
+    Mixxx.ControlProxy {
+        id: bpm
+        group: root.group
+        key: "bpm"
+    }
+
+    Mixxx.ControlProxy {
+        id: rateRange
+        group: root.group
+        key: "rateRange"
+    }
 
     Text {
         id: indicator
-        text: "-"
+        text: bpm.value > 0 ? bpm.value.toFixed(2) : "-"
         font.pixelSize: 17
         color: fontColor
         anchors.centerIn: parent
-
-        Mixxx.ControlProxy {
-            group: root.group
-            key: "bpm"
-            onValueChanged: (value) => {
-                const newValue = value.toFixed(2);
-                if (newValue === indicator.text) return;
-                indicator.text = newValue;
-                root.updated()
-            }
-        }
     }
 
     Text {
         id: range
+
+        text: rateRange.value > 0 ? `-/+ \n${(rateRange.value * 100).toFixed()}%` : ''
         font.pixelSize: 9
         color: fontColor
+
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
@@ -53,17 +55,6 @@ Rectangle {
         anchors.topMargin: 2
 
         horizontalAlignment: Text.AlignHCenter
-
-        Mixxx.ControlProxy {
-            group: root.group
-            key: "rateRange"
-            onValueChanged: (value) => {
-                const newValue = `-/+ \n${(value * 100).toFixed()}%`;
-                if (range.text === newValue) return;
-                range.text = newValue;
-                root.updated();
-            }
-        }
     }
 
     states: State {

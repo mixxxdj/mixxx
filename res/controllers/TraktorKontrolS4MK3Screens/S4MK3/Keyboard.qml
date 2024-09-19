@@ -15,19 +15,13 @@ Item {
 
     required property string group
 
-    property int key: -1
-
-    signal updated
-
     Mixxx.ControlProxy {
+        id: keyProxy
         group: root.group
         key: "key"
-        onValueChanged: (value) => {
-            if (value === root.key) return;
-            root.key = value;
-            root.updated()
-        }
     }
+
+    readonly property int key: keyProxy.value
 
     RowLayout {
         anchors.fill: parent
@@ -119,7 +113,6 @@ Item {
                             Layout.fillWidth: true
                             radius: 2
                             border.width: 1
-                            // border.color: root.key == blackKeys.keyMap[index] || root.key == blackKeys.keyMap[index + blackKeys.model] ? "red" : "black"
                             color: root.key == blackKeys.keyMap[index] || root.key == blackKeys.keyMap[index + blackKeys.model] ? "#aaaaaa" : "black"
                         }
                         Item {

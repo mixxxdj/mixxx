@@ -16,8 +16,6 @@ Item {
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
     property real scale: 0.2
 
-    signal updated
-
     visible: false
     antialiasing: true
     anchors.fill: parent
@@ -26,7 +24,6 @@ Item {
         onGroupChanged: {
             deckPlayer = Mixxx.PlayerManager.getPlayer(root.group)
             console.log("Group changed!!")
-            root.updated()
         }
     }
 

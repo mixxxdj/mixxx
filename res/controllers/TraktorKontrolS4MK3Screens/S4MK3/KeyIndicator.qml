@@ -97,26 +97,21 @@ Rectangle {
                                "3m"
     ]
 
+    Mixxx.ControlProxy {
+        id: keyProxy
+        group: root.group
+        key: "key"
+    }
+
     required property color borderColor
 
-    property int key: KeyIndicator.Key.NoKey
+    readonly property int key: keyProxy.value > 0 ? keyProxy.value : KeyIndicator.Key.NoKey
 
     radius: 6
     border.color: colorsMap[key]
     border.width: 2
 
     color: colorsMap[key]
-    signal updated
-
-    Mixxx.ControlProxy {
-        group: root.group
-        key: "key"
-        onValueChanged: (value) => {
-            if (value === root.key) return;
-            root.key = value;
-            root.updated()
-        }
-    }
 
     Text {
         text: textMap[key]

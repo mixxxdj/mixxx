@@ -15,30 +15,20 @@ Item {
 
     property real windowWidth: Window.width
 
-    width: 0
-    signal updated
-
     Mixxx.ControlProxy {
+        id: trackLoaded
         group: root.group
         key: "track_loaded"
-        onValueChanged: (value) => {
-            if (value === root.visible) return;
-            root.visible = value
-            root.updated()
-        }
     }
 
     Mixxx.ControlProxy {
+        id: playposition
         group: root.group
         key: "playposition"
-        onValueChanged: (value) => {
-            const newValue = Math.round(value * (320 - 12));
-            if (newValue === root.width) return;
-            root.width = newValue;
-            root.updated()
-        }
     }
 
+    width: Math.round(playposition.value * (320 - 12))
+    visible: trackLoaded.value
     clip: true
 
     Rectangle {
