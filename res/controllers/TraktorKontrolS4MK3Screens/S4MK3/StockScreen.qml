@@ -12,7 +12,7 @@ Rectangle {
     required property string group
     required property string screenId
 
-    readonly property bool useSharedApi: engine.getSetting("useSharedDataAPI")
+    readonly property bool useSharedApi: engine.getSetting("useSharedDataAPI") || false
 
     anchors.fill: parent
     color: "black"

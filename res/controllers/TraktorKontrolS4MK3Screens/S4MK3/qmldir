@@ -10,3 +10,4 @@ TimeAndBeatloopIndicator 1.0 TimeAndBeatloopIndicator.qml
 WaveformOverview 1.0 WaveformOverview.qml
 SplashOff 1.0 SplashOff.qml
 StockScreen 1.0 StockScreen.qml
+AdvancedScreen 1.0 AdvancedScreen.qml

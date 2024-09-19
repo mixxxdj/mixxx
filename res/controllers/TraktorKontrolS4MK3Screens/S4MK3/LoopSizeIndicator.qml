@@ -19,49 +19,37 @@ Rectangle {
     property color loopOnBoxColor: Qt.rgba(125/255,246/255,64/255, 1)
     property color loopOnFontColor: "black"
 
-    property bool on: true
-    signal updated
+    Mixxx.ControlProxy {
+        id: beatloopSize
+        group: root.group
+        key: "beatloop_size"
+    }
+
+    Mixxx.ControlProxy {
+        id: loopEnabled
+        group: root.group
+        key: "loop_enabled"
+    }
+
+    Mixxx.ControlProxy {
+        id: loopAnchor
+        group: root.group
+        key: "loop_anchor"
+    }
+
+    readonly property bool on: loopEnabled.value
 
     radius: 6
     border.width: 2
-    border.color: (loopSizeIndicator.on ? loopOnBoxColor : (loop_anchor.value == 0 ? loopOffBoxColor : loopReverseOffBoxColor))
-    color: (loopSizeIndicator.on ? loopOnBoxColor : (loop_anchor.value == 0 ? loopOffBoxColor : loopReverseOffBoxColor))
+    border.color: (loopSizeIndicator.on ? loopOnBoxColor : (loopAnchor.value == 0 ? loopOffBoxColor : loopReverseOffBoxColor))
+    color: (loopSizeIndicator.on ? loopOnBoxColor : (loopAnchor.value == 0 ? loopOffBoxColor : loopReverseOffBoxColor))
 
     Text {
         id: indicator
+        text: (beatloopSize.value < 1 ? `1/${1 / beatloopSize.value}` : `${beatloopSize.value}`);
         anchors.centerIn: parent
         font.pixelSize: 46
         color: (loopSizeIndicator.on ? loopOnFontColor : loopOffFontColor)
-
-        Mixxx.ControlProxy {
-            group: root.group
-            key: "beatloop_size"
-            onValueChanged: (value) => {
-                const newValue = (value < 1 ? `1/${1 / value}` : `${value}`);
-                if (newValue === indicator.text) return;
-                indicator.text = newValue;
-                root.updated()
-            }
-        }
-    }
-
-    Mixxx.ControlProxy {
-        group: root.group
-        key: "loop_enabled"
-        onValueChanged: (value) => {
-            if (value === root.on) return;
-            root.on = value;
-            root.updated()
-        }
-    }
-
-    Mixxx.ControlProxy {
-        group: root.group
-        key: "loop_anchor"
-        id: loop_anchor
-        onValueChanged: (value) => {
-            root.updated()
-        }
     }
 
     states: State {

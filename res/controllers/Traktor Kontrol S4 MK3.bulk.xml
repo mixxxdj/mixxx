@@ -39,18 +39,28 @@
                     <value label="Advanced">advanced</value>
                 </option>
             </row>
-             <row>
-                 <option
-                     variable="idleBackground"
-                     type="enum"
-                     label="Idle deck background">
-                     <description>
-                         The background used for empty decks
-                     </description>
-                     <value label="Man in a mask">mask</value>
-                     <value label="Mixxx" default="true">mixxx</value>
-                 </option>
-             </row>
+            <row>
+               <option
+                   variable="idleBackground"
+                   type="file"
+                   pattern="Images (*.png *.gif *.jpg)"
+                   label="Idle deck background">
+                   <description>
+                       The background used for empty decks
+                   </description>
+               </option>
+            </row>
+            <row>
+               <option
+                   variable="accentColor"
+                   type="color"
+                   default="orange"
+                   label="Accent color">
+                   <description>
+                       The background used for empty decks
+                   </description>
+               </option>
+            </row>
          </group>
          <group label="Advanced theme settings">
             <row>
@@ -63,167 +73,13 @@
                     <value label="Only C and D">cd</value>
                 </option>
             </row>
-            <row>
-                <option
-                    variable="disableKnobFullBrowserCloser"
-                    type="boolean"
-                    default="false"
-                    label="disableKnobFullBrowserCloser">
-                </option>
-                <option
-                    variable="disableKnobSingleBrowserCloser"
-                    type="boolean"
-                    default="false"
-                    label="disableKnobSingleBrowserCloser">
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="enableCueOnTrackLoad"
-                    type="boolean"
-                    default="false"
-                    label="enableCueOnTrackLoad">
-                </option>
-                <option
-                    variable="disableAllCueOnTrackLoad"
-                    type="boolean"
-                    default="false"
-                    label="disableAllCueOnTrackLoad">
-                </option>
-                <option
-                    variable="resetPadModeOnLoad"
-                    type="boolean"
-                    default="true"
-                    label="resetPadModeOnLoad">
-                </option>
-                <option
-                    variable="waveformEndFlashing"
-                    type="boolean"
-                    default="true"
-                    label="waveformEndFlashing">
-                </option>
-                <option
-                    variable="jogwheelEndFlashing"
-                    type="boolean"
-                    default="true"
-                    label="jogwheelEndFlashing">
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="jogwheelLedCue"
-                    type="boolean"
-                    default="true"
-                    label="jogwheelLedCue">
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="deckAWaveformColour"
-                    type="integer"
-                    default="0"
-                    label="deckAWaveformColour">
-                </option>
-                <option
-                    variable="deckBWaveformColour"
-                    type="integer"
-                    default="0"
-                    label="deckBWaveformColour">
-                </option>
-                <option
-                    variable="deckCWaveformColour"
-                    type="integer"
-                    default="0"
-                    label="deckCWaveformColour">
-                </option>
-                <option
-                    variable="deckDWaveformColour"
-                    type="integer"
-                    default="0"
-                    label="deckDWaveformColour">
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="deckAColour"
-                    type="enum"
-                    default="10"
-                    label="deckAColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-                <option
-                    variable="deckBColour"
-                    type="enum"
-                    default="10"
-                    label="deckBColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-                <option
-                    variable="deckCColour"
-                    type="enum"
-                    default="2"
-                    label="deckCColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-                <option
-                    variable="deckDColour"
-                    type="enum"
-                    default="2"
-                    label="deckDColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="jogAColour"
-                    type="enum"
-                    default="10"
-                    label="jogAColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-                <option
-                    variable="jogBColour"
-                    type="enum"
-                    default="10"
-                    label="jogBColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-                <option
-                    variable="jogCColour"
-                    type="enum"
-                    default="2"
-                    label="jogCColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-                <option
-                    variable="jogDColour"
-                    type="enum"
-                    default="2"
-                    label="jogDColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-            </row>
 
             <row>
                 <option
                     variable="alwaysShowTempoInfo"
                     type="boolean"
                     default="false"
-                    label="alwaysShowTempoInfo">
-                </option>
+                    label="alwaysShowTempoInfo"/>
                 <option
                     variable="bpmOverlayTimer"
                     default="5000"
@@ -231,11 +87,10 @@
                     min="100"
                     max="15000"
                     step="1000"
-                    label="amount of time the bpm overlay will stay on the screen">
-                </option>
+                    label="amount of time the bpm overlay will stay on the screen"/>
             </row>
 
-            <group label="BPM/Tempo displayed field">
+            <group label="BPM/Tempo overlay fields">
                 <row>
                     <option
                         variable="tempoDisplayLeft"
@@ -338,20 +193,17 @@
                     variable="enableBpmTextColor"
                     type="boolean"
                     default="false"
-                    label="enableBpmTextColor">
-                </option>
+                    label="enableBpmTextColor"/>
                 <option
                     variable="enableMasterBpmTextColor"
                     type="boolean"
                     default="false"
-                    label="enableMasterBpmTextColor">
-                </option>
+                    label="enableMasterBpmTextColor"/>
                 <option
                     variable="enableTempoTextColor"
                     type="boolean"
                     default="false"
-                    label="enableTempoTextColor">
-                </option>
+                    label="enableTempoTextColor"/>
             </row>
 
             <row>
@@ -359,20 +211,17 @@
                     variable="enableBpmOffsetTextColor"
                     type="boolean"
                     default="false"
-                    label="enableBpmOffsetTextColor">
-                </option>
+                    label="enableBpmOffsetTextColor"/>
                 <option
                     variable="enableTempoOffsetTextColor"
                     type="boolean"
                     default="false"
-                    label="enableTempoOffsetTextColor">
-                </option>
+                    label="enableTempoOffsetTextColor"/>
                 <option
                     variable="enableMasterDeckTextColor"
                     type="boolean"
                     default="false"
-                    label="enableMasterDeckTextColor">
-                </option>
+                    label="enableMasterDeckTextColor"/>
             </row>
 
             <row>
@@ -380,14 +229,12 @@
                     variable="hideWaveforms"
                     type="boolean"
                     default="false"
-                    label="hideWaveforms">
-                </option>
+                    label="hideWaveforms"/>
                 <option
                     variable="alwaysShowLoopSize"
                     type="boolean"
                     default="false"
-                    label="Keep the loop size indicator visible">
-                </option>
+                    label="Keep the loop size indicator visible"/>
                 <option
                     variable="loopOverlayTimer"
                     type="integer"
@@ -395,26 +242,15 @@
                     min="100"
                     max="15000"
                     step="1000"
-                    label="amount of time the loop overlay will stay on the screen">
-                </option>
+                    label="amount of time the loop overlay will stay on the screen"/>
             </row>
 
             <row>
                 <option
-                    variable="waveformPlaymarkerPosition"
-                    type="integer"
-                    min="-250"
-                    max="0"
-                    step="1"
-                    default="-250"
-                    label="move the playmarker to the left">
-                </option>
-                <option
                     variable="hideBeatgrid"
                     type="boolean"
                     default="false"
-                    label="hideBeatgrid">
-                </option>
+                    label="hideBeatgrid"/>
                 <option
                     variable="beatgridVisibility"
                     type="integer"
@@ -433,20 +269,17 @@
                     variable="enableBrowserMode"
                     type="boolean"
                     default="true"
-                    label="enableBrowserMode">
-                </option>
+                    label="enableBrowserMode"/>
                 <option
                     variable="adjacentKeys"
                     type="boolean"
                     default="true"
-                    label="adjacentKeys">
-                </option>
+                    label="adjacentKeys"/>
                 <option
                     variable="camelotKey"
                     type="boolean"
                     default="false"
-                    label="enable camelot key">
-                </option>
+                    label="enable camelot key"/>
             </row>
 
             <row>
@@ -454,20 +287,17 @@
                     variable="disablePreviewPlayerToggle"
                     type="boolean"
                     default="false"
-                    label="disablePreviewPlayerToggle">
-                </option>
+                    label="disablePreviewPlayerToggle"/>
                 <option
                     variable="showBrowserOnFavourites"
                     type="boolean"
                     default="true"
-                    label="showBrowserOnFavourites">
-                </option>
+                    label="showBrowserOnFavourites"/>
                 <option
                     variable="swapViewButtons"
                     type="boolean"
                     default="false"
-                    label="swapViewButtons">
-                </option>
+                    label="swapViewButtons"/>
             </row>
 
             <row>
@@ -475,14 +305,12 @@
                     variable="showBrowserOnFullScreen"
                     type="boolean"
                     default="true"
-                    label="showBrowserOnFullScreen">
-                </option>
+                    label="showBrowserOnFullScreen"/>
                 <option
                     variable="disableSortButtonOutput"
                     type="boolean"
                     default="false"
-                    label="disableSortButtonOutput">
-                </option>
+                    label="disableSortButtonOutput"/>
             </row>
 
             <row>
@@ -533,8 +361,7 @@
                     variable="browserEncoderShiftScroll"
                     type="boolean"
                     default="false"
-                    label="browserEncoderShiftScroll">
-                </option>
+                    label="browserEncoderShiftScroll"/>
                 <option
                     variable="scrollPageSize"
                     type="enum"
@@ -547,8 +374,7 @@
                     variable="browserShift"
                     type="boolean"
                     default="true"
-                    label="browserShift">
-                </option>
+                    label="browserShift"/>
             </row>
 
             <row>
@@ -556,8 +382,7 @@
                     variable="swapArtistTitleColumns"
                     type="boolean"
                     default="false"
-                    label="swapArtistTitleColumns">
-                </option>
+                    label="swapArtistTitleColumns"/>
             </row>
 
             <row>
@@ -565,32 +390,27 @@
                     variable="hideBPM"
                     type="boolean"
                     default="false"
-                    label="hideBPM">
-                </option>
+                    label="hideBPM"/>
                 <option
                     variable="hideKey"
                     type="boolean"
                     default="false"
-                    label="hideKey">
-                </option>
+                    label="hideKey"/>
                 <option
                     variable="hideAlbumArt"
                     type="boolean"
                     default="false"
-                    label="hideAlbumArt">
-                </option>
+                    label="hideAlbumArt"/>
                 <option
                     variable="showArtistColumn"
                     type="boolean"
                     default="false"
-                    label="showArtistColumn">
-                </option>
+                    label="showArtistColumn"/>
                 <option
                     variable="showTrackTitleColumn"
                     type="boolean"
                     default="true"
-                    label="showTrackTitleColumn">
-                </option>
+                    label="showTrackTitleColumn"/>
             </row>
 
             <row>
@@ -598,8 +418,7 @@
                     variable="browserFontSize"
                     type="integer"
                     default="15"
-                    label="browserFontSize">
-                </option>
+                    label="browserFontSize"/>
             </row>
 
             <row>
@@ -607,8 +426,7 @@
                     variable="raiseBrowserFooter"
                     type="boolean"
                     default="false"
-                    label="raiseBrowserFooter">
-                </option>
+                    label="raiseBrowserFooter"/>
             </row>
 
             <row>
@@ -616,8 +434,7 @@
                     variable="bpmBrowserTextColor"
                     type="boolean"
                     default="true"
-                    label="determine the bpm text colour in the browser">
-                </option>
+                    label="determine the bpm text colour in the browser"/>
             </row>
 
             <row>
@@ -625,8 +442,7 @@
                     variable="hideStripe"
                     type="boolean"
                     default="false"
-                    label="hideStripe">
-                </option>
+                    label="hideStripe"/>
             </row>
 
             <row>
@@ -634,8 +450,7 @@
                     variable="shiftStripe"
                     type="boolean"
                     default="false"
-                    label="shiftStripe">
-                </option>
+                    label="shiftStripe"/>
             </row>
 
             <row>
@@ -643,8 +458,7 @@
                     variable="shiftStripeMaster"
                     type="boolean"
                     default="false"
-                    label="shiftStripeMaster">
-                </option>
+                    label="shiftStripeMaster"/>
             </row>
 
             <row>
@@ -652,8 +466,7 @@
                     variable="timeBox"
                     type="integer"
                     default="0"
-                    label="timeBox">
-                </option>
+                    label="timeBox"/>
             </row>
 
             <row>
@@ -672,8 +485,7 @@
                     variable="timeTextColourChange"
                     type="boolean"
                     default="false"
-                    label="timeTextColourChange">
-                </option>
+                    label="timeTextColourChange"/>
             </row>
 
             <row>
@@ -725,8 +537,7 @@
                     variable="hidePhase"
                     type="boolean"
                     default="false"
-                    label="hidePhase">
-                </option>
+                    label="hidePhase"/>
             </row>
 
             <row>
@@ -734,17 +545,7 @@
                     variable="hidePhrase"
                     type="boolean"
                     default="true"
-                    label="hidePhrase">
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="disableGridEditToggle"
-                    type="boolean"
-                    default="false"
-                    label="disableGridEditToggle">
-                </option>
+                    label="hidePhrase"/>
             </row>
 
             <row>
@@ -752,8 +553,7 @@
                     variable="showBPMGridAdjust"
                     type="boolean"
                     default="true"
-                    label="showBPMGridAdjust">
-                </option>
+                    label="showBPMGridAdjust"/>
             </row>
 
             <row>
@@ -764,8 +564,7 @@
                     min="100"
                     max="15000"
                     step="1000"
-                    label="Rate and waveform adjust timer">
-                </option>
+                    label="Rate and waveform adjust timer"/>
             </row>
 
             <row>
@@ -773,17 +572,7 @@
                     variable="hideHotcueOverlay"
                     type="boolean"
                     default="false"
-                    label="hideHotcueOverlay">
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="hotcue1SetsGridmarker"
-                    type="boolean"
-                    default="true"
-                    label="hotcue1SetsGridmarker">
-                </option>
+                    label="hideHotcueOverlay"/>
             </row>
 
             <row>
@@ -792,50 +581,6 @@
                     type="enum"
                     default="10"
                     label="cueCueColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="cueFadeInColour"
-                    type="enum"
-                    default="16"
-                    label="cueFadeInColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="cueFadeOutColour"
-                    type="enum"
-                    default="16"
-                    label="cueFadeOutColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="cueLoadColour"
-                    type="enum"
-                    default="4"
-                    label="cueLoadColour">
-                    <value label="Man in a mask">mask</value>
-                    <value label="Mixxx" default="..">mixxx</value>
-                </option>
-            </row>
-
-            <row>
-                <option
-                    variable="cueGridColour"
-                    type="enum"
-                    default="3"
-                    label="cueGridColour">
                     <value label="Man in a mask">mask</value>
                     <value label="Mixxx" default="..">mixxx</value>
                 </option>
@@ -857,8 +602,7 @@
                     variable="fxOverlays"
                     type="boolean"
                     default="true"
-                    label="fxOverlays">
-                </option>
+                    label="fxOverlays"/>
             </row>
 
             <row>
@@ -880,8 +624,7 @@
                     variable="hideEffectsOverlay1"
                     type="boolean"
                     default="false"
-                    label="hideEffectsOverlay1">
-                </option>
+                    label="hideEffectsOverlay1"/>
             </row>
 
             <row>
@@ -889,8 +632,7 @@
                     variable="hideEffectsOverlay2"
                     type="boolean"
                     default="false"
-                    label="hideEffectsOverlay2">
-                </option>
+                    label="hideEffectsOverlay2"/>
             </row>
 
             <row>
@@ -898,8 +640,7 @@
                     variable="hideToneOverlay"
                     type="boolean"
                     default="false"
-                    label="hideToneOverlay">
-                </option>
+                    label="hideToneOverlay"/>
             </row>
 
             <row>
@@ -907,8 +648,7 @@
                     variable="hideLoopOverlay"
                     type="boolean"
                     default="false"
-                    label="hideLoopOverlay">
-                </option>
+                    label="hideLoopOverlay"/>
             </row>
 
             <row>
@@ -916,17 +656,15 @@
                     variable="hideRollOverlay"
                     type="boolean"
                     default="false"
-                    label="hideRollOverlay">
-                </option>
+                    label="hideRollOverlay"/>
             </row>
 
             <row>
                 <option
-                    variable="disable the tone pads overlay appearing"
+                    variable="hideJumpOverlay"
                     type="boolean"
                     default="false"
-                    label="hideJumpOverlay">
-                </option>
+                    label="disable the tone pads overlay appearing"/>
             </row>
          </group>
      </settings>
