@@ -22,7 +22,7 @@ Mixxx.ControllerScreen {
     property color smallBoxBorder: Qt.rgba(44/255,44/255,44/255, 1)
 
     property string group: screenId == "rightdeck" ? "[Channel2]" : "[Channel1]"
-    property string theme: engine.getSetting("theme")
+    property string theme: engine.getSetting("theme") || "stock"
 
     readonly property bool isStockTheme: theme == "stock"
 
