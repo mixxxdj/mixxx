@@ -28,6 +28,8 @@
             <SignalRGBMidColor></SignalRGBMidColor>
             <SignalRGBLowColor></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
+            <DownbeatColor><Variable name="DownbeatColor"/></DownbeatColor>
+            <MarkerbeatColor><Variable name="MarkerbeatColor"/></MarkerbeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
@@ -163,13 +165,6 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
-                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                    <SetVariable name="ButtonName">BeatCurposLarge</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
-                  </Template>
                   <!-- Custom 2-state button where 0 and 1 have the same border image -->
                   <PushButton>
                     <TooltipId>bpmlock</TooltipId>
@@ -194,6 +189,43 @@
                   </PushButton>
                 </Children>
               </WidgetGroup>
+              <WidgetGroup><!-- beats set & remove marker -->
+                <Layout>vertical</Layout>
+                <Size>26f,52f</Size>
+                <Children>
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">beats_set_marker</SetVariable>
+                    <SetVariable name="ObjectName">BeatsSetMarker</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_set_marker</SetVariable>
+                  </Template>
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">beats_remove_marker</SetVariable>
+                    <SetVariable name="ObjectName">BeatsRemoveMarker</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_remove_marker</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /beats set & remove marker -->
+
+              <WidgetGroup><!-- bar length adjustment -->
+                <Layout>vertical</Layout>
+                <Size>26f,52f</Size>
+                <Children>
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">beats_increase_bar_length</SetVariable>
+                    <SetVariable name="ObjectName">BeatsIncreaseBarLength</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_increase_bar_length</SetVariable>
+                  </Template>
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">beats_decrease_bar_length</SetVariable>
+                    <SetVariable name="ObjectName">BeatsDecreaseBarLength</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_decrease_bar_length</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /bar length adjustment -->
 
               <WidgetGroup><!-- beats earlier & faster -->
                 <Layout>vertical</Layout>
@@ -205,11 +237,12 @@
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
-                    <SetVariable name="ButtonName">BeatsFaster</SetVariable>
+                    <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_adjust_faster</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_adjust_much_faster</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats earlier & faster -->
@@ -225,13 +258,14 @@
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
-                    <SetVariable name="ButtonName">BeatsSlower</SetVariable>
+                    <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_adjust_slower</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_adjust_much_slower</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->

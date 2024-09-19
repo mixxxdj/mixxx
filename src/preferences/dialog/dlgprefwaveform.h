@@ -44,6 +44,14 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformOptionHighDetail(bool checked) {
         slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
     }
+    void slotSetWaveformOptionBeatGridBar(bool checked) {
+        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::BeatGridBar, checked);
+    }
+    void slotSetWaveformOptionBeatGridMarker(bool checked) {
+        slotSetWaveformOptions(
+                allshader::WaveformRendererSignalBase::Option::BeatGridMarker,
+                checked);
+    }
 #endif
     void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);

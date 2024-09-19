@@ -16,7 +16,11 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
 
   private:
     QColor m_beatColor;
+    QColor m_downbeatColor;
+    QColor m_markerbeatColor;
     QVector<QLineF> m_beats;
+    QVector<QLineF> m_downbeats;
+    QVector<QLineF> m_markerbeats;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
