@@ -2,12 +2,19 @@
 
 #include <util/assert.h>
 
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QColorDialog>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
+#include <QPainter>
+#include <QPixmap>
+#include <QPushButton>
 #include <QSpinBox>
+#include <QStringLiteral>
 
 #include "moc_legacycontrollersettings.cpp"
 
@@ -54,6 +61,8 @@ LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
     registerType<LegacyControllerIntegerSetting>();
     registerType<LegacyControllerRealSetting>();
     registerType<LegacyControllerEnumSetting>();
+    registerType<LegacyControllerColorSetting>();
+    registerType<LegacyControllerFileSetting>();
 }
 
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
@@ -221,7 +230,15 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
             !value.isNull();
             value = value.nextSiblingElement("value")) {
         QString val = value.text();
-        m_options.append(std::tuple<QString, QString>(val, value.attribute("label", val)));
+        QColor color = QColor(value.attribute("color"));
+        // TODO: Remove once we mandate GCC 10/Clang 16
+#if defined(__cpp_aggregate_paren_init) &&       \
+        __cpp_aggregate_paren_init >= 201902L && \
+        !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
+        m_options.emplace_back(val, value.attribute("label", val), color);
+#else
+        m_options.emplace_back(Item{val, value.attribute("label", val), color});
+#endif
         if (value.hasAttribute("default")) {
             m_defaultValue = pos;
         }
@@ -273,4 +290,142 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
             });
 
     return pComboBox;
+}
+
+LegacyControllerColorSetting::LegacyControllerColorSetting(
+        const QDomElement& element)
+        : AbstractLegacyControllerSetting(element),
+          m_defaultValue(QColor(element.attribute("default"))),
+          m_savedValue(m_defaultValue),
+          m_editedValue(m_defaultValue) {
+    reset();
+    save();
+}
+
+LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
+
+void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
+    if (ok != nullptr) {
+        *ok = false;
+    }
+    reset();
+    save();
+
+    m_savedValue = QColor(in);
+    if (ok != nullptr) {
+        *ok = m_editedValue.isValid();
+    }
+    if (!m_editedValue.isValid()) {
+        return;
+    }
+    m_editedValue = m_savedValue;
+}
+
+QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
+    auto* pPushButton = new QPushButton(tr("Change color"), pParent);
+
+    auto setColorIcon = [pPushButton](const QColor& color) {
+        QPixmap icon(24, 24);
+        QPainter painter(&icon);
+        painter.fillRect(0, 0, 24, 24, color);
+        pPushButton->setIcon(QIcon(icon));
+    };
+
+    connect(this,
+            &AbstractLegacyControllerSetting::valueReset,
+            pPushButton,
+            [this, pPushButton, setColorIcon]() {
+                if (m_editedValue.isValid()) {
+                    setColorIcon(m_editedValue);
+                } else {
+                    pPushButton->setIcon(QIcon());
+                }
+            });
+
+    connect(pPushButton, &QPushButton::clicked, this, [this, pPushButton, setColorIcon](bool) {
+        auto color = QColorDialog::getColor(m_editedValue, pPushButton, tr("Choose a new color"));
+        if (color.isValid()) {
+            m_editedValue = color;
+            setColorIcon(color);
+            emit changed();
+        }
+    });
+
+    if (m_savedValue.isValid()) {
+        setColorIcon(m_savedValue);
+    }
+
+    return pPushButton;
+}
+
+LegacyControllerFileSetting::LegacyControllerFileSetting(
+        const QDomElement& element)
+        : AbstractLegacyControllerSetting(element),
+          m_fileFilter(element.attribute("pattern")),
+          m_defaultValue(QFileInfo(element.attribute("default"))),
+          m_savedValue(m_defaultValue),
+          m_editedValue(m_defaultValue) {
+    reset();
+    save();
+}
+LegacyControllerFileSetting::~LegacyControllerFileSetting() = default;
+
+void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
+    if (ok != nullptr) {
+        *ok = false;
+    }
+    reset();
+    save();
+
+    m_editedValue = QFileInfo(in);
+    if (ok != nullptr) {
+        *ok = m_editedValue.exists();
+    }
+    if (!m_editedValue.exists()) {
+        return;
+    }
+    m_savedValue = m_editedValue;
+}
+
+QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
+    auto* pWidget = new QWidget(pParent);
+    pWidget->setLayout(new QHBoxLayout);
+    auto* pPushButton = new QPushButton(tr("Browse..."), pWidget);
+    auto* pLabel = new QLabel(pWidget);
+    auto setLabelText = [pLabel](QString&& text) {
+        pLabel->setText(QStringLiteral("<i>%1</i>").arg(text));
+    };
+    pWidget->layout()->addWidget(pLabel);
+    pWidget->layout()->addWidget(pPushButton);
+
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pLabel, [this, setLabelText]() {
+        if (m_editedValue.exists()) {
+            setLabelText(m_editedValue.absoluteFilePath());
+        } else {
+            setLabelText(tr("No file selected"));
+        }
+    });
+
+    connect(pPushButton,
+            &QPushButton::clicked,
+            this,
+            [this, pLabel, pPushButton](bool) {
+                auto file = QFileInfo(QFileDialog::getOpenFileName(pPushButton,
+                        tr("Select a file"),
+                        QString(),
+                        m_fileFilter));
+                if (file.exists()) {
+                    m_editedValue = file;
+                    pLabel->setText(QStringLiteral("<i>%1</i>").arg(file.absoluteFilePath()));
+                    emit changed();
+                }
+            });
+
+    if (m_savedValue.exists()) {
+        setLabelText(m_savedValue.absoluteFilePath());
+    } else {
+        setLabelText(tr("No file selected"));
+    }
+
+    return pWidget;
 }

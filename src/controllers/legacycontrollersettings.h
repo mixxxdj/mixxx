@@ -1,5 +1,9 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
+#include <QColor>
+#include <QFileInfo>
 #include <QJSValue>
 
 #include "controllers/legacycontrollersettingsfactory.h"
@@ -421,6 +425,150 @@ class LegacyControllerEnumSetting
 
     friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
     friend class ControllerS4MK3SettingTest_ensureLibrarySettingValueAndEnumEquals;
+};
+
+class LegacyControllerColorSetting
+        : public LegacyControllerSettingFactory<LegacyControllerColorSetting>,
+          public AbstractLegacyControllerSetting {
+  public:
+    LegacyControllerColorSetting(const QDomElement& element);
+
+    ~LegacyControllerColorSetting() override;
+
+    QJSValue value() const override {
+        return QJSValue(stringify());
+    }
+
+    QString stringify() const override {
+        return m_savedValue.name(QColor::HexRgb);
+    }
+    void parse(const QString& in, bool* ok) override;
+    bool isDefault() const override {
+        return m_savedValue == m_defaultValue;
+    }
+    bool isDirty() const override {
+        return m_savedValue != m_editedValue;
+    }
+
+    virtual void save() override {
+        m_savedValue = m_editedValue;
+    }
+
+    virtual void reset() override {
+        m_editedValue = m_defaultValue;
+        emit valueReset();
+    }
+
+    /// @brief Whether or not this setting definition and its current state are
+    /// valid. Validity scope includes a known default/current/dirty option.
+    /// @return true if valid
+    bool valid() const override {
+        return AbstractLegacyControllerSetting::valid() &&
+                m_defaultValue.isValid() &&
+                m_savedValue.isValid();
+    }
+
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+        return new LegacyControllerColorSetting(element);
+    }
+    static inline bool match(const QDomElement& element) {
+        return element.hasAttribute(QStringLiteral("type")) &&
+                QString::compare(element.attribute(QStringLiteral("type")),
+                        QStringLiteral("color"),
+                        Qt::CaseInsensitive) == 0;
+    }
+
+  protected:
+    LegacyControllerColorSetting(const QDomElement& element,
+            QColor currentValue,
+            QColor defaultValue)
+            : AbstractLegacyControllerSetting(element),
+              m_defaultValue(defaultValue),
+              m_savedValue(currentValue) {
+    }
+
+    virtual QWidget* buildInputWidget(QWidget* parent) override;
+
+  private:
+    QColor m_defaultValue;
+    QColor m_savedValue;
+
+    QColor m_editedValue;
+
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+};
+
+class LegacyControllerFileSetting
+        : public LegacyControllerSettingFactory<LegacyControllerFileSetting>,
+          public AbstractLegacyControllerSetting {
+  public:
+    LegacyControllerFileSetting(const QDomElement& element);
+
+    virtual ~LegacyControllerFileSetting();
+
+    QJSValue value() const override {
+        return QJSValue(stringify());
+    }
+
+    QString stringify() const override {
+        return m_savedValue.absoluteFilePath();
+    }
+    void parse(const QString& in, bool* ok) override;
+    bool isDefault() const override {
+        return m_savedValue == m_defaultValue;
+    }
+    bool isDirty() const override {
+        return m_savedValue != m_editedValue;
+    }
+
+    virtual void save() override {
+        m_savedValue = m_editedValue;
+    }
+
+    virtual void reset() override {
+        m_editedValue = m_defaultValue;
+        emit valueReset();
+    }
+
+    /// @brief Whether or not this setting definition and its current state are
+    /// valid. Validity scope includes a known default/current/dirty option.
+    /// @return true if valid
+    bool valid() const override {
+        return AbstractLegacyControllerSetting::valid() &&
+                (m_defaultValue == m_savedValue || m_savedValue.exists());
+    }
+
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+        return new LegacyControllerFileSetting(element);
+    }
+    static bool match(const QDomElement& element) {
+        return element.hasAttribute(QStringLiteral("type")) &&
+                QString::compare(element.attribute(QStringLiteral("type")),
+                        QStringLiteral("file"),
+                        Qt::CaseInsensitive) == 0;
+    }
+
+  protected:
+    LegacyControllerFileSetting(const QDomElement& element,
+            const QFileInfo& currentValue,
+            const QFileInfo& defaultValue)
+            : AbstractLegacyControllerSetting(element),
+              m_defaultValue(defaultValue),
+              m_savedValue(currentValue) {
+    }
+
+    QWidget* buildInputWidget(QWidget* parent) override;
+
+  private:
+    QString m_fileFilter;
+    QFileInfo m_defaultValue;
+    QFileInfo m_savedValue;
+
+    QFileInfo m_editedValue;
+
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
 };
 
 template<>

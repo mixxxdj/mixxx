@@ -8,6 +8,40 @@
             <product protocol="hid" vendor_id="0xdead" product_id="0xbeaf" />
         </devices>
     </info>
+    <settings>
+        <group label="Cosmetic">
+            <row orientation="vertical">
+                <option
+                    variable="theme"
+                    type="enum"
+                    label="Theme use for the screen">
+                    <description>
+                        The theme used for the screens
+                    </description>
+                    <value label="Classic" default="true">stock</value>
+                    <value label="Advanced">advanced</value>
+                </option>
+               <option
+                   variable="idleBackground"
+                   type="file"
+                   pattern="Images (*.png *.gif *.jpg)"
+                   label="Idle deck background">
+                   <description>
+                       The background used for empty decks
+                   </description>
+               </option>
+               <option
+                   variable="accentColor"
+                   type="color"
+                   default="orange"
+                   label="Accent color">
+                   <description>
+                       The background used for empty decks
+                   </description>
+               </option>
+            </row>
+         </group>
+    </settings>
     <controller id="DummyDevice">
         <screens>
             <screen identifier="main" width="480" height="360" targetFps="20" pixelType="RBGA" splashoff="500" />
