@@ -45,6 +45,10 @@ public:
         return isValidValue(m_value);
     }
 
+    bool isNull() const {
+        return m_value == kValueMin;
+    }
+
     /// Return the valid value.
     ///
     /// Triggers a debug assertion if the value is invalid

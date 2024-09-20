@@ -284,7 +284,7 @@ void SyncControl::reinitLeaderParams(
 }
 
 double SyncControl::determineBpmMultiplier(mixxx::Bpm myBpm, mixxx::Bpm targetBpm) const {
-    if (!myBpm.isValid() || !targetBpm.isValid()) {
+    if (!myBpm.isValid() || !targetBpm.isValid() || myBpm.isNull() || targetBpm.isNull()) {
         return kBpmUnity;
     }
     double unityRatio = myBpm / targetBpm;
