@@ -12,6 +12,15 @@
 #include "oscfunctions.h"
 #include "oscreceiver.h"
 
+void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
+        QString OscGroup,
+        QString OscKey,
+        enum DefOscBodyType OscBodyType,
+        QString OscMessageBodyQString,
+        int OscMessageBodyInt,
+        double OscMessageBodyDouble,
+        float OscMessageBodyFloat);
+
 class OscReceivePacketListener : public osc::OscPacketListener {
   public:
     UserSettingsPointer m_pConfig;
@@ -36,29 +45,88 @@ class OscReceivePacketListener : public osc::OscPacketListener {
             oscIn.oscGroup, oscIn.oscKey;
             oscIn.oscAddress.replace("/", "");
             oscIn.oscValue = oscInVal;
-            int posDel = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
-            if (posDel > 0) {
-                oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel);
-                oscIn.oscGroup = "[" + oscIn.oscGroup + "]";
-                oscIn.oscKey = oscIn.oscAddress.mid(posDel + 1, oscIn.oscAddress.length());
+            bool oscGet = false;
+            bool oscSet = false;
 
-                QString MixxxOSCStatusFileLocation =
-                        m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
-                QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
-                MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
-                QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
-                MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
-                                             "<%1,%2 : %3>")
-                                             .arg(oscIn.oscGroup)
-                                             .arg(oscIn.oscKey)
-                                             .arg(oscIn.oscValue)
-                                  << "\n";
-                ControlObject::getControl(oscIn.oscGroup, oscIn.oscKey)->set(oscIn.oscValue);
-                MixxxOSCStatusFile.close();
-                qDebug() << "OSC Msg Rcvd: Group, Key: Value: "
-                         << oscIn.oscGroup << "," << oscIn.oscKey << ":"
-                         << oscIn.oscValue;
-            };
+            if (oscIn.oscAddress.contains("Get#", Qt::CaseSensitive)) {
+                int posDel1 = oscIn.oscAddress.indexOf("Get#", 0, Qt::CaseInsensitive);
+                if (posDel1 == 0) {
+                    oscGet = true;
+                }
+            } else {
+                oscSet = true;
+            }
+            if (oscGet) {
+                int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
+                if (posDel2 > 0) {
+                    oscIn.oscGroup = oscIn.oscAddress.mid(4, posDel2 - 4);
+                    //                    oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel2);
+                    oscIn.oscGroupSB = "[" + oscIn.oscGroup + "]";
+                    oscIn.oscKey = oscIn.oscAddress.mid(posDel2 + 1, oscIn.oscAddress.length() - 4);
+                    QString MixxxOSCStatusFileLocation =
+                            m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
+                    QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
+                    MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+                    QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
+                    MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Get Group, Key: Value: "
+                                                 "<%1,%2 : %3>")
+                                                 .arg(oscIn.oscGroupSB)
+                                                 .arg(oscIn.oscKey)
+                                                 .arg(oscIn.oscValue)
+                                      << "\n";
+                    // ControlObject::getControl(oscIn.oscGroupSB, oscIn.oscKey)->getParameter();
+
+                    OscFunctionsSendPtrType(m_pConfig,
+                            oscIn.oscGroup,
+                            oscIn.oscKey,
+                            FLOATBODY,
+                            "",
+                            0,
+                            0,
+                            ControlObject::getControl(
+                                    oscIn.oscGroupSB, oscIn.oscKey)
+                                    ->getParameter());
+
+                    MixxxOSCStatusFile.close();
+                    qDebug() << "OSC Msg Rcvd: Get Group, Key: Value: "
+                             << oscIn.oscGroup << "," << oscIn.oscKey << ":"
+                             << oscIn.oscValue;
+                }
+            }
+
+            if (!oscGet && oscSet) {
+                int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
+                if (posDel2 > 0) {
+                    oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel2);
+                    oscIn.oscGroupSB = "[" + oscIn.oscGroup + "]";
+                    oscIn.oscKey = oscIn.oscAddress.mid(posDel2 + 1, oscIn.oscAddress.length());
+
+                    QString MixxxOSCStatusFileLocation =
+                            m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
+                    QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
+                    MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+                    QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
+                    MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
+                                                 "<%1,%2 : %3>")
+                                                 .arg(oscIn.oscGroupSB)
+                                                 .arg(oscIn.oscKey)
+                                                 .arg(oscIn.oscValue)
+                                      << "\n";
+                    ControlObject::getControl(oscIn.oscGroupSB, oscIn.oscKey)->set(oscIn.oscValue);
+                    MixxxOSCStatusFile.close();
+                    //                    qDebug() << "OSC Msg Rcvd: Group, Key: Value: "
+                    //                             << oscIn.oscGroupSB << "," << oscIn.oscKey << ":"
+                    //                             << oscIn.oscValue;
+                    //                    OscFunctionsSendPtrType(m_pConfig,
+                    //                            "[Osc]",
+                    //                            "OscSync",
+                    //                            FLOATBODY,
+                    //                            "",
+                    //                            0,
+                    //                            0,
+                    //                            1);
+                }
+            }
 
         } catch (osc::Exception& e) {
             // std::cout << "error while parsing message: " <<

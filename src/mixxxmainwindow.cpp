@@ -1463,14 +1463,14 @@ void MixxxMainWindow::oscEnable() {
     QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
     if (m_pCoreServices->getSettings()->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
         MixxxOSCStatusTxt << QString("OSC enabled") << "\n";
-        OscFunctionsSendPtrType(m_pCoreServices->getSettings(),
-                "[Master]",
-                "StartReset",
-                INTBODY,
-                "",
-                1,
-                0,
-                0);
+        //        OscFunctionsSendPtrType(m_pCoreServices->getSettings(),
+        //                "[Osc]",
+        //                "OscSync",
+        //                FLOATBODY,
+        //                "",
+        //                0,
+        //                0,
+        //                1);
         OscReceiverMain(m_pCoreServices->getSettings());
     } else {
         MixxxOSCStatusTxt << QString("OSC NOT enabled") << "\n";

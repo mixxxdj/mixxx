@@ -2,7 +2,7 @@
 #define OSCFUNCTIONS_H
 
 // #define oscClientAddress "192.168.0.125"
-constexpr const char* oscClientAddress = "192.168.0.125";
+// constexpr const char* oscClientAddress = "192.168.0.125";
 // #define OscPortOut 9000
 // #define OscPortIn 9001
 // #define OUTPUT_BUFFER_SIZE 1024
@@ -41,8 +41,9 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
     MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
     QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
 
-    OscGroup.replace("[", "");
-    OscGroup.replace("]", "");
+    // OscGroup.replace("[", "");
+    // OscGroup.replace("]", "");
+    // OscGroup = OscGroup.mid(1, OscGroup.length() - 2);
 
     QString OscMessageHeader = "/" + OscGroup + "@" + OscKey;
     QByteArray OscMessageHeaderBa = OscMessageHeader.toLocal8Bit();

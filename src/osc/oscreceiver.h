@@ -20,6 +20,7 @@ class oscResult {
   public:
     QString oscAddress;
     QString oscGroup;
+    QString oscGroupSB;
     QString oscKey;
     float oscValue;
 };
