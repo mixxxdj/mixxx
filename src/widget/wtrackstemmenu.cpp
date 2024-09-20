@@ -55,9 +55,18 @@ WTrackStemMenu::WTrackStemMenu(const QString& label,
 }
 
 bool WTrackStemMenu::eventFilter(QObject* pObj, QEvent* e) {
-    if (e->type() == QEvent::MouseButtonPress) {
+    QInputEvent* pInputEvent = dynamic_cast<QInputEvent*>(e);
+    qDebug() << e << pInputEvent;
+    if (pInputEvent != nullptr &&
+            (pInputEvent->modifiers() & Qt::ControlModifier) != m_selectMode) {
+        m_selectMode = pInputEvent->modifiers() & Qt::ControlModifier;
+        updateActions();
+    }
+
+    if (m_selectMode && (e->type() == QEvent::MouseButtonRelease)) {
         QAction* pAction = activeAction();
-        if (pAction && pAction->isCheckable() && m_selectMode) {
+        qDebug() << e << pAction;
+        if (pAction && pAction->isCheckable()) {
             pAction->setChecked(!pAction->isChecked());
             updateActions();
             return true;
