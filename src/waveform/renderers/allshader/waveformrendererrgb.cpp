@@ -56,9 +56,8 @@ void WaveformRendererRGB::paintGL() {
     }
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
-    uint selectedStems = m_waveformRenderer->getSelectedStems();
-    // If this track is a stem track and is not fully loaded as a stereo track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem() && selectedStems != 0xf) {
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && waveform->hasStem()) {
         return;
     }
 #endif
