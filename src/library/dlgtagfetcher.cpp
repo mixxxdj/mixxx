@@ -537,14 +537,14 @@ void DlgTagFetcher::slotNetworkResult(
         const QString& app,
         const QString& message,
         int code) {
-    QString cantConnect = tr("Can't connect to %1: %2").arg(app, message);
-    QFontMetrics metrics(loadingProgressBar->font());
-    QString elidedCantConnect = metrics.elidedText(
+    const QString cantConnect = tr("Can't connect to %1: %2").arg(app, message);
+    const QFontMetrics metrics(loadingProgressBar->font());
+    const QString elidedCantConnect = metrics.elidedText(
             cantConnect,
             Qt::ElideRight,
             loadingProgressBar->width() - 4);
     loadingProgressBar->setFormat(elidedCantConnect);
-    if (cantConnect.size() != elidedCantConnect.size()) {
+    if (cantConnect != elidedCantConnect) {
         loadingProgressBar->setToolTip(cantConnect);
     }
     qWarning() << "Error while fetching track metadata!"
