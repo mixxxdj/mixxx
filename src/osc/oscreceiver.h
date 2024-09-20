@@ -3,16 +3,16 @@
 
 // #include "preferences/colorpalettesettings.h"
 
+#include <QDataStream>
+#include <QFile>
+#include <QThread>
+#include <memory>
+
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
-
-#include <QDataStream>
-#include <QFile>
-#include <QThread>
-#include <memory>
 
 class ControlProxy;
 

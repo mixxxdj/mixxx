@@ -640,7 +640,9 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     }
 
     double TrackTypePart = 0.0;
-    TrackTypePart = (1.0 * CharType[0] * 1000000000000) + (1.0 * CharType[1] * 1000000000) + (1.0 * CharType[2] * 1000000) + (1.0 * CharType[3] * 1000) + (1.0 * CharType[4] * 1);
+    TrackTypePart = (1.0 * CharType[0] * 1000000000000) +
+            (1.0 * CharType[1] * 1000000000) + (1.0 * CharType[2] * 1000000) +
+            (1.0 * CharType[3] * 1000) + (1.0 * CharType[4] * 1);
     m_pTrackType->set(TrackTypePart);
 
     // Title
@@ -695,21 +697,21 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     double TrackTitlePart_4 = 0.0;
     double TrackTitlePart_5 = 0.0;
 
-    TrackTitlePart_1 = (1.0 * CharTitle[0] * 1000000000000) + 
-        (1.0 * CharTitle[1] * 1000000000) + (1.0 * CharTitle[2] * 1000000) + 
-        (1.0 * CharTitle[3] * 1000) + (1.0 * CharTitle[4] * 1);
-    TrackTitlePart_2 = (1.0 * CharTitle[5] * 1000000000000) + 
-        (1.0 * CharTitle[6] * 1000000000) + (1.0 * CharTitle[7] * 1000000) + 
-        (1.0 * CharTitle[8] * 1000) + (1.0 * CharTitle[9] * 1);
-    TrackTitlePart_3 = (1.0 * CharTitle[10] * 1000000000000) + 
-        (1.0 * CharTitle[11] * 1000000000) + (1.0 * CharTitle[12] * 1000000) + 
-        (1.0 * CharTitle[13] * 1000) + (1.0 * CharTitle[14] * 1);
-    TrackTitlePart_4 = (1.0 * CharTitle[15] * 1000000000000) + 
-        (1.0 * CharTitle[16] * 1000000000) + (1.0 * CharTitle[17] * 1000000) + 
-        (1.0 * CharTitle[18] * 1000) + (1.0 * CharTitle[19] * 1);
-    TrackTitlePart_5 = (1.0 * CharTitle[20] * 1000000000000) + 
-        (1.0 * CharTitle[21] * 1000000000) + (1.0 * CharTitle[22] * 1000000) + 
-        (1.0 * CharTitle[23] * 1000) + (1.0 * CharTitle[24] * 1);
+    TrackTitlePart_1 = (1.0 * CharTitle[0] * 1000000000000) +
+            (1.0 * CharTitle[1] * 1000000000) + (1.0 * CharTitle[2] * 1000000) +
+            (1.0 * CharTitle[3] * 1000) + (1.0 * CharTitle[4] * 1);
+    TrackTitlePart_2 = (1.0 * CharTitle[5] * 1000000000000) +
+            (1.0 * CharTitle[6] * 1000000000) + (1.0 * CharTitle[7] * 1000000) +
+            (1.0 * CharTitle[8] * 1000) + (1.0 * CharTitle[9] * 1);
+    TrackTitlePart_3 = (1.0 * CharTitle[10] * 1000000000000) +
+            (1.0 * CharTitle[11] * 1000000000) + (1.0 * CharTitle[12] * 1000000) +
+            (1.0 * CharTitle[13] * 1000) + (1.0 * CharTitle[14] * 1);
+    TrackTitlePart_4 = (1.0 * CharTitle[15] * 1000000000000) +
+            (1.0 * CharTitle[16] * 1000000000) + (1.0 * CharTitle[17] * 1000000) +
+            (1.0 * CharTitle[18] * 1000) + (1.0 * CharTitle[19] * 1);
+    TrackTitlePart_5 = (1.0 * CharTitle[20] * 1000000000000) +
+            (1.0 * CharTitle[21] * 1000000000) + (1.0 * CharTitle[22] * 1000000) +
+            (1.0 * CharTitle[23] * 1000) + (1.0 * CharTitle[24] * 1);
 
     m_pTrackTitle_1->set(TrackTitlePart_1);
     m_pTrackTitle_2->set(TrackTitlePart_2);
@@ -723,26 +725,26 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     double TrackArtistPart_4 = 0.0;
     double TrackArtistPart_5 = 0.0;
 
-    TrackArtistPart_1 = (1.0 * CharArtist[0] * 1000000000000) + 
-        (1.0 * CharArtist[1] * 1000000000) + 
-        (1.0 * CharArtist[2] * 1000000) + (1.0 * CharArtist[3] * 1000) + 
-        (1.0 * CharArtist[4] * 1);
-    TrackArtistPart_2 = (1.0 * CharArtist[5] * 1000000000000) + 
-        (1.0 * CharArtist[6] * 1000000000) + 
-        (1.0 * CharArtist[7] * 1000000) + (1.0 * CharArtist[8] * 1000) + 
-        (1.0 * CharArtist[9] * 1);
-    TrackArtistPart_3 = (1.0 * CharArtist[10] * 1000000000000) + 
-        (1.0 * CharArtist[11] * 1000000000) + 
-        (1.0 * CharArtist[12] * 1000000) + (1.0 * CharArtist[13] * 1000) + 
-        (1.0 * CharArtist[14] * 1);
-    TrackArtistPart_4 = (1.0 * CharArtist[15] * 1000000000000) + 
-        (1.0 * CharArtist[16] * 1000000000) + 
-        (1.0 * CharArtist[17] * 1000000) + (1.0 * CharArtist[18] * 1000) + 
-        (1.0 * CharArtist[19] * 1);
-    TrackArtistPart_5 = (1.0 * CharArtist[20] * 1000000000000) + 
-        (1.0 * CharArtist[21] * 1000000000) + 
-        (1.0 * CharArtist[22] * 1000000) + (1.0 * CharArtist[23] * 1000) + 
-        (1.0 * CharArtist[24] * 1);
+    TrackArtistPart_1 = (1.0 * CharArtist[0] * 1000000000000) +
+            (1.0 * CharArtist[1] * 1000000000) +
+            (1.0 * CharArtist[2] * 1000000) + (1.0 * CharArtist[3] * 1000) +
+            (1.0 * CharArtist[4] * 1);
+    TrackArtistPart_2 = (1.0 * CharArtist[5] * 1000000000000) +
+            (1.0 * CharArtist[6] * 1000000000) +
+            (1.0 * CharArtist[7] * 1000000) + (1.0 * CharArtist[8] * 1000) +
+            (1.0 * CharArtist[9] * 1);
+    TrackArtistPart_3 = (1.0 * CharArtist[10] * 1000000000000) +
+            (1.0 * CharArtist[11] * 1000000000) +
+            (1.0 * CharArtist[12] * 1000000) + (1.0 * CharArtist[13] * 1000) +
+            (1.0 * CharArtist[14] * 1);
+    TrackArtistPart_4 = (1.0 * CharArtist[15] * 1000000000000) +
+            (1.0 * CharArtist[16] * 1000000000) +
+            (1.0 * CharArtist[17] * 1000000) + (1.0 * CharArtist[18] * 1000) +
+            (1.0 * CharArtist[19] * 1);
+    TrackArtistPart_5 = (1.0 * CharArtist[20] * 1000000000000) +
+            (1.0 * CharArtist[21] * 1000000000) +
+            (1.0 * CharArtist[22] * 1000000) + (1.0 * CharArtist[23] * 1000) +
+            (1.0 * CharArtist[24] * 1);
 
     m_pTrackArtist_1->set(TrackArtistPart_1);
     m_pTrackArtist_2->set(TrackArtistPart_2);
@@ -752,22 +754,21 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     //  EveOSC begin
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        OscFunctionsSendPtrType(m_pConfig, 
-                getGroup(), 
-                "TrackArtist", 
-                STRINGBODY, 
-                pTrack->getArtist().toLatin1(), 
-                0, 
-                0, 
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "TrackArtist",
+                STRINGBODY,
+                pTrack->getArtist().toLatin1(),
+                0,
+                0,
                 0);
-        OscFunctionsSendPtrType(m_pConfig, 
-                getGroup(), 
-                "TrackTitle", 
-                STRINGBODY, 
-                pTrack->getTitle().
-                toLatin1(), 
-                0, 
-                0, 
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "TrackTitle",
+                STRINGBODY,
+                pTrack->getTitle().toLatin1(),
+                0,
+                0,
                 0);
 
         float oscTrackInfoDuration = pTrack->getDuration();
@@ -777,12 +778,12 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         QString oscTrackInfoDurationCalc;
 
         if (oscTrackInfoDurationCalcSec < 10) {
-            oscTrackInfoDurationCalc = 
+            oscTrackInfoDurationCalc =
                     QString("%1:0%2")
                             .arg(oscTrackInfoDurationCalcMin)
                             .arg(oscTrackInfoDurationCalcSec);
         } else {
-            oscTrackInfoDurationCalc = 
+            oscTrackInfoDurationCalc =
                     QString("%1:%2")
                             .arg(oscTrackInfoDurationCalcMin)
                             .arg(oscTrackInfoDurationCalcSec);
@@ -791,13 +792,13 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         QByteArray oscTrackInfoDurationBa = oscTrackInfoDurationCalc.toLocal8Bit();
         const char* oscBodyMessageDuration = oscTrackInfoDurationBa.data();
 
-        OscFunctionsSendPtrType(m_pConfig, 
-                getGroup(), 
-                "TDuration", 
-                STRINGBODY, 
-                oscBodyMessageDuration, 
-                0, 
-                0, 
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "TDuration",
+                STRINGBODY,
+                oscBodyMessageDuration,
+                0,
+                0,
                 0);
     }
     // EveOSC end
@@ -889,29 +890,29 @@ void EngineBuffer::ejectTrack() {
 
     //  EveOSC begin
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        OscFunctionsSendPtrType(m_pConfig, 
-                getGroup(), 
-                "TrackArtist", 
-                STRINGBODY, 
-                "no track loaded", 
-                0, 
-                0, 
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "TrackArtist",
+                STRINGBODY,
+                "no track loaded",
+                0,
+                0,
                 0);
-        OscFunctionsSendPtrType(m_pConfig, 
-                getGroup(), 
-                "TrackTitle", 
-                STRINGBODY, 
-                "no track loaded", 
-                0, 
-                0, 
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "TrackTitle",
+                STRINGBODY,
+                "no track loaded",
+                0,
+                0,
                 0);
-        OscFunctionsSendPtrType(m_pConfig, 
-                getGroup(), 
-                "Duration", 
-                STRINGBODY, 
-                "0:00", 
-                0, 
-                0, 
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "Duration",
+                STRINGBODY,
+                "0:00",
+                0,
+                0,
                 0);
     }
  

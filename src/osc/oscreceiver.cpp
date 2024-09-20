@@ -5,21 +5,21 @@
 
 #pragma comment(lib, "winmm.lib")
 
+#include "control/controlobject.h"
 #include "osc/ip/UdpSocket.h"
 #include "osc/osc/OscPacketListener.h"
 #include "osc/osc/OscReceivedElements.h"
 #include "oscfunctions.h"
 #include "oscreceiver.h"
-#include "control/controlobject.h"
 
 class OscReceivePacketListener : public osc::OscPacketListener {
-  public :
+  public:
     UserSettingsPointer m_pConfig;
     OscReceivePacketListener(UserSettingsPointer aPointerHerePlease) {
         m_pConfig = aPointerHerePlease;
     };
 
-  private: 
+  private:
     void ProcessMessage(const osc::ReceivedMessage& m,
             const IpEndpointName& remoteEndpoint) {
         (void)remoteEndpoint;
@@ -42,20 +42,29 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                 oscIn.oscGroup = "[" + oscIn.oscGroup + "]";
                 oscIn.oscKey = oscIn.oscAddress.mid(posDel + 1, oscIn.oscAddress.length());
 
-                QString MixxxOSCStatusFileLocation = m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
+                QString MixxxOSCStatusFileLocation =
+                        m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
                 QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
                 MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
                 QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
-                MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: <%1,%2 : %3>").arg(oscIn.oscGroup).arg(oscIn.oscKey).arg(oscIn.oscValue) << "\n";
+                MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
+                                             "<%1,%2 : %3>")
+                                             .arg(oscIn.oscGroup)
+                                             .arg(oscIn.oscKey)
+                                             .arg(oscIn.oscValue)
+                                  << "\n";
                 ControlObject::getControl(oscIn.oscGroup, oscIn.oscKey)->set(oscIn.oscValue);
                 MixxxOSCStatusFile.close();
-                qDebug() << "OSC Msg Rcvd: Group, Key: Value: " << oscIn.oscGroup << "," << oscIn.oscKey << ":" << oscIn.oscValue;
-
+                qDebug() << "OSC Msg Rcvd: Group, Key: Value: "
+                         << oscIn.oscGroup << "," << oscIn.oscKey << ":"
+                         << oscIn.oscValue;
             };
 
         } catch (osc::Exception& e) {
-            //std::cout << "error while parsing message: " << m.AddressPattern() << ": " << e.what() << "\n";
-            QString MixxxOSCStatusFileLocation = m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";            
+            // std::cout << "error while parsing message: " <<
+            // m.AddressPattern() << ": " << e.what() << "\n";
+            QString MixxxOSCStatusFileLocation =
+                    m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
             QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
             MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
             QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
@@ -68,12 +77,12 @@ class OscReceivePacketListener : public osc::OscPacketListener {
 
 void RunOscReceiver(int OscPortIn, UserSettingsPointer m_pConfig) {
     OscReceivePacketListener listener(m_pConfig);
-    UdpListeningReceiveSocket s(IpEndpointName(IpEndpointName::ANY_ADDRESS, OscPortIn), 
+    UdpListeningReceiveSocket s(IpEndpointName(IpEndpointName::ANY_ADDRESS, OscPortIn),
             &listener);
     s.Run();
 }
 
-//#ifndef NO_OSC_TEST_MAIN
+// #ifndef NO_OSC_TEST_MAIN
 
 void OscReceiverMain(UserSettingsPointer m_pConfig) {
     QString MixxxOSCStatusFileLocation = m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
@@ -88,16 +97,24 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
         int CKOscPortInInt = CKOscPortIn.toInt();
         MixxxOSCStatusTxt << QString("OSC Enabled -> Started") << "\n";
         qDebug() << "OSC Enabled -> Started";
-        MixxxOSCStatusTxt << QString("OSC Settings: PortIn            : %1").arg(CKOscPortInInt) << "\n";
-        MixxxOSCStatusTxt << QString("OSC Settings: PortOut           : %1").arg(CKOscPortOutInt) << "\n";
+        MixxxOSCStatusTxt << QString("OSC Settings: PortIn            : %1")
+                                     .arg(CKOscPortInInt)
+                          << "\n";
+        MixxxOSCStatusTxt << QString("OSC Settings: PortOut           : %1")
+                                     .arg(CKOscPortOutInt)
+                          << "\n";
 
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver1Active"))) {
             QString CKOscRec1Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Active"));
             QString CKOscRec1Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Ip"));
             QByteArray CKOscRec1Ipba = CKOscRec1Ip.toLocal8Bit();
             const char* CKOscRec1IpChar = CKOscRec1Ipba.data();
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 1 active : %1").arg(CKOscRec1Active) << "\n";
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 1 ip     : %1").arg(CKOscRec1IpChar) << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 1 active : %1")
+                                         .arg(CKOscRec1Active)
+                              << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 1 ip     : %1")
+                                         .arg(CKOscRec1IpChar)
+                              << "\n";
         } else {
             MixxxOSCStatusTxt << QString("OSC Settings: Receiver 1 NOT active") << "\n";
         }
@@ -106,8 +123,12 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             QString CKOscRec2Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Ip"));
             QByteArray CKOscRec2Ipba = CKOscRec2Ip.toLocal8Bit();
             const char* CKOscRec2IpChar = CKOscRec2Ipba.data();
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 2 active : %1").arg(CKOscRec2Active) << "\n";
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 2 ip     : %1").arg(CKOscRec2IpChar) << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 2 active : %1")
+                                         .arg(CKOscRec2Active)
+                              << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 2 ip     : %1")
+                                         .arg(CKOscRec2IpChar)
+                              << "\n";
         } else {
             MixxxOSCStatusTxt << QString("OSC Settings: Receiver 2 NOT active") << "\n";
         }
@@ -116,8 +137,12 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             QString CKOscRec3Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Ip"));
             QByteArray CKOscRec3Ipba = CKOscRec3Ip.toLocal8Bit();
             const char* CKOscRec3IpChar = CKOscRec3Ipba.data();
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 3 active : %1").arg(CKOscRec3Active) << "\n";
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 3 ip     : %1").arg(CKOscRec3IpChar) << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 3 active : %1")
+                                         .arg(CKOscRec3Active)
+                              << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 3 ip     : %1")
+                                         .arg(CKOscRec3IpChar)
+                              << "\n";
         } else {
             MixxxOSCStatusTxt << QString("OSC Settings: Receiver 3 NOT active") << "\n";
         }
@@ -126,8 +151,12 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             QString CKOscRec4Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Ip"));
             QByteArray CKOscRec4Ipba = CKOscRec4Ip.toLocal8Bit();
             const char* CKOscRec4IpChar = CKOscRec4Ipba.data();
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 4 active : %1").arg(CKOscRec4Active) << "\n";
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 4 ip     : %1").arg(CKOscRec4IpChar) << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 4 active : %1")
+                                         .arg(CKOscRec4Active)
+                              << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 4 ip     : %1")
+                                         .arg(CKOscRec4IpChar)
+                              << "\n";
         } else {
             MixxxOSCStatusTxt << QString("OSC Settings: Receiver 4 NOT active") << "\n";
         }
@@ -136,8 +165,12 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             QString CKOscRec5Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Ip"));
             QByteArray CKOscRec5Ipba = CKOscRec5Ip.toLocal8Bit();
             const char* CKOscRec5IpChar = CKOscRec5Ipba.data();
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 5 active : %1").arg(CKOscRec5Active) << "\n";
-            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 5 ip     : %1").arg(CKOscRec5IpChar) << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 5 active : %1")
+                                         .arg(CKOscRec5Active)
+                              << "\n";
+            MixxxOSCStatusTxt << QString("OSC Settings: Receiver 5 ip     : %1")
+                                         .arg(CKOscRec5IpChar)
+                              << "\n";
         } else {
             MixxxOSCStatusTxt << QString("OSC Settings: Receiver 5 NOT active") << "\n";
         }
@@ -149,4 +182,4 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
     MixxxOSCStatusFile.close();
 }
 
-//#endif /* NO_OSC_TEST_MAIN */
+// #endif /* NO_OSC_TEST_MAIN */

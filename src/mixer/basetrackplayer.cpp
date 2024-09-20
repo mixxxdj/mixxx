@@ -798,7 +798,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     QString DeckStatusFilePath = m_pConfig->getSettingsPath();
     DeckStatusFilePath.replace("Roaming", "Local");
     DeckStatusFilePath.replace("\\", "/");
-    QString DeckStatusFileLocation = DeckStatusFilePath + "/controllers/Status" + getGroup() + ".js";
+    QString DeckStatusFileLocation =
+            DeckStatusFilePath + "/controllers/Status" + getGroup() + ".js";
     //  Different file for each Deck / Sampler
     QString DeckStatusTxtLine1 = "var TrackDeck" + trackInfoDeck + " = { ";
     QString DeckStatusTxtLine5 = "};";
@@ -1062,7 +1063,8 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom &&
+            v >= WaveformWidgetRenderer::s_waveformMinZoom) {
         m_pWaveformZoom->setAndConfirm(v);
     }
 }
