@@ -3114,3 +3114,34 @@ TEST_F(EngineSyncTest, BeatContextRounding) {
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
             kMaxFloatingPointErrorHighPrecision);
 }
+
+TEST_F(EngineSyncTest, KeepCorrectFactorUponResync) {
+    /* Usecase
+        - load track @ 174bpm in deck 1
+        - load track @ 87 bpm in deck 2
+        - Sync deck 2 to 1, keep 87 BPM on deck 2
+        - adjust rate slider on deck 1 to 184bpm
+        - Sync deck 2 to 1, get 92 BPM on deck 2
+    */
+    m_pMixerDeck1->loadFakeTrack(false, 174.0);
+    m_pMixerDeck2->loadFakeTrack(false, 87.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(174.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(87.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_enabled"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_leader"), 1.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(174.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(87.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(184.0 / 174));
+    ProcessBuffer();
+    EXPECT_NEAR(184.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")), 0.001);
+    EXPECT_NEAR(92.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")), 0.001);
+    EXPECT_NEAR(getRateSliderValue(1.0574),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate")),
+            0.005);
+}
