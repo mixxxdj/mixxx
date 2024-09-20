@@ -121,7 +121,7 @@ void TagFetcher::slotFingerprintReady() {
         return;
     }
 
-    emit fetchProgress(tr("Identifying track through Acoustid"));
+    emit fetchProgress(tr("Identifying track through AcoustID"));
     DEBUG_ASSERT(!m_pAcoustIdTask);
     m_pAcoustIdTask = make_parented<mixxx::AcoustIdLookupTask>(
             &m_network,
@@ -167,7 +167,7 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
         emit resultAvailable(
                 std::move(pTrack),
                 {},
-                tr("Could not identify track through Acoustid."));
+                tr("Could not identify track through AcoustID."));
         return;
     }
 
@@ -301,15 +301,17 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
     auto pTrack = m_pTrack;
     terminate();
 
-    QString whyEmptyMessage;
     if (guessedTrackReleases.empty()) {
-        whyEmptyMessage = tr("Could not find this track in the MusicBrainz database.");
+        emit resultAvailable(
+                std::move(pTrack),
+                {},
+                tr("Could not find this track in the MusicBrainz database."));
+    } else {
+        emit resultAvailable(
+                std::move(pTrack),
+                std::move(guessedTrackReleases),
+                {});
     }
-
-    emit resultAvailable(
-            std::move(pTrack),
-            std::move(guessedTrackReleases),
-            whyEmptyMessage);
 }
 
 void TagFetcher::startFetchCoverArtLinks(
