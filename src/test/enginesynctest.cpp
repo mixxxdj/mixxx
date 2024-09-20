@@ -671,10 +671,10 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     EXPECT_DOUBLE_EQ(
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
-    // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.8),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    // Leader is currently 192, BPM before sync is 120, so the closer sync should be 96
+    EXPECT_DOUBLE_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -2105,8 +2105,8 @@ TEST_F(EngineSyncTest, HalfDoubleEachOther) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // Threshold 1.414 sqrt(2);
-    // 150 / 105 = 1.43
-    // 105 / 75 = 1.40
+    // 150 / 144 = 1.04
+    // 144 / 75 = 1.92
     // expect 75 BPM
 
     mixxx::BeatsPointer pBeats1b = mixxx::Beats::fromConstTempo(
@@ -2120,7 +2120,7 @@ TEST_F(EngineSyncTest, HalfDoubleEachOther) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0.0);
 
-    EXPECT_DOUBLE_EQ(75.0,
+    EXPECT_DOUBLE_EQ(150,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1.0);
