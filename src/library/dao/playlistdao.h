@@ -8,23 +8,6 @@
 #include "track/trackid.h"
 #include "util/class.h"
 
-#define PLAYLIST_TABLE "Playlists"
-#define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
-
-const QString PLAYLISTTABLE_ID = QStringLiteral("id");
-const QString PLAYLISTTABLE_NAME = QStringLiteral("name");
-const QString PLAYLISTTABLE_POSITION = QStringLiteral("position");
-const QString PLAYLISTTABLE_HIDDEN = QStringLiteral("hidden");
-const QString PLAYLISTTABLE_DATECREATED = QStringLiteral("date_created");
-const QString PLAYLISTTABLE_DATEMODIFIED = QStringLiteral("date_modified");
-
-const QString PLAYLISTTRACKSTABLE_TRACKID = QStringLiteral("track_id");
-const QString PLAYLISTTRACKSTABLE_POSITION = QStringLiteral("position");
-const QString PLAYLISTTRACKSTABLE_PLAYLISTID = QStringLiteral("playlist_id");
-const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_added");
-
-#define AUTODJ_TABLE "Auto DJ"
-
 class AutoDJProcessor;
 class QSqlDatabase;
 

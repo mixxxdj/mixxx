@@ -1236,24 +1236,89 @@ void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {
     TrackModel* pTrackModel = getTrackModel();
     QAbstractItemModel* pItemModel = model();
-
     if (!pTrackModel || !pItemModel || !m_sorting) {
         return;
     }
 
     // Save the selection
-    const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
+    // If this is track model that may contain a track multiple times (a playlist),
+    // we store the positions in order to reselect only the current selection,
+    // not all occurrences of selected tracks.
+    QList<TrackId> selectedTrackIds;
+    QList<int> selectedTrackPositions;
+    bool usePositions = pTrackModel->hasCapabilities(TrackModel::Capability::Reorder);
+    if (usePositions) {
+        const QModelIndexList indices = selectionModel()->selectedRows();
+        selectedTrackPositions = pTrackModel->getSelectedPositions(indices);
+    } else {
+        selectedTrackIds = getSelectedTrackIds();
+    }
+
     int savedHScrollBarPos = horizontalScrollBar()->value();
     // Save the column of focused table cell.
     // The cell is not necessarily part of the selection, but even if it's
     // focused after deselecting a row we may assume the user clicked onto the
     // column that will be used for sorting.
-    int prevColum = 0;
+    int prevColumn = 0;
     if (currentIndex().isValid()) {
-        prevColum = currentIndex().column();
+        prevColumn = currentIndex().column();
     }
 
     sortByColumn(headerSection, sortOrder);
+
+    if (usePositions) {
+        selectTracksByPosition(selectedTrackPositions, prevColumn);
+    } else {
+        selectTracksById(selectedTrackIds, prevColumn);
+    }
+
+    // This seems to be broken since at least Qt 5.12: no scrolling is issued
+    // scrollTo(first, QAbstractItemView::EnsureVisible);
+    horizontalScrollBar()->setValue(savedHScrollBarPos);
+}
+
+void WTrackTableView::selectTracksByPosition(const QList<int>& positions, int prevColumn) {
+    if (positions.isEmpty()) {
+        return;
+    }
+    TrackModel* pTrackModel = getTrackModel();
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    pSelectionModel->reset(); // remove current selection
+
+    // Find previously selected tracks and store respective rows for reselection.
+    QList<int> rows;
+    for (int pos : positions) {
+        rows.append(pTrackModel->getTrackRowByPosition(pos));
+    }
+
+    // Select the first row of the previous selection.
+    // This scrolls to that row and with the leftmost cell being focused we have
+    // a starting point (currentIndex) for navigation with Up/Down keys.
+    // Replaces broken scrollTo() (see comment below)
+    if (!rows.isEmpty()) {
+        selectRow(rows.first());
+    }
+
+    // Refocus the cell in the column that was focused before sorting.
+    // With this, any Up/Down key press moves the selection and keeps the
+    // horizontal scrollbar position we will restore below.
+    QModelIndex restoreIndex = model()->index(currentIndex().row(), prevColumn);
+    if (restoreIndex.isValid()) {
+        setCurrentIndex(restoreIndex);
+    }
+
+    // Restore previous selection (doesn't affect focused cell).
+    for (int row : rows) {
+        pSelectionModel->select(model()->index(row, prevColumn),
+                QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    }
+}
+
+// Don't use this on playlists since they may contain a TrackId multiple times.
+// See doSortByColumn.
+void WTrackTableView::selectTracksById(const QList<TrackId>& trackIds, int prevColum) {
+    TrackModel* pTrackModel = getTrackModel();
+    QAbstractItemModel* pItemModel = model();
 
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
@@ -1264,15 +1329,7 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
 
     // Find previously selected tracks and store respective rows for reselection.
     QMap<int, int> selectedRows;
-    for (const auto& trackId : selectedTrackIds) {
-        // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
-        // code is broken for playlists because it assumes each trackid is in
-        // the table once. This will erroneously select all instances of the
-        // track for playlists, but it works fine for every other view. The way
-        // to fix this that we should do is to delegate the selection saving to
-        // the TrackModel. This will allow the playlist table model to use the
-        // table index as the unique id instead of this code stupidly using
-        // trackid.
+    for (const auto& trackId : trackIds) {
         const auto rows = pTrackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
@@ -1303,10 +1360,6 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         QModelIndex tl = pItemModel->index(i.key(), 0);
         pSelectionModel->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
     }
-
-    // This seems to be broken since at least Qt 5.12: no scrolling is issued
-    //scrollTo(first, QAbstractItemView::EnsureVisible);
-    horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
 void WTrackTableView::applySortingIfVisible() {
