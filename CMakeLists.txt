@@ -1200,7 +1200,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/tapfilter.cpp
   src/util/task.cpp
   src/util/taskmonitor.cpp
-  src/util/threadcputimer.cpp
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp

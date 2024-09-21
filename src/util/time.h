@@ -4,13 +4,11 @@
 
 #include "util/duration.h"
 #include "util/performancetimer.h"
-#include "util/threadcputimer.h"
 
 namespace mixxx {
 
 class Time {
     using LLTIMER = PerformanceTimer;
-    // using LLTIMER = ThreadCpuTimer;
 
   public:
     using rep = LLTIMER::ClockT::rep;
