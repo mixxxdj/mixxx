@@ -4,6 +4,7 @@
 
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "widget/controlwidgetconnection.h"
 

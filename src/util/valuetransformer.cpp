@@ -1,35 +1,130 @@
 #include "util/valuetransformer.h"
 
-ValueTransformer::ValueTransformer() {
-}
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <memory>
+#include <numeric>
 
-void ValueTransformer::addTransformer(TransformNode* pTransformer) {
-    m_transformers.append(pTransformer);
+#include "skin/legacy/skincontext.h"
+
+class TransformNode {
+  public:
+    TransformNode() {
+    }
+    virtual ~TransformNode() {
+    }
+
+    virtual double transform(double argument) const = 0;
+    virtual double transformInverse(double argument) const = 0;
+};
+
+namespace {
+
+class TransformAdd : public TransformNode {
+  public:
+    TransformAdd(double addend)
+            : m_addend(addend) {
+    }
+
+    double transform(double argument) const override {
+        return argument + m_addend;
+    }
+
+    double transformInverse(double argument) const override {
+        return argument - m_addend;
+    }
+
+  private:
+    double m_addend;
+};
+
+class TransformInvert : public TransformNode {
+  public:
+    double transform(double argument) const override {
+        return -argument;
+    }
+
+    double transformInverse(double argument) const override {
+        return -argument;
+    }
+};
+
+class TransformNot : public TransformNode {
+  public:
+    double transform(double argument) const override {
+        return !static_cast<bool>(argument);
+    }
+
+    double transformInverse(double argument) const override {
+        return !static_cast<bool>(argument);
+    }
+};
+
+class TransformIsEqual : public TransformNode {
+  public:
+    TransformIsEqual(double compareValue)
+            : m_compareValue(compareValue) {
+    }
+
+    double transform(double argument) const override {
+        return argument == m_compareValue;
+    }
+
+    double transformInverse(double argument) const override {
+        if (argument > 0.0) {
+            return m_compareValue;
+        }
+        return 0.0;
+    }
+
+  private:
+    double m_compareValue;
+};
+
+} // namespace
+
+void ValueTransformer::addTransformer(std::unique_ptr<TransformNode> pTransformer) {
+    m_transformers.push_back(std::move(pTransformer));
 }
 
 double ValueTransformer::transform(double argument) const {
-    foreach (const TransformNode* pNode, m_transformers) {
-        argument = pNode->transform(argument);
-    }
-    return argument;
+    return std::accumulate(m_transformers.cbegin(),
+            m_transformers.cend(),
+            argument,
+            [&](double argument, const auto& pNode) {
+                return pNode->transform(argument);
+            });
 }
 
 double ValueTransformer::transformInverse(double argument) const {
-    for (int i = m_transformers.size() - 1; i >= 0; --i) {
-        const TransformNode* pNode = m_transformers[i];
-        argument = pNode->transformInverse(argument);
-    }
-    return argument;
+    return std::accumulate(m_transformers.crbegin(),
+            m_transformers.crend(),
+            argument,
+            [&](double argument, const auto& pNode) {
+                return pNode->transformInverse(argument);
+            });
 }
 
 // static
-ValueTransformer* ValueTransformer::parseFromXml(const QDomElement& transformElement,
-        const SkinContext& context) {
+std::unique_ptr<ValueTransformer> ValueTransformer::parseFromXml(
+        const QDomElement& transformElement, const SkinContext& context) {
     if (transformElement.isNull() || !transformElement.hasChildNodes()) {
         return nullptr;
     }
 
-    ValueTransformer* pTransformer = new ValueTransformer();
+    // constructor is private, so we can't use std::make_unique
+    auto pTransformer = std::unique_ptr<ValueTransformer>(new ValueTransformer());
+
+    auto maybeAddFromElement = [&]<typename T>(auto element) {
+        QString valueStr = context.nodeToString(element);
+        bool ok = false;
+        double value = valueStr.toDouble(&ok);
+        if (ok) {
+            pTransformer->addTransformer(std::make_unique<T>(value));
+        }
+    };
+
     QDomNodeList children = transformElement.childNodes();
     for (int i = 0; i < children.count(); ++i) {
         QDomNode node = children.at(i);
@@ -38,32 +133,21 @@ ValueTransformer* ValueTransformer::parseFromXml(const QDomElement& transformEle
         }
 
         QDomElement element = node.toElement();
-        if (element.nodeName() == "Invert") {
-            pTransformer->addTransformer(new TransformInvert());
-        } else if (element.nodeName() == "Add") {
-            QString value = context.nodeToString(element);
-            bool ok = false;
-            double addend = value.toDouble(&ok);
-            if (ok) {
-                pTransformer->addTransformer(new TransformAdd(addend));
-            }
-        } else if (element.nodeName() == "Not") {
-            pTransformer->addTransformer(new TransformNot());
-        } else if (element.nodeName() == "IsEqual") {
-            QString value = context.nodeToString(element);
-            bool ok = false;
-            double compareValue = value.toDouble(&ok);
-            if (ok) {
-                pTransformer->addTransformer(new TransformIsEqual(compareValue));
-            }
+        QString name = element.nodeName();
+        if (name == "Invert") {
+            pTransformer->addTransformer(std::make_unique<TransformInvert>());
+        } else if (name == "Add") {
+            maybeAddFromElement.operator()<TransformAdd>(element);
+        } else if (name == "Not") {
+            pTransformer->addTransformer(std::make_unique<TransformNot>());
+        } else if (name == "IsEqual") {
+            maybeAddFromElement.operator()<TransformIsEqual>(element);
         }
     }
 
     return pTransformer;
 }
 
-ValueTransformer::~ValueTransformer() {
-    foreach (TransformNode* node, m_transformers) {
-        delete node;
-    }
-}
+ValueTransformer::ValueTransformer() = default;
+
+ValueTransformer::~ValueTransformer() = default;

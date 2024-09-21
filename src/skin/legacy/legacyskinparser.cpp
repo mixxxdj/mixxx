@@ -8,8 +8,10 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QtGlobal>
+#include <memory>
 
 #include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -2370,10 +2372,11 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             continue;
         }
 
-        ValueTransformer* pTransformer = nullptr;
+        std::unique_ptr<ValueTransformer> pTransformer = nullptr;
         QDomElement transform = m_pContext->selectElement(con, "Transform");
         if (!transform.isNull()) {
-            pTransformer = ValueTransformer::parseFromXml(transform, *m_pContext);
+            pTransformer =
+                    ValueTransformer::parseFromXml(transform, *m_pContext);
         }
 
         QString property;
@@ -2381,8 +2384,10 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             //qDebug() << "Making property connection for" << property;
 
             ControlWidgetPropertyConnection* pConnection =
-                    new ControlWidgetPropertyConnection(pWidget, control->getKey(),
-                                                        pTransformer, property);
+                    new ControlWidgetPropertyConnection(pWidget,
+                            control->getKey(),
+                            std::move(pTransformer),
+                            property);
             pWidget->addPropertyConnection(pConnection);
         } else {
             bool nodeValue;
@@ -2444,10 +2449,14 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
-            ControlParameterWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                    pWidget, control->getKey(), pTransformer,
-                    static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
-                    static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
+            ControlParameterWidgetConnection* pConnection =
+                    new ControlParameterWidgetConnection(pWidget,
+                            control->getKey(),
+                            std::move(pTransformer),
+                            static_cast<ControlParameterWidgetConnection::
+                                            DirectionOption>(directionOption),
+                            static_cast<ControlParameterWidgetConnection::
+                                            EmitOption>(emitOption));
 
             switch (state) {
             case Qt::NoButton:
