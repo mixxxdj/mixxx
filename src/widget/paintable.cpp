@@ -254,7 +254,15 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
         if (m_drawMode == TILE) {
             pPainter->drawTiledPixmap(targetRect, *m_pPixmap);
         } else {
-            pPainter->drawPixmap(targetRect, *m_pPixmap, sourceRect);
+            if (static_cast<QRectF>(m_pPixmap->rect()) == sourceRect &&
+                    sourceRect.size() == targetRect.size()) {
+                // Copy the whole pixmap without scaling
+                pPainter->drawPixmap(targetRect.topLeft(), *m_pPixmap);
+            } else {
+                // qDebug() << "Drawing QPixmap scaled or chopped";
+                // With scaling or chopping
+                pPainter->drawPixmap(targetRect, *m_pPixmap, sourceRect);
+            }
         }
     } else if (m_pSvg) {
         if (m_drawMode == TILE) {
