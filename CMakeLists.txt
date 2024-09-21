@@ -1201,7 +1201,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/tapfilter.cpp
   src/util/task.cpp
   src/util/taskmonitor.cpp
-  src/util/threadcputimer.cpp
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp
@@ -1471,7 +1470,6 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/util/taskmonitor.h
   src/util/thread_affinity.h
   src/util/thread_annotations.h
-  src/util/threadcputimer.h
   src/util/time.h
   src/util/timer.h
   src/util/trace.h
