@@ -35,37 +35,6 @@ const mixxx::Logger kLogger("BaseTrackTableModel");
 constexpr double kRelativeHeightOfCoverartToolTip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
-const QStringList kDefaultTableColumns = {
-        LIBRARYTABLE_ALBUM,
-        LIBRARYTABLE_ALBUMARTIST,
-        LIBRARYTABLE_ARTIST,
-        LIBRARYTABLE_BPM,
-        LIBRARYTABLE_BPM_LOCK,
-        LIBRARYTABLE_BITRATE,
-        LIBRARYTABLE_CHANNELS,
-        LIBRARYTABLE_COLOR,
-        LIBRARYTABLE_COMMENT,
-        LIBRARYTABLE_COMPOSER,
-        LIBRARYTABLE_COVERART,
-        LIBRARYTABLE_DATETIMEADDED,
-        LIBRARYTABLE_DURATION,
-        LIBRARYTABLE_FILETYPE,
-        LIBRARYTABLE_GENRE,
-        LIBRARYTABLE_GROUPING,
-        LIBRARYTABLE_KEY,
-        TRACKLOCATIONSTABLE_LOCATION,
-        LIBRARYTABLE_PLAYED,
-        LIBRARYTABLE_PREVIEW,
-        LIBRARYTABLE_RATING,
-        LIBRARYTABLE_REPLAYGAIN,
-        LIBRARYTABLE_SAMPLERATE,
-        LIBRARYTABLE_TIMESPLAYED,
-        LIBRARYTABLE_LAST_PLAYED_AT,
-        LIBRARYTABLE_TITLE,
-        LIBRARYTABLE_TRACKNUMBER,
-        LIBRARYTABLE_YEAR,
-};
-
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
     const auto connectionName =
@@ -121,11 +90,6 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
 }
 
-//static
-QStringList BaseTrackTableModel::defaultTableColumns() {
-    return kDefaultTableColumns;
-}
-
 BaseTrackTableModel::BaseTrackTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
@@ -157,9 +121,28 @@ BaseTrackTableModel::BaseTrackTableModel(
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         const QStringList& tableColumns) {
     m_columnCache.setColumns(tableColumns);
-    if (m_columnHeaders.size() < tableColumns.size()) {
-        m_columnHeaders.resize(tableColumns.size());
+
+    // Reset the column headers.
+    m_columnHeaders.clear();
+    m_columnHeaders.resize(tableColumns.size());
+
+    // Init the mapping of all columns, even for internal columns that are
+    // hidden/invisible. Otherwise mapColumn() would not return a valid result
+    // for those columns.
+    for (int columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
+        const auto column = static_cast<ColumnCache::Column>(columnValue);
+        DEBUG_ASSERT(column != ColumnCache::COLUMN_LIBRARYTABLE_INVALID);
+        const int headerIndex = m_columnCache.fieldIndex(column);
+        if (headerIndex < 0) {
+            // Missing table column.
+            continue;
+        }
+        DEBUG_ASSERT(headerIndex < m_columnHeaders.size());
+        m_columnHeaders[headerIndex].column = column;
+        DEBUG_ASSERT(mapColumn(headerIndex) == column);
     }
+
+    // Init the header properties of selected/visible columns.
     initHeaderProperties();
 }
 
@@ -364,22 +347,11 @@ QVariant BaseTrackTableModel::headerData(
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-int BaseTrackTableModel::countValidColumnHeaders() const {
-    int count = 0;
-    for (const auto& columnHeader : m_columnHeaders) {
-        if (columnHeader.column !=
-                ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-            ++count;
-        }
-    }
-    return count;
-}
-
 int BaseTrackTableModel::columnCount(const QModelIndex& parent) const {
     VERIFY_OR_DEBUG_ASSERT(!parent.isValid()) {
         return 0;
     }
-    return countValidColumnHeaders();
+    return m_columnHeaders.size();
 }
 
 void BaseTrackTableModel::cutTracks(const QModelIndexList& indices) {
