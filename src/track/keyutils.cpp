@@ -797,11 +797,11 @@ double KeyUtils::trackSyncPitchDifference(
     const double delta2 = powerOf2ToSemitoneChange(100 / bpm2.value());
 
     // get the resulting key for each track at 100BPM
-    const double resPitch1 = normalizePitch(keyToNumericValue(key1) - 1 + delta1);
-    const double resPitch2 = normalizePitch(keyToNumericValue(key2) - 1 + delta2);
+    const double resPitch1 = keyToNumericValue(key1) - 1 + delta1;
+    const double resPitch2 = keyToNumericValue(key2) - 1 + delta2;
 
     // return the pitch difference when both tracks are played at the same tempo
-    return normalizePitch(resPitch1 - resPitch2);
+    return shortestPitchDiff(resPitch1, resPitch2);
 }
 
 // Calculates Similarity (0 to 1, -1 if invalid) between two tracks based on their key and BPM.

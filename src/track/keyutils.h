@@ -74,6 +74,12 @@ class KeyUtils {
         return std::min(CWSteps, 12 - CWSteps);
     }
 
+    // returns the shortest pitch difference up or down, handling octaves
+    static inline double shortestPitchDiff(double pitch1, double pitch2) {
+        const double normPitchDiff = normalizePitch(pitch1 - pitch2);
+        return std::min(normPitchDiff, 12.0 - normPitchDiff);
+    }
+
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
                                KeyNotation notation = KeyNotation::Custom);
 
