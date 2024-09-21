@@ -50,8 +50,7 @@ QString Paintable::DrawModeToString(DrawMode mode) {
 }
 
 Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
-        : m_drawMode(mode),
-          m_source(source) {
+        : m_drawMode(mode) {
     if (!source.isSVG()) {
         m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
     } else {
@@ -97,7 +96,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
 }
 
 bool Paintable::isNull() const {
-    return m_source.isEmpty();
+    return !(m_pPixmap || m_pSvg);
 }
 
 QSize Paintable::size() const {
