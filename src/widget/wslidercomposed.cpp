@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "moc_wslidercomposed.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"

@@ -11,6 +11,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "moc_wpushbutton.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
