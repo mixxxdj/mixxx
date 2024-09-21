@@ -100,39 +100,43 @@ bool Paintable::isNull() const {
 }
 
 QSize Paintable::size() const {
+    if (m_pSvg) {
+        return m_pSvg->defaultSize();
+    }
     if (m_pPixmap) {
         return m_pPixmap->size();
-    } else if (m_pSvg) {
-        return m_pSvg->defaultSize();
     }
     return QSize();
 }
 
 int Paintable::width() const {
-    if (m_pPixmap) {
-        return m_pPixmap->width();
-    } else if (m_pSvg) {
+    if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.width();
+    }
+    if (m_pPixmap) {
+        return m_pPixmap->width();
     }
     return 0;
 }
 
 int Paintable::height() const {
-    if (m_pPixmap) {
-        return m_pPixmap->height();
-    } else if (m_pSvg) {
+    if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.height();
+    }
+    if (m_pPixmap) {
+        return m_pPixmap->height();
     }
     return 0;
 }
 
 QRectF Paintable::rect() const {
+    if (m_pSvg) {
+        return QRectF(QPointF(0, 0), m_pSvg->defaultSize());
+    }
     if (m_pPixmap) {
         return m_pPixmap->rect();
-    } else if (m_pSvg) {
-        return QRectF(QPointF(0, 0), m_pSvg->defaultSize());
     }
     return QRectF();
 }
@@ -247,6 +251,27 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
     // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_drawMode)
     //          << targetRect << sourceRect;
+    if (m_pSvg) {
+        if (m_drawMode == TILE) {
+            qWarning() << "Tiled SVG should have been rendered to pixmap!";
+        } else {
+            if (!m_pPixmap ||
+                    m_pPixmap->size() != targetRect.size().toSize() ||
+                    m_lastSourceRect != sourceRect) {
+                // qDebug() << "Paintable cache miss";
+                qreal devicePixelRatio = pPainter->device()->devicePixelRatio();
+                m_pPixmap = std::make_unique<QPixmap>(targetRect.size().toSize());
+                m_pPixmap->setDevicePixelRatio(devicePixelRatio);
+                m_pPixmap->fill(Qt::transparent);
+                auto pixmapPainter = QPainter(m_pPixmap.get());
+                m_pSvg->setViewBox(sourceRect);
+                m_pSvg->render(&pixmapPainter);
+                m_lastSourceRect = sourceRect;
+            }
+            pPainter->drawPixmap(targetRect.topLeft(), *m_pPixmap);
+        }
+        return;
+    }
     if (m_pPixmap) {
         // Note: Qt rounds the target rect to device pixels internally
         // using  roundInDeviceCoordinates()
@@ -263,21 +288,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                 pPainter->drawPixmap(targetRect, *m_pPixmap, sourceRect);
             }
         }
-    } else if (m_pSvg) {
-        if (m_drawMode == TILE) {
-            qWarning() << "Tiled SVG should have been rendered to pixmap!";
-        } else {
-            // NOTE(rryan): QSvgRenderer render does not clip for us -- it
-            // applies a world transformation using viewBox and renders the
-            // entire SVG to the painter. We save/restore the QPainter in case
-            // there is an existing clip region (I don't know of any Mixxx code
-            // that uses one but we may in the future).
-            PainterScope PainterScope(pPainter);
-            pPainter->setClipping(true);
-            pPainter->setClipRect(targetRect);
-            m_pSvg->setViewBox(sourceRect);
-            m_pSvg->render(pPainter, targetRect);
-        }
+        return;
     }
 }
 
