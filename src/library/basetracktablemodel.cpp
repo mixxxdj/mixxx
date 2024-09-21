@@ -35,6 +35,7 @@ const mixxx::Logger kLogger("BaseTrackTableModel");
 constexpr double kRelativeHeightOfCoverartToolTip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
+// Mandatory columns that are either used directly or in delegates.
 const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_ALBUM,
         LIBRARYTABLE_ALBUMARTIST,
@@ -53,7 +54,9 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_GENRE,
         LIBRARYTABLE_GROUPING,
         LIBRARYTABLE_KEY,
+        LIBRARYTABLE_KEY_ID,
         TRACKLOCATIONSTABLE_LOCATION,
+        TRACKLOCATIONSTABLE_FSDELETED,
         LIBRARYTABLE_PLAYED,
         LIBRARYTABLE_PREVIEW,
         LIBRARYTABLE_RATING,
