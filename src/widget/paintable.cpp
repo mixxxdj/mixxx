@@ -70,7 +70,6 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         } else {
             return;
         }
-        m_pSvg.reset(pSvg.release());
 #ifdef __APPLE__
         // Apple does Retina scaling behind the scenes, so we also pass a
         // Paintable::FIXED image. On the other targets, it is better to
@@ -83,14 +82,16 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
 #endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-            QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
+            QImage copy_buffer(pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
             copy_buffer.fill(0x00000000);  // Transparent black.
             QPainter painter(&copy_buffer);
-            m_pSvg->render(&painter);
+            pSvg->render(&painter);
             WPixmapStore::correctImageColors(&copy_buffer);
 
             m_pPixmap.reset(new QPixmap(copy_buffer.size()));
             m_pPixmap->convertFromImage(copy_buffer);
+        } else {
+            m_pSvg = std::move(pSvg);
         }
     }
 }
@@ -100,18 +101,18 @@ bool Paintable::isNull() const {
 }
 
 QSize Paintable::size() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->size();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         return m_pSvg->defaultSize();
     }
     return QSize();
 }
 
 int Paintable::width() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->width();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.width();
     }
@@ -119,9 +120,9 @@ int Paintable::width() const {
 }
 
 int Paintable::height() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->height();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         QSize size = m_pSvg->defaultSize();
         return size.height();
     }
@@ -129,9 +130,9 @@ int Paintable::height() const {
 }
 
 QRectF Paintable::rect() const {
-    if (!m_pPixmap.isNull()) {
+    if (m_pPixmap) {
         return m_pPixmap->rect();
-    } else if (!m_pSvg.isNull()) {
+    } else if (m_pSvg) {
         return QRectF(QPointF(0, 0), m_pSvg->defaultSize());
     }
     return QRectF();
@@ -142,7 +143,7 @@ QImage Paintable::toImage() const {
     // This confusion let to the wrong assumption that we could simple
     //   return m_pPixmap->toImage();
     // relying on QPixmap returning QImage() when it was null.
-    return m_pPixmap.isNull() ? QImage() : m_pPixmap->toImage();
+    return m_pPixmap ? m_pPixmap->toImage() : QImage();
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
