@@ -1175,6 +1175,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/font.cpp
   src/util/imagefiledata.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp
