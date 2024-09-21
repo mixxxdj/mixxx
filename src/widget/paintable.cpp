@@ -246,21 +246,15 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
 
 void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
-    // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_draw_mode)
+    // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_drawMode)
     //          << targetRect << sourceRect;
     if (m_pPixmap) {
+        // Note: Qt rounds the target rect to device pixels internally
+        // using  roundInDeviceCoordinates()
         if (m_drawMode == TILE) {
-            // TODO(rryan): Using a source rectangle doesn't make much sense
-            // with tiling. Ignore the source rect and tile our natural size
-            // across the target rect. What's the right general behavior here?
-            // NOTE(rryan): We round our target/source rectangles to the nearest
-            // pixel for raster images.
-            pPainter->drawTiledPixmap(targetRect.toRect(), *m_pPixmap, QPoint(0,0));
+            pPainter->drawTiledPixmap(targetRect, *m_pPixmap);
         } else {
-            // NOTE(rryan): We round our target/source rectangles to the nearest
-            // pixel for raster images.
-            pPainter->drawPixmap(targetRect.toRect(), *m_pPixmap,
-                                 sourceRect.toRect());
+            pPainter->drawPixmap(targetRect, *m_pPixmap, sourceRect);
         }
     } else if (m_pSvg) {
         if (m_drawMode == TILE) {
