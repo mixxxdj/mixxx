@@ -1,38 +1,44 @@
 #pragma once
 
-#include <QString>
-#include <tuple>
+#include <compare>
+
+class QString;
 
 namespace mixxx {
 
 // "major" and "minor" clash with symbols in glibc, so use more verbose variable names.
 class SemanticVersion {
   public:
-    SemanticVersion(unsigned int majorVersion,
+    constexpr SemanticVersion(unsigned int majorVersion,
             unsigned int minorVersion,
-            unsigned int patchVersion);
+            unsigned int patchVersion)
+            : majorVersion(majorVersion),
+              minorVersion(minorVersion),
+              patchVersion(patchVersion) {
+    }
+
     SemanticVersion(const QString& versionString);
 
-    bool isValid() const;
+    constexpr bool isValid() const {
+        return !(majorVersion == 0 && minorVersion == 0 && patchVersion == 0);
+    }
 
-    unsigned int majorVersion, minorVersion, patchVersion;
+    friend constexpr std::strong_ordering operator<=>(
+            const SemanticVersion&, const SemanticVersion&) noexcept;
+
+    // Do not change the order because the synthesized comparison operators
+    // depend on it!
+    unsigned int majorVersion;
+    unsigned int minorVersion;
+    unsigned int patchVersion;
+
+  private:
+    // you should not be able to create an invalid version easily from the outside
+    constexpr SemanticVersion()
+            : SemanticVersion(0, 0, 0){};
 };
 
-inline bool operator<(const SemanticVersion& a, const SemanticVersion& b) {
-    return std::tie(a.majorVersion, a.minorVersion, a.patchVersion) <
-            std::tie(b.majorVersion, b.minorVersion, b.patchVersion);
-}
-
-inline bool operator>(const SemanticVersion& a, const SemanticVersion& b) {
-    return b < a;
-}
-
-inline bool operator<=(const SemanticVersion& a, const SemanticVersion& b) {
-    return !(a > b);
-}
-
-inline bool operator>=(const SemanticVersion& a, const SemanticVersion& b) {
-    return !(a < b);
-}
+constexpr std::strong_ordering operator<=>(
+        const SemanticVersion&, const SemanticVersion&) noexcept = default;
 
 } // namespace mixxx
