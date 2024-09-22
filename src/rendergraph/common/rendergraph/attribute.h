@@ -13,12 +13,7 @@ struct rendergraph::Attribute {
     const PrimitiveType m_primitiveType;
     const QString m_name;
 
-    Attribute(int tupleSize, PrimitiveType primitiveType)
-            : m_tupleSize{tupleSize},
-              m_primitiveType{primitiveType} {
-    }
-
-    Attribute(int tupleSize, PrimitiveType primitiveType, QString name)
+    Attribute(int tupleSize, PrimitiveType primitiveType, QString name = {})
             : m_tupleSize{tupleSize},
               m_primitiveType{primitiveType},
               m_name{std::move(name)} {
