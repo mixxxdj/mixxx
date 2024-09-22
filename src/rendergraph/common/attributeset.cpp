@@ -4,7 +4,7 @@ using namespace rendergraph;
 
 AttributeSet::AttributeSet(std::initializer_list<Attribute> list,
         const std::vector<QString>& names)
-        : backend::AttributeSet(list, names) {
+        : BaseAttributeSet(list, names) {
 }
 
 const std::vector<Attribute>& AttributeSet::attributes() const {

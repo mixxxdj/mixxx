@@ -3,7 +3,7 @@
 #include <QImage>
 #include <memory>
 
-#include "backend/texture.h"
+#include "backend/basetexture.h"
 
 namespace rendergraph {
 class Context;
@@ -14,10 +14,10 @@ class rendergraph::Texture {
   public:
     Texture(Context& context, const QImage& image);
 
-    backend::Texture* backendTexture() const {
+    BaseTexture* backendTexture() const {
         return m_pTexture.get();
     }
 
   private:
-    const std::unique_ptr<backend::Texture> m_pTexture{};
+    const std::unique_ptr<BaseTexture> m_pTexture{};
 };

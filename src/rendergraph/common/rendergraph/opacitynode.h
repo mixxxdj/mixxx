@@ -1,14 +1,14 @@
 #pragma once
 
-#include "backend/opacitynode.h"
-#include "rendergraph/basenode.h"
+#include "backend/baseopacitynode.h"
+#include "rendergraph/treenode.h"
 
 namespace rendergraph {
 class OpacityNode;
 } // namespace rendergraph
 
-class rendergraph::OpacityNode : public rendergraph::backend::OpacityNode,
-                                 public rendergraph::BaseNode {
+class rendergraph::OpacityNode : public rendergraph::BaseOpacityNode,
+                                 public rendergraph::TreeNode {
   public:
     OpacityNode();
 };

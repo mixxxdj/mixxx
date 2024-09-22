@@ -3,5 +3,5 @@
 using namespace rendergraph;
 
 OpenGLNode::OpenGLNode()
-        : BaseNode(this) {
+        : TreeNode(this) {
 }

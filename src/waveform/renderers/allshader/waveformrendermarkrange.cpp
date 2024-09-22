@@ -42,7 +42,7 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
 void WaveformRenderMarkRange::update() {
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    BaseNode* pChild = firstChild();
+    TreeNode* pChild = firstChild();
 
     for (const auto& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.

@@ -3,5 +3,5 @@
 using namespace rendergraph;
 
 OpacityNode::OpacityNode()
-        : BaseNode(this) {
+        : TreeNode(this) {
 }

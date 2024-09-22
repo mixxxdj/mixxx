@@ -6,32 +6,32 @@
 #include "rendergraph/materialshader.h"
 #include "rendergraph/materialtype.h"
 
-namespace rendergraph::backend {
+namespace rendergraph {
 class ShaderCache;
 }
 
-class rendergraph::backend::ShaderCache {
+class rendergraph::ShaderCache {
   private:
-    static std::map<rendergraph::MaterialType*,
-            std::shared_ptr<rendergraph::MaterialShader>>&
+    static std::map<MaterialType*,
+            std::shared_ptr<MaterialShader>>&
     map() {
-        static std::map<rendergraph::MaterialType*,
-                std::shared_ptr<rendergraph::MaterialShader>>
+        static std::map<MaterialType*,
+                std::shared_ptr<MaterialShader>>
                 s_map;
         return s_map;
     }
 
   public:
-    static std::shared_ptr<rendergraph::MaterialShader> getShaderForMaterial(
-            rendergraph::Material* pMaterial) {
+    static std::shared_ptr<MaterialShader> getShaderForMaterial(
+            Material* pMaterial) {
         auto iter = map().find(pMaterial->type());
         if (iter != map().end()) {
             return iter->second;
         }
-        auto pResult = std::shared_ptr<rendergraph::MaterialShader>(
+        auto pResult = std::shared_ptr<MaterialShader>(
                 pMaterial->createShader());
-        map().insert(std::pair<rendergraph::MaterialType*,
-                std::shared_ptr<rendergraph::MaterialShader>>{
+        map().insert(std::pair<MaterialType*,
+                std::shared_ptr<MaterialShader>>{
                 pMaterial->type(), pResult});
         return pResult;
     }

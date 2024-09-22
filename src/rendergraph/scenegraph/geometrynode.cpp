@@ -3,7 +3,7 @@
 using namespace rendergraph;
 
 GeometryNode::GeometryNode()
-        : BaseNode(this) {
+        : TreeNode(this) {
 }
 
 void GeometryNode::setGeometry(std::unique_ptr<Geometry> pGeometry) {

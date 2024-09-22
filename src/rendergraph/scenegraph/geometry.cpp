@@ -25,7 +25,7 @@ Geometry::DrawingMode fromSgDrawingMode(unsigned int mode) {
 } // namespace
 
 Geometry::Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCount)
-        : backend::Geometry(attributeSet, vertexCount) {
+        : BaseGeometry(attributeSet, vertexCount) {
 }
 
 Geometry::~Geometry() = default;

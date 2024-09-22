@@ -3,5 +3,5 @@
 using namespace rendergraph;
 
 Node::Node()
-        : BaseNode(this) {
+        : TreeNode(this) {
 }

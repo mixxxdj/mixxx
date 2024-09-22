@@ -60,13 +60,13 @@ void ExampleNode3::setTexture(std::unique_ptr<Texture> texture) {
 }
 
 ExampleTopNode::ExampleTopNode(rendergraph::Context& context) {
-    BaseNode::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
-    BaseNode::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
-    BaseNode::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
+    TreeNode::appendChildNode(std::make_unique<rendergraph::ExampleNode1>());
+    TreeNode::appendChildNode(std::make_unique<rendergraph::ExampleNode2>());
+    TreeNode::appendChildNode(std::make_unique<rendergraph::ExampleNode3>());
 
     {
         QImage img(":/example/images/test.png");
-        static_cast<rendergraph::ExampleNode3*>(BaseNode::lastChild())
+        static_cast<rendergraph::ExampleNode3*>(TreeNode::lastChild())
                 ->setTexture(
                         std::make_unique<rendergraph::Texture>(context, img));
     }

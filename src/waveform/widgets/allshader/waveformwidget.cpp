@@ -21,12 +21,12 @@
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
 namespace {
-void appendChildTo(std::unique_ptr<rendergraph::Node>& pNode, rendergraph::BaseNode* pChild) {
-    pNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pChild));
+void appendChildTo(std::unique_ptr<rendergraph::Node>& pNode, rendergraph::TreeNode* pChild) {
+    pNode->appendChildNode(std::unique_ptr<rendergraph::TreeNode>(pChild));
 }
 void appendChildTo(std::unique_ptr<rendergraph::OpacityNode>& pNode,
-        rendergraph::BaseNode* pChild) {
-    pNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pChild));
+        rendergraph::TreeNode* pChild) {
+    pNode->appendChildNode(std::unique_ptr<rendergraph::TreeNode>(pChild));
 }
 } // namespace
 

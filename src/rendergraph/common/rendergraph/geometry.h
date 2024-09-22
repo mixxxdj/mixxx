@@ -3,14 +3,14 @@
 #include <QVector2D>
 #include <QVector3D>
 
-#include "backend/geometry.h"
+#include "backend/basegeometry.h"
 #include "rendergraph/attributeset.h"
 
 namespace rendergraph {
 class Geometry;
 } // namespace rendergraph
 
-class rendergraph::Geometry : public rendergraph::backend::Geometry {
+class rendergraph::Geometry : public rendergraph::BaseGeometry {
   public:
     struct Point2D {
         QVector2D position2D;

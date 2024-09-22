@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "backend/material.h"
+#include "backend/basematerial.h"
 #include "rendergraph/materialshader.h"
 #include "rendergraph/materialtype.h"
 #include "rendergraph/texture.h"
@@ -13,7 +13,7 @@ namespace rendergraph {
 class Material;
 } // namespace rendergraph
 
-class rendergraph::Material : public rendergraph::backend::Material {
+class rendergraph::Material : public rendergraph::BaseMaterial {
   public:
     Material(const UniformSet& uniformSet);
     virtual ~Material();

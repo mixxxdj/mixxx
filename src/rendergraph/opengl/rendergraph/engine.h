@@ -11,19 +11,19 @@ class Engine;
 
 class rendergraph::Engine {
   public:
-    Engine(std::unique_ptr<Node> node);
+    Engine(std::unique_ptr<TreeNode> pNode);
     void initialize();
     void render();
     void resize(int w, int h);
     void preprocess();
-    void addToEngine(BaseNode* pNode);
+    void addToEngine(TreeNode* pNode);
 
   private:
-    void initialize(BaseNode* pNode);
-    void render(BaseNode* pNode);
-    void resize(BaseNode* pNode, int, int);
+    void initialize(TreeNode* pNode);
+    void render(TreeNode* pNode);
+    void resize(TreeNode* pNode, int, int);
 
-    const std::unique_ptr<Node> m_pTopNode;
-    std::vector<BaseNode*> m_pPreprocessNodes;
-    std::vector<BaseNode*> m_pInitializeNodes;
+    const std::unique_ptr<TreeNode> m_pTopNode;
+    std::vector<TreeNode*> m_pPreprocessNodes;
+    std::vector<TreeNode*> m_pInitializeNodes;
 };

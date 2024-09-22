@@ -1,16 +1,16 @@
 #pragma once
 
-#include "backend/geometrynode.h"
-#include "rendergraph/basenode.h"
+#include "backend/basegeometrynode.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material.h"
+#include "rendergraph/treenode.h"
 
 namespace rendergraph {
 class GeometryNode;
 } // namespace rendergraph
 
-class rendergraph::GeometryNode : public rendergraph::backend::GeometryNode,
-                                  public rendergraph::BaseNode {
+class rendergraph::GeometryNode : public rendergraph::BaseGeometryNode,
+                                  public rendergraph::TreeNode {
   public:
     GeometryNode();
 

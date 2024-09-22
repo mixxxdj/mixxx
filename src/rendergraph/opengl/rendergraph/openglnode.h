@@ -1,14 +1,14 @@
 #pragma once
 
-#include "backend/openglnode.h"
-#include "rendergraph/basenode.h"
+#include "backend/baseopenglnode.h"
+#include "rendergraph/treenode.h"
 
 namespace rendergraph {
 class OpenGLNode;
 } // namespace rendergraph
 
-class rendergraph::OpenGLNode : public rendergraph::backend::OpenGLNode,
-                                public rendergraph::BaseNode {
+class rendergraph::OpenGLNode : public rendergraph::BaseOpenGLNode,
+                                public rendergraph::TreeNode {
   public:
     OpenGLNode();
 

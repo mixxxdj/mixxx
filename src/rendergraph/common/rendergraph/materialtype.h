@@ -1,10 +1,10 @@
 #pragma once
 
-#include "backend/materialtype.h"
+#include "backend/basematerialtype.h"
 
 namespace rendergraph {
 class MaterialType;
 }
 
-class rendergraph::MaterialType : public rendergraph::backend::MaterialType {
+class rendergraph::MaterialType : public rendergraph::BaseMaterialType {
 };

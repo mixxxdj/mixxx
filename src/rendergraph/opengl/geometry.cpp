@@ -5,7 +5,7 @@
 using namespace rendergraph;
 
 Geometry::Geometry(const AttributeSet& attributeSet, int vertexCount)
-        : backend::Geometry(attributeSet, vertexCount) {
+        : BaseGeometry(attributeSet, vertexCount) {
 }
 
 Geometry::~Geometry() = default;

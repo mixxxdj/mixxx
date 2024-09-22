@@ -6,8 +6,8 @@
 
 using namespace rendergraph;
 
-Engine::Engine(std::unique_ptr<Node> node)
-        : m_pTopNode(std::move(node)) {
+Engine::Engine(std::unique_ptr<TreeNode> pNode)
+        : m_pTopNode(std::move(pNode)) {
     addToEngine(m_pTopNode.get());
 }
 
@@ -23,7 +23,7 @@ void Engine::render() {
     if (!m_pInitializeNodes.empty()) {
         initialize();
     }
-    if (!m_pTopNode->isSubtreeBlocked()) {
+    if (!m_pTopNode->backendNode()->isSubtreeBlocked()) {
         render(m_pTopNode.get());
     }
 }
@@ -40,7 +40,7 @@ void Engine::preprocess() {
     }
 }
 
-void Engine::render(BaseNode* pNode) {
+void Engine::render(TreeNode* pNode) {
     pNode->backendNode()->renderBackend();
     pNode = pNode->firstChild();
     while (pNode) {
@@ -51,7 +51,7 @@ void Engine::render(BaseNode* pNode) {
     }
 }
 
-void Engine::resize(BaseNode* pNode, int w, int h) {
+void Engine::resize(TreeNode* pNode, int w, int h) {
     pNode->backendNode()->resizeBackend(w, h);
     pNode->resize(w, h);
     pNode = pNode->firstChild();
@@ -61,7 +61,7 @@ void Engine::resize(BaseNode* pNode, int w, int h) {
     }
 }
 
-void Engine::addToEngine(BaseNode* pNode) {
+void Engine::addToEngine(TreeNode* pNode) {
     assert(pNode->backendNode()->engine() == nullptr);
 
     pNode->backendNode()->setEngine(this);
