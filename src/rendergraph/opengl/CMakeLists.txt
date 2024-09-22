@@ -68,6 +68,11 @@ target_link_libraries(rendergraph_gl PUBLIC
     Qt6::OpenGL
 )
 
-target_include_directories(rendergraph_gl PUBLIC . ../common
-../.. # needed for util/assert.h
-)
+# USE_QSHADER_FOR_GL is set in rendergraph/CMakeLists.txt
+if(USE_QSHADER_FOR_GL)
+    message(STATUS "Using QShader to load qsb shaders for opengl")
+    target_link_libraries(rendergraph_gl PUBLIC Qt6::GuiPrivate)
+    target_compile_definitions(rendergraph_gl PRIVATE USE_QSHADER_FOR_GL)
+endif()
+
+target_include_directories(rendergraph_gl PUBLIC . ../common)
