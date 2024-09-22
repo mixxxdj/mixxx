@@ -12,7 +12,8 @@ RGBAMaterial::RGBAMaterial()
         : Material(uniforms()) {
 }
 
-/* static */ const AttributeSet& RGBAMaterial::attributes() {
+// static
+const AttributeSet& RGBAMaterial::attributes() {
     static AttributeSet set = makeAttributeSet<QVector2D, QVector4D>({"position", "color"});
     return set;
 }
