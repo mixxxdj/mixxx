@@ -283,8 +283,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     };
     QVector<ColumnHeader> m_columnHeaders;
 
-    int countValidColumnHeaders() const;
-
     TrackId m_previewDeckTrackId;
 
     mutable QModelIndex m_toolTipIndex;
