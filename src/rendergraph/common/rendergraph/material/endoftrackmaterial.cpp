@@ -27,12 +27,6 @@ MaterialType* EndOfTrackMaterial::type() const {
     return &type;
 }
 
-int EndOfTrackMaterial::compare(const Material* other) const {
-    Q_ASSERT(other && type() == other->type());
-    const auto* otherCasted = static_cast<const EndOfTrackMaterial*>(other);
-    return otherCasted == this ? 0 : 1;
-}
-
 std::unique_ptr<MaterialShader> EndOfTrackMaterial::createShader() const {
     return std::make_unique<MaterialShader>(
             "endoftrack.vert", "endoftrack.frag", uniforms(), attributes());

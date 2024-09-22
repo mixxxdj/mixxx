@@ -68,4 +68,6 @@ target_link_libraries(rendergraph_gl PUBLIC
     Qt6::OpenGL
 )
 
-target_include_directories(rendergraph_gl PUBLIC . ../common)
+target_include_directories(rendergraph_gl PUBLIC . ../common
+../.. # needed for util/assert.h
+)

@@ -4,6 +4,7 @@
 #include <QColor>
 #include <QMatrix4x4>
 #include <QVector4D>
+#include <cstring>
 
 #include "rendergraph/types.h"
 #include "rendergraph/uniformset.h"

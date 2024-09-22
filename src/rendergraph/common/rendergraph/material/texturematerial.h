@@ -17,8 +17,6 @@ class rendergraph::TextureMaterial : public rendergraph::Material {
 
     MaterialType* type() const override;
 
-    int compare(const Material* other) const override;
-
     std::unique_ptr<MaterialShader> createShader() const override;
 
     Texture* texture(int /*binding*/) const override {

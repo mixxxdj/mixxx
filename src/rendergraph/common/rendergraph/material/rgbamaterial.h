@@ -15,7 +15,5 @@ class rendergraph::RGBAMaterial : public rendergraph::Material {
 
     MaterialType* type() const override;
 
-    int compare(const Material* other) const override;
-
     std::unique_ptr<MaterialShader> createShader() const override;
 };

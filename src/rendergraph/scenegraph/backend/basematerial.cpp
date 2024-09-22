@@ -15,7 +15,7 @@ bool BaseMaterial::updateUniformsByteArray(QByteArray* buf) {
 
 int BaseMaterial::compare(const QSGMaterial* other) const {
     auto pThis = static_cast<const Material*>(this);
-    return pThis->compare(dynamic_cast<const Material*>(other));
+    return pThis->compare(static_cast<const Material*>(other));
 }
 
 QSGMaterialShader* BaseMaterial::createShader(QSGRendererInterface::RenderMode) const {

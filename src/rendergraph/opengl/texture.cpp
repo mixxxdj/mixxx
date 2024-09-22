@@ -23,3 +23,7 @@ Texture::Texture(Context& context, const QImage& image)
     m_pTexture->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
     m_pTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
 }
+
+qint64 Texture::comparisonKey() const {
+    return static_cast<qint64>(m_pTexture->textureId());
+}

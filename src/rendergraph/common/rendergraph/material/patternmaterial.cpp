@@ -27,12 +27,6 @@ MaterialType* PatternMaterial::type() const {
     return &type;
 }
 
-int PatternMaterial::compare(const Material* other) const {
-    Q_ASSERT(other && type() == other->type());
-    const auto* otherCasted = static_cast<const PatternMaterial*>(other);
-    return otherCasted == this ? 0 : 1;
-}
-
 std::unique_ptr<MaterialShader> PatternMaterial::createShader() const {
     return std::make_unique<MaterialShader>(
             "pattern.vert", "pattern.frag", uniforms(), attributes());

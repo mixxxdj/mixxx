@@ -28,12 +28,6 @@ MaterialType* RGBAMaterial::type() const {
     return &type;
 }
 
-int RGBAMaterial::compare(const Material* other) const {
-    Q_ASSERT(other && type() == other->type());
-    const auto* otherCasted = static_cast<const RGBAMaterial*>(other);
-    return otherCasted == this ? 0 : 1;
-}
-
 std::unique_ptr<MaterialShader> RGBAMaterial::createShader() const {
     return std::make_unique<MaterialShader>(
             "rgba.vert", "rgba.frag", uniforms(), attributes());
