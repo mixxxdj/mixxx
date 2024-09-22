@@ -23,6 +23,6 @@ class rendergraph::BaseMaterialShader : public QSGMaterialShader {
             QSGMaterial* oldMaterial) override;
 
     static QString resource(const QString& filename) {
-        return QString(":/shaders/rendergraph/%1.qsb").arg(filename);
+        return QStringLiteral(":/shaders/rendergraph/%1.qsb").arg(filename);
     }
 };

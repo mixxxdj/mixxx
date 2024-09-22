@@ -20,7 +20,7 @@ class rendergraph::BaseMaterialShader : public QOpenGLShaderProgram {
     void setLastModifiedByMaterial(BaseMaterial* pMaterial);
 
     static QString resource(const QString& filename) {
-        return QString(":/shaders/rendergraph/%1.gl").arg(filename);
+        return QStringLiteral(":/shaders/rendergraph/%1.gl").arg(filename);
     }
     std::vector<int> m_attributeLocations;
     std::vector<int> m_uniformLocations;
