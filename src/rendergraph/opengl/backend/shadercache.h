@@ -29,7 +29,7 @@ class rendergraph::backend::ShaderCache {
             return iter->second;
         }
         auto pResult = std::shared_ptr<rendergraph::MaterialShader>(
-                pMaterial->createShader().release());
+                pMaterial->createShader());
         map().insert(std::pair<rendergraph::MaterialType*,
                 std::shared_ptr<rendergraph::MaterialShader>>{
                 pMaterial->type(), pResult});
