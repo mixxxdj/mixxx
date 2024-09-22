@@ -1,5 +1,7 @@
 #include "backend/baseattributeset.h"
 
+#include "util/assert.h"
+
 using namespace rendergraph;
 
 namespace {
@@ -16,6 +18,9 @@ int toQSGGeometryType(const PrimitiveType& t) {
 BaseAttributeSetHelper::BaseAttributeSetHelper(std::initializer_list<Attribute> list,
         const std::vector<QString>& names) {
     int i = 0;
+    DEBUG_ASSERT(list.size() == names.size());
+    m_attributes.reserve(list.size());
+    m_sgAttributes.reserve(list.size());
     for (auto item : list) {
         m_attributes.push_back(Attribute{item.m_tupleSize, item.m_primitiveType, names[i++]});
 

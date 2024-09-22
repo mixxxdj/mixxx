@@ -8,6 +8,7 @@
 
 #include "rendergraph/types.h"
 #include "rendergraph/uniformset.h"
+#include "util/assert.h"
 
 namespace rendergraph {
 class UniformsCache;
@@ -20,13 +21,17 @@ class rendergraph::UniformsCache {
 
     template<typename T>
     void set(int uniformIndex, const T& value) {
-        set(uniformIndex, typeOf<T>(), static_cast<const void*>(&value), sizeOf(typeOf<T>()));
+        DEBUG_ASSERT(type(uniformIndex) == typeOf<T>());
+        DEBUG_ASSERT(std::is_trivially_copyable<T>());
+        set(uniformIndex, static_cast<const void*>(&value), sizeOf(typeOf<T>()));
     }
 
     template<typename T>
     T get(int uniformIndex) const {
+        DEBUG_ASSERT(type(uniformIndex) == typeOf<T>());
+        DEBUG_ASSERT(std::is_trivially_copyable<T>());
         T value;
-        get(uniformIndex, typeOf<T>(), static_cast<void*>(&value), sizeof(T));
+        get(uniformIndex, static_cast<void*>(&value), sizeof(T));
         return value;
     }
     Type type(int uniformIndex) const {
@@ -44,8 +49,8 @@ class rendergraph::UniformsCache {
     }
 
   private:
-    void set(int uniformIndex, Type type, const void* ptr, int size);
-    void get(int uniformIndex, Type type, void* ptr, int size) const;
+    void set(int uniformIndex, const void* ptr, int size);
+    void get(int uniformIndex, void* ptr, int size) const;
 
     struct Info {
         const Type m_type;
@@ -64,5 +69,6 @@ inline void rendergraph::UniformsCache::set<QColor>(int uniformIndex, const QCol
 template<>
 inline void rendergraph::UniformsCache::set<QMatrix4x4>(
         int uniformIndex, const QMatrix4x4& matrix) {
-    set(uniformIndex, typeOf<QMatrix4x4>(), matrix.constData(), sizeOf(typeOf<QMatrix4x4>()));
+    DEBUG_ASSERT(type(uniformIndex) == typeOf<T>());
+    set(uniformIndex, matrix.constData(), sizeOf(typeOf<QMatrix4x4>()));
 }

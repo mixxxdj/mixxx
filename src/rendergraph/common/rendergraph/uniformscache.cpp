@@ -5,6 +5,7 @@ using namespace rendergraph;
 
 UniformsCache::UniformsCache(const UniformSet& uniformSet) {
     int offset = 0;
+    m_infos.reserve(uniformSet.uniforms().size());
     for (const auto& uniform : uniformSet.uniforms()) {
         const int size = sizeOf(uniform.m_type);
         m_infos.push_back({uniform.m_type, offset});
@@ -16,12 +17,10 @@ UniformsCache::UniformsCache(const UniformSet& uniformSet) {
 
 UniformsCache::~UniformsCache() = default;
 
-void UniformsCache::set(int uniformIndex, Type type, const void* ptr, int size) {
-    assert(type == m_infos[uniformIndex].m_type);
+void UniformsCache::set(int uniformIndex, const void* ptr, int size) {
     memcpy(m_byteArray.data() + m_infos[uniformIndex].m_offset, ptr, size);
 }
 
-void UniformsCache::get(int uniformIndex, Type type, void* ptr, int size) const {
-    assert(type == m_infos[uniformIndex].m_type);
+void UniformsCache::get(int uniformIndex, void* ptr, int size) const {
     memcpy(ptr, m_byteArray.data() + m_infos[uniformIndex].m_offset, size);
 }
