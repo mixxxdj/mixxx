@@ -237,8 +237,10 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                 m_pPixmap = std::make_unique<QPixmap>(m_pSvg->defaultSize());
                 m_pPixmap->setDevicePixelRatio(devicePixelRatio);
                 m_pPixmap->fill(Qt::transparent);
-                auto pixmapPainter = QPainter(m_pPixmap.get());
-                m_pSvg->render(&pixmapPainter);
+                { // QPainter Scope
+                    auto pixmapPainter = QPainter(m_pPixmap.get());
+                    m_pSvg->render(&pixmapPainter);
+                }
                 mayCorrectColors();
             }
             // The SVG renderer doesn't directly support tiling, so we render
@@ -253,9 +255,11 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                 m_pPixmap = std::make_unique<QPixmap>(targetRect.size().toSize());
                 m_pPixmap->setDevicePixelRatio(devicePixelRatio);
                 m_pPixmap->fill(Qt::transparent);
-                auto pixmapPainter = QPainter(m_pPixmap.get());
-                m_pSvg->setViewBox(sourceRect);
-                m_pSvg->render(&pixmapPainter);
+                { // QPainter Scope
+                    auto pixmapPainter = QPainter(m_pPixmap.get());
+                    m_pSvg->setViewBox(sourceRect);
+                    m_pSvg->render(&pixmapPainter);
+                }
                 mayCorrectColors();
                 m_lastSourceRect = sourceRect;
             }
