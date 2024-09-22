@@ -28,6 +28,8 @@ QMutex s_mutexStdErr;
 
 // The file handle for Mixxx's log file.
 QFile s_logfile;
+qint64 s_logMaxFileSize = mixxx::kLogMaxFileSizeDefault;
+bool s_logMaxFileSizeReached = false;
 
 QLoggingCategory::CategoryFilter oldCategoryFilter = nullptr;
 
@@ -149,6 +151,10 @@ inline void writeToFile(
         const QString& message,
         const QString& threadName,
         bool flush) {
+    if (s_logMaxFileSizeReached) {
+        return;
+    }
+
     QString formattedMessageStr =
             formatLogFileMessage(type, message, threadName) +
             QChar('\n');
@@ -158,6 +164,13 @@ inline void writeToFile(
     // Writing to a closed QFile could cause an infinite recursive loop
     // by logging to qWarning!
     if (s_logfile.isOpen()) {
+        if (s_logMaxFileSize >= 0 && s_logfile.pos() >= s_logMaxFileSize) {
+            formattedMessage =
+                    "Maximum log file size reached. It can be adjusted via: "
+                    "--log-max-file-size <bytes>";
+            s_logMaxFileSizeReached = true;
+            flush = true;
+        }
         const int written = s_logfile.write(formattedMessage);
         Q_UNUSED(written);
         DEBUG_ASSERT(written == formattedMessage.size());
@@ -434,6 +447,8 @@ void Logging::initialize(
         oldCategoryFilter = QLoggingCategory::installFilter(nullptr);
         QLoggingCategory::installFilter(controllerDebugCategoryFilter);
     }
+
+    s_logMaxFileSize = CmdlineArgs::Instance().getLogMaxFileSize();
 }
 
 // static
