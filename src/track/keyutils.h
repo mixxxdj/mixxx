@@ -160,7 +160,7 @@ class KeyUtils {
     static inline double normalizePitch(double pitch) {
         double normPitch = fmod(pitch, 12.0);
         if (normPitch < 0) {
-                normPitch += 12.0;
+            normPitch += 12.0;
         }
         return normPitch;
     }
