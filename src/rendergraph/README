@@ -53,6 +53,10 @@ examples/gl_example
 examples/common
     The graphics code that is identical for both example
 
+../../res/shaders/rendergraph/
+    The qsb and (generated) gl shader files
+    See ../../res/shaders/rendergraph/README for more info
+
 More advanced use of rendergraph can be found in the waveform/renderers/allshader classes, which have partially been ported the rendergraph.
 
 
