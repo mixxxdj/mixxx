@@ -16,7 +16,16 @@ class rendergraph::TreeNode {
     virtual ~TreeNode() = default;
 
     void appendChildNode(std::unique_ptr<TreeNode>&& pChild);
+
+    // remove all child nodes. returns the list of child nodes
+    // by returning the node in the list. the caller can keep
+    // the pointer, thus transferring ownership. otherwise the
+    // nodes will be destroyed
     std::unique_ptr<TreeNode> removeAllChildNodes();
+
+    // remove a single child node for the list of child nodes.
+    // the caller can keep the pointer, thus transferring ownership.
+    // otherwise the node will be destroyed
     std::unique_ptr<TreeNode> removeChildNode(TreeNode* pChild);
 
     TreeNode* parent() const {
