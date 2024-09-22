@@ -1,6 +1,6 @@
 #include "backend/baseattributeset.h"
 
-#include "util/assert.h"
+#include "rendergraph/assert.h"
 
 using namespace rendergraph;
 

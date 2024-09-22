@@ -3,12 +3,12 @@
 #include <memory>
 
 #include "backend/basematerial.h"
+#include "rendergraph/assert.h"
 #include "rendergraph/materialshader.h"
 #include "rendergraph/materialtype.h"
 #include "rendergraph/texture.h"
 #include "rendergraph/uniformscache.h"
 #include "rendergraph/uniformset.h"
-#include "util/assert.h"
 
 namespace rendergraph {
 class Material;

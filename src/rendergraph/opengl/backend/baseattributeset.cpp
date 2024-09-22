@@ -1,5 +1,5 @@
+#include "rendergraph/assert.h"
 #include "rendergraph/attributeset.h"
-#include "util/assert.h"
 
 using namespace rendergraph;
 

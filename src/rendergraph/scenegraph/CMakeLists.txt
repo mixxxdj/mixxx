@@ -61,6 +61,4 @@ target_link_libraries(rendergraph_sg PUBLIC
     Qt6::Quick
 )
 
-target_include_directories(rendergraph_sg PUBLIC . ../common
-../.. # needed for util/assert.h
-)
+target_include_directories(rendergraph_sg PUBLIC . ../common)

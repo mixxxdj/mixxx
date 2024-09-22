@@ -6,9 +6,9 @@
 #include <QVector4D>
 #include <cstring>
 
+#include "rendergraph/assert.h"
 #include "rendergraph/types.h"
 #include "rendergraph/uniformset.h"
-#include "util/assert.h"
 
 namespace rendergraph {
 class UniformsCache;
