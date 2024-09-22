@@ -722,11 +722,9 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
                 break;
             }
         }
-    } else {
-        if (m_pTrack) {
-            anyBpmLocked = m_pTrack->isBpmLocked();
-            anyBpmNotLocked = !anyBpmLocked;
-        }
+    } else if (m_pTrack) {
+        anyBpmLocked = m_pTrack->isBpmLocked();
+        anyBpmNotLocked = !anyBpmLocked;
     }
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
 }
@@ -815,8 +813,11 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                         .data()
                         .toString();
         return coverInfo;
-    } else {
+    } else if (m_pTrack) {
         return m_pTrack->getCoverInfoWithLocation();
+    } else {
+        // No track, no track model
+        return CoverInfo();
     }
 }
 
@@ -968,13 +969,15 @@ void WTrackMenu::updateMenus() {
                 } else if (m_pTrack) {
                     pTrack = m_pTrack;
                 }
-                const double bpm = pTrack->getBpm();
-                appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+                if (pTrack) {
+                    const double bpm = pTrack->getBpm();
+                    appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+                }
             }
         }
     }
