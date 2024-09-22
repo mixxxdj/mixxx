@@ -21,7 +21,7 @@ class rendergraph::PatternMaterial : public rendergraph::Material {
 
     std::unique_ptr<MaterialShader> createShader() const override;
 
-    Texture* texture(int /*binding*/) const override {
+    Texture* texture(int) const override {
         return m_pTexture.get();
     }
 
