@@ -2362,8 +2362,15 @@ WPushButton#PlayDeck[value="0"] {
   #BpmLockToggle[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__bpm_locked.svg);
     }
-  #BpmLockToggle[value="0"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__bpm_unlocked.svg);
+    #BpmLockToggle[value="0"] {
+      image: url(skins:LateNight/palemoon/buttons/btn__bpm_unlocked.svg);
+    }
+
+  #Undo[value="0"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/palemoon/buttons/btn__undo_active.svg) no-repeat center center;
     }
 
   #BeatCurposLarge[displayValue="0"] {
@@ -2402,13 +2409,13 @@ WPushButton#PlayDeck[value="0"] {
     }
   #HotcuesEarlier {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
-  }
+    }
     #HotcuesEarlier[pressed="true"] {
       image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
     }
   #HotcuesLater {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
-  }
+    }
     #HotcuesLater[pressed="true"] {
       image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
     }
