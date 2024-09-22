@@ -9,5 +9,5 @@ ubuf;
 layout(location = 0) out vec4 fragColor;
 
 void main() {
-    fragColor = vec4(ubuf.color.xyz * ubuf.color.w, ubuf.color.w); // premultiple alpha
+    fragColor = vec4(ubuf.color.xyz * ubuf.color.w, ubuf.color.w); // premultiply alpha
 }
