@@ -16,14 +16,14 @@ class rendergraph::RGBVertexUpdater {
     void addRectangle(
             QVector2D lt,
             QVector2D rb,
-            QVector4D rgb) {
-        addRectangle(lt.x(), lt.y(), rb.x(), rb.y(), rgb.x(), rgb.y(), rgb.z(), rgb.w());
+            QVector3D rgb) {
+        addRectangle(lt.x(), lt.y(), rb.x(), rb.y(), rgb.x(), rgb.y(), rgb.z());
     }
     void addRectangleVGradient(
             QVector2D lt,
             QVector2D rb,
-            QVector4D rgbt,
-            QVector4D rgbb) {
+            QVector3D rgbt,
+            QVector3D rgbb) {
         addRectangleVGradient(lt.x(),
                 lt.y(),
                 rb.x(),
@@ -38,8 +38,8 @@ class rendergraph::RGBVertexUpdater {
     void addRectangleHGradient(
             QVector2D lt,
             QVector2D rb,
-            QVector4D rgbl,
-            QVector4D rgbr) {
+            QVector3D rgbl,
+            QVector3D rgbr) {
         addRectangleHGradient(lt.x(),
                 lt.y(),
                 rb.x(),
@@ -52,8 +52,8 @@ class rendergraph::RGBVertexUpdater {
                 rgbr.z());
     }
     void addRectangle(float x1, float y1, float x2, float y2, float r, float g, float b) {
-        addTriangle(x1, y1, x2, y1, x1, y2, r, g, b, a);
-        addTriangle(x1, y2, x2, y2, x2, y1, r, g, b, a);
+        addTriangle(x1, y1, x2, y1, x1, y2, r, g, b);
+        addTriangle(x1, y2, x2, y2, x2, y1, r, g, b);
     }
     void addRectangleVGradient(
             float x1,
@@ -79,7 +79,7 @@ class rendergraph::RGBVertexUpdater {
             float b1,
             float r2,
             float g2,
-            floar b2) {
+            float b2) {
         addTriangle(x1, y1, x2, y1, x1, y2, r1, g1, b1, r2, g2, b2, r1, g1, b1);
         addTriangle(x1, y2, x2, y2, x2, y1, r1, g1, b1, r2, g2, b2, r2, g2, b2);
     }
@@ -112,9 +112,7 @@ class rendergraph::RGBVertexUpdater {
 
             float r3,
             float g3,
-            float b3,
-
-    ) {
+            float b3) {
         *m_pWrite++ = Geometry::RGBColoredPoint2D{x1, y1, r1, g1, b1};
         *m_pWrite++ = Geometry::RGBColoredPoint2D{x2, y2, r2, g2, b2};
         *m_pWrite++ = Geometry::RGBColoredPoint2D{x3, y3, r3, g3, b3};
