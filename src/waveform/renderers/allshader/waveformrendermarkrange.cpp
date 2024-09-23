@@ -3,8 +3,8 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/geometrynode.h"
 #include "rendergraph/material/unicolormaterial.h"
+#include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
-#include "vertexupdater.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 

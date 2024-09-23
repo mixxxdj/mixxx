@@ -4,9 +4,9 @@
 
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/unicolormaterial.h"
+#include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
-#include "vertexupdater.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
