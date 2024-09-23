@@ -1,5 +1,6 @@
 #include "rendergraph/geometry.h"
 
+#include "rendergraph/assert.h"
 #include "rendergraph/attributeset.h"
 
 using namespace rendergraph;
@@ -13,10 +14,17 @@ Geometry::~Geometry() = default;
 void Geometry::setAttributeValues(int attributePosition, const float* from, int numTuples) {
     const int offset = m_offsets[attributePosition];
     const int tupleSize = m_tupleSizes[attributePosition];
-    const int skip = m_stride / sizeof(float) - tupleSize;
+    const int strideNumberOfFloats = m_stride / sizeof(float);
+    const int skip = strideNumberOfFloats - tupleSize;
+
+    VERIFY_OR_DEBUG_ASSERT(offset + numTuples * strideNumberOfFloats - skip <=
+            static_cast<int>(m_data.size())) {
+        return;
+    }
 
     float* to = m_data.data();
     to += offset;
+
     while (numTuples--) {
         int k = tupleSize;
         while (k--) {
@@ -31,8 +39,9 @@ float* Geometry::vertexData() {
 }
 
 void Geometry::allocate(int vertexCount) {
+    const int strideNumberOfFloats = m_stride / sizeof(float);
     m_vertexCount = vertexCount;
-    m_data.resize((m_stride / sizeof(float)) * m_vertexCount);
+    m_data.resize(strideNumberOfFloats * m_vertexCount);
 }
 
 void Geometry::setDrawingMode(Geometry::DrawingMode mode) {

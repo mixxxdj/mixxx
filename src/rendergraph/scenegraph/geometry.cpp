@@ -1,5 +1,7 @@
 #include "rendergraph/geometry.h"
 
+#include "rendergraph/assert.h"
+
 using namespace rendergraph;
 
 namespace {
@@ -37,7 +39,13 @@ void Geometry::setAttributeValues(int attributePosition, const float* from, int 
         offset += attributeArray[i].tupleSize;
     }
     const int tupleSize = attributeArray[attributePosition].tupleSize;
-    const int skip = m_stride / sizeof(float) - tupleSize;
+    const int strideNumberOfFloats = m_stride / sizeof(float);
+    const int skip = strideNumberOfFloats - tupleSize;
+
+    VERIFY_OR_DEBUG_ASSERT(offset + numTuples * strideNumberOfFloats - skip <=
+            vertexCount() * strideNumberOfFloats) {
+        return;
+    }
 
     float* to = static_cast<float*>(QSGGeometry::vertexData());
     to += offset;

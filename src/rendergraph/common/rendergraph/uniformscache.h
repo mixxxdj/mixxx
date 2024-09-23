@@ -69,6 +69,6 @@ inline void rendergraph::UniformsCache::set<QColor>(int uniformIndex, const QCol
 template<>
 inline void rendergraph::UniformsCache::set<QMatrix4x4>(
         int uniformIndex, const QMatrix4x4& matrix) {
-    DEBUG_ASSERT(type(uniformIndex) == typeOf<T>());
+    DEBUG_ASSERT(type(uniformIndex) == typeOf<QMatrix4x4>());
     set(uniformIndex, matrix.constData(), sizeOf(typeOf<QMatrix4x4>()));
 }
