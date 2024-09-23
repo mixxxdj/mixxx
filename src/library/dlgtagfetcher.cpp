@@ -272,6 +272,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
+    loadingProgressBar->setToolTip(QString());
     addDivider(tr("Original tags"), tags);
     addTagRow(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
 
@@ -435,6 +436,7 @@ void DlgTagFetcher::retry() {
     checkBoxTags->setDisabled(true);
     checkBoxCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
+    loadingProgressBar->setToolTip(QString());
     m_tagFetcher.startFetch(m_pTrack);
 }
 
@@ -535,8 +537,16 @@ void DlgTagFetcher::slotNetworkResult(
         const QString& app,
         const QString& message,
         int code) {
-    QString cantConnect = tr("Can't connect to %1: %2");
-    loadingProgressBar->setFormat(cantConnect.arg(app, message));
+    const QString cantConnect = tr("Can't connect to %1: %2").arg(app, message);
+    const QFontMetrics metrics(loadingProgressBar->font());
+    const QString elidedCantConnect = metrics.elidedText(
+            cantConnect,
+            Qt::ElideRight,
+            loadingProgressBar->width() - 4);
+    loadingProgressBar->setFormat(elidedCantConnect);
+    if (cantConnect != elidedCantConnect) {
+        loadingProgressBar->setToolTip(cantConnect);
+    }
     qWarning() << "Error while fetching track metadata!"
                << "Service:" << app
                << "HTTP Status:" << httpError
