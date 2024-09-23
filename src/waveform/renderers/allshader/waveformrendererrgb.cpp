@@ -1,10 +1,14 @@
 #include "waveform/renderers/allshader/waveformrendererrgb.h"
 
+#include "rendergraph/material/rgbmaterial.h"
+#include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+
+using namespace rendergraph;
 
 namespace allshader {
 
@@ -20,20 +24,25 @@ WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         : WaveformRendererSignalBase(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
+    initForRectangles<RGBMaterial>(0);
+    setUsePreprocess(true);
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
-void WaveformRendererRGB::initializeGL() {
-    m_shader.init();
+void WaveformRendererRGB::preprocess() {
+    if (!preprocessInner()) {
+        geometry().allocate(0);
+    }
 }
 
-void WaveformRendererRGB::paintGL() {
+bool WaveformRendererRGB::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+
     if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
-        return;
+        return false;
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -41,23 +50,23 @@ void WaveformRendererRGB::paintGL() {
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
-        return;
+        return false;
     }
 
     const int dataSize = waveform->getDataSize();
     if (dataSize <= 1) {
-        return;
+        return false;
     }
 
     const WaveformData* data = waveform->data();
     if (data == nullptr) {
-        return;
+        return false;
     }
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
     if (!stemInfo.isEmpty() && waveform->hasStem()) {
-        return;
+        return false;
     }
 #endif
 
@@ -107,16 +116,14 @@ void WaveformRendererRGB::paintGL() {
             // Slip rendere only render a single channel, so the vertices count doesn't change
             ((splitLeftRight && !m_isSlipRenderer ? length * 2 : length) + 1);
 
-    m_vertices.clear();
-    m_vertices.reserve(reserved);
-    m_colors.clear();
-    m_colors.reserve(reserved);
+    geometry().allocate(reserved);
+    // TODO set dirty for scenegraph
 
-    m_vertices.addRectangle(0.f,
+    RGBVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBColoredPoint2D>()};
+    vertexUpdater.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f * devicePixelRatio);
-    m_colors.addForRectangle(
+            m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f * devicePixelRatio,
             static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b));
@@ -214,51 +221,37 @@ void WaveformRendererRGB::paintGL() {
 
             // Lines are thin rectangles
             if (!splitLeftRight) {
-                m_vertices.addRectangle(fpos - 0.5f,
+                vertexUpdater.addRectangle(fpos - 0.5f,
                         halfBreadth - heightFactorAbs * maxAllChn[0],
                         fpos + 0.5f,
                         m_isSlipRenderer
                                 ? halfBreadth
-                                : halfBreadth + heightFactorAbs * maxAllChn[1]);
+                                : halfBreadth + heightFactorAbs * maxAllChn[1],
+                        red,
+                        green,
+                        blue);
             } else {
                 // note: heightFactor is the same for left and right,
                 // but negative for left (chn 0) and positive for right (chn 1)
-                m_vertices.addRectangle(fpos - 0.5f,
+                vertexUpdater.addRectangle(fpos - 0.5f,
                         halfBreadth,
                         fpos + 0.5f,
-                        halfBreadth + heightFactor[chn] * maxAllChn[chn]);
+                        halfBreadth + heightFactor[chn] * maxAllChn[chn],
+                        red,
+                        green,
+                        blue);
             }
-            m_colors.addForRectangle(red, green, blue);
         }
 
         xVisualFrame += visualIncrementPerPixel;
     }
 
-    DEBUG_ASSERT(reserved == m_vertices.size());
-    DEBUG_ASSERT(reserved == m_colors.size());
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
+    material().setUniform(0, matrix);
 
-    const int matrixLocation = m_shader.matrixLocation();
-    const int positionLocation = m_shader.positionLocation();
-    const int colorLocation = m_shader.colorLocation();
-
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-    m_shader.enableAttributeArray(colorLocation);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-    m_shader.setAttributeArray(
-            colorLocation, GL_FLOAT, m_colors.constData(), 3);
-
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.disableAttributeArray(colorLocation);
-    m_shader.release();
+    return true;
 }
 
 } // namespace allshader
