@@ -41,7 +41,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private slots:
     void fetchTagFinished(
             TrackPointer pTrack,
-            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases,
+            const QString& whyEmptyMessage);
     void tagSelected();
     void showProgressOfConstantTask(const QString&);
     void setPercentOfEachRecordings(int totalRecordingsFound);
