@@ -74,6 +74,9 @@
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#ifdef __STEM__
+#include "widget/wstemlabel.h"
+#endif
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wtrackwidgetgroup.h"
@@ -559,7 +562,13 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
-    } else if (nodeName == "Knob") {
+    }
+#ifdef __STEM__
+    else if (nodeName == "StemLabel") {
+        result = wrapWidget(parseStemLabelWidget(node));
+    }
+#endif
+    else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
@@ -731,6 +740,11 @@ void LegacySkinParser::parseChildren(
 }
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
+#ifndef __STEM__
+    if (requiresStem(node)) {
+        return nullptr;
+    }
+#endif
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
     setupBaseWidget(node, pGroup);
     setupWidget(node, pGroup->toQWidget());
@@ -966,6 +980,41 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
             m_pControllerManager->getControllerLearningEventFilter());
     pLabel->Init();
 }
+
+#ifdef __STEM__
+QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
+    WStemLabel* pLabel = new WStemLabel(m_pParent);
+    setupLabelWidget(element, pLabel);
+
+    QString group = lookupNodeGroup(element);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(element,
+                *m_pContext,
+                QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+
+    connect(pPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            pLabel,
+            &WStemLabel::slotTrackLoaded);
+
+    connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            pLabel,
+            &WStemLabel::slotTrackUnloaded);
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        // Set the trackpoinnter to the already loaded track,
+        // needed at skin change
+        pLabel->slotTrackLoaded(pTrack);
+    }
+
+    return pLabel;
+}
+#endif
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
@@ -2532,4 +2581,9 @@ QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     // skins directory for the launch image style.
     style.replace("url(skins:", "url(" + m_pConfig->getResourcePath() + "skins/");
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
+}
+
+bool LegacySkinParser::requiresStem(const QDomElement& node) {
+    QDomElement requiresStemNode = node.firstChildElement("RequiresStem");
+    return !requiresStemNode.isNull() && requiresStemNode.text() == "true";
 }

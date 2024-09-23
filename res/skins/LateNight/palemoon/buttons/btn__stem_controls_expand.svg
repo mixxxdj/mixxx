@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="52"
+   height="104"
+   version="1.1"
+   viewBox="0 0 26 52"
+   id="svg14"
+   sodipodi:docname="btn__stem_controls_expand.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="8.5673077"
+     inkscape:cx="26.087542"
+     inkscape:cy="59.470258"
+     inkscape:window-width="1920"
+     inkscape:window-height="1129"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14" />
+  <g
+     fill="none"
+     stroke="#000001"
+     stroke-linejoin="round"
+     stroke-width="1.6"
+     id="g7">
+    <path
+       d="m11.648 18.12-4.4253-4.4252 4.4253-4.4252-1.1064-1.1063-5.5316 5.5315 5.5316 5.5315z"
+       id="path6" />
+    <path
+       d="m14.352 18.12 4.4253-4.4253-4.4253-4.4253 1.1064-1.1064 5.5315 5.5316-5.5315 5.5315-1.1064-1.1064z"
+       id="path7" />
+    <path
+       d="m 3.4997,27.5001 v 2 h 18 v -2 z"
+       id="path14" />
+    <path
+       d="m 3.4996,32.5001 v 2 h 18 v -2 z"
+       id="path14-2" />
+    <path
+       d="m 3.5000999,37.5004 v 2 H 21.5001 v -2 z"
+       id="path14-1" />
+    <path
+       d="m 3.5001002,42.5004 v 2 H 21.5001 v -2 z"
+       id="path14-6" />
+  </g>
+  <g
+     fill="#666668"
+     id="g13">
+    <path
+       d="m11.648 18.12-4.4253-4.4252 4.4253-4.4252-1.1064-1.1063-5.5316 5.5315 5.5316 5.5315z"
+       stroke-width=".93992"
+       id="path12" />
+    <path
+       d="m14.352 18.12 4.4253-4.4253-4.4253-4.4253 1.1064-1.1064 5.5315 5.5315-5.5315 5.5316-1.1064-1.1064z"
+       stroke-width=".93992"
+       id="path13" />
+    <path
+       id="path11"
+       d="M 3.5 27.5 L 3.5 29.5 L 7.4824219 29.5 L 11.484375 29.5 L 21.5 29.5 L 21.5 27.5 L 12.787109 27.5 L 9.7753906 27.5 L 3.5 27.5 z " />
+    <path
+       id="path11-1"
+       d="m 3.4996,32.5001 v 2 H 7.482022 11.483975 21.4996 v -2 H 12.786709 9.7749902 Z" />
+    <path
+       id="path11-13"
+       d="m 3.5001004,37.5004 v 2 H 7.4825224 11.484475 21.5001 v -2 H 12.787209 9.7754914 Z" />
+    <path
+       id="path11-8"
+       d="m 3.5000995,42.5004 v 2 H 7.4825215 11.484475 21.5001 v -2 H 12.787209 9.7754905 Z" />
+  </g>
+</svg>

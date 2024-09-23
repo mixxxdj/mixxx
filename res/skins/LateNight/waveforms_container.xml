@@ -4,12 +4,26 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-
       <WidgetGroup>
         <ObjectName>WaveformsContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+
+          <WidgetGroup>
+            <RequiresStem>true</RequiresStem>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                <SetVariable name="TooltipId">show_stem_controls</SetVariable>
+                <SetVariable name="ObjectName">StemControlsToggle</SetVariable>
+                <SetVariable name="Size">26f,52f</SetVariable>
+                <SetVariable name="BtnSize"></SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_stem_controls</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <Layout>vertical</Layout>
