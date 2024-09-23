@@ -3147,7 +3147,7 @@ TEST_F(EngineSyncTest, KeepCorrectFactorUponResync) {
 }
 
 // There is a race condition preventing this usecase to work.
-// https://github.com/mixxxdj/mixxx/issues/????
+// https://github.com/mixxxdj/mixxx/issues/13689
 TEST_F(EngineSyncTest, DISABLED_KeepCorrectFactorOnLoad) {
     /* Usecase
         - load track @ 174bpm in deck 1 and enable sync leader
