@@ -215,6 +215,10 @@ void WTrackMenu::createMenus() {
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
+                        // Ensure it's enabled, else we can't add actions.
+                        VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
+                            m_pSearchRelatedMenu->setEnabled(true);
+                        }
                         m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
                     }
                     m_pSearchRelatedMenu->setEnabled(
@@ -828,6 +832,19 @@ void WTrackMenu::updateMenus() {
 
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
+
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        // Enable only if we have one valid track pointer.
+        // this prevents the cursor getting stuck on this menu in case it gets
+        // disabled when encountering a track nullptr in lambda function
+        // connected to aboutToShow() signal (see createMenus()).
+        // Note: track nullptr can happen when TrackDAO returns nullptr because
+        // the selected track references a file referenced by another cached track.
+        DEBUG_ASSERT(m_pSearchRelatedMenu);
+        const auto pTrack = getFirstTrackPointer();
+        m_pSearchRelatedMenu->setEnabled(pTrack != nullptr);
+        // TODO Only enable for single track?
+    }
 
     if (featureIsEnabled(Feature::LoadTo)) {
         int iNumDecks = static_cast<int>(m_pNumDecks.get());
