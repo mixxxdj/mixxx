@@ -3,7 +3,6 @@
 #include <QFlags>
 #include <limits>
 
-#include "rendergraph/openglnode.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 

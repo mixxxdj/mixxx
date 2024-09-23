@@ -2,6 +2,7 @@
 
 #ifndef QT_OPENGL_ES_2
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbshader.h"
 #include "track/track_decl.h"
 #include "util/class.h"

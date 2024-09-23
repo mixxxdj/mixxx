@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rendergraph/openglnode.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
 class WaveformWidgetRenderer;
@@ -9,8 +8,7 @@ namespace allshader {
 class WaveformRenderer;
 }
 
-class allshader::WaveformRenderer : public ::WaveformRendererAbstract,
-                                    public rendergraph::OpenGLNode {
+class allshader::WaveformRenderer : public ::WaveformRendererAbstract {
   public:
     explicit WaveformRenderer(WaveformWidgetRenderer* widget);
 

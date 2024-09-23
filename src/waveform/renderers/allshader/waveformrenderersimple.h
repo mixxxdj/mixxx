@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rendergraph/openglnode.h"
 #include "shaders/unicolorshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/vertexdata.h"

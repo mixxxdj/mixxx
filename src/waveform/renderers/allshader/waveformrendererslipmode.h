@@ -3,6 +3,7 @@
 #include <QColor>
 #include <memory>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/slipmodeshader.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
@@ -16,7 +17,9 @@ namespace allshader {
 class WaveformRendererSlipMode;
 }
 
-class allshader::WaveformRendererSlipMode final : public allshader::WaveformRenderer {
+class allshader::WaveformRendererSlipMode final
+        : public allshader::WaveformRenderer,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererSlipMode(
             WaveformWidgetRenderer* waveformWidget);

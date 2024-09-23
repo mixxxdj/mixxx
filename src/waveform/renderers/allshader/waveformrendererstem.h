@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
 #include "util/class.h"
