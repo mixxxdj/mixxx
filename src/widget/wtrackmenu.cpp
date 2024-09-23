@@ -849,6 +849,7 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::LoadTo)) {
         int iNumDecks = static_cast<int>(m_pNumDecks.get());
         m_pDeckMenu->clear();
+        // TODO Only enable for single track?
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 // PlayerManager::groupForDeck is 0-indexed.
@@ -964,6 +965,7 @@ void WTrackMenu::updateMenus() {
         bool anyBpmLocked;
         bool anyBpmNotLocked;
         std::tie(anyBpmLocked, anyBpmNotLocked) = getTrackBpmLockStates();
+        // TODO Disable menu if anyBpmLocked == anyBpmNotLocked ??
         if (featureIsEnabled(Feature::Reset)) {
             m_pClearBeatsAction->setEnabled(!anyBpmLocked);
         }
@@ -2355,6 +2357,10 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 }
             });
     // Method getFirstTrackPointer() is not applicable here!
+    // DlgTrackInfo relies on a track model for certain operations,
+    // for example show/hide the Next/Prev buttons.
+    // It can be loaded with either an index (must have a model),
+    // or a TrackPointer (must NOT have a model then).
     if (m_pTrackModel) {
         m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
