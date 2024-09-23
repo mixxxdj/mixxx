@@ -15,7 +15,9 @@ namespace allshader {
 class WaveformRendererStem;
 }
 
-class allshader::WaveformRendererStem final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererStem final
+        : public allshader::WaveformRendererSignalBase,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererStem(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =

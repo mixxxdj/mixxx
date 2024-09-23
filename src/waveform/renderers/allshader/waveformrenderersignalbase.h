@@ -13,8 +13,7 @@ namespace allshader {
 class WaveformRendererSignalBase;
 }
 
-class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
-                                              public rendergraph::OpenGLNode {
+class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase {
   public:
     enum class Option {
         None = 0b0,

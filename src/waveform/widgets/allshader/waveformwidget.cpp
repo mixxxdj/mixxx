@@ -55,7 +55,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     allshader::WaveformRendererSignalBase* waveformSignalRenderer =
             addWaveformSignalRenderer(
                     type, options, ::WaveformRendererAbstract::Play);
-    appendChildTo(pOpacityNode, waveformSignalRenderer);
+    appendChildTo(pOpacityNode, dynamic_cast<rendergraph::TreeNode*>(waveformSignalRenderer));
 
     appendChildTo(pOpacityNode, addRenderer<WaveformRenderBeat>());
     m_pWaveformRenderMark = addRenderer<WaveformRenderMark>();
@@ -75,8 +75,8 @@ WaveformWidget::WaveformWidget(QWidget* parent,
                         ::WaveformRendererAbstract::Slip));
 #endif
         appendChildTo(pOpacityNode,
-                addWaveformSignalRenderer(
-                        type, options, ::WaveformRendererAbstract::Slip));
+                dynamic_cast<rendergraph::TreeNode*>(addWaveformSignalRenderer(
+                        type, options, ::WaveformRendererAbstract::Slip)));
         appendChildTo(pOpacityNode,
                 addRenderer<WaveformRenderBeat>(
                         ::WaveformRendererAbstract::Slip));

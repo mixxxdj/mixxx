@@ -20,7 +20,8 @@ class WaveformRendererTextured;
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
 class allshader::WaveformRendererTextured : public QObject,
-                                            public allshader::WaveformRendererSignalBase {
+                                            public allshader::WaveformRendererSignalBase,
+                                            public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
     explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,

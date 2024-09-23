@@ -9,7 +9,9 @@ namespace allshader {
 class WaveformRendererFiltered;
 }
 
-class allshader::WaveformRendererFiltered final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererFiltered final
+        : public allshader::WaveformRendererSignalBase,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget, bool rgbStacked);
 
