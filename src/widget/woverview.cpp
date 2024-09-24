@@ -1386,9 +1386,7 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors.getLowColor(),
-                m_signalColors.getMidColor(),
-                m_signalColors.getHighColor());
+                m_signalColors);
     } else if (m_type == Type::HSV) {
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
         WaveformOverviewRenderer::instance()->drawWaveformPartHSV(
@@ -1396,7 +1394,7 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors.getLowColor());
+                m_signalColors);
     } else { // Type::RGB:
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
         WaveformOverviewRenderer::instance()->drawWaveformPartRGB(
@@ -1404,9 +1402,7 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors.getRgbLowColor(),
-                m_signalColors.getRgbMidColor(),
-                m_signalColors.getRgbHighColor());
+                m_signalColors);
     }
 
     m_waveformImageScaled = QImage();

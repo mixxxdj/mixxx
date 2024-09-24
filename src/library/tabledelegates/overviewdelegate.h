@@ -7,6 +7,7 @@
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/woverview.h"
 
 class ControlProxy;
@@ -43,6 +44,7 @@ class OverviewDelegate : public TableItemDelegate {
     OverviewCache* const m_pCache;
     WOverview::Type m_type;
     parented_ptr<ControlProxy> m_pTypeControl;
+    WaveformSignalColors m_signalColors;
 
     mutable QHash<TrackId, int> m_trackIdToRow;
 };

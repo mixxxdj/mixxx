@@ -11,6 +11,7 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
 #include "waveform/overviews/waveformoverviewrenderer.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformfactory.h"
 
 namespace {
@@ -54,6 +55,7 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
 
 QPixmap OverviewCache::requestOverview(
         WOverview::Type type,
+        const WaveformSignalColors& signalColors,
         const TrackId trackId,
         const QObject* pRequester,
         const QSize desiredSize) {
@@ -87,6 +89,7 @@ QPixmap OverviewCache::requestOverview(
             m_pConfig,
             m_pDbConnectionPool,
             type,
+            signalColors,
             trackId,
             pRequester,
             desiredSize);
@@ -104,6 +107,7 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         const UserSettingsPointer pConfig,
         const mixxx::DbConnectionPoolPtr pDbConnectionPool,
         const WOverview::Type type,
+        const WaveformSignalColors& signalColors,
         const TrackId trackId,
         const QObject* pRequester,
         const QSize desiredSize) {
@@ -133,7 +137,9 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
 
         if (!pLoadedTrackWaveformSummary.isNull()) {
             QImage image = WaveformOverviewRenderer::instance()->render(
-                    pLoadedTrackWaveformSummary, type);
+                    pLoadedTrackWaveformSummary,
+                    type,
+                    signalColors);
 
             if (!image.isNull()) {
                 image = resizeImageSize(image, desiredSize);
