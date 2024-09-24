@@ -50,6 +50,17 @@ void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress an
 }
 
 void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
+    // kLogger.warning() << "onTrackSummaryChanged" << trackId;
+    // The waveform has been removed, created or changed.
+    // Find all cache keys for this id and remove the entries from the pixmap cache
+    while (m_cacheKeysByTrackId.contains(trackId)) {
+        const auto cacheKey = m_cacheKeysByTrackId.take(trackId);
+        DEBUG_ASSERT(!cacheKey.isEmpty());
+        QPixmapCache::remove(cacheKey);
+    }
+    // try remove the id from the ignore list
+    m_tracksWithoutOverview.remove(trackId);
+    // then let users request an update independent from paint events
     emit overviewChanged(trackId);
 }
 
@@ -165,12 +176,18 @@ void OverviewCache::overviewPrepared() {
         const QString cacheKey = pixmapCacheKey(
                 res.trackId, res.resizedToSize, res.type);
         QPixmapCache::insert(cacheKey, pixmap);
+        // Store the cached track id so we can clear ALL pixmaps of a track
+        // in case the waveform has been cleared/updated.
+        // This is a QMultiHash because we want to store pixmap keys of all
+        // OverviewDelegates with different widths in various library features.
+        m_cacheKeysByTrackId.insert(res.trackId, cacheKey);
     }
 
     if (pixmap.isNull()) {
         // Avoid (too many) repeated lookups.
         // (there may still be identical request be processed due to
         // asynchronous processing)
+        // kLogger.warning() << "--> empty pixmap, add to ignore list";
         m_tracksWithoutOverview.insert(res.trackId);
     }
     m_currentlyLoading.remove(res.trackId);
