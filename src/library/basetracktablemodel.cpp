@@ -258,7 +258,7 @@ void BaseTrackTableModel::initHeaderProperties() {
             defaultColumnWidth() * 6);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX,
             tr("Overview"),
-            defaultColumnWidth());
+            defaultColumnWidth() * 8);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW,
             tr("Preview"),
@@ -1217,17 +1217,23 @@ void BaseTrackTableModel::slotRefreshCoverRows(
     emitDataChangedForMultipleRowsInColumn(rows, column);
 }
 
-void BaseTrackTableModel::slotOverviewReady(int row) {
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+void BaseTrackTableModel::slotOverviewReady(TrackId trackId) {
+    const int column = fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX);
     VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }
-    QModelIndex idx = index(row, column);
-    emit dataChanged(idx, idx);
+    const QList<int> rows = getTrackRows(trackId);
+    for (int row : rows) {
+        if (row == -1) {
+            continue;
+        }
+        QModelIndex idx = index(row, column);
+        emit dataChanged(idx, idx);
+    }
 }
 
 void BaseTrackTableModel::slotOverviewChanged(TrackId trackId) {
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    const int column = fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX);
     VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }
