@@ -59,7 +59,6 @@
 #include "util/translations.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "waveform/overviews/waveformoverviewrenderer.h"
 
 #ifdef __APPLE__
 #include "util/sandbox.h"
@@ -360,7 +359,6 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
     Clipboard::createInstance();
-    WaveformOverviewRenderer::createInstance();
     OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(

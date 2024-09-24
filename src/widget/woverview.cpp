@@ -1381,7 +1381,7 @@ bool WOverview::drawNextPixmapPart() {
 
     if (m_type == Type::Filtered) {
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartLMH"));
-        WaveformOverviewRenderer::instance()->drawWaveformPartLMH(
+        WaveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
@@ -1389,7 +1389,7 @@ bool WOverview::drawNextPixmapPart() {
                 m_signalColors);
     } else if (m_type == Type::HSV) {
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
-        WaveformOverviewRenderer::instance()->drawWaveformPartHSV(
+        WaveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
@@ -1397,7 +1397,7 @@ bool WOverview::drawNextPixmapPart() {
                 m_signalColors);
     } else { // Type::RGB:
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
-        WaveformOverviewRenderer::instance()->drawWaveformPartRGB(
+        WaveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,

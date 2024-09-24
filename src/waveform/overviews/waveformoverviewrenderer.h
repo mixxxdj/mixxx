@@ -2,31 +2,30 @@
 
 #include <QColor>
 
-#include "util/singleton.h"
 #include "waveform/waveform.h"
 #include "widget/woverview.h"
 
 class QPainter;
 class WaveformSignalColors;
 
-class WaveformOverviewRenderer : public Singleton<WaveformOverviewRenderer> {
+class WaveformOverviewRenderer {
   public:
-    QImage render(ConstWaveformPointer,
+    static QImage render(ConstWaveformPointer,
             WOverview::Type type,
             const WaveformSignalColors& signalColors);
-    void drawWaveformPartRGB(
+    static void drawWaveformPartRGB(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
             int end,
             const WaveformSignalColors& signalColors);
-    void drawWaveformPartLMH(
+    static void drawWaveformPartLMH(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
             int end,
             const WaveformSignalColors& signalColors);
-    void drawWaveformPartHSV(
+    static void drawWaveformPartHSV(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,

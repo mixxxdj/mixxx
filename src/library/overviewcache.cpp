@@ -136,7 +136,7 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
                 WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
 
         if (!pLoadedTrackWaveformSummary.isNull()) {
-            QImage image = WaveformOverviewRenderer::instance()->render(
+            QImage image = WaveformOverviewRenderer::render(
                     pLoadedTrackWaveformSummary,
                     type,
                     signalColors);
