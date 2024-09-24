@@ -18,7 +18,7 @@ namespace {
 
 mixxx::Logger kLogger("OverviewCache");
 
-QString pixmapCacheKey(TrackId trackId, QSize size, WOverview::Type type) {
+QString pixmapCacheKey(TrackId trackId, QSize size, mixxx::OverviewType type) {
     return QString("Overview_%1_%2_%3_%4")
             .arg(QString::number(static_cast<int>(type)),
                     trackId.toString(),
@@ -54,7 +54,7 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
 }
 
 QPixmap OverviewCache::requestOverview(
-        WOverview::Type type,
+        mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         const TrackId trackId,
         const QObject* pRequester,
@@ -106,7 +106,7 @@ QPixmap OverviewCache::requestOverview(
 OverviewCache::FutureResult OverviewCache::prepareOverview(
         const UserSettingsPointer pConfig,
         const mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        const WOverview::Type type,
+        const mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         const TrackId trackId,
         const QObject* pRequester,

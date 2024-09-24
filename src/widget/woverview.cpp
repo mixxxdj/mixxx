@@ -35,7 +35,7 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(Type::RGB),
+          m_type(mixxx::OverviewType::RGB),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -428,8 +428,8 @@ void WOverview::onPassthroughChange(double v) {
 
 void WOverview::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
-    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<Type>().keyCount());
-    Type type = static_cast<Type>(static_cast<int>(v));
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+    mixxx::OverviewType type = static_cast<mixxx::OverviewType>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -1379,7 +1379,7 @@ bool WOverview::drawNextPixmapPart() {
                 static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
-    if (m_type == Type::Filtered) {
+    if (m_type == mixxx::OverviewType::Filtered) {
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartLMH"));
         WaveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
@@ -1387,7 +1387,7 @@ bool WOverview::drawNextPixmapPart() {
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else if (m_type == Type::HSV) {
+    } else if (m_type == mixxx::OverviewType::HSV) {
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartHSV"));
         WaveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
@@ -1395,7 +1395,7 @@ bool WOverview::drawNextPixmapPart() {
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else { // Type::RGB:
+    } else { // mixxx::OverviewType::RGB:
         ScopedTimer t(QStringLiteral("WOverview::drawNextPixmapPartRGB"));
         WaveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
