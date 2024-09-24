@@ -7,6 +7,7 @@
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
+#include "waveform/overviews/overviewtype.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/woverview.h"
 
@@ -42,7 +43,7 @@ class OverviewDelegate : public TableItemDelegate {
 
   private:
     OverviewCache* const m_pCache;
-    WOverview::Type m_type;
+    mixxx::OverviewType m_type;
     parented_ptr<ControlProxy> m_pTypeControl;
     WaveformSignalColors m_signalColors;
 

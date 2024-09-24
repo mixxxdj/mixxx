@@ -2,8 +2,8 @@
 
 #include <QColor>
 
+#include "waveform/overviews/overviewtype.h"
 #include "waveform/waveform.h"
-#include "widget/woverview.h"
 
 class QPainter;
 class WaveformSignalColors;
@@ -11,7 +11,7 @@ class WaveformSignalColors;
 class WaveformOverviewRenderer {
   public:
     static QImage render(ConstWaveformPointer,
-            WOverview::Type type,
+            mixxx::OverviewType type,
             const WaveformSignalColors& signalColors);
     static void drawWaveformPartRGB(
             QPainter* pPainter,

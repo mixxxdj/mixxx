@@ -41,7 +41,7 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
           m_pTrackModel(asTrackModel(pTableView)),
           m_pCache(OverviewCache::instance()),
-          m_type(WOverview::Type::RGB) {
+          m_type(mixxx::OverviewType::RGB) {
     VERIFY_OR_DEBUG_ASSERT(m_pCache) {
         kLogger.warning() << "Caching of overviews is not available";
         return;
@@ -73,8 +73,8 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
 
 void OverviewDelegate::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
-    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<WOverview::Type>().keyCount());
-    WOverview::Type type = static_cast<WOverview::Type>(static_cast<int>(v));
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+    mixxx::OverviewType type = static_cast<mixxx::OverviewType>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
