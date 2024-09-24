@@ -1,4 +1,5 @@
 #include <QThread>
+#include <bitset>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -6,6 +7,8 @@
 #pragma comment(lib, "winmm.lib")
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "osc/ip/UdpSocket.h"
 #include "osc/osc/OscPacketListener.h"
 #include "osc/osc/OscReceivedElements.h"
@@ -35,7 +38,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
 
         try {
             osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
-            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
+            //            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
 
             float oscInVal;
             args >> oscInVal >> osc::EndMessage;
@@ -44,25 +47,34 @@ class OscReceivePacketListener : public osc::OscPacketListener {
             oscIn.oscAddress = m.AddressPattern();
             oscIn.oscGroup, oscIn.oscKey;
             oscIn.oscAddress.replace("/", "");
+            oscIn.oscAddress.replace("(", "[");
+            oscIn.oscAddress.replace(")", "]");
             oscIn.oscValue = oscInVal;
-            bool oscGet = false;
+            bool oscGetP = false;
+            bool oscGetV = false;
             bool oscSet = false;
 
-            if (oscIn.oscAddress.contains("Get#", Qt::CaseSensitive)) {
-                int posDel1 = oscIn.oscAddress.indexOf("Get#", 0, Qt::CaseInsensitive);
+            if (oscIn.oscAddress.contains("GetP#", Qt::CaseSensitive)) {
+                int posDel1 = oscIn.oscAddress.indexOf("GetP#", 0, Qt::CaseInsensitive);
                 if (posDel1 == 0) {
-                    oscGet = true;
+                    oscGetP = true;
                 }
             } else {
-                oscSet = true;
+                if (oscIn.oscAddress.contains("GetV#", Qt::CaseSensitive)) {
+                    int posDel1 = oscIn.oscAddress.indexOf("GetV#", 0, Qt::CaseInsensitive);
+                    if (posDel1 == 0) {
+                        oscGetV = true;
+                    }
+                } else {
+                    oscSet = true;
+                }
             }
-            if (oscGet) {
+
+            if (oscGetP) {
                 int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
                 if (posDel2 > 0) {
-                    oscIn.oscGroup = oscIn.oscAddress.mid(4, posDel2 - 4);
-                    //                    oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel2);
-                    oscIn.oscGroupSB = "[" + oscIn.oscGroup + "]";
-                    oscIn.oscKey = oscIn.oscAddress.mid(posDel2 + 1, oscIn.oscAddress.length() - 4);
+                    oscIn.oscGroup = oscIn.oscAddress.mid(5, posDel2 - 5);
+                    oscIn.oscKey = oscIn.oscAddress.mid(posDel2 + 1, oscIn.oscAddress.length() - 5);
                     QString MixxxOSCStatusFileLocation =
                             m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
                     QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
@@ -70,22 +82,24 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                     QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
                     MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Get Group, Key: Value: "
                                                  "<%1,%2 : %3>")
-                                                 .arg(oscIn.oscGroupSB)
+                                                 .arg(oscIn.oscGroup)
                                                  .arg(oscIn.oscKey)
                                                  .arg(oscIn.oscValue)
                                       << "\n";
-                    // ControlObject::getControl(oscIn.oscGroupSB, oscIn.oscKey)->getParameter();
 
-                    OscFunctionsSendPtrType(m_pConfig,
-                            oscIn.oscGroup,
-                            oscIn.oscKey,
-                            FLOATBODY,
-                            "",
-                            0,
-                            0,
-                            ControlObject::getControl(
-                                    oscIn.oscGroupSB, oscIn.oscKey)
-                                    ->getParameter());
+                    if (ControlObject::exists(ConfigKey(oscIn.oscGroup, oscIn.oscKey))) {
+                        OscFunctionsSendPtrType(m_pConfig,
+                                oscIn.oscGroup,
+                                oscIn.oscKey,
+                                FLOATBODY,
+                                "",
+                                0,
+                                0,
+                                0 +
+                                        ControlObject::getControl(
+                                                oscIn.oscGroup, oscIn.oscKey)
+                                                ->getParameter());
+                    }
 
                     MixxxOSCStatusFile.close();
                     qDebug() << "OSC Msg Rcvd: Get Group, Key: Value: "
@@ -94,11 +108,47 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                 }
             }
 
-            if (!oscGet && oscSet) {
+            if (oscGetV) {
+                int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
+                if (posDel2 > 0) {
+                    oscIn.oscGroup = oscIn.oscAddress.mid(5, posDel2 - 5);
+                    oscIn.oscKey = oscIn.oscAddress.mid(posDel2 + 1, oscIn.oscAddress.length() - 5);
+                    QString MixxxOSCStatusFileLocation =
+                            m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
+                    QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
+                    MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+                    QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
+                    MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Get Group, Key: Value: "
+                                                 "<%1,%2 : %3>")
+                                                 .arg(oscIn.oscGroup)
+                                                 .arg(oscIn.oscKey)
+                                                 .arg(oscIn.oscValue)
+                                      << "\n";
+
+                    if (ControlObject::exists(ConfigKey(oscIn.oscGroup, oscIn.oscKey))) {
+                        OscFunctionsSendPtrType(m_pConfig,
+                                oscIn.oscGroup,
+                                oscIn.oscKey,
+                                INTBODY,
+                                "",
+                                ControlObject::getControl(
+                                        oscIn.oscGroup, oscIn.oscKey)
+                                        ->getParameter(),
+                                0,
+                                0);
+                    }
+
+                    MixxxOSCStatusFile.close();
+                    qDebug() << "OSC Msg Rcvd: Get Group, Key: Value: "
+                             << oscIn.oscGroup << "," << oscIn.oscKey << ":"
+                             << oscIn.oscValue;
+                }
+            }
+
+            if (!oscGetP && !oscGetV && oscSet) {
                 int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
                 if (posDel2 > 0) {
                     oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel2);
-                    oscIn.oscGroupSB = "[" + oscIn.oscGroup + "]";
                     oscIn.oscKey = oscIn.oscAddress.mid(posDel2 + 1, oscIn.oscAddress.length());
 
                     QString MixxxOSCStatusFileLocation =
@@ -106,25 +156,44 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                     QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
                     MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
                     QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
-                    MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
-                                                 "<%1,%2 : %3>")
-                                                 .arg(oscIn.oscGroupSB)
-                                                 .arg(oscIn.oscKey)
-                                                 .arg(oscIn.oscValue)
-                                      << "\n";
-                    ControlObject::getControl(oscIn.oscGroupSB, oscIn.oscKey)->set(oscIn.oscValue);
+
+                    if (ControlObject::exists(ConfigKey(oscIn.oscGroup, oscIn.oscKey))) {
+                        std::unique_ptr<PollingControlProxy> m_poscPCP;
+                        m_poscPCP = std::make_unique<PollingControlProxy>(
+                                oscIn.oscGroup, oscIn.oscKey);
+                        m_poscPCP->set(oscIn.oscValue);
+                        // ControlObject::getControl(oscIn.oscGroup,
+                        // oscIn.oscKey)->setAndConfirm(oscIn.oscValue);
+                        MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
+                                                     "<%1,%2 : %3>")
+                                                     .arg(oscIn.oscGroup)
+                                                     .arg(oscIn.oscKey)
+                                                     .arg(oscIn.oscValue)
+                                          << " Value Changed "
+                                          << "\n";
+
+                    } else {
+                        MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
+                                                     "<%1,%2 : %3>")
+                                                     .arg(oscIn.oscGroup)
+                                                     .arg(oscIn.oscKey)
+                                                     .arg(oscIn.oscValue)
+                                          << " does not exist -> Value NOT Changed "
+                                          << "\n";
+                    }
+
                     MixxxOSCStatusFile.close();
-                    //                    qDebug() << "OSC Msg Rcvd: Group, Key: Value: "
-                    //                             << oscIn.oscGroupSB << "," << oscIn.oscKey << ":"
-                    //                             << oscIn.oscValue;
-                    //                    OscFunctionsSendPtrType(m_pConfig,
-                    //                            "[Osc]",
-                    //                            "OscSync",
-                    //                            FLOATBODY,
-                    //                            "",
-                    //                            0,
-                    //                            0,
-                    //                            1);
+                    qDebug() << "OSC Msg Rcvd: Group, Key: Value: "
+                             << oscIn.oscGroup << "," << oscIn.oscKey << ":"
+                             << oscIn.oscValue;
+                    //                  OscFunctionsSendPtrType(m_pConfig,
+                    //                          "[Osc]",
+                    //                          "OscSync",
+                    //                          INTBODY,
+                    //                          "",
+                    //                          1,
+                    //                          0,
+                    //                          0);
                 }
             }
 

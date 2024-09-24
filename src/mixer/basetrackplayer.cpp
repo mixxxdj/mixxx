@@ -1019,13 +1019,19 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
-
-        //  EveOSC begin
-        //        if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        //            OscFunctionsSendFloat(getGroup(), "play", value);
-        //        }
-        // EveOSC end
     }
+    //  EveOSC begin
+    if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "play",
+                FLOATBODY,
+                "",
+                0,
+                0,
+                value);
+    }
+    // EveOSC end
 }
 
 EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {

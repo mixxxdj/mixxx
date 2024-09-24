@@ -43,9 +43,32 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
     // OscGroup.replace("[", "");
     // OscGroup.replace("]", "");
-    // OscGroup = OscGroup.mid(1, OscGroup.length() - 2);
+    //    int posDelSB1 = OscGroup.indexOf("[", 0, Qt::CaseInsensitive);
+    //    if (posDelSB1 == 0) {
+    //        OscGroup = OscGroup.mid(1, OscGroup.length() - 1);
+
+    //    }
+    //    int posDelSB2 = OscGroup.indexOf("]", OscGroup.length()-1, Qt::CaseInsensitive);
+    //    if (posDelSB2 == OscGroup.length() - 1) {
+    //        OscGroup = OscGroup.mid(0, OscGroup.length() - 1);
+    //    }
+
+    //    OscGroup = OscGroup.mid(1, OscGroup.length() - 2);
+
+    //    OscGroup.replace("[", "(");
+    //    OscGroup.replace("]", ")");
 
     QString OscMessageHeader = "/" + OscGroup + "@" + OscKey;
+    OscMessageHeader.replace("[", "(");
+    OscMessageHeader.replace("]", ")");
+
+    //    if
+    //    (OscMessageHeader.contains("/EqualizerRack1_[Channel1]_Effect1@parameter1",
+    //    Qt::CaseSensitive)) {
+    //        OscMessageHeader =
+    //        "/EqualizerRack1_Channel1!!!_Effect1@parameter1";
+    //    }
+
     QByteArray OscMessageHeaderBa = OscMessageHeader.toLocal8Bit();
     const char* OscMessageHeaderChar = OscMessageHeaderBa.data();
     QByteArray OscMessageBodyBa;

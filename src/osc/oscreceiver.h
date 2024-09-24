@@ -23,6 +23,7 @@ class oscResult {
     QString oscGroupSB;
     QString oscKey;
     float oscValue;
+    bool oscInValB;
 };
 
 class oscReceiver {
