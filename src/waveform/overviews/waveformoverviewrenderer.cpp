@@ -44,7 +44,7 @@ void WaveformOverviewRenderer::setSignalColor(QColor color) {
 }
 
 QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
-        WOverview::Type type) {
+        mixxx::OverviewType type) {
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
         return QImage();
@@ -56,13 +56,13 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
     QPainter painter(&image);
     painter.translate(0.0, static_cast<double>(image.height()) / 2.0);
 
-    if (type == WOverview::Type::HSV) {
+    if (type == mixxx::OverviewType::HSV) {
         drawWaveformPartHSV(&painter,
                 pWaveform,
                 nullptr,
                 dataSize,
                 s_signalColor);
-    } else if (type == WOverview::Type::Filtered) {
+    } else if (type == mixxx::OverviewType::Filtered) {
         drawWaveformPartLMH(&painter,
                 pWaveform,
                 nullptr,

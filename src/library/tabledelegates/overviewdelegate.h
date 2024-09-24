@@ -7,7 +7,7 @@
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
-#include "widget/woverview.h"
+#include "waveform/overviews/overviewtype.h"
 
 class ControlProxy;
 class OverviewCache;
@@ -41,7 +41,7 @@ class OverviewDelegate : public TableItemDelegate {
 
   private:
     OverviewCache* const m_pCache;
-    WOverview::Type m_type;
+    mixxx::OverviewType m_type;
     parented_ptr<ControlProxy> m_pTypeControl;
 
     mutable QHash<TrackId, int> m_trackIdToRow;

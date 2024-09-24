@@ -2,14 +2,14 @@
 
 #include <QColor>
 
+#include "waveform/overviews/overviewtype.h"
 #include "waveform/waveform.h"
-#include "widget/woverview.h"
 
 class QPainter;
 
 class WaveformOverviewRenderer {
   public:
-    static QImage render(ConstWaveformPointer, WOverview::Type type);
+    static QImage render(ConstWaveformPointer, mixxx::OverviewType type);
     static void drawWaveformPartRGB(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,

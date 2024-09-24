@@ -1212,6 +1212,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
+  src/waveform/overviews/overviewtype.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
   src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
