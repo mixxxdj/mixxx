@@ -22,28 +22,21 @@ class OverviewDelegate : public TableItemDelegate {
             const QModelIndex& index) const final;
 
   signals:
-    void overviewReady(int row);
-    // int column
+    void overviewReady(TrackId trackId);
 
     void overviewChanged(TrackId trackId);
 
   private slots:
     void slotOverviewReady(const QObject* pRequester,
-            TrackId trackId,
-            QPixmap pixmap,
-            QSize resizedToSize);
-
-    void slotOverviewChanged(TrackId trackId);
+            const TrackId trackId,
+            bool pixmapValid,
+            const QSize resizedToSize);
 
   protected:
     TrackModel* const m_pTrackModel;
 
   private:
     OverviewCache* const m_pCache;
-
-    // QTableView* m_pTableView;
-    // int m_iIdColumn;
-    // int m_iOverviewColumn;
 
     mutable QHash<TrackId, int> m_trackIdToRow;
 };

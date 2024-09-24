@@ -260,7 +260,7 @@ void BaseTrackTableModel::initHeaderProperties() {
             defaultColumnWidth() * 6);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX,
             tr("Overview"),
-            defaultColumnWidth());
+            defaultColumnWidth() * 8);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW,
             tr("Preview"),
@@ -538,7 +538,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         connect(pOverviewDelegate,
                 &OverviewDelegate::overviewReady,
                 this,
-                &BaseTrackTableModel::slotOverviewReady);
+                &BaseTrackTableModel::slotOverviewChanged);
         connect(pOverviewDelegate,
                 &OverviewDelegate::overviewChanged,
                 this,
@@ -1106,7 +1106,8 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
         return readOnlyFlags(index);
     }
 
@@ -1208,17 +1209,8 @@ void BaseTrackTableModel::slotRefreshCoverRows(
     emitDataChangedForMultipleRowsInColumn(rows, column);
 }
 
-void BaseTrackTableModel::slotOverviewReady(int row) {
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
-        return;
-    }
-    QModelIndex idx = index(row, column);
-    emit dataChanged(idx, idx);
-}
-
 void BaseTrackTableModel::slotOverviewChanged(TrackId trackId) {
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    const int column = fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX);
     VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }

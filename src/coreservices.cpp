@@ -361,9 +361,7 @@ void CoreServices::initialize(QApplication* pApp) {
     CoverArtCache::createInstance();
     Clipboard::createInstance();
     WaveformOverviewRenderer::createInstance();
-    OverviewCache::createInstance();
-    OverviewCache::instance()->setConfig(pConfig);
-    OverviewCache::instance()->setDbConnectionPool(m_pDbConnectionPool);
+    OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
             this,
@@ -383,6 +381,13 @@ void CoreServices::initialize(QApplication* pApp) {
     // been created. Otherwise Mixxx might hang when accessing
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+    // This also creates a TrackAnalysisScheduler instance.
+    // Connect to analyzer progress so we can update the tracks table
+    // (re-requests the overview) when analysis has finished.
+    connect(m_pPlayerManager.get(),
+            &PlayerManager::trackAnalyzerProgress,
+            pOverviewCache,
+            &OverviewCache::onTrackAnalysisProgress);
 
     bool musicDirAdded = false;
 
