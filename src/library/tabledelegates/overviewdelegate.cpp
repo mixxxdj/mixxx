@@ -80,6 +80,9 @@ void OverviewDelegate::slotTypeControlChanged(double v) {
     }
 
     m_type = type;
+    // Instantly update visible overviews so we get a live preview
+    // when changing the type in the preferences.
+    m_pTableView->update();
 }
 
 /// Maybe request repaint via dataChanged() by BaseTrackTableModel
