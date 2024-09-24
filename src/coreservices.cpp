@@ -359,7 +359,6 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
     Clipboard::createInstance();
-    OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
             this,
@@ -374,18 +373,17 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
 
+    OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
+    connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
+            &TrackDAO::waveformSummaryUpdated,
+            pOverviewCache,
+            &OverviewCache::onTrackSummaryChanged);
+
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has
     // been created. Otherwise Mixxx might hang when accessing
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
-    // This also creates a TrackAnalysisScheduler instance.
-    // Connect to analyzer progress so we can update the tracks table
-    // (re-requests the overview) when analysis has finished.
-    connect(m_pPlayerManager.get(),
-            &PlayerManager::trackAnalyzerProgress,
-            pOverviewCache,
-            &OverviewCache::onTrackAnalysisProgress);
 
     bool musicDirAdded = false;
 

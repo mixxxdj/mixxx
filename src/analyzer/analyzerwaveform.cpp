@@ -3,7 +3,6 @@
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "engine/filters/enginefilterbessel4.h"
-#include "library/overviewcache.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "waveform/waveformfactory.h"
@@ -330,7 +329,6 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
         m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
     }
-    tio->setWaveform(m_waveform);
 
     // Force completion to waveform size
     if (m_waveformSummary) {
@@ -339,7 +337,6 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
     }
-    tio->setWaveformSummary(m_waveformSummary);
 
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
@@ -354,12 +351,10 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
             m_waveform,
             m_waveformSummary);
 
-    auto* pOverviewcache = OverviewCache::instance();
-    // There's no cache instance created for AnalyzerWaveformTest since there
-    // are no CoreServices
-    if (pOverviewcache) {
-        pOverviewcache->onTrackSummaryChanged(tio->getId());
-    }
+    // Set waveforms on track AFTER they'been written to disk in order to have
+    // a consistency when OverviewCache asks AnalysisDAO for a waveform summary.
+    tio->setWaveform(m_waveform);
+    tio->setWaveformSummary(m_waveformSummary);
 
     kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
                     << m_timer.elapsed().debugSecondsWithUnit();
