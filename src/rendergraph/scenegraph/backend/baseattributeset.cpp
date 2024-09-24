@@ -1,7 +1,5 @@
 #include "backend/baseattributeset.h"
 
-#include "rendergraph/assert.h"
-
 using namespace rendergraph;
 
 namespace {
@@ -15,23 +13,15 @@ int toQSGGeometryType(const PrimitiveType& t) {
 }
 } // namespace
 
-BaseAttributeSetHelper::BaseAttributeSetHelper(std::initializer_list<Attribute> list,
-        const std::vector<QString>& names) {
+BaseAttributeSetHelper::BaseAttributeSetHelper(std::initializer_list<AttributeInit> list) {
     int i = 0;
-    DEBUG_ASSERT(list.size() == names.size());
-    m_attributes.reserve(list.size());
     m_sgAttributes.reserve(list.size());
     for (auto item : list) {
-        m_attributes.push_back(Attribute{item.m_tupleSize, item.m_primitiveType, names[i++]});
-
-        const auto& attribute = m_attributes.back();
-
         const int count = static_cast<int>(m_sgAttributes.size());
         const bool isPosition = count == 0;
         m_sgAttributes.push_back(QSGGeometry::Attribute::create(count,
-                attribute.m_tupleSize,
-                toQSGGeometryType(attribute.m_primitiveType),
+                item.m_tupleSize,
+                toQSGGeometryType(item.m_primitiveType),
                 isPosition));
-        m_stride += attribute.m_tupleSize * sizeOf(attribute.m_primitiveType);
     }
 }

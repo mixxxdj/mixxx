@@ -30,41 +30,33 @@ Geometry::Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCoun
         : BaseGeometry(attributeSet, vertexCount) {
 }
 
-Geometry::~Geometry() = default;
-
 void Geometry::setAttributeValues(int attributePosition, const float* from, int numTuples) {
+    // TODO this code assumes all vertices are floats
     const auto attributeArray = QSGGeometry::attributes();
-    int offset = 0;
+    int vertexOffset = 0;
     for (int i = 0; i < attributePosition; i++) {
-        offset += attributeArray[i].tupleSize;
+        vertexOffset += attributeArray[i].tupleSize;
     }
     const int tupleSize = attributeArray[attributePosition].tupleSize;
-    const int strideNumberOfFloats = m_stride / sizeof(float);
-    const int skip = strideNumberOfFloats - tupleSize;
+    const int vertexStride = sizeOfVertex() / sizeof(float);
+    const int vertexSkip = vertexStride - tupleSize;
 
-    VERIFY_OR_DEBUG_ASSERT(offset + numTuples * strideNumberOfFloats - skip <=
-            vertexCount() * strideNumberOfFloats) {
+    VERIFY_OR_DEBUG_ASSERT(vertexOffset + numTuples * vertexStride - vertexSkip <=
+            vertexCount() * vertexStride) {
         return;
     }
 
     float* to = static_cast<float*>(QSGGeometry::vertexData());
-    to += offset;
+    to += vertexOffset;
     while (numTuples--) {
         int k = tupleSize;
         while (k--) {
             *to++ = *from++;
         }
-        to += skip;
+        to += vertexSkip;
     }
 }
 
-float* Geometry::vertexData() {
-    return static_cast<float*>(QSGGeometry::vertexData());
-}
-
-void Geometry::allocate(int vertexCount) {
-    QSGGeometry::allocate(vertexCount);
-}
 
 void Geometry::setDrawingMode(Geometry::DrawingMode mode) {
     QSGGeometry::setDrawingMode(toSgDrawingMode(mode));

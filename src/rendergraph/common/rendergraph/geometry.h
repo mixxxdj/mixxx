@@ -52,13 +52,27 @@ class rendergraph::Geometry : public rendergraph::BaseGeometry {
     };
 
     Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCount);
-    ~Geometry();
 
-    void allocate(int vertexCount);
+    const Attribute* attributes() const {
+        return BaseGeometry::attributes();
+    }
 
     void setAttributeValues(int attributePosition, const float* data, int numTuples);
 
-    float* vertexData();
+    int attributeCount() const {
+        return BaseGeometry::attributeCount();
+    }
+
+    void allocate(int vertexCount) {
+        BaseGeometry::allocate(vertexCount);
+    }
+
+    int sizeOfVertex() const {
+        return BaseGeometry::sizeOfVertex();
+    }
+    int vertexCount() const {
+        return BaseGeometry::vertexCount();
+    }
 
     template<typename T>
     T* vertexDataAs() {
@@ -66,5 +80,6 @@ class rendergraph::Geometry : public rendergraph::BaseGeometry {
     }
 
     DrawingMode drawingMode() const;
+
     void setDrawingMode(DrawingMode mode);
 };

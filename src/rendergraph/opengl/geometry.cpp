@@ -9,39 +9,31 @@ Geometry::Geometry(const AttributeSet& attributeSet, int vertexCount)
         : BaseGeometry(attributeSet, vertexCount) {
 }
 
-Geometry::~Geometry() = default;
-
 void Geometry::setAttributeValues(int attributePosition, const float* from, int numTuples) {
-    const int offset = m_offsets[attributePosition];
-    const int tupleSize = m_tupleSizes[attributePosition];
-    const int strideNumberOfFloats = m_stride / sizeof(float);
-    const int skip = strideNumberOfFloats - tupleSize;
+    // TODO this code assumes all vertices are floats
+    VERIFY_OR_DEBUG_ASSERT(attributePosition < attributeCount()) {
+        return;
+    }
+    const int vertexOffset = attributes()[attributePosition].m_offset / sizeof(float);
+    const int tupleSize = attributes()[attributePosition].m_tupleSize;
+    const int vertexStride = sizeOfVertex() / sizeof(float);
+    const int vertexSkip = vertexStride - tupleSize;
 
-    VERIFY_OR_DEBUG_ASSERT(offset + numTuples * strideNumberOfFloats - skip <=
-            static_cast<int>(m_data.size())) {
+    VERIFY_OR_DEBUG_ASSERT(vertexOffset + numTuples * vertexStride - vertexSkip <=
+            static_cast<int>(m_vertexData.size())) {
         return;
     }
 
-    float* to = m_data.data();
-    to += offset;
+    float* to = m_vertexData.data();
+    to += vertexOffset;
 
     while (numTuples--) {
         int k = tupleSize;
         while (k--) {
             *to++ = *from++;
         }
-        to += skip;
+        to += vertexSkip;
     }
-}
-
-float* Geometry::vertexData() {
-    return m_data.data();
-}
-
-void Geometry::allocate(int vertexCount) {
-    const int strideNumberOfFloats = m_stride / sizeof(float);
-    m_vertexCount = vertexCount;
-    m_data.resize(strideNumberOfFloats * m_vertexCount);
 }
 
 void Geometry::setDrawingMode(Geometry::DrawingMode mode) {

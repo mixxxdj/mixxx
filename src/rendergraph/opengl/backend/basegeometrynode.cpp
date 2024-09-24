@@ -70,13 +70,17 @@ void BaseGeometryNode::renderBackend() {
         }
     }
 
+    // TODO this code assumes all vertices are floats
+    int vertexOffset = 0;
     for (int i = 0; i < geometry.attributeCount(); i++) {
+        const Geometry::Attribute& attribute = geometry.attributes()[i];
         int location = material.attributeLocation(i);
         shader.enableAttributeArray(location);
         shader.setAttributeArray(location,
-                geometry.vertexData() + geometry.offset(i),
-                geometry.tupleSize(i),
-                geometry.stride());
+                geometry.vertexDataAs<float>() + vertexOffset,
+                attribute.m_tupleSize,
+                geometry.sizeOfVertex());
+        vertexOffset += attribute.m_tupleSize;
     }
 
     // TODO multiple textures

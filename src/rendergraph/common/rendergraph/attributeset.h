@@ -1,6 +1,7 @@
 #pragma once
 
 #include "backend/baseattributeset.h"
+#include "rendergraph/attributeinit.h"
 
 namespace rendergraph {
 class AttributeSet;
@@ -8,13 +9,12 @@ class AttributeSet;
 
 class rendergraph::AttributeSet : public rendergraph::BaseAttributeSet {
   public:
-    AttributeSet(std::initializer_list<Attribute> list, const std::vector<QString>& names);
-    const std::vector<Attribute>& attributes() const;
+    AttributeSet(std::initializer_list<AttributeInit> list, const std::vector<QString>& names);
 };
 
 namespace rendergraph {
 template<typename... T>
 AttributeSet makeAttributeSet(const std::vector<QString>& names) {
-    return AttributeSet({(Attribute::create<T>())...}, names);
+    return AttributeSet({(AttributeInit::create<T>())...}, names);
 }
 } // namespace rendergraph

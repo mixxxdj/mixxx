@@ -1,9 +1,8 @@
 add_library(rendergraph_gl
-../common/attributeset.cpp
 ../common/treenode.cpp
 ../common/node.cpp
 ../common/opacitynode.cpp
-../common/rendergraph/attribute.h
+../common/rendergraph/attributeinit.h
 ../common/rendergraph/attributeset.h
 ../common/rendergraph/treenode.h
 ../common/rendergraph/geometry.h
@@ -49,6 +48,7 @@ backend/baseopenglnode.cpp
 backend/baseopenglnode.h
 backend/shadercache.h
 backend/basetexture.h
+attributeset.cpp
 treenode.cpp
 engine.cpp
 geometry.cpp

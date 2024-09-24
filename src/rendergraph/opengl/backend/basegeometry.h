@@ -1,29 +1,56 @@
 #pragma once
 
+#include <QString>
 #include <vector>
 
-#include "rendergraph/attributeset.h"
+#include "rendergraph/types.h"
 
 namespace rendergraph {
+class BaseAttributeSet; // fwd decl to avoid circular dependency
 class BaseGeometry;
 }
 
+// TODO this assumes all vertices consist of floats
 class rendergraph::BaseGeometry {
   protected:
-    BaseGeometry(const AttributeSet& attributeSet, int vertexCount);
+    BaseGeometry(const BaseAttributeSet& attributeSet, int vertexCount);
 
   public:
-    int attributeCount() const;
-    int vertexCount() const;
-    int offset(int attributeIndex) const;
-    int tupleSize(int attributeIndex) const;
-    int stride() const;
+    struct Attribute {
+        const int m_offset;
+        const int m_tupleSize;
+        const PrimitiveType m_primitiveType;
+        const QString m_name;
+    };
+
+    float* vertexData() {
+        return m_vertexData.data();
+    }
+    const float* vertexData() const {
+        return m_vertexData.data();
+    }
+    const Attribute* attributes() const {
+        return m_pAttributes;
+    }
+    int attributeCount() const {
+        return m_attributeCount;
+    }
+    int vertexCount() const {
+        return m_vertexCount;
+    }
+    int sizeOfVertex() const { // in bytes
+        return m_sizeOfVertex;
+    }
+    void allocate(int vertexCount) {
+        m_vertexCount = vertexCount;
+        m_vertexData.resize(m_vertexCount * sizeOfVertex() / sizeof(float));
+    }
 
   protected:
+    const Attribute* m_pAttributes;
+    const int m_attributeCount;
+    const int m_sizeOfVertex;
     int m_drawingMode;
     int m_vertexCount;
-    std::vector<int> m_tupleSizes;
-    std::vector<int> m_offsets;
-    int m_stride;
-    std::vector<float> m_data;
+    std::vector<float> m_vertexData;
 };
