@@ -19,8 +19,6 @@ namespace {
 mixxx::Logger kLogger("OverviewCache");
 
 QString pixmapCacheKey(TrackId trackId, QSize size) {
-    // return QString("Overview_%1").arg(trackId.toInt());
-    // return QString("Overview_%1_%2").arg(trackId.toInt()).arg(width);
     return QString("Overview_%1_%2_%3")
             .arg(trackId.toString())
             .arg(size.width())
@@ -30,50 +28,24 @@ QString pixmapCacheKey(TrackId trackId, QSize size) {
 // The transformation mode when scaling images
 const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
 
-// Resizes the image (preserving aspect ratio) to width.
-inline QImage resizeImageWidth(const QImage& image, int width) {
-    return image.scaledToWidth(width, kTransformationMode);
-}
-
 inline QImage resizeImageSize(const QImage& image, QSize size) {
     return image.scaled(size, Qt::IgnoreAspectRatio, kTransformationMode);
 }
 } // anonymous namespace
 
-// OverviewCache::OverviewCache(QObject *parent) : QObject(parent)
-OverviewCache::OverviewCache() {
+OverviewCache::OverviewCache(UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool)
+        : m_pConfig(pConfig),
+          m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 }
 
-// OverviewCache::~OverviewCache() {
-//  qDebug()
-//}
-
-/*
-void OverviewCache::initialize(UserSettingsPointer pConfig) {
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "OVERVIEW_CACHE");
-    if (!m_database.isOpen()) {
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
-
-        // Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database from overview cacher thread."
-                     << m_database.lastError();
-        }
+void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
+    if (analyzerProgress < 1.0) {
+        return;
     }
-
-    // m_pAnalysisDao = std::make_unique<AnalysisDao>(pConfig);
-}
-*/
-
-void OverviewCache::setConfig(UserSettingsPointer pConfig) {
-    m_pConfig = pConfig;
-}
-
-void OverviewCache::setDbConnectionPool(mixxx::DbConnectionPoolPtr pDbConnectionPool) {
-    m_pDbConnectionPool = std::move(pDbConnectionPool);
+    m_tracksWithoutOverview.remove(trackId);
+    // request update independent from paint events
+    emit overviewChanged(trackId);
 }
 
 void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
@@ -83,8 +55,6 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
 QPixmap OverviewCache::requestOverview(const TrackId trackId,
         const QObject* pRequester,
         const QSize desiredSize) {
-    kLogger.info() << "requestOverview()" << trackId << pRequester << desiredSize;
-
     if (!trackId.isValid()) {
         return QPixmap();
     }
@@ -93,13 +63,20 @@ QPixmap OverviewCache::requestOverview(const TrackId trackId,
         return QPixmap();
     }
 
-    QString cacheKey = pixmapCacheKey(trackId, desiredSize);
+    if (m_tracksWithoutOverview.contains(trackId)) {
+        return QPixmap();
+    }
 
+    kLogger.info() << "requestOverview()" << trackId << pRequester << desiredSize;
+
+    // request overview
+    const QString cacheKey = pixmapCacheKey(trackId, desiredSize);
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         return pixmap;
     }
 
+    // no cached overview, request preparation
     m_currentlyLoading.insert(trackId);
 
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
@@ -117,53 +94,6 @@ QPixmap OverviewCache::requestOverview(const TrackId trackId,
     watcher->setFuture(future);
 
     return QPixmap();
-
-    /*
-    ConstWaveformPointer pLoadedTrackWaveformSummary;
-    QList<AnalysisDao::AnalysisInfo> analyses =
-            m_pAnalysisDao->getAnalysesForTrackByType(trackId,
-    AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
-
-    if (analyses.size() != 1) {
-        return QPixmap();
-    }
-    */
-
-    /*
-    QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
-    while (it.hasNext()) {
-        const AnalysisDao::AnalysisInfo& analysis = it.next();
-        pLoadedTrackWaveformSummary = ConstWaveformPointer(
-                WaveformFactory::loadWaveformFromAnalysis(analysis));
-    }
-    */
-    /*
-    pLoadedTrackWaveformSummary = ConstWaveformPointer(
-                WaveformFactory::loadWaveformFromAnalysis(analyses[0]));
-
-    if (!pLoadedTrackWaveformSummary.isNull() && !pLoadedTrackWaveformSummary->isValid()) {
-        return QPixmap();
-    }
-
-    QImage image = pLoadedTrackWaveformSummary->renderToImage();
-
-    if (!image.isNull() && desiredWidth > 0) {
-        image = resizeImageWidth(image, desiredWidth);
-    }
-    */
-
-    // Create pixmap, GUI thread only
-    /*QPixmap*/
-    /*pixmap = QPixmap::fromImage(image);
-if (!pixmap.isNull() && desiredWidth != 0) {
-// we have to be sure that res.cover.hash is unique
-// because insert replaces the images with the same key
-QString cacheKey = pixmapCacheKey(
-    trackId, desiredWidth);
-QPixmapCache::insert(cacheKey, pixmap);
-}
-
-return pixmap;*/
 }
 
 // static
@@ -173,6 +103,16 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         const TrackId trackId,
         const QObject* pRequester,
         const QSize desiredSize) {
+    FutureResult result;
+    result.trackId = trackId;
+    result.requester = pRequester;
+    result.image = QImage();
+    result.resizedToSize = desiredSize;
+
+    if (!trackId.isValid() || desiredSize.isEmpty()) {
+        return result;
+    }
+
     mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
 
     AnalysisDao analysisDao(pConfig);
@@ -182,35 +122,21 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
             analysisDao.getAnalysesForTrackByType(
                     trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
 
-    /*
-    QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
-    if (it.hasNext()) {
-        const AnalysisDao::AnalysisInfo& analysis = it.next();
-    }
-    */
-
-    QImage image;
-
     if (!analyses.isEmpty()) {
         ConstWaveformPointer pLoadedTrackWaveformSummary = ConstWaveformPointer(
                 WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
 
-        /*&& pLoadedTrackWaveformSummary->isValid()*/
         if (!pLoadedTrackWaveformSummary.isNull()) {
-            image = WaveformOverviewRenderer::instance()->render(pLoadedTrackWaveformSummary);
+            QImage image = WaveformOverviewRenderer::instance()->render(
+                    pLoadedTrackWaveformSummary);
 
-            if (!image.isNull() && !desiredSize.isEmpty()) {
-                // image = resizeImageWidth(image, desiredWidth);
+            if (!image.isNull()) {
                 image = resizeImageSize(image, desiredSize);
             }
+            result.image = image;
         }
     }
 
-    FutureResult result;
-    result.trackId = trackId;
-    result.requester = pRequester;
-    result.image = image; // QImage();
-    result.resizedToSize = desiredSize;
     return result;
 }
 
@@ -223,14 +149,20 @@ void OverviewCache::overviewPrepared() {
     // Create pixmap, GUI thread only
     QPixmap pixmap = QPixmap::fromImage(res.image);
     if (!pixmap.isNull() && !res.resizedToSize.isEmpty()) {
-        // we have to be sure that res.cover.hash is unique
+        // we have to be sure that cacheKey is unique
         // because insert replaces the images with the same key
-        QString cacheKey = pixmapCacheKey(
+        const QString cacheKey = pixmapCacheKey(
                 res.trackId, res.resizedToSize);
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
+    if (pixmap.isNull()) {
+        // Avoid (too many) repeated lookups.
+        // (there may still be identical request be processed due to
+        // asynchronous processing)
+        m_tracksWithoutOverview.insert(res.trackId);
+    }
     m_currentlyLoading.remove(res.trackId);
 
-    emit overviewReady(res.requester, res.trackId, pixmap, res.resizedToSize);
+    emit overviewReady(res.requester, res.trackId, !pixmap.isNull(), res.resizedToSize);
 }

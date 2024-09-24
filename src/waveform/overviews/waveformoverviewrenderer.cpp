@@ -19,6 +19,7 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform) const {
     QColor color;
 
     for (int i = 0, x = 0; i < dataSize; i += 2, ++x) {
+        // paint left channel
         unsigned char all = pWaveform->getAll(i);
         unsigned char low = pWaveform->getLow(i);
         unsigned char mid = pWaveform->getMid(i);
@@ -27,11 +28,14 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform) const {
         qreal maxF = static_cast<qreal>(max);
 
         if (maxF > 0.0) {
-            color.setRgbF(low / maxF, mid / maxF, high / maxF);
+            color.setRgbF(static_cast<float>(low / maxF),
+                    static_cast<float>(mid / maxF),
+                    static_cast<float>(high / maxF));
             painter.setPen(color);
             painter.drawLine(x, -all, x, 0);
         }
 
+        // paint right channel
         all = pWaveform->getAll(i + 1);
         low = pWaveform->getLow(i + 1);
         mid = pWaveform->getMid(i + 1);
@@ -40,7 +44,9 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform) const {
         maxF = static_cast<qreal>(max);
 
         if (maxF > 0.0) {
-            color.setRgbF(low / maxF, mid / maxF, high / maxF);
+            color.setRgbF(static_cast<float>(low / maxF),
+                    static_cast<float>(mid / maxF),
+                    static_cast<float>(high / maxF));
             painter.setPen(color);
             painter.drawLine(x, 0, x, all);
         }

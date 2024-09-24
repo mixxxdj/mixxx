@@ -767,6 +767,8 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
+        // Might happen editing read-only column values, so make sure to return
+        // the read-only flags for those in BaseTrackTableModel::readWriteFlags().
         qWarning() << "Column"
                    << columnNameForFieldIndex(column)
                    << "is not editable!";

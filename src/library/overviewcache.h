@@ -2,28 +2,15 @@
 
 #include <QSqlDatabase>
 
+#include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
 
-class AnalysisDao;
-
-/*
-struct CacheItem{
-    TrackId trackId;
-    bool isLoading;
-    QImage image;
-};
-*/
-
 class OverviewCache : public QObject, public Singleton<OverviewCache> {
     Q_OBJECT
   public:
-    void setConfig(UserSettingsPointer pConfig);
-
-    void setDbConnectionPool(mixxx::DbConnectionPoolPtr pDbConnectionPool);
-
     void onTrackSummaryChanged(TrackId);
 
     QPixmap requestOverview(
@@ -33,8 +20,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
 
     struct FutureResult {
         FutureResult()
-                : /*resToWidth(0),*/
-                  requester(nullptr) {
+                : requester(nullptr) {
         }
 
         TrackId trackId;
@@ -45,18 +31,20 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
 
   public slots:
     void overviewPrepared();
+    void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void overviewReady(
             const QObject* pRequester,
-            TrackId trackId,
-            QPixmap pixmap,
-            QSize resizedToSize);
+            const TrackId trackId,
+            bool pixmapValid,
+            const QSize resizedToSize); // Currently only needed for debugging
 
     void overviewChanged(TrackId);
 
   protected:
-    OverviewCache();
+    OverviewCache(UserSettingsPointer pConfig,
+            mixxx::DbConnectionPoolPtr m_pDbConnectionPool);
     virtual ~OverviewCache() override = default;
     friend class Singleton<OverviewCache>;
 
@@ -71,10 +59,6 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
-    // QSqlDatabase m_database;
-    // std::unique_ptr<AnalysisDao> m_pAnalysisDao;
-
     QSet<TrackId> m_currentlyLoading;
-
-    QHash<TrackId, QImage> m_cache;
+    QSet<TrackId> m_tracksWithoutOverview;
 };
