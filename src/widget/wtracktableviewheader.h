@@ -55,7 +55,7 @@ private:
 class WTrackTableViewHeader : public QHeaderView {
     Q_OBJECT
   public:
-    explicit WTrackTableViewHeader(Qt::Orientation orientation, QWidget* parent = nullptr);
+    explicit WTrackTableViewHeader(Qt::Orientation orientation, QWidget* pParent = nullptr);
 
     void contextMenuEvent(QContextMenuEvent* event) override;
     void setModel(QAbstractItemModel* model) override;
@@ -65,6 +65,9 @@ class WTrackTableViewHeader : public QHeaderView {
     void loadDefaultHeaderState();
      /** returns false if the header state is stored in the database (on first time usgae) **/
     bool hasPersistedHeaderState();
+
+  signals:
+    void shuffle();
 
   private slots:
     void showOrHideColumn(int);
