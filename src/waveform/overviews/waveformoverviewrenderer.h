@@ -2,16 +2,15 @@
 
 #include <QColor>
 
-#include "util/singleton.h"
 #include "waveform/waveform.h"
 #include "widget/woverview.h"
 
 class QPainter;
 
-class WaveformOverviewRenderer : public Singleton<WaveformOverviewRenderer> {
+class WaveformOverviewRenderer {
   public:
-    QImage render(ConstWaveformPointer, WOverview::Type type);
-    void drawWaveformPartRGB(
+    static QImage render(ConstWaveformPointer, WOverview::Type type);
+    static void drawWaveformPartRGB(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
@@ -19,7 +18,7 @@ class WaveformOverviewRenderer : public Singleton<WaveformOverviewRenderer> {
             QColor rgbLowColor,
             QColor rgbMidColor,
             QColor rgbHighColor);
-    void drawWaveformPartLMH(
+    static void drawWaveformPartLMH(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
@@ -27,7 +26,7 @@ class WaveformOverviewRenderer : public Singleton<WaveformOverviewRenderer> {
             QColor lowColor,
             QColor midColor,
             QColor highColor);
-    void drawWaveformPartHSV(
+    static void drawWaveformPartHSV(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,

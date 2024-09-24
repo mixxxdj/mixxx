@@ -360,7 +360,6 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
     Clipboard::createInstance();
-    WaveformOverviewRenderer::createInstance();
     OverviewCache::createInstance();
     auto* pOverviewCache = OverviewCache::instance();
     pOverviewCache->setConfig(pConfig);
