@@ -8,6 +8,7 @@
 #include "library/trackmodel.h"
 #include "moc_overviewdelegate.cpp"
 #include "util/logger.h"
+#include "widget/wlibrary.h"
 
 namespace {
 
@@ -21,6 +22,19 @@ inline TrackModel* asTrackModel(
     return pTrackModel;
 }
 
+inline WLibrary* findLibraryWidgetParent(QWidget* pWidget) {
+    while (pWidget) {
+        WLibrary* pLibrary = qobject_cast<WLibrary*>(pWidget);
+        if (pLibrary) {
+            return pLibrary;
+        }
+
+        pWidget = pWidget->parentWidget();
+    }
+
+    return nullptr;
+}
+
 } // anonymous namespace
 
 OverviewDelegate::OverviewDelegate(QTableView* pTableView)
@@ -31,6 +45,11 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
     VERIFY_OR_DEBUG_ASSERT(m_pCache) {
         kLogger.warning() << "Caching of overviews is not available";
         return;
+    }
+
+    WLibrary* pLibrary = findLibraryWidgetParent(pTableView);
+    if (pLibrary) {
+        m_signalColors = pLibrary->getOverviewSignalColors();
     }
 
     connect(m_pCache,
@@ -88,6 +107,7 @@ void OverviewDelegate::paintItem(QPainter* painter,
     const TrackId trackId(m_pTrackModel->getTrackId(index));
     const double scaleFactor = m_pTableView->devicePixelRatioF();
     QPixmap pixmap = m_pCache->requestOverview(m_type,
+            m_signalColors,
             trackId,
             this,
             option.rect.size() * scaleFactor);

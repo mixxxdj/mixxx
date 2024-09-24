@@ -7,30 +7,29 @@
 #include "widget/woverview.h"
 
 class QPainter;
+class WaveformSignalColors;
 
 class WaveformOverviewRenderer : public Singleton<WaveformOverviewRenderer> {
   public:
-    QImage render(ConstWaveformPointer, WOverview::Type type);
+    QImage render(ConstWaveformPointer,
+            WOverview::Type type,
+            const WaveformSignalColors& signalColors);
     void drawWaveformPartRGB(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
             int end,
-            QColor lowColor = Qt::red,
-            QColor midColor = Qt::green,
-            QColor highColor = Qt::blue);
+            const WaveformSignalColors& signalColors);
     void drawWaveformPartLMH(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
             int end,
-            QColor lowColor = Qt::red,
-            QColor midColor = Qt::green,
-            QColor highColor = Qt::blue);
+            const WaveformSignalColors& signalColors);
     void drawWaveformPartHSV(
             QPainter* pPainter,
             ConstWaveformPointer pWaveform,
             int* start,
             int end,
-            QColor lowColor = Qt::lightGray);
+            const WaveformSignalColors& signalColors);
 };

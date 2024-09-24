@@ -4,9 +4,11 @@
 
 #include "util/colorcomponents.h"
 #include "util/math.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 
 QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
-        WOverview::Type type) {
+        WOverview::Type type,
+        const WaveformSignalColors& signalColors) {
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
         return QImage();
@@ -19,11 +21,23 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
     painter.translate(0.0, static_cast<double>(image.height()) / 2.0);
 
     if (type == WOverview::Type::HSV) {
-        drawWaveformPartHSV(&painter, pWaveform, nullptr, dataSize);
+        drawWaveformPartHSV(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                signalColors);
     } else if (type == WOverview::Type::Filtered) {
-        drawWaveformPartLMH(&painter, pWaveform, nullptr, dataSize);
+        drawWaveformPartLMH(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                signalColors);
     } else {
-        drawWaveformPartRGB(&painter, pWaveform, nullptr, dataSize);
+        drawWaveformPartRGB(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                signalColors);
     }
 
     return image;
@@ -34,14 +48,17 @@ void WaveformOverviewRenderer::drawWaveformPartRGB(
         ConstWaveformPointer pWaveform,
         int* start,
         int end,
-        QColor lowColor,
-        QColor midColor,
-        QColor highColor) {
+        const WaveformSignalColors& signalColors) {
     int startVal = 0;
     if (start) {
         startVal = *start;
     }
 
+    const QColor lowColor = signalColors.getRgbLowColor();
+    const QColor midColor = signalColors.getRgbMidColor();
+    const QColor highColor = signalColors.getRgbHighColor();
+
+    // TODO initialize?
     float lowColor_r, lowColor_g, lowColor_b,
             midColor_r, midColor_g, midColor_b,
             highColor_r, highColor_g, highColor_b,
@@ -103,9 +120,10 @@ void WaveformOverviewRenderer::drawWaveformPartLMH(
         ConstWaveformPointer pWaveform,
         int* start,
         int end,
-        QColor lowColor,
-        QColor midColor,
-        QColor highColor) {
+        const WaveformSignalColors& signalColors) {
+    const QColor lowColor = signalColors.getLowColor();
+    const QColor midColor = signalColors.getMidColor();
+    const QColor highColor = signalColors.getHighColor();
     int startVal = 0;
     if (start) {
         startVal = *start;
@@ -138,18 +156,19 @@ void WaveformOverviewRenderer::drawWaveformPartHSV(
         ConstWaveformPointer pWaveform,
         int* start,
         int end,
-        QColor lowColor) {
+        const WaveformSignalColors& signalColors) {
     int startVal = 0;
     if (start) {
         startVal = *start;
     }
 
+    const QColor lowColor = signalColors.getLowColor();
     // Get HSV of low color.
-    float h, s, v;
+    float h, s, v; // TODO initialize?
     getHsvF(lowColor, &h, &s, &v);
 
     QColor color;
-    float lo, hi, total;
+    float lo, hi, total; // TODO initialize?
 
     unsigned char maxLow[2] = {0, 0};
     unsigned char maxHigh[2] = {0, 0};
