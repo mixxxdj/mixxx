@@ -162,6 +162,11 @@ Library::Library(
             &PlayerManager::trackAnalyzerIdle,
             this,
             &Library::onPlayerManagerTrackAnalyzerIdle);
+    connect(m_pAnalysisFeature,
+            &AnalysisFeature::trackProgress,
+            this,
+            &Library::onTrackAnalyzerProgress,
+            Qt::DirectConnection);
 
     // iTunes and Rhythmbox should be last until we no longer have an obnoxious
     // messagebox popup when you select them. (This forces you to reach for your
