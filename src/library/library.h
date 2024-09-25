@@ -148,6 +148,8 @@ class Library: public QObject {
     void setTrackTableRowHeight(int rowHeight);
     void setSelectedClick(bool enable);
 
+    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+
   private slots:
       void onPlayerManagerTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
       void onPlayerManagerTrackAnalyzerIdle();
