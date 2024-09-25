@@ -88,6 +88,10 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                       << "\n";
 
                     if (ControlObject::exists(ConfigKey(oscIn.oscGroup, oscIn.oscKey))) {
+                        std::unique_ptr<PollingControlProxy> m_poscPCP;
+                        m_poscPCP = std::make_unique<PollingControlProxy>(
+                                oscIn.oscGroup, oscIn.oscKey);
+                        float m_posPCPValue = m_poscPCP->get();
                         OscFunctionsSendPtrType(m_pConfig,
                                 oscIn.oscGroup,
                                 oscIn.oscKey,
@@ -95,10 +99,10 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 "",
                                 0,
                                 0,
-                                0 +
-                                        ControlObject::getControl(
-                                                oscIn.oscGroup, oscIn.oscKey)
-                                                ->getParameter());
+                                0 + m_posPCPValue);
+                        //                                0 + ControlObject::getControl(
+                        //                                            oscIn.oscGroup, oscIn.oscKey)
+                        //                                            ->getParameter());
                     }
 
                     MixxxOSCStatusFile.close();
@@ -162,6 +166,15 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                         m_poscPCP = std::make_unique<PollingControlProxy>(
                                 oscIn.oscGroup, oscIn.oscKey);
                         m_poscPCP->set(oscIn.oscValue);
+                        float m_posPCPValue = m_poscPCP->get();
+                        OscFunctionsSendPtrType(m_pConfig,
+                                oscIn.oscGroup,
+                                oscIn.oscKey,
+                                FLOATBODY,
+                                "",
+                                0,
+                                0,
+                                0 + m_posPCPValue);
                         // ControlObject::getControl(oscIn.oscGroup,
                         // oscIn.oscKey)->setAndConfirm(oscIn.oscValue);
                         MixxxOSCStatusTxt << QString("OSC Msg Rcvd: Group, Key: Value: "
