@@ -13,6 +13,7 @@ target_link_libraries(gl_example PRIVATE
     rendergraph_gl
 )
 target_include_directories(gl_example PRIVATE ../common)
+target_compile_definitions(gl_example PRIVATE rendergraph=rendergraph_gl)
 
 qt_add_resources(gl_example "gl_example"
     PREFIX

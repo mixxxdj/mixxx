@@ -9,6 +9,7 @@ target_link_libraries(sg_example PRIVATE
     rendergraph_sg
 )
 target_include_directories(sg_example PRIVATE ../common)
+target_compile_definitions(sg_example PRIVATE rendergraph=rendergraph_sg)
 
 qt_add_qml_module(sg_example
     URI RenderGraph

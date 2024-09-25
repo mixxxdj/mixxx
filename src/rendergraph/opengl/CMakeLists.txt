@@ -67,6 +67,7 @@ target_link_libraries(rendergraph_gl PUBLIC
     Qt6::Gui
     Qt6::OpenGL
 )
+target_compile_definitions(rendergraph_gl PRIVATE rendergraph=rendergraph_gl)
 
 # USE_QSHADER_FOR_GL is set in rendergraph/CMakeLists.txt
 if(USE_QSHADER_FOR_GL)

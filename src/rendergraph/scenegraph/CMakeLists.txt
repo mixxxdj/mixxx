@@ -60,5 +60,6 @@ target_link_libraries(rendergraph_sg PUBLIC
     Qt6::Qml
     Qt6::Quick
 )
+target_compile_definitions(rendergraph_sg PRIVATE rendergraph=rendergraph_sg)
 
 target_include_directories(rendergraph_sg PUBLIC . ../common)
