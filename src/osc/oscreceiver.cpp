@@ -70,6 +70,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                 }
             }
 
+            // OSC wants info from Mixxx
             if (oscGetP) {
                 int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
                 if (posDel2 > 0) {
@@ -149,6 +150,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                 }
             }
 
+            // Input from OSC -> Changes in Mixxx
             if (!oscGetP && !oscGetV && oscSet) {
                 int posDel2 = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
                 if (posDel2 > 0) {
@@ -324,6 +326,36 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
         } else {
             MixxxOSCStatusTxt << QString("OSC Settings: Receiver 5 NOT active") << "\n";
         }
+
+        QString OscTrackGroup;
+        for (int i = 1; i < 5; i++) {
+            OscTrackGroup = QString("[Channel%1]").arg(i);
+            OscFunctionsSendPtrType(m_pConfig,
+                    OscTrackGroup,
+                    "TrackArtist",
+                    STRINGBODY,
+                    "no track loaded",
+                    0,
+                    0,
+                    0);
+            OscFunctionsSendPtrType(m_pConfig,
+                    OscTrackGroup,
+                    "TrackTitle",
+                    STRINGBODY,
+                    "no track loaded",
+                    0,
+                    0,
+                    0);
+            OscFunctionsSendPtrType(m_pConfig,
+                    OscTrackGroup,
+                    "Duration",
+                    STRINGBODY,
+                    "0:00",
+                    0,
+                    0,
+                    0);
+        }
+
         std::thread tosc(RunOscReceiver, CKOscPortInInt, m_pConfig);
         tosc.detach();
     } else {

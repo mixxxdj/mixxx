@@ -771,35 +771,14 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                 0,
                 0);
 
-        float oscTrackInfoDuration = pTrack->getDuration();
-        int oscTrackInfoDurationCalcMin = oscTrackInfoDuration / 60;
-        int oscTrackInfoDurationCalcSec = oscTrackInfoDuration - (oscTrackInfoDurationCalcMin * 60);
-
-        QString oscTrackInfoDurationCalc;
-
-        if (oscTrackInfoDurationCalcSec < 10) {
-            oscTrackInfoDurationCalc =
-                    QString("%1:0%2")
-                            .arg(oscTrackInfoDurationCalcMin)
-                            .arg(oscTrackInfoDurationCalcSec);
-        } else {
-            oscTrackInfoDurationCalc =
-                    QString("%1:%2")
-                            .arg(oscTrackInfoDurationCalcMin)
-                            .arg(oscTrackInfoDurationCalcSec);
-        };
-
-        QByteArray oscTrackInfoDurationBa = oscTrackInfoDurationCalc.toLocal8Bit();
-        const char* oscBodyMessageDuration = oscTrackInfoDurationBa.data();
-
         OscFunctionsSendPtrType(m_pConfig,
                 getGroup(),
-                "TDuration",
-                STRINGBODY,
-                oscBodyMessageDuration,
+                "duration",
+                FLOATBODY,
+                "",
                 0,
                 0,
-                0);
+                pTrack->getDuration());
     }
     // EveOSC end
 
