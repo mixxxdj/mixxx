@@ -847,10 +847,11 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
+        // Enable menus only for single track
         int iNumDecks = static_cast<int>(m_pNumDecks.get());
         m_pDeckMenu->clear();
-        // TODO Only enable for single track?
-        if (iNumDecks > 0) {
+        m_pDeckMenu->setEnabled(singleTrackSelected);
+        if (singleTrackSelected && iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString deckGroup = PlayerManager::groupForDeck(i - 1);
@@ -885,8 +886,9 @@ void WTrackMenu::updateMenus() {
 
         int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
         const int maxSamplersPerMenu = 16;
-        if (iNumSamplers > 0) {
-            m_pSamplerMenu->clear();
+        m_pSamplerMenu->clear();
+        m_pSamplerMenu->setEnabled(singleTrackSelected);
+        if (singleTrackSelected && iNumSamplers > 0) {
             QMenu* pMenu = m_pSamplerMenu;
             int samplersInMenu = 0;
             for (int i = 1; i <= iNumSamplers; ++i) {
@@ -965,7 +967,6 @@ void WTrackMenu::updateMenus() {
         bool anyBpmLocked;
         bool anyBpmNotLocked;
         std::tie(anyBpmLocked, anyBpmNotLocked) = getTrackBpmLockStates();
-        // TODO Disable menu if anyBpmLocked == anyBpmNotLocked ??
         if (featureIsEnabled(Feature::Reset)) {
             m_pClearBeatsAction->setEnabled(!anyBpmLocked);
         }
