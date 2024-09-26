@@ -36,6 +36,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     };
 
   public slots:
+    void onNormalizeOrVisualGainChanged();
     void overviewPrepared();
     void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
