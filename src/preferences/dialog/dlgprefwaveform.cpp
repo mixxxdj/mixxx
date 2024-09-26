@@ -145,6 +145,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::clicked,
             this,
             &DlgPrefWaveform::slotSetWaveformOptionHighDetail);
+    connect(barBeatGridCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetWaveformOptionBeatGridBar);
+    connect(markerBeatGridCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetWaveformOptionBeatGridMarker);
     connect(defaultZoomComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -483,6 +491,8 @@ void DlgPrefWaveform::updateWaveformOption(bool useWaveform,
         allshader::WaveformRendererSignalBase::Options currentOptions) {
     splitLeftRightCheckBox->blockSignals(true);
     highDetailCheckBox->blockSignals(true);
+    markerBeatGridCheckBox->blockSignals(true);
+    barBeatGridCheckBox->blockSignals(true);
 
 #ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -502,18 +512,32 @@ void DlgPrefWaveform::updateWaveformOption(bool useWaveform,
     highDetailCheckBox->setEnabled(useWaveform &&
             supportedOption &
                     allshader::WaveformRendererSignalBase::Option::HighDetail);
+    markerBeatGridCheckBox->setEnabled(useWaveform &&
+            supportedOption &
+                    allshader::WaveformRendererSignalBase::Option::BeatGridMarker);
+    barBeatGridCheckBox->setEnabled(useWaveform &&
+            supportedOption &
+                    allshader::WaveformRendererSignalBase::Option::BeatGridBar);
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
             currentOptions &
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal);
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
             currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail);
+    markerBeatGridCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
+            currentOptions & allshader::WaveformRendererSignalBase::Option::BeatGridMarker);
+    barBeatGridCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
+            currentOptions & allshader::WaveformRendererSignalBase::Option::BeatGridBar);
 #else
     splitLeftRightCheckBox->setVisible(false);
     highDetailCheckBox->setVisible(false);
+    markerBeatGridCheckBox->setVisible(false);
+    barBeatGridCheckBox->setVisible(false);
 #endif
 
     splitLeftRightCheckBox->blockSignals(false);
     highDetailCheckBox->blockSignals(false);
+    markerBeatGridCheckBox->blockSignals(false);
+    barBeatGridCheckBox->blockSignals(false);
 }
 
 void DlgPrefWaveform::updateEnableUntilMark() {

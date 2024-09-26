@@ -20,7 +20,10 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
         None = 0b0,
         SplitStereoSignal = 0b1,
         HighDetail = 0b10,
-        AllOptionsCombined = SplitStereoSignal | HighDetail,
+        BeatGridBar = 0b100,
+        BeatGridMarker = 0b1000,
+        AdvancedBeatGrid = BeatGridBar | BeatGridMarker,
+        AllOptionsCombined = SplitStereoSignal | HighDetail | AdvancedBeatGrid,
     };
     Q_DECLARE_FLAGS(Options, Option)
 
