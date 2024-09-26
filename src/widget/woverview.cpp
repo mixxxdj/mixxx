@@ -702,8 +702,8 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (!m_waveformSourceImage.isNull()) {
+        WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
         PainterScope painterScope(pPainter);
         float diffGain;
         bool normalize = widgetFactory->isOverviewNormalized();

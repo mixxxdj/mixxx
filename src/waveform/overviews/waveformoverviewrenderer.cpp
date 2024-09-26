@@ -3,8 +3,16 @@
 #include <QPainter>
 
 #include "util/colorcomponents.h"
+#include "util/logger.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveformwidgetfactory.h"
+
+namespace {
+
+const mixxx::Logger kLogger("WaveformOverviewRenderer");
+
+} // anonymous namespace
 
 QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
@@ -44,7 +52,39 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
                 mono);
     }
 
-    return image;
+    // Evaluate waveform ratio peak
+    float peak = 1;
+    for (int i = 0; i < dataSize; i += 2) {
+        peak = math_max3(
+                peak,
+                static_cast<float>(pWaveform->getAll(i)),
+                static_cast<float>(pWaveform->getAll(i + 1)));
+    }
+    // Normalize
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    float diffGain = 0;
+    bool normalize = widgetFactory->isOverviewNormalized();
+    if (normalize && peak > 1) {
+        diffGain = 255 - peak - 1;
+    } else {
+        const auto visualGain = static_cast<float>(
+                widgetFactory->getVisualGain(WaveformWidgetFactory::All));
+        diffGain = 255.0f - (255.0f / visualGain);
+    }
+
+    const int topLeft = static_cast<int>(mono ? diffGain * 2 : diffGain);
+    const QRect sourceRect(0,
+            topLeft,
+            image.width(),
+            image.height() -
+                    2 * static_cast<int>(diffGain));
+    QImage croppedImage = image.copy(sourceRect);
+    // Copy image, otherwise QPainter crashes when we alter it.
+    QImage normImage = croppedImage.scaled(image.size(),
+            Qt::IgnoreAspectRatio,
+            Qt::SmoothTransformation);
+
+    return normImage;
 }
 
 void WaveformOverviewRenderer::drawWaveformPartRGB(
@@ -62,13 +102,13 @@ void WaveformOverviewRenderer::drawWaveformPartRGB(
     const QColor lowColor = signalColors.getRgbLowColor();
     const QColor midColor = signalColors.getRgbMidColor();
     const QColor highColor = signalColors.getRgbHighColor();
-
-    // TODO initialize?
-    float lowColor_r, lowColor_g, lowColor_b,
-            midColor_r, midColor_g, midColor_b,
-            highColor_r, highColor_g, highColor_b,
-            all, low, mid, high, red, green, blue, max;
     QColor color;
+
+    float lowColor_r = 0, lowColor_g = 0, lowColor_b = 0,
+          midColor_r = 0, midColor_g = 0, midColor_b = 0,
+          highColor_r = 0, highColor_g = 0, highColor_b = 0,
+          all = 0, low = 0, mid = 0, high = 0,
+          red = 0, green = 0, blue = 0, max = 0;
 
     getRgbF(lowColor, &lowColor_r, &lowColor_g, &lowColor_b);
     getRgbF(midColor, &midColor_r, &midColor_g, &midColor_b);
@@ -224,11 +264,11 @@ void WaveformOverviewRenderer::drawWaveformPartHSV(
         startVal = *start;
     }
 
-    const QColor lowColor = signalColors.getLowColor();
-    QColor color;
-    // Get HSV of low color.
     float h = 0, s = 0, v = 0, lo = 0, hi = 0, total = 0;
+    // Get HSV of low color.
+    const QColor lowColor = signalColors.getLowColor();
     getHsvF(lowColor, &h, &s, &v);
+    QColor color;
 
     unsigned char low[2] = {0, 0};
     unsigned char high[2] = {0, 0};
