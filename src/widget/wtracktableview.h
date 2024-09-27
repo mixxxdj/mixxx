@@ -62,6 +62,7 @@ class WTrackTableView : public WLibraryTableView {
     void moveRows(QList<int> selectedRows, int destRow);
     void moveSelectedTracks(QKeyEvent* event);
     void selectTracksById(const QList<TrackId>& tracks, int prevColumn);
+    void selectTracksByPosition(const QList<int>& positions, int prevColum);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;

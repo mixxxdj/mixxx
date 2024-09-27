@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QImage>
-#include <QScopedPointer>
 #include <QRectF>
 #include <QString>
+#include <memory>
 
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/pixmapsource.h"
@@ -54,8 +54,7 @@ class Paintable {
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,
                       const QRectF& sourceRect);
 
-    QScopedPointer<QPixmap> m_pPixmap;
-    QScopedPointer<QSvgRenderer> m_pSvg;
+    std::unique_ptr<QPixmap> m_pPixmap;
+    std::unique_ptr<QSvgRenderer> m_pSvg;
     DrawMode m_drawMode;
-    PixmapSource m_source;
 };
