@@ -7,7 +7,7 @@
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
-#include "waveform/overviews/overviewtype.h"
+#include "waveform/overviewtype.h"
 
 class WaveformSignalColors;
 
