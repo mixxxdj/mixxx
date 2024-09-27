@@ -339,6 +339,19 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
+const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {
+    if (indices.isEmpty()) {
+        return {};
+    }
+    QList<int> positions;
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (auto idx : indices) {
+        int pos = idx.siblingAtColumn(positionColumn).data().toInt();
+        positions.append(pos);
+    }
+    return positions;
+}
+
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
     if (indices.isEmpty()) {
         return mixxx::Duration::empty();

@@ -56,5 +56,4 @@ class Paintable {
     std::unique_ptr<QPixmap> m_pPixmap;
     std::unique_ptr<QSvgRenderer> m_pSvg;
     DrawMode m_drawMode;
-    PixmapSource m_source;
 };

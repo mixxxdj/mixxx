@@ -254,6 +254,10 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotBeatsUndoAdjustment,
             Qt::DirectConnection);
+
+    m_pBeatsUndoPossible = std::make_unique<ControlObject>(
+            ConfigKey(group, "beats_undo_possible"));
+    m_pBeatsUndoPossible->setReadOnly();
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -342,6 +346,7 @@ void BpmControl::slotBeatsUndoAdjustment(double v) {
         return;
     }
     pTrack->undoBeatsChange();
+    m_pBeatsUndoPossible->forceSet(pTrack->canUndoBeatsChange());
 }
 
 void BpmControl::slotBpmTap(double v) {
@@ -1129,13 +1134,22 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
                                              frameInfo().trackEndPosition)
                                    : mixxx::Bpm());
     }
+    qWarning() << "BpmControl::trackBeatsUpdated";
     m_pBeats = pBeats;
     updateLocalBpm();
     resetSyncAdjustment();
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    m_pBeatsUndoPossible->forceSet(pTrack ? pTrack->canUndoBeatsChange() : 0);
 }
 
 void BpmControl::trackBpmLockChanged(bool locked) {
     m_pBpmLock->setAndConfirm(locked);
+    if (locked) {
+        m_pBeatsUndoPossible->forceSet(0);
+    } else {
+        TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+        m_pBeatsUndoPossible->forceSet(pTrack ? pTrack->canUndoBeatsChange() : 0);
+    }
 }
 
 void BpmControl::notifySeek(mixxx::audio::FramePos position) {
