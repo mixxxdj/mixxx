@@ -8,7 +8,7 @@
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
-#include "waveform/overviews/overviewtype.h"
+#include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformsignalcolors.h"

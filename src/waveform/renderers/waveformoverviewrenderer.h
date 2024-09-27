@@ -2,7 +2,7 @@
 
 #include <QColor>
 
-#include "waveform/overviews/overviewtype.h"
+#include "waveform/overviewtype.h"
 #include "waveform/waveform.h"
 
 class QPainter;

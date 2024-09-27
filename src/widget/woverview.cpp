@@ -21,7 +21,7 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
-#include "waveform/overviews/waveformoverviewrenderer.h"
+#include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"

@@ -7,9 +7,8 @@
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
-#include "waveform/overviews/overviewtype.h"
+#include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformsignalcolors.h"
-#include "widget/woverview.h"
 
 class ControlProxy;
 class OverviewCache;

@@ -10,7 +10,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
-#include "waveform/overviews/waveformoverviewrenderer.h"
+#include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformfactory.h"
 
