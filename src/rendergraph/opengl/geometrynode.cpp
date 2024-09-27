@@ -21,3 +21,11 @@ Geometry& GeometryNode::geometry() const {
 Material& GeometryNode::material() const {
     return *m_pMaterial;
 }
+
+void GeometryNode::markDirtyGeometry() {
+    // not (yet) needed for opengl
+}
+
+void GeometryNode::markDirtyMaterial() {
+    // not (yet) needed for opengl
+}

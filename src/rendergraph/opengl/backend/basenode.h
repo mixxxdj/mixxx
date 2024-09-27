@@ -1,10 +1,6 @@
 #pragma once
 
 namespace rendergraph {
-class Engine; // fwd decl to avoid circular dependency
-}
-
-namespace rendergraph {
 class BaseNode;
 }
 
@@ -31,14 +27,6 @@ class rendergraph::BaseNode {
     virtual void resizeBackend(int, int) {
     }
 
-    void setEngine(Engine* pEngine) {
-        m_pEngine = pEngine;
-    }
-    Engine* engine() const {
-        return m_pEngine;
-    }
-
   private:
     bool m_usePreprocess{};
-    Engine* m_pEngine{};
 };

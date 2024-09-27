@@ -23,3 +23,11 @@ Geometry& GeometryNode::geometry() const {
 Material& GeometryNode::material() const {
     return *m_pMaterial;
 }
+
+void GeometryNode::markDirtyMaterial() {
+    markDirty(QSGNode::DirtyMaterial);
+}
+
+void GeometryNode::markDirtyGeometry() {
+    markDirty(QSGNode::DirtyGeometry);
+}

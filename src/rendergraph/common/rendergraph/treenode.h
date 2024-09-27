@@ -5,6 +5,7 @@
 #include "backend/basenode.h"
 
 namespace rendergraph {
+class Engine; // fwd decl to avoid circular dependency
 class TreeNode;
 } // namespace rendergraph
 
@@ -55,11 +56,19 @@ class rendergraph::TreeNode {
     virtual void resize(int, int) {
     }
 
+    void setEngine(Engine* pEngine) {
+        m_pEngine = pEngine;
+    }
+    Engine* engine() const {
+        return m_pEngine;
+    }
+
   private:
     void onAppendChildNode(TreeNode* pChild);
     void onRemoveAllChildNodes();
     void onRemoveChildNode(TreeNode* pChild);
 
+    Engine* m_pEngine{};
     rendergraph::BaseNode* m_pBackendNode;
     TreeNode* m_pParent{};
     std::unique_ptr<TreeNode> m_pFirstChild;

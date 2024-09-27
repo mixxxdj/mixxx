@@ -5,6 +5,7 @@
 
 namespace rendergraph {
 class Node;
+class Engine;
 }
 
 class CustomItem : public QQuickItem {
@@ -20,7 +21,7 @@ class CustomItem : public QQuickItem {
     void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
 
     bool m_geometryChanged{};
-    std::unique_ptr<rendergraph::Node> m_node;
+    std::unique_ptr<rendergraph::Engine> m_pEngine;
 };
 
 #endif // CUSTOMITEM_H

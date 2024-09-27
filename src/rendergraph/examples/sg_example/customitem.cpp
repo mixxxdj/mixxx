@@ -8,6 +8,7 @@
 
 #include "examplenodes.h"
 #include "rendergraph/context.h"
+#include "rendergraph/engine.h"
 #include "rendergraph/node.h"
 
 CustomItem::CustomItem(QQuickItem* parent)
@@ -31,8 +32,12 @@ QSGNode* CustomItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
         bgNode->setRect(boundingRect());
 
         rendergraph::Context context(window());
-        m_node = std::make_unique<rendergraph::ExampleTopNode>(context);
-        bgNode->appendChildNode(m_node->backendNode());
+
+        auto pTopNode = std::make_unique<rendergraph::ExampleTopNode>(context);
+        bgNode->appendChildNode(pTopNode->backendNode());
+
+        m_pEngine = std::make_unique<rendergraph::Engine>(std::move(pTopNode));
+        m_pEngine->initialize();
 
         node = bgNode;
     } else {
@@ -41,6 +46,7 @@ QSGNode* CustomItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
 
     if (m_geometryChanged) {
         bgNode->setRect(boundingRect());
+        m_pEngine->resize(boundingRect().width(), boundingRect().height());
         m_geometryChanged = false;
     }
 

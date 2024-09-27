@@ -9,9 +9,9 @@ void TreeNode::setUsePreprocess(bool value) {
 }
 
 void TreeNode::onAppendChildNode(TreeNode* pChild) {
-    if (backendNode()->engine() != nullptr &&
-            backendNode()->engine() != pChild->backendNode()->engine()) {
-        backendNode()->engine()->addToEngine(pChild);
+    if (engine() != nullptr &&
+            engine() != pChild->engine()) {
+        engine()->addToEngine(pChild);
     }
 }
 

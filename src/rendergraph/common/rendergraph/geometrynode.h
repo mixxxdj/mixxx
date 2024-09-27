@@ -29,6 +29,9 @@ class rendergraph::GeometryNode : public rendergraph::BaseGeometryNode,
     Geometry& geometry() const;
     Material& material() const;
 
+    void markDirtyGeometry();
+    void markDirtyMaterial();
+
   private:
     std::unique_ptr<Material> m_pMaterial;
     std::unique_ptr<Geometry> m_pGeometry;

@@ -2,6 +2,7 @@
 
 #include "examplenodes.h"
 #include "rendergraph/context.h"
+#include "rendergraph/engine.h"
 
 Window::Window() {
 }
