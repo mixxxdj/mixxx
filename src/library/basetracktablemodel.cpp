@@ -522,7 +522,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 new CoverArtDelegate(pTableView);
         // WLibraryTableView -> CoverArtDelegate
         connect(pTableView,
-                &WLibraryTableView::onlyCachedCoverArt,
+                &WLibraryTableView::onlyCachedCoversAndOverviews,
                 pCoverArtDelegate,
                 &CoverArtDelegate::slotInhibitLazyLoading);
         // CoverArtDelegate -> BaseTrackTableModel
@@ -536,13 +536,13 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
         auto* pOverviewDelegate = new OverviewDelegate(pTableView);
         connect(pOverviewDelegate,
-                &OverviewDelegate::overviewReady,
+                &OverviewDelegate::overviewRowsChanged,
                 this,
-                &BaseTrackTableModel::slotOverviewChanged);
-        connect(pOverviewDelegate,
-                &OverviewDelegate::overviewChanged,
-                this,
-                &BaseTrackTableModel::slotOverviewChanged);
+                &BaseTrackTableModel::slotRefreshOverviewRows);
+        connect(pTableView,
+                &WLibraryTableView::onlyCachedCoversAndOverviews,
+                pOverviewDelegate,
+                &OverviewDelegate::slotInhibitLazyLoading);
         return pOverviewDelegate;
     }
     return nullptr;
@@ -1209,17 +1209,15 @@ void BaseTrackTableModel::slotRefreshCoverRows(
     emitDataChangedForMultipleRowsInColumn(rows, column);
 }
 
-void BaseTrackTableModel::slotOverviewChanged(TrackId trackId) {
+void BaseTrackTableModel::slotRefreshOverviewRows(const QList<int>& rows) {
+    if (rows.isEmpty()) {
+        return;
+    }
     const int column = fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX);
     VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }
-
-    const auto rows = getTrackRows(trackId);
-    for (int row : rows) {
-        QModelIndex idx = index(row, column);
-        emit dataChanged(idx, idx);
-    }
+    emitDataChangedForMultipleRowsInColumn(rows, column);
 }
 
 void BaseTrackTableModel::slotRefreshAllRows() {

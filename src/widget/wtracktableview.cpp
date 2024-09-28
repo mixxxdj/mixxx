@@ -89,7 +89,7 @@ void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit onlyCachedCoverArt(true);
+        emit onlyCachedCoversAndOverviews(true);
         m_loadCachedOnly = true;
     }
     m_lastUserAction = mixxx::Time::elapsed();
@@ -153,7 +153,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
         // This allows CoverArtDelegate to request that we load covers from disk
         // (as opposed to only serving them from cache).
-        emit onlyCachedCoverArt(false);
+        emit onlyCachedCoversAndOverviews(false);
         m_loadCachedOnly = false;
     }
 }

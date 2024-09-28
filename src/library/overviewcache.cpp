@@ -98,12 +98,12 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
     emit overviewChanged(trackId);
 }
 
-QPixmap OverviewCache::requestOverview(
+QPixmap OverviewCache::requestCachedOverview(
         mixxx::OverviewType type,
-        const WaveformSignalColors& signalColors,
-        const TrackId trackId,
+        TrackId trackId,
         const QObject* pRequester,
-        const QSize desiredSize) {
+        QSize desiredSize) {
+    Q_UNUSED(pRequester);
     if (!trackId.isValid()) {
         return QPixmap();
     }
@@ -116,11 +116,37 @@ QPixmap OverviewCache::requestOverview(
         return QPixmap();
     }
 
-    kLogger.info() << "requestOverview()" << trackId << pRequester << desiredSize;
+    // kLogger.info() << "requestCachedOverview()" << trackId << pRequester << desiredSize;
 
-    // request overview
     const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
     QPixmap pixmap;
+    QPixmapCache::find(cacheKey, &pixmap);
+    return pixmap;
+}
+
+QPixmap OverviewCache::requestUncachedOverview(
+        mixxx::OverviewType type,
+        const WaveformSignalColors& signalColors,
+        TrackId trackId,
+        const QObject* pRequester,
+        QSize desiredSize) {
+    if (!trackId.isValid()) {
+        return QPixmap();
+    }
+
+    if (m_currentlyLoading.contains(trackId)) {
+        return QPixmap();
+    }
+
+    if (m_tracksWithoutOverview.contains(trackId)) {
+        return QPixmap();
+    }
+
+    // kLogger.info() << "requestUncachedOverview()" << trackId << pRequester << desiredSize;
+
+    const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
+    QPixmap pixmap;
+    // Maybe it has been cached since the request for cached image?
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         return pixmap;
     }
@@ -151,11 +177,11 @@ QPixmap OverviewCache::requestOverview(
 OverviewCache::FutureResult OverviewCache::prepareOverview(
         const UserSettingsPointer pConfig,
         const mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        const mixxx::OverviewType type,
+        mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        const TrackId trackId,
+        TrackId trackId,
         const QObject* pRequester,
-        const QSize desiredSize) {
+        QSize desiredSize) {
     // kLogger.warning() << "prepareOverview" << trackId;
     FutureResult result;
     result.trackId = trackId;
@@ -229,5 +255,5 @@ void OverviewCache::overviewPrepared() {
     }
     m_currentlyLoading.remove(res.trackId);
 
-    emit overviewReady(res.requester, res.trackId, !pixmap.isNull(), res.resizedToSize);
+    emit overviewReady(res.requester, res.trackId, !pixmap.isNull());
 }

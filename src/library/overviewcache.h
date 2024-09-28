@@ -16,12 +16,17 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
   public:
     void onTrackSummaryChanged(TrackId);
 
-    QPixmap requestOverview(
-            const mixxx::OverviewType type,
-            const WaveformSignalColors& signalColors,
-            const TrackId trackId,
+    QPixmap requestCachedOverview(
+            mixxx::OverviewType type,
+            TrackId trackId,
             const QObject* pRequester,
-            const QSize desiredSize);
+            QSize desiredSize);
+    QPixmap requestUncachedOverview(
+            mixxx::OverviewType type,
+            const WaveformSignalColors& signalColors,
+            TrackId trackId,
+            const QObject* pRequester,
+            QSize desiredSize);
 
     struct FutureResult {
         FutureResult()
@@ -43,9 +48,8 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
   signals:
     void overviewReady(
             const QObject* pRequester,
-            const TrackId trackId,
-            bool pixmapValid,
-            const QSize resizedToSize); // Currently only needed for debugging
+            TrackId trackId,
+            bool pixmapValid);
 
     void overviewChanged(TrackId);
 
@@ -58,11 +62,11 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     static FutureResult prepareOverview(
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            const mixxx::OverviewType type,
+            mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
-            const TrackId trackId,
+            TrackId trackId,
             const QObject* pRequester,
-            const QSize desiredSize);
+            QSize desiredSize);
 
   private:
     UserSettingsPointer m_pConfig;

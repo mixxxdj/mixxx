@@ -26,25 +26,37 @@ class OverviewDelegate : public TableItemDelegate {
             const QModelIndex& index) const final;
 
   signals:
-    void overviewReady(TrackId trackId);
+    void overviewRowsChanged(const QList<int>& rows);
 
-    void overviewChanged(TrackId trackId);
+  public slots:
+    // Advise the delegate to temporarily inhibit lazy loading
+    // of overview images and to only display those images
+    // that have already been cached.
+    //
+    // It is useful to handle cases when the user scroll down
+    // very fast or when they hold an arrow key. In this case
+    // it is NOT desirable to start multiple expensive file
+    // system operations for loading and scaling images that
+    // are not even displayed after scrolling beyond them.
+    void slotInhibitLazyLoading(bool inhibitLazyLoading);
 
   private slots:
     void slotTypeControlChanged(double v);
     void slotOverviewReady(const QObject* pRequester,
             const TrackId trackId,
-            bool pixmapValid,
-            const QSize resizedToSize);
+            bool pixmapValid);
+    void slotOverviewChanged(const TrackId trackId);
 
   protected:
     TrackModel* const m_pTrackModel;
 
   private:
+    void emitOverviewRowsChanged(QSet<TrackId>&& trackIds);
     OverviewCache* const m_pCache;
     mixxx::OverviewType m_type;
+    bool m_inhibitLazyLoading;
     parented_ptr<ControlProxy> m_pTypeControl;
     WaveformSignalColors m_signalColors;
 
-    mutable QHash<TrackId, int> m_trackIdToRow;
+    mutable QSet<TrackId> m_cacheMissIds;
 };
