@@ -49,6 +49,12 @@ class CmdlineArgs final {
     }
 #endif
     bool getSafeMode() const { return m_safeMode; }
+    qint64 getEngineCpuId() const {
+        return m_engineCpuId;
+    }
+    const QString& getEngineCpuSet() const {
+        return m_engineCpuSet;
+    }
     bool useColors() const {
         return m_useColors;
     }
@@ -104,6 +110,8 @@ class CmdlineArgs final {
     double m_scaleFactor;
     bool m_useColors;       // should colors be used
     bool m_parseForUserFeedbackRequired;
+    qint64 m_engineCpuId;
+    QString m_engineCpuSet;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;
