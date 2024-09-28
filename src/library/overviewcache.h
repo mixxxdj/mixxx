@@ -16,7 +16,12 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
   public:
     void onTrackSummaryChanged(TrackId);
 
-    QPixmap requestOverview(
+    QPixmap requestCachedOverview(
+            const mixxx::OverviewType type,
+            const TrackId trackId,
+            const QObject* pRequester,
+            const QSize desiredSize);
+    QPixmap requestUncachedOverview(
             const mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
             const TrackId trackId,
@@ -44,8 +49,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     void overviewReady(
             const QObject* pRequester,
             const TrackId trackId,
-            bool pixmapValid,
-            const QSize resizedToSize); // Currently only needed for debugging
+            bool pixmapValid);
 
     void overviewChanged(TrackId);
 
