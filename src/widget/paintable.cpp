@@ -82,7 +82,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
 #endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-                QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor,
+                QImage copy_buffer(pSvg->defaultSize() * scaleFactor,
                         QImage::Format_ARGB32_Premultiplied);
                 // The constructor doesn't initialize the image with data,
                 // so we need to fill it before we can draw on it.
