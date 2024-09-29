@@ -828,34 +828,47 @@ TrackPointer TrackDAO::addTracksAddFile(
 
     GlobalTrackCacheResolver cacheResolver(fileAccess);
     TrackPointer pTrack = cacheResolver.getTrack();
-    if (!pTrack) {
-        qWarning() << "TrackDAO::addTracksAddFile:"
-                   << "File not found"
-                   << fileAccess.info().location();
-        return nullptr;
-    }
-    const TrackId oldTrackId = pTrack->getId();
-    if (oldTrackId.isValid()) {
-        qDebug() << "TrackDAO::addTracksAddFile:"
-                << "Track has already been added to the database"
-                << oldTrackId;
-        DEBUG_ASSERT(pTrack->getDateAdded().isValid());
-        const auto trackLocation = pTrack->getLocation();
-        // TODO: These duplicates are only detected by chance when
-        // the other track is currently cached. Instead file aliasing
-        // must be detected reliably in any situation.
-        if (fileAccess.info().location() != trackLocation) {
-            kLogger.warning()
-                    << "Cannot add track:"
-                    << "Both the new track at"
-                    << fileAccess.info().location()
-                    << "and an existing track at"
-                    << trackLocation
-                    << "are referencing the same file"
-                    << fileAccess.info().canonicalLocation();
-            return nullptr;
+    switch (cacheResolver.getLookupResult()) {
+    case GlobalTrackCacheLookupResult::Hit: {
+        DEBUG_ASSERT(pTrack);
+        const TrackId oldTrackId = pTrack->getId();
+        if (oldTrackId.isValid()) {
+            qDebug() << "TrackDAO::addTracksAddFile:"
+                     << "Track has already been added to the database"
+                     << oldTrackId;
+            DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+            return pTrack;
         }
-        return pTrack;
+        // The track is cached, but not yet in the database
+        break;
+    }
+    case GlobalTrackCacheLookupResult::Miss:
+        // An (almost) empty track object
+        DEBUG_ASSERT(pTrack);
+        DEBUG_ASSERT(!pTrack->getId().isValid());
+        // Continue and populate the (almost) empty track object
+        break;
+    case GlobalTrackCacheLookupResult::ConflictCanonicalLocation:
+        // Reject requests that would otherwise cause a caching caching conflict
+        // by accessing the same, physical file from multiple tracks concurrently.
+        DEBUG_ASSERT(!pTrack);
+        DEBUG_ASSERT(cacheResolver.getTrackRef().hasCanonicalLocation());
+        DEBUG_ASSERT(cacheResolver.getTrackRef().getCanonicalLocation() ==
+                fileAccess.info().canonicalLocation());
+        kLogger.warning()
+                << "Failed to add track"
+                << fileAccess.info().location()
+                << "because tack"
+                << cacheResolver.getTrackRef().getLocation()
+                << "with id"
+                << cacheResolver.getTrackRef().getId()
+                << "referencing the same file at"
+                << cacheResolver.getTrackRef().getCanonicalLocation()
+                << "is already loaded.";
+        return {};
+    default:
+        DEBUG_ASSERT(!"unreachable");
+        return {};
     }
     // Keep the GlobalTrackCache locked until the id of the Track
     // object is known and has been updated in the cache.
