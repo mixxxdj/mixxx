@@ -849,7 +849,7 @@ TrackPointer TrackDAO::addTracksAddFile(
         // Continue and populate the (almost) empty track object
         break;
     case GlobalTrackCacheLookupResult::ConflictCanonicalLocation:
-        // Reject requests that would otherwise cause a caching caching conflict
+        // Reject requests that would otherwise cause a caching conflict
         // by accessing the same, physical file from multiple tracks concurrently.
         DEBUG_ASSERT(!pTrack);
         DEBUG_ASSERT(cacheResolver.getTrackRef().hasCanonicalLocation());
@@ -858,7 +858,7 @@ TrackPointer TrackDAO::addTracksAddFile(
         kLogger.warning()
                 << "Failed to add track"
                 << fileAccess.info().location()
-                << "because tack"
+                << "because track"
                 << cacheResolver.getTrackRef().getLocation()
                 << "with id"
                 << cacheResolver.getTrackRef().getId()
