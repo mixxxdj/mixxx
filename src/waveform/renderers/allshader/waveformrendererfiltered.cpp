@@ -19,7 +19,6 @@ void WaveformRendererFiltered::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererFiltered::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 

@@ -1,41 +1,23 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 
+#include "rendergraph/geometry.h"
+#include "rendergraph/geometrynode.h"
+#include "rendergraph/material/unicolormaterial.h"
+#include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
-allshader::WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget) {
+using namespace rendergraph;
+
+namespace allshader {
+
+WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget)
+        : ::WaveformRendererAbstract(waveformWidget) {
 }
 
-void allshader::WaveformRenderMarkRange::initializeGL() {
-    WaveformRenderer::initializeGL();
-    m_shader.init();
-}
-
-void allshader::WaveformRenderMarkRange::fillRect(
-        const QRectF& rect, QColor color) {
-    const float posx1 = static_cast<float>(rect.x());
-    const float posx2 = static_cast<float>(rect.x() + rect.width());
-    const float posy1 = static_cast<float>(rect.y());
-    const float posy2 = static_cast<float>(rect.y() + rect.height());
-
-    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
-
-    const int colorLocation = m_shader.colorLocation();
-    const int positionLocation = m_shader.positionLocation();
-
-    m_shader.setUniformValue(colorLocation, color);
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, posarray, 2);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
-void allshader::WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& context) {
     m_markRanges.clear();
-    m_markRanges.reserve(1);
 
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
@@ -51,21 +33,18 @@ void allshader::WaveformRenderMarkRange::setup(const QDomNode& node, const SkinC
     }
 }
 
-void allshader::WaveformRenderMarkRange::paintGL() {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
+}
 
+void WaveformRenderMarkRange::update() {
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    const int positionLocation = m_shader.positionLocation();
-    const int matrixLocation = m_shader.matrixLocation();
+    TreeNode* pChild = firstChild();
 
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-
-    for (auto&& markRange : m_markRanges) {
+    for (const auto& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.
         if (!markRange.active()) {
             continue;
@@ -89,8 +68,6 @@ void allshader::WaveformRenderMarkRange::paintGL() {
         startPosition = std::floor(startPosition);
         endPosition = std::floor(endPosition);
 
-        const double span = std::max(endPosition - startPosition, 1.0);
-
         // range not in the current display
         if (startPosition > m_waveformRenderer->getLength() || endPosition < 0) {
             continue;
@@ -99,8 +76,37 @@ void allshader::WaveformRenderMarkRange::paintGL() {
         QColor color = markRange.enabled() ? markRange.m_activeColor : markRange.m_disabledColor;
         color.setAlphaF(0.3f);
 
-        fillRect(QRectF(startPosition, 0, span, m_waveformRenderer->getBreadth()), color);
+        if (!pChild) {
+            appendChildNode(std::make_unique<GeometryNode>());
+            pChild = lastChild();
+            static_cast<GeometryNode*>(pChild)->initForRectangles<UniColorMaterial>(1);
+        }
+
+        updateNode(static_cast<GeometryNode*>(pChild),
+                matrix,
+                color,
+                {static_cast<float>(startPosition), 0.f},
+                {static_cast<float>(endPosition) + 1.f,
+                        static_cast<float>(m_waveformRenderer->getBreadth())});
+
+        pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.release();
+    while (pChild) {
+        auto pNext = pChild->nextSibling();
+        removeChildNode(pChild);
+        pChild = pNext;
+    }
 }
+
+void WaveformRenderMarkRange::updateNode(GeometryNode* pChild,
+        const QMatrix4x4& matrix,
+        QColor color,
+        QVector2D lt,
+        QVector2D rb) {
+    VertexUpdater vertexUpdater{pChild->geometry().vertexDataAs<Geometry::Point2D>()};
+    vertexUpdater.addRectangle(lt, rb);
+    pChild->material().setUniform(0, matrix);
+    pChild->material().setUniform(1, color);
+}
+
+} // namespace allshader
