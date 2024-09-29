@@ -159,8 +159,8 @@ BaseTrackTableModel::BaseTrackTableModel(
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         const QStringList& tableColumns) {
+    // This function might be invoked repeatedly and not only once during construction.
     m_columnCache.setColumns(tableColumns);
-    DEBUG_ASSERT(m_columnHeaders.isEmpty());
     m_columnHeaders.resize(tableColumns.size());
     // Init the mapping of all columns, even for internal columns that are
     // hidden/invisible. Otherwise mapColumn() would not return a valid result
@@ -174,7 +174,6 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
             continue;
         }
         DEBUG_ASSERT(headerIndex < m_columnHeaders.size());
-        DEBUG_ASSERT(mapColumn(headerIndex) == ColumnCache::COLUMN_LIBRARYTABLE_INVALID);
         m_columnHeaders[headerIndex].column = column;
         DEBUG_ASSERT(mapColumn(headerIndex) == column);
     }
