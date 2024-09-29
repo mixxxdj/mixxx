@@ -2220,10 +2220,7 @@ TrackPointer TrackDAO::getOrAddTrack(
     const auto pTrack = addTracksAddFile(trackRef.getLocation(), true);
     addTracksFinish(!pTrack);
     if (!pTrack) {
-        qWarning()
-                << "Failed to add track"
-                << trackRef;
-        return TrackPointer();
+        return {};
     }
     if (pAlreadyInLibrary) {
         *pAlreadyInLibrary = false;
