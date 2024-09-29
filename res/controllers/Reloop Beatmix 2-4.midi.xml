@@ -2805,7 +2805,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x91</status>
 				<midino>0x00</midino>
 				<on>0x55</on>
@@ -2813,7 +2813,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x91</status>
 				<midino>0x01</midino>
 				<on>0x55</on>
@@ -2821,7 +2821,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x91</status>
 				<midino>0x02</midino>
 				<on>0x55</on>
@@ -2829,7 +2829,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x91</status>
 				<midino>0x03</midino>
 				<on>0x55</on>
@@ -2869,7 +2869,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x91</status>
 				<midino>0x10</midino>
 				<on>0x55</on>
@@ -2877,7 +2877,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x91</status>
 				<midino>0x11</midino>
 				<on>0x55</on>
@@ -2885,7 +2885,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x91</status>
 				<midino>0x12</midino>
 				<on>0x55</on>
@@ -2893,7 +2893,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x91</status>
 				<midino>0x13</midino>
 				<on>0x55</on>
@@ -2901,7 +2901,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x91</status>
 				<midino>0x40</midino>
 				<on>0x55</on>
@@ -2909,7 +2909,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x91</status>
 				<midino>0x41</midino>
 				<on>0x55</on>
@@ -2917,7 +2917,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x91</status>
 				<midino>0x42</midino>
 				<on>0x55</on>
@@ -2925,7 +2925,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x91</status>
 				<midino>0x43</midino>
 				<on>0x55</on>
@@ -2941,7 +2941,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x91</status>
 				<midino>0x18</midino>
 				<on>0x55</on>
@@ -2949,7 +2949,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x91</status>
 				<midino>0x19</midino>
 				<on>0x55</on>
@@ -2957,7 +2957,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x91</status>
 				<midino>0x1A</midino>
 				<on>0x55</on>
@@ -2965,7 +2965,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x91</status>
 				<midino>0x1B</midino>
 				<on>0x55</on>
@@ -3069,7 +3069,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x92</status>
 				<midino>0x00</midino>
 				<on>0x55</on>
@@ -3077,7 +3077,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x92</status>
 				<midino>0x01</midino>
 				<on>0x55</on>
@@ -3085,7 +3085,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x92</status>
 				<midino>0x02</midino>
 				<on>0x55</on>
@@ -3093,7 +3093,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x92</status>
 				<midino>0x03</midino>
 				<on>0x55</on>
@@ -3133,7 +3133,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x92</status>
 				<midino>0x10</midino>
 				<on>0x55</on>
@@ -3141,7 +3141,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x92</status>
 				<midino>0x11</midino>
 				<on>0x55</on>
@@ -3149,7 +3149,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x92</status>
 				<midino>0x12</midino>
 				<on>0x55</on>
@@ -3157,7 +3157,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x92</status>
 				<midino>0x13</midino>
 				<on>0x55</on>
@@ -3165,7 +3165,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x92</status>
 				<midino>0x40</midino>
 				<on>0x55</on>
@@ -3173,7 +3173,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x92</status>
 				<midino>0x41</midino>
 				<on>0x55</on>
@@ -3181,7 +3181,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x92</status>
 				<midino>0x42</midino>
 				<on>0x55</on>
@@ -3189,7 +3189,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x92</status>
 				<midino>0x43</midino>
 				<on>0x55</on>
@@ -3205,7 +3205,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x92</status>
 				<midino>0x18</midino>
 				<on>0x55</on>
@@ -3213,7 +3213,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x92</status>
 				<midino>0x19</midino>
 				<on>0x55</on>
@@ -3221,7 +3221,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x92</status>
 				<midino>0x1A</midino>
 				<on>0x55</on>
@@ -3229,7 +3229,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x92</status>
 				<midino>0x1B</midino>
 				<on>0x55</on>
@@ -3333,7 +3333,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x93</status>
 				<midino>0x00</midino>
 				<on>0x55</on>
@@ -3341,7 +3341,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x93</status>
 				<midino>0x01</midino>
 				<on>0x55</on>
@@ -3349,7 +3349,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x93</status>
 				<midino>0x02</midino>
 				<on>0x55</on>
@@ -3357,7 +3357,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x93</status>
 				<midino>0x03</midino>
 				<on>0x55</on>
@@ -3397,7 +3397,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x93</status>
 				<midino>0x10</midino>
 				<on>0x55</on>
@@ -3405,7 +3405,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x93</status>
 				<midino>0x11</midino>
 				<on>0x55</on>
@@ -3413,7 +3413,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x93</status>
 				<midino>0x12</midino>
 				<on>0x55</on>
@@ -3421,7 +3421,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x93</status>
 				<midino>0x13</midino>
 				<on>0x55</on>
@@ -3429,7 +3429,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x93</status>
 				<midino>0x40</midino>
 				<on>0x55</on>
@@ -3437,7 +3437,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x93</status>
 				<midino>0x41</midino>
 				<on>0x55</on>
@@ -3445,7 +3445,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x93</status>
 				<midino>0x42</midino>
 				<on>0x55</on>
@@ -3453,7 +3453,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x93</status>
 				<midino>0x43</midino>
 				<on>0x55</on>
@@ -3469,7 +3469,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x93</status>
 				<midino>0x18</midino>
 				<on>0x55</on>
@@ -3477,7 +3477,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x93</status>
 				<midino>0x19</midino>
 				<on>0x55</on>
@@ -3485,7 +3485,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x93</status>
 				<midino>0x1A</midino>
 				<on>0x55</on>
@@ -3493,7 +3493,7 @@
 			</output>
 			<output>
 				<group>[Channel3]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x93</status>
 				<midino>0x1B</midino>
 				<on>0x55</on>
@@ -3597,7 +3597,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x94</status>
 				<midino>0x00</midino>
 				<on>0x55</on>
@@ -3605,7 +3605,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x94</status>
 				<midino>0x01</midino>
 				<on>0x55</on>
@@ -3613,7 +3613,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x94</status>
 				<midino>0x02</midino>
 				<on>0x55</on>
@@ -3621,7 +3621,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x94</status>
 				<midino>0x03</midino>
 				<on>0x55</on>
@@ -3661,7 +3661,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x94</status>
 				<midino>0x10</midino>
 				<on>0x55</on>
@@ -3669,7 +3669,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x94</status>
 				<midino>0x11</midino>
 				<on>0x55</on>
@@ -3677,7 +3677,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x94</status>
 				<midino>0x12</midino>
 				<on>0x55</on>
@@ -3685,7 +3685,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x94</status>
 				<midino>0x13</midino>
 				<on>0x55</on>
@@ -3693,7 +3693,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x94</status>
 				<midino>0x40</midino>
 				<on>0x55</on>
@@ -3701,7 +3701,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x94</status>
 				<midino>0x41</midino>
 				<on>0x55</on>
@@ -3709,7 +3709,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x94</status>
 				<midino>0x42</midino>
 				<on>0x55</on>
@@ -3717,7 +3717,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x94</status>
 				<midino>0x43</midino>
 				<on>0x55</on>
@@ -3733,7 +3733,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<status>0x94</status>
 				<midino>0x18</midino>
 				<on>0x55</on>
@@ -3741,7 +3741,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<status>0x94</status>
 				<midino>0x19</midino>
 				<on>0x55</on>
@@ -3749,7 +3749,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<status>0x94</status>
 				<midino>0x1A</midino>
 				<on>0x55</on>
@@ -3757,7 +3757,7 @@
 			</output>
 			<output>
 				<group>[Channel4]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<status>0x94</status>
 				<midino>0x1B</midino>
 				<on>0x55</on>

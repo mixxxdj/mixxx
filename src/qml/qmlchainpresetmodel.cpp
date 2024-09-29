@@ -62,8 +62,13 @@ QHash<int, QByteArray> QmlChainPresetModel::roleNames() const {
 }
 
 QVariant QmlChainPresetModel::get(int row) const {
-    QModelIndex idx = index(row, 0);
     QVariantMap dataMap;
+    QModelIndex idx = index(row, 0);
+
+    if (!idx.isValid()) {
+        return dataMap;
+    }
+
     for (auto it = kRoleNames.constBegin(); it != kRoleNames.constEnd(); it++) {
         dataMap.insert(it.value(), data(idx, it.key()));
     }

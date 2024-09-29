@@ -33,6 +33,14 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
         return VC_REMOVE;
     }
 
+#ifdef __STEM__
+    if (version == WAVEFORM_6_0_VERSION) {
+        // Used in Mixxx 2.6 beta, introducing stem data but later replaced with
+        // the signal scale removal
+        return VC_REMOVE;
+    }
+#endif
+
     // possible a future version
     return VC_KEEP;
 }

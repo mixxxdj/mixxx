@@ -35,6 +35,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
     /// Get the total duration of all tracks referenced by the given model indices
     mixxx::Duration getTotalDuration(const QModelIndexList& indices);
+    const QList<int> getSelectedPositions(const QModelIndexList& indices) const override;
 
     Capabilities getCapabilities() const final;
 
