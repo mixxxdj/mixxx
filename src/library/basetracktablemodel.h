@@ -112,12 +112,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int defaultColumnWidth() {
         return 50;
     }
-    static QStringList defaultTableColumns();
 
     // Build a map from the column names to their indices
-    // used by fieldIndex(). This function has to be called
+    // used by fieldIndex().
     void initTableColumnsAndHeaderProperties(
-            const QStringList& tableColumns = defaultTableColumns());
+            const QStringList& tableColumns);
 
     QString columnNameForFieldIndex(int index) const {
         return m_columnCache.columnNameForFieldIndex(index);
