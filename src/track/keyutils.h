@@ -7,7 +7,6 @@
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
-#include "track/bpm.h"
 #include "track/keys.h"
 #include "util/color/colorpalette.h"
 #include "util/math.h"
@@ -63,6 +62,21 @@ class KeyUtils {
     static inline mixxx::track::io::key::ChromaticKey minorToRelativeMajor(
             mixxx::track::io::key::ChromaticKey key) {
         return openKeyNumberToKey(keyToOpenKeyNumber(key), true);
+    }
+
+    // Key to 0-based Major scale value. Converts Minor keys to relative majors.
+    // eg. C and Am will be 0.0
+    static inline double keyToScalePitch(mixxx::track::io::key::ChromaticKey key) {
+        return keyToNumericValue(minorToRelativeMajor(key)) - 1;
+    }
+
+    // Ensure pitch is in the [0-12) range
+    static inline double normalizePitch(double pitch) {
+        double normPitch = fmod(pitch, 12.0);
+        if (normPitch < 0) {
+            normPitch += 12.0;
+        }
+        return normPitch;
     }
 
     // Given pitch difference of 2 keys, returns their distance on the keywheel
@@ -156,25 +170,9 @@ class KeyUtils {
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
 
-    // Ensure pitch is in the [0-12) range
-    static inline double normalizePitch(double pitch) {
-        double normPitch = fmod(pitch, 12.0);
-        if (normPitch < 0) {
-            normPitch += 12.0;
-        }
-        return normPitch;
-    }
+    static double trackSyncPitchDifference(double key1, double bpm1, double key2, double bpm2);
 
-    static double trackSyncPitchDifference(
-            mixxx::track::io::key::ChromaticKey key1,
-            mixxx::Bpm bpm1,
-            mixxx::track::io::key::ChromaticKey key2,
-            mixxx::Bpm bpm2);
-
-    static double trackSimilarity(mixxx::track::io::key::ChromaticKey key1,
-            mixxx::Bpm bpm1,
-            mixxx::track::io::key::ChromaticKey key2,
-            mixxx::Bpm bpm2);
+    static double trackSimilarity(double key1, double bpm1, double key2, double bpm2);
 
   private:
     static QMutex s_notationMutex;

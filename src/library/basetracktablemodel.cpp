@@ -21,6 +21,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetracktablemodel.cpp"
+#include "proto/keys.pb.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -741,24 +742,24 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             const auto key = KeyUtils::keyFromNumericValue(keyCode);
+            const auto trackKey = KeyUtils::keyToScalePitch(key);
 
             const QVariant rawBpm = rawSiblingValue(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM);
-            mixxx::Bpm bpm;
             if (rawBpm.isNull()) {
                 return QVariant();
             }
 
             // reuse ok variable from key
-            const auto bpmValue = rawBpm.toDouble(&ok);
+            const auto trackBpm = rawBpm.toDouble(&ok);
             VERIFY_OR_DEBUG_ASSERT(ok) {
                 return QVariant();
             }
-            bpm = mixxx::Bpm(bpmValue);
 
-            const auto targetKey = KeyUtils::tonicToKey(0, true);
-            const auto targetBpm = mixxx::Bpm(100);
+            const auto targetKey = KeyUtils::keyToScalePitch(mixxx::track::io::key::C_MAJOR);
+            const auto targetBpm = 100.0;
 
-            const auto similarity = KeyUtils::trackSimilarity(targetKey, targetBpm, key, bpm);
+            const auto similarity = KeyUtils::trackSimilarity(
+                    targetKey, targetBpm, trackKey, trackBpm);
             return QVariant(similarity);
         }
 #endif

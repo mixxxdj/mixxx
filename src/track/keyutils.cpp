@@ -782,36 +782,22 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
 
 // returns the pitch difference between two tracks, when they are played at the
 // same tempo. Assumes all inputs are valid.
-double KeyUtils::trackSyncPitchDifference(
-        mixxx::track::io::key::ChromaticKey key1,
-        mixxx::Bpm bpm1,
-        mixxx::track::io::key::ChromaticKey key2,
-        mixxx::Bpm bpm2) {
-    // convert minor keys to their relative majors
-    // we are interested in the notes used, not the mode
-    key1 = minorToRelativeMajor(key1);
-    key2 = minorToRelativeMajor(key2);
-
+double KeyUtils::trackSyncPitchDifference(double key1, double bpm1, double key2, double bpm2) {
     // calculate the pitch delta for each track when stretched to a tempo of 100BPM
-    const double delta1 = powerOf2ToSemitoneChange(100 / bpm1.value());
-    const double delta2 = powerOf2ToSemitoneChange(100 / bpm2.value());
+    const double delta1 = powerOf2ToSemitoneChange(100 / bpm1);
+    const double delta2 = powerOf2ToSemitoneChange(100 / bpm2);
 
     // get the resulting key for each track at 100BPM
-    const double resPitch1 = keyToNumericValue(key1) - 1 + delta1;
-    const double resPitch2 = keyToNumericValue(key2) - 1 + delta2;
+    const double resPitch1 = key1 + delta1;
+    const double resPitch2 = key2 + delta2;
 
     // return the pitch difference when both tracks are played at the same tempo
     return shortestPitchDiff(resPitch1, resPitch2);
 }
 
 // Calculates Similarity (0 to 1, -1 if invalid) between two tracks based on their key and BPM.
-double KeyUtils::trackSimilarity(mixxx::track::io::key::ChromaticKey key1,
-        mixxx::Bpm bpm1,
-        mixxx::track::io::key::ChromaticKey key2,
-        mixxx::Bpm bpm2) {
-    if (key1 == mixxx::track::io::key::INVALID ||
-            key2 == mixxx::track::io::key::INVALID || !bpm1.isValid() ||
-            !bpm2.isValid()) {
+double KeyUtils::trackSimilarity(double key1, double bpm1, double key2, double bpm2) {
+    if (bpm1 <= 0.0 || bpm2 <= 0.0 || key1 < 0 || key1 >= 13 || key2 < 0 || key2 >= 13) {
         return -1.0;
     }
 
