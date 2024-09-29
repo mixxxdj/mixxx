@@ -1420,12 +1420,15 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         DEBUG_ASSERT(!query.next());
     }
 
-    {
+    { // locking scope of cacheResolver
         // Location is the first column.
         DEBUG_ASSERT(queryRecord.count() > 0);
         const auto trackLocation = queryRecord.value(0).toString();
         const auto fileInfo = mixxx::FileInfo(trackLocation);
         const auto fileAccess = mixxx::FileAccess(fileInfo);
+        // Look up the track. First by trackId again, than find duplicates using the
+        // fileAccess (canonical location) and if all fails add a new track object
+        // to the cache
         const auto cacheResolver = GlobalTrackCacheResolver(fileAccess, trackId);
         pTrack = cacheResolver.getTrack();
         switch (cacheResolver.getLookupResult()) {
@@ -1435,42 +1438,47 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             // the operation and simply return the already cached Track
             // object which is up-to-date.
             DEBUG_ASSERT(pTrack);
-            DEBUG_ASSERT(!trackId.isValid() || trackId == pTrack->getId());
+            DEBUG_ASSERT(trackId.isValid() && trackId == pTrack->getId());
             DEBUG_ASSERT(fileInfo == pTrack->getFileInfo());
             return pTrack;
         case GlobalTrackCacheLookupResult::Miss:
             // An (almost) empty track object
             DEBUG_ASSERT(pTrack);
             DEBUG_ASSERT(fileInfo == pTrack->getFileInfo());
-            DEBUG_ASSERT(!trackId.isValid() || trackId == pTrack->getId());
+            DEBUG_ASSERT(trackId.isValid() && trackId == pTrack->getId());
             // Continue and populate the (almost) empty track object
             break;
         case GlobalTrackCacheLookupResult::ConflictCanonicalLocation:
             // Reject requests that would otherwise cause a caching caching conflict
             // by accessing the same, physical file from multiple tracks concurrently.
             DEBUG_ASSERT(!pTrack);
-            DEBUG_ASSERT(cacheResolver.getTrackRef().hasId());
-            DEBUG_ASSERT(!trackId.isValid() || trackId == cacheResolver.getTrackRef().getId());
+            DEBUG_ASSERT(!cacheResolver.getTrackRef().hasId() ||
+                    (trackId != cacheResolver.getTrackRef().getId()));
             DEBUG_ASSERT(cacheResolver.getTrackRef().hasCanonicalLocation());
             DEBUG_ASSERT(cacheResolver.getTrackRef().getCanonicalLocation() ==
                     fileInfo.canonicalLocation());
             kLogger.warning()
-                    << "Failed to load track with id"
+                    << "Failed to load track"
+                    << trackLocation
+                    << "with id"
                     << trackId
-                    << "that is referencing the same file"
+                    << "because tack"
+                    << cacheResolver.getTrackRef().getLocation()
+                    << "with id"
+                    << cacheResolver.getTrackRef().getId()
+                    << "referencing the same file at"
                     << cacheResolver.getTrackRef().getCanonicalLocation()
-                    << "as the cached track with id"
-                    << cacheResolver.getTrackRef().getId();
+                    << "is already loaded.";
             return nullptr;
         default:
             DEBUG_ASSERT(!"unreachable");
             return nullptr;
         }
-    }
+    } // end of cacheResolver locking scope
 
     // NOTE(uklotzde, 2018-02-06):
-    // pTrack has only the id set and is otherwise empty. It is registered
-    // in the cache with both the id and the canonical location of the file.
+    // pTrack has only the id set and maybe a canonical location of the file
+    // and is registered by both as available. The rest is default constructed.
     // The following database query will restore and populate all remaining
     // properties while the virgin track object is already visible for other
     // threads when looking it up in the cache. This temporary inconsistency
