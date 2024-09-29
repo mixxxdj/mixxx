@@ -217,7 +217,7 @@ class EngineBuffer : public EngineObject {
     // has completed.
 #ifdef __STEM__
     void loadTrack(TrackPointer pTrack,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool play,
             EngineChannel* pChannelToCloneFrom);
 #else

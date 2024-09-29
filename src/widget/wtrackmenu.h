@@ -113,7 +113,7 @@ class WTrackMenu : public QMenu {
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool play = false);
 #else
     void loadTrackToPlayer(TrackPointer pTrack,
@@ -243,7 +243,7 @@ class WTrackMenu : public QMenu {
 
 #ifdef __STEM__
     void loadSelectionToGroup(const QString& group,
-            uint stemMask = mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection stemMask = mixxx::StemChannelSelection(),
             bool play = false);
 #else
     void loadSelectionToGroup(const QString& group,

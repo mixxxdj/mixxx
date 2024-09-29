@@ -222,7 +222,7 @@ void PreviewButtonDelegate::buttonClicked() {
         // Load to preview deck and start playing
         emit loadTrackToPlayer(pTrack, kPreviewDeckGroup,
 #ifdef __STEM__
-                mixxx::kNoStemSelected,
+                mixxx::StemChannelSelection(),
 #endif
                 true);
         startedPlaying = true;

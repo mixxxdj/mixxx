@@ -1267,7 +1267,7 @@ void WTrackTableView::activateSelectedTrack() {
 
 #ifdef __STEM__
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
-        uint stemMask,
+        mixxx::StemChannelSelection stemMask,
         bool play) {
 #else
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group,

@@ -177,7 +177,7 @@ class WaveformWidgetRenderer {
     }
 
 #ifdef __STEM__
-    void selectStem(uint stemMask);
+    void selectStem(mixxx::StemChannelSelection stemMask);
 #endif
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {

@@ -11,6 +11,9 @@
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -40,7 +43,7 @@ class WTrackTableView : public WLibraryTableView {
     void activateSelectedTrack();
 #ifdef __STEM__
     void loadSelectedTrackToGroup(const QString& group,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool play);
 #else
     void loadSelectedTrackToGroup(const QString& group,

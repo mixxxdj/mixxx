@@ -553,7 +553,7 @@ void Library::slotLoadLocationToPlayer(const QString& location, const QString& g
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
 #ifdef __STEM__
-        emit loadTrackToPlayer(pTrack, group, mixxx::kNoStemSelected, play);
+        emit loadTrackToPlayer(pTrack, group, mixxx::StemChannelSelection(), play);
 #else
         emit loadTrackToPlayer(pTrack, group, play);
 #endif
@@ -561,8 +561,10 @@ void Library::slotLoadLocationToPlayer(const QString& location, const QString& g
 }
 
 #ifdef __STEM__
-void Library::slotLoadTrackToPlayer(
-        TrackPointer pTrack, const QString& group, uint stemMask, bool play) {
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
     emit loadTrackToPlayer(pTrack, group, stemMask, play);
 }
 #else

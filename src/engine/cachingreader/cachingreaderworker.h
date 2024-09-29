@@ -105,7 +105,7 @@ class CachingReaderWorker : public EngineWorker {
 
     // Request to load a new track. wake() must be called afterwards.
 #ifdef __STEM__
-    void newTrack(TrackPointer pTrack, uint stemMask);
+    void newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask);
 #else
     void newTrack(TrackPointer pTrack);
 #endif
@@ -129,7 +129,7 @@ class CachingReaderWorker : public EngineWorker {
 #ifdef __STEM__
     struct NewTrackRequest {
         TrackPointer track;
-        uint stemMask;
+        mixxx::StemChannelSelection stemMask;
     };
 #endif
     const QString m_group;
@@ -162,7 +162,7 @@ class CachingReaderWorker : public EngineWorker {
 
     /// Internal method to load a track. Emits trackLoaded when finished.
 #ifdef __STEM__
-    void loadTrack(const TrackPointer& pTrack, uint stemMask);
+    void loadTrack(const TrackPointer& pTrack, mixxx::StemChannelSelection stemMask);
 #else
     void loadTrack(const TrackPointer& pTrack);
 #endif

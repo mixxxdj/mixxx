@@ -22,7 +22,7 @@ constexpr int kDefaultDimBrightThreshold = 127;
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),
 #ifdef __STEM__
-          m_selectedStems(mixxx::kNoStemSelected),
+          m_selectedStems(mixxx::StemChannelSelection()),
 #endif
           m_orientation(Qt::Horizontal),
           m_dimBrightThreshold(kDefaultDimBrightThreshold),
@@ -420,7 +420,7 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
 }
 
 #ifdef __STEM__
-void WaveformWidgetRenderer::selectStem(uint stemMask) {
+void WaveformWidgetRenderer::selectStem(mixxx::StemChannelSelection stemMask) {
     m_selectedStems = stemMask;
 }
 #endif

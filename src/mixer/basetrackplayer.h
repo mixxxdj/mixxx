@@ -3,6 +3,9 @@
 #include <gsl/pointers>
 #include <memory>
 
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
 #include "preferences/colorpalettesettings.h"
@@ -48,7 +51,7 @@ class BaseTrackPlayer : public BasePlayer {
   public slots:
 #ifdef __STEM__
     virtual void slotLoadTrack(TrackPointer pTrack,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool bPlay = false) = 0;
 #else
     virtual void slotLoadTrack(TrackPointer pTrack,
@@ -65,7 +68,7 @@ class BaseTrackPlayer : public BasePlayer {
     void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 #ifdef __STEM__
-    void selectedStems(uint stemMask);
+    void selectedStems(mixxx::StemChannelSelection stemMask);
 #endif
     void playerEmpty();
     void noVinylControlInputConfigured();
@@ -106,7 +109,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   public slots:
 #ifdef __STEM__
     void slotLoadTrack(TrackPointer track,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool bPlay) final;
 #else
     void slotLoadTrack(TrackPointer track,

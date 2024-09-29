@@ -115,7 +115,10 @@ class Library: public QObject {
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
 #ifdef __STEM__
-    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, uint stemMask, bool play);
+    void slotLoadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
 #else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
 #endif
@@ -134,7 +137,7 @@ class Library: public QObject {
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool play = false);
 #else
     void loadTrackToPlayer(TrackPointer pTrack,

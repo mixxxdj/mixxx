@@ -6,6 +6,9 @@
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlProxy;
 class WLibraryTableView;
@@ -55,7 +58,10 @@ class PreviewButtonDelegate : public TableItemDelegate {
 
   signals:
 #ifdef __STEM__
-    void loadTrackToPlayer(const TrackPointer& pTrack, const QString& group, uint stemMask, bool);
+    void loadTrackToPlayer(const TrackPointer& pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool);
 #else
     void loadTrackToPlayer(const TrackPointer& pTrack, const QString& group, bool);
 #endif

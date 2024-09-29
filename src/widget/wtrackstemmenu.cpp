@@ -2,8 +2,17 @@
 
 #include <QAction>
 
-#include "engine/engine.h"
 #include "moc_wtrackstemmenu.cpp"
+
+namespace {
+const QList<mixxx::StemChannel> stemTracks = {
+
+        mixxx::StemChannel::First,
+        mixxx::StemChannel::Second,
+        mixxx::StemChannel::Third,
+        mixxx::StemChannel::Fourth,
+};
+}
 
 WTrackStemMenu::WTrackStemMenu(const QString& label,
         QWidget* parent,
@@ -14,38 +23,40 @@ WTrackStemMenu::WTrackStemMenu(const QString& label,
           m_group(group),
           m_selectMode(false),
           m_stemInfo(stemInfo),
-          m_currentSelection(mixxx::kNoStemSelected) {
+          m_currentSelection() {
     if (primaryDeck) {
         QAction* pAction = new QAction(tr("Load for stem mixing"), this);
         addAction(pAction);
         connect(pAction, &QAction::triggered, this, [this, group] {
-            emit selectedStem(group, mixxx::kNoStemSelected);
+            emit selectedStem(group, {mixxx::StemChannelSelection()});
         });
     }
 
     QAction* pAction = new QAction(tr("Load pre-mixed stereo track"), this);
     addAction(pAction);
     connect(pAction, &QAction::triggered, this, [this, group] {
-        emit selectedStem(group, 0xf);
+        emit selectedStem(group, mixxx::StemChannel::All);
     });
     addSeparator();
 
-    for (uint stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+    DEBUG_ASSERT(stemTracks.count() == mixxx::kMaxSupportedStems);
+    int stemIdx = 0;
+    for (const auto& stemTrack : stemTracks) {
         m_stemActions.emplace_back(
                 make_parented<QAction>(tr("Load the \"%1\" stem")
                                                .arg(m_stemInfo.at(stemIdx).getLabel()),
                         this));
         addAction(m_stemActions.back().get());
-        connect(m_stemActions.back().get(), &QAction::triggered, this, [this, stemIdx] {
-            emit selectedStem(m_group, 1 << stemIdx);
+        connect(m_stemActions.back().get(), &QAction::triggered, this, [this, stemTrack] {
+            emit selectedStem(m_group, stemTrack);
         });
-        connect(m_stemActions.back().get(), &QAction::toggled, this, [this, stemIdx](bool checked) {
-            if (checked) {
-                m_currentSelection |= 1 << stemIdx;
-            } else {
-                m_currentSelection ^= 1 << stemIdx;
-            }
-        });
+        connect(m_stemActions.back().get(),
+                &QAction::toggled,
+                this,
+                [this, stemTrack](bool checked) {
+                    m_currentSelection.setFlag(stemTrack, checked);
+                });
+        stemIdx++;
     }
     m_selectAction = make_parented<QAction>(this);
     m_selectAction->setToolTip(tr("Load multiple stem into a stereo deck"));
@@ -56,7 +67,6 @@ WTrackStemMenu::WTrackStemMenu(const QString& label,
 
 bool WTrackStemMenu::eventFilter(QObject* pObj, QEvent* e) {
     QInputEvent* pInputEvent = dynamic_cast<QInputEvent*>(e);
-    qDebug() << e << pInputEvent;
     if (pInputEvent != nullptr &&
             (pInputEvent->modifiers() & Qt::ControlModifier) != m_selectMode) {
         m_selectMode = pInputEvent->modifiers() & Qt::ControlModifier;
@@ -65,7 +75,6 @@ bool WTrackStemMenu::eventFilter(QObject* pObj, QEvent* e) {
 
     if (m_selectMode && (e->type() == QEvent::MouseButtonRelease)) {
         QAction* pAction = activeAction();
-        qDebug() << e << pAction;
         if (pAction && pAction->isCheckable()) {
             pAction->setChecked(!pAction->isChecked());
             updateActions();
@@ -100,7 +109,7 @@ void WTrackStemMenu::keyReleaseEvent(QKeyEvent* pQEvent) {
     bool selectMode = pQEvent->modifiers() & Qt::ControlModifier;
     if (!selectMode && m_selectMode && m_currentSelection) {
         emit selectedStem(m_group, m_currentSelection);
-        m_currentSelection = mixxx::kNoStemSelected;
+        m_currentSelection = mixxx::StemChannelSelection();
     }
     m_selectMode = selectMode;
     updateActions();

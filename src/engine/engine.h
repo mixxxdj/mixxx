@@ -13,7 +13,16 @@ static constexpr audio::ChannelCount kMaxEngineChannelInputCount =
 // not.
 constexpr int kMaxSupportedStems = 4;
 #ifdef __STEM__
-constexpr uint kNoStemSelected = 0;
+enum class StemChannel {
+    First = 0x1,
+    Second = 0x2,
+    Third = 0x4,
+    Fourth = 0x8,
+
+    None = 0,
+    All = First | Second | Third | Fourth
+};
+Q_DECLARE_FLAGS(StemChannelSelection, StemChannel);
 #endif
 
 // Contains the information needed to process a buffer of audio

@@ -12,6 +12,9 @@
 #include "library/dao/trackdao.h"
 #include "library/treeitemmodel.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class KeyboardEventFilter;
 class Library;
@@ -138,7 +141,7 @@ class LibraryFeature : public QObject {
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool play = false);
 #else
     void loadTrackToPlayer(TrackPointer pTrack,

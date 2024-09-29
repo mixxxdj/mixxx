@@ -202,7 +202,10 @@ class AutoDJProcessor : public QObject {
 
   signals:
 #ifdef __STEM__
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, uint stemMask, bool play);
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
 #else
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
 #endif
@@ -236,7 +239,7 @@ class AutoDJProcessor : public QObject {
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
         emit loadTrackToPlayer(pTrack, group,
 #ifdef __STEM__
-                mixxx::kNoStemSelected,
+                mixxx::StemChannelSelection(),
 #endif
                 play);
     }

@@ -93,7 +93,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 
 // WARNING: Always called from a different thread (GUI)
 #ifdef __STEM__
-void CachingReaderWorker::newTrack(TrackPointer pTrack, uint stemMask) {
+void CachingReaderWorker::newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask) {
 #else
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 #endif
@@ -188,7 +188,8 @@ void CachingReaderWorker::unloadTrack() {
 }
 
 #ifdef __STEM__
-void CachingReaderWorker::loadTrack(const TrackPointer& pTrack, uint stemMask) {
+void CachingReaderWorker::loadTrack(
+        const TrackPointer& pTrack, mixxx::StemChannelSelection stemMask) {
 #else
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 #endif

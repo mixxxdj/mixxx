@@ -117,7 +117,7 @@ class CachingReader : public QObject {
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
 #ifdef __STEM__
-    void newTrack(TrackPointer pTrack, uint stemMask = 0);
+    void newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask = {});
 #else
     void newTrack(TrackPointer pTrack);
 #endif

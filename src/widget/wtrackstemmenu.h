@@ -3,6 +3,7 @@
 #include <QKeyEvent>
 #include <QMenu>
 
+#include "engine/engine.h"
 #include "track/steminfo.h"
 #include "util/parented_ptr.h"
 
@@ -18,7 +19,7 @@ class WTrackStemMenu : public QMenu {
             const QList<StemInfo>& stemInfo);
 
   signals:
-    void selectedStem(const QString& group, uint stemMask);
+    void selectedStem(const QString& group, mixxx::StemChannelSelection stemMask);
 
   protected:
     virtual void showEvent(QShowEvent* pQEvent) override;
@@ -32,7 +33,7 @@ class WTrackStemMenu : public QMenu {
     QString m_group;
     bool m_selectMode;
     QList<StemInfo> m_stemInfo;
-    uint m_currentSelection;
+    mixxx::StemChannelSelection m_currentSelection;
 
     std::vector<parented_ptr<QAction>> m_stemActions;
     parented_ptr<QAction> m_selectAction;

@@ -46,7 +46,10 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             this,
             [this](double value) {
                 if (value >= 0 && value <= 2 << mixxx::kMaxSupportedStems) {
-                    emit loadToGroup(m_group, static_cast<uint>(value), false);
+                    emit loadToGroup(m_group,
+                            mixxx::StemChannelSelection::fromInt(
+                                    static_cast<int>(value)),
+                            false);
                 }
             });
 #endif
@@ -63,7 +66,7 @@ void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
         emit loadToGroup(m_group,
 #ifdef __STEM__
-                mixxx::kNoStemSelected,
+                mixxx::StemChannelSelection(),
 #endif
                 false);
     }
@@ -73,7 +76,7 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
 #ifdef __STEM__
         emit loadToGroup(m_group,
-                mixxx::kNoStemSelected,
+                mixxx::StemChannelSelection(),
                 true);
 #else
         emit loadToGroup(m_group,
@@ -625,7 +628,8 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
 }
 
 #ifdef __STEM__
-void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, uint stemMask, bool play) {
+void LibraryControl::slotLoadSelectedTrackToGroup(
+        const QString& group, mixxx::StemChannelSelection stemMask, bool play) {
 #else
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
 #endif

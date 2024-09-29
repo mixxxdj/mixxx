@@ -671,8 +671,10 @@ void PlayerManager::slotCloneDeck(const QString& source_group, const QString& ta
 }
 
 #ifdef __STEM__
-void PlayerManager::slotLoadTrackToPlayer(
-        TrackPointer pTrack, const QString& group, uint stemMask, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
 #else
 void PlayerManager::slotLoadTrackToPlayer(
         TrackPointer pTrack, const QString& group, bool play) {
@@ -785,7 +787,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
 
     pDeck->slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
 }
@@ -810,7 +812,11 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     }
     locker.unlock();
 
+#ifdef __STEM__
+    pSampler->slotLoadTrack(pTrack, mixxx::StemChannelSelection(), false);
+#else
     pSampler->slotLoadTrack(pTrack, false);
+#endif
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {

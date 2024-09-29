@@ -1542,7 +1542,7 @@ void EngineBuffer::hintReader(const double dRate) {
 // WARNING: This method runs in the GUI thread
 #ifdef __STEM__
 void EngineBuffer::loadTrack(TrackPointer pTrack,
-        uint stemMask,
+        mixxx::StemChannelSelection stemMask,
         bool play,
         EngineChannel* pChannelToCloneFrom) {
 #else

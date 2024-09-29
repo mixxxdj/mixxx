@@ -419,7 +419,7 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         if (lastEjected) {
             slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::kNoStemSelected,
+                    mixxx::StemChannelSelection(),
 #endif
                     false);
         }
@@ -432,7 +432,7 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         if (lastEjected) {
             slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::kNoStemSelected,
+                    mixxx::StemChannelSelection(),
 #endif
                     false);
         }
@@ -550,7 +550,7 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 
 #ifdef __STEM__
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
-        uint stemMask,
+        mixxx::StemChannelSelection stemMask,
         bool bPlay) {
 #else
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
@@ -801,7 +801,7 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     bool play = ControlObject::toBool(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play"));
     slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             play);
 }
@@ -829,7 +829,7 @@ void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
 
     slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
 }

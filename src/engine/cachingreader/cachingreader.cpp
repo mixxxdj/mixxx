@@ -206,7 +206,7 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 
 // Invoked from the UI thread!!
 #ifdef __STEM__
-void CachingReader::newTrack(TrackPointer pTrack, uint stemMask) {
+void CachingReader::newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask) {
 #else
 void CachingReader::newTrack(TrackPointer pTrack) {
 #endif

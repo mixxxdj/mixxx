@@ -171,7 +171,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         }
         pDeck->slotLoadTrack(pTrack,
 #ifdef __STEM__
-                mixxx::kNoStemSelected,
+                mixxx::StemChannelSelection(),
 #endif
                 false);
 

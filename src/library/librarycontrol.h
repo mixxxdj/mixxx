@@ -5,6 +5,9 @@
 
 #include "control/controlproxy.h"
 #include "library/library_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlEncoder;
 class ControlObject;
@@ -25,7 +28,7 @@ class LoadToGroupController : public QObject {
   signals:
 #ifdef __STEM__
     void loadToGroup(const QString& group,
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
             bool);
 #else
     void loadToGroup(const QString& group,
@@ -66,7 +69,9 @@ class LibraryControl : public QObject {
   public slots:
     // Deprecated navigation slots
 #ifdef __STEM__
-    void slotLoadSelectedTrackToGroup(const QString& group, uint stemMask, bool play);
+    void slotLoadSelectedTrackToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
 #else
     void slotLoadSelectedTrackToGroup(const QString& group, bool play);
 #endif

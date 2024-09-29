@@ -74,16 +74,16 @@ EngineDeck::EngineDeck(
 
     m_stemGain.reserve(mixxx::kMaxSupportedStems);
     m_stemMute.reserve(mixxx::kMaxSupportedStems);
-    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("volume"))));
         // The default value is ignored and override with the medium value by
         // ControlPotmeter. This is likely a bug but fixing might have a
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
         m_stemMute.emplace_back(std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute"))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("mute"))));
     }
 #endif
 }

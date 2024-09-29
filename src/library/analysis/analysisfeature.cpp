@@ -83,7 +83,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
             [=, this](TrackPointer track, const QString& group) {
                 emit loadTrackToPlayer(track, group,
 #ifdef __STEM__
-                        mixxx::kNoStemSelected,
+                        mixxx::StemChannelSelection(),
 #endif
                         false);
             });

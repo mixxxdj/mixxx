@@ -50,7 +50,10 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void addRandomTrackButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
 #ifdef __STEM__
-    void loadTrackToPlayer(TrackPointer tio, const QString& group, uint stemMask, bool);
+    void loadTrackToPlayer(TrackPointer tio,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool);
 #else
     void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
 #endif

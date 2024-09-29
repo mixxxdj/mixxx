@@ -46,7 +46,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void slotTrackUnloaded(TrackPointer pOldTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 #ifdef __STEM__
-    void slotSelectStem(uint stemMask);
+    void slotSelectStem(mixxx::StemChannelSelection stemMask);
 #endif
 
   protected:

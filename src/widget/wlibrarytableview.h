@@ -8,6 +8,9 @@
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class QFont;
 
@@ -59,7 +62,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
 #ifdef __STEM__
-            uint stemMask,
+            mixxx::StemChannelSelection stemMask,
 #endif
             bool play = false);
     void trackSelected(TrackPointer pTrack);

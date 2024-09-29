@@ -900,7 +900,7 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
         connect(pStemMenu,
                 &WTrackStemMenu::selectedStem,
                 this,
-                [this](const QString& group, uint stemMask) {
+                [this](const QString& group, mixxx::StemChannelSelection stemMask) {
                     loadSelectionToGroup(group, stemMask);
                     close();
                 });
@@ -1866,7 +1866,7 @@ void WTrackMenu::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
 
 #ifdef __STEM__
 void WTrackMenu::loadSelectionToGroup(const QString& group,
-        uint stemMask,
+        mixxx::StemChannelSelection stemMask,
         bool play) {
 #else
 void WTrackMenu::loadSelectionToGroup(const QString& group,

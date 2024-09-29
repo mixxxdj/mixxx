@@ -96,7 +96,7 @@ class FakeDeck : public BaseTrackPlayer {
     // fakeTrackLoadFailedEvent.
     void slotLoadTrack(TrackPointer pTrack,
 #ifdef __STEM__
-            uint,
+            mixxx::StemChannelSelection,
 #endif
             bool bPlay) override {
         loadedTrack = pTrack;
@@ -269,7 +269,7 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -290,7 +290,7 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
 
@@ -351,7 +351,7 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerOutro) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -372,7 +372,7 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerOutro) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
 
@@ -439,7 +439,7 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerIntro) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -460,7 +460,7 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerIntro) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
 
@@ -523,7 +523,7 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerOutro) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -544,7 +544,7 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerOutro) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
 
@@ -678,7 +678,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     TrackPointer pTrack = trackCollectionManager()->getTrackById(testId);
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
 
@@ -728,7 +728,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     TrackPointer pTrack(newTestTrack(testId));
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
 
@@ -750,7 +750,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     // Now pretend that the follow-up load request succeeded.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -802,7 +802,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     TrackPointer pTrack(newTestTrack(testId));
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
 
@@ -830,7 +830,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     // Now pretend that the deck2 load request failed.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadFailedEvent(pTrack);
@@ -841,7 +841,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     // Pretend the deck2 load request succeeded.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -862,7 +862,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -888,7 +888,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -909,7 +909,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -942,7 +942,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     // Pretend the track load fails.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadFailedEvent(pTrack);
@@ -956,7 +956,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -977,7 +977,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1004,7 +1004,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     // Pretend the track load succeeds.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -1025,7 +1025,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1058,7 +1058,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     // Pretend the track load fails.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadFailedEvent(pTrack);
@@ -1072,7 +1072,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     // Pretend the track load succeeds.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -1111,7 +1111,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1140,7 +1140,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     // Pretend the track load succeeds.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -1187,7 +1187,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     // Pretend the track load request succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1210,7 +1210,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1241,7 +1241,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Pretend the track load succeeds.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -1292,7 +1292,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Pretend the track load request fails.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadFailedEvent(pTrack);
@@ -1306,7 +1306,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Pretend the second track load request succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1329,7 +1329,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1358,7 +1358,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1405,7 +1405,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     // Pretend the track load request succeeds.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -1428,7 +1428,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1459,7 +1459,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1510,7 +1510,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Pretend the track load request fails.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadFailedEvent(pTrack);
@@ -1524,7 +1524,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Pretend the track load request succeeds.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -1550,7 +1550,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1571,7 +1571,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1647,7 +1647,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1667,7 +1667,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1685,7 +1685,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1739,7 +1739,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1760,7 +1760,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1799,7 +1799,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
     // Indicate the track loaded successfully.
@@ -1820,7 +1820,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
     // Pretend the track load succeeds.
     deck2.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             false);
     deck2.fakeTrackLoadedEvent(pTrack);
@@ -1883,7 +1883,7 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     pTrack->setDuration(0);
     deck1.slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::kNoStemSelected,
+            mixxx::StemChannelSelection(),
 #endif
             true);
 

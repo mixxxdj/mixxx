@@ -81,7 +81,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     void unloadTrack() {
         m_pMixerDeck1->slotLoadTrack(TrackPointer(),
 #ifdef __STEM__
-                mixxx::kNoStemSelected,
+                mixxx::StemChannelSelection(),
 #endif
                 false);
     }
