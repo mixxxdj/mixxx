@@ -1,7 +1,5 @@
 #include "controllers/hid/hiddevice.h"
 
-#include <hidapi.h>
-
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
@@ -52,6 +50,27 @@ DeviceInfo::DeviceInfo(const hid_device_info& device_info)
                   device_info.product_string, kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
+}
+
+// We need an opened hid_device here,
+// but the lifetime of the data is as long as DeviceInfo exists,
+// means the reportDescriptor data remains valid after closing the hid_device
+std::optional<std::vector<uint8_t>> DeviceInfo::fetchRawReportDescriptor(hid_device* pHidDevice) {
+    if (!m_reportDescriptor) {
+        if (!pHidDevice) {
+            return std::nullopt;
+        }
+
+        uint8_t tempReportDescriptor[HID_API_MAX_REPORT_DESCRIPTOR_SIZE];
+        int descriptorSize = hid_get_report_descriptor(pHidDevice,
+                tempReportDescriptor,
+                HID_API_MAX_REPORT_DESCRIPTOR_SIZE);
+        if (descriptorSize > 0) {
+            m_reportDescriptor = std::vector<uint8_t>(tempReportDescriptor,
+                    tempReportDescriptor + descriptorSize);
+        }
+    }
+    return m_reportDescriptor;
 }
 
 QString DeviceInfo::formatName() const {

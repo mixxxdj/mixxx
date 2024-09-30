@@ -2595,6 +2595,7 @@ if(BUILD_TESTING)
     src/test/colormapperjsproxy_test.cpp
     src/test/colorpalette_test.cpp
     src/test/configobject_test.cpp
+    src/test/controller_hid_reportdescriptor_test.cpp
     src/test/controller_mapping_validation_test.cpp
     src/test/controller_mapping_settings_test.cpp
     src/test/controllers/controller_columnid_regression_test.cpp
@@ -4825,12 +4826,14 @@ if(HID)
   target_sources(
     mixxx-lib
     PRIVATE
+      src/controllers/controllerhidreporttabsmanager.cpp
       src/controllers/hid/hidcontroller.cpp
       src/controllers/hid/hidiothread.cpp
       src/controllers/hid/hidioglobaloutputreportfifo.cpp
       src/controllers/hid/hidiooutputreport.cpp
       src/controllers/hid/hiddevice.cpp
       src/controllers/hid/hidenumerator.cpp
+      src/controllers/hid/hidreportdescriptor.cpp
       src/controllers/hid/hidusagetables.cpp
       src/controllers/hid/legacyhidcontrollermapping.cpp
       src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp

@@ -24,7 +24,8 @@ class HidIoThread : public QThread {
     Q_OBJECT
   public:
     HidIoThread(hid_device* pDevice,
-            const mixxx::hid::DeviceInfo& deviceInfo);
+            const mixxx::hid::DeviceInfo& deviceInfo,
+            std::optional<bool> deviceHasReportIds);
     ~HidIoThread() override;
 
     void run() override;
@@ -52,6 +53,7 @@ class HidIoThread : public QThread {
   signals:
     /// Signals that a HID InputReport received by Interrupt triggered from HID device
     void receive(const QByteArray& data, mixxx::Duration timestamp);
+    void reportReceived(quint8 reportId, const QByteArray& data);
 
   private:
     bool sendNextCachedOutputReport();
@@ -80,6 +82,8 @@ class HidIoThread : public QThread {
     int m_lastPollSize;
     int m_pollingBufferIndex;
     bool m_hidReadErrorLogged;
+
+    std::optional<bool> m_deviceHasReportIds;
 
     /// Must be locked when a operation changes the size of the m_outputReports map,
     /// or when modify the m_outputReportIterator
