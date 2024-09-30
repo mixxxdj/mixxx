@@ -121,7 +121,11 @@ BaseTrackTableModel::BaseTrackTableModel(
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         const QStringList& tableColumns) {
     m_columnCache.setColumns(tableColumns);
+
+    // Reset the column headers.
+    m_columnHeaders.clear();
     m_columnHeaders.resize(tableColumns.size());
+
     // Init the mapping of all columns, even for internal columns that are
     // hidden/invisible. Otherwise mapColumn() would not return a valid result
     // for those columns.
@@ -137,6 +141,8 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         m_columnHeaders[headerIndex].column = column;
         DEBUG_ASSERT(mapColumn(headerIndex) == column);
     }
+
+    // Init the header properties of selected/visible columns.
     initHeaderProperties();
 }
 
