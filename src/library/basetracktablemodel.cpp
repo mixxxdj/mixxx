@@ -126,10 +126,10 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         // Init the mapping of all columns, even for internal columns that are
         // hidden/invisible. Otherwise mapColumn() would not return a valid result
         // for those columns.
-        for (auto columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
+        for (int columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
             const auto column = static_cast<ColumnCache::Column>(columnValue);
             DEBUG_ASSERT(column != ColumnCache::COLUMN_LIBRARYTABLE_INVALID);
-            const auto headerIndex = m_columnCache.fieldIndex(column);
+            const int headerIndex = m_columnCache.fieldIndex(column);
             if (headerIndex < 0) {
                 // Missing table column.
                 continue;
