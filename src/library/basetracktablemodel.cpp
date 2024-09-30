@@ -121,23 +121,21 @@ BaseTrackTableModel::BaseTrackTableModel(
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         const QStringList& tableColumns) {
     m_columnCache.setColumns(tableColumns);
-    if (m_columnHeaders.size() < tableColumns.size()) {
-        m_columnHeaders.resize(tableColumns.size());
-        // Init the mapping of all columns, even for internal columns that are
-        // hidden/invisible. Otherwise mapColumn() would not return a valid result
-        // for those columns.
-        for (int columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
-            const auto column = static_cast<ColumnCache::Column>(columnValue);
-            DEBUG_ASSERT(column != ColumnCache::COLUMN_LIBRARYTABLE_INVALID);
-            const int headerIndex = m_columnCache.fieldIndex(column);
-            if (headerIndex < 0) {
-                // Missing table column.
-                continue;
-            }
-            DEBUG_ASSERT(headerIndex < m_columnHeaders.size());
-            m_columnHeaders[headerIndex].column = column;
-            DEBUG_ASSERT(mapColumn(headerIndex) == column);
+    m_columnHeaders.resize(tableColumns.size());
+    // Init the mapping of all columns, even for internal columns that are
+    // hidden/invisible. Otherwise mapColumn() would not return a valid result
+    // for those columns.
+    for (int columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
+        const auto column = static_cast<ColumnCache::Column>(columnValue);
+        DEBUG_ASSERT(column != ColumnCache::COLUMN_LIBRARYTABLE_INVALID);
+        const int headerIndex = m_columnCache.fieldIndex(column);
+        if (headerIndex < 0) {
+            // Missing table column.
+            continue;
         }
+        DEBUG_ASSERT(headerIndex < m_columnHeaders.size());
+        m_columnHeaders[headerIndex].column = column;
+        DEBUG_ASSERT(mapColumn(headerIndex) == column);
     }
     initHeaderProperties();
 }
