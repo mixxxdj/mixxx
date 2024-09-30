@@ -796,6 +796,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/metronomeclick.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/compressoreffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
@@ -2100,6 +2101,7 @@ add_executable(mixxx-test
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/itunesxmlimportertest.cpp
+  src/test/keyfactorytest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -2151,6 +2153,7 @@ add_executable(mixxx-test
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
   src/test/trackmetadata_test.cpp
+  src/test/trackmetadataexport_test.cpp
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
@@ -3465,6 +3468,7 @@ if (STEM)
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/widget/wstemlabel.cpp
   )
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE

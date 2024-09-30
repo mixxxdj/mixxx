@@ -88,11 +88,11 @@ TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP3) {
     parseBeatGridDataInDirectory(
             QDir(MixxxTest::getOrInitTestDir().filePath(
                     QStringLiteral("serato/data/mp3/beatgrid"))),
-            mixxx::taglib::FileType::MP3);
+            mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoBeatGridTest, ParseEmptyDataMP3) {
-    parseEmptyBeatGridData(mixxx::taglib::FileType::MP3);
+    parseEmptyBeatGridData(mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP4) {

@@ -313,11 +313,8 @@ void DlgTrackInfoMulti::updateFromTracks() {
         }
     }
     // Update the star widget
-    // Block signals to not set the 'modified' flag.
-    m_pWStarRating->blockSignals(true);
     m_pWStarRating->slotSetRating(commonRating);
     m_starRatingModified = false;
-    m_pWStarRating->blockSignals(false);
 
     // Same procedure for the track color
     mixxx::RgbColor::optional_t commonColor = m_trackRecords.first().getColor();

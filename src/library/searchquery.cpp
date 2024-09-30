@@ -77,6 +77,8 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
         return static_cast<int>(pTrack->getKey());
     } else if (column == LIBRARYTABLE_BPM_LOCK) {
         return pTrack->isBpmLocked();
+    } else if (column == LIBRARYTABLE_ID) {
+        return pTrack->getId().toVariant();
     }
 
     return QVariant();

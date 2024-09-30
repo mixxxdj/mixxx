@@ -51,8 +51,7 @@ QString Paintable::DrawModeToString(DrawMode mode) {
 }
 
 Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
-        : m_drawMode(mode),
-          m_source(source) {
+        : m_drawMode(mode) {
     if (!source.isSVG()) {
             auto pPixmap = WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor);
             if (!pPixmap) {
@@ -70,8 +69,6 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
                 // The above line already logs a warning
                 return;
         }
-
-        m_pSvg = std::move(pSvg);
 #ifdef __APPLE__
         // Apple does Retina scaling behind the scenes, so we also pass a
         // DrawMode::Fixed image. On the other targets, it is better to
@@ -85,22 +82,24 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
 #endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-                QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor,
+                QImage copy_buffer(pSvg->defaultSize() * scaleFactor,
                         QImage::Format_ARGB32_Premultiplied);
                 // The constructor doesn't initialize the image with data,
                 // so we need to fill it before we can draw on it.
                 copy_buffer.fill(Qt::transparent);
                 QPainter painter(&copy_buffer);
-                m_pSvg->render(&painter);
+                pSvg->render(&painter);
                 WPixmapStore::correctImageColors(&copy_buffer);
 
                 m_pPixmap = std::make_unique<QPixmap>(QPixmap::fromImage(copy_buffer));
+        } else {
+                m_pSvg = std::move(pSvg);
         }
     }
 }
 
 bool Paintable::isNull() const {
-    return m_source.isEmpty();
+    return !(m_pPixmap || m_pSvg);
 }
 
 QSize Paintable::size() const {
@@ -265,21 +264,23 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
 
 void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
-    // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_draw_mode)
+    // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_drawMode)
     //          << targetRect << sourceRect;
     if (m_pPixmap) {
+        // Note: Qt rounds the target rect to device pixels internally
+        // using  roundInDeviceCoordinates()
         if (m_drawMode == DrawMode::Tile) {
-            // TODO(rryan): Using a source rectangle doesn't make much sense
-            // with tiling. Ignore the source rect and tile our natural size
-            // across the target rect. What's the right general behavior here?
-            // NOTE(rryan): We round our target/source rectangles to the nearest
-            // pixel for raster images.
-            pPainter->drawTiledPixmap(targetRect.toRect(), *m_pPixmap, QPoint(0,0));
+            pPainter->drawTiledPixmap(targetRect, *m_pPixmap);
         } else {
-            // NOTE(rryan): We round our target/source rectangles to the nearest
-            // pixel for raster images.
-            pPainter->drawPixmap(targetRect.toRect(), *m_pPixmap,
-                                 sourceRect.toRect());
+            if (static_cast<QRectF>(m_pPixmap->rect()) == sourceRect &&
+                    sourceRect.size() == targetRect.size()) {
+                // Copy the whole pixmap without scaling
+                pPainter->drawPixmap(targetRect.topLeft(), *m_pPixmap);
+            } else {
+                // qDebug() << "Drawing QPixmap scaled or chopped";
+                // With scaling or chopping
+                pPainter->drawPixmap(targetRect, *m_pPixmap, sourceRect);
+            }
         }
     } else if (m_pSvg) {
         if (m_drawMode == DrawMode::Tile) {

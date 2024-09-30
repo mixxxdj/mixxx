@@ -833,17 +833,29 @@ void CrateFeature::slotExportPlaylist() {
 }
 
 void CrateFeature::slotExportTrackFiles() {
+    CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
+    if (!crateId.isValid()) {
+        return;
+    }
     // Create a new table model since the main one might have an active search.
     std::unique_ptr<CrateTableModel> pCrateTableModel =
             std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
-    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
+    pCrateTableModel->selectCrate(crateId);
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
     TrackPointerList trackpointers;
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_crateTableModel.index(i, 0);
-        trackpointers.push_back(m_crateTableModel.getTrack(index));
+        QModelIndex index = pCrateTableModel->index(i, 0);
+        auto pTrack = pCrateTableModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
+        trackpointers.push_back(pTrack);
+    }
+
+    if (trackpointers.isEmpty()) {
+        return;
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
