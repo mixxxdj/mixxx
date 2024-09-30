@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "library/coverartcache.h"
+#include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"
@@ -28,7 +29,8 @@ CoverArtDelegate::CoverArtDelegate(QTableView* parent)
         : TableItemDelegate(parent),
           m_pTrackModel(asTrackModel(parent)),
           m_pCache(CoverArtCache::instance()),
-          m_inhibitLazyLoading(false) {
+          m_inhibitLazyLoading(false),
+          m_column(m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART)) {
     if (m_pCache) {
         connect(m_pCache,
                 &CoverArtCache::coverFound,
@@ -57,7 +59,11 @@ void CoverArtDelegate::emitRowsChanged(
 void CoverArtDelegate::slotInhibitLazyLoading(
         bool inhibitLazyLoading) {
     m_inhibitLazyLoading = inhibitLazyLoading;
-    if (m_inhibitLazyLoading || m_cacheMissRows.isEmpty()) {
+    if (m_inhibitLazyLoading) {
+        return;
+    }
+    cleanCacheMissRows();
+    if (m_cacheMissRows.isEmpty()) {
         return;
     }
     // If we can request non-cache covers now, request updates
@@ -65,9 +71,8 @@ void CoverArtDelegate::slotInhibitLazyLoading(
     // Reset the member variable before mutating the aggregated
     // rows list (-> implicit sharing) and emitting a signal that
     // in turn may trigger new signals for CoverArtDelegate!
-    QList<int> staleRows = std::move(m_cacheMissRows);
-    DEBUG_ASSERT(m_cacheMissRows.isEmpty());
-    emitRowsChanged(std::move(staleRows));
+    emitRowsChanged(std::move(m_cacheMissRows.toList()));
+    m_cacheMissRows.clear();
 }
 
 void CoverArtDelegate::slotCoverFound(
@@ -120,9 +125,11 @@ void CoverArtDelegate::paintItem(
             // Cache miss
             if (m_inhibitLazyLoading) {
                 // We are requesting cache-only covers and got a cache
-                // miss. Record this row so that when we switch to requesting
-                // non-cache we can request an update.
-                m_cacheMissRows.append(index.row());
+                // miss. Maintain them in a list for later lookup
+                if (!m_cacheMissRows.contains(index.row())) {
+                    cleanCacheMissRows();
+                    m_cacheMissRows.insert(index.row());
+                }
             } else {
                 if (coverInfo.imageDigest().isEmpty()) {
                     // This happens if we have the legacy hash
@@ -166,5 +173,18 @@ void CoverArtDelegate::paintItem(
     // Draw a border if the cover art cell has focus
     if (option.state & QStyle::State_HasFocus) {
         drawBorder(painter, m_pFocusBorderColor, option.rect);
+    }
+}
+
+void CoverArtDelegate::cleanCacheMissRows() const {
+    auto it = m_cacheMissRows.begin();
+    while (it != m_cacheMissRows.end()) {
+        QModelIndex index = m_pTableView->model()->index(*it, m_column);
+        QRect rect = m_pTableView->visualRect(index);
+        if (!rect.intersects(m_pTableView->rect())) {
+            it = m_cacheMissRows.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
