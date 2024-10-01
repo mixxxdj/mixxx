@@ -55,6 +55,17 @@ const QString kAppGroup = QStringLiteral("[App]");
 
 } // anonymous namespace
 
+// EveOSC
+void OscTrackLoadedInGroup(UserSettingsPointer m_pConfig,
+        const QString& OscGroup,
+        const QString& TrackArtist,
+        const QString& TrackTitle,
+        float track_loaded,
+        float duration,
+        float playposition);
+void OscNoTrackLoadedInGroup(UserSettingsPointer m_pConfig, const QString& OscGroup);
+// EveOSC
+
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
@@ -575,6 +586,18 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(trackSampleRate.toDouble());
     m_pTrackLoaded->forceSet(1);
 
+    //  EveOSC begin
+    if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+        OscTrackLoadedInGroup(m_pConfig,
+                getGroup(),
+                pTrack->getArtist().toLatin1(),
+                pTrack->getTitle().toLatin1(),
+                (float)1,
+                (float)pTrack->getDuration(),
+                (float)0);
+    }
+    // EveOSC end
+
     // Reset slip mode
     m_pSlipButton->set(0);
     m_bSlipEnabledProcessing = false;
@@ -643,6 +666,12 @@ void EngineBuffer::ejectTrack() {
     setTrackEndPosition(mixxx::audio::kInvalidFramePos);
     m_pTrackSampleRate->set(0);
     m_pTrackLoaded->forceSet(0);
+
+    //  EveOSC begin
+    if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+        OscNoTrackLoadedInGroup(m_pConfig, getGroup());
+    }
+    //  EveOSC end
 
     m_playButton->set(0.0);
     m_playposSlider->set(0);
