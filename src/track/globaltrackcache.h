@@ -114,8 +114,6 @@ public:
     QSet<TrackId> getCachedTrackIds() const;
 
   private:
-    friend class GlobalTrackCache;
-
     void lockCache();
 
 protected:
