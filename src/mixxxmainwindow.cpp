@@ -1455,25 +1455,10 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
 
 void MixxxMainWindow::oscEnable() {
     UserSettingsPointer pConfig;
-    QString MixxxOSCStatusFilePath = m_pCoreServices->getSettings()->getSettingsPath();
-    QString MixxxOSCStatusFileLocation = MixxxOSCStatusFilePath + "/MixxxOSCStatus.txt";
-    QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
-    MixxxOSCStatusFile.remove();
-    MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
-    QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
     if (m_pCoreServices->getSettings()->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        MixxxOSCStatusTxt << QString("OSC enabled") << "\n";
-        //        OscFunctionsSendPtrType(m_pCoreServices->getSettings(),
-        //                "[Osc]",
-        //                "OscSync",
-        //                FLOATBODY,
-        //                "",
-        //                0,
-        //                0,
-        //                1);
+        qDebug() << "Mixxx OSC Service Enabled";
         OscReceiverMain(m_pCoreServices->getSettings());
     } else {
-        MixxxOSCStatusTxt << QString("OSC NOT enabled") << "\n";
+        qDebug() << "Mixxx OSC Service NOT Enabled";
     }
-    MixxxOSCStatusFile.close();
 }

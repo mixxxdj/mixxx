@@ -1,8 +1,6 @@
 #ifndef INCLUDED_OSCRECEIVER_H
 #define INCLUDED_OSCRECEIVER_H
 
-// #include "preferences/colorpalettesettings.h"
-
 #include <QDataStream>
 #include <QFile>
 #include <QThread>
@@ -33,6 +31,6 @@ class oscReceiver {
 };
 
 void OscReceiverMain(UserSettingsPointer m_pConfig);
-
+void SendSyncTrigger(UserSettingsPointer m_pConfig);
 
 #endif /* INCLUDED_OSCRECEIVER_H */

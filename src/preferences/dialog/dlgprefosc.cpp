@@ -102,6 +102,10 @@ void DlgPrefOsc::slotUpdate() {
     OscReceiver5IpByte4->setValue(m_pConfig->getValue(
             ConfigKey("[OSC]", "OscReceiver5IpByte4"), 1));
 
+    OscSendSyncTriggers->setChecked(m_pConfig->getValue(
+            ConfigKey("[OSC]", "OscSendSyncTriggers"), false));
+    OscSendSyncTriggersInterval->setValue(m_pConfig->getValue(
+            ConfigKey("[OSC]", "OscSendSyncTriggersInterval"), 5000));
 }
 
 void DlgPrefOsc::slotApply() {
@@ -214,6 +218,12 @@ void DlgPrefOsc::slotApply() {
             OscReceiver5IpByte3->value());
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5IpByte4"),
             OscReceiver5IpByte4->value());
+
+    m_pConfig->setValue(ConfigKey("[OSC]", "OscSendSyncTriggers"),
+            OscEnabledCheckBox->isChecked());
+
+    m_pConfig->setValue(ConfigKey("[OSC]", "OscSendSyncTriggersInterval"),
+            OscSendSyncTriggersInterval->value());
 }
 
 void DlgPrefOsc::slotResetToDefaults() {

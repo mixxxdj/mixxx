@@ -72,7 +72,6 @@ class MixxxMainWindow : public QMainWindow {
     void slotDeveloperToolsClosed();
 
     void slotUpdateWindowTitle(TrackPointer pTrack);
-
     /// warn the user when inputs are not configured.
     void slotNoMicrophoneInputConfigured();
     void slotNoAuxiliaryInputConfigured();

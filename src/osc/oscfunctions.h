@@ -1,13 +1,7 @@
 #ifndef OSCFUNCTIONS_H
 #define OSCFUNCTIONS_H
 
-// #define oscClientAddress "192.168.0.125"
-// constexpr const char* oscClientAddress = "192.168.0.125";
-// #define OscPortOut 9000
-// #define OscPortIn 9001
-// #define OUTPUT_BUFFER_SIZE 1024
 constexpr int OUTPUT_BUFFER_SIZE = 1024;
-// #define IP_MTU_SIZE 1536
 constexpr int IP_MTU_SIZE = 1536;
 
 #include <QDataStream>
@@ -36,38 +30,10 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
         int OscMessageBodyInt,
         double OscMessageBodyDouble,
         float OscMessageBodyFloat) {
-    QString MixxxOSCStatusFileLocation = m_pConfig->getSettingsPath() + "/MixxxOSCStatus.txt";
-    QFile MixxxOSCStatusFile(MixxxOSCStatusFileLocation);
-    MixxxOSCStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
-    QTextStream MixxxOSCStatusTxt(&MixxxOSCStatusFile);
-
-    // OscGroup.replace("[", "");
-    // OscGroup.replace("]", "");
-    //    int posDelSB1 = OscGroup.indexOf("[", 0, Qt::CaseInsensitive);
-    //    if (posDelSB1 == 0) {
-    //        OscGroup = OscGroup.mid(1, OscGroup.length() - 1);
-
-    //    }
-    //    int posDelSB2 = OscGroup.indexOf("]", OscGroup.length()-1, Qt::CaseInsensitive);
-    //    if (posDelSB2 == OscGroup.length() - 1) {
-    //        OscGroup = OscGroup.mid(0, OscGroup.length() - 1);
-    //    }
-
-    //    OscGroup = OscGroup.mid(1, OscGroup.length() - 2);
-
-    //    OscGroup.replace("[", "(");
-    //    OscGroup.replace("]", ")");
 
     QString OscMessageHeader = "/" + OscGroup + "@" + OscKey;
     OscMessageHeader.replace("[", "(");
     OscMessageHeader.replace("]", ")");
-
-    //    if
-    //    (OscMessageHeader.contains("/EqualizerRack1_[Channel1]_Effect1@parameter1",
-    //    Qt::CaseSensitive)) {
-    //        OscMessageHeader =
-    //        "/EqualizerRack1_Channel1!!!_Effect1@parameter1";
-    //    }
 
     QByteArray OscMessageHeaderBa = OscMessageHeader.toLocal8Bit();
     const char* OscMessageHeaderChar = OscMessageHeaderBa.data();
@@ -121,12 +87,11 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
             UdpTransmitSocket transmitSocket(IpEndpointName(CKOscRec1IpChar, CKOscPortOutInt));
             transmitSocket.Send(p.Data(), p.Size());
-            MixxxOSCStatusTxt << "OSC Msg Send to Receiver 1 ("
-                              << CKOscRec1IpChar << ":" << CKOscPortOutInt
-                              << QString(") : <%1 : %2")
-                                         .arg(OscMessageHeader)
-                                         .arg(MixxxOSCStatusTxtBody)
-                              << ">\n";
+            qDebug() << "OSC Msg Send to Receiver 1 ("
+                     << CKOscRec1IpChar << ":" << CKOscPortOutInt
+                     << QString(") : <%1 : %2")
+                                .arg(OscMessageHeader)
+                                .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver2Active"))) {
             QString CKOscRec2Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Active"));
@@ -136,12 +101,11 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
             UdpTransmitSocket transmitSocket(IpEndpointName(CKOscRec2IpChar, CKOscPortOutInt));
             transmitSocket.Send(p.Data(), p.Size());
-            MixxxOSCStatusTxt << "OSC Msg Send to Receiver 2 ("
-                              << CKOscRec2IpChar << ":" << CKOscPortOutInt
-                              << QString(") : <%1 : %2")
-                                         .arg(OscMessageHeader)
-                                         .arg(MixxxOSCStatusTxtBody)
-                              << ">\n";
+            qDebug() << "OSC Msg Send to Receiver 2 ("
+                     << CKOscRec2IpChar << ":" << CKOscPortOutInt
+                     << QString(") : <%1 : %2")
+                                .arg(OscMessageHeader)
+                                .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver3Active"))) {
             QString CKOscRec3Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Active"));
@@ -151,12 +115,11 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
             UdpTransmitSocket transmitSocket(IpEndpointName(CKOscRec3IpChar, CKOscPortOutInt));
             transmitSocket.Send(p.Data(), p.Size());
-            MixxxOSCStatusTxt << "OSC Msg Send to Receiver 3 ("
-                              << CKOscRec3IpChar << ":" << CKOscPortOutInt
-                              << QString(") : <%1 : %2")
-                                         .arg(OscMessageHeader)
-                                         .arg(MixxxOSCStatusTxtBody)
-                              << ">\n";
+            qDebug() << "OSC Msg Send to Receiver 3 ("
+                     << CKOscRec3IpChar << ":" << CKOscPortOutInt
+                     << QString(") : <%1 : %2")
+                                .arg(OscMessageHeader)
+                                .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver4Active"))) {
             QString CKOscRec4Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Active"));
@@ -165,13 +128,11 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
             const char* CKOscRec4IpChar = CKOscRec4Ipba.data();
 
             UdpTransmitSocket transmitSocket(IpEndpointName(CKOscRec4IpChar, CKOscPortOutInt));
-            transmitSocket.Send(p.Data(), p.Size());
-            MixxxOSCStatusTxt << "OSC Msg Send to Receiver 4 ("
-                              << CKOscRec4IpChar << ":" << CKOscPortOutInt
-                              << QString(") : <%1 : %2")
-                                         .arg(OscMessageHeader)
-                                         .arg(MixxxOSCStatusTxtBody)
-                              << ">\n";
+            qDebug() << "OSC Msg Send to Receiver 4 ("
+                     << CKOscRec4IpChar << ":" << CKOscPortOutInt
+                     << QString(") : <%1 : %2")
+                                .arg(OscMessageHeader)
+                                .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver5Active"))) {
             QString CKOscRec5Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Active"));
@@ -181,18 +142,15 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
             UdpTransmitSocket transmitSocket(IpEndpointName(CKOscRec5IpChar, CKOscPortOutInt));
             transmitSocket.Send(p.Data(), p.Size());
-            MixxxOSCStatusTxt << "OSC Msg Send to Receiver 5 ("
-                              << CKOscRec5IpChar << ":" << CKOscPortOutInt
-                              << QString(") : <%1 : %2")
-                                         .arg(OscMessageHeader)
-                                         .arg(MixxxOSCStatusTxtBody)
-                              << ">\n";
+            qDebug() << "OSC Msg Send to Receiver 5 ("
+                     << CKOscRec5IpChar << ":" << CKOscPortOutInt
+                     << QString(") : <%1 : %2")
+                                .arg(OscMessageHeader)
+                                .arg(MixxxOSCStatusTxtBody);
         }
     } else {
-        MixxxOSCStatusTxt << QString("OSC NOT Enabled") << "\n";
+        qDebug() << "OSC NOT Enabled";
     }
-
-    MixxxOSCStatusFile.close();
 }
 
 #endif /* OSCFUNCTIONS_H */
