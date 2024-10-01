@@ -35,6 +35,24 @@ inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
 }
 } // namespace
 
+// EveOSC
+enum DefOscBodyType {
+    STRINGBODY = 1,
+    INTBODY = 2,
+    DOUBLEBODY = 3,
+    FLOATBODY = 4
+};
+
+void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
+        QString OscGroup,
+        QString OscKey,
+        enum DefOscBodyType OscBodyType,
+        QString OscMessageBodyQString,
+        int OscMessageBodyInt,
+        double OscMessageBodyDouble,
+        float OscMessageBodyFloat);
+// EveOSC
+
 BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
         : BasePlayer(pParent, group) {
 }
@@ -924,6 +942,18 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }
+    //  EveOSC begin
+    if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "play",
+                FLOATBODY,
+                "",
+                0,
+                0,
+                value);
+    }
+    // EveOSC end
 }
 
 EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {

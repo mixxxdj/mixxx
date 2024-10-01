@@ -1066,6 +1066,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgpreflibrarydlg.ui
   src/preferences/dialog/dlgprefmixer.cpp
   src/preferences/dialog/dlgprefmixerdlg.ui
+  src/preferences/dialog/dlgprefosc.cpp
+  src/preferences/dialog/dlgprefoscdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
@@ -2556,6 +2558,42 @@ add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
 )
 target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
+
+IF(WIN32)
+	 set(IpSystemTypePath src/osc/ip/win32)
+#	 set(LIBS ${LIBS} Ws2_32 winmm)
+	ELSE(WIN32)
+	 set(IpSystemTypePath src/osc/ip/posix)
+	ENDIF(WIN32)
+
+#eve osc
+ADD_LIBRARY(oscpack
+	src/osc/ip/IpEndpointName.cpp
+    src/osc/ip/IpEndpointName.h
+	src/osc/ip/NetworkingUtils.h
+	${IpSystemTypePath}/NetworkingUtils.cpp
+	src/osc/ip/PacketListener.h
+    src/osc/ip/TimerListener.h
+    src/osc/ip/UdpSocket.h
+	${IpSystemTypePath}/UdpSocket.cpp
+	src/osc/osc/MessageMappingOscPacketListener.h
+    src/osc/osc/OscException.h
+    src/osc/osc/OscHostEndianness.h
+    src/osc/osc/OscOutboundPacketStream.cpp
+    src/osc/osc/OscOutboundPacketStream.h
+    src/osc/osc/OscPacketListener.h
+    src/osc/osc/OscPrintReceivedElements.cpp
+    src/osc/osc/OscPrintReceivedElements.h
+    src/osc/osc/OscReceivedElements.cpp
+	src/osc/osc/OscReceivedElements.h
+	src/osc/osc/OscTypes.cpp
+	src/osc/osc/OscTypes.h
+	)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
+#target_link_libraries(mixxx oscpack ${LIBS})
+target_include_directories(mixxx-lib SYSTEM PRIVATE ip)
+target_include_directories(mixxx-lib SYSTEM PRIVATE osc)
+target_link_libraries(mixxx-lib PRIVATE oscpack)
 
 #silence "enumeration values not handled in switch" in generated code
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
