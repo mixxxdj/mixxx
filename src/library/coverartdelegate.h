@@ -55,9 +55,11 @@ class CoverArtDelegate : public TableItemDelegate {
   private:
     void emitRowsChanged(
             QList<int>&& rows);
-    TrackPointer loadTrackByLocation(
-            const QString& trackLocation) const;
     void cleanCacheMissRows() const;
+    void requestUncachedCover(
+            const CoverInfo& coverInfo,
+            int width,
+            int row) const;
 
     CoverArtCache* const m_pCache;
     bool m_inhibitLazyLoading;

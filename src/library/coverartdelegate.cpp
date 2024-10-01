@@ -56,22 +56,43 @@ void CoverArtDelegate::emitRowsChanged(
     emit rowsChanged(std::move(rows));
 }
 
+void CoverArtDelegate::requestUncachedCover(
+        const CoverInfo& coverInfo,
+        int width,
+        int row) const {
+    if (coverInfo.imageDigest().isEmpty()) {
+        // This happens if we have the legacy hash
+        // The CoverArtCache will take care of the update
+        const auto pTrack = m_pTrackModel->getTrackByRef(
+                TrackRef::fromFilePath(coverInfo.trackLocation));
+        CoverArtCache::requestUncachedCover(this, pTrack, width);
+    } else {
+        // This is the fast path with an internal temporary track
+        CoverArtCache::requestUncachedCover(this, coverInfo, width);
+    }
+    m_pendingCacheRows.insert(coverInfo.cacheKey(), row);
+}
+
 void CoverArtDelegate::slotInhibitLazyLoading(
         bool inhibitLazyLoading) {
     m_inhibitLazyLoading = inhibitLazyLoading;
     if (m_inhibitLazyLoading) {
         return;
     }
-    cleanCacheMissRows();
-    if (m_cacheMissRows.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
-    // If we can request non-cache covers now, request updates
-    // for all rows that were cache misses since the last time.
-    // Reset the member variable before mutating the aggregated
-    // rows list (-> implicit sharing) and emitting a signal that
-    // in turn may trigger new signals for CoverArtDelegate!
-    emitRowsChanged(std::move(m_cacheMissRows.toList()));
+    const double scaleFactor = m_pTableView->devicePixelRatioF();
+    const int width = static_cast<int>(m_pTableView->columnWidth(m_column) * scaleFactor);
+
+    for (int row : m_cacheMissRows) {
+        QModelIndex index = m_pTableView->model()->index(row, m_column);
+        CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
+        QRect rect = m_pTableView->visualRect(index);
+        if (rect.intersects(m_pTableView->rect())) {
+            requestUncachedCover(coverInfo, width, row);
+        }
+    }
     m_cacheMissRows.clear();
 }
 
@@ -95,15 +116,6 @@ void CoverArtDelegate::slotCoverFound(
     }
 }
 
-TrackPointer CoverArtDelegate::loadTrackByLocation(
-        const QString& trackLocation) const {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
-        return TrackPointer();
-    }
-    return m_pTrackModel->getTrackByRef(
-            TrackRef::fromFilePath(trackLocation));
-}
-
 void CoverArtDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
@@ -118,9 +130,8 @@ void CoverArtDelegate::paintItem(
             return;
         }
         const double scaleFactor = m_pTableView->devicePixelRatioF();
-        QPixmap pixmap = CoverArtCache::getCachedCover(
-                coverInfo,
-                static_cast<int>(option.rect.width() * scaleFactor));
+        const int width = static_cast<int>(option.rect.width() * scaleFactor);
+        QPixmap pixmap = CoverArtCache::getCachedCover(coverInfo, width);
         if (pixmap.isNull()) {
             // Cache miss
             if (m_inhibitLazyLoading) {
@@ -131,22 +142,7 @@ void CoverArtDelegate::paintItem(
                     m_cacheMissRows.insert(index.row());
                 }
             } else {
-                if (coverInfo.imageDigest().isEmpty()) {
-                    // This happens if we have the legacy hash
-                    // The CoverArtCache will take care of the update
-                    const auto pTrack = loadTrackByLocation(coverInfo.trackLocation);
-                    CoverArtCache::requestUncachedCover(
-                            this,
-                            pTrack,
-                            static_cast<int>(option.rect.width() * scaleFactor));
-                } else {
-                    // This is the fast path with an internal temporary track
-                    CoverArtCache::requestUncachedCover(
-                            this,
-                            coverInfo,
-                            static_cast<int>(option.rect.width() * scaleFactor));
-                }
-                m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
+                requestUncachedCover(coverInfo, width, index.row());
             }
         } else {
             // Cache hit
