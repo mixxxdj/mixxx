@@ -108,16 +108,16 @@ void CoverArtDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
+    CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
     bool drewPixmap = false;
     if (coverInfo.hasImage()) {
         VERIFY_OR_DEBUG_ASSERT(m_pCache) {
             return;
         }
-        const double scaleFactor = qobject_cast<QWidget*>(parent())->devicePixelRatioF();
+        const double scaleFactor = m_pTableView->devicePixelRatioF();
         QPixmap pixmap = CoverArtCache::getCachedCover(
                 coverInfo,
                 static_cast<int>(option.rect.width() * scaleFactor));
