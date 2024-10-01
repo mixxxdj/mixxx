@@ -146,7 +146,11 @@ void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
     }
 
     // Pass all other press events to the base class.
-    WPushButton::mousePressEvent(pEvent);
+    // Except when Shift is pressed which is used to swap hotcues without
+    // starting the preview.
+    if (!pEvent->modifiers().testFlag(Qt::ShiftModifier)) {
+        WPushButton::mousePressEvent(pEvent);
+    }
 }
 
 void WHotcueButton::mouseReleaseEvent(QMouseEvent* pEvent) {
