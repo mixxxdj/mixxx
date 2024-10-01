@@ -136,6 +136,7 @@ public:
           mixxx::FileAccess fileAccess,
           TrackId trackId);
   GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
+  GlobalTrackCacheResolver() = delete;
   GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 
   GlobalTrackCacheLookupResult getLookupResult() const {
@@ -157,7 +158,6 @@ public:
 
 private:
     friend class GlobalTrackCache;
-    GlobalTrackCacheResolver();
 
     void initLookupResult(
             GlobalTrackCacheLookupResult lookupResult,
