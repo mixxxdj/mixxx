@@ -103,8 +103,6 @@ void CoverArtDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    paintItemBackground(painter, option, index);
-
     CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
@@ -157,8 +155,12 @@ void CoverArtDelegate::paintItem(
     // Since the background color is calculated from the cover art image
     // it is optional and may not always be available. The background
     // color may even be set manually without having a cover image.
-    if (!drewPixmap && coverInfo.color) {
-        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
+    if (!drewPixmap) {
+        if (coverInfo.color) {
+            painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
+        } else {
+            paintItemBackground(painter, option, index);
+        }
     }
 
     // Draw a border if the cover art cell has focus
