@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QWaitCondition>
 #include <map>
 #include <unordered_map>
 
@@ -136,6 +137,7 @@ public:
   GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
   GlobalTrackCacheResolver() = delete;
   GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
+  ~GlobalTrackCacheResolver() override;
 
   GlobalTrackCacheLookupResult getLookupResult() const {
       return m_lookupResult;
@@ -258,6 +260,8 @@ class GlobalTrackCache : public QObject {
             const TrackRef& trackRef,
             TrackId trackId);
 
+    void discardIncompleteTrack();
+
     void purgeTrackId(TrackId trackId);
 
     bool tryEvict(Track* plainPtr);
@@ -270,11 +274,15 @@ class GlobalTrackCache : public QObject {
     void saveEvictedTrack(Track* pEvictedTrack) const;
 
     // Managed by GlobalTrackCacheLocker
-    mutable QT_RECURSIVE_MUTEX m_mutex;
+    mutable QMutex m_mutex;
 
     GlobalTrackCacheSaver* m_pSaver;
 
     deleteTrackFn_t m_deleteTrackFn;
+
+    // A track without a
+    TrackPointer m_incompletTrack;
+    QWaitCondition m_isTrackCompleted;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;

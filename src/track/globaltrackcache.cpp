@@ -156,6 +156,7 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->resolve(this, std::move(fileAccess), TrackId());
+    m_pInstance->m_mutex.unlock();
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
@@ -164,6 +165,14 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->resolve(this, std::move(fileAccess), std::move(trackId));
+    m_pInstance->m_mutex.unlock();
+}
+
+GlobalTrackCacheResolver::~GlobalTrackCacheResolver() {
+    if (m_pInstance) {
+        m_pInstance->m_mutex.lock();
+        m_pInstance->discardIncompleteTrack();
+    }
 }
 
 void GlobalTrackCacheResolver::initLookupResult(
@@ -281,11 +290,7 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
 GlobalTrackCache::GlobalTrackCache(
         GlobalTrackCacheSaver* pSaver,
         deleteTrackFn_t deleteTrackFn)
-        :
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-          m_mutex(QMutex::Recursive),
-#endif
-          m_pSaver(pSaver),
+        : m_pSaver(pSaver),
           m_deleteTrackFn(deleteTrackFn),
           m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
@@ -412,6 +417,11 @@ bool GlobalTrackCache::isEmpty() const {
 
 TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
+    while (m_incompletTrack && m_incompletTrack->getId() == trackId) {
+        // Wait unit other threads have completed their temporary.
+        m_isTrackCompleted.wait(&m_mutex);
+    }
+
     TrackPointer trackPtr;
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
@@ -462,6 +472,12 @@ TrackPointer GlobalTrackCache::lookupByRef(
 
 TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
         const QString& canonicalLocation) {
+    while (m_incompletTrack &&
+            m_incompletTrack->getFileInfo().canonicalLocationPath() == canonicalLocation) {
+        // Wait unit other threads have completed their temporary.
+        m_isTrackCompleted.wait(&m_mutex);
+    }
+
     TrackPointer trackPtr;
     const auto trackByCanonicalLocation(
             m_tracksByCanonicalLocation.find(canonicalLocation));
@@ -656,6 +672,13 @@ void GlobalTrackCache::resolve(
     // created object to the main thread.
     savingPtr->moveToThread(QCoreApplication::instance()->thread());
 
+    while (m_incompletTrack) {
+        // Wait unit other threads have completed their temporary.
+        m_isTrackCompleted.wait(&m_mutex);
+        // now the track should be empty
+    }
+    m_incompletTrack = savingPtr;
+
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::Miss,
             std::move(savingPtr),
@@ -675,6 +698,11 @@ TrackRef GlobalTrackCache::initTrackId(
     EvictAndSaveFunctor* pDel = std::get_deleter<EvictAndSaveFunctor>(strongPtr);
     DEBUG_ASSERT(pDel);
 
+    m_mutex.lock();
+    DEBUG_ASSERT(strongPtr == m_incompletTrack);
+    m_incompletTrack = nullptr;
+    m_isTrackCompleted.wakeAll();
+
     // Insert item by id
     DEBUG_ASSERT(m_tracksById.find(trackId) == m_tracksById.end());
     m_tracksById.insert(std::make_pair(
@@ -686,6 +714,11 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(m_tracksById.find(trackId) != m_tracksById.end());
 
     return trackRefWithId;
+}
+
+void GlobalTrackCache::discardIncompleteTrack() {
+    m_incompletTrack = nullptr;
+    m_isTrackCompleted.wakeAll();
 }
 
 void GlobalTrackCache::purgeTrackId(TrackId trackId) {
