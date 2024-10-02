@@ -121,7 +121,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 "",
                                 0,
                                 0,
-                                0 + m_poscPCP->get());
+                                (float)m_poscPCP->get());
                         qDebug() << "OSC Msg Snd: Group, Key: Value: "
                                  << oscIn.oscGroup << "," << oscIn.oscKey << ":"
                                  // << m_posPCPValue;
@@ -144,7 +144,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 "",
                                 0,
                                 0,
-                                ControlObject::getControl(
+                                (float)ControlObject::getControl(
                                         oscIn.oscGroup, oscIn.oscKey)
                                         ->get());
                     }
