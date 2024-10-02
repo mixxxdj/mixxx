@@ -10,7 +10,8 @@
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
-          m_isPersistentEditorOpen(false) {
+          m_persistentEditorState(PersistentEditor_NotOpen) {
+    connect(this, &QAbstractItemDelegate::closeEditor, this, &StarDelegate::closingEditor);
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
     connect(pTableView, &QTableView::viewportEntered, this, &StarDelegate::cursorNotOverAnyCell);
 
@@ -85,6 +86,17 @@ void StarDelegate::commitAndCloseEditor() {
     emit closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
 }
 
+void StarDelegate::closingEditor(QWidget* widget, QAbstractItemDelegate::EndEditHint hint) {
+    Q_UNUSED(hint);
+
+    auto* editor = qobject_cast<StarEditor*>(widget);
+    VERIFY_OR_DEBUG_ASSERT(editor) {
+        return;
+    }
+
+    restorePersistentRatingEditor(editor->getModelIndex());
+}
+
 void StarDelegate::editRequested(const QModelIndex& index,
         QAbstractItemView::EditTrigger trigger,
         QEvent* event) {
@@ -94,11 +106,12 @@ void StarDelegate::editRequested(const QModelIndex& index,
     // QTableView but the code should only be executed on a column with a
     // StarRating.
     if (trigger == QAbstractItemView::EditTrigger::EditKeyPressed &&
-            m_isPersistentEditorOpen && index.data().canConvert<StarRating>() &&
+            m_persistentEditorState == PersistentEditor_Open &&
+            index.data().canConvert<StarRating>() &&
             m_currentEditedCellIndex == index) {
         // Close the (implicit) persistent editor for the current cell,
         // so that a new explicit editor can be opened instead.
-        closeCurrentPersistentRatingEditor();
+        closeCurrentPersistentRatingEditor(true);
     }
 }
 
@@ -109,32 +122,50 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     if (index.data().canConvert<StarRating>()) {
         openPersistentRatingEditor(index);
     } else {
-        closeCurrentPersistentRatingEditor();
+        closeCurrentPersistentRatingEditor(false);
     }
 }
 
 void StarDelegate::cursorNotOverAnyCell() {
     // Invoked when the mouse cursor is not over any specific cell,
     // or when the mouse cursor has left the table area
-    closeCurrentPersistentRatingEditor();
+    closeCurrentPersistentRatingEditor(false);
 }
 
 void StarDelegate::openPersistentRatingEditor(const QModelIndex& index) {
     // Close the previously open persistent rating editor
-    if (m_isPersistentEditorOpen) {
+    if (m_persistentEditorState == PersistentEditor_Open) {
         // Don't close other editors when hovering the stars cell!
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
     }
 
+    m_persistentEditorState = PersistentEditor_NotOpen;
     m_pTableView->openPersistentEditor(index);
-    m_isPersistentEditorOpen = true;
+    m_persistentEditorState = PersistentEditor_Open;
     m_currentEditedCellIndex = index;
 }
 
-void StarDelegate::closeCurrentPersistentRatingEditor() {
-    if (m_isPersistentEditorOpen) {
-        m_isPersistentEditorOpen = false;
+void StarDelegate::closeCurrentPersistentRatingEditor(bool rememberForRestore) {
+    if (m_persistentEditorState == PersistentEditor_Open) {
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+    }
+
+    if (rememberForRestore &&
+            (m_persistentEditorState == PersistentEditor_Open ||
+                    m_persistentEditorState == PersistentEditor_ShouldRestore)) {
+        // Keep m_currentEditedCellIndex so the persistent editor
+        // can be restored when the currently active explicit editor
+        // is closed.
+        m_persistentEditorState = PersistentEditor_ShouldRestore;
+    } else {
+        m_persistentEditorState = PersistentEditor_NotOpen;
         m_currentEditedCellIndex = QPersistentModelIndex();
+    }
+}
+
+void StarDelegate::restorePersistentRatingEditor(const QModelIndex& index) {
+    if (m_persistentEditorState == PersistentEditor_ShouldRestore &&
+            index.isValid() && m_currentEditedCellIndex == index) {
+        openPersistentRatingEditor(m_currentEditedCellIndex);
     }
 }

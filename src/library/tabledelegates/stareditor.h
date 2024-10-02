@@ -29,6 +29,10 @@ class StarEditor : public QWidget {
     }
     StarRating starRating() { return m_starRating; }
 
+    QModelIndex getModelIndex() {
+        return m_index;
+    }
+
   signals:
     void editingFinished();
 
