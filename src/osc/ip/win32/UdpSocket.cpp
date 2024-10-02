@@ -35,9 +35,9 @@
         above license is reproduced.
 */
 
+#include <mmsystem.h> // for timeGetTime()
 #include <windows.h>
 #include <winsock2.h> // this must come first to prevent errors with MSVC7
-// #include <mmsystem.h>   // for timeGetTime()
 
 #ifndef WINCE
 #include <signal.h>

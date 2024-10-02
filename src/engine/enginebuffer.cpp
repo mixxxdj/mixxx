@@ -614,7 +614,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                 "",
                 0,
                 0,
-                0 + pTrack->getDuration());
+                (float)pTrack->getDuration());
     }
     // EveOSC end
 

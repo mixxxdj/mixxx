@@ -1,19 +1,11 @@
-#include <mmsystem.h>
 
 #include <QThread>
 #include <bitset>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-// #include <winmm>
 
 // #pragma comment(lib, "winmm.lib")
-// #include (lib, "winmm.dll")
-#if defined(__BORLANDC__) // workaround for BCB4 release build intrinsics bug
-namespace std {
-using ::__strcmp__; // avoid error: E2316 '__strcmp__' is not a member of 'std'.
-}
-#endif
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"

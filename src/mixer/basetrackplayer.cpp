@@ -951,7 +951,7 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
                 "",
                 0,
                 0,
-                value);
+                (float)value);
         //        OscFunctionsSendPtrType(m_pConfig,
         //                getGroup(),
         //                "play",
