@@ -944,22 +944,22 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     }
     //  EveOSC begin
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        //        OscFunctionsSendPtrType(m_pConfig,
-        //                getGroup(),
-        //                "play",
-        //                FLOATBODY,
-        //                "",
-        //                0,
-        //                0,
-        //                value);
         OscFunctionsSendPtrType(m_pConfig,
                 getGroup(),
                 "play",
-                DOUBLEBODY,
+                FLOATBODY,
                 "",
                 0,
-                value,
-                0);
+                0,
+                value);
+        //        OscFunctionsSendPtrType(m_pConfig,
+        //                getGroup(),
+        //                "play",
+        //                DOUBLEBODY,
+        //                "",
+        //                0,
+        //                value,
+        //                0);
     }
     // EveOSC end
 }

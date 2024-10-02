@@ -46,6 +46,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring> // for memset
+// #include <QTime>
 #include <stdexcept>
 #include <vector>
 
@@ -326,7 +327,12 @@ class SocketReceiveMultiplexer::Implementation {
 
     double GetCurrentTimeMs() const {
 #ifndef WINCE
-        return timeGetTime(); // FIXME: bad choice if you want to run for more than 40 days
+        // EVE
+        // return timeGetTime(); // FIXME: bad choice if you want to run for more than 40 days
+        // QTime tm = QTime::currentTime();
+        // DWORD dtime = tm.msecsSinceStartOfDay();
+        return 0;
+// EVE
 #else
         return 0;
 #endif

@@ -1,10 +1,19 @@
+#include <mmsystem.h>
+
 #include <QThread>
 #include <bitset>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+// #include <winmm>
 
-#pragma comment(lib, "winmm.lib")
+// #pragma comment(lib, "winmm.lib")
+// #include (lib, "winmm.dll")
+#if defined(__BORLANDC__) // workaround for BCB4 release build intrinsics bug
+namespace std {
+using ::__strcmp__; // avoid error: E2316 '__strcmp__' is not a member of 'std'.
+}
+#endif
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -103,7 +112,8 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                         std::unique_ptr<PollingControlProxy> m_poscPCP;
                         m_poscPCP = std::make_unique<PollingControlProxy>(
                                 oscIn.oscGroup, oscIn.oscKey);
-                        float m_posPCPValue = m_poscPCP->get();
+                        // float m_posPCPValue = m_poscPCP->get();
+                        // double m_posPCPValue = m_poscPCP->get();
                         OscFunctionsSendPtrType(m_pConfig,
                                 oscIn.oscGroup,
                                 oscIn.oscKey,
@@ -111,10 +121,11 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 "",
                                 0,
                                 0,
-                                0 + m_posPCPValue);
+                                0 + m_poscPCP->get());
                         qDebug() << "OSC Msg Snd: Group, Key: Value: "
                                  << oscIn.oscGroup << "," << oscIn.oscKey << ":"
-                                 << m_posPCPValue;
+                                 // << m_posPCPValue;
+                                 << m_poscPCP->get();
                     }
                 }
             }
@@ -136,21 +147,10 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 ControlObject::getControl(
                                         oscIn.oscGroup, oscIn.oscKey)
                                         ->get());
-                        //                        OscFunctionsSendPtrType(m_pConfig,
-                        //                                oscIn.oscGroup,
-                        //                                oscIn.oscKey,
-                        //                                INTBODY,
-                        //                                "",
-                        //                                ControlObject::getControl(
-                        //                                        oscIn.oscGroup, oscIn.oscKey)
-                        //                                        ->getParameter(),
-                        //                                0,
-                        //                                0);
                     }
                     qDebug() << "OSC Msg Rcvd: Get Group, Key: Value: "
                              << oscIn.oscGroup << "," << oscIn.oscKey << ":"
-                             << oscIn.oscValue
-                             << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+                             << oscIn.oscValue;
                 }
             }
 
@@ -165,7 +165,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                         m_poscPCP = std::make_unique<PollingControlProxy>(
                                 oscIn.oscGroup, oscIn.oscKey);
                         m_poscPCP->set(oscIn.oscValue);
-                        float m_posPCPValue = m_poscPCP->get();
+                        // float m_posPCPValue = m_poscPCP->get();
                         OscFunctionsSendPtrType(m_pConfig,
                                 oscIn.oscGroup,
                                 oscIn.oscKey,
@@ -173,7 +173,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 "",
                                 0,
                                 0,
-                                0 + m_posPCPValue);
+                                oscIn.oscValue);
                         qDebug() << "OSC Msg Rcvd: Group, Key: Value: "
                                  << oscIn.oscGroup << "," << oscIn.oscKey << ":"
                                  << oscIn.oscValue;
