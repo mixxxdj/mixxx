@@ -56,8 +56,8 @@
 #include <stdexcept>
 #include <vector>
 
-#include "ip/PacketListener.h"
-#include "ip/TimerListener.h"
+#include "../PacketListener.h"
+#include "../TimerListener.h"
 
 #if defined(__APPLE__) && !defined(_SOCKLEN_T)
 // pre system 10.3 didn't have socklen_t
