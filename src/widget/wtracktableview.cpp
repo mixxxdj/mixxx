@@ -1457,6 +1457,16 @@ void WTrackTableView::editSelectedItem() {
     }
 }
 
+bool WTrackTableView::edit(const QModelIndex& index, EditTrigger trigger, QEvent* event) {
+    // Notify the StarDelegate that we want to open an editor, either due to
+    // the mouse hovering over a cell, or because the user pressed the edit key,
+    // to allow it to properly handle switching between these two edit modes.
+    //
+    // This behavior is unique to the StarDelegate.
+    emit editRequested(index, trigger, event);
+    return QAbstractItemView::edit(index, trigger, event);
+}
+
 void WTrackTableView::activateSelectedTrack() {
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
