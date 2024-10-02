@@ -34,7 +34,7 @@
         requested that these non-binding requests be included whenever the
         above license is reproduced.
 */
-#include "ip/UdpSocket.h"
+#include "../UdpSocket.h"
 
 #include <errno.h>
 #include <math.h>

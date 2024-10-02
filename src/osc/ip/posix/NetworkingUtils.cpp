@@ -34,7 +34,7 @@
         requested that these non-binding requests be included whenever the
         above license is reproduced.
 */
-#include "ip/NetworkingUtils.h"
+#include "../NetworkingUtils.h"
 
 #include <netdb.h>
 #include <netinet/in.h>

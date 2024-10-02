@@ -2561,7 +2561,7 @@ target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 
 IF(WIN32)
 	 set(IpSystemTypePath src/osc/ip/win32)
-#	 set(LIBS ${LIBS} Ws2_32 winmm)
+	 set(LIBS ${LIBS} Ws2_32 winmm)
 	ELSE(WIN32)
 	 set(IpSystemTypePath src/osc/ip/posix)
 	ENDIF(WIN32)
