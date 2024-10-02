@@ -102,7 +102,6 @@ void DlgPrefOsc::slotApply() {
     //    m_pConfig->setValue(ConfigKey("[OSC]", "OscIpMtuSize"),
     //            OscIpMtuSize->value());
 
-
     QString OscReceiverIp, OscReceiverIpByte1, OscReceiverIpByte2,
             OscReceiverIpByte3, OscReceiverIpByte4;
 
@@ -114,10 +113,10 @@ void DlgPrefOsc::slotApply() {
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver1IpByte3->value());
     OscReceiverIpByte4 = QString("%1").arg(OscReceiver1IpByte4->value());
     OscReceiverIp = QString("%1.%2.%3.%4")
-                            .arg(OscReceiverIpByte1)
-                            .arg(OscReceiverIpByte2)
-                            .arg(OscReceiverIpByte3)
-                            .arg(OscReceiverIpByte4);
+                            .arg(OscReceiverIpByte1,
+                                    OscReceiverIpByte2,
+                                    OscReceiverIpByte3,
+                                    OscReceiverIpByte4);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver1Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver1IpByte1"),
             OscReceiver1IpByte1->value());
@@ -136,10 +135,10 @@ void DlgPrefOsc::slotApply() {
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver2IpByte3->value());
     OscReceiverIpByte4 = QString("%1").arg(OscReceiver2IpByte4->value());
     OscReceiverIp = QString("%1.%2.%3.%4")
-                            .arg(OscReceiverIpByte1)
-                            .arg(OscReceiverIpByte2)
-                            .arg(OscReceiverIpByte3)
-                            .arg(OscReceiverIpByte4);
+                            .arg(OscReceiverIpByte1,
+                                    OscReceiverIpByte2,
+                                    OscReceiverIpByte3,
+                                    OscReceiverIpByte4);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver2Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver2IpByte1"),
             OscReceiver2IpByte1->value());
@@ -158,10 +157,10 @@ void DlgPrefOsc::slotApply() {
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver3IpByte3->value());
     OscReceiverIpByte4 = QString("%1").arg(OscReceiver3IpByte4->value());
     OscReceiverIp = QString("%1.%2.%3.%4")
-                            .arg(OscReceiverIpByte1)
-                            .arg(OscReceiverIpByte2)
-                            .arg(OscReceiverIpByte3)
-                            .arg(OscReceiverIpByte4);
+                            .arg(OscReceiverIpByte1,
+                                    OscReceiverIpByte2,
+                                    OscReceiverIpByte3,
+                                    OscReceiverIpByte4);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver3Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver3IpByte1"),
             OscReceiver3IpByte1->value());
@@ -180,10 +179,10 @@ void DlgPrefOsc::slotApply() {
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver4IpByte3->value());
     OscReceiverIpByte4 = QString("%1").arg(OscReceiver4IpByte4->value());
     OscReceiverIp = QString("%1.%2.%3.%4")
-                            .arg(OscReceiverIpByte1)
-                            .arg(OscReceiverIpByte2)
-                            .arg(OscReceiverIpByte3)
-                            .arg(OscReceiverIpByte4);
+                            .arg(OscReceiverIpByte1,
+                                    OscReceiverIpByte2,
+                                    OscReceiverIpByte3,
+                                    OscReceiverIpByte4);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver4Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver4IpByte1"),
             OscReceiver4IpByte1->value());
@@ -202,10 +201,10 @@ void DlgPrefOsc::slotApply() {
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver5IpByte3->value());
     OscReceiverIpByte4 = QString("%1").arg(OscReceiver5IpByte4->value());
     OscReceiverIp = QString("%1.%2.%3.%4")
-                            .arg(OscReceiverIpByte1)
-                            .arg(OscReceiverIpByte2)
-                            .arg(OscReceiverIpByte3)
-                            .arg(OscReceiverIpByte4);
+                            .arg(OscReceiverIpByte1,
+                                    OscReceiverIpByte2,
+                                    OscReceiverIpByte3,
+                                    OscReceiverIpByte4);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5IpByte1"),
             OscReceiver5IpByte1->value());
@@ -218,7 +217,7 @@ void DlgPrefOsc::slotApply() {
 
     // Sync Triggers
     m_pConfig->setValue(ConfigKey("[OSC]", "OscSendSyncTriggers"),
-            OscEnabledCheckBox->isChecked());
+            OscSendSyncTriggers->isChecked());
     m_pConfig->setValue(ConfigKey("[OSC]", "OscSendSyncTriggersInterval"),
             OscSendSyncTriggersInterval->value());
 }
@@ -230,4 +229,5 @@ void DlgPrefOsc::slotResetToDefaults() {
     OscReceiver3ActiveCheckBox->setChecked(false);
     OscReceiver4ActiveCheckBox->setChecked(false);
     OscReceiver5ActiveCheckBox->setChecked(false);
+    OscSendSyncTriggers->setChecked(false);
 }

@@ -16,10 +16,10 @@
 #include "oscreceiver.h"
 
 void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
-        QString OscGroup,
-        QString OscKey,
+        const QString& OscGroup,
+        const QString& OscKey,
         enum DefOscBodyType OscBodyType,
-        QString OscMessageBodyQString,
+        const QString& OscMessageBodyQString,
         int OscMessageBodyInt,
         double OscMessageBodyDouble,
         float OscMessageBodyFloat);
@@ -213,7 +213,7 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             //            QString CKOscRec1Active =
             //            m_pConfig->getValue(ConfigKey("[OSC]",
             //            "OscReceiver1Active"));
-            QString CKOscRec1Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Ip"));
+            const QString& CKOscRec1Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Ip"));
             QByteArray CKOscRec1Ipba = CKOscRec1Ip.toLocal8Bit();
             const char* CKOscRec1IpChar = CKOscRec1Ipba.data();
             qDebug() << "Mixxx OSC Receiver 1 Activated, ip-Address : "
@@ -225,7 +225,7 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             //            QString CKOscRec2Active =
             //            m_pConfig->getValue(ConfigKey("[OSC]",
             //            "OscReceiver2Active"));
-            QString CKOscRec2Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Ip"));
+            const QString& CKOscRec2Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Ip"));
             QByteArray CKOscRec2Ipba = CKOscRec2Ip.toLocal8Bit();
             const char* CKOscRec2IpChar = CKOscRec2Ipba.data();
             qDebug() << "Mixxx OSC Receiver 2 Activated, ip-Address : "
@@ -237,7 +237,7 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             //            QString CKOscRec3Active =
             //            m_pConfig->getValue(ConfigKey("[OSC]",
             //            "OscReceiver3Active"));
-            QString CKOscRec3Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Ip"));
+            const QString& CKOscRec3Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Ip"));
             QByteArray CKOscRec3Ipba = CKOscRec3Ip.toLocal8Bit();
             const char* CKOscRec3IpChar = CKOscRec3Ipba.data();
             qDebug() << "Mixxx OSC Receiver 3 Activated, ip-Address : "
@@ -249,7 +249,7 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             //            QString CKOscRec4Active =
             //            m_pConfig->getValue(ConfigKey("[OSC]",
             //            "OscReceiver4Active"));
-            QString CKOscRec4Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Ip"));
+            const QString& CKOscRec4Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Ip"));
             QByteArray CKOscRec4Ipba = CKOscRec4Ip.toLocal8Bit();
             const char* CKOscRec4IpChar = CKOscRec4Ipba.data();
             qDebug() << "Mixxx OSC Receiver 4 Activated, ip-Address : "
@@ -261,7 +261,7 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             //            QString CKOscRec5Active =
             //            m_pConfig->getValue(ConfigKey("[OSC]",
             //            "OscReceiver5Active"));
-            QString CKOscRec5Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Ip"));
+            const QString& CKOscRec5Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Ip"));
             QByteArray CKOscRec5Ipba = CKOscRec5Ip.toLocal8Bit();
             const char* CKOscRec5IpChar = CKOscRec5Ipba.data();
             qDebug() << "Mixxx OSC Receiver 5 Activated, ip-Address : "
@@ -270,9 +270,9 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             qDebug() << "Mixxx OSC Receiver 5 Not Activated";
         }
 
-        QString OscTrackGroup;
+        //        QString OscTrackGroup;
         for (int i = 1; i < 5; i++) {
-            OscTrackGroup = QString("[Channel%1]").arg(i);
+            const QString& OscTrackGroup = QString("[Channel%1]").arg(i);
             OscFunctionsSendPtrType(m_pConfig,
                     OscTrackGroup,
                     "TrackArtist",

@@ -63,10 +63,10 @@ enum DefOscBodyType {
 };
 
 void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
-        QString OscGroup,
-        QString OscKey,
+        const QString& OscGroup,
+        const QString& OscKey,
         enum DefOscBodyType OscBodyType,
-        QString OscMessageBodyQString,
+        const QString& OscMessageBodyQString,
         int OscMessageBodyInt,
         double OscMessageBodyDouble,
         float OscMessageBodyFloat);
