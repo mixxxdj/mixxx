@@ -20,6 +20,10 @@ StarDelegate::StarDelegate(QTableView* pTableView)
                 &WTrackTableView::viewportLeaving,
                 this,
                 &StarDelegate::cursorNotOverAnyCell);
+        connect(pTrackTableView,
+                &WTrackTableView::editRequested,
+                this,
+                &StarDelegate::editRequested);
     }
 }
 
@@ -79,6 +83,23 @@ void StarDelegate::commitAndCloseEditor() {
     StarEditor* editor = qobject_cast<StarEditor*>(sender());
     emit commitData(editor);
     emit closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
+}
+
+void StarDelegate::editRequested(const QModelIndex& index,
+        QAbstractItemView::EditTrigger trigger,
+        QEvent* event) {
+    Q_UNUSED(event);
+
+    // This slot is called when an edit is requested for ANY cell on the
+    // QTableView but the code should only be executed on a column with a
+    // StarRating.
+    if (trigger == QAbstractItemView::EditTrigger::EditKeyPressed &&
+            m_isPersistentEditorOpen && index.data().canConvert<StarRating>() &&
+            m_currentEditedCellIndex == index) {
+        // Close the (implicit) persistent editor for the current cell,
+        // so that a new explicit editor can be opened instead.
+        closeCurrentPersistentRatingEditor();
+    }
 }
 
 void StarDelegate::cellEntered(const QModelIndex& index) {

@@ -35,6 +35,9 @@ class StarDelegate : public TableItemDelegate {
     void commitAndCloseEditor();
     void cellEntered(const QModelIndex& index);
     void cursorNotOverAnyCell();
+    void editRequested(const QModelIndex& index,
+            QAbstractItemView::EditTrigger trigger,
+            QEvent* event);
 
   private:
     void openPersistentRatingEditor(const QModelIndex& index);
