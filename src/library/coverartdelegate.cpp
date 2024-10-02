@@ -85,7 +85,7 @@ void CoverArtDelegate::slotInhibitLazyLoading(
     const double scaleFactor = m_pTableView->devicePixelRatioF();
     const int width = static_cast<int>(m_pTableView->columnWidth(m_column) * scaleFactor);
 
-    for (int row : m_cacheMissRows) {
+    for (int row : std::as_const(m_cacheMissRows)) {
         QModelIndex index = m_pTableView->model()->index(row, m_column);
         CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
         QRect rect = m_pTableView->visualRect(index);
