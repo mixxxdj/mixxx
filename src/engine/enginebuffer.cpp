@@ -607,14 +607,22 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                 0,
                 0,
                 1);
+        //        OscFunctionsSendPtrType(m_pConfig,
+        //                getGroup(),
+        //                "duration",
+        //                FLOATBODY,
+        //                "",
+        //                0,
+        //                0,
+        //                pTrack->getDuration());
         OscFunctionsSendPtrType(m_pConfig,
                 getGroup(),
                 "duration",
-                FLOATBODY,
+                DOUBLEBODY,
                 "",
                 0,
-                0,
-                pTrack->getDuration());
+                pTrack->getDuration(),
+                0);
     }
     // EveOSC end
 

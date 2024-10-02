@@ -9,30 +9,6 @@ DlgPrefOsc::DlgPrefOsc(QWidget* pParent,
     setupUi(this);
 
     // If OSC Receiver X is active -> OSC messages from Mixxx will be send to this receiver
-    connect(OscReceiver1ActiveCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefOsc::slotToggleOscReceiver1Active);
-
-    connect(OscReceiver2ActiveCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefOsc::slotToggleOscReceiver1Active);
-
-    connect(OscReceiver3ActiveCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefOsc::slotToggleOscReceiver1Active);
-
-    connect(OscReceiver4ActiveCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefOsc::slotToggleOscReceiver1Active);
-
-    connect(OscReceiver5ActiveCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefOsc::slotToggleOscReceiver1Active);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -51,8 +27,6 @@ void DlgPrefOsc::slotUpdate() {
 
     OscReceiver1ActiveCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[OSC]", "OscReceiver1Active"), false));
-    QString OscReceiver1IpTest = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Ip"));
-
     OscReceiver1IpByte1->setValue(
             m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1IpByte1"), 1));
     OscReceiver1IpByte2->setValue(
@@ -128,11 +102,13 @@ void DlgPrefOsc::slotApply() {
     //    m_pConfig->setValue(ConfigKey("[OSC]", "OscIpMtuSize"),
     //            OscIpMtuSize->value());
 
-    m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver1Active"),
-            OscReceiver1ActiveCheckBox->isChecked());
 
     QString OscReceiverIp, OscReceiverIpByte1, OscReceiverIpByte2,
             OscReceiverIpByte3, OscReceiverIpByte4;
+
+    // Receiver 1
+    m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver1Active"),
+            OscReceiver1ActiveCheckBox->isChecked());
     OscReceiverIpByte1 = QString("%1").arg(OscReceiver1IpByte1->value());
     OscReceiverIpByte2 = QString("%1").arg(OscReceiver1IpByte2->value());
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver1IpByte3->value());
@@ -152,9 +128,9 @@ void DlgPrefOsc::slotApply() {
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver1IpByte4"),
             OscReceiver1IpByte4->value());
 
+    // Receiver 2
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver2Active"),
             OscReceiver2ActiveCheckBox->isChecked());
-
     OscReceiverIpByte1 = QString("%1").arg(OscReceiver2IpByte1->value());
     OscReceiverIpByte2 = QString("%1").arg(OscReceiver2IpByte2->value());
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver2IpByte3->value());
@@ -174,9 +150,9 @@ void DlgPrefOsc::slotApply() {
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver2IpByte4"),
             OscReceiver2IpByte4->value());
 
+    // Receiver 3
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver3Active"),
             OscReceiver3ActiveCheckBox->isChecked());
-
     OscReceiverIpByte1 = QString("%1").arg(OscReceiver3IpByte1->value());
     OscReceiverIpByte2 = QString("%1").arg(OscReceiver3IpByte2->value());
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver3IpByte3->value());
@@ -186,7 +162,6 @@ void DlgPrefOsc::slotApply() {
                             .arg(OscReceiverIpByte2)
                             .arg(OscReceiverIpByte3)
                             .arg(OscReceiverIpByte4);
-
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver3Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver3IpByte1"),
             OscReceiver3IpByte1->value());
@@ -197,9 +172,9 @@ void DlgPrefOsc::slotApply() {
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver3IpByte4"),
             OscReceiver3IpByte4->value());
 
+    // Receiver 4
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver4Active"),
             OscReceiver4ActiveCheckBox->isChecked());
-
     OscReceiverIpByte1 = QString("%1").arg(OscReceiver4IpByte1->value());
     OscReceiverIpByte2 = QString("%1").arg(OscReceiver4IpByte2->value());
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver4IpByte3->value());
@@ -209,7 +184,6 @@ void DlgPrefOsc::slotApply() {
                             .arg(OscReceiverIpByte2)
                             .arg(OscReceiverIpByte3)
                             .arg(OscReceiverIpByte4);
-
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver4Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver4IpByte1"),
             OscReceiver4IpByte1->value());
@@ -220,9 +194,9 @@ void DlgPrefOsc::slotApply() {
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver4IpByte4"),
             OscReceiver4IpByte4->value());
 
+    // Receiver 5
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5Active"),
             OscReceiver5ActiveCheckBox->isChecked());
-
     OscReceiverIpByte1 = QString("%1").arg(OscReceiver5IpByte1->value());
     OscReceiverIpByte2 = QString("%1").arg(OscReceiver5IpByte2->value());
     OscReceiverIpByte3 = QString("%1").arg(OscReceiver5IpByte3->value());
@@ -232,7 +206,6 @@ void DlgPrefOsc::slotApply() {
                             .arg(OscReceiverIpByte2)
                             .arg(OscReceiverIpByte3)
                             .arg(OscReceiverIpByte4);
-
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5Ip"), OscReceiverIp);
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5IpByte1"),
             OscReceiver5IpByte1->value());
@@ -243,9 +216,9 @@ void DlgPrefOsc::slotApply() {
     m_pConfig->setValue(ConfigKey("[OSC]", "OscReceiver5IpByte4"),
             OscReceiver5IpByte4->value());
 
+    // Sync Triggers
     m_pConfig->setValue(ConfigKey("[OSC]", "OscSendSyncTriggers"),
             OscEnabledCheckBox->isChecked());
-
     m_pConfig->setValue(ConfigKey("[OSC]", "OscSendSyncTriggersInterval"),
             OscSendSyncTriggersInterval->value());
 }
@@ -257,15 +230,4 @@ void DlgPrefOsc::slotResetToDefaults() {
     OscReceiver3ActiveCheckBox->setChecked(false);
     OscReceiver4ActiveCheckBox->setChecked(false);
     OscReceiver5ActiveCheckBox->setChecked(false);
-}
-
-void DlgPrefOsc::slotToggleOscReceiver1Active(int buttonState) {
-}
-void DlgPrefOsc::slotToggleOscReceiver2Active(int buttonState) {
-}
-void DlgPrefOsc::slotToggleOscReceiver3Active(int buttonState) {
-}
-void DlgPrefOsc::slotToggleOscReceiver4Active(int buttonState) {
-}
-void DlgPrefOsc::slotToggleOscReceiver5Active(int buttonState) {
 }

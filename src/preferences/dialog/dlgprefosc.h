@@ -17,11 +17,6 @@ class DlgPrefOsc : public DlgPreferencePage, public Ui::DlgPrefOscDlg {
     void slotResetToDefaults() override;
 
   private slots:
-    void slotToggleOscReceiver1Active(int buttonState);
-    void slotToggleOscReceiver2Active(int buttonState);
-    void slotToggleOscReceiver3Active(int buttonState);
-    void slotToggleOscReceiver4Active(int buttonState);
-    void slotToggleOscReceiver5Active(int buttonState);
 
   private:
     UserSettingsPointer m_pConfig;

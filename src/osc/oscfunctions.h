@@ -79,7 +79,9 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
         QString CKOscPortOut = m_pConfig->getValue(ConfigKey("[OSC]", "OscPortOut"));
         int CKOscPortOutInt = CKOscPortOut.toInt();
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver1Active"))) {
-            QString CKOscRec1Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Active"));
+            //            QString CKOscRec1Active =
+            //            m_pConfig->getValue(ConfigKey("[OSC]",
+            //            "OscReceiver1Active"));
             QString CKOscRec1Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Ip"));
             QByteArray CKOscRec1Ipba = CKOscRec1Ip.toLocal8Bit();
             const char* CKOscRec1IpChar = CKOscRec1Ipba.data();
@@ -93,7 +95,9 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
                                 .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver2Active"))) {
-            QString CKOscRec2Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Active"));
+            //          QString CKOscRec2Active =
+            //          m_pConfig->getValue(ConfigKey("[OSC]",
+            //          "OscReceiver2Active"));
             QString CKOscRec2Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Ip"));
             QByteArray CKOscRec2Ipba = CKOscRec2Ip.toLocal8Bit();
             const char* CKOscRec2IpChar = CKOscRec2Ipba.data();
@@ -107,7 +111,9 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
                                 .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver3Active"))) {
-            QString CKOscRec3Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Active"));
+            //            QString CKOscRec3Active =
+            //            m_pConfig->getValue(ConfigKey("[OSC]",
+            //            "OscReceiver3Active"));
             QString CKOscRec3Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Ip"));
             QByteArray CKOscRec3Ipba = CKOscRec3Ip.toLocal8Bit();
             const char* CKOscRec3IpChar = CKOscRec3Ipba.data();
@@ -121,7 +127,9 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
                                 .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver4Active"))) {
-            QString CKOscRec4Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Active"));
+            //            QString CKOscRec4Active =
+            //            m_pConfig->getValue(ConfigKey("[OSC]",
+            //            "OscReceiver4Active"));
             QString CKOscRec4Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Ip"));
             QByteArray CKOscRec4Ipba = CKOscRec4Ip.toLocal8Bit();
             const char* CKOscRec4IpChar = CKOscRec4Ipba.data();
@@ -134,7 +142,9 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
                                 .arg(MixxxOSCStatusTxtBody);
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver5Active"))) {
-            QString CKOscRec5Active = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Active"));
+            //            QString CKOscRec5Active =
+            //            m_pConfig->getValue(ConfigKey("[OSC]",
+            //            "OscReceiver5Active"));
             QString CKOscRec5Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Ip"));
             QByteArray CKOscRec5Ipba = CKOscRec5Ip.toLocal8Bit();
             const char* CKOscRec5IpChar = CKOscRec5Ipba.data();
