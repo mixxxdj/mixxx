@@ -37,8 +37,8 @@
 // #include "ip/NetworkingUtils.h"
 #include "../NetworkingUtils.h"
 
-#include <windows.h>
 #include <winsock2.h> // this must come first to prevent errors with MSVC7
+// #include <windows.h>
 
 #include <cstring>
 
