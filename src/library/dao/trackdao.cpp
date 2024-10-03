@@ -892,7 +892,7 @@ TrackPointer TrackDAO::addTracksAddFile(
                    << "Failed to add track to database"
                    << pTrack->getLocation();
         // GlobalTrackCache will be unlocked implicitly
-        return nullptr;
+        return {};
     }
     // The track object has already been initialized with the
     // database id, but the cache is not aware of this yet.
@@ -1583,20 +1583,6 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     return pTrack;
 }
 
-TrackId TrackDAO::getTrackIdByRef(
-        const TrackRef& trackRef) const {
-    if (trackRef.getId().isValid()) {
-        return trackRef.getId();
-    }
-    const auto pTrack = GlobalTrackCacheLocker().lookupTrackByRef(trackRef);
-    if (pTrack) {
-        const auto trackId = pTrack->getId();
-        DEBUG_ASSERT(trackId.isValid());
-        return trackId;
-    }
-    return getTrackIdByLocation(trackRef.getLocation());
-}
-
 TrackPointer TrackDAO::getTrackByRef(
         const TrackRef& trackRef) const {
     if (!trackRef.isValid()) {
@@ -2201,47 +2187,52 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 TrackPointer TrackDAO::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
-    if (!trackRef.isValid()) {
-        return TrackPointer();
+    // This function shall not be used with tracks known already in library
+    DEBUG_ASSERT(!trackRef.hasId());
+    VERIFY_OR_DEBUG_ASSERT(trackRef.hasLocation()) {
+        return {};
     }
-
-    const TrackId trackId = getTrackIdByRef(trackRef);
-    if (trackId.isValid()) {
-        const auto pTrack = getTrackById(trackId);
-        if (pTrack) {
+    TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackByRef(trackRef);
+    if (!pTrack) {
+        // track not cached
+        const TrackId trackId = getTrackIdByLocation(trackRef.getLocation());
+        if (trackId.isValid()) {
+            // create track from library
+            pTrack = getTrackById(trackId);
+        }
+    }
+    if (pTrack) {
+        if (pTrack->getId().isValid()) {
             DEBUG_ASSERT(pTrack->getDateAdded().isValid());
             if (pAlreadyInLibrary) {
                 *pAlreadyInLibrary = true;
             }
             return pTrack;
         }
-        if (!trackRef.hasLocation()) {
-            qWarning()
-                    << "Failed to get track"
-                    << trackRef;
-            return TrackPointer();
-        }
     }
 
-    DEBUG_ASSERT(trackRef.hasLocation());
     addTracksPrepare();
-    const auto pTrack = addTracksAddFile(trackRef.getLocation(), true);
-    addTracksFinish(!pTrack);
-    if (!pTrack) {
-        return {};
+    bool unremove = true;
+    const TrackPointer pAddedTrack = addTracksAddFile(trackRef.getLocation(), unremove);
+    bool rollback = !pAddedTrack;
+    addTracksFinish(rollback);
+    if (!pAddedTrack) {
+        return pAddedTrack;
     }
     if (pAlreadyInLibrary) {
         *pAlreadyInLibrary = false;
     }
-    DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+    DEBUG_ASSERT(pAddedTrack->getDateAdded().isValid());
+    DEBUG_ASSERT(!pTrack || pTrack == pAddedTrack);
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
-    const auto future = guessTrackCoverInfoConcurrently(pTrack);
-    // Don't wait for the result and keep running in the background
-    Q_UNUSED(future)
-
-    return pTrack;
+    if (!pAddedTrack->getCoverInfo().hasImage()) {
+        const auto future = guessTrackCoverInfoConcurrently(pAddedTrack);
+        // Don't wait for the result and keep running in the background
+        Q_UNUSED(future)
+    }
+    return pAddedTrack;
 }
 
 mixxx::FileAccess TrackDAO::relocateCachedTrack(TrackId trackId) {

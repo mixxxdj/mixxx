@@ -51,8 +51,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
     QList<TrackRef> getAllTrackRefs(
             const QDir& rootDir) const;
 
