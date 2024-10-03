@@ -10,6 +10,15 @@
 
 class TrackCollectionManager;
 
+/// Base class for tabular track list views.
+///
+/// The abstract model behind `WTrackTableView`.
+///
+/// Closely coupled with `BaseSqlTableModel` from which it has been extracted once.
+///
+/// Serves as an extension point for integrating external track data into Mixxx.
+/// It allows to view track lists provided by external libraries using `WTrackTableView`
+/// without importing redundant data into the Mixxx database.
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
     DISALLOW_COPY_AND_ASSIGN(BaseTrackTableModel);
