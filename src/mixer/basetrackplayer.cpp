@@ -952,14 +952,6 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
                 0,
                 0,
                 (float)value);
-        //        OscFunctionsSendPtrType(m_pConfig,
-        //                getGroup(),
-        //                "play",
-        //                DOUBLEBODY,
-        //                "",
-        //                0,
-        //                value,
-        //                0);
     }
     // EveOSC end
 }

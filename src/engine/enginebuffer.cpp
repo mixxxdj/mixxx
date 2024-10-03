@@ -615,6 +615,14 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                 0,
                 0,
                 (float)pTrack->getDuration());
+        OscFunctionsSendPtrType(m_pConfig,
+                getGroup(),
+                "playposition",
+                FLOATBODY,
+                "",
+                0,
+                0,
+                0);
     }
     // EveOSC end
 

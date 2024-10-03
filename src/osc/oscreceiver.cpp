@@ -5,8 +5,6 @@
 #include <cstring>
 #include <iostream>
 
-// #pragma comment(lib, "winmm.lib")
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
@@ -60,7 +58,6 @@ class OscReceivePacketListener : public osc::OscPacketListener {
             }
 
             osc::ReceivedMessageArgumentStream args = m.ArgumentStream();
-            //            osc::ReceivedMessage::const_iterator arg = m.ArgumentsBegin();
 
             float oscInVal;
             args >> oscInVal >> osc::EndMessage;
@@ -104,8 +101,6 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                         std::unique_ptr<PollingControlProxy> m_poscPCP;
                         m_poscPCP = std::make_unique<PollingControlProxy>(
                                 oscIn.oscGroup, oscIn.oscKey);
-                        // float m_posPCPValue = m_poscPCP->get();
-                        // double m_posPCPValue = m_poscPCP->get();
                         OscFunctionsSendPtrType(m_pConfig,
                                 oscIn.oscGroup,
                                 oscIn.oscKey,
@@ -116,7 +111,6 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                                 (float)m_poscPCP->get());
                         qDebug() << "OSC Msg Snd: Group, Key: Value: "
                                  << oscIn.oscGroup << "," << oscIn.oscKey << ":"
-                                 // << m_posPCPValue;
                                  << m_poscPCP->get();
                     }
                 }
@@ -157,7 +151,6 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                         m_poscPCP = std::make_unique<PollingControlProxy>(
                                 oscIn.oscGroup, oscIn.oscKey);
                         m_poscPCP->set(oscIn.oscValue);
-                        // float m_posPCPValue = m_poscPCP->get();
                         OscFunctionsSendPtrType(m_pConfig,
                                 oscIn.oscGroup,
                                 oscIn.oscKey,
@@ -195,16 +188,11 @@ void RunOscReceiver(int OscPortIn, UserSettingsPointer m_pConfig) {
 
 void OscReceiverMain(UserSettingsPointer m_pConfig) {
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        //        QString CKOscPortOut = m_pConfig->getValue(ConfigKey("[OSC]", "OscPortOut"));
         QString CKOscPortIn = m_pConfig->getValue(ConfigKey("[OSC]", "OscPortIn"));
-        //        int CKOscPortOutInt = CKOscPortOut.toInt();
         int CKOscPortInInt = CKOscPortIn.toInt();
         qDebug() << "OSC Enabled -> Started";
 
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver1Active"))) {
-            //            QString CKOscRec1Active =
-            //            m_pConfig->getValue(ConfigKey("[OSC]",
-            //            "OscReceiver1Active"));
             const QString& CKOscRec1Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver1Ip"));
             QByteArray CKOscRec1Ipba = CKOscRec1Ip.toLocal8Bit();
             const char* CKOscRec1IpChar = CKOscRec1Ipba.data();
@@ -214,9 +202,6 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             qDebug() << "Mixxx OSC Receiver 1 Not Activated";
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver2Active"))) {
-            //            QString CKOscRec2Active =
-            //            m_pConfig->getValue(ConfigKey("[OSC]",
-            //            "OscReceiver2Active"));
             const QString& CKOscRec2Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver2Ip"));
             QByteArray CKOscRec2Ipba = CKOscRec2Ip.toLocal8Bit();
             const char* CKOscRec2IpChar = CKOscRec2Ipba.data();
@@ -226,9 +211,6 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             qDebug() << "Mixxx OSC Receiver 2 Not Activated";
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver3Active"))) {
-            //            QString CKOscRec3Active =
-            //            m_pConfig->getValue(ConfigKey("[OSC]",
-            //            "OscReceiver3Active"));
             const QString& CKOscRec3Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver3Ip"));
             QByteArray CKOscRec3Ipba = CKOscRec3Ip.toLocal8Bit();
             const char* CKOscRec3IpChar = CKOscRec3Ipba.data();
@@ -238,9 +220,6 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             qDebug() << "Mixxx OSC Receiver 3 Not Activated";
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver4Active"))) {
-            //            QString CKOscRec4Active =
-            //            m_pConfig->getValue(ConfigKey("[OSC]",
-            //            "OscReceiver4Active"));
             const QString& CKOscRec4Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver4Ip"));
             QByteArray CKOscRec4Ipba = CKOscRec4Ip.toLocal8Bit();
             const char* CKOscRec4IpChar = CKOscRec4Ipba.data();
@@ -250,9 +229,6 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             qDebug() << "Mixxx OSC Receiver 4 Not Activated";
         }
         if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscReceiver5Active"))) {
-            //            QString CKOscRec5Active =
-            //            m_pConfig->getValue(ConfigKey("[OSC]",
-            //            "OscReceiver5Active"));
             const QString& CKOscRec5Ip = m_pConfig->getValue(ConfigKey("[OSC]", "OscReceiver5Ip"));
             QByteArray CKOscRec5Ipba = CKOscRec5Ip.toLocal8Bit();
             const char* CKOscRec5IpChar = CKOscRec5Ipba.data();
@@ -262,7 +238,6 @@ void OscReceiverMain(UserSettingsPointer m_pConfig) {
             qDebug() << "Mixxx OSC Receiver 5 Not Activated";
         }
 
-        //        QString OscTrackGroup;
         for (int i = 1; i < 5; i++) {
             const QString& OscTrackGroup = QString("[Channel%1]").arg(i);
             OscFunctionsSendPtrType(m_pConfig,

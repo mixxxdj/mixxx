@@ -46,9 +46,17 @@ unsigned long IpEndpointName::GetHostByName(const char* s) {
 
 void IpEndpointName::AddressAsString(char* s) const {
     if (address == ANY_ADDRESS) {
-        std::sprintf(s, "<any>");
+        // std::sprintf(s, "<any>");
+        std::snprintf(s, 16, "<any>");
     } else {
-        std::sprintf(s,
+        // std::sprintf(s,
+        //        "%d.%d.%d.%d",
+        //        (int)((address >> 24) & 0xFF),
+        //        (int)((address >> 16) & 0xFF),
+        //        (int)((address >> 8) & 0xFF),
+        //        (int)(address & 0xFF));
+        std::snprintf(s,
+                16,
                 "%d.%d.%d.%d",
                 (int)((address >> 24) & 0xFF),
                 (int)((address >> 16) & 0xFF),
@@ -60,9 +68,17 @@ void IpEndpointName::AddressAsString(char* s) const {
 void IpEndpointName::AddressAndPortAsString(char* s) const {
     if (port == ANY_PORT) {
         if (address == ANY_ADDRESS) {
-            std::sprintf(s, "<any>:<any>");
+            // std::sprintf(s, "<any>:<any>");
+            std::snprintf(s, 16, "<any>:<any>");
         } else {
-            std::sprintf(s,
+            // std::sprintf(s,
+            //        "%d.%d.%d.%d:<any>",
+            //        (int)((address >> 24) & 0xFF),
+            //        (int)((address >> 16) & 0xFF),
+            //        (int)((address >> 8) & 0xFF),
+            //        (int)(address & 0xFF));
+            std::snprintf(s,
+                    16,
                     "%d.%d.%d.%d:<any>",
                     (int)((address >> 24) & 0xFF),
                     (int)((address >> 16) & 0xFF),
@@ -71,9 +87,18 @@ void IpEndpointName::AddressAndPortAsString(char* s) const {
         }
     } else {
         if (address == ANY_ADDRESS) {
-            std::sprintf(s, "<any>:%d", port);
+            // std::sprintf(s, "<any>:%d", port);
+            std::snprintf(s, 16, "<any>:%d", port);
         } else {
-            std::sprintf(s,
+            // std::sprintf(s,
+            //        "%d.%d.%d.%d:%d",
+            //        (int)((address >> 24) & 0xFF),
+            //        (int)((address >> 16) & 0xFF),
+            //        (int)((address >> 8) & 0xFF),
+            //        (int)(address & 0xFF),
+            //        (int)port);
+            std::snprintf(s,
+                    16,
                     "%d.%d.%d.%d:%d",
                     (int)((address >> 24) & 0xFF),
                     (int)((address >> 16) & 0xFF),

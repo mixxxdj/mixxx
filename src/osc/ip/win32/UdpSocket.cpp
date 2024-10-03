@@ -46,7 +46,6 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring> // for memset
-// #include <QTime>
 #include <stdexcept>
 #include <vector>
 
