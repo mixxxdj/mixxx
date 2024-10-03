@@ -30,6 +30,7 @@
 #include "util/db/sqlite.h"
 #include "util/db/sqlstringformatter.h"
 #include "util/db/sqltransaction.h"
+#include "util/fileaccess.h"
 #include "util/fileinfo.h"
 #include "util/logger.h"
 #include "util/math.h"
@@ -813,8 +814,9 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 }
 
 TrackPointer TrackDAO::addTracksAddFile(
-        const mixxx::FileAccess& fileAccess,
+        const QString& filePath,
         bool unremove) {
+    const auto fileAccess = mixxx::FileAccess(mixxx::FileInfo(filePath));
     // Check that track is a supported extension.
     // TODO(uklotzde): The following check can be skipped if
     // the track is already in the library. A refactoring is
@@ -826,7 +828,7 @@ TrackPointer TrackDAO::addTracksAddFile(
         return nullptr;
     }
 
-    GlobalTrackCacheResolver cacheResolver(fileAccess);
+    auto cacheResolver = GlobalTrackCacheResolver(fileAccess);
     TrackPointer pTrack = cacheResolver.getTrack();
     switch (cacheResolver.getLookupResult()) {
     case GlobalTrackCacheLookupResult::Hit: {
