@@ -322,7 +322,10 @@ class SocketReceiveMultiplexer::Implementation {
         // return timeGetTime(); // FIXME: bad choice if you want to run for more than 40 days
         // QTime tm = QTime::currentTime();
         // DWORD dtime = tm.msecsSinceStartOfDay();
+        // return QTime::msecsSinceStartOfDay();
         return 0;
+        // double TimeStamp = QDateTime::currentDateTime().toDouble();
+
 // EVE
 #else
         return 0;
