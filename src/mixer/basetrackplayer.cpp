@@ -744,6 +744,51 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    QString trackInfoArtist = " ";
+    QString trackInfoTitle = " ";
+    QString DeckStatusTxtLine2 = " ";
+    QString DeckStatusTxtLine3 = " ";
+    QString DeckStatusTxtLine4 = " ";
+    QTime tempStatusTime = QTime::currentTime();
+    QString DeckStatusTime = tempStatusTime.toString("hh:mm:ss");
+
+    if (pNewTrack) {
+        //    QString trackInfo = pNewTrack->getInfo();
+        trackInfoArtist = pNewTrack->getArtist();
+        trackInfoTitle = pNewTrack->getTitle();
+        trackInfoArtist.replace("\"", "''");
+        trackInfoTitle.replace("\"", "''");
+        DeckStatusTxtLine2 = "Artist : \"" + trackInfoArtist + "\",";
+        DeckStatusTxtLine3 = "Title : \"" + trackInfoTitle + "\",";
+        DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
+
+    } else {
+        DeckStatusTxtLine2 = "Artist : \" \",";
+        DeckStatusTxtLine3 = "Title : \" \",";
+        DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
+    }
+    QString trackInfoDeck = getGroup();
+    trackInfoDeck.replace("[Channel", "");
+    trackInfoDeck.replace("]", "");
+    QString DeckStatusFilePath = m_pConfig->getSettingsPath();
+    DeckStatusFilePath.replace("Roaming", "Local");
+    DeckStatusFilePath.replace("\\", "/");
+    QString DeckStatusFileLocation =
+            DeckStatusFilePath + "/controllers/Status" + getGroup() + ".js";
+    //  Different file for each Deck / Sampler
+    QString DeckStatusTxtLine1 = "var TrackDeck" + trackInfoDeck + " = { ";
+    QString DeckStatusTxtLine5 = "};";
+    QFile DeckStatusFile(DeckStatusFileLocation);
+    DeckStatusFile.remove();
+    DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    // DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    QTextStream DeckStatusTxt(&DeckStatusFile);
+    DeckStatusTxt << DeckStatusTxtLine1 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine2 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine3 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine4 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine5 << "\n";
+    DeckStatusFile.close();
 }
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
