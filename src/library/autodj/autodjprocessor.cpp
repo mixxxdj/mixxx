@@ -1,6 +1,7 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "engine/channels/enginedeck.h"
+#include "library/autodj/autodjconstants.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
@@ -12,8 +13,8 @@ const QString kConfigKey = QStringLiteral("[Auto DJ]");
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
-constexpr double kKeepPosition = -1.0;
-constexpr double kSkipToNextTrack = -2.0;
+constexpr double kKeepPosition = AutoDJConstants::kKeepPosition;
+constexpr double kSkipToNextTrack = AutoDJConstants::kSkipToNextTrack;
 
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
