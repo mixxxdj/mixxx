@@ -77,11 +77,14 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
-    mixxx::Duration getRemainingTime() const {
-        return m_timeRemaining;
+    /// Gets the total remaining duration of tracks in the AutoDJ playlist,
+    /// excluding the track that is currently playing already.
+    mixxx::Duration getQueueDuration() const {
+        return m_queueDuration;
     }
 
-    int getRemainingTracks() const;
+    /// Gets the number of tracks remaining in the Auto DJ queue.
+    int getQueueTrackCount() const;
 
     bool nextTrackLoaded();
 
@@ -105,7 +108,7 @@ class AutoDJProcessor : public QObject {
 #endif
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void autoDJError(AutoDJProcessor::AutoDJError error);
-    void remainingTimeChanged(int numTracks, mixxx::Duration duration);
+    void queueDurationChanged(int numTracks, mixxx::Duration duration);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
@@ -126,7 +129,7 @@ class AutoDJProcessor : public QObject {
     void playlistTracksChanged();
     void tracksChanged(const QSet<TrackId>& tracks);
     void multipleTracksChanged();
-    void updateRemainingTime();
+    void updateQueueDuration();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
@@ -191,7 +194,7 @@ class AutoDJProcessor : public QObject {
 
     /// Calculates the total remaining duration of tracks in the AutoDJ playlist,
     /// excluding the track that is currently playing already.
-    mixxx::Duration calculateRemainingTime();
+    mixxx::Duration calculateQueueDuration();
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
@@ -222,9 +225,9 @@ class AutoDJProcessor : public QObject {
     ControlPushButton m_fadeNow;
     ControlPushButton m_enabledAutoDJ;
 
-    ControlObject m_tracksRemaining;
-    ControlObject m_timeRemaining;
-    mixxx::Duration m_remainingTime;
+    ControlObject m_queueRemainingTracks;
+    ControlObject m_queueRemainingDuration;
+    mixxx::Duration m_queueDuration;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };

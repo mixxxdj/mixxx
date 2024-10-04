@@ -41,7 +41,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void autoDJError(AutoDJProcessor::AutoDJError error);
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
-    void remainingTimeChanged(int numTracks, mixxx::Duration duration);
+    void queueDurationChanged(int numTracks, mixxx::Duration duration);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
     void slotTransitionModeChanged(int comboboxIndex);
