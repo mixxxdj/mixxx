@@ -72,10 +72,10 @@ AutoDJProcessor::AutoDJProcessor(
     m_pEnabledAutoDJ->connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 
-    m_pTracksRemaining = new ControlObject(
-            ConfigKey("[AutoDJ]", "tracks_remaining"));
-    m_pTimeRemaining = new ControlObject(
-            ConfigKey("[AutoDJ]", "time_remaining"));
+    m_pQueueRemainingTracks = new ControlObject(
+            ConfigKey("[AutoDJ]", "queue_tracks"));
+    m_pQueueRemainingDuration = new ControlObject(
+            ConfigKey("[AutoDJ]", "queue_duration"));
     connect(m_pAutoDJTableModel,
             &PlaylistTableModel::playlistTracksChanged,
             this,
@@ -129,8 +129,8 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pAddRandomTrack;
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
-    delete m_pTracksRemaining;
-    delete m_pTimeRemaining;
+    delete m_pQueueRemainingTracks;
+    delete m_pQueueRemainingDuration;
     delete m_pFadeNow;
 
     delete m_pAutoDJTableModel;
@@ -151,24 +151,24 @@ void AutoDJProcessor::setCrossfader(double value) {
 }
 
 void AutoDJProcessor::playlistTracksChanged() {
-    m_pTracksRemaining->set(m_pAutoDJTableModel->rowCount());
-    updateRemainingTime();
+    m_pQueueRemainingTracks->set(m_pAutoDJTableModel->rowCount());
+    updateQueueDuration();
 }
 
 void AutoDJProcessor::tracksChanged(const QSet<TrackId>& tracks) {
     Q_UNUSED(tracks);
-    updateRemainingTime();
+    updateQueueDuration();
 }
 
 void AutoDJProcessor::multipleTracksChanged() {
-    updateRemainingTime();
+    updateQueueDuration();
 }
 
-int AutoDJProcessor::getRemainingTracks() const {
+int AutoDJProcessor::getQueueTrackCount() const {
     return m_pAutoDJTableModel->rowCount();
 }
 
-void AutoDJProcessor::updateRemainingTime() {
+void AutoDJProcessor::updateQueueDuration() {
     // The following data points are used as inputs for the "remaining time"
     // calculation, and should therefore trigger a recalculation:
     //
@@ -193,13 +193,13 @@ void AutoDJProcessor::updateRemainingTime() {
     //       and simply trigger a recalculation when ANY
     //       track has changed.
     //
-    mixxx::Duration remainingTime = calculateRemainingTime();
-    m_pTimeRemaining->set(remainingTime.toDoubleSeconds());
-    m_timeRemaining = remainingTime;
-    emit remainingTimeChanged(getRemainingTracks(), remainingTime);
+    mixxx::Duration queueDuration = calculateQueueDuration();
+    m_pQueueRemainingDuration->set(queueDuration.toDoubleSeconds());
+    m_queueDuration = queueDuration;
+    emit queueDurationChanged(getQueueTrackCount(), queueDuration);
 }
 
-mixxx::Duration AutoDJProcessor::calculateRemainingTime() {
+mixxx::Duration AutoDJProcessor::calculateQueueDuration() {
     if (m_transitionMode == TransitionMode::FullIntroOutro ||
             m_transitionMode == TransitionMode::FadeAtOutroStart ||
             m_transitionMode == TransitionMode::FixedSkipSilence) {
@@ -1776,7 +1776,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
             emit autoDJError(ADJ_NOT_TWO_DECKS);
-            updateRemainingTime();
+            updateQueueDuration();
             return;
         }
         if (pLeftDeck->isPlaying()) {
@@ -1789,7 +1789,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
 
     // Recalculate the duration of the Auto DJ playlist,
     // which may have been affected by the transition time change
-    updateRemainingTime();
+    updateQueueDuration();
 }
 
 void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
@@ -1800,7 +1800,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     if (m_eState != ADJ_IDLE) {
         // We don't want to recalculate a running transition,
         // only the remaining queue play time
-        updateRemainingTime();
+        updateQueueDuration();
         return;
     }
 
@@ -1812,7 +1812,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
         emit autoDJError(ADJ_NOT_TWO_DECKS);
-        updateRemainingTime();
+        updateQueueDuration();
         return;
     }
 
@@ -1837,7 +1837,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
     // Recalculate the duration of the Auto DJ playlist,
     // which may have been affected by the transition mode change
-    updateRemainingTime();
+    updateQueueDuration();
 }
 
 DeckAttributes* AutoDJProcessor::getLeftDeck() {

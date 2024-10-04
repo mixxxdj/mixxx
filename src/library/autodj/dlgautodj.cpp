@@ -208,9 +208,9 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &DlgAutoDJ::transitionTimeChanged);
 
     connect(m_pAutoDJProcessor,
-            &AutoDJProcessor::remainingTimeChanged,
+            &AutoDJProcessor::queueDurationChanged,
             this,
-            &DlgAutoDJ::remainingTimeChanged);
+            &DlgAutoDJ::queueDurationChanged);
 
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::autoDJError,
@@ -310,7 +310,7 @@ void DlgAutoDJ::transitionSliderChanged(int value) {
     m_pAutoDJProcessor->setTransitionTime(value);
 }
 
-void DlgAutoDJ::remainingTimeChanged(int numTracks, mixxx::Duration duration) {
+void DlgAutoDJ::queueDurationChanged(int numTracks, mixxx::Duration duration) {
     Q_UNUSED(numTracks);
     Q_UNUSED(duration);
     updateSelectionInfo();
@@ -364,7 +364,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     // Obtain the total duration of the whole remaining Auto DJ queue
     // from the Auto DJ processor. The calculated time is exact and
     // takes transition times, intros, outros etc. into account.
-    mixxx::Duration totalDuration = m_pAutoDJProcessor->getRemainingTime();
+    mixxx::Duration totalDuration = m_pAutoDJProcessor->getQueueDuration();
     int totalTracks = m_pAutoDJTableModel->rowCount();
 
     // Derive total duration of the selected tracks from the table model.

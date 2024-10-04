@@ -99,7 +99,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     // Update the title of the "Auto DJ" node when the
     // list of queued tracks or their properties have changed.
     connect(m_pAutoDJProcessor,
-            &AutoDJProcessor::remainingTimeChanged,
+            &AutoDJProcessor::queueDurationChanged,
             this,
             &AutoDJFeature::slotRemainingQueueDurationChanged);
 
@@ -171,8 +171,8 @@ AutoDJFeature::~AutoDJFeature() {
 
 QVariant AutoDJFeature::title() {
     return createAutoDjTitle(tr("Auto DJ"),
-            m_pAutoDJProcessor->getRemainingTracks(),
-            m_pAutoDJProcessor->getRemainingTime(),
+            m_pAutoDJProcessor->getQueueTrackCount(),
+            m_pAutoDJProcessor->getQueueDuration(),
             true,
             true);
 }
