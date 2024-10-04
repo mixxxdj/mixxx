@@ -2,6 +2,24 @@
 
 #include <numeric>
 
+Rotary::index_type Rotary::nextIndex(Rotary::index_type i) {
+    if (++i >= m_filterHistory.size()) {
+        return 0;
+    }
+    return i;
+}
+
+void Rotary::append(double v) {
+    m_filterHistory[nextIndex(m_headIndex)] = v;
+}
+
+double Rotary::calculate() const {
+    return std::accumulate(std::cbegin(m_filterHistory),
+                   std::cend(m_filterHistory),
+                   0) /
+            static_cast<double>(m_filterHistory.size());
+}
+
 /* Note: There's probably a bug in this function (or this class) somewhere.
     The filter function seems to be the cause of the "drifting" bug in the Hercules stuff.
     What happens is that filter() gets called to do some magic to a value that's returned
@@ -12,13 +30,6 @@
     - Albert (March 13, 2007)
 */
 double Rotary::filter(double v) {
-    // don't grow the list if we're already at capacity.
-    if (m_filterHistory.size() == m_filterHistory.capacity()) {
-        m_filterHistory.dequeue();
-    }
-    m_filterHistory.enqueue(v);
-    return std::accumulate(std::cbegin(m_filterHistory),
-                   std::cend(m_filterHistory),
-                   0) /
-            static_cast<double>(m_filterHistory.size());
+    append(v);
+    return calculate();
 }
