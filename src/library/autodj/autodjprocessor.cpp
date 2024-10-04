@@ -621,7 +621,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
         if (leftDeckPlaying || rightDeckPlaying || leftDeckReachesEnd) {
             // One of left and right is playing. Switch to IDLE mode and make
-            // sure our thresholds are configured (by calling calculateFadeThresholds
+            // sure our thresholds are configured (by calling calculateTransition
             // for the playing deck).
             m_eState = ADJ_IDLE;
 
@@ -1480,7 +1480,7 @@ void AutoDJProcessor::useFixedFadeTime(
         if (toDeckOutroStart <= toDeckStartSecond + kMinimumTrackDurationSec) {
             // we have already passed the outro start
             // Check OutroEnd as alternative, which is for all transition mode
-            // better than directly default to duration()
+            // better than directly defaulting to duration()
             double end = getOutroEndSecond(toTrack);
             if (end <= toDeckStartSecond + kMinimumTrackDurationSec) {
                 // we have also passed the outro end
@@ -1525,7 +1525,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     if (duration < kMinimumTrackDurationSec) {
         qWarning() << "Skip track with" << duration << "Duration"
                    << pTrack->getLocation();
-        // Remove Tack with duration smaller than two callbacks
+        // Remove Track with duration smaller than two callbacks
         removeTrackFromTopOfQueue(pTrack);
 
         // Load the next track. If we are the first AutoDJ track
@@ -1548,10 +1548,10 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         calculateTransition(fromDeck, pDeck, true);
         if (pDeck->startPos != kKeepPosition) {
             // Note: this seek will trigger the playerPositionChanged slot
-            // which may calls the calculateTransition() again without seek = true;
+            // which may call the calculateTransition() again without seek = true;
             pDeck->setPlayPosition(pDeck->startPos);
         }
-        // we are her in the relative domain 0..1
+        // we are here in the relative domain 0..1
         if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
             // repeat a probably missed update
             playerPositionChanged(fromDeck, 1.0);
@@ -1591,11 +1591,11 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
 
     if (!pNewTrack) {
         // If a track is ejected because of a manual eject command or a load failure
-        // this track seams to be undesired. Remove the bad track from the queue.
+        // this track seems to be undesired. Remove the bad track from the queue.
         removeTrackFromTopOfQueue(pOldTrack);
 
-        // wait until the track is fully unloaded and the playerEmpty()
-        // slot is called before load an alternative track.
+        // Wait until the track is fully unloaded and the playerEmpty()
+        // slot is called before loading an alternative track.
     }
 }
 
@@ -1604,7 +1604,7 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
         qDebug() << this << "playerEmpty()" << pDeck->group;
     }
 
-    // The Deck has ejected a track and no new one is loaded
+    // The Deck has ejected a track and no new one is loaded.
     // This happens if loading fails or the user manually ejected the track
     // and would normally stop the AutoDJ flow, which is not desired.
     // It should be safe to load a new track from the queue. The only case where
