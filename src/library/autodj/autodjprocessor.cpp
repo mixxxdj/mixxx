@@ -194,8 +194,8 @@ void AutoDJProcessor::updateQueueDuration() {
     //       track has changed.
     //
     mixxx::Duration queueDuration = calculateQueueDuration();
-    m_pQueueRemainingDuration->set(queueDuration.toDoubleSeconds());
     m_queueDuration = queueDuration;
+    m_pQueueRemainingDuration->set(queueDuration.toDoubleSeconds());
     emit queueDurationChanged(getQueueTrackCount(), queueDuration);
 }
 
