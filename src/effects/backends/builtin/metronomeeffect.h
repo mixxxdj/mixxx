@@ -37,6 +37,7 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
   private:
     EngineEffectParameterPointer m_pBpmParameter;
     EngineEffectParameterPointer m_pSyncParameter;
+    EngineEffectParameterPointer m_pGainParameter;
 
     DISALLOW_COPY_AND_ASSIGN(MetronomeEffect);
 };
