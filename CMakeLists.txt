@@ -2594,6 +2594,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 target_include_directories(mixxx-lib SYSTEM PRIVATE ip)
 target_include_directories(mixxx-lib SYSTEM PRIVATE osc)
 target_link_libraries(mixxx-lib PRIVATE oscpack)
+#eve osc
 
 #silence "enumeration values not handled in switch" in generated code
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
