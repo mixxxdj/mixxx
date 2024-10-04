@@ -544,7 +544,7 @@ importTrackMetadataAndCoverImageUnavailable() {
 //static
 std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
 SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
-        mixxx::FileAccess trackFileAccess,
+        const mixxx::FileAccess& trackFileAccess,
         mixxx::TrackMetadata* pTrackMetadata,
         QImage* pCoverImage,
         bool resetMissingTagMetadata) {
@@ -553,20 +553,13 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         // https://github.com/mixxxdj/mixxx/issues/9944
         return importTrackMetadataAndCoverImageUnavailable();
     }
-    TrackPointer pTrack;
-    // Lock the global track cache while accessing the file to ensure
-    // that no metadata is written. Since locking individual files
-    // is not possible the whole cache has to be locked.
-    GlobalTrackCacheLocker locker;
-    pTrack = locker.lookupTrackByRef(TrackRef::fromFileInfo(trackFileAccess.info()));
-    if (pTrack) {
-        // We can safely unlock the cache if the track object is already cached.
-        locker.unlockCache();
-    } else {
-        // If the track object is not cached we need to keep the cache
-        // locked and create a temporary track object instead.
-        pTrack = Track::newTemporary(std::move(trackFileAccess));
-    }
+    // Since we want to read the cover only, use a temporary track
+    // that is discarded in an incomplet state without saving to library or
+    // track meta data. Lock the track via the global track cache while
+    // accessing the file to ensure that no metadata is written by another trhead.
+    bool temporary = true;
+    auto cacheResolver = GlobalTrackCacheResolver(trackFileAccess, temporary);
+    TrackPointer pTrack = cacheResolver.getTrack();
     return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
             pTrackMetadata,
             pCoverImage,
