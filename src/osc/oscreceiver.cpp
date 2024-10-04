@@ -1,4 +1,6 @@
 
+#include "oscreceiver.h"
+
 #include <QThread>
 #include <bitset>
 #include <cstdlib>
@@ -12,7 +14,6 @@
 #include "osc/osc/OscPacketListener.h"
 #include "osc/osc/OscReceivedElements.h"
 #include "oscfunctions.h"
-#include "oscreceiver.h"
 
 void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
         const QString& OscGroup,
