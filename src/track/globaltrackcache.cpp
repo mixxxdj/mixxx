@@ -152,10 +152,15 @@ QSet<TrackId> GlobalTrackCacheLocker::getCachedTrackIds() const {
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        mixxx::FileAccess fileAccess)
+        mixxx::FileAccess fileAccess,
+        bool temporary)
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
-    m_pInstance->resolve(this, std::move(fileAccess), TrackId());
+    if (temporary) {
+        m_pInstance->resolveTemporary(this, std::move(fileAccess));
+    } else {
+        m_pInstance->resolve(this, std::move(fileAccess), TrackId());
+    }
     m_pInstance->m_mutex.unlock();
 }
 
@@ -682,6 +687,51 @@ void GlobalTrackCache::resolve(
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::Miss,
             std::move(savingPtr),
+            std::move(trackRef));
+}
+
+void GlobalTrackCache::resolveTemporary(
+        GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
+        mixxx::FileAccess /*in*/ fileAccess) {
+    DEBUG_ASSERT(pCacheResolver);
+
+    TrackPointer pTrack;
+
+    auto trackRef = TrackRef::fromFileInfo(fileAccess.info());
+    if (trackRef.hasCanonicalLocation()) {
+        pTrack = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
+        if (pTrack) {
+            // Multiple tracks may reference the same physical file on disk
+            auto cachedTrackRef = createTrackRef(*pTrack);
+            if (trackRef.getLocation() != cachedTrackRef.getLocation()) {
+                kLogger.warning()
+                        << "Found a different track for the same canonical location:"
+                        << "requested =" << trackRef
+                        << "cached =" << cachedTrackRef;
+                pCacheResolver->initLookupResult(
+                        GlobalTrackCacheLookupResult::ConflictCanonicalLocation,
+                        TrackPointer(),
+                        std::move(cachedTrackRef));
+            } else {
+                pCacheResolver->initLookupResult(
+                        GlobalTrackCacheLookupResult::Hit,
+                        std::move(pTrack),
+                        std::move(cachedTrackRef));
+            }
+            return;
+        }
+    }
+
+    pTrack = Track::newTemporary(std::move(fileAccess));
+    while (m_incompletTrack) {
+        // Wait for completion.
+        m_isTrackCompleted.wait(&m_mutex);
+        // now the track should be empty
+    }
+    m_incompletTrack = pTrack;
+    pCacheResolver->initLookupResult(
+            GlobalTrackCacheLookupResult::Miss,
+            std::move(pTrack),
             std::move(trackRef));
 }
 

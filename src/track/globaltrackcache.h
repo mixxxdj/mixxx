@@ -130,7 +130,8 @@ protected:
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
   GlobalTrackCacheResolver(
-          mixxx::FileAccess fileAccess);
+          mixxx::FileAccess fileAccess,
+          bool temporary = false);
   GlobalTrackCacheResolver(
           mixxx::FileAccess fileAccess,
           TrackId trackId);
@@ -252,8 +253,12 @@ class GlobalTrackCache : public QObject {
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-            mixxx::FileAccess /*in*/ fileAccess,
-            TrackId /*in*/ trackId);
+            mixxx::FileAccess fileAccess,
+            TrackId trackId);
+
+    void resolveTemporary(
+            GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
+            mixxx::FileAccess fileAccess);
 
     TrackRef initTrackId(
             const TrackPointer& strongPtr,
