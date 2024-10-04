@@ -55,21 +55,14 @@ const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
 // EveOSC
-enum DefOscBodyType {
-    STRINGBODY = 1,
-    INTBODY = 2,
-    DOUBLEBODY = 3,
-    FLOATBODY = 4
-};
-
-void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
+void OscTrackLoadedInGroup(UserSettingsPointer m_pConfig,
         const QString& OscGroup,
-        const QString& OscKey,
-        enum DefOscBodyType OscBodyType,
-        const QString& OscMessageBodyQString,
-        int OscMessageBodyInt,
-        double OscMessageBodyDouble,
-        float OscMessageBodyFloat);
+        const QString& TrackArtist,
+        const QString& TrackTitle,
+        float track_loaded,
+        float duration,
+        float playposition);
+void OscNoTrackLoadedInGroup(UserSettingsPointer m_pConfig, const QString& OscGroup);
 // EveOSC
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -583,46 +576,13 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     //  EveOSC begin
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        OscFunctionsSendPtrType(m_pConfig,
+        OscTrackLoadedInGroup(m_pConfig,
                 getGroup(),
-                "TrackArtist",
-                STRINGBODY,
                 pTrack->getArtist().toLatin1(),
-                0,
-                0,
-                0);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "TrackTitle",
-                STRINGBODY,
                 pTrack->getTitle().toLatin1(),
-                0,
-                0,
-                0);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "track_loaded",
-                FLOATBODY,
-                "",
-                0,
-                0,
-                1);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "duration",
-                FLOATBODY,
-                "",
-                0,
-                0,
-                (float)pTrack->getDuration());
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "playposition",
-                FLOATBODY,
-                "",
-                0,
-                0,
-                0);
+                (float)1,
+                (float)pTrack->getDuration(),
+                (float)0);
     }
     // EveOSC end
 
@@ -697,47 +657,9 @@ void EngineBuffer::ejectTrack() {
 
     //  EveOSC begin
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "TrackArtist",
-                STRINGBODY,
-                "no track loaded",
-                0,
-                0,
-                0);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "TrackTitle",
-                STRINGBODY,
-                "no track loaded",
-                0,
-                0,
-                0);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "track_loaded",
-                FLOATBODY,
-                "",
-                0,
-                0,
-                0);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "duration",
-                FLOATBODY,
-                "",
-                0,
-                0,
-                0);
-        OscFunctionsSendPtrType(m_pConfig,
-                getGroup(),
-                "playposition",
-                FLOATBODY,
-                "",
-                0,
-                0,
-                0);
+        OscNoTrackLoadedInGroup(m_pConfig, getGroup());
     }
+    //  EveOSC end
 
     m_playButton->set(0.0);
     m_playposSlider->set(0);

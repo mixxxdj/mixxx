@@ -18,10 +18,8 @@ class oscResult {
   public:
     QString oscAddress;
     QString oscGroup;
-    QString oscGroupSB;
     QString oscKey;
     float oscValue;
-    bool oscInValB;
 };
 
 class oscReceiver {
@@ -29,7 +27,7 @@ class oscReceiver {
     UserSettingsPointer m_pConfig;
 };
 
+void RunOscReceiver(int OscPortIn, UserSettingsPointer m_pConfig);
 void OscReceiverMain(UserSettingsPointer m_pConfig);
-void SendSyncTrigger(UserSettingsPointer m_pConfig);
 
 #endif /* INCLUDED_OSCRECEIVER_H */
