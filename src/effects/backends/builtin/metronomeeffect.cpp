@@ -62,16 +62,16 @@ std::span<CSAMPLE> syncedClickOutput(double beatFractionBufferEnd,
 
 // static
 QString MetronomeEffect::getId() {
-    return "org.mixxx.effects.metronome";
+    return QStringLiteral("org.mixxx.effects.metronome");
 }
 
 // static
 EffectManifestPointer MetronomeEffect::getManifest() {
-    EffectManifestPointer pManifest(new EffectManifest());
+    auto pManifest = EffectManifestPointer::create();
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Metronome"));
-    pManifest->setAuthor("The Mixxx Team");
-    pManifest->setVersion("1.0");
+    pManifest->setAuthor(QObject::tr("The Mixxx Team"));
+    pManifest->setVersion(QStringLiteral("1.0"));
     pManifest->setDescription(QObject::tr("Adds a metronome click sound to the stream"));
     pManifest->setEffectRampsFromDry(true);
 
@@ -79,7 +79,7 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     // The maximum is at 128 + 1 allowing 128 as max value and
     // enabling us to pause time when the parameter is above
     EffectManifestParameterPointer period = pManifest->addParameter();
-    period->setId("bpm");
+    period->setId(QStringLiteral("bpm"));
     period->setName(QObject::tr("BPM"));
     period->setDescription(QObject::tr("Set the beats per minute value of the click sound"));
     period->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
@@ -88,7 +88,7 @@ EffectManifestPointer MetronomeEffect::getManifest() {
 
     // Period unit
     EffectManifestParameterPointer periodUnit = pManifest->addParameter();
-    periodUnit->setId("sync");
+    periodUnit->setId(QStringLiteral("sync"));
     periodUnit->setName(QObject::tr("Sync"));
     periodUnit->setDescription(QObject::tr(
             "Synchronizes the BPM with the track if it can be retrieved"));
@@ -101,8 +101,8 @@ EffectManifestPointer MetronomeEffect::getManifest() {
 
 void MetronomeEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
-    m_pBpmParameter = parameters.value("bpm");
-    m_pSyncParameter = parameters.value("sync");
+    m_pBpmParameter = parameters.value(QStringLiteral("bpm"));
+    m_pSyncParameter = parameters.value(QStringLiteral("sync"));
 }
 
 void MetronomeEffect::processChannel(
