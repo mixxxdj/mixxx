@@ -51,8 +51,6 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
     QByteArray OscMessageHeaderBa = OscMessageHeader.toLocal8Bit();
     const char* OscMessageHeaderChar = OscMessageHeaderBa.data();
-    QByteArray OscMessageBodyBa;
-    const char* OscMessageBodyChar;
 
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
         char buffer[IP_MTU_SIZE];
