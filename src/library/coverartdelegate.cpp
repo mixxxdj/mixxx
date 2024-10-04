@@ -76,7 +76,7 @@ void CoverArtDelegate::requestUncachedCover(
 void CoverArtDelegate::slotInhibitLazyLoading(
         bool inhibitLazyLoading) {
     m_inhibitLazyLoading = inhibitLazyLoading;
-    if (m_inhibitLazyLoading) {
+    if (m_inhibitLazyLoading || m_cacheMissRows.isEmpty()) {
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
@@ -86,10 +86,10 @@ void CoverArtDelegate::slotInhibitLazyLoading(
     const int width = static_cast<int>(m_pTableView->columnWidth(m_column) * scaleFactor);
 
     for (int row : std::as_const(m_cacheMissRows)) {
-        QModelIndex index = m_pTableView->model()->index(row, m_column);
-        CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
-        QRect rect = m_pTableView->visualRect(index);
+        const QModelIndex index = m_pTableView->model()->index(row, m_column);
+        const QRect rect = m_pTableView->visualRect(index);
         if (rect.intersects(m_pTableView->rect())) {
+            const CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
             requestUncachedCover(coverInfo, width, row);
         }
     }
