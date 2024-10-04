@@ -131,7 +131,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
             qDebug() << "OSC Msg Rcvd: Group, Key: Value:" << oscIn.oscGroup
                      << "," << oscIn.oscKey << ":" << value;
         } else {
-            qDebug() << "OSC Msg Rcvd for non-existing Control Object: Group, "
+            qDebug() << "OSC Msg Rcvd for NON-existing Control Object: Group, "
                         "Key: Value:"
                      << oscIn.oscGroup << "," << oscIn.oscKey << ":" << value;
         }
