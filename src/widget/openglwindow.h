@@ -3,6 +3,7 @@
 #include <QOpenGLWindow>
 
 class WGLWidget;
+class TrackDropTarget;
 
 /// Helper class used by wglwidgetqopengl
 
@@ -22,4 +23,5 @@ class OpenGLWindow : public QOpenGLWindow {
     bool event(QEvent* pEv) override;
 
     WGLWidget* m_pWidget;
+    TrackDropTarget* m_pTrackDropTarget;
 };

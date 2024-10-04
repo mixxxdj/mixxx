@@ -3,12 +3,12 @@
 #include <QHash>
 #include <QList>
 #include <QString>
+#include <memory>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
 #include "track/track_decl.h"
-#include "util/memory.h"
 
 class AnalyzerKey : public Analyzer {
   public:
@@ -20,6 +20,7 @@ class AnalyzerKey : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer tio) override;
@@ -35,6 +36,7 @@ class AnalyzerKey : public Analyzer {
     std::unique_ptr<mixxx::AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
     mixxx::audio::SampleRate m_sampleRate;
+    mixxx::audio::ChannelCount m_channelCount;
     SINT m_totalFrames;
     SINT m_maxFramesToProcess;
     SINT m_currentFrame;

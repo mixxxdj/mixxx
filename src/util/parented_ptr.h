@@ -29,17 +29,12 @@ class parented_ptr final {
 
     explicit parented_ptr(T* t) noexcept
             : m_ptr{t} {
-    }
-// Only generate destructor if not empty, otherwise its empty but will
-// cause the parented_ptr to be not trivially destructible even though it could be.
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-    ~parented_ptr() noexcept {
         DEBUG_ASSERT(!m_ptr || static_cast<const QObject*>(m_ptr)->parent());
     }
-#else
+
     // explicitly generate trivial destructor (since decltype(m_ptr) is not a class type)
     ~parented_ptr() noexcept = default;
-#endif
+
     // Rule of 5
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
@@ -104,7 +99,11 @@ class parented_ptr final {
     friend class parented_ptr;
 };
 
+template<typename... Args>
+concept AnyIsQObject = (... || std::is_convertible_v<Args, QObject*>);
+
 template<typename T, typename... Args>
+    requires(std::is_base_of_v<QObject, T> && AnyIsQObject<Args...>)
 inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
 }

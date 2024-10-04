@@ -7,6 +7,7 @@
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "test/soundsourceproviderregistration.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
@@ -56,6 +57,10 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
 #endif
                 << "-png.mp3"
                 << "-vbr.mp3"
+#ifdef __STEM__
+                << ".stem.mp4"
+                << ".stem.m4a"
+#endif
                 << ".ogg"
                 << ".opus"
                 << ".wav"
@@ -96,8 +101,8 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
         mixxx::AudioSource::OpenParams openParams;
-        const auto channelCount = mixxx::audio::ChannelCount(2);
-        openParams.setChannelCount(mixxx::audio::ChannelCount(2));
+        const auto channelCount = mixxx::audio::ChannelCount::stereo();
+        openParams.setChannelCount(channelCount);
         auto pAudioSource = proxy.openAudioSource(openParams);
         if (pAudioSource) {
             if (pAudioSource->getSignalInfo().getChannelCount() != channelCount) {
@@ -808,6 +813,10 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
             // 1166 FFmpeg
 
             {QStringLiteral("cover-test.ogg"), 1166},
+#ifdef __STEM__
+            {QStringLiteral("cover-test.stem.mp4"), 1166},
+            {QStringLiteral("cover-test.stem.m4a"), 1166},
+#endif
             {QStringLiteral("cover-test.opus"), 1268},
             {QStringLiteral("cover-test.wav"), 1166},
             {QStringLiteral("cover-test.wav"), 1166},
@@ -930,6 +939,20 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
                     QFileInfo(missingFileWithUppercaseSuffix))));
 }
 
+#ifdef __STEM__
+TEST_F(SoundSourceProxyTest, getTypeFromMissingNIStemFile) {
+    const QFileInfo missingFileWithUppercaseSuffix(
+            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.stem.mp4")));
+
+    ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
+
+    // The missing file doesn't contains a STEM atom, so it is considered like a standard mp4
+    EXPECT_STREQ(qPrintable("mp4"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(missingFileWithUppercaseSuffix))));
+}
+#endif
+
 TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());
@@ -1020,7 +1043,7 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         QStringLiteral("ac3"),
         QStringLiteral("aiff"),
         // Test fails for file type "caf" supported by SoundSourceSndfile
-        //QStringLiteral("caf"),
+        // QStringLiteral("caf"),
         QStringLiteral("flac"),
         QStringLiteral("it"),
         QStringLiteral("m4a"),
@@ -1038,10 +1061,14 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         QStringLiteral("mp4"),
         QStringLiteral("ogg"),
         // Test fails for file type "okt" supported by SoundSourceModPlug
-        //QStringLiteral("okt"),
+        // QStringLiteral("okt"),
         QStringLiteral("opus"),
         QStringLiteral("s3m"),
         QStringLiteral("stm"),
+#ifdef __STEM__
+        QStringLiteral("stem.mp4"),
+        QStringLiteral("stem.m4a"),
+#endif
         QStringLiteral("wav"),
         QStringLiteral("wma"),
         QStringLiteral("wv"),
@@ -1084,5 +1111,17 @@ TEST_F(SoundSourceProxyTest, freeModeGarbage) {
                 providerRegistration.getProvider());
         ASSERT_TRUE(pContReadSource != nullptr);
         break;
+    }
+}
+
+TEST_F(SoundSourceProxyTest, taglibStringToEnumFileType) {
+    const QStringList fileTypes = SoundSourceProxy::getSupportedFileTypes();
+    for (const auto& fileType : fileTypes) {
+        qDebug() << fileType;
+        if (fileType != "okt" &&     // Oktalyzer
+                fileType != "stm") { // "Scream Tracker";
+            ASSERT_NE(mixxx::taglib::stringToEnumFileType(fileType),
+                    mixxx::taglib::FileType::Unknown);
+        }
     }
 }

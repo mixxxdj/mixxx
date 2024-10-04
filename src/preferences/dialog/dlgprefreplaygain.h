@@ -42,6 +42,4 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     PollingControlProxy m_replayGainBoost;
     PollingControlProxy m_defaultBoost;
     PollingControlProxy m_enabled;
-
-    QButtonGroup m_analysisButtonGroup;
 };

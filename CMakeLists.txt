@@ -205,7 +205,7 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.5.0)
+project(mixxx VERSION 2.6.0)
 enable_language(C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
@@ -796,6 +796,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/metronomeclick.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/compressoreffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
@@ -933,6 +934,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtagfetcher.ui
   src/library/dlgtrackinfo.cpp
   src/library/dlgtrackinfo.ui
+  src/library/dlgtrackinfomulti.cpp
+  src/library/dlgtrackinfomulti.ui
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
@@ -966,8 +969,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/recording/dlgrecording.cpp
   src/library/recording/dlgrecording.ui
   src/library/recording/recordingfeature.cpp
-  src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
-  src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
   src/library/rekordbox/rekordboxfeature.cpp
   src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
@@ -982,11 +983,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/sidebarmodel.cpp
   src/library/starrating.cpp
   src/library/tabledelegates/bpmdelegate.cpp
+  src/library/tabledelegates/checkboxdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
-  src/library/tabledelegates/playcountdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -1042,6 +1044,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/colorpalettesettings.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
+  src/preferences/constants.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -1207,12 +1210,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
-  src/waveform/renderers/glslwaveformrenderersignal.cpp
-  src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
-  src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/glwaveformrendererrgb.cpp
-  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
@@ -1239,16 +1238,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveformmarklabel.cpp
   src/waveform/waveformwidgetfactory.cpp
   src/waveform/widgets/emptywaveformwidget.cpp
-  src/waveform/widgets/glrgbwaveformwidget.cpp
-  src/waveform/widgets/glsimplewaveformwidget.cpp
-  src/waveform/widgets/glslwaveformwidget.cpp
-  src/waveform/widgets/glvsynctestwidget.cpp
-  src/waveform/widgets/glwaveformwidget.cpp
-  src/waveform/widgets/glwaveformwidgetabstract.cpp
   src/waveform/widgets/hsvwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
+  src/waveform/widgets/glwaveformwidgetabstract.cpp
+  src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
@@ -1274,6 +1269,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectchainpresetselector.cpp
   src/widget/weffectknobparametername.cpp
   src/widget/weffectname.cpp
+  src/widget/weffectmetaknob.cpp
   src/widget/weffectparameterknob.cpp
   src/widget/weffectparameterknobcomposed.cpp
   src/widget/weffectparameternamebase.cpp
@@ -1296,9 +1292,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wnumberpos.cpp
   src/widget/wnumberrate.cpp
   src/widget/woverview.cpp
-  src/widget/woverviewhsv.cpp
-  src/widget/woverviewlmh.cpp
-  src/widget/woverviewrgb.cpp
   src/widget/wpixmapstore.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
@@ -1333,7 +1326,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 set(MIXXX_COMMON_PRECOMPILED_HEADER
   src/util/assert.h
 )
-target_precompile_headers(mixxx-lib PUBLIC
+set(MIXXX_LIB_PRECOMPILED_HEADER
   src/audio/frame.h
   src/audio/signalinfo.h
   src/audio/streaminfo.h
@@ -1341,6 +1334,7 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/control/control.h
   src/control/controlaudiotaperpot.h
   src/control/controlbehavior.h
+  src/control/controlbuttonmode.h
   src/control/controlcompressingproxy.h
   src/control/controleffectknob.h
   src/control/controlencoder.h
@@ -1374,6 +1368,7 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/track/tracknumbers.h
   src/track/trackrecord.h
   src/track/trackref.h
+  src/util/always_false_v.h
   src/util/alphabetafilter.h
   src/util/battery/battery.h
   src/util/cache.h
@@ -1435,7 +1430,6 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/mac.h
   src/util/macros.h
   src/util/math.h
-  src/util/memory.h
   src/util/messagepipe.h
   src/util/movinginterquartilemean.h
   src/util/mutex.h
@@ -1450,7 +1444,6 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/rampingvalue.h
   src/util/rangelist.h
   src/util/readaheadsamplebuffer.h
-  src/util/reference.h
   src/util/regex.h
   src/util/rescaler.h
   src/util/ringdelaybuffer.h
@@ -1471,6 +1464,7 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/statmodel.h
   src/util/statsmanager.h
   src/util/string.h
+  src/util/stringformat.h
   src/util/tapfilter.h
   src/util/task.h
   src/util/taskmonitor.h
@@ -1489,7 +1483,6 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/workerthread.h
   src/util/workerthreadscheduler.h
   src/util/xml.h
-  ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
 if (NOT QML)
   target_sources(mixxx-lib PRIVATE
@@ -1498,6 +1491,13 @@ if (NOT QML)
     # main target
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
+  )
+else()
+  target_sources(mixxx-lib PRIVATE
+    # The following source depends of QML being available but aren't part of the new QML UI
+    src/controllers/rendering/controllerrenderingengine.cpp
+    src/controllers/controllerenginethreadcontrol.cpp
+    src/controllers/controllerscreenpreview.cpp
   )
 endif()
 if(QOPENGL)
@@ -1521,18 +1521,13 @@ if(QOPENGL)
     src/waveform/renderers/allshader/waveformrendererslipmode.cpp
     src/waveform/renderers/allshader/waveformrendererfiltered.cpp
     src/waveform/renderers/allshader/waveformrendererhsv.cpp
-    src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
     src/waveform/renderers/allshader/waveformrendererpreroll.cpp
     src/waveform/renderers/allshader/waveformrendererrgb.cpp
+    src/waveform/renderers/allshader/waveformrenderertextured.cpp
     src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
     src/waveform/renderers/allshader/waveformrenderersimple.cpp
     src/waveform/renderers/allshader/waveformrendermark.cpp
     src/waveform/renderers/allshader/waveformrendermarkrange.cpp
-    src/waveform/widgets/allshader/filteredwaveformwidget.cpp
-    src/waveform/widgets/allshader/hsvwaveformwidget.cpp
-    src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
-    src/waveform/widgets/allshader/rgbwaveformwidget.cpp
-    src/waveform/widgets/allshader/simplewaveformwidget.cpp
     src/waveform/widgets/allshader/waveformwidget.cpp
     src/widget/openglwindow.cpp
     src/widget/tooltipqopengl.cpp
@@ -1546,11 +1541,6 @@ else()
     src/waveform/renderers/qtvsynctestrenderer.cpp
     src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-    src/waveform/widgets/qthsvwaveformwidget.cpp
-    src/waveform/widgets/qtrgbwaveformwidget.cpp
-    src/waveform/widgets/qtsimplewaveformwidget.cpp
-    src/waveform/widgets/qtvsynctestwidget.cpp
-    src/waveform/widgets/qtwaveformwidget.cpp
     src/widget/wglwidgetqglwidget.cpp
   )
 endif()
@@ -1628,26 +1618,6 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
   message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
-endif()
-
-# Disable warnings in generated source files
-if(GNU_GCC OR LLVM_CLANG)
-  set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
-  )
-  set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
-  )
-elseif(MSVC)
-  set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS /wd4244
-  )
 endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
@@ -2131,6 +2101,7 @@ add_executable(mixxx-test
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/itunesxmlimportertest.cpp
+  src/test/keyfactorytest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -2182,6 +2153,7 @@ add_executable(mixxx-test
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
   src/test/trackmetadata_test.cpp
+  src/test/trackmetadataexport_test.cpp
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
@@ -2189,41 +2161,22 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
+  src/test/waveform_upgrade_test.cpp
   src/util/moc_included_test.cpp
+  src/test/helpers/log_test.cpp
 )
-target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+if (QML)
+  target_sources(mixxx-test PRIVATE
+    src/test/controller_mapping_file_handler_test.cpp
+    src/test/controllerrenderingengine_test.cpp
+  )
+endif()
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
 
 find_package(benchmark)
 target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
-
-# Test Suite
-include(CTest)
-include(GoogleTest)
-enable_testing()
-gtest_add_tests(
-  TARGET mixxx-test
-  EXTRA_ARGS --logLevel info
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  TEST_LIST testsuite
-)
-if (NOT WIN32)
-  # Default to offscreen rendering during tests.
-  # This is required if the build system like Fedora koji/mock does not
-  # allow to pass environment variables into the ctest macro expansion.
-  set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-endif()
-
-# Benchmarking
-add_custom_target(mixxx-benchmark
-  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMENT "Mixxx Benchmarks"
-  VERBATIM
-)
-add_dependencies(mixxx-benchmark mixxx-test)
 
 #
 # Resources
@@ -2371,7 +2324,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.20.2)
+  set(LIBDJINTEROP_VERSION 0.21.0)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2407,7 +2360,7 @@ if(ENGINEPRIME)
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=3024b8b49bc0bd673a7f032e7da7b73ce61144951e810683ec89650fedd45b85
+      URL_HASH SHA256=160d4e09b25e859816a6b664058e7c6bc5cd889adeb188a9721c2b65d2133641
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2597,12 +2550,27 @@ target_link_libraries(mixxx-lib PRIVATE FpClassify)
 find_package(mp3lame REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE mp3lame::mp3lame)
 
+add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
+  lib/rekordbox-metadata/rekordbox_pdb.cpp
+  lib/rekordbox-metadata/rekordbox_anlz.cpp
+)
+target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
+target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
+
+#silence "enumeration values not handled in switch" in generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
+
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
-  lib/kaitai/kaitaistream.cpp
+  lib/kaitai/kaitai/kaitaistream.cpp
 )
 target_include_directories(Kaitai SYSTEM PUBLIC lib/kaitai)
 target_compile_definitions(Kaitai PRIVATE KS_STR_ENCODING_NONE)
+target_link_libraries(rekordbox_metadata PRIVATE Kaitai)
 target_link_libraries(mixxx-lib PRIVATE Kaitai)
 
 # For determining MP3 timing offset cases in Rekordbox library feature
@@ -2818,6 +2786,7 @@ if(QML)
     src/qml/qmlplayermanagerproxy.cpp
     src/qml/qmlplayerproxy.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
+    src/qml/qmlchainpresetmodel.cpp
     src/qml/qmlwaveformoverview.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
@@ -3266,6 +3235,9 @@ if(RUBBERBAND)
   target_sources(mixxx-lib PRIVATE
     src/effects/backends/builtin/pitchshifteffect.cpp
     src/engine/bufferscalers/enginebufferscalerubberband.cpp
+    src/engine/bufferscalers/rubberbandwrapper.cpp
+    src/engine/bufferscalers/rubberbandtask.cpp
+    src/engine/bufferscalers/rubberbandworkerpool.cpp
   )
 endif()
 
@@ -3478,6 +3450,65 @@ if(FFMPEG)
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
+# STEM file support
+default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+if (STEM)
+  if(NOT FFMPEG)
+    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
+  target_compile_definitions(mixxx-test PUBLIC __STEM__)
+  target_sources(mixxx-test PUBLIC
+    src/test/stemtest.cpp
+    src/test/steminfotest.cpp
+    src/test/stemcontrolobjecttest.cpp
+  )
+  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourcestem.cpp
+    src/track/steminfoimporter.cpp
+    src/track/steminfo.cpp
+    src/widget/wstemlabel.cpp
+  )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
+    target_sources(mixxx-qml-lib PRIVATE
+      src/qml/qmlstemsmodel.cpp
+    )
+  endif()
+endif()
+
+# Test Suite
+include(CTest)
+include(GoogleTest)
+enable_testing()
+gtest_add_tests(
+  TARGET mixxx-test
+  EXTRA_ARGS --logLevel info
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  TEST_LIST testsuite
+)
+if (NOT WIN32)
+  # Default to offscreen rendering during tests.
+  # This is required if the build system like Fedora koji/mock does not
+  # allow to pass environment variables into the ctest macro expansion.
+  set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif()
+
+# Benchmarking
+add_custom_target(mixxx-benchmark
+  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMENT "Mixxx Benchmarks"
+  VERBATIM
+)
+add_dependencies(mixxx-benchmark mixxx-test)
+
 # Google PerfTools
 option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
@@ -3585,8 +3616,8 @@ if(OPUS)
     src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
-  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile)
-  target_link_libraries(mixxx-lib PRIVATE Opus::Opus)
+  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
+  target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
 endif()
 
 # MAD MP3 Decoder
@@ -3653,7 +3684,7 @@ else()
   check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
   if(NOT HAVE_GSL_GSL)
     unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
-    message(FATAL_ERROR "ms-gsl deveopment headers (libmsgsl-dev) not found")
+    message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
   endif()
 endif()
 
@@ -3788,6 +3819,12 @@ if(WAVPACK)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
 
+target_precompile_headers(mixxx-lib PUBLIC
+  ${MIXXX_LIB_PRECOMPILED_HEADER}
+  ${MIXXX_COMMON_PRECOMPILED_HEADER}
+)
+target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/src/config.h" @ONLY)
@@ -3856,7 +3893,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy lunar mantic noble)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy mantic noble oracular)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

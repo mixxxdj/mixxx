@@ -37,8 +37,8 @@ class WTrackTableView : public WLibraryTableView {
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
-    void activateSelectedTrack() override;
-    void loadSelectedTrackToGroup(const QString& group, bool play) override;
+    void activateSelectedTrack();
+    void loadSelectedTrackToGroup(const QString& group, bool play);
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
@@ -48,13 +48,21 @@ class WTrackTableView : public WLibraryTableView {
     TrackId getCurrentTrackId() const;
     bool setCurrentTrackId(const TrackId& trackId, int column = 0, bool scrollToTrack = false);
 
+    void addToAutoDJBottom();
+    void addToAutoDJTop();
+    void addToAutoDJReplace();
+    void selectTrack(const TrackId&);
+
     void removeSelectedTracks();
     void cutSelectedTracks();
     void copySelectedTracks();
     void pasteTracks(const QModelIndex& index);
+
+    void moveSelection(int delta);
     void moveRows(QList<int> selectedRows, int destRow);
     void moveSelectedTracks(QKeyEvent* event);
     void selectTracksById(const QList<TrackId>& tracks, int prevColumn);
+    void selectTracksByPosition(const QList<int>& positions, int prevColum);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -103,9 +111,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotDeleteTracksFromDisk();
     void slotShowHideTrackMenu(bool show);
 
-    void slotAddToAutoDJBottom() override;
-    void slotAddToAutoDJTop() override;
-    void slotAddToAutoDJReplace() override;
     void slotSaveCurrentViewState() {
         saveCurrentViewState();
     };
@@ -115,7 +120,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotrestoreCurrentIndex() {
         restoreCurrentIndex();
     }
-    void slotSelectTrack(const TrackId&);
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);

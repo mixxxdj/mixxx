@@ -146,8 +146,8 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
             context.getScaleFactor());
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
-            Paintable::FIXED);
-    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
+            Paintable::DrawMode::Fixed);
+    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::DrawMode::Fixed) {
         setFixedSize(m_pBgImage->size());
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -652,14 +652,14 @@ bool WSpinnyBase::event(QEvent* pEvent) {
     return WGLWidget::event(pEvent);
 }
 
-bool WSpinnyBase::handleDragAndDropEventFromWindow(QEvent* ev) {
-    return event(ev);
+bool WSpinnyBase::handleDragAndDropEventFromWindow(QEvent* pEvent) {
+    return event(pEvent);
 }
 
-void WSpinnyBase::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WSpinnyBase::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
 
-void WSpinnyBase::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WSpinnyBase::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }

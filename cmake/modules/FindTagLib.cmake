@@ -48,7 +48,7 @@ include(IsStaticLibrary)
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   if(UNIX AND NOT APPLE)
-    # priorize the taglib1 package introduced in https://www.archlinux.de/packages/extra/x86_64/taglib1
+    # prioritize the taglib1 package introduced in https://www.archlinux.de/packages/extra/x86_64/taglib1
     set(ENV{PKG_CONFIG_PATH} "/usr/lib/taglib1/pkgconfig/:$ENV{PKG_CONFIG_PATH}")
   endif()
   pkg_check_modules(PC_TagLib QUIET taglib)

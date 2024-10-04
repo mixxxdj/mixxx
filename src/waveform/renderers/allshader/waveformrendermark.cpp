@@ -207,7 +207,7 @@ void allshader::WaveformRenderMark::paintGL() {
 
     QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    const double playPosition = m_waveformRenderer->getTruePosSample();
+    const double playPosition = m_waveformRenderer->getTruePosSample(positionType);
     double nextMarkPosition = std::numeric_limits<double>::max();
 
     for (const auto& pMark : std::as_const(m_marks)) {
@@ -225,12 +225,16 @@ void allshader::WaveformRenderMark::paintGL() {
                 static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
                         ->texture();
 
+        if (!pTexture) {
+            continue;
+        }
+
         const float currentMarkPoint =
                 std::round(
                         static_cast<float>(
                                 m_waveformRenderer
                                         ->transformSamplePositionInRendererWorld(
-                                                samplePosition)) *
+                                                samplePosition, positionType)) *
                         devicePixelRatio) /
                 devicePixelRatio;
         if (pMark->isShowUntilNext() &&

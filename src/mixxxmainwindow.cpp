@@ -27,7 +27,6 @@
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
 #include "moc_mixxxmainwindow.cpp"
-#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -100,7 +99,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #endif
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
+          m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
     DEBUG_ASSERT(pCoreServices);
     // These depend on the settings
 #ifdef __LINUX__
@@ -176,9 +175,10 @@ void MixxxMainWindow::initialize() {
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = pConfig->getValue(
             ConfigKey("[Controls]", "Tooltips"),
-            mixxx::TooltipsPreference::TOOLTIPS_ON);
+            mixxx::preferences::Tooltips::On);
 #ifdef MIXXX_USE_QOPENGL
-    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+    ToolTipQOpenGL::singleton().setActive(
+            m_toolTipsCfg == mixxx::preferences::Tooltips::On);
 #endif
 
 #ifdef __ENGINEPRIME__
@@ -555,6 +555,7 @@ void MixxxMainWindow::initializeWindow() {
 
 #ifndef __APPLE__
 void MixxxMainWindow::alwaysHideMenuBarDlg() {
+    // Don't show the dialog if the user unchecked "Ask me again"
     if (!m_pCoreServices->getSettings()->getValue<bool>(
                 kMenuBarHintConfigKey, true)) {
         return;
@@ -774,7 +775,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     qWarning() << "     $ createMenuBar";
-    ScopedTimer t(u"MixxxMainWindow::createMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
@@ -789,7 +790,7 @@ void MixxxMainWindow::connectMenuBar() {
     // so all connections must be unique!
     qWarning() << "     $ connectMenuBar";
 
-    ScopedTimer t(u"MixxxMainWindow::connectMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::connectMenuBar"));
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
@@ -956,6 +957,7 @@ void MixxxMainWindow::connectMenuBar() {
 #endif
 }
 
+/// Enable/disable listening to Alt key press for toggling the menubar.
 #ifndef __APPLE__
 void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     if (!m_pCoreServices->getKeyboardEventFilter() || !m_pMenuBar) {
@@ -963,6 +965,7 @@ void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     }
 
     if (m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false)) {
+        // with Qt::UniqueConnection we don't need to check whether we're already connected
         connect(m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
                 m_pMenuBar,
@@ -1153,10 +1156,11 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
     }
 }
 
-void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
+void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
     m_toolTipsCfg = tt;
 #ifdef MIXXX_USE_QOPENGL
-    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+    ToolTipQOpenGL::singleton().setActive(
+            m_toolTipsCfg == mixxx::preferences::Tooltips::On);
 #endif
 }
 
@@ -1237,7 +1241,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     return m_pCentralWidget != nullptr;
 }
 
-// Try to load default styles that can be overridden by skins
+/// Try to load default styles that can be overridden by skins
 void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
     QFile file(resPath + "/skins/default.qss");
@@ -1250,6 +1254,7 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     }
 }
 
+/// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
         // always show tooltips in the preferences window
@@ -1259,14 +1264,14 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
                         "DlgPreferences") {
             // return true for no tool tips
             switch (m_toolTipsCfg) {
-            case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+            case mixxx::preferences::Tooltips::OnlyInLibrary:
                 if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                     return true;
                 }
                 break;
-            case mixxx::TooltipsPreference::TOOLTIPS_ON:
+            case mixxx::preferences::Tooltips::On:
                 break;
-            case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+            case mixxx::preferences::Tooltips::Off:
                 return true;
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
@@ -1306,12 +1311,21 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
                 QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
                 createMenuBar();
                 connectMenuBar();
-                // With a global menu we didn't show the menubar auto-hide dialog
-                // during (windowed) startup, so ask now.
+            }
+#endif
+
+#ifndef __APPLE__
+#ifdef __LINUX__
+            // Only show the dialog if we are able to have the menubar in the
+            // main window, only then we're able to hide it.
+            if (!m_supportsGlobalMenuBar || isFullScreenNow)
+#endif
+            {
                 alwaysHideMenuBarDlg();
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif
+
             // This will toggle the Fullscreen checkbox and hide the menubar if
             // we go fullscreen.
             // Skip this during startup or the launchimage will be shifted

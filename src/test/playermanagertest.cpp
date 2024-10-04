@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QTest>
+#include <gsl/pointers>
 
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
@@ -20,6 +21,9 @@
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 
 namespace {
 
@@ -61,7 +65,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 true);
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
-        m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+        m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
 
         CoverArtCache::createInstance();
 
@@ -95,6 +99,14 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 m_pRecordingManager.get());
 
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+        RubberBandWorkerPool::createInstance();
+    }
+
+    void TearDown() override {
+        CoverArtCache::destroy();
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::destroy();
+#endif
     }
 
     ~PlayerManagerTest() {

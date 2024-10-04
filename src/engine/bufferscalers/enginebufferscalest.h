@@ -1,7 +1,8 @@
 #pragma once
 
+#include <memory>
+
 #include "engine/bufferscalers/enginebufferscale.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 class ReadAheadManager;
@@ -31,7 +32,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     void clear() override;
 
   private:
-    void onSampleRateChanged() override;
+    void onSignalChanged() override;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;

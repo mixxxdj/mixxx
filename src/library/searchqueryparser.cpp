@@ -81,11 +81,13 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                   << "grouping"
                   << "comment"
                   << "location"
-                  << "crate";
+                  << "crate"
+                  << "type";
     m_numericFilters << "track"
                      << "played"
                      << "rating"
-                     << "bitrate";
+                     << "bitrate"
+                     << "id";
     m_specialFilters << "year"
                      << "key"
                      << "bpm"
@@ -114,7 +116,9 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["lastplayed"] << "last_played_at";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["type"] << "filetype";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
+    m_fieldToSqlColumns["id"] << "id";
 
     m_textFilterMatcher = QRegularExpression(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegularExpression(

@@ -19,7 +19,9 @@ class BeatsImporter {
 
     /// Determines the timing offset and returns a Beats object.
     virtual BeatsPointer importBeatsAndApplyTimingOffset(
-            const QString& filePath, const audio::StreamInfo& streamInfo) = 0;
+            const QString& filePath,
+            const QString& fileType,
+            const audio::StreamInfo& streamInfo) = 0;
 };
 
 typedef std::shared_ptr<BeatsImporter> BeatsImporterPointer;

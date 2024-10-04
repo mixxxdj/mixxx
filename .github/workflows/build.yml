@@ -38,8 +38,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 11 x64
-            os: macos-11
+          - name: macOS 12 x64
+            os: macos-12
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -47,6 +47,7 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
               -DQT6=ON
+              -DQML=OFF
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
@@ -62,8 +63,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 11 arm64
-            os: macos-11
+          - name: macOS 12 arm64
+            os: macos-12
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -71,6 +72,7 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
               -DQT6=ON
+              -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
@@ -101,6 +103,7 @@ jobs:
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
               -DQT6=ON
+              -DQML=OFF
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
@@ -131,7 +134,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.2.0
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -313,13 +316,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/azure-code-signing-action@v0.3.0
+        uses: azure/trusted-signing-action@v0.4.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: exe
@@ -345,7 +348,7 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.4" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
@@ -368,13 +371,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/azure-code-signing-action@v0.3.0
+        uses: azure/trusted-signing-action@v0.4.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: msi
@@ -470,7 +473,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -481,10 +484,12 @@ jobs:
     needs: build
     # Always run this job, even if one or more jobs from the `build` jobs
     # fail to allow partial updates of the manifest.
-    if: always()
+    # Don't run it on forks that do not have access to our external
+    # infrastructure, though.
+    if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
 

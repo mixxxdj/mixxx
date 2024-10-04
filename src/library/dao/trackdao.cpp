@@ -621,7 +621,7 @@ void bindTrackLibraryValues(
     QString keysVersion = keys.getVersion();
     QString keysSubVersion = keys.getSubVersion();
     mixxx::track::io::key::ChromaticKey key = keys.getGlobalKey();
-    QString keyText = KeyUtils::formatGlobalKey(keys);
+    QString keyText = keys.getGlobalKeyText();
     pTrackLibraryQuery->bindValue(":keys", keysBlob);
     pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
     pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
@@ -1251,16 +1251,18 @@ void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
     QString keysVersion = record.value(column + 1).toString();
     QString keysSubVersion = record.value(column + 2).toString();
     QByteArray keysBlob = record.value(column + 3).toByteArray();
-    Keys keys = KeyFactory::loadKeysFromByteArray(
-            keysVersion, keysSubVersion, &keysBlob);
-
     if (!keysVersion.isEmpty()) {
-        pTrack->setKeys(keys);
+        pTrack->setKeys(KeyFactory::loadKeysFromByteArray(
+                keysVersion,
+                keysSubVersion,
+                &keysBlob));
     } else if (!keyText.isEmpty()) {
         // Typically this happens if we are upgrading from an older (<1.12.0)
         // version of Mixxx that didn't support Keys. We treat all legacy data
         // as user-generated because that way it will be treated sensitively.
-        pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+        pTrack->setKeys(KeyFactory::makeBasicKeysKeepText(
+                keyText,
+                mixxx::track::io::key::USER));
     }
 }
 
@@ -1368,7 +1370,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
     // will be locked again after the query has been executed (see below)
     // and potential race conditions will be resolved.
-    ScopedTimer t(u"TrackDAO::getTrackById");
+    ScopedTimer t(QStringLiteral("TrackDAO::getTrackById"));
 
     QSqlRecord queryRecord;
     {

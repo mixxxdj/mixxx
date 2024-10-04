@@ -17,7 +17,7 @@ constexpr bool kDefaultCueEnabled = true;
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_selFormat(QString(), QString(), false, QString()) {
+          m_selFormat({QString(), QString(), false, QString()}) {
     setupUi(this);
 
     // Setting recordings path.
@@ -92,10 +92,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     if (index >= 0) {
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
-    }
-    else {
+    } else {
         //Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
+        saveSplitSize();
     }
 
     setScrollSafeGuard(comboBoxSplitting);
@@ -121,8 +121,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             &DlgPrefRecord::slotSliderCompression);
 }
 
-DlgPrefRecord::~DlgPrefRecord()
-{
+DlgPrefRecord::~DlgPrefRecord() {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
     for (QRadioButton* button : std::as_const(m_formatButtons)) {
@@ -140,8 +139,7 @@ DlgPrefRecord::~DlgPrefRecord()
     m_optionWidgets.clear();
 }
 
-void DlgPrefRecord::slotApply()
-{
+void DlgPrefRecord::slotApply() {
     saveRecordingFolder();
     saveMetaData();
     saveEncoding();
@@ -150,8 +148,7 @@ void DlgPrefRecord::slotApply()
 }
 
 // This function updates/refreshes the contents of this dialog.
-void DlgPrefRecord::slotUpdate()
-{
+void DlgPrefRecord::slotUpdate() {
     // Find out the max width of the labels. This is needed to keep the
     // UI fixed in size when hiding or showing elements.
     // It is not perfect, but it didn't get better than this.
@@ -189,8 +186,7 @@ void DlgPrefRecord::slotUpdate()
     }
 }
 
-void DlgPrefRecord::slotResetToDefaults()
-{
+void DlgPrefRecord::slotResetToDefaults() {
     m_formatButtons.first()->setChecked(true);
     m_selFormat = EncoderFactory::getFactory().getFormatFor(
             m_formatButtons.first()->objectName());
@@ -208,9 +204,7 @@ void DlgPrefRecord::slotResetToDefaults()
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 }
 
-
-void DlgPrefRecord::slotBrowseRecordingsDir()
-{
+void DlgPrefRecord::slotBrowseRecordingsDir() {
     QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose recordings directory"),
             m_pConfig->getValueString(
@@ -228,8 +222,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir()
     }
 }
 
-void DlgPrefRecord::slotFormatChanged()
-{
+void DlgPrefRecord::slotFormatChanged() {
     QObject *senderObj = sender();
     m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
     setupEncoderUI();
@@ -305,8 +298,7 @@ void DlgPrefRecord::setupEncoderUI() {
     }
 }
 
-void DlgPrefRecord::slotSliderQuality()
-{
+void DlgPrefRecord::slotSliderQuality() {
     updateTextQuality();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
@@ -339,8 +331,7 @@ void DlgPrefRecord::updateTextQuality() {
     }
 }
 
-void DlgPrefRecord::slotSliderCompression()
-{
+void DlgPrefRecord::slotSliderCompression() {
     updateTextCompression();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
@@ -371,9 +362,7 @@ void DlgPrefRecord::loadMetaData() {
     LineEditAlbum->setText(m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")));
 }
 
-
-void DlgPrefRecord::saveRecordingFolder()
-{
+void DlgPrefRecord::saveRecordingFolder() {
     QString newPath = LineEditRecordings->text();
     if (newPath != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
         QFileInfo fileInfo(newPath);
@@ -402,8 +391,8 @@ void DlgPrefRecord::saveRecordingFolder()
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), newPath);
     }
 }
-void DlgPrefRecord::saveMetaData()
-{
+
+void DlgPrefRecord::saveMetaData() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));

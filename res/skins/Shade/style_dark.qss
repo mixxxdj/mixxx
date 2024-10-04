@@ -118,6 +118,7 @@ WEffectSelector::indicator:unchecked:selected,
   #MainMenu::item:disabled,
   #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
+  WLibraryTextBrowser QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
@@ -149,6 +150,9 @@ WEffectSelector::indicator:unchecked:selected,
 
 #CueDeleteButton {
   background-color: #8a8a8a;
+}
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #b79d00;
 }
 #CueLabelEdit {
   background-color: #3F3041;

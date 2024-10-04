@@ -16,6 +16,7 @@
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
+#include "library/dlgtrackinfomulti.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
@@ -224,6 +225,10 @@ void WTrackMenu::createMenus() {
                 &QMenu::aboutToShow,
                 this,
                 [this] {
+                    // TODO When accidentally leaving the menu and reopening it,
+                    // the previous check states are cleared.
+                    // Clear in closeEvent() only? And create actions on aboutToShow
+                    // only if it's empty?
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
@@ -237,6 +242,7 @@ void WTrackMenu::createMenus() {
                 this,
                 [this](const QString& searchQuery) {
                     m_pLibrary->searchTracksInCollection(searchQuery);
+                    hide();
                 });
     }
 
@@ -339,14 +345,16 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotRemoveFromDisk);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pStarRatingAction = new WStarRatingAction(this);
         m_pStarRatingAction->setObjectName("RatingAction");
         connect(m_pStarRatingAction,
                 &WStarRatingAction::ratingSet,
                 this,
                 &WTrackMenu::slotSetRating);
+    }
 
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
@@ -625,7 +633,7 @@ void WTrackMenu::setupActions() {
         addMenu(m_pBPMMenu);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         addAction(m_pStarRatingAction);
     }
 
@@ -764,7 +772,7 @@ int WTrackMenu::getCommonTrackRating() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return 0;
     }
-    int commonRating;
+    int commonRating = 0;
     if (m_pTrackModel) {
         const int column =
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_RATING);
@@ -1095,13 +1103,15 @@ void WTrackMenu::updateMenus() {
         m_pSelectInLibraryAct->setEnabled(enabled);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         // Might be needed to resize Menu to fit the star rating
         // QResizeEvent resizeEvent(QSize(), m_pStarRatingAction->sizeHint());
         // qApp->sendEvent(m_pStarRatingAction, &resizeEvent);
         m_pStarRatingAction->setRating(getCommonTrackRating());
+    }
 
-        m_pPropertiesAct->setEnabled(singleTrackSelected);
+    if (featureIsEnabled(Feature::Properties)) {
+        m_pPropertiesAct->setEnabled(true);
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
@@ -2491,25 +2501,50 @@ void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {
         return;
     }
-    // Create a fresh dialog on invocation
-    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
-            m_pConfig,
-            m_pTrackModel);
-    connect(m_pDlgTrackInfo.get(),
-            &QDialog::finished,
-            this,
-            [this]() {
-                if (m_pDlgTrackInfo.get() == sender()) {
-                    m_pDlgTrackInfo.release()->deleteLater();
-                }
-            });
-    // Method getFirstTrackPointer() is not applicable here!
-    if (m_pTrackModel) {
-        m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
+
+    if (m_pTrackModel && getTrackCount() > 1) {
+        // Use the batch editor.
+        // Create a fresh dialog on invocation.
+        m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
+                m_pConfig);
+        connect(m_pDlgTrackInfoMulti.get(),
+                &QDialog::finished,
+                this,
+                [this]() {
+                    if (m_pDlgTrackInfoMulti.get() == sender()) {
+                        m_pDlgTrackInfoMulti.release()->deleteLater();
+                    }
+                });
+        QList<TrackPointer> tracks;
+        tracks.reserve(getTrackCount());
+        for (int i = 0; i < m_trackIndexList.size(); i++) {
+            tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
+        }
+        m_pDlgTrackInfoMulti->loadTracks(tracks);
+        m_pDlgTrackInfoMulti->show();
     } else {
-        m_pDlgTrackInfo->loadTrack(m_pTrack);
+        // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
+        // Create a fresh dialog on invocation.
+        m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+                m_pConfig,
+                m_pTrackModel);
+        connect(m_pDlgTrackInfo.get(),
+                &QDialog::finished,
+                this,
+                [this]() {
+                    if (m_pDlgTrackInfo.get() == sender()) {
+                        m_pDlgTrackInfo.release()->deleteLater();
+                    }
+                });
+        // Method getFirstTrackPointer() is not applicable here, the dialog
+        // needs an index reference for the Next/Prev navigation.
+        if (m_pTrackModel) {
+            m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
+        } else {
+            m_pDlgTrackInfo->loadTrack(m_pTrack);
+        }
+        m_pDlgTrackInfo->show();
     }
-    m_pDlgTrackInfo->show();
 }
 
 void WTrackMenu::showDlgTrackInfo(const QString& property) {
@@ -2722,7 +2757,7 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::FindOnWeb:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::Properties);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
     case Feature::SelectInLibrary:

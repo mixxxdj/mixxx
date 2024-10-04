@@ -9,7 +9,9 @@
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
+#include "waveform/widgets/waveformwidgetvars.h"
 
 class WVuMeterLegacy;
 class WVuMeterBase;
@@ -22,13 +24,60 @@ class VisualsManager;
 class WaveformWidgetAbstractHandle {
   public:
     WaveformWidgetAbstractHandle();
+    WaveformWidgetAbstractHandle(WaveformWidgetType::Type type,
+            QList<WaveformWidgetBackend> backends
+#ifdef MIXXX_USE_QOPENGL
+            ,
+            int supportedOptions
+#endif
+            )
+            : m_type(type), m_backends(std::move(backends))
+#ifdef MIXXX_USE_QOPENGL
+              ,
+              m_supportedOption(supportedOptions)
+#endif
+    {
+    }
 
     WaveformWidgetType::Type getType() const { return m_type;}
-    QString getDisplayName() const { return m_displayString;}
+    const QList<WaveformWidgetBackend>& getBackend() const {
+        return m_backends;
+    }
+    bool supportAcceleration() const {
+        for (auto backend : m_backends) {
+            if (backend == WaveformWidgetBackend::GL ||
+                    backend == WaveformWidgetBackend::GLSL
+#ifdef MIXXX_USE_QOPENGL
+                    || backend == WaveformWidgetBackend::AllShader
+#endif
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    bool supportSoftware() const {
+        return m_backends.contains(WaveformWidgetBackend::None);
+    }
+
+#ifdef MIXXX_USE_QOPENGL
+    allshader::WaveformRendererSignalBase::Options supportedOptions(
+            WaveformWidgetBackend backend) const {
+        return backend == WaveformWidgetBackend::AllShader
+                ? m_supportedOption
+                : allshader::WaveformRendererSignalBase::Option::None;
+    }
+#endif
+
+    QString getDisplayName() const;
 
   private:
     WaveformWidgetType::Type m_type;
-    QString m_displayString;
+    QList<WaveformWidgetBackend> m_backends;
+#ifdef MIXXX_USE_QOPENGL
+    // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
+    allshader::WaveformRendererSignalBase::Options m_supportedOption;
+#endif
 
     friend class WaveformWidgetFactory;
 };
@@ -83,6 +132,11 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    WaveformWidgetBackend preferredBackend() const;
+    static WaveformWidgetType::Type defaultType() {
+        return WaveformWidgetType::RGB;
+    }
+
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid
     bool setWidgetType(WaveformWidgetType::Type type);
@@ -98,7 +152,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
-
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
@@ -144,7 +197,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
-    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
+    const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
+        return m_waveformWidgetHandles;
+    }
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void destroyWidgets();
 
@@ -157,9 +212,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
-
-    WaveformWidgetType::Type autoChooseWidgetType() const;
-
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
@@ -167,6 +219,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swapSpinnies();
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
+
+    void overviewNormalizeChanged();
+    void overallVisualGainChanged();
 
   public slots:
     void slotSkinLoaded();
@@ -187,14 +242,20 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void renderSelf();
     void swapSelf();
 
+    void addHandle(
+            QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend>>&
+                    collectedHandles,
+            WaveformWidgetType::Type type,
+            const WaveformWidgetVars& vars) const;
     void evaluateWidgets();
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
+    WaveformWidgetAbstract* createAllshaderWaveformWidget(
+            WaveformWidgetType::Type type, WWaveformViewer* viewer);
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);
-    QString getDisplayNameFromType(WaveformWidgetType::Type type);
 
     //All type of available widgets
 
@@ -230,6 +291,14 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
+
+    // TODO(#13245): Migrate the following methods to smart pointer.
+    WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug
     PerformanceTimer m_time;

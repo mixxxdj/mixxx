@@ -24,18 +24,24 @@ bool calcUseColorsAuto() {
     // see https://no-color.org/
     if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
         return false;
-    } else {
-#ifndef __WINDOWS__
-        if (isatty(fileno(stderr))) {
-            return true;
-        }
-#else
-        if (_isatty(_fileno(stderr))) {
-            return true;
-        }
-#endif
     }
-    return false;
+
+#ifndef __WINDOWS__
+    if (!isatty(fileno(stderr))) {
+        return false;
+    }
+#else
+    if (!_isatty(_fileno(stderr))) {
+        return false;
+    }
+#endif
+
+    // Check if terminal is known to support ANSI colors
+    QString term = QProcessEnvironment::systemEnvironment().value("TERM");
+    return term == "alacritty" || term == "ansi" || term == "cygwin" || term == "linux" ||
+            term.startsWith("screen") || term.startsWith("xterm") ||
+            term.startsWith("vt100") || term.startsWith("rxvt") ||
+            term.endsWith("color");
 }
 
 } // namespace
@@ -340,6 +346,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "you specify will be loaded into the next virtual deck.")
                             : QString());
 
+    const QCommandLineOption controllerPreviewScreens(QStringLiteral("controller-preview-screens"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Preview rendered controller screens in the Setting windows.")
+                            : QString());
+    parser.addOption(controllerPreviewScreens);
+
     if (forUserFeedback) {
         // We know form the first path, that there will be likely an error message, check again.
         // This is not the case if the user uses a Qt internal option that is unknown
@@ -408,6 +420,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_useLegacyVuMeter = parser.isSet(enableLegacyVuMeter);
     m_useLegacySpinny = parser.isSet(enableLegacySpinny);
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerPreviewScreens = parser.isSet(controllerPreviewScreens);
     m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML
