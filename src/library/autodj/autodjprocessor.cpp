@@ -3,6 +3,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginedeck.h"
+#include "library/autodj/autodjconstants.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -17,8 +18,8 @@ namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
-constexpr double kKeepPosition = -1.0;
-constexpr double kSkipToNextTrack = -2.0;
+constexpr double kKeepPosition = AutoDJConstants::kKeepPosition;
+constexpr double kSkipToNextTrack = AutoDJConstants::kSkipToNextTrack;
 
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
