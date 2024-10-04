@@ -7,18 +7,22 @@
 
 #include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
+#include "effects/backends/effectmanifestparameter.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "metronomeclick.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "util/types.h"
 
 namespace {
 
-std::size_t playMonoSamples(std::span<const CSAMPLE> monoSource, std::span<CSAMPLE> output) {
+std::size_t playMonoSamplesWithGain(std::span<const CSAMPLE> monoSource,
+        std::span<CSAMPLE> output,
+        CSAMPLE_GAIN gain) {
     const std::size_t outputBufferFrames = output.size() / mixxx::kEngineChannelOutputCount;
     std::size_t framesPlayed = std::min(monoSource.size(), outputBufferFrames);
-    SampleUtil::addMonoToStereo(output.data(), monoSource.data(), framesPlayed);
+    SampleUtil::addMonoToStereoWithGain(gain, output.data(), monoSource.data(), framesPlayed);
     return framesPlayed;
 }
 
@@ -96,6 +100,19 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     periodUnit->setRange(0, 1, 1);
 
+    EffectManifestParameterPointer gain = pManifest->addParameter();
+    gain->setId(QStringLiteral("gain"));
+    gain->setName(QObject::tr("Gain"));
+    gain->setDescription(QObject::tr(
+            "Set the gain of metronome click sound"));
+    gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
+    gain->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    gain->setRange(-24.0, 0.0, 3.0); // decibel
+    // 0db on the range above, assumes scale is linear default=(max-min)x+min (solve for x)
+    // TODO: move this generally to ControlPotmeterBehavior?
+    gain->setNeutralPointOnScale(24.0 / 27.0);
+
     return pManifest;
 }
 
@@ -103,6 +120,7 @@ void MetronomeEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pBpmParameter = parameters.value(QStringLiteral("bpm"));
     m_pSyncParameter = parameters.value(QStringLiteral("sync"));
+    m_pGainParameter = parameters.value(QStringLiteral("gain"));
 }
 
 void MetronomeEffect::processChannel(
@@ -140,7 +158,9 @@ void MetronomeEffect::processChannel(
         }
     }
 
-    playMonoSamples(subspan_clamped(click, gs->framesSinceLastClick), output);
+    const CSAMPLE_GAIN gain = db2ratio(static_cast<float>(m_pGainParameter->value()));
+
+    playMonoSamplesWithGain(subspan_clamped(click, gs->framesSinceLastClick), output, gain);
     gs->framesSinceLastClick += engineParameters.framesPerBuffer();
 
     std::span<CSAMPLE> outputBufferOffset = [&] {
@@ -159,6 +179,6 @@ void MetronomeEffect::processChannel(
     }();
 
     if (!outputBufferOffset.empty()) {
-        gs->framesSinceLastClick = playMonoSamples(click, outputBufferOffset);
+        gs->framesSinceLastClick = playMonoSamplesWithGain(click, outputBufferOffset, gain);
     }
 }
