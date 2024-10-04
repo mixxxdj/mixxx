@@ -215,7 +215,7 @@ mixxx::Duration AutoDJProcessor::calculateQueueDuration() {
                 TrackAttributes fromTrack(previousTrack);
                 TrackAttributes toTrack(track);
                 calculateTransitionImpl(fromTrack, toTrack, true);
-                durationTotal += track->getDuration() - fromTrack.fadeDurationSeconds;
+                durationTotal += track->getDuration() + fromTrack.adjustDurationSeconds;
             } else {
                 // TODO: Take the transition between an already playing deck
                 //       and the top of the Auto DJ queue into account?
@@ -1551,11 +1551,29 @@ void AutoDJProcessor::calculateTransitionImpl(
         }
     }
 
-    // A negative startPos (and therefore fadeDuration) indicates
-    // that there is silence between the tracks instead of an overlap.
-    fromTrack.fadeDurationSeconds =
-            (fromTrack.fadeEndPos - fromTrack.fadeBeginPos) +
-            math_max(0.0, toTrack.startPos);
+    // adjustDurationSeconds is the time that the transition takes up from
+    // (or adds to) the combined total duration of fromTrack+toTrack.
+    //
+    //
+    //                +---+ fromTrack start position
+    //                 |   |
+    //                      +---+ toTrack start position
+    //
+    //
+    // This means that, due to the transition:
+    //   - toTrack is shortened by toTrack.startPos (which may be negative when
+    //     silence is inserted between tracks, in which case it is actually
+    //     elongated).
+    //
+    //   - fromTrack is shortened by the time between fromTrack.fadeBeginPos and
+    //     fromTrack.duration. (the transition duration is already taken into
+    //     account by not subtracting it from toTrack).
+    //
+    //   - The fromTrack.startPos and toTrack.fadeBeginPos/fadeEndPos are not
+    //     accounted for here, but are taken into account by the calculation
+    //     of the previous/next transition, respectively.
+    fromTrack.adjustDurationSeconds = 0.0 -
+            (fromDeckDuration - fromTrack.fadeBeginPos) - toTrack.startPos;
 
     // The positions are expected to be a fraction of the track length.
     fromTrack.fadeBeginPos /= fromDeckDuration;
