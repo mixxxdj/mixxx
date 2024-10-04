@@ -842,15 +842,29 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* M_RESTRICT pDest,
 }
 
 // static
-void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
-        const CSAMPLE* M_RESTRICT pSrc, SINT numFrames) {
+void SampleUtil::addMonoToStereoWithGain(CSAMPLE_GAIN gain,
+        CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
+    if (gain == 0.0) {
+        // no need to add silence
+        return;
+    }
     // forward loop
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numFrames; ++i) {
-        const CSAMPLE s = pSrc[i];
+        const CSAMPLE s = pSrc[i] * gain;
         pDest[i * 2] += s;
         pDest[i * 2 + 1] += s;
     }
+}
+
+// static
+void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
+    // lets hope the compiler inlines here and optimizes the multiplication away
+    return addMonoToStereoWithGain(1, pDest, pSrc, numFrames);
 }
 
 // static
