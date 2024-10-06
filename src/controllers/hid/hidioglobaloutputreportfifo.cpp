@@ -14,7 +14,8 @@ constexpr size_t kSizeOfFifoInReports = 32;
 } // namespace
 
 HidIoGlobalOutputReportFifo::HidIoGlobalOutputReportFifo()
-        : m_fifoQueue(kSizeOfFifoInReports) {
+        : m_fifoQueue(kSizeOfFifoInReports),
+          m_hidWriteErrorLogged(false) {
 }
 
 void HidIoGlobalOutputReportFifo::addReportDatasetToFifo(const quint8 reportId,
@@ -69,10 +70,16 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
             reinterpret_cast<const unsigned char*>(reportToSend.constData()),
             reportToSend.size());
     if (result == -1) {
-        qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
-                             << mixxx::convertWCStringToQString(
-                                        hid_error(pHidDevice),
-                                        kMaxHidErrorMessageSize);
+        if (!m_hidWriteErrorLogged) {
+            qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
+                                 << mixxx::convertWCStringToQString(
+                                            hid_error(pHidDevice),
+                                            kMaxHidErrorMessageSize);
+            // Stop logging error messages if every hid_write() fails to avoid large log files
+            m_hidWriteErrorLogged = true;
+        }
+    } else {
+        m_hidWriteErrorLogged = false;
     }
 
     hidDeviceLock.unlock();
