@@ -175,8 +175,8 @@ void CoverArtDelegate::paintItem(
 void CoverArtDelegate::cleanCacheMissRows() const {
     auto it = m_cacheMissRows.begin();
     while (it != m_cacheMissRows.end()) {
-        QModelIndex index = m_pTableView->model()->index(*it, m_column);
-        QRect rect = m_pTableView->visualRect(index);
+        const QModelIndex index = m_pTableView->model()->index(*it, m_column);
+        const QRect rect = m_pTableView->visualRect(index);
         if (!rect.intersects(m_pTableView->rect())) {
             // Cover image row is no longer shown. We keep the set
             // small which likely reuses the allocatd memory later
