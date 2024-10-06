@@ -37,6 +37,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
 void WaveformRenderBeat::preprocess() {
     if (!preprocessInner()) {
         geometry().allocate(0);
+        markDirtyGeometry();
     }
 }
 
@@ -100,7 +101,6 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const int reserved = numBeatsInRange * numVerticesPerLine;
     geometry().allocate(reserved);
-    // TODO set dirty for scenegraph
 
     VertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::Point2D>()};
 
@@ -120,13 +120,15 @@ bool WaveformRenderBeat::preprocessInner() {
         vertexUpdater.addRectangle({x1, 0.f},
                 {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth});
     }
+    markDirtyGeometry();
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
+    const QMatrix4x4 matrix = m_waveformRenderer->getMatrix(false);
 
     material().setUniform(0, matrix);
     material().setUniform(1, m_color);
+    markDirtyMaterial();
 
     return true;
 }
