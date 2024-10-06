@@ -123,10 +123,14 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
             m_lastSentData.size());
     if (result == -1) {
         if (!m_hidWriteErrorLogged) {
-            qCWarning(logOutput) << "Unable to send data to device :"
-                                 << mixxx::convertWCStringToQString(
-                                            hid_error(pHidDevice),
-                                            kMaxHidErrorMessageSize);
+            qCWarning(logOutput)
+                    << "Unable to send data to device :"
+                    << mixxx::convertWCStringToQString(
+                               hid_error(pHidDevice), kMaxHidErrorMessageSize)
+                    << "Note that, this message is only logged once and may "
+                       "not appear again until all hid_writee errors have "
+                       "disappeared.";
+
             // Stop logging error messages if every hid_write() fails to avoid large log files
             m_hidWriteErrorLogged = true;
         }

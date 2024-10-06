@@ -71,10 +71,15 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
             reportToSend.size());
     if (result == -1) {
         if (!m_hidWriteErrorLogged) {
-            qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
-                                 << mixxx::convertWCStringToQString(
-                                            hid_error(pHidDevice),
-                                            kMaxHidErrorMessageSize);
+            qCWarning(logOutput)
+                    << "Unable to send data to" << deviceInfo.formatName()
+                    << ":"
+                    << mixxx::convertWCStringToQString(
+                               hid_error(pHidDevice), kMaxHidErrorMessageSize)
+                    << "Note that, this message is only logged once and may "
+                       "not appear again until all hid_read errors have "
+                       "disappeared.";
+
             // Stop logging error messages if every hid_write() fails to avoid large log files
             m_hidWriteErrorLogged = true;
         }

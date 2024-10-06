@@ -102,11 +102,15 @@ void HidIoThread::pollBufferedInputReports() {
             // -1 is the only error value according to hidapi documentation.
             DEBUG_ASSERT(bytesRead == -1);
             if (!m_hidReadErrorLogged) {
-                qCWarning(m_logOutput) << "Unable to read buffered HID InputReports from"
-                                       << m_deviceInfo.formatName() << ":"
-                                       << mixxx::convertWCStringToQString(
-                                                  hid_error(m_pHidDevice),
-                                                  kMaxHidErrorMessageSize);
+                qCWarning(m_logOutput)
+                        << "Unable to read buffered HID InputReports from"
+                        << m_deviceInfo.formatName() << ":"
+                        << mixxx::convertWCStringToQString(
+                                   hid_error(m_pHidDevice),
+                                   kMaxHidErrorMessageSize)
+                        << "Note that, this message is only logged once and "
+                           "may not appear again until all hid_read errors "
+                           "have disappeared.";
                 // Stop logging error messages if every hid_read() fails to avoid large log files
                 m_hidReadErrorLogged = true;
             }
