@@ -1,8 +1,13 @@
 <Template>
   <WidgetGroup>
+    <ObjectName>Mixer_4Decks_Stacked</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,min</SizePolicy>
     <Children>
+
+      <!-- spacer to center channel controls without crossfader
+          without stretching the mixer -->
+      <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
       <WidgetGroup><!-- Channel controls -->
         <ObjectName>AlignHCenter</ObjectName>
@@ -11,24 +16,28 @@
         <Children>
 
           <Template src="skins:LateNight/mixer/channel_4decks.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Stacked_Ch3</SetVariable>
             <SetVariable name="ChanNum">3</SetVariable>
             <SetVariable name="xfaderLeft">default</SetVariable>
             <SetVariable name="xfaderRight">warning</SetVariable>
           </Template>
 
           <Template src="skins:LateNight/mixer/channel_4decks.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Stacked_Ch1</SetVariable>
             <SetVariable name="ChanNum">1</SetVariable>
             <SetVariable name="xfaderLeft">default</SetVariable>
             <SetVariable name="xfaderRight">warning</SetVariable>
           </Template>
 
           <Template src="skins:LateNight/mixer/channel_4decks.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Stacked_Ch2</SetVariable>
             <SetVariable name="ChanNum">2</SetVariable>
             <SetVariable name="xfaderLeft">warning</SetVariable>
             <SetVariable name="xfaderRight">default</SetVariable>
           </Template>
 
           <Template src="skins:LateNight/mixer/channel_4decks.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Stacked_Ch4</SetVariable>
             <SetVariable name="ChanNum">4</SetVariable>
             <SetVariable name="xfaderLeft">warning</SetVariable>
             <SetVariable name="xfaderRight">default</SetVariable>
@@ -41,41 +50,27 @@
 
       <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
+      <WidgetGroup><!-- CrossfaderContainer -->
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-
-          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>CrossfaderContainer</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <SingletonContainer>
-                <ObjectName>CrossfaderSingleton</ObjectName>
-              </SingletonContainer>
-            </Children>
-          </WidgetGroup><!-- CrossfaderContainer -->
-
-          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
-
+          <SingletonContainer>
+            <ObjectName>CrossfaderSingleton</ObjectName>
+          </SingletonContainer>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- CrossfaderAndSwitches2Decks -->
+      </WidgetGroup><!-- CrossfaderContainer -->
 
-      <!-- spacer to center channel controls without crossfader
-          without stretching the mixer -->
       <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_4decks_row</ConfigKey>
       <BindProperty>visible</BindProperty>
+      <Transform><Not/></Transform>
     </Connection>
   </WidgetGroup>
 </Template>

@@ -3,48 +3,79 @@
   <SetVariable name="ChannelType">channel</SetVariable>
   <SetVariable name="VuSize">deck</SetVariable>
   <SetVariable name="VuColor">dark</SetVariable>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
 
   <SingletonDefinition>
     <ObjectName>CrossfaderSingleton</ObjectName>
     <Children>
+      <!-- WidgetGroup around slider to draw a style border
+      around it when AutoDJ is enabled. Note that it doesn't
+      work without the extra outer WidgetGroup (highlight in SliderComposed) -->
       <WidgetGroup>
-        <Size>115f,40f</Size>
+        <ObjectName>CrossfaderContainer</ObjectName>
+        <SizePolicy>f,f</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
         <Children>
-          <!-- WidgetGroup around slider to draw a style border
-          around it when AutoDJ is enabled. Note that it doesn't
-          work without the extra outer WidgetGroup -->
-          <WidgetGroup>
+          <SliderComposed>
+            <TooltipId>crossfader</TooltipId>
             <Size>115f,40f</Size>
-            <ObjectName>CrossfaderContainer</ObjectName>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
+            <Slider visible="false" scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_crossfader.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <BarColor><Variable name="BarColorCrossfader"/></BarColor>
+            <BarWidth><Variable name="BarWidth"/></BarWidth>
+            <BarMargins><Variable name="BarMarginCrossfader"/></BarMargins>
+            <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
+            <BarRoundCaps>true</BarRoundCaps>
+            <BarAxisPos>19.0</BarAxisPos>
+            <BarUnipolar>false</BarUnipolar>
             <Connection>
-              <ConfigKey>[AutoDJ],enabled</ConfigKey>
-              <BindProperty>highlight</BindProperty>
+              <ConfigKey>[Master],crossfader</ConfigKey>
             </Connection>
-            <Children>
-              <SliderComposed>
-                <TooltipId>crossfader</TooltipId>
-                <Size>115f,40f</Size>
-                <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
-                <Slider visible="false" scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_crossfader.svg</Slider>
-                <Horizontal>true</Horizontal>
-                <BarColor><Variable name="BarColorCrossfader"/></BarColor>
-                <BarWidth><Variable name="BarWidth"/></BarWidth>
-                <BarMargins><Variable name="BarMarginCrossfader"/></BarMargins>
-                <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
-                <BarRoundCaps>true</BarRoundCaps>
-                <BarAxisPos>19.0</BarAxisPos>
-                <BarUnipolar>false</BarUnipolar>
-                <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
-                </Connection>
-              </SliderComposed>
-            </Children>
-          </WidgetGroup>
+          </SliderComposed>
         </Children>
       </WidgetGroup>
     </Children>
   </SingletonDefinition>
 
+  <SingletonDefinition>
+    <ObjectName>CrossfaderNarrowSingleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Size>85f,40f</Size>
+        <ObjectName>CrossfaderContainer</ObjectName>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+        <Children>
+          <SliderComposed>
+            <TooltipId>crossfader</TooltipId>
+            <Size>85f,40f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_crossfader_small.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <BarColor><Variable name="BarColorCrossfader"/></BarColor>
+            <BarWidth><Variable name="BarWidth"/></BarWidth>
+            <BarMargins><Variable name="BarMarginCrossfader"/></BarMargins>
+            <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
+            <BarRoundCaps>true</BarRoundCaps>
+            <BarAxisPos>19.0</BarAxisPos>
+            <BarUnipolar>false</BarUnipolar>
+            <Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <!-- VU meters -->
   <SingletonDefinition>
     <ObjectName>VuMeterChannel1</ObjectName>
     <Children>
@@ -124,6 +155,183 @@
           <Template src="skins:LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">light</SetVariable>
           </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <!-- Pfl buttons -->
+  <SingletonDefinition>
+    <ObjectName>PflButton1</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/controls/button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="ConfigKey">[Channel1],pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>PflButton2</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/controls/button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="ConfigKey">[Channel2],pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>PflButton3</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/controls/button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="ConfigKey">[Channel3],pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>PflButton4</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/controls/button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="ConfigKey">[Channel4],pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <!-- Volumen sliders -->
+  <SingletonDefinition>
+    <ObjectName>VolumeSlider1</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/mixer/volume_slider.xml">
+        <SetVariable name="ChanNum">1</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VolumeSlider2</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/mixer/volume_slider.xml">
+        <SetVariable name="ChanNum">2</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VolumeSlider3</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/mixer/volume_slider.xml">
+        <SetVariable name="ChanNum">3</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VolumeSlider4</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/mixer/volume_slider.xml">
+        <SetVariable name="ChanNum">4</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <!-- Quick Effect selectors -->
+  <!-- text alignment and position of the down arrow is done in css
+       via the parents' ObjectName -->
+  <SingletonDefinition>
+    <ObjectName>QuickEffectSelector1_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelector1</ObjectName>
+            <Size>40me,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_[Channel1]]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>QuickEffectSelector2_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelector2</ObjectName>
+            <Size>40me,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_[Channel2]]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>QuickEffectSelector3_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelector3</ObjectName>
+            <Size>40me,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_[Channel3]]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>QuickEffectSelector4_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelector4</ObjectName>
+            <Size>40me,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_[Channel4]]</EffectUnitGroup>
+          </EffectChainPresetSelector>
         </Children>
       </WidgetGroup>
     </Children>

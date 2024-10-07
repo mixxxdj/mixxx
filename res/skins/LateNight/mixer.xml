@@ -15,10 +15,22 @@
           <WidgetGroup>
             <ObjectName>MixerDecks</ObjectName>
             <SizePolicy>max,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <!-- <Layout>vertical</Layout> -->
+            <Layout>horizontal</Layout>
             <Children>
               <Template src="skins:LateNight/mixer/mixer_2decks.xml"/>
-              <Template src="skins:LateNight/mixer/mixer_4decks.xml"/>
+              <WidgetGroup>
+                <SizePolicy>max,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mixer/mixer_4decks_stacked.xml"/>
+                  <Template src="skins:LateNight/mixer/mixer_4decks_row.xml"/>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>

@@ -1,0 +1,22 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+      <SliderComposed>
+        <TooltipId>channel_volume</TooltipId>
+        <Size>42f,107f</Size>
+        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+        <Horizontal>false</Horizontal>
+        <BarColor><Variable name="BarColorVolume"/></BarColor>
+        <BarWidth><Variable name="BarWidth"/></BarWidth>
+        <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
+        <BarRoundCaps>true</BarRoundCaps>
+        <BarAxisPos>21.0</BarAxisPos>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="ChanNum"/>],volume</ConfigKey>
+        </Connection>
+      </SliderComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -9,7 +9,7 @@
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>MixerChannel_4Decks</ObjectName>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
@@ -19,6 +19,8 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
+          <!-- AlignRight doesn't seem to work anymore with Qt6?? -->
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
           <Template src="skins:LateNight/controls/knob.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="KnobColor">orange</SetVariable>
@@ -64,11 +66,9 @@
         <MaximumSize>,18</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
-          <EffectChainPresetSelector>
-            <ObjectName>QuickEffectSelectorLeft</ObjectName>
-            <Size>40min,18f</Size>
-            <EffectUnitGroup>[QuickEffectRack1_<Variable name="Group"/>]</EffectUnitGroup>
-          </EffectChainPresetSelector>
+          <SingletonContainer>
+            <ObjectName>QuickEffectSelector<Variable name="ChanNum"/>_Singleton</ObjectName>
+          </SingletonContainer>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
@@ -77,17 +77,14 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>PflBox_4Decks</ObjectName>
+        <ObjectName>PflBox_4Decks_Stacked</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skins:LateNight/controls/button_2state.xml">
-            <SetVariable name="TooltipId">pfl</SetVariable>
-            <SetVariable name="ObjectName">PflButton</SetVariable>
-            <SetVariable name="Size">26,26</SetVariable>
-            <SetVariable name="BtnSize">square</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
-          </Template>
+          <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
+          <SingletonContainer>
+            <ObjectName>PflButton<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
         </Children>
       </WidgetGroup>
 
@@ -106,31 +103,19 @@
                 <ObjectName>VuMeterChannel<Variable name="ChanNum"/></ObjectName>
               </SingletonContainer>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- VuMeterChannel_4Decks -->
 
-          <SliderComposed><!-- Volume -->
-            <TooltipId>channel_volume</TooltipId>
-            <Size>42f,107f</Size>
-            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
-            <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
-            <Horizontal>false</Horizontal>
-            <BarColor><Variable name="BarColorVolume"/></BarColor>
-            <BarWidth><Variable name="BarWidth"/></BarWidth>
-            <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
-            <BarRoundCaps>true</BarRoundCaps>
-            <BarAxisPos>21.0</BarAxisPos>
-            <Connection>
-              <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
-            </Connection>
-          </SliderComposed>
+          <SingletonContainer>
+            <ObjectName>VolumeSlider<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
 
         </Children>
       </WidgetGroup><!-- VuAndSlider_4Decks -->
 
       <WidgetGroup>
-        <ObjectName>CrossfaderSwitch_4Decks</ObjectName>
+        <ObjectName>CrossfaderSwitch_4Decks_Stacked</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skins:LateNight/controls/button_xfader_deck.xml"/>
         </Children>

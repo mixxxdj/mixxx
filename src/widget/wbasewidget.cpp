@@ -146,8 +146,10 @@ void WBaseWidget::setControlParameterRightUp(double v) {
 }
 
 void WBaseWidget::updateTooltip() {
+    qWarning() << "updateTooltip";
     // If we are in developer mode, update the tooltip.
     if (CmdlineArgs::Instance().getDeveloper()) {
+        qWarning() << "--> dev";
         QStringList debug;
         fillDebugTooltip(&debug);
 
@@ -183,6 +185,7 @@ QString toDebugString(const QSizePolicy::Policy& policy) {
 }
 
 void WBaseWidget::fillDebugTooltip(QStringList* debug) {
+    qWarning() << "fillDebugTooltip";
     QSizePolicy policy = m_pWidget->sizePolicy();
     *debug << QString("ClassName: %1").arg(m_pWidget->metaObject()->className())
            << QString("ObjectName: %1").arg(m_pWidget->objectName())
