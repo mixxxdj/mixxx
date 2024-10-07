@@ -234,7 +234,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             if (!m_pPixmap) {
                 // qDebug() << "Paintable cache miss";
                 qreal devicePixelRatio = pPainter->device()->devicePixelRatio();
-                m_pPixmap = std::make_unique<QPixmap>(m_pSvg->defaultSize());
+                m_pPixmap = std::make_unique<QPixmap>(m_pSvg->defaultSize() * devicePixelRatio);
                 m_pPixmap->setDevicePixelRatio(devicePixelRatio);
                 m_pPixmap->fill(Qt::transparent);
                 { // QPainter Scope
@@ -252,12 +252,18 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                     m_lastSourceRect != sourceRect) {
                 // qDebug() << "Paintable cache miss";
                 qreal devicePixelRatio = pPainter->device()->devicePixelRatio();
-                m_pPixmap = std::make_unique<QPixmap>(targetRect.size().toSize());
+                m_pPixmap = std::make_unique<QPixmap>(
+                        targetRect.size().toSize() * devicePixelRatio);
                 m_pPixmap->setDevicePixelRatio(devicePixelRatio);
                 m_pPixmap->fill(Qt::transparent);
                 { // QPainter Scope
                     auto pixmapPainter = QPainter(m_pPixmap.get());
-                    m_pSvg->setViewBox(sourceRect);
+                    QRectF deviceSourceRect = QRectF(
+                            sourceRect.x() * devicePixelRatio,
+                            sourceRect.y() * devicePixelRatio,
+                            sourceRect.width() * devicePixelRatio,
+                            sourceRect.height() * devicePixelRatio);
+                    m_pSvg->setViewBox(deviceSourceRect);
                     m_pSvg->render(&pixmapPainter);
                 }
                 mayCorrectColors();
