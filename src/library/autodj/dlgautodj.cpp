@@ -146,7 +146,11 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "Skip Silence:\n"
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
-            "last sound.");
+            "last sound.\n"
+            "\n"
+            "Skip Silence:\n"
+            "The same as Skip Silence, but starting transitions with a centered\n"
+            "crossfader, so that the intro starts at full volume.\n");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
