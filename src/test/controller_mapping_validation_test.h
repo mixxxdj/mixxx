@@ -119,8 +119,9 @@ class FakeController : public Controller {
         Q_UNUSED(length);
     }
 
-    void sendBytes(const QByteArray& data) override {
+    bool sendBytes(const QByteArray& data) override {
         Q_UNUSED(data);
+        return true;
     }
 
   private slots:
