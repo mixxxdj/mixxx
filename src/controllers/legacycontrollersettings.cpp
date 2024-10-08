@@ -2,6 +2,7 @@
 
 #include <util/assert.h>
 
+#include <QBoxLayout>
 #include <QCheckBox>
 #include <QColorDialog>
 #include <QComboBox>
@@ -9,8 +10,11 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
+#include <QPainter>
+#include <QPixmap>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QStringLiteral>
 
 #include "moc_legacycontrollersettings.cpp"
 
@@ -315,17 +319,36 @@ void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
 QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
     auto* pPushButton = new QPushButton(tr("Change color"), pParent);
 
-    // connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, pComboBox]() {
-    //     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
-    // });
+    auto setColorIcon = [pPushButton](const QColor& color) {
+        QPixmap icon(24, 24);
+        QPainter painter(&icon);
+        painter.fillRect(0, 0, 24, 24, color);
+        pPushButton->setIcon(QIcon(icon));
+    };
 
-    connect(pPushButton, &QPushButton::clicked, this, [this, pPushButton](bool) {
+    connect(this,
+            &AbstractLegacyControllerSetting::valueReset,
+            pPushButton,
+            [this, pPushButton, setColorIcon]() {
+                if (m_editedValue.isValid()) {
+                    setColorIcon(m_editedValue);
+                } else {
+                    pPushButton->setIcon(QIcon());
+                }
+            });
+
+    connect(pPushButton, &QPushButton::clicked, this, [this, pPushButton, setColorIcon](bool) {
         auto color = QColorDialog::getColor(m_editedValue, pPushButton, tr("Choose a new color"));
         if (color.isValid()) {
             m_editedValue = color;
+            setColorIcon(color);
             emit changed();
         }
     });
+
+    if (m_savedValue.isValid()) {
+        setColorIcon(m_savedValue);
+    }
 
     return pPushButton;
 }
@@ -364,25 +387,39 @@ void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
 }
 
 QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
-    auto* pPushButton = new QPushButton(tr("Change file"), pParent);
+    auto* pWidget = new QWidget(pParent);
+    pWidget->setLayout(new QHBoxLayout);
+    auto* pPushButton = new QPushButton(tr("Browse..."), pWidget);
+    auto* pLabel = new QLabel(QStringLiteral("<i>%1</i>").arg(tr("No file selected")), pWidget);
+    pWidget->layout()->addWidget(pLabel);
+    pWidget->layout()->addWidget(pPushButton);
 
-    // connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, pComboBox]() {
-    //     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
-    // });
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pLabel, [this, pLabel]() {
+        if (m_editedValue.exists()) {
+            pLabel->setText(QStringLiteral("<i>%1</i>").arg(m_editedValue.absoluteFilePath()));
+        } else {
+            pLabel->setText(QStringLiteral("<i>%1</i>").arg(tr("No file selected")));
+        }
+    });
 
     connect(pPushButton,
             &QPushButton::clicked,
             this,
-            [this, pPushButton](bool) {
+            [this, pLabel, pPushButton](bool) {
                 auto file = QFileInfo(QFileDialog::getOpenFileName(pPushButton,
                         tr("Select a file"),
                         QString(),
                         m_fileFilter));
                 if (file.exists()) {
                     m_editedValue = file;
+                    pLabel->setText(QStringLiteral("<i>%1</i>").arg(file.absoluteFilePath()));
                     emit changed();
                 }
             });
 
-    return pPushButton;
+    if (m_savedValue.exists()) {
+        pLabel->setText(QStringLiteral("<i>%1</i>").arg(m_savedValue.absoluteFilePath()));
+    }
+
+    return pWidget;
 }
