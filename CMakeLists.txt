@@ -2801,6 +2801,7 @@ if(QML)
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
 
+
   install(
     DIRECTORY
       "${CMAKE_CURRENT_SOURCE_DIR}/res/qml"
