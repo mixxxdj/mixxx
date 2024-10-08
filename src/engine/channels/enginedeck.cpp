@@ -10,6 +10,7 @@
 #include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/sample.h"
 
 #ifdef __STEM__
@@ -204,6 +205,16 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
 
 void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     VERIFY_OR_DEBUG_ASSERT(deckToClone) {
+        return;
+    }
+    // Sampler and preview decks don't have stem controls
+    if (!isPrimaryDeck() || !deckToClone->isPrimaryDeck()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_stemGain.size() == kMaxSupportedStems &&
+            m_stemMute.size() == kMaxSupportedStems &&
+            deckToClone->m_stemGain.size() == kMaxSupportedStems &&
+            deckToClone->m_stemMute.size() == kMaxSupportedStems) {
         return;
     }
     for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
