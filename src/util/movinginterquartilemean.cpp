@@ -7,18 +7,22 @@
 #include <iterator>
 #include <numeric>
 
+#include "util/algorithm.h"
 #include "util/assert.h"
 
 double MovingInterquartileMean::insert(double value) {
-    // make space if needed
-    // TODO (Swiftb0y): benchmark and see if it makes sense to optimize here by instead of
-    // removing + insertion (2x O(n)) (likely large n), we should rotate+swap (O(n)).
+    auto insertPosition = std::lower_bound(m_list.begin(), m_list.end(), value);
+    // replace the value instead of growing the list
     if (m_list.size() == m_list.capacity()) {
-        m_list.erase(std::lower_bound(m_list.begin(), m_list.end(), m_queue.front()));
+        auto evict = std::lower_bound(m_list.begin(), m_list.end(), m_queue.front());
         m_queue.pop();
+        DEBUG_ASSERT(evict != m_list.end()); // we should always find a value,
+                                             // otherwise the invariant between
+                                             // m_queue and m_list is broken!
+        mixxx::replace_sorted(value, insertPosition, evict);
+    } else {
+        m_list.insert(insertPosition, value);
     }
-    auto insertPosition = std::lower_bound(m_list.cbegin(), m_list.cend(), value);
-    m_list.insert(insertPosition, value);
     // we explicitly insert the value and not an index or iterator here,
     // because those would get invalidated when the contents of m_list are
     // shifted around (due to the erase and insert above). updating those
