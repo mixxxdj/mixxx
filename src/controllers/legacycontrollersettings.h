@@ -539,8 +539,8 @@ class LegacyControllerFileSetting
 
   protected:
     LegacyControllerFileSetting(const QDomElement& element,
-            QFileInfo currentValue,
-            QFileInfo defaultValue)
+            const QFileInfo& currentValue,
+            const QFileInfo& defaultValue)
             : AbstractLegacyControllerSetting(element),
               m_savedValue(currentValue),
               m_defaultValue(defaultValue) {
