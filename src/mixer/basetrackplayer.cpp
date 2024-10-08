@@ -874,16 +874,7 @@ void BaseTrackPlayerImpl::slotTrackColorSelector(int steps) {
     ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
     mixxx::RgbColor::optional_t color = m_pLoadedTrack->getColor();
 
-    while (steps != 0) {
-        if (steps > 0) {
-            color = colorPalette.nextColor(color);
-            steps--;
-        } else {
-            color = colorPalette.previousColor(color);
-            steps++;
-        }
-    }
-    m_pLoadedTrack->setColor(color);
+    m_pLoadedTrack->setColor(colorPalette.getNthColor(color, steps));
 }
 
 void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
