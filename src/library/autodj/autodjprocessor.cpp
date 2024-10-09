@@ -120,15 +120,17 @@ AutoDJProcessor::AutoDJProcessor(
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
-    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
-                                                 "mixxx.db.model.autodj");
+    m_pAutoDJTableModel = new PlaylistTableModel(
+            this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
     m_pAutoDJTableModel->select();
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    connect(m_pShufflePlaylist, &ControlPushButton::valueChanged,
-            this, &AutoDJProcessor::controlShuffle);
+    connect(m_pShufflePlaylist,
+            &ControlPushButton::valueChanged,
+            this,
+            &AutoDJProcessor::controlShuffle);
 
     m_pSkipNext = new ControlPushButton(
             ConfigKey("[AutoDJ]", "skip_next"));
@@ -169,6 +171,7 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
+    m_crossfaderStartCenter = false;
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -812,12 +815,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     otherDeck->setPlayPosition(otherDeck->startPos);
                 }
 
-                if (!otherDeckPlaying) {
-                    otherDeck->play();
+                if (m_crossfaderStartCenter) {
+                    setCrossfader(0.0);
+                } else if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
+                    setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
 
-                if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
-                    setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
+                if (!otherDeckPlaying) {
+                    otherDeck->play();
                 }
 
                 // Now that we have started the other deck playing, remove the track
@@ -836,6 +841,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         double crossfaderTarget;
         if (m_eState == ADJ_LEFT_FADING) {
             crossfaderTarget = 1.0;
+
         } else if (m_eState == ADJ_RIGHT_FADING) {
             crossfaderTarget = -1.0;
         } else {
@@ -1346,6 +1352,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                  << "outroLength" << outroLength;
     }
 
+    m_crossfaderStartCenter = false;
     switch (m_transitionMode) {
     case TransitionMode::FullIntroOutro: {
         // Use the outro or intro length for the transition time, whichever is
@@ -1445,6 +1452,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, outroEnd, toDeckStartSeconds);
         }
     } break;
+    case TransitionMode::FixedStartCenterSkipSilence:
+        m_crossfaderStartCenter = true;
+        // fall through intended!
+        [[fallthrough]];
     case TransitionMode::FixedSkipSilence: {
         double toDeckStartSecond;
         pToDeck->fadeBeginPos = getLastSoundSecond(pToDeck);
