@@ -14,8 +14,6 @@ namespace {
 
 const mixxx::Logger kLogger("CrateStorage");
 
-const QString CRATETABLE_LOCKED = "locked";
-
 const QString CRATE_SUMMARY_VIEW = "crate_summary";
 
 const QString CRATESUMMARY_TRACK_COUNT = "track_count";
