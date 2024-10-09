@@ -2309,7 +2309,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
         if (!transform.isNull()) {
             pTransformer =
                     ValueTransformer::parseFromXml(transform, *m_pContext)
-                            .get(); // TODO don't leak here
+                            .release(); // TODO don't leak here
         }
 
         QString property;
