@@ -2,20 +2,18 @@
 
 #include <hss1394/HSS1394.h>
 
+#include <memory>
+
 #include "controllers/midi/hss1394controller.h"
 #include "moc_hss1394enumerator.cpp"
 
-Hss1394Enumerator::Hss1394Enumerator(UserSettingsPointer pConfig)
-        : MidiEnumerator(),
-          m_pConfig(pConfig) {
+Hss1394Enumerator::Hss1394Enumerator()
+        : MidiEnumerator() {
 }
 
 Hss1394Enumerator::~Hss1394Enumerator() {
     qDebug() << "Deleting HSS1394 devices...";
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
+    m_devices.clear();
     using namespace hss1394;
     Node::Shutdown();
 }
@@ -28,22 +26,26 @@ QList<Controller*> Hss1394Enumerator::queryDevices() {
     hss1394::uint uNodes = Node::Instance()->GetNodeCount();
     qDebug() << "   Nodes detected:" << uNodes;
 
+    m_devices.clear();
+
     for(hss1394::uint i=0; i<40; i++) {
         TNodeInfo tNodeInfo;
         bool bInstalled;
-        if (Node::Instance()->GetNodeInfo(tNodeInfo, i, NULL, &bInstalled)) {
-            QString message = QString("Node %1 (%2): Name = <%3>, GUID = %4 %5, FW[%6]")
-                    .arg(QString::number(i),
-                         (bInstalled)?"installed":"not installed",
-                         tNodeInfo.sName.c_str(),
-                         QString("%1").arg(tNodeInfo.uGUID.mu32High, 0, 16),
-                         QString("%1").arg(tNodeInfo.uGUID.mu32Low, 0, 16),
-                         QString("%1").arg(tNodeInfo.uProtocolVersion, 0, 16));
-            qDebug() << " " << message;
-            Hss1394Controller* currentDevice = new Hss1394Controller(
-                    tNodeInfo, i);
-            m_devices.push_back(currentDevice);
+        if (Node::Instance()->GetNodeInfo(tNodeInfo, i, nullptr, &bInstalled)) {
+            qDebug() << "Node" << i << "("
+                     << (bInstalled ? "installed" : "not installed")
+                     << "): Name = <" << tNodeInfo.sName.c_str() << ">, GUID ="
+                     << QString::number(tNodeInfo.uGUID.mu32High, 16)
+                     << QString::number(tNodeInfo.uGUID.mu32Low, 16) << ", FW["
+                     << QString::number(tNodeInfo.uProtocolVersion, 16) << "]";
+
+            m_devices.push_back(std::make_unique<Hss1394Controller>(tNodeInfo, i));
         }
     }
-    return m_devices;
+    QList<Controller*> devices;
+    devices.reserve(m_devices.size());
+    for (const auto& pDevice : m_devices) {
+        devices.push_back(pDevice.get());
+    }
+    return devices;
 }

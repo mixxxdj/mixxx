@@ -2,6 +2,8 @@
 
 #include <libusb.h>
 
+#include <algorithm>
+
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
@@ -148,20 +150,18 @@ int BulkController::open() {
     }
 
     /* Look up endpoint addresses in supported database */
-    int i;
-    for (i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == m_vendorId) &&
-                (bulk_supported[i].product_id == m_productId)) {
-            m_inEndpointAddr = bulk_supported[i].in_epaddr;
-            m_outEndpointAddr = bulk_supported[i].out_epaddr;
+    const bulk_supported_t* device = std::find(
+            std::begin(bulk_supported), std::end(bulk_supported), bulk_supported_t {
+                m_vendorId,
+                        m_productId,
+                        m_inEndpointAddr,
+                        m_outEndpointAddr,
 #if defined(__WINDOWS__) || defined(__APPLE__)
-            m_interfaceNumber = bulk_supported[i].interface_number;
+                        m_interfaceNumber,
 #endif
-            break;
-        }
-    }
+            });
 
-    if (bulk_supported[i].vendor_id == 0) {
+    if (!device) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }

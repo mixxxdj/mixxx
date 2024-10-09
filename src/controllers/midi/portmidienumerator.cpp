@@ -2,12 +2,12 @@
 
 #include <portmidi.h>
 
+#include <QLatin1String>
 #include <QRegularExpression>
 
 #include "controllers/midi/portmidicontroller.h"
 #include "moc_portmidienumerator.cpp"
 #include "util/cmdlineargs.h"
-
 namespace {
 
 const auto kMidiThroughPortPrefix = QLatin1String("MIDI Through Port");
@@ -38,9 +38,9 @@ const QRegularExpression kOutputRegex(QStringLiteral("^(.*) out( \\d+)?( .*)?$")
 const QRegularExpression kDeviceNameRegex(QStringLiteral("^(.*) (\\d+)( [^0-9]+)?$"));
 
 bool namesMatchRegexes(const QRegularExpression& kInputRegex,
-        const QString& input_name,
+        QLatin1String input_name,
         const QRegularExpression& kOutputRegex,
-        const QString& output_name) {
+        QLatin1String output_name) {
     QRegularExpressionMatch inputMatch = kInputRegex.match(input_name);
     if (inputMatch.hasMatch()) {
         QString inputDeviceName = inputMatch.captured(1);
@@ -58,34 +58,36 @@ bool namesMatchRegexes(const QRegularExpression& kInputRegex,
     return false;
 }
 
-bool namesMatchMidiPattern(const QString& input_name,
-        const QString& output_name) {
+bool namesMatchMidiPattern(QLatin1String input_name,
+        QLatin1String output_name) {
     return namesMatchRegexes(kMidiDeviceNameRegex, input_name, kMidiDeviceNameRegex, output_name);
 }
 
-bool namesMatchInOutPattern(const QString& input_name,
-        const QString& output_name) {
+bool namesMatchInOutPattern(QLatin1String input_name,
+        QLatin1String output_name) {
     return namesMatchRegexes(kInputRegex, input_name, kOutputRegex, output_name);
 }
 
-bool namesMatchPattern(const QString& input_name,
-        const QString& output_name) {
+bool namesMatchPattern(QLatin1String input_name,
+        QLatin1String output_name) {
     return namesMatchRegexes(kDeviceNameRegex, input_name, kDeviceNameRegex, output_name);
 }
 
-bool namesMatchAllowableEdgeCases(const QString& input_name,
-        const QString& output_name) {
+bool namesMatchAllowableEdgeCases(QLatin1String input_name,
+        QLatin1String output_name) {
     // Mac OS 10.12 & Korg Kaoss DJ 1.6:
     // Korg Kaoss DJ has input 'KAOSS DJ CONTROL' and output 'KAOSS DJ SOUND'.
     // This means it doesn't pass the shouldLinkInputToOutput test. Without an
     // output linked, the MIDI output for the device fails, as the device is
     // NULL in PortMidiController
-    if (input_name == "KAOSS DJ CONTROL" && output_name == "KAOSS DJ SOUND") {
+    if (input_name == QLatin1String("KAOSS DJ CONTROL") &&
+            output_name == QLatin1String("KAOSS DJ SOUND")) {
         return true;
     }
     // Ableton Push on Windows
     // Shows 2 different devices for MIDI input and output.
-    if (input_name == "MIDIIN2 (Ableton Push)" && output_name == "MIDIOUT2 (Ableton Push)") {
+    if (input_name == QLatin1String("MIDIIN2 (Ableton Push)") &&
+            output_name == QLatin1String("MIDIOUT2 (Ableton Push)")) {
         return true;
     }
 
@@ -95,6 +97,28 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
     }
 
     return false;
+}
+
+bool namesMatch(QLatin1String input_name, QLatin1String output_name) {
+    return namesMatchMidiPattern(input_name, output_name) ||
+            namesMatchInOutPattern(input_name, output_name) ||
+            namesMatchPattern(input_name, output_name);
+}
+
+QLatin1String trimStart(QLatin1String str, QLatin1String trim) {
+    if (str.startsWith(trim, Qt::CaseInsensitive)) {
+        return str.sliced(trim.size());
+    }
+    return str;
+}
+
+QByteArray trimMiddle(QLatin1String str, QLatin1String trim) {
+    int offset = str.indexOf(trim, 0, Qt::CaseInsensitive);
+    QByteArray strOwned = QByteArray(str.data(), str.size());
+    if (offset != -1) {
+        return strOwned.replace(offset, trim.size(), " ");
+    }
+    return strOwned;
 }
 
 } // namespace
@@ -109,10 +133,7 @@ PortMidiEnumerator::PortMidiEnumerator() {
 
 PortMidiEnumerator::~PortMidiEnumerator() {
     qDebug() << "Deleting PortMIDI devices...";
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
+    m_devices.clear();
     PmError err = Pm_Terminate();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
@@ -120,8 +141,8 @@ PortMidiEnumerator::~PortMidiEnumerator() {
     }
 }
 
-bool shouldLinkInputToOutput(const QString& input_name,
-        const QString& output_name) {
+bool shouldLinkInputToOutput(QLatin1String input_name,
+        QLatin1String output_name) {
     // Early exit.
     if (input_name == output_name || namesMatchAllowableEdgeCases(input_name, output_name)) {
         return true;
@@ -130,42 +151,20 @@ bool shouldLinkInputToOutput(const QString& input_name,
     // Some device drivers prepend "To" and "From" to the names of their MIDI
     // ports. If the output and input device names don't match, let's try
     // trimming those words from the start, and seeing if they then match.
+    QLatin1String input_name_trimmed = trimStart(input_name, QLatin1String("from"));
+    QLatin1String output_name_trimmed = trimStart(output_name, QLatin1String("to"));
 
-    // Ignore "From" text in the beginning of device input name.
-    QString input_name_stripped = input_name;
-    if (input_name.indexOf("from", 0, Qt::CaseInsensitive) == 0) {
-        input_name_stripped = input_name.right(input_name.length() - 4);
+    if (input_name_trimmed == output_name_trimmed) {
+        return true;
     }
 
-    // Ignore "To" text in the beginning of device output name.
-    QString output_name_stripped = output_name;
-    if (output_name.indexOf("to", 0, Qt::CaseInsensitive) == 0) {
-        output_name_stripped = output_name.right(output_name.length() - 2);
-    }
-
-    if (output_name_stripped != input_name_stripped) {
-        // Ignore " input " text in the device names
-        int offset = input_name_stripped.indexOf(" input ", 0,
-                                                 Qt::CaseInsensitive);
-        if (offset != -1) {
-            input_name_stripped = input_name_stripped.replace(offset, 7, " ");
-        }
-
-        // Ignore " output " text in the device names
-        offset = output_name_stripped.indexOf(" output ", 0,
-                                              Qt::CaseInsensitive);
-        if (offset != -1) {
-            output_name_stripped = output_name_stripped.replace(offset, 8, " ");
-        }
-    }
+    QByteArray input_name_stripped = trimMiddle(input_name_trimmed, QLatin1String(" input "));
+    QByteArray output_name_stripped = trimMiddle(output_name_trimmed, QLatin1String(" output "));
 
     if (input_name_stripped == output_name_stripped ||
-        namesMatchMidiPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchMidiPattern(input_name, output_name) ||
-        namesMatchInOutPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchInOutPattern(input_name, output_name) ||
-        namesMatchPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchPattern(input_name, output_name)) {
+            namesMatch(input_name, output_name) ||
+            namesMatch(input_name_trimmed, output_name_trimmed) ||
+            namesMatch(QLatin1String(input_name_stripped), QLatin1String(output_name_stripped))) {
         return true;
     }
 
@@ -180,23 +179,14 @@ bool shouldLinkInputToOutput(const QString& input_name,
 QList<Controller*> PortMidiEnumerator::queryDevices() {
     qDebug() << "Scanning PortMIDI devices:";
 
-    int iNumDevices = Pm_CountDevices();
-
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
+    int numDevices = Pm_CountDevices();
 
     m_devices.clear();
 
-    const PmDeviceInfo* inputDeviceInfo = nullptr;
-    const PmDeviceInfo* outputDeviceInfo = nullptr;
-    int inputDevIndex = -1;
-    int outputDevIndex = -1;
-    QMap<int, QString> unassignedOutputDevices;
+    QMap<int, QLatin1String> unassignedOutputDevices;
 
     // Build a complete list of output devices for later pairing
-    for (int i = 0; i < iNumDevices; i++) {
+    for (int i = 0; i < numDevices; i++) {
         const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
@@ -206,12 +196,11 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
         }
         qDebug() << " Found output device"
                  << "#" << i << pDeviceInfo->name;
-        QString deviceName = pDeviceInfo->name;
-        unassignedOutputDevices[i] = deviceName;
+        unassignedOutputDevices[i] = QLatin1String(pDeviceInfo->name);
     }
 
     // Search for input devices and pair them with output devices if applicable
-    for (int i = 0; i < iNumDevices; i++) {
+    for (int i = 0; i < numDevices; i++) {
         const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
@@ -225,43 +214,44 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
         qDebug() << " Found input device"
                  << "#" << i << pDeviceInfo->name;
-        inputDeviceInfo = pDeviceInfo;
-        inputDevIndex = i;
+        const PmDeviceInfo* inputDeviceInfo = pDeviceInfo;
+        int inputDevIndex = i;
 
         //Reset our output device variables before we look for one in case we find none.
-        outputDeviceInfo = nullptr;
-        outputDevIndex = -1;
+        const PmDeviceInfo* outputDeviceInfo = nullptr;
+        int outputDevIndex = -1;
 
         //Search for a corresponding output device
-        QMapIterator<int, QString> j(unassignedOutputDevices);
+        QMapIterator<int, QLatin1String> j(unassignedOutputDevices);
         while (j.hasNext()) {
             j.next();
 
-            QString deviceName = inputDeviceInfo->name;
-            QString outputName = QString(j.value());
-
-            if (shouldLinkInputToOutput(deviceName, outputName)) {
+            if (shouldLinkInputToOutput(QLatin1String(inputDeviceInfo->name), j.value())) {
                 outputDevIndex = j.key();
                 outputDeviceInfo = Pm_GetDeviceInfo(outputDevIndex);
 
                 unassignedOutputDevices.remove(outputDevIndex);
 
-                qDebug() << "    Linking to output device #" << outputDevIndex << outputName;
+                qDebug() << "    Linking to output device #" << outputDevIndex << j.value();
                 break;
             }
         }
 
         // So at this point, we either have an input-only MIDI device
-        // (outputDeviceInfo == NULL) or we've found a matching output MIDI
-        // device (outputDeviceInfo != NULL).
+        // (outputDeviceInfo == nullptr) or we've found a matching output MIDI
+        // device (outputDeviceInfo != nullptr).
 
         //.... so create our (aggregate) MIDI device!
-        PortMidiController* currentDevice =
-                new PortMidiController(inputDeviceInfo,
-                        outputDeviceInfo,
-                        inputDevIndex,
-                        outputDevIndex);
-        m_devices.push_back(currentDevice);
+        m_devices.push_back(std::make_unique<PortMidiController>(inputDeviceInfo,
+                outputDeviceInfo,
+                inputDevIndex,
+                outputDevIndex));
     }
-    return m_devices;
+    QList<Controller*> devices;
+    devices.reserve(m_devices.size());
+    for (const auto& pDevice : m_devices) {
+        devices.push_back(pDevice.get());
+    }
+
+    return devices;
 }

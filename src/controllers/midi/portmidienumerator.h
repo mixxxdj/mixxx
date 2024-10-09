@@ -1,6 +1,14 @@
 #pragma once
 
+#include <QLatin1String>
+#include <QList>
+#include <memory>
+#include <vector>
+
 #include "controllers/midi/midienumerator.h"
+
+class Controller;
+class PortMidiController;
 
 /// This class handles discovery and enumeration of DJ controllers that appear under the PortMIDI cross-platform API.
 class PortMidiEnumerator : public MidiEnumerator {
@@ -12,9 +20,9 @@ class PortMidiEnumerator : public MidiEnumerator {
     QList<Controller*> queryDevices() override;
 
   private:
-    QList<Controller*> m_devices;
+    std::vector<std::unique_ptr<PortMidiController>> m_devices;
 };
 
 // For testing.
-bool shouldLinkInputToOutput(const QString& input_name,
-        const QString& output_name);
+bool shouldLinkInputToOutput(QLatin1String input_name,
+        QLatin1String output_name);

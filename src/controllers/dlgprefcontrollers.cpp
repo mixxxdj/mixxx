@@ -173,7 +173,11 @@ void DlgPrefControllers::setupControllerWidgets() {
     }
     txtNoControllersAvailable->setVisible(false);
 
-    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
+    std::sort(controllerList.begin(), controllerList.end(), [](const auto* lhs, const auto* rhs) {
+        DEBUG_ASSERT(rhs);
+        DEBUG_ASSERT(lhs);
+        return controllerCompare(*lhs, *rhs);
+    });
 
     for (auto* pController : controllerList) {
         DlgPrefController* pControllerDlg = new DlgPrefController(

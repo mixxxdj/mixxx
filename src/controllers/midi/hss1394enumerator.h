@@ -1,19 +1,23 @@
 #pragma once
 
+#include <QList>
+#include <memory>
+#include <vector>
+
 #include "controllers/midi/midienumerator.h"
-#include "preferences/usersettings.h"
+
+class Controller;
 
 // Handles discovery and enumeration of DJ controllers that appear under the
 // HSS1394 cross-platform API.
 class Hss1394Enumerator : public MidiEnumerator {
     Q_OBJECT
   public:
-    explicit Hss1394Enumerator(UserSettingsPointer pConfig);
-    virtual ~Hss1394Enumerator();
+    explicit Hss1394Enumerator();
+    ~Hss1394Enumerator() override;
 
     QList<Controller*> queryDevices() override;
 
   private:
-    UserSettingsPointer m_pConfig;
-    QList<Controller*> m_devices;
+    std::vector<std::unique_ptr<Controller>> m_devices;
 };
