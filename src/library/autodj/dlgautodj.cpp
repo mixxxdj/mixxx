@@ -148,7 +148,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "Begin crossfading from the selected number of seconds before the\n"
             "last sound.\n"
             "\n"
-            "Skip Silence:\n"
+            "Skip Silence Start Full Volume:\n"
             "The same as Skip Silence, but starting transitions with a centered\n"
             "crossfader, so that the intro starts at full volume.\n");
 
