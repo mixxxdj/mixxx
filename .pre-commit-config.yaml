@@ -95,6 +95,14 @@ repos:
         additional_dependencies:
           - clang-format==16.0.6
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
+      - id: clang-tidy
+        name: clang-tidy
+        require_serial: true
+        entry: python tools/clang_tidy.py
+        language: python
+        files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|m|mm|vert)$
+        additional_dependencies:
+          - clang-tidy==18.1.8
   - repo: https://github.com/psf/black
     rev: 24.4.2
     hooks:

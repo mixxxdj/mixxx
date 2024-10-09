@@ -19,7 +19,6 @@ jobs:
       matrix:
         include:
           - name: clazy
-          - name: clang-tidy
           - name: coverage
     runs-on: ubuntu-22.04
     name: ${{ matrix.name }}
@@ -59,34 +58,6 @@ jobs:
           LD: clang++
           CC: clang
           CXX: clazy
-      - name: Configure (clang-tidy)
-        if: matrix.name == 'clang-tidy'
-        run: |
-          cmake \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DCLANG_TIDY=clang-tidy \
-            -DWARNINGS_FATAL=ON \
-            -DQT6=ON \
-            -DBATTERY=ON \
-            -DBROADCAST=ON \
-            -DBULK=ON \
-            -DHID=ON \
-            -DLILV=ON \
-            -DOPUS=ON \
-            -DQTKEYCHAIN=ON \
-            -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
-            -DKEYFINDER=ON \
-            -DLOCALECOMPARE=ON \
-            -DMAD=ON \
-            -DMODPLUG=ON \
-            -DWAVPACK=ON \
-            ..
-        working-directory: build
-        env:
-          LD: clang++
-          CC: clang
-          CXX: clang++
       - name: Configure (coverage)
         if: matrix.name == 'coverage'
         run: |
@@ -116,13 +87,6 @@ jobs:
         working-directory: build
       - name: Set up problem matcher
         uses: ammaraskar/gcc-problem-matcher@0.3.0
-      # Work around https://github.com/actions/runner-images/issues/8659
-      - name: "Remove GCC 13 from runner image (workaround)"
-        shell: bash
-        run: |
-          sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list
-          sudo apt-get update
-          sudo apt-get install -y --allow-downgrades libc6=2.35* libc6-dev=2.35* libstdc++6=12.3.0-1ubuntu1~22.04 libgcc-s1=12.3.0-1ubuntu1~22.04
       - name: Build
         # Do not abort on errors and build/check the whole project
         run: cmake --build . -j $(nproc) -- --keep-going
