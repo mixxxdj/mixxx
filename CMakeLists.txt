@@ -1470,7 +1470,6 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/util/taskmonitor.h
   src/util/thread_affinity.h
   src/util/thread_annotations.h
-  src/util/threadcputimer.h
   src/util/time.h
   src/util/timer.h
   src/util/trace.h
