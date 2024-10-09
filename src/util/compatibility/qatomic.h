@@ -9,9 +9,6 @@
 // Until the minimum required Qt version of Mixxx is increased some utility
 // functions that work independently of the Qt version are needed.
 
-#define DEPRECATED_QATOMIC_OPS /// Deprecated, use the corresponding member function directly
-
-DEPRECATED_QATOMIC_OPS
 template<typename T>
 inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -21,7 +18,6 @@ inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
 #endif
 }
 
-DEPRECATED_QATOMIC_OPS
 template<typename T>
 inline T* atomicLoadRelaxed(const QAtomicPointer<T>& atomicPtr) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -31,7 +27,6 @@ inline T* atomicLoadRelaxed(const QAtomicPointer<T>& atomicPtr) {
 #endif
 }
 
-DEPRECATED_QATOMIC_OPS
 template<typename T>
 inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -40,5 +35,3 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
     atomicPtr.store(newValue);
 #endif
 }
-
-#undef DEPRECATED_QATOMIC_OPS
