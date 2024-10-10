@@ -19,10 +19,9 @@ enum class CueType {
     Outro = 7,
     N60dBSound = 8, // range that covers beginning and end of audible
                     // sound; not shown to user
-                    // sound; not shown to user
     FadeIn = 9,     // First time sound reaches a certain level
                     // (cf analyzersilence.cpp);  not shown to user
-    FadeOut = 10   // Last time sound reaches a certain level 
+    FadeOut = 10    // Last time sound reaches a certain level
                     // (cf analyzersilence.cpp);  not shown to user
 };
 

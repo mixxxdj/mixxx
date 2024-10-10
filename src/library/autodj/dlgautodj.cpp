@@ -70,8 +70,9 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &WTrackTableView::setSelectedClick);
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
-    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
+    }
+    else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pTrackTableView);
@@ -82,7 +83,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     // Do not set this because it disables auto-scrolling
-    //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
+    // m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
     connect(pushButtonAutoDJ,
             &QPushButton::clicked,
@@ -152,11 +153,10 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "The same as Skip Silence, but starting transitions with a centered\n"
             "crossfader, so that the intro starts at full volume.\n"
             "Radio Laneway Crossfade:\n"
-            "Starts the next track at full volume.  Starts the crossfade when the\n" 
-            "volume last falls below -12Db or at the spin box setting which ever\n" 
+            "Starts the next track at full volume.  Starts the crossfade when the\n"
+            "volume last falls below -12Db or at the spin box setting which ever\n"
             "is lower, and potentially starts the next earlier if it starts below\n"
             "-27Db.\n");
-
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
