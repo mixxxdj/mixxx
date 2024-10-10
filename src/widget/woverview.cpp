@@ -407,11 +407,16 @@ void WOverview::onRateRatioChange(double v) {
 void WOverview::onPassthroughChange(double v) {
     m_bPassthroughEnabled = static_cast<bool>(v);
 
-    if (!m_bPassthroughEnabled) {
+    if (m_bPassthroughEnabled) {
+        // Abort play position dragging
+        m_bLeftClickDragging = false;
+        m_bTimeRulerActive = false;
+        m_iPickupPos = m_iPlayPos;
+    } else {
         slotWaveformSummaryUpdated();
     }
 
-    // Always call this to trigger a repaint even if not track is loaded
+    // Always call this to trigger a repaint even if no track is loaded
     update();
 }
 
