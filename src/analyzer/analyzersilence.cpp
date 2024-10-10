@@ -38,7 +38,8 @@ bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pFadeIn = pTrack->findCueByType(mixxx::CueType::FadeIn);
     CuePointer pFadeOut = pTrack->findCueByType(mixxx::CueType::FadeOut);
 
-    if (!pFadeIn || !pFadeOut || !pIntroCue || !pOutroCue || !pN60dBSound || pN60dBSound->getLengthFrames() <= 0) {
+    if (!pFadeIn || !pFadeOut || !pIntroCue || !pOutroCue || !pN60dBSound ||
+            pN60dBSound->getLengthFrames() <= 0) {
         return true;
     }
     return false;
@@ -112,7 +113,10 @@ SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
 // static
 SINT AnalyzerSilence::findFirstFadeOutChunk(std::span<const CSAMPLE> samples) {
     // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
-    SINT ret = std::distance(first_fade_out_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
+    SINT ret = std::distance(
+                       first_fade_out_sound(samples.rbegin(), samples.rend()),
+                       samples.rend()) -
+            1;
     if (ret == -1) {
         ret = samples.size();
     }
@@ -161,7 +165,8 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
     if (m_fadeThresholdFadeInEnd >= 0) {
         const SINT lasttSampleBeforeFadeOut = findFirstFadeOutChunk(samples);
         if (lasttSampleBeforeFadeOut < (count - 1)) {
-            m_fadeThresholdFadeOutStart = m_framesProcessed + (lasttSampleBeforeFadeOut / m_channelCount) + 1;
+            m_fadeThresholdFadeOutStart = m_framesProcessed +
+                    (lasttSampleBeforeFadeOut / m_channelCount) + 1;
         }
     }
     if (m_fadeThresholdFadeOutStart >= 0) {
