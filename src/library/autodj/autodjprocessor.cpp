@@ -1731,9 +1731,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 }
             } else {
                 // This is the general case where we want to do a fadeout when
-                // after (sound level last goes below) Cue:FadOut start.
-                // and we start early while for (the sound level starts below)
-                // the duration Cue:FadIn end.
+                // after (sound level last goes below) Cue:FadOut start
+                // and/or we start early until (the sound level is above) 
+                // Cue:FadeIn end.
                 pFromDeck->fadeEndPos = fadeOutEnd;
             }
         } else {
