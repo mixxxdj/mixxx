@@ -1174,7 +1174,15 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                     }
                     break;
                 case mixxx::CueType::Jump:
-                    if (pControl->getStatus() != HotcueControl::Status::Active) {
+                    // If the play position is after the jump departure (cue
+                    // end), triggering the hotcue will make it behave like a
+                    // normal hotcue
+                    if (getEngineBuffer() != nullptr &&
+                            getEngineBuffer()->getPlayPos() >
+                                    pCue->getEndPosition()) {
+                        hotcueGoto(pControl, value);
+                    } else if (pControl->getStatus() !=
+                            HotcueControl::Status::Active) {
                         pControl->setStatus(HotcueControl::Status::Active);
                     } else {
                         pControl->setStatus(HotcueControl::Status::Set);
