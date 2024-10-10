@@ -1691,7 +1691,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
 
         // Note as we get here pFromDeck->playNextPos == fromDeckEndPosition.
-        // We use this default to make sure that playNextPos is alway greater than
+        // We use this default to make sure that playNextPos is always greater than
         // pFromDeck->fadeBeginPos unless we really intend to start early.
 
         // If we have a long(ish) fade in then let's start the next track early.
@@ -1732,7 +1732,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             } else {
                 // This is the general case where we want to do a fadeout when
                 // after (sound level last goes below) Cue:FadOut start.
-                // and we start early while for (the sound level starts below) the duration Cue:FadIn end.
+                // and we start early while for (the sound level starts below)
+                // the duration Cue:FadIn end.
                 pFromDeck->fadeEndPos = fadeOutEnd;
             }
         } else {
