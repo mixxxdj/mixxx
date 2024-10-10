@@ -122,6 +122,15 @@ class WOverview : public WWidget, public TrackDropTarget {
         return m_orientation == Qt::Horizontal ? height() : width();
     }
 
+    inline bool isPosInAllowedPosDragZone(const QPoint pos) {
+        const QRect dragZone = rect().marginsAdded(QMargins(
+                m_dragMarginH,
+                m_dragMarginV,
+                m_dragMarginH,
+                m_dragMarginV));
+        return dragZone.contains(pos);
+    }
+
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
     }
@@ -162,6 +171,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPlayPos;
     bool m_bTimeRulerActive;
     Qt::Orientation m_orientation;
+    int m_dragMarginH;
+    int m_dragMarginV;
     int m_iLabelFontSize;
 
     // Coefficient value-position linear transposition
@@ -213,5 +224,4 @@ class WOverview : public WWidget, public TrackDropTarget {
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;
-
 };
