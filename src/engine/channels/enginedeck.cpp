@@ -84,8 +84,10 @@ EngineDeck::EngineDeck(
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
-        m_stemMute.emplace_back(std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute"))));
+        auto pMuteButton = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
+        pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+        m_stemMute.push_back(std::move(pMuteButton));
     }
 #endif
 }
