@@ -2,6 +2,8 @@
 
 #include <libusb.h>
 
+#include <algorithm>
+
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
@@ -130,12 +132,10 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
         return false;
     }
 
-#if defined(__WINDOWS__) || defined(__APPLE__)
     value = product.interface_number.toInt(&ok, 16);
-    if (!ok || m_interfaceNumber != static_cast<unsigned int>(value)) {
+    if (!ok || m_interfaceNumber != value) {
         return false;
     }
-#endif
 
     // Match found
     return true;
@@ -148,23 +148,18 @@ int BulkController::open() {
     }
 
     /* Look up endpoint addresses in supported database */
-    int i;
-    for (i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == m_vendorId) &&
-                (bulk_supported[i].product_id == m_productId)) {
-            m_inEndpointAddr = bulk_supported[i].in_epaddr;
-            m_outEndpointAddr = bulk_supported[i].out_epaddr;
-#if defined(__WINDOWS__) || defined(__APPLE__)
-            m_interfaceNumber = bulk_supported[i].interface_number;
-#endif
-            break;
-        }
-    }
 
-    if (bulk_supported[i].vendor_id == 0) {
+    const bulk_support_lookup* pDevice = std::find_if(
+            std::cbegin(bulk_supported), std::cend(bulk_supported), [this](const auto& dev) {
+                return dev.key.vendor_id == m_vendorId && dev.key.product_id == m_productId;
+            });
+    if (pDevice == std::cend(bulk_supported)) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
+    m_inEndpointAddr = pDevice->endpoints.in_epaddr;
+    m_outEndpointAddr = pDevice->endpoints.out_epaddr;
+    m_interfaceNumber = pDevice->endpoints.interface_number;
 
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == nullptr) {
@@ -176,31 +171,21 @@ int BulkController::open() {
         qCWarning(m_logBase) << "Unable to open USB Bulk device" << getName();
         return -1;
     }
-
-#if defined(__WINDOWS__) || defined(__APPLE__)
-    if (m_interfaceNumber && libusb_kernel_driver_active(m_phandle, m_interfaceNumber) == 1) {
-        qCDebug(m_logBase) << "Found a driver active for" << getName();
-        if (libusb_detach_kernel_driver(m_phandle, 0) == 0)
-            qCDebug(m_logBase) << "Kernel driver detached for" << getName();
-        else {
-            qCWarning(m_logBase) << "Couldn't detach kernel driver for" << getName();
-            libusb_close(m_phandle);
-            return -1;
-        }
+    if (libusb_set_auto_detach_kernel_driver(m_phandle, true) == LIBUSB_ERROR_NOT_SUPPORTED) {
+        qCDebug(m_logBase) << "unable to automatically detach kernel driver for" << getName();
     }
 
-    if (m_interfaceNumber) {
-        int ret = libusb_claim_interface(m_phandle, m_interfaceNumber);
-        if (ret < 0) {
+    if (m_interfaceNumber.has_value()) {
+        int error = libusb_claim_interface(m_phandle, *m_interfaceNumber);
+        if (error < 0) {
             qCWarning(m_logBase) << "Cannot claim interface for" << getName()
-                                 << ":" << libusb_error_name(ret);
+                                 << ":" << libusb_error_name(error);
             libusb_close(m_phandle);
             return -1;
         } else {
             qCDebug(m_logBase) << "Claimed interface for" << getName();
         }
     }
-#endif
 
     setOpen(true);
     startEngine();
@@ -255,15 +240,13 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-#if defined(__WINDOWS__) || defined(__APPLE__)
-    if (m_interfaceNumber) {
-        int ret = libusb_release_interface(m_phandle, m_interfaceNumber);
-        if (ret < 0) {
+    if (m_interfaceNumber.has_value()) {
+        int error = libusb_release_interface(m_phandle, *m_interfaceNumber);
+        if (error < 0) {
             qCWarning(m_logBase) << "Cannot release interface for" << getName()
-                                 << ":" << libusb_error_name(ret);
+                                 << ":" << libusb_error_name(error);
         }
     }
-#endif
     qCInfo(m_logBase) << "  Closing device";
     libusb_close(m_phandle);
     m_phandle = nullptr;
