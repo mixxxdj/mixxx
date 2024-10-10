@@ -23,6 +23,8 @@ void assertEndPosition(
     case CueType::Intro:
     case CueType::Outro:
     case CueType::Invalid:
+    case CueType::FadeIn:
+    case CueType::FadeOut:
         break;
     case CueType::Beat: // unused
     default:
