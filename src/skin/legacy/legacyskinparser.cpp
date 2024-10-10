@@ -10,6 +10,7 @@
 #include <QtGlobal>
 
 #include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -2355,7 +2356,9 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
         ValueTransformer* pTransformer = nullptr;
         QDomElement transform = m_pContext->selectElement(con, "Transform");
         if (!transform.isNull()) {
-            pTransformer = ValueTransformer::parseFromXml(transform, *m_pContext);
+            pTransformer =
+                    ValueTransformer::parseFromXml(transform, *m_pContext)
+                            .release(); // TODO don't leak here
         }
 
         QString property;
