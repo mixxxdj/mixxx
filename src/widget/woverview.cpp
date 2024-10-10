@@ -474,17 +474,9 @@ void WOverview::receiveCuesUpdated() {
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
-#else
-            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
-#endif
+            m_iPickupPos = math_clamp(e->pos().x(), 0, width() - 1);
         } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
-#else
-            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
-#endif
+            m_iPickupPos = math_clamp(e->pos().y(), 0, height() - 1);
         }
     }
 
@@ -541,17 +533,9 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
-#else
-            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
-#endif
+            m_iPickupPos = math_clamp(e->pos().x(), 0, width() - 1);
         } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
-#else
-            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
-#endif
+            m_iPickupPos = math_clamp(e->pos().y(), 0, height() - 1);
         }
 
         if (m_pHoveredMark != nullptr) {
