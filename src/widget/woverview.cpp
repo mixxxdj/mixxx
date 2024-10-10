@@ -26,6 +26,12 @@
 #include "widget/controlwidgetconnection.h"
 #include "wskincolor.h"
 
+namespace {
+// Horizontal and vertical margin around the widget where we accept play pos dragging.
+constexpr int kDragOutsideLimitX = 100;
+constexpr int kDragOutsideLimitY = 50;
+} // anonymous namespace
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -50,6 +56,8 @@ WOverview::WOverview(
           m_iPlayPos(0),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
+          m_dragMarginH(kDragOutsideLimitX),
+          m_dragMarginV(kDragOutsideLimitY),
           m_iLabelFontSize(10),
           m_a(1.0),
           m_b(0.0),
@@ -108,6 +116,12 @@ WOverview::WOverview(
             this, &WOverview::onTrackAnalyzerProgress);
 
     connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
+
+    // Style the cursor we show when the cursor leaves the valid
+    // play pos dragging area.
+    QPixmap abortPixmap(32, 32);
+    abortPixmap.load(":/images/cross_circle_red.svg");
+    m_dragAbortCursor = QCursor(abortPixmap);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -216,6 +230,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     QString orientationString = context.selectString(node, "Orientation").toLower();
     if (orientationString == "vertical") {
         m_orientation = Qt::Vertical;
+        m_dragMarginH = kDragOutsideLimitY;
+        m_dragMarginV = kDragOutsideLimitX;
     } else {
         m_orientation = Qt::Horizontal;
     }
@@ -412,6 +428,7 @@ void WOverview::onPassthroughChange(double v) {
         m_bLeftClickDragging = false;
         m_bTimeRulerActive = false;
         m_iPickupPos = m_iPlayPos;
+        unsetCursor();
     } else {
         slotWaveformSummaryUpdated();
     }
@@ -478,6 +495,23 @@ void WOverview::receiveCuesUpdated() {
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
+        if (isPosInAllowedPosDragZone(e->pos())) {
+            m_bTimeRulerActive = true;
+            m_timeRulerPos = e->pos();
+            unsetCursor();
+        } else {
+            // Remove the time ruler to indicate dragging position is invalid,
+            // don't abort dragging!
+            m_iPickupPos = m_iPlayPos;
+            m_bTimeRulerActive = false;
+
+            setCursor(m_dragAbortCursor);
+            // Remember to restore cursor everywhere where we cancel dragging.
+            // Update immediately.
+            update();
+            return;
+        }
+
         if (m_orientation == Qt::Horizontal) {
             m_iPickupPos = math_clamp(e->pos().x(), 0, width() - 1);
         } else {
@@ -498,7 +532,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
     m_pHoveredMark = m_marks.findHoveredMark(e->pos(), m_orientation);
 
-    //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
+    // qDebug() << "WOverview::mouseMoveEvent" << e->pos();
     update();
 }
 
@@ -506,16 +540,28 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
+        // We may be dragging, and we may be outside the valid dragging area.
+        // If so, we've set the 'invalid drag' cursor. Restore the cursor now.
+        unsetCursor();
         return;
     }
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
         if (m_bLeftClickDragging) {
-            m_iPlayPos = m_iPickupPos;
-            double dValue = positionToValue(m_iPickupPos);
-            setControlParameterUp(dValue);
-            m_bLeftClickDragging = false;
+            unsetCursor();
+            if (isPosInAllowedPosDragZone(e->pos())) {
+                m_iPlayPos = m_iPickupPos;
+                double dValue = positionToValue(m_iPickupPos);
+                setControlParameterUp(dValue);
+                m_bLeftClickDragging = false;
+            } else {
+                // Abort dragging if we are way outside the widget.
+                m_iPickupPos = m_iPlayPos;
+                m_bLeftClickDragging = false;
+                m_bTimeRulerActive = false;
+                return;
+            }
         }
         m_bTimeRulerActive = false;
     } else if (e->button() == Qt::RightButton) {
@@ -530,6 +576,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
+        unsetCursor();
         return;
     }
     double trackSamples = getTrackSamples();
@@ -560,6 +607,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             m_iPickupPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
+            unsetCursor();
         } else if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
@@ -648,6 +696,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
     if (m_bPassthroughEnabled) {
         drawPassthroughOverlay(&painter);
         m_pPassthroughLabel->show();
+        unsetCursor();
     } else {
         m_pPassthroughLabel->hide();
     }
