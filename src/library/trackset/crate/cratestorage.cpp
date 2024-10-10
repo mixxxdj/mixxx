@@ -18,6 +18,30 @@ const QString CRATE_SUMMARY_VIEW = "crate_summary";
 
 const QString CRATESUMMARY_TRACK_COUNT = "track_count";
 const QString CRATESUMMARY_TRACK_DURATION = "track_duration";
+const QString CRATESUMMARY_FULL_PATH = "full_path";
+
+const QString kSubCrateSeparator(" / ");
+
+const QString kCrateFullPathTableExpression =
+        QStringLiteral(
+                "WITH RECURSIVE full_path_recursive(id, path) AS "
+                "( "
+                "SELECT %2, %3 FROM %1 WHERE %4 IS NULL "
+                "UNION ALL "
+                "SELECT %1.%2, full_path_recursive.path||'%5'||%1.%3 "
+                "FROM %1 "
+                "JOIN full_path_recursive ON %1.%4=full_path_recursive.id "
+                ")")
+                .arg(
+                        CRATE_TABLE,
+                        CRATETABLE_ID,
+                        CRATETABLE_NAME,
+                        CRATETABLE_PARENTID,
+                        kSubCrateSeparator);
+
+const QString kCrateFullPathJoin =
+        QStringLiteral("LEFT JOIN full_path_recursive ON %1.%2=full_path_recursive.id")
+                .arg(CRATE_TABLE, CRATETABLE_ID);
 
 const QString kCrateTracksJoin =
         QStringLiteral("LEFT JOIN %3 ON %3.%4=%1.%2")
@@ -29,17 +53,23 @@ const QString kLibraryTracksJoin = kCrateTracksJoin +
 
 const QString kCrateSummaryViewSelect =
         QStringLiteral(
-                "SELECT %1.*,"
-                "COUNT(CASE %2.%4 WHEN 0 THEN 1 ELSE NULL END) AS %5,"
-                "SUM(CASE %2.%4 WHEN 0 THEN %2.%3 ELSE 0 END) AS %6 "
-                "FROM %1")
+                "%9 "
+                "SELECT %1.*, "
+                "COUNT(CASE %2.%4 WHEN 0 THEN 1 ELSE NULL END) AS %5, "
+                "SUM(CASE %2.%4 WHEN 0 THEN %2.%3 ELSE 0 END) AS %6, "
+                "fpr_self.path AS %7, "
+                "FROM %1 "
+                "LEFT JOIN full_path_recursive AS fpr_self ON %1.%8=fpr_self.id "
                 .arg(
                         CRATE_TABLE,
                         LIBRARY_TABLE,
                         LIBRARYTABLE_DURATION,
                         LIBRARYTABLE_MIXXXDELETED,
                         CRATESUMMARY_TRACK_COUNT,
-                        CRATESUMMARY_TRACK_DURATION);
+                        CRATESUMMARY_TRACK_DURATION,
+                        CRATESUMMARY_FULL_PATH,
+                        CRATETABLE_ID,
+                        kCrateFullPathTableExpression);
 
 const QString kCrateSummaryViewQuery =
         QStringLiteral(
@@ -130,7 +160,8 @@ TrackQueryFields::TrackQueryFields(const FwdSqlQuery& query)
 CrateSummaryQueryFields::CrateSummaryQueryFields(const FwdSqlQuery& query)
         : CrateQueryFields(query),
           m_iTrackCount(query.fieldIndex(CRATESUMMARY_TRACK_COUNT)),
-          m_iTrackDuration(query.fieldIndex(CRATESUMMARY_TRACK_DURATION)) {
+          m_iTrackDuration(query.fieldIndex(CRATESUMMARY_TRACK_DURATION)),
+          m_iFullPath(query.fieldIndex(CRATESUMMARY_FULL_PATH)) {
 }
 
 void CrateSummaryQueryFields::populateFromQuery(
@@ -139,6 +170,7 @@ void CrateSummaryQueryFields::populateFromQuery(
     CrateQueryFields::populateFromQuery(query, pCrateSummary);
     pCrateSummary->setTrackCount(getTrackCount(query));
     pCrateSummary->setTrackDuration(getTrackDuration(query));
+    pCrateSummary->setFullPath(getFullPath(query));
 }
 
 void CrateStorage::repairDatabase(const QSqlDatabase& database) {

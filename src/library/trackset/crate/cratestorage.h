@@ -97,6 +97,9 @@ class CrateSummaryQueryFields : public CrateQueryFields {
             return varTrackDuration.toDouble();
         }
     }
+    QString getFullPath(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iFullPath).toString();
+    }
 
     void populateFromQuery(
             const FwdSqlQuery& query,
@@ -105,6 +108,7 @@ class CrateSummaryQueryFields : public CrateQueryFields {
   private:
     DbFieldIndex m_iTrackCount;
     DbFieldIndex m_iTrackDuration;
+    DbFieldIndex m_iFullPath;
 };
 
 class CrateSummarySelectResult : public FwdSqlQuerySelectResult {
