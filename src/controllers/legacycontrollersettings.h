@@ -355,6 +355,12 @@ class LegacyControllerEnumSetting
         : public LegacyControllerSettingFactory<LegacyControllerEnumSetting>,
           public AbstractLegacyControllerSetting {
   public:
+    struct Item {
+        QString value;
+        QString label;
+        QColor color;
+    };
+
     LegacyControllerEnumSetting(const QDomElement& element);
 
     virtual ~LegacyControllerEnumSetting() = default;
@@ -363,12 +369,12 @@ class LegacyControllerEnumSetting
         return QJSValue(stringify());
     }
 
-    const QList<std::tuple<QString, QString>>& options() const {
+    const QList<Item>& options() const {
         return m_options;
     }
 
     QString stringify() const override {
-        return std::get<0>(m_options.value(static_cast<int>(m_savedValue)));
+        return m_options.value(static_cast<int>(m_savedValue)).value;
     }
     void parse(const QString& in, bool* ok) override;
     bool isDefault() const override {
@@ -404,7 +410,7 @@ class LegacyControllerEnumSetting
 
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
-            const QList<std::tuple<QString, QString>>& options,
+            const QList<Item>& options,
             size_t currentValue,
             size_t defaultValue)
             : AbstractLegacyControllerSetting(element),
@@ -417,7 +423,7 @@ class LegacyControllerEnumSetting
 
   private:
     // We use a QList instead of QHash here because we want to keep the natural order
-    QList<std::tuple<QString, QString>> m_options;
+    QList<Item> m_options;
     size_t m_savedValue;
     size_t m_defaultValue;
 

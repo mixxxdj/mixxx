@@ -256,8 +256,8 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
     save();
 
     size_t pos = 0;
-    for (const auto& value : std::as_const(m_options)) {
-        if (std::get<0>(value) == in) {
+    for (const auto& item : std::as_const(m_options)) {
+        if (item.value == in) {
             if (ok != nullptr) {
                 *ok = true;
             }
@@ -272,8 +272,15 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     auto* pComboBox = new QComboBox(pParent);
 
-    for (const auto& value : std::as_const(m_options)) {
-        pComboBox->addItem(std::get<1>(value));
+    for (const auto& item : std::as_const(m_options)) {
+        if (item.color.isValid()) {
+            QPixmap icon(24, 24);
+            QPainter painter(&icon);
+            painter.fillRect(0, 0, 24, 24, item.color);
+            pComboBox->addItem(QIcon(icon), item.label);
+        } else {
+            pComboBox->addItem(item.label);
+        }
     }
     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
 
