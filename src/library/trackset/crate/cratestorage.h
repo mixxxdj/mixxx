@@ -25,6 +25,9 @@ class CrateQueryFields {
     QString getName(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iName).toString();
     }
+    CrateId getParentId(const FwdSqlQuery& query) const {
+        return CrateId(query.fieldValue(m_iParentId));
+    }
     bool isLocked(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iLocked);
     }
@@ -39,6 +42,7 @@ class CrateQueryFields {
   private:
     DbFieldIndex m_iId;
     DbFieldIndex m_iName;
+    DbFieldIndex m_iParentId;
     DbFieldIndex m_iLocked;
     DbFieldIndex m_iAutoDjSource;
 };
