@@ -16,7 +16,7 @@ StarDelegate::StarDelegate(QTableView* pTableView)
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
     connect(pTableView, &QTableView::viewportEntered, this, &StarDelegate::cursorNotOverAnyCell);
 
-    auto pTrackTableView = qobject_cast<WTrackTableView*>(pTableView);
+    auto* pTrackTableView = qobject_cast<WTrackTableView*>(pTableView);
     if (pTrackTableView) {
         connect(pTrackTableView,
                 &WTrackTableView::viewportLeaving,
