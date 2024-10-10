@@ -148,6 +148,12 @@ QDebug operator<<(QDebug debug, const CueType& cueType) {
     case CueType::N60dBSound:
         debug << "CueType::N60dBSound";
         break;
+    case CueType::FadeIn:
+        debug << "CueType::FadeIn";
+        break;
+    case CueType::FadeOut:
+        debug << "CueType::FadeOut";
+        break;
     }
     return debug;
 }

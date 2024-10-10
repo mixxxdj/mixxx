@@ -10,7 +10,7 @@ namespace {
 // verify that the track samples have not changed since the last analysis
 constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 // TODO: Change the above line to:
-//constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
+// constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
 
 // These are in dBV expressed as Volts RMS (which seems, sensibly,
 // the way Mixxx works).
@@ -30,7 +30,6 @@ constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 
 constexpr CSAMPLE kFadeInThreshold = N_27DB_FADEOUT_THRESHOLD;
 constexpr CSAMPLE kFadeOutThreshold = N_12DB_FADEOUT_THRESHOLD;
-
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
