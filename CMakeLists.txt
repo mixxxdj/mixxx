@@ -1147,6 +1147,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/util/autofilereloader.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/clipboard.cpp
