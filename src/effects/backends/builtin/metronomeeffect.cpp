@@ -32,9 +32,10 @@ std::span<T> subspan_clamped(std::span<T> in, typename std::span<T>::size_type o
     return in.subspan(std::min(offset, in.size()));
 }
 
-std::size_t samplesPerBeat(mixxx::audio::SampleRate sampleRate, double bpm) {
-    double samplesPerMinute = sampleRate * 60;
-    return static_cast<std::size_t>(samplesPerMinute / bpm);
+constexpr std::size_t framesPerBeat(
+        mixxx::audio::SampleRate framesPerSecond, double beatsPerMinute) {
+    double framesPerMinute = framesPerSecond * 60;
+    return static_cast<std::size_t>(framesPerMinute / beatsPerMinute);
 }
 
 std::span<CSAMPLE> syncedClickOutput(double beatFractionBufferEnd,
@@ -166,12 +167,12 @@ void MetronomeEffect::processChannel(
                     groupFeatures.beat_length,
                     output);
         } else {
-            std::size_t samplesSinceLastClick =
-                    gs->framesSinceLastClick * mixxx::kEngineChannelOutputCount;
-            std::size_t offset = samplesSinceLastClick %
-                    samplesPerBeat(engineParameters.sampleRate(),
+            // EngineParameters::sampleRate in reality returns the framerate.
+            mixxx::audio::SampleRate framesPerSecond = engineParameters.sampleRate();
+            std::size_t offset = gs->framesSinceLastClick %
+                    framesPerBeat(framesPerSecond,
                             m_pBpmParameter->value());
-            return subspan_clamped(output, offset);
+            return subspan_clamped(output, offset * mixxx::kEngineChannelOutputCount);
         }
     }();
 
