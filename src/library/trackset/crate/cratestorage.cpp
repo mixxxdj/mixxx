@@ -255,6 +255,65 @@ void CrateStorage::repairDatabase(const QSqlDatabase& database) {
                     << "for" << query.numRowsAffected() << "crates";
         }
     }
+    {
+        // Fix invalid -1/NULL values in the "parent_id" column
+        FwdSqlQuery query(database,
+                QStringLiteral("UPDATE %1 SET %2=NULL WHERE %2<0")
+                        .arg(CRATE_TABLE, CRATETABLE_PARENTID));
+        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+            kLogger.warning()
+                    << "Fixed NULL values in table" << CRATE_TABLE
+                    << "column" << CRATETABLE_PARENTID
+                    << "for" << query.numRowsAffected() << "crates";
+        }
+    }
+    {
+        // Attach subcrates with a non-existent parent to the root folder instead
+        FwdSqlQuery query(database,
+                QStringLiteral(
+                        "UPDATE %1 SET %3=NULL "
+                        "FROM ( "
+                        "SELECT self_crate.%2 FROM %1 AS self_crate "
+                        "LEFT JOIN crates AS parent_crate on parent_crate.%2=self_crate.%3 "
+                        "WHERE self_crate.%3 IS NOT NULL AND parent_crate.%2 IS NULL "
+                        ") AS no_parent "
+                        "WHERE %1.%2=no_parent.%3")
+                        .arg(
+                                CRATE_TABLE,
+                                CRATETABLE_ID,
+                                CRATETABLE_PARENTID));
+        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+            kLogger.warning()
+                    << "Fixed broken references in table" << CRATE_TABLE
+                    << "column" << CRATETABLE_PARENTID
+                    << "for" << query.numRowsAffected() << "crates";
+        }
+    }
+    {
+        // Break cycles where a subcrate is its own ancestor by attaching
+        // all crates that are part of any cycle to the root folder instead
+        FwdSqlQuery query(database,
+                QStringLiteral(
+                        "UPDATE %1 SET %3=NULL "
+                        "FROM ( "
+                        "%4 "
+                        "SELECT self_crate.%2 FROM %1 AS self_crate "
+                        "LEFT JOIN full_path_recursive ON self_crate.%2=full_path_recursive.id "
+                        "WHERE full_path_recursive.ancestors IS NULL "
+                        ") AS no_parent "
+                        "WHERE %1.%2=no_parent.%3")
+                        .arg(
+                                CRATE_TABLE,
+                                CRATETABLE_ID,
+                                CRATETABLE_PARENTID,
+                                kCrateFullPathTableExpression));
+        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+            kLogger.warning()
+                    << "Fixed cyclic references in table" << CRATE_TABLE
+                    << "column" << CRATETABLE_PARENTID
+                    << "for" << query.numRowsAffected() << "crates";
+        }
+    }
 
     // Crate tracks
     {
