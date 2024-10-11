@@ -1,6 +1,7 @@
 #include "metronomeeffect.h"
 
 #include <cmath>
+#include <limits>
 #include <optional>
 #include <span>
 
@@ -37,7 +38,8 @@ constexpr std::size_t framesPerBeat(
     double framesPerMinute = framesPerSecond * 60;
     return static_cast<std::size_t>(framesPerMinute / beatsPerMinute);
 }
-
+// returns where in the output buffer to start playing the next click.
+// If there the span is empty, no click should be played yet.
 std::span<CSAMPLE> syncedClickOutput(double beatFractionBufferEnd,
         std::optional<GroupFeatureBeatLength> beatLengthAndScratch,
         std::span<CSAMPLE> output) {
@@ -158,6 +160,7 @@ void MetronomeEffect::processChannel(
 
     const CSAMPLE_GAIN gain = db2ratio(static_cast<float>(m_pGainParameter->value()));
 
+    // Continue playing the click if needed.
     playMonoSamplesWithGain(subspan_clamped(click, gs->framesSinceLastClick), output, gain);
     gs->framesSinceLastClick += engineParameters.framesPerBuffer();
 
