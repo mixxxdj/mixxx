@@ -314,6 +314,9 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return pTreeItem->getData();
         case SidebarModel::IconNameRole:
             // TODO: Add support for icon names in tree items
+            return QVariant();
+        case SidebarModel::UrlRole:
+            return pTreeItem->getUrl();
         default:
             return QVariant();
         }
