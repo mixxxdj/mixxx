@@ -1155,8 +1155,8 @@ void MixxxMainWindow::slotOptionsRepairDatabase() {
 
         // Set flag and exit out of Mixxx
         m_pCoreServices->getSettings()->setValue(
-            mixxx::library::prefs::kRepairDatabaseOnNextRestartConfigKey,
-            true);
+                mixxx::library::prefs::kRepairDatabaseOnNextRestartConfigKey,
+                true);
         close();
     }
 }
