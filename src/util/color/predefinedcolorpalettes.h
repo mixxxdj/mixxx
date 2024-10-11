@@ -1,4 +1,7 @@
 #pragma once
+#include <array>
+#include <gsl/pointers>
+
 #include "util/color/colorpalette.h"
 
 namespace {
@@ -11,6 +14,8 @@ constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
 } // namespace
 namespace mixxx {
 namespace predefinedcolorpalettes {
+
+using ColorPalettePointer = gsl::not_null<const ColorPalette* const>;
 
 constexpr static mixxx::RgbColor kDefaultCueColor = kSchemaMigrationReplacementColor;
 constexpr static mixxx::RgbColor kDefaultLoopColor = kColorMixxxWhite;
@@ -36,11 +41,11 @@ struct PredefinedColorPalettes {
     ColorPalette deutKeyColorPalette;
     ColorPalette tritKeyColorPalette;
 
-    ColorPalette defaultHotcueColorPalette;
-    ColorPalette defaultTrackColorPalette;
-    ColorPalette defaultKeyColorPalette;
+    const ColorPalette& defaultHotcueColorPalette;
+    const ColorPalette& defaultTrackColorPalette;
+    const ColorPalette& defaultKeyColorPalette;
 
-    QList<ColorPalette> palettes;
+    std::array<ColorPalettePointer, 16> palettes;
 };
 
 // since the palettes used here are supposed to be used in other translation

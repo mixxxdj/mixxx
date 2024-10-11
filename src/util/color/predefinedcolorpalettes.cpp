@@ -548,24 +548,24 @@ const PredefinedColorPalettes& get() {
             .defaultKeyColorPalette = kPalettes.mixxxKeyColorPalette,
             .palettes{
                     // Hotcue Color Palettes
-                    kPalettes.mixxxHotcueColorPalette,
-                    kPalettes.seratoDJProHotcueColorPalette,
-                    kPalettes.rekordboxCOLD1HotcueColorPalette,
-                    kPalettes.rekordboxCOLD2HotcueColorPalette,
-                    kPalettes.rekordboxCOLORFULHotcueColorPalette,
+                    &kPalettes.mixxxHotcueColorPalette,
+                    &kPalettes.seratoDJProHotcueColorPalette,
+                    &kPalettes.rekordboxCOLD1HotcueColorPalette,
+                    &kPalettes.rekordboxCOLD2HotcueColorPalette,
+                    &kPalettes.rekordboxCOLORFULHotcueColorPalette,
                     // Track Color Palettes
-                    kPalettes.mixxxTrackColorPalette,
-                    kPalettes.rekordboxTrackColorPalette,
-                    kPalettes.seratoDJProTrackColorPalette,
-                    kPalettes.traktorProTrackColorPalette,
-                    kPalettes.virtualDJTrackColorPalette,
+                    &kPalettes.mixxxTrackColorPalette,
+                    &kPalettes.rekordboxTrackColorPalette,
+                    &kPalettes.seratoDJProTrackColorPalette,
+                    &kPalettes.traktorProTrackColorPalette,
+                    &kPalettes.virtualDJTrackColorPalette,
                     // Key Color Palettes
-                    kPalettes.mixxxKeyColorPalette,
-                    kPalettes.traktorKeyColorPalette,
-                    kPalettes.MIKKeyColorPalette,
-                    kPalettes.protKeyColorPalette,
-                    kPalettes.deutKeyColorPalette,
-                    kPalettes.tritKeyColorPalette,
+                    &kPalettes.mixxxKeyColorPalette,
+                    &kPalettes.traktorKeyColorPalette,
+                    &kPalettes.MIKKeyColorPalette,
+                    &kPalettes.protKeyColorPalette,
+                    &kPalettes.deutKeyColorPalette,
+                    &kPalettes.tritKeyColorPalette,
             }};
     return kPalettes;
 }

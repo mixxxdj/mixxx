@@ -12,6 +12,7 @@
 
 #include "moc_colorpaletteeditor.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
@@ -148,8 +149,8 @@ void ColorPaletteEditor::initialize(
 
     const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
 
-    for (const ColorPalette& palette : kPalettes.palettes) {
-        if (paletteName == palette.getName()) {
+    for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette : kPalettes.palettes) {
+        if (paletteName == palette->getName()) {
             saveName = paletteName + QStringLiteral(" (") + tr("Edited") + QChar(')');
             ColorPaletteSettings colorPaletteSettings(m_pConfig);
             if (colorPaletteSettings.getColorPaletteNames().contains(saveName)) {
@@ -209,8 +210,8 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     bool bPaletteIsReadOnly = false;
     bool bPaletteExists = false;
     const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
-    for (const ColorPalette& palette : kPalettes.palettes) {
-        if (text == palette.getName()) {
+    for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette : kPalettes.palettes) {
+        if (text == palette->getName()) {
             bPaletteExists = true;
             bPaletteIsReadOnly = true;
             break;
@@ -225,10 +226,10 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     if (bPaletteExists) {
         if (!m_pModel->isDirty()) {
             bool bPaletteFound = false;
-            for (const ColorPalette& palette : kPalettes.palettes) {
-                if (text == palette.getName()) {
+            for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette : kPalettes.palettes) {
+                if (text == palette->getName()) {
                     bPaletteFound = true;
-                    m_pModel->setColorPalette(palette);
+                    m_pModel->setColorPalette(*palette);
                     break;
                 }
             }

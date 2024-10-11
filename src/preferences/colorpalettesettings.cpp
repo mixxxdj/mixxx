@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
@@ -39,9 +40,10 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     }
 
     // If we find a predefined palette with this name, return it
-    for (const ColorPalette& palette : mixxx::predefinedcolorpalettes::get().palettes) {
-        if (name == palette.getName()) {
-            return palette;
+    for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette :
+            mixxx::predefinedcolorpalettes::get().palettes) {
+        if (name == palette->getName()) {
+            return *palette;
         }
     }
 
@@ -87,8 +89,9 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
         return;
     }
 
-    for (const ColorPalette& palette : mixxx::predefinedcolorpalettes::get().palettes) {
-        if (name == palette.getName()) {
+    for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette :
+            mixxx::predefinedcolorpalettes::get().palettes) {
+        if (name == palette->getName()) {
             qDebug() << "Color Palette" << name << "is a built-in palette, not writing to config!";
             return;
         }

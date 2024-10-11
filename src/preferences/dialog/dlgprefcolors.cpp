@@ -94,8 +94,9 @@ void DlgPrefColors::slotUpdate() {
     checkboxKeyColorsEnabled->setChecked(
             m_pConfig->getValue(kKeyColorsEnabledConfigKey,
                     BaseTrackTableModel::kKeyColorsEnabledDefault));
-    for (const auto& palette : mixxx::predefinedcolorpalettes::get().palettes) {
-        QString paletteName = palette.getName();
+    for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette :
+            mixxx::predefinedcolorpalettes::get().palettes) {
+        QString paletteName = palette->getName();
         QString translatedName = QCoreApplication::translate(
                 "PredefinedColorPalettes", qPrintable(paletteName));
         QIcon paletteIcon = drawPalettePreview(paletteName);
@@ -109,7 +110,7 @@ void DlgPrefColors::slotUpdate() {
                 comboBoxTrackColors->count() - 1,
                 paletteIcon);
 
-        if (palette.size() == 12) {
+        if (palette->size() == 12) {
             comboBoxKeyColors->addItem(translatedName, paletteName);
             comboBoxKeyColors->setItemIcon(
                     comboBoxKeyColors->count() - 1,
@@ -209,20 +210,22 @@ void DlgPrefColors::slotApply() {
     bool bTrackColorPaletteFound = false;
     bool bKeyColorPaletteFound = false;
 
-    for (const auto& palette : mixxx::predefinedcolorpalettes::get().palettes) {
+    for (mixxx::predefinedcolorpalettes::ColorPalettePointer palette :
+            mixxx::predefinedcolorpalettes::get().palettes) {
+        QString name = palette->getName();
         if (!bHotcueColorPaletteFound &&
-                hotcueColorPaletteName == palette.getName()) {
-            m_colorPaletteSettings.setHotcueColorPalette(palette);
+                hotcueColorPaletteName == name) {
+            m_colorPaletteSettings.setHotcueColorPalette(*palette);
             bHotcueColorPaletteFound = true;
         }
         if (!bTrackColorPaletteFound &&
-                trackColorPaletteName == palette.getName()) {
-            m_colorPaletteSettings.setTrackColorPalette(palette);
+                trackColorPaletteName == name) {
+            m_colorPaletteSettings.setTrackColorPalette(*palette);
             bTrackColorPaletteFound = true;
         }
         if (!bKeyColorPaletteFound &&
-                keyColorPaletteName == palette.getName()) {
-            m_colorPaletteSettings.setKeyColorPalette(palette);
+                keyColorPaletteName == name) {
+            m_colorPaletteSettings.setKeyColorPalette(*palette);
             bKeyColorPaletteFound = true;
         }
     }
