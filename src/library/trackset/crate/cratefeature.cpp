@@ -18,6 +18,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
+#include "library/trackset/crate/crateurls.h"
 #include "library/treeitem.h"
 #include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
@@ -272,6 +273,7 @@ void CrateFeature::updateTreeItemForCrateSummary(
     // Update mutable properties
     pTreeItem->setLabel(formatLabel(crateSummary));
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
+    pTreeItem->setUrl(CrateURLs::toUrl(crateSummary.getId()));
 }
 
 bool CrateFeature::dropAcceptChild(
