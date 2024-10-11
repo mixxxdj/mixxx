@@ -152,11 +152,12 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "Skip Silence Start Full Volume:\n"
             "The same as Skip Silence, but starting transitions with a centered\n"
             "crossfader, so that the intro starts at full volume.\n"
+            "\n"
             "Radio Laneway Crossfade:\n"
             "Starts the next track at full volume.  Starts the crossfade when the\n"
             "volume last falls below -12Db or at the spin box setting which ever\n"
             "is lower, and potentially starts the next earlier if it starts below\n"
-            "-27Db.\n");
+            "-27Db.");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
