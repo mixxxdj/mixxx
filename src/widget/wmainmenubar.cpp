@@ -541,6 +541,14 @@ void WMainMenuBar::initialize() {
 
     pOptionsMenu->addSeparator();
 
+    QString repairDatabaseTitle = tr("Repair Database");
+    QString repairDatabaseText = tr("Restart Mixxx & repair database inconsistencies");
+    auto* pOptionsRepairDatabase = new QAction(repairDatabaseTitle, this);
+    pOptionsRepairDatabase->setStatusTip(repairDatabaseText);
+    pOptionsRepairDatabase->setWhatsThis(buildWhatsThis(repairDatabaseTitle, repairDatabaseText));
+    connect(pOptionsRepairDatabase, &QAction::triggered, this, &WMainMenuBar::repairDatabase);
+    pOptionsMenu->addAction(pOptionsRepairDatabase);
+
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     auto* pOptionsPreferences = new QAction(preferencesTitle, this);

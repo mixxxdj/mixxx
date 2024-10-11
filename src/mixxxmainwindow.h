@@ -62,6 +62,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileLoadSongPlayer(int deck);
     /// show the preferences dialog
     void slotOptionsPreferences();
+    /// set up a database repair for next start
+    void slotOptionsRepairDatabase();
     /// show the about dialog
     void slotHelpAbout();
     /// show popup with library scan results
