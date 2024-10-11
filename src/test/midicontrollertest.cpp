@@ -28,6 +28,13 @@ class MockMidiController : public MidiController {
                     unsigned char byte2));
     MOCK_METHOD1(sendBytes, bool(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
 };
 
 class MidiControllerTest : public MixxxTest {

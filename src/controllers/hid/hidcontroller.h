@@ -20,6 +20,13 @@ class HidController final : public Controller {
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::HID;
+    }
+
     bool isMappable() const override {
         if (!m_pMapping) {
             return false;

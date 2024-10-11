@@ -33,7 +33,7 @@ DeviceInfo::DeviceInfo(
           release_number(device_info.release_number),
           usage_page(device_info.usage_page),
           usage(device_info.usage),
-          interface_number(device_info.interface_number),
+          m_usbInterfaceNumber(device_info.interface_number),
           m_pathRaw(device_info.path, mixxx::strnlen_s(device_info.path, PATH_MAX)),
           m_serialNumberRaw(device_info.serial_number,
                   mixxx::wcsnlen_s(device_info.serial_number,
@@ -45,13 +45,30 @@ DeviceInfo::DeviceInfo(
                   kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
+    switch (device_info.bus_type) {
+    case HID_API_BUS_USB:
+        m_physicalTransportProtocol = PhysicalTransportProtocol::USB;
+        break;
+    case HID_API_BUS_BLUETOOTH:
+        m_physicalTransportProtocol = PhysicalTransportProtocol::BlueTooth;
+        break;
+    case HID_API_BUS_I2C:
+        m_physicalTransportProtocol = PhysicalTransportProtocol::I2C;
+        break;
+    case HID_API_BUS_SPI:
+        m_physicalTransportProtocol = PhysicalTransportProtocol::SPI;
+        break;
+    default:
+        m_physicalTransportProtocol = PhysicalTransportProtocol::UNKNOWN;
+        break;
+    }
 }
 
 QString DeviceInfo::formatInterface() const {
-    if (interface_number < 0) {
+    if (m_usbInterfaceNumber < 0) {
         return QString();
     }
-    return QChar('#') + QString::number(interface_number);
+    return QChar('#') + QString::number(m_usbInterfaceNumber);
 }
 
 QString DeviceInfo::formatVID() const {
@@ -80,12 +97,12 @@ QString DeviceInfo::formatName() const {
     // interface number to allow the user (and Mixxx!) to keep
     // track of which is which
     const auto serialSuffix = serialNumber().right(4);
-    if (interface_number >= 0) {
+    if (m_usbInterfaceNumber >= 0) {
         return productString() +
                 QChar(' ') +
                 serialSuffix +
                 QChar('_') +
-                QString::number(interface_number);
+                QString::number(m_usbInterfaceNumber);
     } else {
         return productString() +
                 QChar(' ') +
@@ -137,9 +154,9 @@ bool DeviceInfo::matchProductInfo(
         return false;
     }
 
-    // Optionally check against interface_number / usage_page && usage
-    if (interface_number >= 0) {
-        if (interface_number != product.interface_number.toInt(&ok, 16) || !ok) {
+    // Optionally check against m_usbInterfaceNumber / usage_page && usage
+    if (m_usbInterfaceNumber >= 0) {
+        if (m_usbInterfaceNumber != product.interface_number.toInt(&ok, 16) || !ok) {
             return false;
         }
     } else {

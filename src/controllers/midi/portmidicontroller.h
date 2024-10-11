@@ -55,6 +55,10 @@ class PortMidiController : public MidiController {
             int outputDeviceIndex);
     ~PortMidiController() override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+
   private slots:
     int open() override;
     int close() override;

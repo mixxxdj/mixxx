@@ -4,6 +4,8 @@
 #include <QString>
 #include <string>
 
+#include "controllers/controller.h"
+
 struct ProductInfo;
 struct hid_device_info;
 
@@ -69,6 +71,14 @@ class DeviceInfo final {
         return m_serialNumber;
     }
 
+    const int& usbInterfaceNumber() {
+        return m_usbInterfaceNumber;
+    }
+
+    const PhysicalTransportProtocol& physicalTransportProtocol() {
+        return m_physicalTransportProtocol;
+    }
+
     bool isValid() const {
         return !productString().isNull() && !serialNumber().isNull();
     }
@@ -95,7 +105,8 @@ class DeviceInfo final {
     unsigned short release_number;
     unsigned short usage_page;
     unsigned short usage;
-    int interface_number;
+    PhysicalTransportProtocol m_physicalTransportProtocol;
+    int m_usbInterfaceNumber;
 
     std::string m_pathRaw;
     std::wstring m_serialNumberRaw;

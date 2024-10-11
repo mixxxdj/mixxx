@@ -11,8 +11,8 @@ HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
         : Controller(deviceInfo.formatName()),
           m_deviceInfo(std::move(deviceInfo)) {
-
-    // All HID devices are full-duplex
+    // We assume, that all HID controllers are full-duplex,
+    // but a HID can also be input only (e.g. a USB HID mouse)
     setInputDevice(true);
     setOutputDevice(true);
 }

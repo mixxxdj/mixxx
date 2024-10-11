@@ -42,6 +42,10 @@ class Hss1394Controller : public MidiController {
             int deviceIndex);
     ~Hss1394Controller() override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::FireWire;
+    }
+
   private slots:
     int open() override;
     int close() override;

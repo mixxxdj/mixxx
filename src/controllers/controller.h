@@ -9,6 +9,21 @@
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
 
+enum class PhysicalTransportProtocol : uint8_t {
+    UNKNOWN,
+    USB,
+    BlueTooth,
+    I2C,
+    SPI,
+    FireWire // IEEE 1394
+};
+
+enum class DataRepresentationProtocol : uint8_t {
+    MIDI,
+    HID,
+    USB_BULK_TRANSFER // Bulk is only one of the 4 USB transfer modes
+};
+
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
@@ -45,6 +60,9 @@ class Controller : public QObject {
     inline const QString& getName() const {
         return m_sDeviceName;
     }
+    virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
+    virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;

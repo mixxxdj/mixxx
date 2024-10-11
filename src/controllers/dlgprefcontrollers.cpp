@@ -203,10 +203,24 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
+
+        const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
+            switch (protocol) {
+            case DataRepresentationProtocol::USB_BULK_TRANSFER:
+                return QStringLiteral("ic_preferences_bulk.svg");
+            case DataRepresentationProtocol::HID:
+                return QStringLiteral("ic_preferences_hid.svg");
+            case DataRepresentationProtocol::MIDI:
+                return QStringLiteral("ic_preferences_midi.svg");
+            default:
+                return QStringLiteral("ic_preferences_controllers.svg");
+            }
+        }();
+
         m_pDlgPreferences->addPageWidget(
                 DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
                 pController->getName(),
-                "ic_preferences_controllers.svg");
+                treeImage);
 
         m_pControllersRootItem->addChild(pControllerTreeItem);
         m_controllerTreeItems.append(pControllerTreeItem);

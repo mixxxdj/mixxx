@@ -77,6 +77,19 @@ class FakeController : public Controller {
         return new FakeBulkControllerJSProxy();
     }
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        if (m_bMidiMapping) {
+            return DataRepresentationProtocol::MIDI;
+        } else if (m_bHidMapping) {
+            return DataRepresentationProtocol::HID;
+        } else {
+            return DataRepresentationProtocol::USB_BULK_TRANSFER;
+        }
+    }
+
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override {
         auto pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
         if (pMidiMapping) {
