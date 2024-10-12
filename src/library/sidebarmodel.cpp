@@ -8,8 +8,12 @@
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
+#include "util/dnd.h"
 
 namespace {
+
+/// The MIME type supported for drag & drop
+const QString kUriListMimeType = QStringLiteral("text/uri-list");
 
 /// The time between selecting and activating (= clicking) a feature item
 /// in the sidebar tree. This is essential to allow smooth scrolling through
@@ -27,6 +31,7 @@ SidebarModel::SidebarModel(
         : QAbstractItemModel(parent),
           m_iDefaultSelectedIndex(0),
           m_pressedUntilClickedTimer(new QTimer(this)) {
+    m_mimeTypes << kUriListMimeType;
     m_pressedUntilClickedTimer->setSingleShot(true);
     connect(m_pressedUntilClickedTimer,
             &QTimer::timeout,
@@ -438,6 +443,102 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
             pFeature->deleteItem(index);
         }
     }
+}
+
+QStringList SidebarModel::mimeTypes() const {
+    return m_mimeTypes;
+}
+
+QMimeData* SidebarModel::mimeData(const QModelIndexList& indexes) const {
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::mimeData() indexes=" << indexes;
+    }
+    DEBUG_ASSERT(mimeTypes().size() == 1 && mimeTypes().at(0) == kUriListMimeType);
+    const auto urls = collectUrls(indexes);
+    if (urls.isEmpty()) {
+        return nullptr;
+    } else {
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setUrls(urls);
+        return mimeData;
+    }
+}
+
+QList<QUrl> SidebarModel::collectUrls(const QModelIndexList& indexes) const {
+    QList<QUrl> urls;
+    urls.reserve(indexes.size());
+    // The list of indexes we're given may contain separate indices for each
+    // column, so even if only one row is selected, we might have columnCount()
+    // indices.  We need to only count a single QModelIndex per unique row.
+    //
+    // TODO(cr7pt0gr4ph7): An alternative implementation would be to instead
+    // use a QSet<QUrl> to check if an URL has already been seen. Are there
+    // any cases where the behavior of these two implementations would differ?
+    QSet<QModelIndex> visitedRows;
+    for (const auto& index : indexes) {
+        if (!index.isValid()) {
+            continue;
+        }
+        auto uniqueRow = index.siblingAtColumn(0);
+        if (visitedRows.contains(uniqueRow)) {
+            continue;
+        }
+        visitedRows.insert(uniqueRow);
+        QUrl url = data(index, Roles::UrlRole).toUrl();
+        if (url.isValid()) {
+            urls.append(url);
+        }
+    }
+    return urls;
+}
+
+Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
+    Q_UNUSED(index);
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+}
+
+QModelIndex SidebarModel::resolveDropIndex(int row, int column, const QModelIndex& parent) const {
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+    return parent;
+}
+
+bool SidebarModel::canDropMimeData(const QMimeData* data,
+        Qt::DropAction action,
+        int row,
+        int column,
+        const QModelIndex& parent) const {
+    Q_UNUSED(action);
+    const QModelIndex index = resolveDropIndex(row, column, parent);
+
+    if (data->hasUrls()) {
+        return dragMoveAccept(index, data->urls());
+    }
+
+    return false;
+}
+
+bool SidebarModel::dropMimeData(const QMimeData* data,
+        Qt::DropAction action,
+        int row,
+        int column,
+        const QModelIndex& parent) {
+    Q_UNUSED(action);
+    QModelIndex index = resolveDropIndex(row, column, parent);
+
+    if (data->hasUrls()) {
+        const QList<QUrl> urls = data->urls();
+
+        // m_sourceOfCurrentDragDropEvent will be NULL if
+        // something is dropped from a different application
+        return dropAccept(index, urls, m_sourceOfCurrentDragDropEvent);
+    }
+
+    return false;
+}
+
+void SidebarModel::setSourceOfCurrentDragDropEvent(QObject* source) {
+    m_sourceOfCurrentDragDropEvent = source;
 }
 
 bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
