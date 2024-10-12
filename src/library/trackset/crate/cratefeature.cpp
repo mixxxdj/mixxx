@@ -276,12 +276,25 @@ void CrateFeature::updateTreeItemForCrateSummary(
     pTreeItem->setUrl(CrateURLs::toUrl(crateSummary.getId()));
 }
 
-bool CrateFeature::dropAcceptChild(
-        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
-    CrateId crateId(crateIdFromIndex(index));
-    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+bool CrateFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+    Q_UNUSED(pSource);
+    QList<CrateId> crateIds = CrateURLs::parseCrateUrls(urls);
+    if (crateIds.isEmpty()) {
         return false;
     }
+    return moveToParent(CrateId(), crateIds);
+}
+
+bool CrateFeature::dropAcceptChild(
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+    CrateId targetCrateId(crateIdFromIndex(index));
+    VERIFY_OR_DEBUG_ASSERT(targetCrateId.isValid()) {
+        return false;
+    }
+
+    bool movedTracks = false;
+    bool movedCrates = false;
+
     // If a track is dropped onto a crate's name, but the track isn't in the
     // library, then add the track to the library before adding it to the
     // playlist.
@@ -292,12 +305,22 @@ bool CrateFeature::dropAcceptChild(
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
             m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
-    if (trackIds.isEmpty()) {
-        return false;
+    if (!trackIds.isEmpty()) {
+        m_pTrackCollection->addCrateTracks(targetCrateId, trackIds);
+        movedTracks = true;
     }
 
-    m_pTrackCollection->addCrateTracks(crateId, trackIds);
-    return true;
+    const QList<CrateId> crateIds = CrateURLs::parseCrateUrls(urls);
+    if (!crateIds.isEmpty()) {
+        moveToParent(targetCrateId, crateIds);
+        movedCrates = true;
+    }
+
+    return movedTracks || movedCrates;
+}
+
+bool CrateFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return !CrateURLs::parseCrateUrls(urls).isEmpty();
 }
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
@@ -310,7 +333,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUr
             crate.isLocked()) {
         return false;
     }
-    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true) ||
+            !CrateURLs::parseCrateUrls(urls).isEmpty();
 }
 
 void CrateFeature::bindLibraryWidget(
@@ -488,6 +512,33 @@ void CrateFeature::createNewCrate(CrateId parentId, bool selectAfterCreation) {
         // expand Crates and scroll to new crate
         m_pSidebarWidget->selectChildIndex(indexFromCrateId(crateId), false);
     }
+}
+
+bool CrateFeature::moveToParent(CrateId destinationId, const QList<CrateId>& cratesToMove) {
+    // Note: An "invalid"/NULL destination is not actually invalid
+    //       for this function, but instead represents the root folder.
+    bool success = false;
+    for (CrateId crateToMoveId : cratesToMove) {
+        success |= moveToParent(destinationId, crateToMoveId, false);
+    }
+    return success;
+}
+
+bool CrateFeature::moveToParent(
+        CrateId destinationId, CrateId crateToMoveId, bool selectAfterMove) {
+    // Note: An "invalid"/NULL destination is not actually invalid
+    //       for this function, but instead represents the root folder.
+    Crate crate;
+    if (m_pTrackCollection->crates().readCrateById(crateToMoveId, &crate)) {
+        crate.setParentId(destinationId);
+        const bool success = m_pTrackCollection->updateCrate(crate);
+        if (success && selectAfterMove) {
+            // Scroll to new location of the selected crate/folder
+            m_pSidebarWidget->selectChildIndex(indexFromCrateId(crateToMoveId), false);
+        }
+        return success;
+    }
+    return false;
 }
 
 void CrateFeature::deleteItem(const QModelIndex& index) {
