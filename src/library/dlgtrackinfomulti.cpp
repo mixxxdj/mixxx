@@ -813,7 +813,7 @@ void DlgTrackInfoMulti::slotKeyTextChanged() {
         newKeyText = KeyUtils::keyToString(newKey);
     } else if (newTextInput.isEmpty()) {
         // Empty text is not a valid key but indicates we want to clear the key.
-        newKeyText = QStringLiteral("");
+        newKeyText = QString();
     }
 
     txtKey->blockSignals(true);
