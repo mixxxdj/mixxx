@@ -57,6 +57,7 @@ class CrateFeature : public BaseTrackSetFeature {
 #endif
 
   private slots:
+    void slotCreateSubCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
@@ -102,6 +103,9 @@ class CrateFeature : public BaseTrackSetFeature {
     bool isChildIndexSelectedInSidebar(const QModelIndex& index);
     bool readLastRightClickedCrate(Crate* pCrate) const;
 
+    // TreeItem actions
+    void createNewCrate(CrateId parentId, bool selectAfterCreation);
+
     QString formatRootViewHtml() const;
 
     const QIcon m_lockedCrateIcon;
@@ -122,6 +126,7 @@ class CrateFeature : public BaseTrackSetFeature {
     TrackId m_selectedTrackId;
 
     parented_ptr<QAction> m_pCreateCrateAction;
+    parented_ptr<QAction> m_pCreateSubCrateAction;
     parented_ptr<QAction> m_pDeleteCrateAction;
     parented_ptr<QAction> m_pRenameCrateAction;
     parented_ptr<QAction> m_pLockCrateAction;
