@@ -11,7 +11,11 @@ const QString kControllerSettingsResourcePathSubst = QStringLiteral("%RESOURCE_P
 void LegacyControllerMapping::loadSettings(UserSettingsPointer pConfig,
         const QString& controllerName) const {
     auto mappingFile = QFileInfo(m_filePath);
-    DEBUG_ASSERT(mappingFile.exists());
+    if (!mappingFile.exists()) {
+        // This happens when we start the MIDI Learning Wizard with a new (empty)
+        // mapping, or when the mapping file has been removed manually by the user.
+        return;
+    }
     QString controllerPath =
             mappingFile.absoluteFilePath()
                     .replace(pConfig->getSettingsPath(),
