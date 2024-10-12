@@ -13,18 +13,17 @@
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
-          m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault),
-          m_lastDragMoveAccepted(false) {
+          m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
     //Drag and drop setup
-    setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
+    setDragDropOverwriteMode(true);
     setDropIndicatorShown(true);
-    setAcceptDrops(true);
     setAutoScroll(true);
+    setAutoExpandDelay(m_hoverExpandDelay);
     setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -44,29 +43,44 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
     //}
 }
 
+void WLibrarySidebar::setSourceOfCurrentDragDropEvent(QObject* pSource) {
+    // pEvent->source() will be NULL if something is dropped
+    // from a different application. This knowledge is used
+    // inside the LibraryFeature implementations.
+    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
+    if (pSidebarModel) {
+        pSidebarModel->setSourceOfCurrentDragDropEvent(pSource);
+    }
+}
+
 /// Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << pEvent->mimeData()->formats();
-    resetHoverIndexAndDragMoveResult();
-    if (pEvent->mimeData()->hasUrls()) {
-        // We don't have a way to ask the LibraryFeatures whether to accept a
-        // drag so for now we accept all drags. Since almost every
-        // LibraryFeature accepts all files in the drop and accepts playlist
-        // drops we default to those flags to DragAndDropHelper.
-        // FIXME Unless the cursor is steady after entering the sidebar (which
-        // is veryhard to achieve for humans) QDragEnterEvent is followed by one
-        // or more QDragMoveEvent, so don't check here at all and rely on dragMove?
-        if (DragAndDropHelper::urlsContainSupportedTrackFiles(pEvent->mimeData()->urls(), true)) {
-            pEvent->acceptProposedAction();
-            return;
-        }
+    toggleDragHoverPropertyAndUpdateStyle(true);
+
+    // QTreeView::dragEnterEvent will, through some indirection,
+    // call SidebarModel::mimeTypes() and use it to decide whether
+    // we could potentially support the drag data at all. In practice,
+    // this checks whether the drag data contains a list of URLs.
+    //
+    // As documented in the Qt source code, the actual check whether any
+    // of the URLs are actually valid/supported is deferred until the
+    // dragMoveEvent (see below).
+    //
+    // Note: pEvent->source() will be NULL if something is dropped
+    // from a different application. This knowledge is used
+    // inside the LibraryFeature implementations.
+    setSourceOfCurrentDragDropEvent(pEvent->source());
+    QTreeView::dragEnterEvent(pEvent);
+    setSourceOfCurrentDragDropEvent(nullptr);
+
+    if (pEvent->isAccepted()) {
+        pEvent->acceptProposedAction();
     }
-    pEvent->ignore();
-    // QTreeView::dragEnterEvent(pEvent);
 }
 
-/// Drag leave event, happens when leaving and when the drag is aborted, eg. with Esc.
-/// We override this only to reset the drag hover property.
+/// Drag leave event, happens when the dragged item leaves the track sources view
+/// or when the drag is aborted through Escape or other means.
 void WLibrarySidebar::dragLeaveEvent(QDragLeaveEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dragLeaveEvent";
     toggleDragHoverPropertyAndUpdateStyle(false);
@@ -77,115 +91,50 @@ void WLibrarySidebar::dragLeaveEvent(QDragLeaveEvent* pEvent) {
 /// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dragMoveEvent" << pEvent->mimeData()->formats();
-    toggleDragHoverPropertyAndUpdateStyle(true);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint pos = pEvent->position().toPoint();
-#else
-    QPoint pos = pEvent->pos();
-#endif
-    const QModelIndex index = indexAt(pos);
-    if (m_hoverIndex == index) {
-        m_lastDragMoveAccepted ? pEvent->acceptProposedAction() : pEvent->ignore();
-        return;
-    }
-
-    m_hoverIndex = index;
-
-    if (m_hoverExpandDelay >= 0) {
-        // Timeout of < 0 disables auto-expand
-        m_expandTimer.stop();
-        m_expandTimer.start(m_hoverExpandDelay, this);
-    }
-
-    // This has to be here instead of after, otherwise all drags will be
-    // rejected -- rryan 3/2011
+    // QTreeView::dragMoveEvent will, through some indirection,
+    // call SidebarModel::canDropMimeData, which will call one of either
+    // LibraryFeature::dragMoveAccept or LibraryFeature::dragMoveAcceptChild,
+    // depending on the item over which the drag event occurred.
+    //
+    // This is where the LibraryFeature subclasses check whether any of
+    // actual data being dragged is supported, e.g. whether it is
+    // a list of valid track URLs.
+    //
+    // Note: We go through QTreeView here instead of directly calling
+    // SidebarModel to retain other useful features from the base class,
+    // like e.g. auto-scroll behavior when the mouse cursor reaches
+    // the boundaries of the tree view.
+    //
+    // Note: pEvent->source() will be NULL if something is dropped
+    // from a different application. This knowledge is used
+    // inside the LibraryFeature implementations.
+    setSourceOfCurrentDragDropEvent(pEvent->source());
     QTreeView::dragMoveEvent(pEvent);
-    if (!pEvent->mimeData()->hasUrls()) {
-        pEvent->ignore();
-        m_lastDragMoveAccepted = false;
-        return;
-    }
-
-    const QList<QUrl> urls = pEvent->mimeData()->urls();
-    // Drag and drop within this widget
-    if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
-        // Do nothing.
-        m_lastDragMoveAccepted = false;
-        pEvent->ignore();
-        return;
-    }
-
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        m_lastDragMoveAccepted = false;
-        pEvent->ignore();
-        return;
-    }
-    if (pSidebarModel->dragMoveAccept(index, urls)) {
-        m_lastDragMoveAccepted = true;
-        pEvent->acceptProposedAction();
-    } else {
-        m_lastDragMoveAccepted = false;
-        pEvent->ignore();
-    }
-}
-
-void WLibrarySidebar::timerEvent(QTimerEvent* pEvent) {
-    if (pEvent->timerId() == m_expandTimer.timerId()) {
-        QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
-        if (viewport()->rect().contains(pos)) {
-            QModelIndex index = indexAt(pos);
-            if (m_hoverIndex == index) {
-                setExpanded(index, !isExpanded(index));
-            }
-        }
-        m_expandTimer.stop();
-        return;
-    }
-    QTreeView::timerEvent(pEvent);
+    setSourceOfCurrentDragDropEvent(nullptr);
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dropEvent";
-    resetHoverIndexAndDragMoveResult();
     toggleDragHoverPropertyAndUpdateStyle(false);
 
-    if (!pEvent->mimeData()->hasUrls()) {
-        pEvent->ignore();
-        return;
-    }
-    // Drag and drop within this widget
-    if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
-        // Do nothing.
-        pEvent->ignore();
-        return;
-    }
-    // Drag-and-drop from an external application (eg. a file manager) or the
-    // track table widget onto the sidebar.
-    // Reset the selected items (if you had anything highlighted, it clears it)
-    // this->selectionModel()->clear();
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        pEvent->ignore();
-        return;
-    }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint pos = pEvent->position().toPoint();
-#else
-    QPoint pos = pEvent->pos();
-#endif
-
-    const QModelIndex destIndex = indexAt(pos);
-    // pEvent->source() will return NULL if something is dropped from
-    // a different application
-    const QList<QUrl> urls = pEvent->mimeData()->urls();
-    if (pSidebarModel->dropAccept(destIndex, urls, pEvent->source())) {
-        pEvent->acceptProposedAction();
-    } else {
-        pEvent->ignore();
-    }
+    // QTreeView::dropEvent will, through some indirection, call
+    // SidebarModel::dropMimeData, which will call one of either
+    // LibraryFeature::dropAccept or LibraryFeature::dropAcceptChild,
+    // depending on where the drop occurred.
+    //
+    // Note: We go through QTreeView here instead of directly calling
+    // SidebarModel to retain other useful features from the base class,
+    // like e.g. auto-scroll behavior when the mouse cursor reaches
+    // the boundaries of the tree view.
+    //
+    // Note: pEvent->source() will be NULL if something is dropped
+    // from a different application. This knowledge is used
+    // inside the LibraryFeature implementations.
+    setSourceOfCurrentDragDropEvent(pEvent->source());
+    QTreeView::dropEvent(pEvent);
+    setSourceOfCurrentDragDropEvent(nullptr);
 }
 
 void WLibrarySidebar::toggleDragHoverPropertyAndUpdateStyle(bool enabled) {
@@ -198,11 +147,6 @@ void WLibrarySidebar::toggleDragHoverPropertyAndUpdateStyle(bool enabled) {
     style()->unpolish(this);
     style()->polish(this);
     update();
-}
-
-void WLibrarySidebar::resetHoverIndexAndDragMoveResult() {
-    m_hoverIndex = QModelIndex();
-    m_lastDragMoveAccepted = false;
 }
 
 void WLibrarySidebar::renameSelectedItem() {
@@ -498,4 +442,5 @@ void WLibrarySidebar::slotSetFont(const QFont& font) {
 
 void WLibrarySidebar::slotSetExpandOnHoverDelay(int delay) {
     m_hoverExpandDelay = delay;
+    setAutoExpandDelay(m_hoverExpandDelay);
 }
