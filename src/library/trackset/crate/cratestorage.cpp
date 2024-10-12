@@ -686,6 +686,14 @@ bool CrateStorage::onUpdatingCrate(
                 << "Cannot update crate without a valid id";
         return false;
     }
+    // Ensure that we do not create a cycle where a crate becomes its own ancestor.
+    VERIFY_OR_DEBUG_ASSERT(crate.getId() != crate.getParentId() &&
+            !isAncestor(crate.getId(), crate.getParentId())) {
+        kLogger.warning() << "Cannot update parent crate of crate" << crate.getId()
+                          << "to" << crate.getParentId()
+                          << "because that would create a cycle";
+        return false;
+    }
     FwdSqlQuery query(m_database,
             QString(
                     "UPDATE %1 "
@@ -745,6 +753,26 @@ bool CrateStorage::onDeletingCrate(
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
                         << "Deleting empty crate with id"
+                        << crateId;
+            }
+        }
+    }
+    {
+        // TODO(cr7pt0gr4ph7): Delete child crates instead of orphaning them
+        FwdSqlQuery query(m_database,
+                QStringLiteral("UPDATE %1 SET %2=NULL WHERE %2=:id")
+                        .arg(CRATE_TABLE, CRATETABLE_PARENTID));
+        VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
+            return false;
+        }
+        query.bindValue(":id", crateId);
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            return false;
+        }
+        if (query.numRowsAffected() <= 0) {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Deleting crate without child crates with id"
                         << crateId;
             }
         }
