@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -68,6 +69,12 @@ void CrateFeature::initActions() {
             &QAction::triggered,
             this,
             &CrateFeature::slotCreateCrate);
+
+    m_pCreateSubCrateAction = make_parented<QAction>(tr("Create New Sub-Crate"), this);
+    connect(m_pCreateSubCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotCreateSubCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
     connect(m_pRenameCrateAction.get(),
@@ -301,7 +308,11 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUr
 
 void CrateFeature::bindLibraryWidget(
         WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
+    m_pCreateCrateAction->setShortcut(
+            QKeySequence(keyboard->getKeyboardConfig()->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "LibraryMenu_NewCrate"),
+                    tr("Ctrl+Shift+N"))));
+
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
@@ -422,6 +433,7 @@ void CrateFeature::onRightClickChild(
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
+    menu.addAction(m_pCreateSubCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction.get());
     menu.addAction(m_pDuplicateCrateAction.get());
@@ -442,10 +454,30 @@ void CrateFeature::onRightClickChild(
 }
 
 void CrateFeature::slotCreateCrate() {
+    Crate crate;
+    if (readLastRightClickedCrate(&crate)) {
+        createNewCrate(crate.getParentId(), true);
+    } else {
+        createNewCrate(CrateId(), true);
+    }
+}
+
+void CrateFeature::slotCreateSubCrate() {
+    CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
+    if (!crateId.isValid()) {
+        return;
+    }
+    createNewCrate(crateId, true);
+}
+
+void CrateFeature::createNewCrate(CrateId parentId, bool selectAfterCreation) {
+    // Note: An "invalid"/NULL parentId is not actually invalid
+    //       for this function, but instead represents the root folder.
     CrateId crateId =
             CrateFeatureHelper(m_pTrackCollection, m_pConfig)
-                    .createEmptyCrate(CrateId());
-    if (crateId.isValid()) {
+                    .createEmptyCrate(parentId);
+
+    if (selectAfterCreation && crateId.isValid()) {
         // expand Crates and scroll to new crate
         m_pSidebarWidget->selectChildIndex(indexFromCrateId(crateId), false);
     }
