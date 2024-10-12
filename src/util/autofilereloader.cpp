@@ -6,6 +6,8 @@
 #include "moc_autofilereloader.cpp"
 #include "util/runtimeloggingcategory.h"
 
+AutoFileReloader::~AutoFileReloader() = default;
+
 AutoFileReloader::AutoFileReloader(const RuntimeLoggingCategory& loggingCategory)
         : m_loggingCategory(loggingCategory) {
     connect(&m_fileWatcher,
