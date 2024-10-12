@@ -483,7 +483,7 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
                 pMappingEnumerator->getMappingsByExtension(
                         m_pController->mappingExtension());
 
-        for (const MappingInfo& mapping : systemMappings) {
+        for (const MappingInfo& mapping : std::as_const(systemMappings)) {
             m_ui.comboBoxMapping->addItem(
                     icon, mapping.getName(), mapping.getPath());
             if (m_pController->matchMapping(mapping)) {

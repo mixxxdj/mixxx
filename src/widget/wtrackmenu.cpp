@@ -1327,7 +1327,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
     QList<QPair<int, QString>> playlists =
             playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
 
-    for (const auto& [id, name] : playlists) {
+    for (const auto& [id, name] : std::as_const(playlists)) {
         // No leak because making the menu the parent means they will be
         // auto-deleted
         int plId = id;

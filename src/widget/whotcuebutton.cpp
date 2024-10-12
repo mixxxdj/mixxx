@@ -108,7 +108,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
 
             CuePointer pHotCue;
             QList<CuePointer> cueList = pTrack->getCuePoints();
-            for (const auto& pCue : cueList) {
+            for (const auto& pCue : std::as_const(cueList)) {
                 if (pCue->getHotCue() == m_hotcue) {
                     pHotCue = pCue;
                     break;

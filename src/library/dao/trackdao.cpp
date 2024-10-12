@@ -132,7 +132,7 @@ void TrackDAO::finish() {
     // And mark the corresponding tracks in track_locations in the deleted
     // directories as deleted.
     // TODO(XXX) This doesn't handle sub-directories of deleted directories.
-    for (const auto& dir: deletedHashDirs) {
+    for (const auto& dir : std::as_const(deletedHashDirs)) {
         markTrackLocationsAsDeleted(m_database, dir);
     }
     transaction.commit();

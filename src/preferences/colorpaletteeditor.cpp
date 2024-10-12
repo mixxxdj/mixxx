@@ -194,7 +194,7 @@ void ColorPaletteEditor::slotAddColor() {
 
 void ColorPaletteEditor::slotRemoveColor() {
     QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
-    for (const auto& index : selection) {
+    for (const auto& index : std::as_const(selection)) {
         //row selected
         int row = index.row();
         m_pModel->removeRow(row);

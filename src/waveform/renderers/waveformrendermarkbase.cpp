@@ -58,7 +58,7 @@ void WaveformRenderMarkBase::updateMarksFromCues() {
 
     const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
     QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
-    for (const CuePointer& pCue : loadedCues) {
+    for (const CuePointer& pCue : std::as_const(loadedCues)) {
         const int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {
             continue;

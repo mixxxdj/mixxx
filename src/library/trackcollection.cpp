@@ -394,7 +394,7 @@ bool TrackCollection::purgeAllTracks(
     QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
     QList<TrackId> trackIds;
     trackIds.reserve(trackRefs.size());
-    for (const auto& trackRef : trackRefs) {
+    for (const auto& trackRef : std::as_const(trackRefs)) {
         DEBUG_ASSERT(trackRef.hasId());
         trackIds.append(trackRef.getId());
     }

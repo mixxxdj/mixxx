@@ -91,7 +91,7 @@ void BansheeFeature::activate() {
 
         std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
         QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
-        for (const BansheeDbConnection::Playlist& playlist: playlists) {
+        for (const BansheeDbConnection::Playlist& playlist : std::as_const(playlists)) {
             qDebug() << playlist.name;
             // append the playlist to the child model
             pRootItem->appendChild(playlist.name, playlist.playlistId);

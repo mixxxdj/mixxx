@@ -49,7 +49,7 @@ void BroadcastSettings::loadProfiles() {
         kLogger.info() << "Found" << files.size() << "profile(s)";
 
         // Load profiles from filesystem
-        for (const QFileInfo& fileInfo : files) {
+        for (const QFileInfo& fileInfo : std::as_const(files)) {
             BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 

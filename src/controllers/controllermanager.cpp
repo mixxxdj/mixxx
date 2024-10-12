@@ -240,7 +240,7 @@ void ControllerManager::slotSetUpDevices() {
     QList<Controller*> deviceList = getControllerList(false, true);
     QStringList mappingPaths(getMappingPaths(m_pConfig));
 
-    for (Controller* pController : deviceList) {
+    for (Controller* pController : std::as_const(deviceList)) {
         QString name = pController->getName();
 
         if (pController->isOpen()) {

@@ -27,7 +27,7 @@ Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment def
     Qt::Alignment hflags;
     Qt::Alignment vflags;
 
-    for (const auto& stringFlag : stringFlags) {
+    for (const auto& stringFlag : std::as_const(stringFlags)) {
         if (stringFlag == "center") {
             hflags |= Qt::AlignHCenter;
             vflags |= Qt::AlignVCenter;

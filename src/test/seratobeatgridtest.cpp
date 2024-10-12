@@ -53,7 +53,7 @@ class SeratoBeatGridTest : public testing::Test {
 
         QFileInfoList fileList = dir.entryInfoList();
         EXPECT_FALSE(fileList.isEmpty());
-        for (const QFileInfo& fileInfo : fileList) {
+        for (const QFileInfo& fileInfo : std::as_const(fileList)) {
             qDebug() << "--- File:" << fileInfo.fileName();
             QFile file(dir.filePath(fileInfo.fileName()));
             bool openOk = file.open(QIODevice::ReadOnly);

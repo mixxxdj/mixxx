@@ -707,7 +707,7 @@ void CrateFeature::slotCreateImportCrate() {
     CrateId lastCrateId;
 
     // For each selected file create a new crate
-    for (const QString& playlistFile : playlistFiles) {
+    for (const QString& playlistFile : std::as_const(playlistFiles)) {
         const QFileInfo fileInfo(playlistFile);
 
         Crate crate;
