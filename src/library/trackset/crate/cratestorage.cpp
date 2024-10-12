@@ -20,16 +20,20 @@ const QString CRATESUMMARY_TRACK_COUNT = "track_count";
 const QString CRATESUMMARY_TRACK_DURATION = "track_duration";
 const QString CRATESUMMARY_FULL_PATH = "full_path";
 const QString CRATESUMMARY_FOLDER_PATH = "folder_path";
+const QString CRATESUMMARY_ANCESTOR_IDS = "ancestor_ids";
 
 const QString kSubCrateSeparator(" / ");
+const QChar kSqlListSeparator(',');
 
 const QString kCrateFullPathTableExpression =
         QStringLiteral(
-                "WITH RECURSIVE full_path_recursive(id, path) AS "
+                "WITH RECURSIVE full_path_recursive(id, path, ancestors) AS "
                 "( "
-                "SELECT %2, %3 FROM %1 WHERE %4 IS NULL "
+                "SELECT %2, %3, '' FROM %1 WHERE %4 IS NULL "
                 "UNION ALL "
-                "SELECT %1.%2, full_path_recursive.path||'%5'||%1.%3 "
+                "SELECT %1.%2, "
+                "   full_path_recursive.path||'%5'||%1.%3, "
+                "   full_path_recursive.ancestors||'%6'||full_path_recursive.id "
                 "FROM %1 "
                 "JOIN full_path_recursive ON %1.%4=full_path_recursive.id "
                 ")")
@@ -38,7 +42,8 @@ const QString kCrateFullPathTableExpression =
                         CRATETABLE_ID,
                         CRATETABLE_NAME,
                         CRATETABLE_PARENTID,
-                        kSubCrateSeparator);
+                        kSubCrateSeparator,
+                        kSqlListSeparator);
 
 const QString kCrateFullPathJoin =
         QStringLiteral("LEFT JOIN full_path_recursive ON %1.%2=full_path_recursive.id")
@@ -54,15 +59,16 @@ const QString kLibraryTracksJoin = kCrateTracksJoin +
 
 const QString kCrateSummaryViewSelect =
         QStringLiteral(
-                "%11 "
+                "%12 "
                 "SELECT %1.*, "
                 "COUNT(CASE %2.%4 WHEN 0 THEN 1 ELSE NULL END) AS %5, "
                 "SUM(CASE %2.%4 WHEN 0 THEN %2.%3 ELSE 0 END) AS %6, "
                 "fpr_self.path AS %7, "
-                "fpr_parent.path AS %8 "
+                "fpr_parent.path AS %8, "
+                "fpr_self.ancestors AS %9 "
                 "FROM %1 "
-                "LEFT JOIN full_path_recursive AS fpr_self ON %1.%9=fpr_self.id "
-                "LEFT JOIN full_path_recursive AS fpr_parent ON %1.%10=fpr_parent.id "
+                "LEFT JOIN full_path_recursive AS fpr_self ON %1.%10=fpr_self.id "
+                "LEFT JOIN full_path_recursive AS fpr_parent ON %1.%11=fpr_parent.id ")
                 .arg(
                         CRATE_TABLE,
                         LIBRARY_TABLE,
@@ -72,6 +78,7 @@ const QString kCrateSummaryViewSelect =
                         CRATESUMMARY_TRACK_DURATION,
                         CRATESUMMARY_FULL_PATH,
                         CRATESUMMARY_FOLDER_PATH,
+                        CRATESUMMARY_ANCESTOR_IDS,
                         CRATETABLE_ID,
                         CRATETABLE_PARENTID,
                         kCrateFullPathTableExpression);
@@ -112,8 +119,6 @@ class CrateQueryBinder final {
   protected:
     FwdSqlQuery& m_query;
 };
-
-const QChar kSqlListSeparator(',');
 
 // It is not possible to bind multiple values as a list to a query.
 // The list of track ids has to be transformed into a single list
@@ -167,7 +172,26 @@ CrateSummaryQueryFields::CrateSummaryQueryFields(const FwdSqlQuery& query)
           m_iTrackCount(query.fieldIndex(CRATESUMMARY_TRACK_COUNT)),
           m_iTrackDuration(query.fieldIndex(CRATESUMMARY_TRACK_DURATION)),
           m_iFullPath(query.fieldIndex(CRATESUMMARY_FULL_PATH)),
-          m_iFolderPath(query.fieldIndex(CRATESUMMARY_FOLDER_PATH)) {
+          m_iFolderPath(query.fieldIndex(CRATESUMMARY_FOLDER_PATH)),
+          m_iAncestorIds(query.fieldIndex(CRATESUMMARY_ANCESTOR_IDS)) {
+}
+
+QList<CrateId> CrateSummaryQueryFields::getAncestorIds(const FwdSqlQuery& query) const {
+    QList<CrateId> result;
+    for (const QString& id : query.fieldValue(m_iAncestorIds)
+                    .toString()
+                    .split(kSqlListSeparator, Qt::KeepEmptyParts)) {
+        if (id.isEmpty()) {
+            result.append(CrateId());
+        } else {
+            // If id is a valid number, it will be automatically parsed while
+            // coercing the QVariant to int inside the DbId constructor.
+            CrateId parsedId = CrateId(id);
+            DEBUG_ASSERT(parsedId.isValid());
+            result.append(parsedId);
+        }
+    }
+    return result;
 }
 
 void CrateSummaryQueryFields::populateFromQuery(
@@ -178,6 +202,7 @@ void CrateSummaryQueryFields::populateFromQuery(
     pCrateSummary->setTrackDuration(getTrackDuration(query));
     pCrateSummary->setFullPath(getFullPath(query));
     pCrateSummary->setFolderPath(getFolderPath(query));
+    pCrateSummary->setAncestorIds(getAncestorIds(query));
 }
 
 void CrateStorage::repairDatabase(const QSqlDatabase& database) {
@@ -404,6 +429,14 @@ CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     } else {
         return CrateSelectResult();
     }
+}
+
+bool CrateStorage::isAncestor(CrateId crateA, CrateId crateB) const {
+    // Note: An "invalid"/NULL crateA id is not actually invalid
+    //       for this function, but instead represents the root folder.
+    CrateSummary crateSummary;
+    readCrateSummaryById(crateB, &crateSummary);
+    return crateSummary.isDescendantOf(crateA);
 }
 
 CrateSummarySelectResult CrateStorage::selectCrateSummaries() const {
