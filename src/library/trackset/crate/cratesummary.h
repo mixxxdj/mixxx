@@ -51,9 +51,26 @@ class CrateSummary : public Crate {
         m_folderPath = folderPath;
     }
 
+    // The list of ancestors of this crate
+    const QList<CrateId>& getAncestorIds() const {
+        return m_ancestorIds;
+    }
+    void setAncestorIds(const QList<CrateId>& ancestorIds) {
+        m_ancestorIds = ancestorIds;
+    }
+    bool isDescendantOf(CrateId otherId) const {
+        // Note: An "invalid"/NULL folderA id is not actually invalid
+        //       for this function, but instead represents the root folder.
+        //
+        //       The root folder is explicitly contained in the list of
+        //       ancestorIds, so no additional explicit handling is required.
+        return m_ancestorIds.contains(otherId);
+    }
+
   private:
     uint m_trackCount;
     double m_trackDuration;
     QString m_fullPath;
     QString m_folderPath;
+    QList<CrateId> m_ancestorIds;
 };
