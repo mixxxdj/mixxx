@@ -63,6 +63,11 @@ class Controller : public QObject {
     virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
     virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
 
+    virtual QString getVendorString() const = 0;
+    virtual QString getProductString() const = 0;
+    virtual QString getSerialNumber() const = 0;
+    virtual std::optional<uint8_t> getUsbInterfaceNumber() const = 0;
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;

@@ -96,15 +96,15 @@ QString DeviceInfo::formatName() const {
     // We include the last 4 digits of the serial number and the
     // interface number to allow the user (and Mixxx!) to keep
     // track of which is which
-    const auto serialSuffix = serialNumber().right(4);
+    const auto serialSuffix = getSerialNumber().right(4);
     if (m_usbInterfaceNumber >= 0) {
-        return productString() +
+        return getProductString() +
                 QChar(' ') +
                 serialSuffix +
                 QChar('_') +
                 QString::number(m_usbInterfaceNumber);
     } else {
-        return productString() +
+        return getProductString() +
                 QChar(' ') +
                 serialSuffix;
     }
@@ -127,14 +127,14 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     if (!interfaceId.isEmpty()) {
         parts.append(QStringLiteral("Interface: ") + interfaceId);
     }
-    if (!deviceInfo.manufacturerString().isEmpty()) {
-        parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.manufacturerString());
+    if (!deviceInfo.getVendorString().isEmpty()) {
+        parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.getVendorString());
     }
-    if (!deviceInfo.productString().isEmpty()) {
-        parts.append(QStringLiteral("Product: ") + deviceInfo.productString());
+    if (!deviceInfo.getProductString().isEmpty()) {
+        parts.append(QStringLiteral("Product: ") + deviceInfo.getProductString());
     }
-    if (!deviceInfo.serialNumber().isEmpty()) {
-        parts.append(QStringLiteral("S/N: ") + deviceInfo.serialNumber());
+    if (!deviceInfo.getSerialNumber().isEmpty()) {
+        parts.append(QStringLiteral("S/N: ") + deviceInfo.getSerialNumber());
     }
     const auto dbgState = QDebugStateSaver(dbg);
     return dbg.nospace().noquote()

@@ -68,11 +68,11 @@ int HidController::open() {
     // If that fails, try to open device with vendor/product/serial #
     if (!pHidDevice) {
         qCWarning(m_logBase) << "Failed. Trying to open with make, model & serial no:"
-                             << m_deviceInfo.vendorId() << m_deviceInfo.productId()
-                             << m_deviceInfo.serialNumber();
+                             << m_deviceInfo.getVendorId() << m_deviceInfo.getProductId()
+                             << m_deviceInfo.getSerialNumber();
         pHidDevice = hid_open(
-                m_deviceInfo.vendorId(),
-                m_deviceInfo.productId(),
+                m_deviceInfo.getVendorId(),
+                m_deviceInfo.getProductId(),
                 m_deviceInfo.serialNumberRaw());
     }
 
@@ -82,8 +82,8 @@ int HidController::open() {
         qCWarning(m_logBase) << "Unable to open specific HID device" << getName()
                              << "Trying now with just make and model."
                              << "(This may only open the first of multiple identical devices.)";
-        pHidDevice = hid_open(m_deviceInfo.vendorId(),
-                m_deviceInfo.productId(),
+        pHidDevice = hid_open(m_deviceInfo.getVendorId(),
+                m_deviceInfo.getProductId(),
                 nullptr);
     }
 

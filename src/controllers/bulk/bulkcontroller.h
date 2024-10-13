@@ -52,6 +52,20 @@ class BulkController : public Controller {
         return DataRepresentationProtocol::USB_BULK_TRANSFER;
     }
 
+    QString getVendorString() const override {
+        return m_manufacturer;
+    }
+    QString getProductString() const override {
+        return m_product;
+    }
+    QString getSerialNumber() const override {
+        return m_sUID;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_interfaceNumber;
+    }
+
     bool isMappable() const override {
         // On raw USB transfer level, there isn't any information about mappable controls
         return false;

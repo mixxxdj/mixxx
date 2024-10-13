@@ -21,10 +21,24 @@ class HidController final : public Controller {
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
-        return PhysicalTransportProtocol::USB;
+        return m_deviceInfo.getPhysicalTransportProtocol();
     }
     DataRepresentationProtocol getDataRepresentationProtocol() const override {
         return DataRepresentationProtocol::HID;
+    }
+
+    QString getVendorString() const override {
+        return m_deviceInfo.getVendorString();
+    }
+    QString getProductString() const override {
+        return m_deviceInfo.getProductString();
+    }
+    QString getSerialNumber() const override {
+        return m_deviceInfo.getSerialNumber();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_deviceInfo.getUsbInterfaceNumber();
     }
 
     bool isMappable() const override {

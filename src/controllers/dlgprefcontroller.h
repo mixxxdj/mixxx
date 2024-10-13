@@ -125,9 +125,6 @@ class DlgPrefController : public DlgPreferencePage {
             QSharedPointer<MappingInfoEnumerator> pMappingEnumerator,
             const QIcon& icon = QIcon());
 
-    void enableDevice();
-    void disableDevice();
-
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
     const QString m_pUserDir;

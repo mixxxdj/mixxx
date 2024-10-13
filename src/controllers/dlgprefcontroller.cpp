@@ -94,6 +94,77 @@ DlgPrefController::DlgPrefController(
 
     m_ui.labelDeviceName->setText(m_pController->getName());
 
+    switch (m_pController->getPhysicalTransportProtocol()) {
+    case PhysicalTransportProtocol::USB:
+        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("USB"));
+        break;
+    case PhysicalTransportProtocol::BlueTooth:
+        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("Bluetooth"));
+        break;
+    case PhysicalTransportProtocol::I2C:
+        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("I2C"));
+        break;
+    case PhysicalTransportProtocol::SPI:
+        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("SPI"));
+        break;
+    case PhysicalTransportProtocol::FireWire:
+        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("Firewire - IEEE 1394"));
+        break;
+    default:
+        m_ui.labelPhysicalInterfaceValue->setText(tr("Unknown"));
+    }
+
+    const QString dataHandlingProtocol =
+            [protocol = m_pController->getDataRepresentationProtocol()] {
+                switch (protocol) {
+                case DataRepresentationProtocol::USB_BULK_TRANSFER:
+                    return QStringLiteral("USB Bulk");
+                case DataRepresentationProtocol::HID:
+                    return QStringLiteral("HID");
+                case DataRepresentationProtocol::MIDI:
+                    return QStringLiteral("MIDI");
+                default:
+                    DEBUG_ASSERT(false);
+                    return QString();
+                }
+            }();
+    m_ui.labelDataHandlingProtocolValue->setText(dataHandlingProtocol);
+
+    auto vendorString = m_pController->getVendorString();
+    if (!vendorString.isEmpty()) {
+        m_ui.labelVendorValue->setText(vendorString);
+        m_ui.labelVendor->setVisible(true);
+        m_ui.labelVendorValue->setVisible(true);
+    } else {
+        m_ui.labelVendor->setVisible(false);
+        m_ui.labelVendorValue->setVisible(false);
+    }
+
+    // Product-String is always available
+    m_ui.labelProductValue->setText(m_pController->getProductString());
+
+    auto serialNo = m_pController->getSerialNumber();
+    if (!serialNo.isEmpty()) {
+        m_ui.labelSerialNumberValue->setText(serialNo);
+        m_ui.labelSerialNumber->setVisible(true);
+        m_ui.labelSerialNumberValue->setVisible(true);
+    } else {
+        m_ui.labelSerialNumber->setVisible(false);
+        m_ui.labelSerialNumberValue->setVisible(false);
+    }
+
+    auto interfaceNumber = m_pController->getUsbInterfaceNumber();
+    if (m_pController->getPhysicalTransportProtocol() == PhysicalTransportProtocol::USB &&
+            interfaceNumber) {
+        m_ui.labelUsbInterfaceNumberValue->setText(QString::number(*interfaceNumber));
+        m_ui.labelUsbInterfaceNumber->setVisible(true);
+        m_ui.labelUsbInterfaceNumberValue->setVisible(true);
+    } else {
+        // Not a USB device -> USB interface number is not applicable
+        m_ui.labelUsbInterfaceNumber->setVisible(false);
+        m_ui.labelUsbInterfaceNumberValue->setVisible(false);
+    }
+
     m_ui.groupBoxWarning->hide();
     m_ui.labelWarning->setText(tr(
             "<font color='#BB0000'><b>If you use this mapping your controller "

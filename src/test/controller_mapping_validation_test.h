@@ -125,6 +125,24 @@ class FakeController : public Controller {
         Q_UNUSED(mapping);
         return false;
     }
+    QString getVendorString() const override {
+        static const QString vendor = "Test Vendor";
+        return vendor;
+    }
+
+    QString getProductString() const override {
+        static const QString product = "Test Product";
+        return product;
+    }
+
+    QString getSerialNumber() const override {
+        static const QString serialNumber = "123456789";
+        return serialNumber;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
 
   protected:
     void send(const QList<int>& data, unsigned int length) override {

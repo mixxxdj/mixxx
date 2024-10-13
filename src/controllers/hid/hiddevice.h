@@ -40,11 +40,11 @@ class DeviceInfo final {
             const hid_device_info& device_info);
 
     // The VID.
-    unsigned short vendorId() const {
+    unsigned short getVendorId() const {
         return vendor_id;
     }
     // The PID.
-    unsigned short productId() const {
+    unsigned short getProductId() const {
         return product_id;
     }
     /// The release number as a binary-coded decimal (BCD).
@@ -61,26 +61,29 @@ class DeviceInfo final {
         return m_serialNumberRaw.c_str();
     }
 
-    const QString& manufacturerString() const {
+    const QString& getVendorString() const {
         return m_manufacturerString;
     }
-    const QString& productString() const {
+    const QString& getProductString() const {
         return m_productString;
     }
-    const QString& serialNumber() const {
+    const QString& getSerialNumber() const {
         return m_serialNumber;
     }
 
-    const int& usbInterfaceNumber() {
+    std::optional<uint8_t> getUsbInterfaceNumber() const {
+        if (m_usbInterfaceNumber == -1) {
+            return std::nullopt;
+        }
         return m_usbInterfaceNumber;
     }
 
-    const PhysicalTransportProtocol& physicalTransportProtocol() {
+    const PhysicalTransportProtocol& getPhysicalTransportProtocol() const {
         return m_physicalTransportProtocol;
     }
 
     bool isValid() const {
-        return !productString().isNull() && !serialNumber().isNull();
+        return !getProductString().isNull() && !getSerialNumber().isNull();
     }
 
     QString formatVID() const;

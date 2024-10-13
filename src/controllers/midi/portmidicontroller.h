@@ -59,6 +59,26 @@ class PortMidiController : public MidiController {
         return PhysicalTransportProtocol::UNKNOWN;
     }
 
+    QString getVendorString() const override {
+        return QString();
+    }
+    QString getProductString() const override {
+        if (m_pInputDevice) {
+            return QString::fromLocal8Bit(m_pInputDevice->info()->name);
+        }
+        if (m_pOutputDevice) {
+            return QString::fromLocal8Bit(m_pOutputDevice->info()->name);
+        }
+        return QString();
+    }
+    QString getSerialNumber() const override {
+        return QString();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
+
   private slots:
     int open() override;
     int close() override;
