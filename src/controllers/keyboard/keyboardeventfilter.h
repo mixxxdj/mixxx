@@ -7,6 +7,7 @@
 
 #include "control/controlobject.h"
 #include "preferences/configobject.h"
+#include "util/autofilereloader.h"
 
 class ControlObject;
 class QEvent;
@@ -98,7 +99,7 @@ class KeyboardEventFilter : public QObject {
     QLocale m_locale;
     bool m_enabled;
 
-    QFileSystemWatcher m_fileWatcher;
+    AutoFileReloader m_autoReloader;
 
     // Actions in the menu bar
     // Value pair is the ConfigKey and the default QKeySequence (as QString).

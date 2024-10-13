@@ -19,7 +19,8 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
 #endif
           m_pConfig(pConfig),
           m_locale(locale),
-          m_enabled(false) {
+          m_enabled(false),
+          m_autoReloader(RuntimeLoggingCategory(QStringLiteral("kbd_auto_reload"))) {
     setObjectName(name);
 
     // get enabled state
@@ -31,8 +32,8 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
     createKeyboardConfig();
 
     // For watching the currently loaded mapping file
-    connect(&m_fileWatcher,
-            &QFileSystemWatcher::fileChanged,
+    connect(&m_autoReloader,
+            &AutoFileReloader::fileChanged,
             this,
             &KeyboardEventFilter::reloadKeyboardConfig);
 }
@@ -304,38 +305,38 @@ void KeyboardEventFilter::reloadKeyboardConfig() {
 }
 
 void KeyboardEventFilter::createKeyboardConfig() {
-    // Remove previously watched files.
-    // Could be the user mapping was removed and we switch to the
-    // built-in default mapping.
-    const QStringList paths = m_fileWatcher.files();
-    if (!paths.isEmpty()) {
-        m_fileWatcher.removePaths(paths);
-    }
-    // Read keyboard configuration and set kdbConfig object in WWidget
+    // Remove the previously watched file.
+    // Could be the user mapping has been removed and we'll need to switch
+    // to the built-in default mapping.
+    m_autoReloader.clear();
+
     // Check first in user's Mixxx directory
     QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
     if (QFile::exists(keyboardFile)) {
         qDebug() << "Found and will use custom keyboard mapping" << keyboardFile;
     } else {
         // check if a default keyboard exists
-        QString resourcePath = m_pConfig->getResourcePath();
+        const QString resourcePath = m_pConfig->getResourcePath();
         keyboardFile = QString(resourcePath).append("keyboard/");
         keyboardFile += m_locale.name();
         keyboardFile += ".kbd.cfg";
-        if (!QFile::exists(keyboardFile)) {
+        if (QFile::exists(keyboardFile)) {
+            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
+        } else {
             qDebug() << keyboardFile << " not found, using en_US.kbd.cfg";
             keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
             if (!QFile::exists(keyboardFile)) {
                 qDebug() << keyboardFile << " not found, starting without shortcuts";
                 keyboardFile = "";
             }
-        } else {
-            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
         }
     }
-    // Watch the loaded file for changes.
-    m_fileWatcher.addPath(keyboardFile);
+    if (!keyboardFile.isEmpty()) {
+        // Watch the loaded file for changes.
+        m_autoReloader.addPath(keyboardFile);
+    }
 
+    // Read the keyboard configuration file and set m_pKbdConfig.
     // Keyboard configs are a surjection from ConfigKey to key sequence. We
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
