@@ -265,7 +265,7 @@ const QString KeyboardEventFilter::buildShortcutString(
                                      .toString(QKeySequence::NativeText);
 
     QString shortcutTooltip;
-    shortcutTooltip += QObject::tr("Shortcut");
+    shortcutTooltip += tr("Shortcut");
     if (!cmd.isEmpty()) {
         shortcutTooltip += " ";
         shortcutTooltip += cmd;
