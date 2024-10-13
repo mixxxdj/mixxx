@@ -7,7 +7,12 @@
 
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
+#include "util/logger.h"
 #include "widget/wbasewidget.h"
+
+namespace {
+mixxx::Logger kLogger("AnalyzerThread");
+} // anonymous namespace
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
         QLocale& locale,
@@ -83,7 +88,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
+                        // kLogger.debug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
@@ -93,8 +98,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                         control->setValueFromMidi(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
+                        kLogger.warning() << "Key" << keyId
+                                          << "is configured for nonexistent control:"
+                                          << configKey.group << configKey.item;
                     }
                 }
             }
@@ -134,7 +140,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #endif
         bool autoRepeat = ke->isAutoRepeat();
 
-        //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
+        // kLogger.debug() << "KeyRelease event =" << ke->key()
+        // << "AutoRepeat=" << autoRepeat << "KeyId =" << keyId;
 
         int clearModifiers = 0;
 #ifdef __APPLE__
@@ -154,7 +161,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
+                    // kLogger.debug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
                     pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
@@ -167,7 +174,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        //qDebug() << "QEvent::KeyboardLayoutChange";
+        // kLogger.debug() << "QEvent::KeyboardLayoutChange";
     }
     return false;
 }
@@ -205,9 +212,9 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
     if (CmdlineArgs::Instance().getDeveloper()) {
         if (e->type() == QEvent::KeyPress) {
-            qDebug() << "keyboard press: " << k.toString();
+            kLogger.debug() << "keyboard press: " << k.toString();
         } else if (e->type() == QEvent::KeyRelease) {
-            qDebug() << "keyboard release: " << k.toString();
+            kLogger.debug() << "keyboard release: " << k.toString();
         }
     }
 
@@ -313,7 +320,7 @@ void KeyboardEventFilter::createKeyboardConfig() {
     // Check first in user's Mixxx directory
     QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
     if (QFile::exists(keyboardFile)) {
-        qDebug() << "Found and will use custom keyboard mapping" << keyboardFile;
+        kLogger.debug() << "Found and will use custom keyboard mapping" << keyboardFile;
     } else {
         // check if a default keyboard exists
         const QString resourcePath = m_pConfig->getResourcePath();
@@ -321,12 +328,12 @@ void KeyboardEventFilter::createKeyboardConfig() {
         keyboardFile += m_locale.name();
         keyboardFile += ".kbd.cfg";
         if (QFile::exists(keyboardFile)) {
-            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
+            kLogger.debug() << "Found and will use default keyboard mapping" << keyboardFile;
         } else {
-            qDebug() << keyboardFile << " not found, using en_US.kbd.cfg";
+            kLogger.debug() << keyboardFile << " not found, using en_US.kbd.cfg";
             keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
             if (!QFile::exists(keyboardFile)) {
-                qDebug() << keyboardFile << " not found, starting without shortcuts";
+                kLogger.debug() << keyboardFile << " not found, starting without shortcuts";
                 keyboardFile = "";
             }
         }
