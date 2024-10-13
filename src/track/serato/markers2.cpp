@@ -455,7 +455,7 @@ bool SeratoMarkers2::parseCommon(
     return true;
 }
 
-//static
+// static
 bool SeratoMarkers2::parseBase64Encoded(
         SeratoMarkers2* seratoMarkers2,
         const QByteArray& base64EncodedData) {
@@ -480,7 +480,7 @@ bool SeratoMarkers2::parseBase64Encoded(
     return true;
 }
 
-//static
+// static
 bool SeratoMarkers2::parseFLAC(
         SeratoMarkers2* seratoMarkers2,
         const QByteArray& base64EncodedData) {
@@ -615,6 +615,10 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 pCueEntry->getIndex(),
                 pCueEntry->getLabel(),
                 pCueEntry->getColor().toDisplayedColor(),
+                100,
+                100,
+                100,
+                100,
                 CueFlag::None);
         cueInfos.append(cueInfo);
     }
@@ -638,6 +642,10 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 pLoopEntry->getIndex(),
                 pLoopEntry->getLabel(),
                 std::nullopt, // Serato's Loops don't have a color
+                100,
+                100,
+                100,
+                100,
                 pLoopEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
         // TODO: Add support for "locked" loops
         cueInfos.append(loopInfo);
