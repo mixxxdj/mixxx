@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iterator>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -20,7 +21,7 @@ struct BeatGridV1Data {
 };
 
 constexpr double kEpsilon = 0.01;
-constexpr int kDefaultBeatsPerBar = 4;
+constexpr mixxx::audio::BarLength kDefaultBeatsPerBar = mixxx::audio::BarLength(4);
 
 // The amount that `Beats::tryAdjustTempo()` changes the last marker's BPM by.
 constexpr double kBpmAdjustStep = 0.01;
@@ -223,10 +224,10 @@ mixxx::BeatsPointer Beats::fromConstTempo(
 }
 
 bool isDoubleBeat(const QVector<audio::FramePos>& beatPositions, int beatIdx) {
-    if (beatIdx && beatPositions[beatIdx - 1] == beatPositions[beatIdx]) {
-        return true;
+    if (beatIdx <= 0 || beatIdx > beatPositions.size()) {
+        return false; // failed bounds check
     }
-    return false;
+    return beatPositions[beatIdx - 1] == beatPositions[beatIdx];
 }
 
 double effectiveHundredthBpm(double beatLength, mixxx::audio::SampleRate sampleRate) {
@@ -262,7 +263,7 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
 
     auto previousPosition = markerPosition;
     audio::FrameDiff_t previousBeatLengthFrames = 0;
-    int beatsPerBar = kDefaultBeatsPerBar;
+    mixxx::audio::BarLength beatsPerBar = kDefaultBeatsPerBar;
     bool isBeatCounting = isDoubleBeat(beatPositions, 1);
     for (int i = isBeatCounting ? 2 : 1; i < beatPositions.size(); i++) {
         VERIFY_OR_DEBUG_ASSERT(beatPositions[i].isValid() &&
@@ -273,9 +274,9 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
         // If the current beat is a "closing" double beat
         if (isDoubleBeat(beatPositions, i) && isBeatCounting) {
             isBeatCounting = false;
-            beatsPerBar =
-                    static_cast<int>(std::floor(position - markerPosition) /
-                            previousBeatLengthFrames);
+            beatsPerBar = static_cast<mixxx::audio::BarLength>(
+                    std::lround((std::floor(position - markerPosition) /
+                            previousBeatLengthFrames)));
             continue;
         }
         audio::FrameDiff_t beatLengthFrames = position - beatPositions[i - 1];
@@ -983,6 +984,7 @@ std::optional<BeatsPointer> Beats::trySetMarker(audio::FramePos position) const 
         // }
     } else {
         if (markerIt->position() == position) {
+            // TODO if `[BPM],stretch_on_marker_duplicate`, call tryStretchBeatGrid
             return std::nullopt;
         }
         // We found the beat marker right after the position we want to create a
@@ -1038,7 +1040,7 @@ std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
         markerIt = markers.emplace(markerIt,
                 marker.position(),
                 marker.beatsLength(),
-                adjustedBeatsPerBar);
+                mixxx::audio::BarLength::valueFromUInt(adjustedBeatsPerBar));
     }
 
     return fromBeatMarkers(m_sampleRate,
@@ -1046,6 +1048,14 @@ std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
             m_lastMarkerPosition,
             lastBeatsPerBar,
             m_lastMarkerBpm);
+}
+
+std::optional<BeatsPointer> Beats::tryStretchBeatGrid(
+        audio::FramePos position, int adjustment) const {
+    Q_UNUSED(position);
+    Q_UNUSED(adjustment);
+    // TODO implement beat stretching
+    return std::nullopt;
 }
 
 std::optional<BeatsPointer> Beats::tryRemoveMarker(audio::FramePos position) const {

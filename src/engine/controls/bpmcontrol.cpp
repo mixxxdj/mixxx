@@ -1,5 +1,7 @@
 #include "engine/controls/bpmcontrol.h"
 
+#include <chrono>
+
 #include "control/controlencoder.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlproxy.h"
@@ -13,6 +15,8 @@
 #include "util/logger.h"
 #include "util/math.h"
 
+using namespace std::literals;
+
 namespace {
 const mixxx::Logger kLogger("BpmControl");
 
@@ -22,8 +26,8 @@ constexpr double kBpmRangeMax = 200.0;
 constexpr double kBpmRangeStep = 1.0;
 constexpr double kBpmRangeSmallStep = 0.1;
 
-constexpr int kBpmAdjustRepeatIntervalMs = 50;
-constexpr int kBpmAdjustTimeBeforeRepeatMs = 500;
+constexpr std::chrono::milliseconds kBpmAdjustRepeatInterval = 50ms;
+constexpr std::chrono::milliseconds kBpmAdjustTimeBeforeRepeat = 500ms;
 constexpr double kBpmTapRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
@@ -323,11 +327,11 @@ void BpmControl::activateActionRepeater(const std::function<void()>& callback) {
     }
 
     if (m_repeatOperation.isActive()) {
-        m_repeatOperation.setInterval(kBpmAdjustRepeatIntervalMs);
+        m_repeatOperation.setInterval(kBpmAdjustRepeatInterval);
     } else {
         m_repeatOperation.disconnect();
         connect(&m_repeatOperation, &QTimer::timeout, this, callback);
-        m_repeatOperation.start(kBpmAdjustTimeBeforeRepeatMs);
+        m_repeatOperation.start(kBpmAdjustTimeBeforeRepeat);
     }
 }
 

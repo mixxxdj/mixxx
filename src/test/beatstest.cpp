@@ -13,7 +13,7 @@ namespace {
 
 constexpr auto kBpm = Bpm(120.0);
 constexpr auto kSampleRate = audio::SampleRate(48000);
-constexpr auto kBeatsPerBar = 4;
+constexpr auto kBeatsPerBar = audio::BarLength(4);
 constexpr auto kStartPosition = audio::FramePos(400);
 const auto kEndPosition = kStartPosition + 24 * kSampleRate.value();
 constexpr double kMaxBeatError = 1e-9;
@@ -441,15 +441,15 @@ TEST(BeatsTest, NonConstTempoFromBeatPositions) {
     ASSERT_EQ(3, markers.size());
 
     EXPECT_DOUBLE_EQ(kStartPosition.value(), markers[0].position().value());
-    EXPECT_EQ(8, markers[0].beatsTillNextMarker(markers[1].position()));
+    EXPECT_EQ(8, markers[0].beatsUntilPositionExtrapolated(markers[1].position()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 8 * beatLengthFrames).value(),
             markers[1].position().value());
-    EXPECT_EQ(16, markers[1].beatsTillNextMarker(markers[2].position()));
+    EXPECT_EQ(16, markers[1].beatsUntilPositionExtrapolated(markers[2].position()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 40 * beatLengthFrames).value(),
             markers[2].position().value());
-    EXPECT_EQ(16, markers[2].beatsTillNextMarker(beatPositions.last()));
+    EXPECT_EQ(16, markers[2].beatsUntilPositionExtrapolated(beatPositions.last()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 48 * beatLengthFrames).value(),
             pBeats->getLastMarkerPosition().value());
@@ -552,8 +552,12 @@ TEST(BeatsTest, FractionalBeats) {
     // >.||....|....|....|....|.||........|........|........|.......<||
     const auto tempoBeats = Beats(
             std::vector<BeatMarker>{
-                    BeatMarker{kStartPosition, (60 * kSampleRate) / 120, 4},
-                    BeatMarker{secondMarkerPosition, (60 * kSampleRate) / 60, 4},
+                    BeatMarker{kStartPosition,
+                            (60 * kSampleRate) / 120,
+                            mixxx::audio::BarLength(4)},
+                    BeatMarker{secondMarkerPosition,
+                            (60 * kSampleRate) / 60,
+                            mixxx::audio::BarLength(4)},
             },
             lastMarkerPosition,
             kBpm,
@@ -596,10 +600,12 @@ TEST(BeatsTest, FractionalBeats) {
 TEST(BeatsTest, MultipleBeatsPerBar) {
     const auto tempoBeats = Beats(
             std::vector<BeatMarker>{
-                    BeatMarker{kStartPosition, (60 * kSampleRate) / 120, 4},
+                    BeatMarker{kStartPosition,
+                            (60 * kSampleRate) / 120,
+                            mixxx::audio::BarLength(4)},
                     BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2,
                             (60 * kSampleRate) / 60,
-                            3},
+                            mixxx::audio::BarLength(3)},
             },
             kStartPosition + 8 * kSampleRate.value() / 2 +
                     16 * kSampleRate.value(),

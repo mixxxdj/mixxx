@@ -244,6 +244,53 @@ class Bitrate {
 
 QDebug operator<<(QDebug dbg, Bitrate arg);
 
+// The BarLength is measured in beats and provides information
+// about the number expected within a single bar or phrase.
+class BarLength {
+  public:
+    typedef uint32_t value_t;
+
+    static BarLength valueFromUInt(unsigned int value) {
+        VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
+                value <= std::numeric_limits<value_t>::max()) {
+            return BarLength(kValueDefault);
+        }
+        return BarLength(static_cast<value_t>(value));
+    }
+
+  private:
+    // The default value is invalid and indicates a missing or unknown value.
+    static constexpr value_t kValueDefault = 4;
+
+  public:
+    static constexpr value_t kValueMin = 2;  // lower bound (inclusive)
+    static constexpr value_t kValueMax = 32; // upper bound (inclusive)
+    static constexpr const char* unit() {
+        return "beats";
+    }
+
+    explicit constexpr BarLength(
+            value_t value = kValueDefault)
+            : m_value(value) {
+    }
+
+    constexpr bool isValid() const {
+        return m_value >= kValueMin && m_value <= kValueMax;
+    }
+
+    constexpr value_t value() const {
+        return m_value;
+    }
+    /*implicit*/ constexpr operator value_t() const {
+        return value();
+    }
+
+  private:
+    value_t m_value;
+};
+
+QDebug operator<<(QDebug dbg, BarLength arg);
+
 } // namespace audio
 
 } // namespace mixxx
@@ -262,3 +309,6 @@ Q_DECLARE_METATYPE(mixxx::audio::SampleRate)
 
 Q_DECLARE_TYPEINFO(mixxx::audio::Bitrate, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::Bitrate)
+
+Q_DECLARE_TYPEINFO(mixxx::audio::BarLength, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::BarLength)

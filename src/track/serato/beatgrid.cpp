@@ -441,7 +441,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
                 pBeats->getLastMarkerBpm().value();
         const auto previousBeatLengthFrames =
                 (pBeats->getLastMarkerPosition() - marker.position()) /
-                marker.beatsTillNextMarker(pBeats->getLastMarkerPosition());
+                marker.beatsUntilPositionExtrapolated(pBeats->getLastMarkerPosition());
         // If the following condition holds true, the marker only exists for backwards compatibility with the legacy beatgrid format.
         //
         // TODO: Remove this when the protobuf format is changed.
@@ -471,7 +471,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
                                               : pBeats->getLastMarkerPosition();
 
         nonTerminalMarkers.push_back(std::make_shared<SeratoBeatGridNonTerminalMarker>(
-                positionSecs, pMarker->beatsTillNextMarker(nextPosition)));
+                positionSecs, pMarker->beatsUntilPositionExtrapolated(nextPosition)));
         pMarker = pNextMarker;
     }
 
