@@ -44,6 +44,45 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     connect(m_pEditLabel.get(), &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
     connect(m_pEditLabel.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
+    // Eve
+    m_pEditStem1vol = std::make_unique<QLineEdit>(this);
+    m_pEditStem1vol->setToolTip(tr("Edit cue Volume for Stem 1 (- for mute; 0-100 volume)"));
+    m_pEditStem1vol->setObjectName("CueStem1volEdit");
+    m_pEditStem1vol->setPlaceholderText(tr("Volume for Stem 1..."));
+    m_pEditStem1vol->setMaxLength(10);
+    m_pEditStem1vol->setMaximumSize(50, 20);
+    connect(m_pEditStem1vol.get(), &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditStem1vol);
+    connect(m_pEditStem1vol.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
+
+    m_pEditStem2vol = std::make_unique<QLineEdit>(this);
+    m_pEditStem2vol->setToolTip(tr("Edit cue Volume for Stem 2 (- for mute; 0-100 volume)"));
+    m_pEditStem2vol->setObjectName("CueStem2volEdit");
+    m_pEditStem2vol->setPlaceholderText(tr("Volume for Stem 2..."));
+    m_pEditStem2vol->setMaxLength(10);
+    m_pEditStem2vol->setMaximumSize(50, 20);
+    connect(m_pEditStem2vol.get(), &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditStem2vol);
+    connect(m_pEditStem2vol.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
+
+    m_pEditStem3vol = std::make_unique<QLineEdit>(this);
+    m_pEditStem3vol->setToolTip(tr("Edit cue Volume for Stem 3 (- for mute; 0-100 volume)"));
+    m_pEditStem3vol->setObjectName("CueStem3volEdit");
+    m_pEditStem3vol->setPlaceholderText(tr("Volume for Stem 3..."));
+    m_pEditStem3vol->setMaxLength(10);
+    m_pEditStem3vol->setMaximumSize(50, 20);
+    connect(m_pEditStem3vol.get(), &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditStem3vol);
+    connect(m_pEditStem3vol.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
+
+    m_pEditStem4vol = std::make_unique<QLineEdit>(this);
+    m_pEditStem4vol->setToolTip(tr("Edit cue Volume for Stem 4 (- for mute; 0-100 volume)"));
+    m_pEditStem4vol->setObjectName("CueStem4volEdit");
+    m_pEditStem4vol->setPlaceholderText(tr("Volume for Stem 4..."));
+    m_pEditStem4vol->setMaxLength(10);
+    m_pEditStem4vol->setMaximumSize(50, 20);
+    connect(m_pEditStem4vol.get(), &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditStem4vol);
+    connect(m_pEditStem4vol.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
+
+    // Eve
+
     m_pColorPicker =
             std::make_unique<WColorPicker>(WColorPicker::Option::NoOptions,
                     m_colorPaletteSettings.getHotcueColorPalette(),
@@ -82,9 +121,22 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pLabelLayout->addStretch(1);
     pLabelLayout->addWidget(m_pCuePosition.get());
 
+    // EVE
+    QHBoxLayout* pStemvolLayout = new QHBoxLayout();
+    pStemvolLayout->addWidget(m_pEditStem1vol.get(), 1);
+    pStemvolLayout->addSpacing(5);
+    pStemvolLayout->addWidget(m_pEditStem2vol.get(), 1);
+    pStemvolLayout->addSpacing(5);
+    pStemvolLayout->addWidget(m_pEditStem3vol.get(), 1);
+    pStemvolLayout->addSpacing(5);
+    pStemvolLayout->addWidget(m_pEditStem4vol.get(), 1);
+    //    pStemvolLayout->maximumSize();
+    // EVE
+
     QVBoxLayout* pLeftLayout = new QVBoxLayout();
     pLeftLayout->addLayout(pLabelLayout);
     pLeftLayout->addWidget(m_pEditLabel.get());
+    pLeftLayout->addLayout(pStemvolLayout);
     pLeftLayout->addWidget(m_pColorPicker.get());
 
     QVBoxLayout* pRightLayout = new QVBoxLayout();
@@ -147,15 +199,20 @@ void WCueMenuPopup::slotUpdate() {
             positionText = mixxx::Duration::formatTime(startPositionSeconds, mixxx::Duration::Precision::CENTISECONDS);
             if (pos.endPosition.isValid() && m_pCue->getType() != mixxx::CueType::HotCue) {
                 double endPositionSeconds = pos.endPosition.value() / m_pTrack->getSampleRate();
-                positionText = QString("%1 - %2").arg(
-                    positionText,
-                    mixxx::Duration::formatTime(endPositionSeconds, mixxx::Duration::Precision::CENTISECONDS)
-                );
+                positionText = QString("%1 - %2").arg(positionText,
+                        mixxx::Duration::formatTime(endPositionSeconds,
+                                mixxx::Duration::Precision::CENTISECONDS));
             }
         }
         m_pCuePosition->setText(positionText);
 
         m_pEditLabel->setText(m_pCue->getLabel());
+        // Eve
+        m_pEditStem1vol->setText(QString("%1").arg(m_pCue->getStem1vol()));
+        m_pEditStem2vol->setText(QString("%1").arg(m_pCue->getStem2vol()));
+        m_pEditStem3vol->setText(QString("%1").arg(m_pCue->getStem3vol()));
+        m_pEditStem4vol->setText(QString("%1").arg(m_pCue->getStem4vol()));
+        // Eve
         m_pColorPicker->setSelectedColor(m_pCue->getColor());
         m_pSavedLoopCue->setChecked(m_pCue->getType() == mixxx::CueType::Loop);
     } else {
@@ -164,6 +221,12 @@ void WCueMenuPopup::slotUpdate() {
         m_pCueNumber->setText(QString(""));
         m_pCuePosition->setText(QString(""));
         m_pEditLabel->setText(QString(""));
+        // Eve
+        m_pEditStem1vol->setText(QString("100"));
+        m_pEditStem2vol->setText(QString("100"));
+        m_pEditStem3vol->setText(QString("100"));
+        m_pEditStem4vol->setText(QString("100"));
+        // Eve
         m_pColorPicker->setSelectedColor(std::nullopt);
     }
 }
@@ -174,6 +237,36 @@ void WCueMenuPopup::slotEditLabel() {
     }
     m_pCue->setLabel(m_pEditLabel->text());
 }
+
+// Eve
+void WCueMenuPopup::slotEditStem1vol() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    m_pCue->setStem1vol((m_pEditStem1vol->text()).toInt());
+}
+
+void WCueMenuPopup::slotEditStem2vol() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    m_pCue->setStem2vol((m_pEditStem2vol->text()).toInt());
+}
+
+void WCueMenuPopup::slotEditStem3vol() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    m_pCue->setStem3vol((m_pEditStem3vol->text()).toInt());
+}
+
+void WCueMenuPopup::slotEditStem4vol() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    m_pCue->setStem4vol((m_pEditStem4vol->text()).toInt());
+}
+// Eve
 
 void WCueMenuPopup::slotChangeCueColor(mixxx::RgbColor::optional_t color) {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {

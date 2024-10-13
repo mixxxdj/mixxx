@@ -35,6 +35,10 @@ class SeratoMarkersEntry {
             bool hasEndPosition,
             int endPosition,
             SeratoStoredHotcueColor color,
+            int stem1vol,
+            int stem2vol,
+            int stem3vol,
+            int stem4vol,
             quint8 type,
             bool isLocked)
             : m_color(color),
@@ -100,7 +104,6 @@ class SeratoMarkersEntry {
     SeratoStoredHotcueColor m_color;
     bool m_hasStartPosition;
     bool m_hasEndPosition;
-    ;
     bool m_isLocked;
     quint32 m_startPosition;
     quint32 m_endPosition;

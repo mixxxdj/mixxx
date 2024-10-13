@@ -236,6 +236,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
                     hasEndPosition,
                     endPosition,
                     color,
+                    100,
+                    100,
+                    100,
+                    100,
                     type,
                     isLocked));
     kLogger.trace() << "SeratoMarkersEntry (ID3)" << *pEntry;
@@ -256,6 +260,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     quint8 colorGreen;
     quint8 colorBlue;
     quint8 type;
+    //    int m_stem1vol;
+    //    int m_stem2vol;
+    //    int m_stem3vol;
+    //    int m_stem4vol;
     bool isLocked;
 
     QDataStream stream(data);
@@ -315,6 +323,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
                     type == static_cast<quint8>(TypeId::Loop),
                     endPosition,
                     color,
+                    100,
+                    100,
+                    100,
+                    100,
                     type,
                     isLocked));
     kLogger.trace() << "SeratoMarkersEntry (MP4)" << *pEntry;
@@ -654,6 +666,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         cueIndex,
                         QString(),
                         pEntry->getColor().toDisplayedColor(),
+                        100,
+                        100,
+                        100,
+                        100,
                         CueFlag::None);
                 cueInfos.append(cueInfo);
             }
@@ -676,6 +692,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         loopIndex,
                         QString(),
                         std::nullopt,
+                        100,
+                        100,
+                        100,
+                        100,
                         pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
@@ -738,6 +758,10 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     false,
                     0,
                     SeratoStoredHotcueColor::fromDisplayedColor(cueInfo.getColor()),
+                    100,
+                    100,
+                    100,
+                    100,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Cue),
                     false);
         } else {
@@ -747,6 +771,10 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     false,
                     0,
                     SeratoStoredHotcueColor(SeratoStoredColor::kFixedUnsetColor),
+                    100,
+                    100,
+                    100,
+                    100,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Unknown),
                     false);
         }
@@ -768,6 +796,10 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     // import the blue-ish default color in the code above, but
                     // it will not be used by Serato.
                     SeratoStoredHotcueColor(SeratoStoredColor::kFixedLoopColor),
+                    100,
+                    100,
+                    100,
+                    100,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
                     cueInfo.isLocked());
         } else {
@@ -777,6 +809,10 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     false,
                     0,
                     SeratoStoredHotcueColor(SeratoStoredColor::kFixedUnsetColor),
+                    100,
+                    100,
+                    100,
+                    100,
                     // In contrast to cues, unset saved loop have the same type
                     // ID as set ones.
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
