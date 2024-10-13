@@ -222,8 +222,21 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 }
 
 void KeyboardEventFilter::setEnabled(bool enabled) {
+    if (enabled) {
+        kLogger.debug() << "Enable keyboard shortcuts/mappings";
+    } else {
+        kLogger.debug() << "Disable keyboard shortcuts/mappings";
+    }
     m_enabled = enabled;
     m_pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), enabled);
+    // Shortcuts may be toggled off and on again to make Mixxx discover a new
+    // Custom.kbd.cfg, so reload now.
+    // Note: the other way around (removing a loaded Custom.kbd.cfg) is covered
+    // by the auto-reloader and we'll try to load a built-in mapping then.
+    if (enabled) {
+        reloadKeyboardConfig();
+    }
+    // Update widget tooltips
     emit shortcutsEnabled(enabled);
 }
 

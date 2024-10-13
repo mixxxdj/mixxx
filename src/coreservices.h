@@ -104,9 +104,6 @@ class CoreServices : public QObject {
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
-  public slots:
-    void slotOptionsKeyboard(bool toggle);
-
   private:
     bool initializeDatabase();
     void initializeKeyboard();

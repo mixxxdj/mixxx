@@ -458,7 +458,7 @@ void WMainMenuBar::initialize() {
     pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
     pOptionsKeyboard->setStatusTip(keyboardShortcutText);
     pOptionsKeyboard->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
-    connect(pOptionsKeyboard, &QAction::triggered, this, &WMainMenuBar::toggleKeyboardShortcuts);
+    connect(pOptionsKeyboard, &QAction::triggered, m_pKeyboard, &KeyboardEventFilter::setEnabled);
 
     pOptionsMenu->addAction(pOptionsKeyboard);
 
