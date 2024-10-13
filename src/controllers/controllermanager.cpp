@@ -237,10 +237,10 @@ void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
-    QList<Controller*> deviceList = getControllerList(false, true);
+    const QList<Controller*> deviceList = getControllerList(false, true);
     QStringList mappingPaths(getMappingPaths(m_pConfig));
 
-    for (Controller* pController : std::as_const(deviceList)) {
+    for (Controller* pController : deviceList) {
         QString name = pController->getName();
 
         if (pController->isOpen()) {

@@ -677,9 +677,9 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
+            const QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             QList<AnalyzerScheduledTrack> tracks;
-            for (auto id : std::as_const(ids)) {
+            for (auto id : ids) {
                 tracks.append(id);
             }
             emit analyzeTracks(tracks);

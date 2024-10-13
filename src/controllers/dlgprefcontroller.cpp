@@ -479,11 +479,11 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
     // re-enumerate on the next open of the preferences.
     if (!pMappingEnumerator.isNull()) {
         // Get a list of mappings in alphabetical order
-        QList<MappingInfo> systemMappings =
+        const QList<MappingInfo> systemMappings =
                 pMappingEnumerator->getMappingsByExtension(
                         m_pController->mappingExtension());
 
-        for (const MappingInfo& mapping : std::as_const(systemMappings)) {
+        for (const MappingInfo& mapping : systemMappings) {
             m_ui.comboBoxMapping->addItem(
                     icon, mapping.getName(), mapping.getPath());
             if (m_pController->matchMapping(mapping)) {

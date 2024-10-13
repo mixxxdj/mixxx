@@ -54,10 +54,10 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
 
     // found some value for splitsizes?
     if (!sizesJoined.isEmpty()) {
-        QStringList sizesSplit = sizesJoined.split(",");
+        const QStringList sizesSplit = sizesJoined.split(",");
         QList<int> sizesList;
         ok = false;
-        for (const QString& sizeStr : std::as_const(sizesSplit)) {
+        for (const QString& sizeStr : sizesSplit) {
             sizesList.push_back(sizeStr.toInt(&ok));
             if (!ok) {
                 break;
@@ -75,10 +75,10 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
     // Which children can be collapsed?
     QString collapsibleJoined;
     if (context.hasNodeSelectString(node, "Collapsible", &collapsibleJoined)) {
-        QStringList collapsibleSplit = collapsibleJoined.split(",");
+        const QStringList collapsibleSplit = collapsibleJoined.split(",");
         QList<bool> collapsibleList;
         ok = false;
-        for (const QString& collapsibleStr : std::as_const(collapsibleSplit)) {
+        for (const QString& collapsibleStr : collapsibleSplit) {
             collapsibleList.push_back(collapsibleStr.toInt(&ok)>0);
             if (!ok) {
                 break;

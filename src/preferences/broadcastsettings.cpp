@@ -31,7 +31,7 @@ void BroadcastSettings::loadProfiles() {
     }
 
     QStringList nameFilters("*.bcp.xml");
-    QFileInfoList files =
+    const QFileInfoList files =
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
     // If *.bcp.xml files exist in the profiles subfolder, those will be loaded
@@ -49,7 +49,7 @@ void BroadcastSettings::loadProfiles() {
         kLogger.info() << "Found" << files.size() << "profile(s)";
 
         // Load profiles from filesystem
-        for (const QFileInfo& fileInfo : std::as_const(files)) {
+        for (const QFileInfo& fileInfo : files) {
             BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 

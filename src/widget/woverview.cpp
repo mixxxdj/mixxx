@@ -537,8 +537,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             // WOverview in the future, another way to associate
             // WaveformMarks with Cues will need to be implemented.
             CuePointer pHoveredCue;
-            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
-            for (const auto& pCue : std::as_const(cueList)) {
+            const QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            for (const auto& pCue : cueList) {
                 if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
                     pHoveredCue = pCue;
                     break;

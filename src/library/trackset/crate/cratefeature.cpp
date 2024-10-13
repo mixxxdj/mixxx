@@ -693,7 +693,7 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
 
 void CrateFeature::slotCreateImportCrate() {
     // Get file to read
-    QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
+    const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
         return;
     }
@@ -707,7 +707,7 @@ void CrateFeature::slotCreateImportCrate() {
     CrateId lastCrateId;
 
     // For each selected file create a new crate
-    for (const QString& playlistFile : std::as_const(playlistFiles)) {
+    for (const QString& playlistFile : playlistFiles) {
         const QFileInfo fileInfo(playlistFile);
 
         Crate crate;

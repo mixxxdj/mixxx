@@ -16,18 +16,18 @@ namespace {
 constexpr float lineHoverPadding = 5.0;
 
 Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
-    QStringList stringFlags = alignString.toLower()
-                                      .split('|',
+    const QStringList stringFlags = alignString.toLower()
+                                            .split('|',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-                                              Qt::SkipEmptyParts);
+                                                    Qt::SkipEmptyParts);
 #else
-                                              QString::SkipEmptyParts);
+                                                    QString::SkipEmptyParts);
 #endif
 
     Qt::Alignment hflags;
     Qt::Alignment vflags;
 
-    for (const auto& stringFlag : std::as_const(stringFlags)) {
+    for (const auto& stringFlag : stringFlags) {
         if (stringFlag == "center") {
             hflags |= Qt::AlignHCenter;
             vflags |= Qt::AlignVCenter;

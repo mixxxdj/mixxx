@@ -84,7 +84,8 @@ bool SoundManagerConfig::readFromDisk() {
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
-    QList<SoundDevicePointer> soundDevices = m_pSoundManager->getDeviceList(m_api, true, true);
+    const QList<SoundDevicePointer> soundDevices =
+            m_pSoundManager->getDeviceList(m_api, true, true);
 
     for (int i = 0; i < devElements.count(); ++i) {
         QDomElement devElement(devElements.at(i).toElement());
@@ -109,7 +110,7 @@ bool SoundManagerConfig::readFromDisk() {
         }
 
         int devicesMatchingByName = 0;
-        for (const auto& soundDevice : std::as_const(soundDevices)) {
+        for (const auto& soundDevice : soundDevices) {
             SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
             if (hardwareDeviceId.name == deviceIdFromFile.name) {
                 devicesMatchingByName++;
@@ -127,7 +128,7 @@ bool SoundManagerConfig::readFromDisk() {
             // very reliable as persistent identifiers across restarts of Mixxx.
             // Set deviceIdFromFile's alsaHwDevice and portAudioIndex to match
             // the hardwareDeviceId so operator== works for SoundDeviceId.
-            for (const auto& soundDevice : std::as_const(soundDevices)) {
+            for (const auto& soundDevice : soundDevices) {
                 SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                 if (hardwareDeviceId.name == deviceIdFromFile.name) {
                     deviceIdFromFile.alsaHwDevice = hardwareDeviceId.alsaHwDevice;
@@ -146,7 +147,7 @@ bool SoundManagerConfig::readFromDisk() {
                 // multiple devices with the same name. This might be possible
                 // somehow with a udev rule matching device serial numbers, but
                 // I have not tested this.
-                for (const auto& soundDevice : std::as_const(soundDevices)) {
+                for (const auto& soundDevice : soundDevices) {
                     SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                     if (hardwareDeviceId.name == deviceIdFromFile.name
                             && hardwareDeviceId.alsaHwDevice == deviceIdFromFile.alsaHwDevice) {
@@ -156,7 +157,7 @@ bool SoundManagerConfig::readFromDisk() {
                 }
             } else {
                 // Check if the one of the matching devices has the configured in and output channels
-                for (const auto& soundDevice : std::as_const(soundDevices)) {
+                for (const auto& soundDevice : soundDevices) {
                     SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                     if (hardwareDeviceId.name == deviceIdFromFile.name &&
                             soundDevice->getNumOutputChannels() >=
@@ -513,9 +514,10 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
-        QList<SoundDevicePointer> outputDevices = soundManager->getDeviceList(m_api, true, false);
+        const QList<SoundDevicePointer> outputDevices =
+                soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
-            for (const auto& pDevice : std::as_const(outputDevices)) {
+            for (const auto& pDevice : outputDevices) {
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }

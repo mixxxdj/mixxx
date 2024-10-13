@@ -310,8 +310,8 @@ void DlgReplaceCueColor::slotApply() {
     }
 
     // Flush cached tracks to database
-    QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
-    for (const TrackId& trackId : std::as_const(cachedTrackIds)) {
+    const QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
+    for (const TrackId& trackId : cachedTrackIds) {
         TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (pTrack) {
             m_pTrackCollectionManager->saveTrack(pTrack);
