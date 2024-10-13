@@ -216,7 +216,7 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
 void KeyboardEventFilter::setEnabled(bool enabled) {
     m_enabled = enabled;
-    m_pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(enabled));
+    m_pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), enabled);
     emit shortcutsEnabled(enabled);
 }
 
