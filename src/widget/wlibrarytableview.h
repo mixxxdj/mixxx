@@ -68,6 +68,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void setSelectedClick(bool enable);
 
   protected:
+    void keyPressEvent(QKeyEvent* event) override;
     void focusInEvent(QFocusEvent* event) override;
     QModelIndex moveCursor(CursorAction cursorAction,
             Qt::KeyboardModifiers modifiers) override;

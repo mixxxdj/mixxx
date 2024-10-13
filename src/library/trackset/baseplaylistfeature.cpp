@@ -21,6 +21,7 @@
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/file.h"
+#include "widget/actionutils.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -74,7 +75,10 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
-    m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
+    m_pRenamePlaylistAction->setShortcuts(QList<QKeySequence>{
+            QKeySequence(kRenameSidebarItemShortcutKey),
+            QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
+    ActionUtils::updateMultiShortcutActionText(m_pRenamePlaylistAction);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
