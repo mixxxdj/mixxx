@@ -19,9 +19,9 @@ const JogFlashCriticalTime = 15; // number of seconds to quickly blink at the en
  **********************************************************************
  * User References
  * ---------------
- * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatmix_2
- * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatmix_4
- * support forum : http://mixxx.org/forums/viewtopic.php?f=7&t=8428
+ * Wiki/manual : https://github.com/mixxxdj/mixxx/wiki/reloop-beatmix-2
+ * Wiki/manual : https://github.com/mixxxdj/mixxx/wiki/Reloop-Beatmix-4
+ * support forum : https://mixxx.discourse.group/t/reloop-beatmix-2-4-mapping/16049
  *
  * Thanks
  * ----------------
@@ -35,10 +35,11 @@ const JogFlashCriticalTime = 15; // number of seconds to quickly blink at the en
  * 2016-08-15 - v1.2.1 - fix small typos and bugs
  * 2016-08-17 - v1.3 - sync each item on the controller with Mixxx at launch
  * 2016-08-19 - v1.3.1 - fix nex/prev effect button release and superknob responsiveness
+ * 2024-08-25 - v2.0.0 - Fixes & rewrites for Mixxx 2.4
  ***********************************************************************
  *                           GPL v2 licence
  *                           --------------
- * Reloop Beatmix controller script script 1.3.1 for Mixxx 2.1.0
+ * Reloop Beatmix controller script script 2.0.0 for Mixxx 2.4+
  * Copyright (C) 2016 Sébastien Blaisot
  *
  * This program is free software; you can redistribute it and/or
@@ -158,19 +159,25 @@ ReloopBeatmix24.connectControls = function() {
     // Channels controls
     for (let i = 1; i <= 4; i++) {
         group = "[Channel" + i + "]";
-        engine.connectControl(group, "track_samples",
-            "ReloopBeatmix24.deckLoaded");
-        engine.connectControl(group, "play",
-            "ReloopBeatmix24.ChannelPlay");
-        engine.connectControl(group, "playposition",
-            "ReloopBeatmix24.JogLed");
-        engine.connectControl(group, "loop_end_position",
-            "ReloopBeatmix24.loopDefined");
+        engine.makeConnection(group, "track_loaded",
+            ReloopBeatmix24.deckLoaded);
+        engine.trigger(group, "track_loaded");
+        engine.makeConnection(group, "play",
+            ReloopBeatmix24.ChannelPlay);
+        engine.trigger(group, "play");
+        engine.makeConnection(group, "playposition",
+            ReloopBeatmix24.JogLed);
+        engine.trigger(group, "playposition");
+        engine.makeConnection(group, "loop_end_position",
+            ReloopBeatmix24.loopDefined);
+        engine.trigger(group, "loop_end_position");
         engine.softTakeover(group, "rate", true);
         engine.setValue("[EffectRack1_EffectUnit1]",
             "group_" + group + "_enable", 0);
         engine.setValue("[EffectRack1_EffectUnit2]",
             "group_" + group + "_enable", 0);
+        engine.trigger("[EffectRack1_EffectUnit1]", `group_${ group }_enable`);
+        engine.trigger("[EffectRack1_EffectUnit2]", `group_${ group }_enable`);
         channelPlaying[group] = !!engine.getValue(group, "play");
         JogBlinking[group] = false;
     }
@@ -178,10 +185,12 @@ ReloopBeatmix24.connectControls = function() {
     // Samplers controls
     for (let i = 1; i <= 8; i++) {
         group = "[Sampler" + i + "]";
-        engine.connectControl(group, "track_samples",
-            "ReloopBeatmix24.deckLoaded");
-        engine.connectControl(group, "play",
-            "ReloopBeatmix24.SamplerPlay");
+        engine.makeConnection(group, "track_loaded",
+            ReloopBeatmix24.deckLoaded);
+        engine.trigger(group, "track_loaded");
+        engine.makeConnection(group, "play",
+            ReloopBeatmix24.SamplerPlay);
+        engine.trigger(group, "play");
     }
 
     // Effects reset
@@ -195,23 +204,29 @@ ReloopBeatmix24.init = function(id, _debug) {
     if (engine.getValue("[App]", "num_samplers") < 8) {
         engine.setValue("[App]", "num_samplers", 8);
     }
-    ReloopBeatmix24.connectControls(false);
+    ReloopBeatmix24.connectControls();
 
     for (let i = 1; i <= 4; i++) {
         engine.trigger("[Channel" + i + "]", "loop_end_position");
     }
 
-    // After midi controller receive this Outbound Message request SysEx Message,
-    // midi controller will send the status of every item on the
-    // control surface. (Mixxx will be initialized with current values)
-    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    // Delay controller status request to give time to the controller to be ready
+    engine.beginTimer(1500,
+        () => {
+            console.log(`Reloop Beatmix: ${ id } Requesting Controller Status`);
 
-    print("Reloop Beatmix: " + id + " initialized.");
+            // After midi controller receive this Outbound Message request SysEx Message,
+            // midi controller will send the status of every item on the
+            // control surface. (Mixxx will be initialized with current values)
+            midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+
+        }, true);
+    console.log(`Reloop Beatmix: ${ id } initialized.`);
 };
 
 ReloopBeatmix24.shutdown = function() {
     ReloopBeatmix24.TurnLEDsOff(); // Turn off all LEDs
-    print("Reloop Beatmix: " + ReloopBeatmix24.id + " shut down.");
+    console.log(`Reloop Beatmix: ${ ReloopBeatmix24.id } shut down.`);
 };
 
 // Button functions.
@@ -350,7 +365,7 @@ ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
 // ========================================================
 ReloopBeatmix24.SamplerPad = function(channel, control, value, status, group) {
     if (value === DOWN) {
-        if (engine.getValue(group, "track_samples")) { //Sampler loaded (playing or not)
+        if (engine.getValue(group, "track_loaded")) { //Sampler loaded (playing or not)
             engine.setValue(group, "cue_gotoandplay", 1);
         } else {
             engine.setValue(group, "LoadSelectedTrack", 1);
@@ -361,7 +376,7 @@ ReloopBeatmix24.SamplerPad = function(channel, control, value, status, group) {
 ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status,
     group) {
     if (value === DOWN) {
-        if (engine.getValue(group, "track_samples")) { //Sampler loaded (playing or not)
+        if (engine.getValue(group, "track_loaded")) { //Sampler loaded (playing or not)
             if (engine.getValue(group, "play")) { // Sampler is playing
                 engine.setValue(group, "cue_gotoandstop", 1);
             } else {
@@ -371,7 +386,7 @@ ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status,
             engine.setValue(group, "LoadSelectedTrack", 1);
         }
     } else { // UP
-        if (!engine.getValue(group, "track_samples")) { // if empty
+        if (!engine.getValue(group, "track_loaded")) { // if empty
             // Set eject back to 0 to turn off the eject button on screen
             engine.setValue(group, "eject", 0);
         }
@@ -426,7 +441,7 @@ ReloopBeatmix24.deckLoaded = function(value, group, _control) {
         {
             const channelChan = parseInt(channelRegEx.exec(group)[1]);
             if (channelChan <= 4) {
-            // shut down load button
+                // shut down load button
                 midi.sendShortMsg(0x90 + channelChan, 0x50,
                     value ? ON : OFF);
 
@@ -473,7 +488,7 @@ ReloopBeatmix24.SamplerPlay = function(value, group, _control) {
         if (value) {
             ledColor = VIOLET;
         } else {
-            ledColor = engine.getValue(group, "track_samples") ? RED : OFF;
+            ledColor = engine.getValue(group, "track_loaded") ? RED : OFF;
         }
 
         // We need to switch off pad lights before changing color otherwise
@@ -528,6 +543,9 @@ ReloopBeatmix24.ChannelPlay = function(value, group, _control) {
 // so value here represent the position in the track in the range [-0.14..1.14]
 // (0 = beginning, 1 = end)
 ReloopBeatmix24.JogLed = function(value, group, _control) {
+    if (engine.getValue(group, "track_loaded") === 0) {
+        return;
+    }
     // time computation
     const trackDuration = engine.getValue(group, "duration");
     const timeLeft = trackDuration * (1.0 - value);

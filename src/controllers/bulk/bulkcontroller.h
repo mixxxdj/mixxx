@@ -2,6 +2,7 @@
 
 #include <QAtomicInt>
 #include <QThread>
+#include <optional>
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
@@ -72,13 +73,12 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short m_vendorId;
-    unsigned short m_productId;
-    unsigned char m_inEndpointAddr;
-    unsigned char m_outEndpointAddr;
-#if defined(__WINDOWS__) || defined(__APPLE__)
-    unsigned int m_interfaceNumber;
-#endif
+    std::uint16_t m_vendorId;
+    std::uint16_t m_productId;
+    std::uint8_t m_inEndpointAddr;
+    std::uint8_t m_outEndpointAddr;
+    std::optional<std::uint8_t> m_interfaceNumber;
+
     QString m_manufacturer;
     QString m_product;
 

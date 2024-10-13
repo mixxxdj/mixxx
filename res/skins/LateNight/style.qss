@@ -402,6 +402,13 @@ WOverview QLabel {
 
 
 
+/************** Waveforms *****************************************************/
+
+#StemChannel_ControlContainer {
+  margin: 0px 3px 0px 2px;
+}
+
+
 /************** Decks *********************************************************/
 
 #DeckRows12345 {
@@ -660,8 +667,14 @@ WEffectChainPresetSelector {
     padding: 0px -1px 0px -5px;
     margin: 0px;
     text-align: right;
+  }
+  WEffectChainPresetSelector#StemQuickEffectSelector {
+    padding: 0px -5px 0px 2px;
+    margin: 0px;
+    text-align: left;
     }
-    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down,
+    WEffectChainPresetSelector#StemQuickEffectSelector::drop-down {
       subcontrol-origin: margin;
       subcontrol-position: right center;
     }

@@ -4,6 +4,7 @@
 #include <QtDebug>
 
 #include "library/autodj/autodjprocessor.h"
+#include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "moc_playlistdao.cpp"
 #include "util/db/dbconnection.h"

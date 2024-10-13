@@ -88,6 +88,12 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
     if (input_name == "MIDIIN2 (Ableton Push)" && output_name == "MIDIOUT2 (Ableton Push)") {
         return true;
     }
+
+    // Novation Launchpad X (macOS)
+    if (input_name == "Launchpad X LPX DAW Out" && output_name == "Launchpad X LPX DAW In") {
+        return true;
+    }
+
     return false;
 }
 

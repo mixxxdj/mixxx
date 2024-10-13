@@ -27,9 +27,7 @@ Variables:
           <ConfigKey><Variable name="CoverConfigKey"/></ConfigKey>
         </Connection>
       </Label>
-      <Template src="skins:LateNight/controls/button_1state_right.xml">
-        <SetVariable name="ObjectName"><Variable name="ButtonName"/></SetVariable>
-      </Template>
+      <Template src="skins:LateNight/controls/button_1state_right.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

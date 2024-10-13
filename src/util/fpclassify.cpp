@@ -13,11 +13,11 @@ int util_fpclassify(float x) {
     return std::fpclassify(x);
 }
 
-int util_isfinite(float x) {
+bool util_isfinite(float x) {
     return std::isfinite(x);
 }
 
-int util_isnormal(float x) {
+bool util_isnormal(float x) {
     return std::isnormal(x);
 }
 
@@ -33,11 +33,11 @@ int util_fpclassify(double x) {
     return std::fpclassify(x);
 }
 
-int util_isfinite(double x) {
+bool util_isfinite(double x) {
     return std::isfinite(x);
 }
 
-int util_isnormal(double x) {
+bool util_isnormal(double x) {
     return std::isnormal(x);
 }
 

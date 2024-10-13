@@ -164,6 +164,7 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pBeatsRemoveMarker;
     std::unique_ptr<ControlPushButton> m_pBeatsBarCountUp;
     std::unique_ptr<ControlPushButton> m_pBeatsBarCountDown;
+    std::unique_ptr<ControlObject> m_pBeatsUndoPossible;
 
     std::unique_ptr<ControlPushButton> m_pBeatsHalve;
     std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;

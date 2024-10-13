@@ -53,7 +53,7 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
-    inline bool isPrimaryDeck() {
+    inline bool isPrimaryDeck() const {
         return m_bIsPrimaryDeck;
     };
     int getChannelIndex() {

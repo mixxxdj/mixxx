@@ -145,6 +145,7 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
 #ifdef __STEM__
         slotStemsChanged();
 #endif
+        slotWaveformChanged();
     }
     emit trackChanged();
     emit trackLoaded();

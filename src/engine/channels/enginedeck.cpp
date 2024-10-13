@@ -10,6 +10,7 @@
 #include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/sample.h"
 
 #ifdef __STEM__
@@ -84,8 +85,10 @@ EngineDeck::EngineDeck(
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
-        m_stemMute.emplace_back(std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute"))));
+        auto pMuteButton = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
+        pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+        m_stemMute.push_back(std::move(pMuteButton));
     }
 #endif
 }
@@ -204,6 +207,16 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
 
 void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     VERIFY_OR_DEBUG_ASSERT(deckToClone) {
+        return;
+    }
+    // Sampler and preview decks don't have stem controls
+    if (!isPrimaryDeck() || !deckToClone->isPrimaryDeck()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_stemGain.size() == kMaxSupportedStems &&
+            m_stemMute.size() == kMaxSupportedStems &&
+            deckToClone->m_stemGain.size() == kMaxSupportedStems &&
+            deckToClone->m_stemMute.size() == kMaxSupportedStems) {
         return;
     }
     for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {

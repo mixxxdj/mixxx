@@ -278,7 +278,7 @@ void SyncControl::reinitLeaderParams(
         kLogger.trace() << "SyncControl::reinitLeaderParams" << getGroup()
                         << beatDistance << baseBpm << bpm;
     }
-    m_leaderBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    m_leaderBpmAdjustFactor = determineBpmMultiplier(mixxx::Bpm(m_pBpm->get()), bpm);
     updateLeaderBpm(bpm);
     updateLeaderBeatDistance(beatDistance);
 }

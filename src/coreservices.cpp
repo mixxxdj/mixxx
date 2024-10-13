@@ -406,8 +406,8 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
 
     // Scan the library for new files and directories
-    bool rescan = pConfig->getValue<bool>(
-            library::prefs::kRescanOnStartupConfigKey);
+    bool rescan = m_cmdlineArgs.getRescanLibrary() ||
+            pConfig->getValue<bool>(library::prefs::kRescanOnStartupConfigKey);
     // rescan the library if we get a new plugin
     QList<QString> prev_plugins_list =
             pConfig->getValueString(

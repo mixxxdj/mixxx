@@ -1147,6 +1147,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/util/autofilereloader.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/clipboard.cpp
@@ -2101,6 +2102,7 @@ add_executable(mixxx-test
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/itunesxmlimportertest.cpp
+  src/test/keyfactorytest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -3467,6 +3469,7 @@ if (STEM)
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/widget/wstemlabel.cpp
   )
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE

@@ -195,6 +195,16 @@ WSearchLineEdit,
     border: 1px solid red;
   }
 
+#BeatgridControls,
+#StemControls {
+  border-top: 1px solid #222;
+  border-left: 1px solid #222;
+  border-bottom: 1px solid #111;
+  border-right: 1px solid #111;
+  border-radius: 2px;
+  background-color: #171717;
+  }
+
 #VuMainCover {
   background-color: rgba(21, 21, 21, 150);
 }
@@ -1371,6 +1381,7 @@ WEffectSelector[highlight="1"] {  /*
 }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#StemControls WPushButton, WPushButton#StemControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
@@ -1420,6 +1431,7 @@ WPushButton#LibExpand,
 WPushButton#CueDeck[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
 WPushButton#LoopActivate[displayValue="0"],
+WPushButton#StemMuteButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
@@ -1483,6 +1495,10 @@ QPushButton#pushButtonRecording:checked {
     border-radius: 0px;
   }
 
+/* Orange for Stem Ch Mute buttons */
+WPushButton#StemMuteButton{
+  background-color: #db7700;
+}
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
@@ -1626,6 +1642,7 @@ WPushButton#FxExpand[displayValue="0"],
 WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
+#StemControlsToggle,
 #SamplerControlsMini WPushButton,
 #RecDot,
 /* transparent buttons, 0-4 (max button state we have currently) */
@@ -1815,6 +1832,10 @@ WPushButton#BpmLockToggle[value="1"] {
   image: url(skins:LateNight/classic/buttons/btn__pfl.svg) no-repeat center center;
 }
 
+#StemMuteButton[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_mute.svg) no-repeat center center;
+}
+
 #QuickEffectButton[displayValue="0"] {
   image: url(skins:LateNight/classic/buttons/btn__star.svg) no-repeat center center;
 }
@@ -1940,11 +1961,25 @@ WPushButton#BpmLockToggle[value="1"] {
   #BeatgridControlsToggle[displayValue="1"] {
     image: url(skins:LateNight/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
+
+#StemControlsToggle[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_controls_expand.svg) no-repeat center center;
+  }
+  #StemControlsToggle[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
+  }
+
   #BpmLockToggle[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__bpm_locked.svg);
     }
   #BpmLockToggle[value="0"] {
     image: url(skins:LateNight/classic/buttons/btn__bpm_unlocked.svg);
+    }
+  #Undo[value="0"] {
+    image: url(skins:LateNight/classic/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/classic/buttons/btn__undo_active.svg) no-repeat center center;
     }
   #BeatCurposLarge {
     image: url(skins:LateNight/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;

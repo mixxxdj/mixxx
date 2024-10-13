@@ -6,6 +6,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
+#include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"

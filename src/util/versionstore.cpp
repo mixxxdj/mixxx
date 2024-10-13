@@ -15,6 +15,7 @@
 
 #include <FLAC/format.h>
 #include <chromaprint.h>
+#include <ebur128.h>
 #include <lame/lame.h>
 #include <portaudio.h>
 #include <sndfile.h>
@@ -155,6 +156,12 @@ QStringList VersionStore::dependencyVersions() {
     sf_command(nullptr, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
     // Null-terminate just in case.
     sndfile_version[sizeof(sndfile_version) - 1] = '\0';
+
+    int eburMaj = 0;
+    int eburMin = 0;
+    int eburP = 0;
+    ebur128_get_version(&eburMaj, &eburMin, &eburP);
+
     // WARNING: may be inaccurate since some come from compile-time header
     // definitions instead of the actual dynamically loaded library).
     QStringList result;
@@ -185,6 +192,10 @@ QStringList VersionStore::dependencyVersions() {
                        .arg(QString::number(CHROMAPRINT_VERSION_MAJOR),
                                QString::number(CHROMAPRINT_VERSION_MINOR),
                                QString::number(CHROMAPRINT_VERSION_PATCH))
+            << QString("libebur128: %1.%2.%3")
+                       .arg(QString::number(eburMaj),
+                               QString::number(eburMin),
+                               QString::number(eburP))
             // Should be accurate.
             << QString("Vorbis: %1").arg(vorbis_version_string())
             // Should be accurate.
