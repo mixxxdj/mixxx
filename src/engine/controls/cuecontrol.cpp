@@ -2459,6 +2459,11 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcuePositionChanged,
             Qt::DirectConnection);
     m_hotcuePosition->set(Cue::kNoPosition);
+    m_hotcuePosition->setReadOnly();
+    m_hotcuePosition->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotPositionChangeRequest,
+            Qt::DirectConnection);
 
     m_hotcueEndPosition = std::make_unique<ControlObject>(
             keyForControl(QStringLiteral("endposition")));
@@ -2644,6 +2649,14 @@ void HotcueControl::slotHotcueClear(double v) {
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
+    emit hotcuePositionChanged(this, newPosition);
+}
+
+void HotcueControl::slotPositionChangeRequest(double newPosition) {
+    if (!m_hotcuePosition->get()) {
+        return;
+    }
+    m_hotcuePosition->setAndConfirm(newPosition);
     emit hotcuePositionChanged(this, newPosition);
 }
 
