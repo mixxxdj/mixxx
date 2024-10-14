@@ -890,15 +890,9 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
             mode = HotcueSetMode::Cue;
         }
     }
-
     // EveCue-Loop
-    bool TrackStem = false;
-    if (ControlObject::exists(ConfigKey(getGroup(), "stem_count"))) {
-        PollingControlProxy proxyStem(getGroup(), "stem_count");
-        TrackStem = proxyStem.get() > 1;
-    }
-
-    if (TrackStem) {
+    PollingControlProxy proxyStem(getGroup(), "stem_count", ControlFlag::AllowMissingOrInvalid);
+    if (proxyStem.get() > 1) {
         const QString groupBaseName = getGroup().remove("[").remove("]");
         const QString stemGroups[] = {
                 QString("[%1Stem1]").arg(groupBaseName),
@@ -1175,14 +1169,11 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
         // pressed
         if (pCue && pCue->getPosition().isValid() &&
                 pCue->getType() != mixxx::CueType::Invalid) {
-            //            bool TrackStem = m_pLoadedTrack->hasStem();
-            bool TrackStem = false;
-            if (ControlObject::exists(ConfigKey(getGroup(), "stem_count"))) {
-                PollingControlProxy proxyStem(getGroup(), "stem_count");
-                TrackStem = proxyStem.get() > 1;
-            }
-
-            if (TrackStem) {
+            // EveCue-Loop
+            PollingControlProxy proxyStem(getGroup(),
+                    "stem_count",
+                    ControlFlag::AllowMissingOrInvalid);
+            if (proxyStem.get() > 1) {
                 const QString groupBaseName = getGroup().remove('[').remove(']');
                 const std::vector<QString> stemGroups = {
                         QString("[%1Stem1]").arg(groupBaseName),
@@ -1206,7 +1197,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                 setMuteAndVolume(stemGroups[2], pCue->getStem3vol());
                 setMuteAndVolume(stemGroups[3], pCue->getStem4vol());
             }
-
+            // EveCue-Loop
             if (m_pPlay->toBool() && m_currentlyPreviewingIndex == Cue::kNoHotCue) {
                 // playing by Play button
 
