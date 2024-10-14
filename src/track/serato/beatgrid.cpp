@@ -458,9 +458,9 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     nonTerminalMarkers.reserve(static_cast<int>(markers.size()));
 
-    auto pMarker = !markers.empty() ? &markers.front() : nullptr;
+    const auto* pMarker = !markers.empty() ? &markers.front() : nullptr;
     for (std::size_t i = 1; i <= markers.size(); i++) {
-        auto pNextMarker = i < markers.size() ? &markers[i] : nullptr;
+        const auto* pNextMarker = i < markers.size() ? &markers[i] : nullptr;
 
         const float positionSecs =
                 static_cast<float>(signalInfo.frames2secsFractional(
