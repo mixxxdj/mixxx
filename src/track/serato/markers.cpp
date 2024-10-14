@@ -256,10 +256,6 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     quint8 colorGreen;
     quint8 colorBlue;
     quint8 type;
-    //    int m_stem1vol;
-    //    int m_stem2vol;
-    //    int m_stem3vol;
-    //    int m_stem4vol;
     bool isLocked;
 
     QDataStream stream(data);
@@ -658,10 +654,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         cueIndex,
                         QString(),
                         pEntry->getColor().toDisplayedColor(),
-                        100,
-                        100,
-                        100,
-                        100,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
                         CueFlag::None);
                 cueInfos.append(cueInfo);
             }
@@ -684,10 +680,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         loopIndex,
                         QString(),
                         std::nullopt,
-                        100,
-                        100,
-                        100,
-                        100,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
                         pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute

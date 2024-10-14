@@ -16,10 +16,10 @@ TEST(CueTest, NewCueIsDirty) {
             mixxx::audio::kStartFramePos,
             mixxx::audio::kInvalidFramePos,
             mixxx::PredefinedColorPalettes::kDefaultCueColor,
-            100,
-            100,
-            100,
-            100);
+            1.0,
+            1.0,
+            1.0,
+            1.0);
     EXPECT_TRUE(cue.isDirty());
 }
 
@@ -46,10 +46,10 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
             std::make_optional(3),
             QStringLiteral("label"),
             RgbColor::optional(0xABCDEF),
-            100,
-            100,
-            100,
-            100);
+            1.0,
+            1.0,
+            1.0,
+            1.0);
     const Cue cueObject(
             cueInfo1,
             audio::SampleRate(44100),
