@@ -71,8 +71,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
-    }
-    else {
+    } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pTrackTableView);
