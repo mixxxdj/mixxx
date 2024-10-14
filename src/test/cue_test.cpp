@@ -32,10 +32,6 @@ TEST(CueTest, DefaultCueInfoToCueRoundtrip) {
     auto cueInfo2 = cueObject.getCueInfo(
             audio::SampleRate(44100));
     cueInfo2.setColor(std::nullopt);
-    100;
-    100;
-    100;
-    100;
     EXPECT_EQ(cueInfo1, cueInfo2);
 }
 
