@@ -282,11 +282,12 @@ void BulkController::sendBytes(const QByteArray& data) {
             (unsigned char*)data.constData(),
             data.size(),
             &transferred,
-            0);
+            5000 // Send timeout in milliseconds
+    );
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
                                << "serial #" << m_sUID << "-" << libusb_error_name(ret);
-    } else {
+    } else if (CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(m_logOutput) << transferred << "bytes sent to" << getName()
                              << "serial #" << m_sUID;
     }
