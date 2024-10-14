@@ -137,6 +137,32 @@
         SliderScheme  ...exactly!
         StyleScheme   icons & backgrounds for library, splitters, spinnies,
                       VU meter, default cover art etc. -->
+      <LaunchImageStyle>
+        LaunchImage {
+          background-color: #0f0f0f;
+        }
+        QLabel {
+          image: url(skins:LateNight/palemoon/style/mixxx_logo.svg);
+          padding: 0;
+          margin: 0px 2px 0px 2px;
+          border: none;
+          min-width: 160px;
+          max-width: 160px;
+          min-height: 40px;
+          max-height: 40px;
+        }
+        QProgressBar {
+          background: url(skins:LateNight/palemoon/style/progressbar_bg.svg);
+          border: none;
+          min-width: 164px;
+          max-width: 164px;
+          min-height: 5px;
+          max-height: 5px;
+        }
+        QProgressBar::chunk {
+          background: url(skins:LateNight/palemoon/style/progressbar.svg);
+        }
+      </LaunchImageStyle>
       <Style src="skins:LateNight/style_palemoon.qss"/>
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
@@ -238,6 +264,33 @@
       <Name>Classic</Name>
       <!-- Classic theme. Bulky containers, hatched backgrounds, no knob arcs -->
       <Style src="skins:LateNight/style_classic.qss"/>
+      <LaunchImageStyle>
+        LaunchImage {
+          background-color: #1e1e1e;
+        }
+        QLabel {
+          image: url(skins:LateNight/classic/style/mixxx_logo.svg);
+          padding: 0;
+          margin: 0px 2px 0px 2px;
+          border: none;
+          min-width: 162px;
+          max-width: 162px;
+          min-height: 42px;
+          max-height: 42px;
+        }
+        QProgressBar {
+          background: url(skins:LateNight/classic/style/progressbar_bg.svg);
+          border: none;
+          min-width: 160px;
+          max-width: 160px;
+          min-height: 5px;
+          max-height: 5px;
+        }
+        QProgressBar::chunk {
+          background: url(skins:LateNight/classic/style/progressbar.svg);
+        }
+      </LaunchImageStyle>
+
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
       <SetVariable name="SliderScheme">classic</SetVariable>
