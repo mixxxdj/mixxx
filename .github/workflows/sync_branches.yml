@@ -1,0 +1,30 @@
+name: Sync Branches
+on:
+  push:
+    branches:
+      - "2.4"
+      - "2.5"
+  workflow_dispatch:
+
+jobs:
+  sync-branches:
+    strategy:
+      matrix:
+        include:
+          - from_branch: "2.4"
+            to_branch: "2.5"
+          - from_branch: "2.5"
+            to_branch: "main"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge ${{ matrix.from_branch }} into ${{ matrix.to_branch }}
+        if: github.event_name == 'workflow_dispatch' || github.ref_name == matrix.from_branch
+        uses: tretuna/sync-branches@1.4.0
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          FROM_BRANCH: ${{ matrix.from_branch }}
+          TO_BRANCH: ${{ matrix.to_branch }}
+          CONTENT_COMPARISON: true # Prevent empty PRs
+          PULL_REQUEST_TITLE: Merge changes from `${{ matrix.from_branch }}` into `${{ matrix.to_branch }}`
+          PULL_REQUEST_BODY: |
+            New content has landed in the `${{ matrix.from_branch }}` branch, so let's merge the changes into `${{ matrix.to_branch }}`.
