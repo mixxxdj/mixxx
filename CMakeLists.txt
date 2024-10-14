@@ -2792,6 +2792,8 @@ if(QML)
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
+    # needed for qml/qmlautoreload.cpp
+    src/util/autofilereloader.cpp
   )
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
