@@ -1013,10 +1013,10 @@ CuePointer Track::createAndAddCue(
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
         mixxx::RgbColor color,
-        int stem1vol,
-        int stem2vol,
-        int stem3vol,
-        int stem4vol) {
+        double stem1vol,
+        double stem2vol,
+        double stem3vol,
+        double stem4vol) {
     VERIFY_OR_DEBUG_ASSERT(hotCueIndex == Cue::kNoHotCue ||
             hotCueIndex >= mixxx::kFirstHotCueIndex) {
         return CuePointer{};

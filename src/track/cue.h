@@ -47,10 +47,10 @@ class Cue : public QObject {
             int hotCue,
             const QString& label,
             mixxx::RgbColor color,
-            int stem1vol,
-            int stem2vol,
-            int stem3vol,
-            int stem4vol);
+            double stem1vol,
+            double stem2vol,
+            double stem3vol,
+            double stem4vol);
 
     /// Initialize new cue points
     Cue(
@@ -59,10 +59,10 @@ class Cue : public QObject {
             mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             mixxx::RgbColor color,
-            int stem1vol,
-            int stem2vol,
-            int stem3vol,
-            int stem4vol);
+            double stem1vol,
+            double stem2vol,
+            double stem3vol,
+            double stem4vol);
 
     ~Cue() override = default;
 
@@ -83,17 +83,17 @@ class Cue : public QObject {
     mixxx::audio::FrameDiff_t getLengthFrames() const;
 
     int getHotCue() const;
-    int getStem1vol() const;
-    int getStem2vol() const;
-    int getStem3vol() const;
-    int getStem4vol() const;
+    double getStem1vol() const;
+    double getStem2vol() const;
+    double getStem3vol() const;
+    double getStem4vol() const;
 
     QString getLabel() const;
     void setLabel(const QString& label);
-    void setStem1vol(int stem1vol);
-    void setStem2vol(int stem2vol);
-    void setStem3vol(int stem3vol);
-    void setStem4vol(int stem4vol);
+    void setStem1vol(double stem1vol);
+    void setStem2vol(double stem2vol);
+    void setStem3vol(double stem3vol);
+    void setStem4vol(double stem4vol);
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);
@@ -123,10 +123,10 @@ class Cue : public QObject {
     const int m_iHotCue;
     QString m_label;
     mixxx::RgbColor m_color;
-    int m_stem1vol;
-    int m_stem2vol;
-    int m_stem3vol;
-    int m_stem4vol;
+    double m_stem1vol;
+    double m_stem2vol;
+    double m_stem3vol;
+    double m_stem4vol;
 
     friend class Track;
     friend class CueDAO;

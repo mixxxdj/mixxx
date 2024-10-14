@@ -51,10 +51,10 @@ Cue::Cue(
         int hotCue,
         const QString& label,
         mixxx::RgbColor color,
-        int stem1vol,
-        int stem2vol,
-        int stem3vol,
-        int stem4vol)
+        double stem1vol,
+        double stem2vol,
+        double stem3vol,
+        double stem4vol)
         : m_bDirty(false), // clear flag after loading from database
           m_dbId(id),
           m_type(type),
@@ -107,10 +107,10 @@ Cue::Cue(
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
         mixxx::RgbColor color,
-        int stem1vol,
-        int stem2vol,
-        int stem3vol,
-        int stem4vol)
+        double stem1vol,
+        double stem2vol,
+        double stem3vol,
+        double stem4vol)
         : m_bDirty(true), // not yet in database, needs to be saved
           m_type(type),
           m_startPosition(startPosition),
@@ -250,27 +250,27 @@ int Cue::getHotCue() const {
     return m_iHotCue;
 }
 
-int Cue::getStem1vol() const {
+double Cue::getStem1vol() const {
     const auto lock = lockMutex(&m_mutex);
     return m_stem1vol;
 }
 
-int Cue::getStem2vol() const {
+double Cue::getStem2vol() const {
     const auto lock = lockMutex(&m_mutex);
     return m_stem2vol;
 }
 
-int Cue::getStem3vol() const {
+double Cue::getStem3vol() const {
     const auto lock = lockMutex(&m_mutex);
     return m_stem3vol;
 }
 
-int Cue::getStem4vol() const {
+double Cue::getStem4vol() const {
     const auto lock = lockMutex(&m_mutex);
     return m_stem4vol;
 }
 
-void Cue::setStem1vol(int stem1vol) {
+void Cue::setStem1vol(double stem1vol) {
     auto lock = lockMutex(&m_mutex);
     if (m_stem1vol == stem1vol) {
         return;
@@ -284,7 +284,7 @@ void Cue::setStem1vol(int stem1vol) {
     emit updated();
 }
 
-void Cue::setStem2vol(int stem2vol) {
+void Cue::setStem2vol(double stem2vol) {
     auto lock = lockMutex(&m_mutex);
     if (m_stem2vol == stem2vol) {
         return;
@@ -298,7 +298,7 @@ void Cue::setStem2vol(int stem2vol) {
     emit updated();
 }
 
-void Cue::setStem3vol(int stem3vol) {
+void Cue::setStem3vol(double stem3vol) {
     auto lock = lockMutex(&m_mutex);
     if (m_stem3vol == stem3vol) {
         return;
@@ -312,7 +312,7 @@ void Cue::setStem3vol(int stem3vol) {
     emit updated();
 }
 
-void Cue::setStem4vol(int stem4vol) {
+void Cue::setStem4vol(double stem4vol) {
     auto lock = lockMutex(&m_mutex);
     if (m_stem4vol == stem4vol) {
         return;

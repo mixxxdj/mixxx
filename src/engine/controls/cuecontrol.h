@@ -99,10 +99,10 @@ class HotcueControl : public QObject {
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
-    void setStem1vol(int stem1vol);
-    void setStem2vol(int stem2vol);
-    void setStem3vol(int stem3vol);
-    void setStem4vol(int stem4vol);
+    void setStem1vol(double stem1vol);
+    void setStem2vol(double stem2vol);
+    void setStem3vol(double stem3vol);
+    void setStem4vol(double stem4vol);
 
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.

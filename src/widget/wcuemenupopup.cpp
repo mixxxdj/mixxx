@@ -208,10 +208,10 @@ void WCueMenuPopup::slotUpdate() {
 
         m_pEditLabel->setText(m_pCue->getLabel());
         // Eve
-        m_pEditStem1vol->setText(QString("%1").arg(m_pCue->getStem1vol()));
-        m_pEditStem2vol->setText(QString("%1").arg(m_pCue->getStem2vol()));
-        m_pEditStem3vol->setText(QString("%1").arg(m_pCue->getStem3vol()));
-        m_pEditStem4vol->setText(QString("%1").arg(m_pCue->getStem4vol()));
+        m_pEditStem1vol->setText(QString("%1").arg(round(m_pCue->getStem1vol() * 100)));
+        m_pEditStem2vol->setText(QString("%1").arg(round(m_pCue->getStem2vol() * 100)));
+        m_pEditStem3vol->setText(QString("%1").arg(round(m_pCue->getStem3vol() * 100)));
+        m_pEditStem4vol->setText(QString("%1").arg(round(m_pCue->getStem4vol() * 100)));
         // Eve
         m_pColorPicker->setSelectedColor(m_pCue->getColor());
         m_pSavedLoopCue->setChecked(m_pCue->getType() == mixxx::CueType::Loop);
@@ -243,28 +243,28 @@ void WCueMenuPopup::slotEditStem1vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem1vol((m_pEditStem1vol->text()).toInt());
+    m_pCue->setStem1vol((m_pEditStem1vol->text()).toInt() / 100);
 }
 
 void WCueMenuPopup::slotEditStem2vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem2vol((m_pEditStem2vol->text()).toInt());
+    m_pCue->setStem2vol((m_pEditStem2vol->text()).toInt() / 100);
 }
 
 void WCueMenuPopup::slotEditStem3vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem3vol((m_pEditStem3vol->text()).toInt());
+    m_pCue->setStem3vol((m_pEditStem3vol->text()).toInt() / 100);
 }
 
 void WCueMenuPopup::slotEditStem4vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem4vol((m_pEditStem4vol->text()).toInt());
+    m_pCue->setStem4vol((m_pEditStem4vol->text()).toInt() / 100);
 }
 // Eve
 

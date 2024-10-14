@@ -863,10 +863,10 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     mixxx::audio::FramePos cueStartPosition;
     mixxx::audio::FramePos cueEndPosition;
     mixxx::CueType cueType = mixxx::CueType::Invalid;
-    int passStem1Vol;
-    int passStem2Vol;
-    int passStem3Vol;
-    int passStem4Vol;
+    double pass2CueCreationStem1Vol;
+    double pass2CueCreationStem2Vol;
+    double pass2CueCreationStem3Vol;
+    double pass2CueCreationStem4Vol;
 
     bool loopEnabled = m_pLoopEnabled->toBool();
     if (mode == HotcueSetMode::Auto) {
@@ -911,25 +911,25 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         };
 
         // get the volume value adjusted by the mute multiplier
-        auto getVolume = [](const QString& group, int muteMultiplier) -> int {
+        auto getVolume = [](const QString& group, int muteMultiplier) -> double {
             if (ControlObject::exists(ConfigKey(group, "volume"))) {
                 auto proxyVolume = std::make_unique<PollingControlProxy>(group, "volume");
-                return static_cast<int>(proxyVolume->get() * 100 * muteMultiplier);
+                return static_cast<double>(proxyVolume->get() * muteMultiplier);
             }
-            return 100 * muteMultiplier; // Default value when volume not changed
+            return muteMultiplier; // Default value when volume not changed
         };
 
         // calc stem volume values
-        passStem1Vol = getVolume(stemGroups[0], getMuteMultiplier(stemGroups[0]));
-        passStem2Vol = getVolume(stemGroups[1], getMuteMultiplier(stemGroups[1]));
-        passStem3Vol = getVolume(stemGroups[2], getMuteMultiplier(stemGroups[2]));
-        passStem4Vol = getVolume(stemGroups[3], getMuteMultiplier(stemGroups[3]));
+        pass2CueCreationStem1Vol = getVolume(stemGroups[0], getMuteMultiplier(stemGroups[0]));
+        pass2CueCreationStem2Vol = getVolume(stemGroups[1], getMuteMultiplier(stemGroups[1]));
+        pass2CueCreationStem3Vol = getVolume(stemGroups[2], getMuteMultiplier(stemGroups[2]));
+        pass2CueCreationStem4Vol = getVolume(stemGroups[3], getMuteMultiplier(stemGroups[3]));
 
     } else {
-        passStem1Vol = 100;
-        passStem2Vol = 100;
-        passStem3Vol = 100;
-        passStem4Vol = 100;
+        pass2CueCreationStem1Vol = 1.0;
+        pass2CueCreationStem2Vol = 1.0;
+        pass2CueCreationStem3Vol = 1.0;
+        pass2CueCreationStem4Vol = 1.0;
     }
     // EveCue-Loop
 
@@ -1005,10 +1005,10 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
             cueStartPosition,
             cueEndPosition,
             color,
-            passStem1Vol,
-            passStem2Vol,
-            passStem3Vol,
-            passStem4Vol);
+            pass2CueCreationStem1Vol,
+            pass2CueCreationStem2Vol,
+            pass2CueCreationStem3Vol,
+            pass2CueCreationStem4Vol);
 
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
@@ -1181,14 +1181,14 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                         QString("[%1Stem3]").arg(groupBaseName),
                         QString("[%1Stem4]").arg(groupBaseName)};
 
-                auto setMuteAndVolume = [](const QString& group, int volume) {
+                auto setMuteAndVolume = [](const QString& group, double volume) {
                     if (ControlObject::exists(ConfigKey(group, "mute"))) {
                         auto proxyMute = std::make_unique<PollingControlProxy>(group, "mute");
-                        proxyMute->set(volume < 1 ? 1 : 0);
+                        proxyMute->set(volume < 0 ? 1 : 0);
                     }
                     if (ControlObject::exists(ConfigKey(group, "volume"))) {
                         auto proxyVol = std::make_unique<PollingControlProxy>(group, "volume");
-                        proxyVol->set(std::abs(volume) / 100.0);
+                        proxyVol->set(std::abs(volume));
                     }
                 };
 
@@ -2822,17 +2822,17 @@ void HotcueControl::setType(mixxx::CueType type) {
     m_hotcueType->forceSet(static_cast<double>(type));
 }
 
-void HotcueControl::setStem1vol(int stem1vol) {
-    m_hotcueStem1vol->set(static_cast<int>(stem1vol));
+void HotcueControl::setStem1vol(double stem1vol) {
+    m_hotcueStem1vol->set(static_cast<double>(stem1vol));
 }
-void HotcueControl::setStem2vol(int stem2vol) {
-    m_hotcueStem2vol->set(static_cast<int>(stem2vol));
+void HotcueControl::setStem2vol(double stem2vol) {
+    m_hotcueStem2vol->set(static_cast<double>(stem2vol));
 }
-void HotcueControl::setStem3vol(int stem3vol) {
-    m_hotcueStem3vol->set(static_cast<int>(stem3vol));
+void HotcueControl::setStem3vol(double stem3vol) {
+    m_hotcueStem3vol->set(static_cast<double>(stem3vol));
 }
-void HotcueControl::setStem4vol(int stem4vol) {
-    m_hotcueStem4vol->set(static_cast<int>(stem4vol));
+void HotcueControl::setStem4vol(double stem4vol) {
+    m_hotcueStem4vol->set(static_cast<double>(stem4vol));
 }
 
 void HotcueControl::setStatus(HotcueControl::Status status) {
