@@ -19,7 +19,8 @@ jobs:
     steps:
       - name: Merge ${{ matrix.from_branch }} into ${{ matrix.to_branch }}
         if: github.event_name == 'workflow_dispatch' || github.ref_name == matrix.from_branch
-        uses: tretuna/sync-branches@1.4.0
+        # Commit is pinned due to low popularity of the action repo.
+        uses: tretuna/sync-branches@ea58ab6e406fd3ad016a064b31270bbb41127f41
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: ${{ matrix.from_branch }}
