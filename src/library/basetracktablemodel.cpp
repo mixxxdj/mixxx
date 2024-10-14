@@ -126,8 +126,14 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
     m_columnHeaders.clear();
     m_columnHeaders.resize(tableColumns.size());
 
-    // Init the mapping of all columns, even for internal columns that are
-    // hidden/invisible. Otherwise mapColumn() would not return a valid result
+    // Init the header properties of selected/visible columns.
+    // This method might by overridden by derived classes.
+    initHeaderProperties();
+    // The derived class might have added column headers.
+    DEBUG_ASSERT(m_columnHeaders.size() >= tableColumns.size());
+
+    // Init the mapping of all remaining columns, even for internal columns that
+    // are hidden/invisible. Otherwise mapColumn() would not return a valid result
     // for those columns.
     for (int columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
         const auto column = static_cast<ColumnCache::Column>(columnValue);
@@ -138,12 +144,15 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
             continue;
         }
         DEBUG_ASSERT(headerIndex < m_columnHeaders.size());
-        m_columnHeaders[headerIndex].column = column;
+        if (m_columnHeaders[headerIndex].column == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
+            // Invisible/hidden column.
+            m_columnHeaders[headerIndex].column = column;
+        } else {
+            // Already initialized by initHeaderProperties().
+            DEBUG_ASSERT(m_columnHeaders[headerIndex].column == column);
+        }
         DEBUG_ASSERT(mapColumn(headerIndex) == column);
     }
-
-    // Init the header properties of selected/visible columns.
-    initHeaderProperties();
 }
 
 void BaseTrackTableModel::initHeaderProperties() {
