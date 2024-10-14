@@ -115,7 +115,8 @@ SINT AnalyzerSilence::findFirstFadeOutChunk(std::span<const CSAMPLE> samples) {
     // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
     SINT ret = std::distance(
                        first_fade_out_sound(samples.rbegin(), samples.rend()),
-                       samples.rend()) - 1;
+                       samples.rend()) -
+            1;
     if (ret == -1) {
         ret = samples.size();
     }
