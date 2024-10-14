@@ -27,7 +27,7 @@ void LegacyControllerMapping::loadSettings(UserSettingsPointer pConfig,
                                     .arg(controllerName, controllerPath);
 
     auto availableSettings = getSettings();
-    QList<ConfigKey> definedSettings = pConfig->getKeysWithGroup(controllerKey);
+    const QList<ConfigKey> definedSettings = pConfig->getKeysWithGroup(controllerKey);
 
     QList<QString> availableSettingKeys;
     for (const auto& pSetting : std::as_const(availableSettings)) {
