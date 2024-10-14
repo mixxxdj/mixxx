@@ -522,7 +522,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
             audio::FramePos position, int adjustment) const;
 
     /// Stretch the current beat grid and adjust its BPM to fit the grid with an
-    /// even number of bits. If no
+    /// even number of beats. If no
     std::optional<BeatsPointer> tryStretchBeatGrid(
             audio::FramePos position, int adjustment) const;
 

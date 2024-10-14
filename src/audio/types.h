@@ -248,12 +248,12 @@ QDebug operator<<(QDebug dbg, Bitrate arg);
 // about the number expected within a single bar or phrase.
 class BarLength {
   public:
-    typedef uint32_t value_t;
+    using value_t = std::uint32_t;
 
     static BarLength valueFromUInt(unsigned int value) {
         VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
                 value <= std::numeric_limits<value_t>::max()) {
-            return BarLength(kValueDefault);
+            return BarLength(0);
         }
         return BarLength(static_cast<value_t>(value));
     }
