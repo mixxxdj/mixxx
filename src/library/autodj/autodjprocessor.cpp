@@ -401,6 +401,9 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         // TODO: This is a total bandaid for making Auto DJ work with four decks.
         // We should design a nicer way to handle this.
         for (const auto& pDeck : std::as_const(m_decks)) {
+            VERIFY_OR_DEBUG_ASSERT(pDeck) {
+                continue;
+            }
             if (pDeck == pLeftDeck) {
                 continue;
             }
