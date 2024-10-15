@@ -262,7 +262,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     if constexpr (sDebug) {
-        qDebug("SidebarModel::data() row=%d column=%d pointer=%8x, role=%d",
+        qDebug("SidebarModel::data() row=%d column=%d pointer=%p, role=%d",
                 index.row(),
                 index.column(),
                 index.internalPointer(),
