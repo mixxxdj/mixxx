@@ -41,6 +41,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
+    void updateEndMarkImage(WaveformMarkPointer pMark) override;
 
     void updatePlayPosMarkTexture();
 
@@ -51,7 +52,11 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p3);
 
     void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
-    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
+    void drawTexture(const QMatrix4x4& matrix,
+            float x,
+            float y,
+            QOpenGLTexture* texture,
+            float opacity = 1.f);
     void updateUntilMark(double playPosition, double markerPosition);
     void drawUntilMark(const QMatrix4x4& matrix, float x);
     float getMaxHeightForText() const;
