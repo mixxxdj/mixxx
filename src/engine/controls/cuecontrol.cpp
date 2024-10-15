@@ -903,20 +903,14 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
         // get the mute multiplier
         auto getMuteMultiplier = [](const QString& group) -> int {
-            if (ControlObject::exists(ConfigKey(group, "mute"))) {
-                auto proxyMute = std::make_unique<PollingControlProxy>(group, "mute");
-                return static_cast<bool>(proxyMute->get()) ? -1 : 1;
-            }
-            return 1; // Default multiplier when no mute
+            PollingControlProxy proxyMute(group, "mute", ControlFlag::AllowMissingOrInvalid);
+            return static_cast<bool>(proxyMute.get()) ? -1 : 1;
         };
 
         // get the volume value adjusted by the mute multiplier
         auto getVolume = [](const QString& group, int muteMultiplier) -> double {
-            if (ControlObject::exists(ConfigKey(group, "volume"))) {
-                auto proxyVolume = std::make_unique<PollingControlProxy>(group, "volume");
-                return static_cast<double>(proxyVolume->get() * muteMultiplier);
-            }
-            return muteMultiplier; // Default value when volume not changed
+            PollingControlProxy proxyVolume(group, "volume", ControlFlag::AllowMissingOrInvalid);
+            return static_cast<double>(proxyVolume.get()) * muteMultiplier;
         };
 
         // calc stem volume values
@@ -1181,16 +1175,34 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                         QString("[%1Stem3]").arg(groupBaseName),
                         QString("[%1Stem4]").arg(groupBaseName)};
 
-                auto setMuteAndVolume = [](const QString& group, double volume) {
-                    if (ControlObject::exists(ConfigKey(group, "mute"))) {
-                        auto proxyMute = std::make_unique<PollingControlProxy>(group, "mute");
-                        proxyMute->set(volume < 0 ? 1 : 0);
-                    }
-                    if (ControlObject::exists(ConfigKey(group, "volume"))) {
-                        auto proxyVol = std::make_unique<PollingControlProxy>(group, "volume");
-                        proxyVol->set(std::abs(volume));
-                    }
+                auto setMuteAndVolume = [](const QString& group,
+                                                double volume) {
+                    PollingControlProxy proxyMute(
+                            group, "mute", ControlFlag::AllowMissingOrInvalid);
+                    proxyMute.set(volume < 0 ? 1 : 0);
+                    PollingControlProxy proxyVolume(group,
+                            "volume",
+                            ControlFlag::AllowMissingOrInvalid);
+                    proxyVolume.set(std::abs(volume));
                 };
+
+                //                auto setMuteAndVolume = [](const QString&
+                //                group, double volume) {
+                //                    if (ControlObject::exists(ConfigKey(group,
+                //                    "mute"))) {
+                //                        auto proxyMute =
+                //                        std::make_unique<PollingControlProxy>(group,
+                //                        "mute"); proxyMute->set(volume < 0 ? 1
+                //                        : 0);
+                //                    }
+                //                    if (ControlObject::exists(ConfigKey(group,
+                //                    "volume"))) {
+                //                        auto proxyVol =
+                //                        std::make_unique<PollingControlProxy>(group,
+                //                        "volume");
+                //                        proxyVol->set(std::abs(volume));
+                //                    }
+                //                };
 
                 setMuteAndVolume(stemGroups[0], pCue->getStem1vol());
                 setMuteAndVolume(stemGroups[1], pCue->getStem2vol());

@@ -243,28 +243,28 @@ void WCueMenuPopup::slotEditStem1vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem1vol((m_pEditStem1vol->text()).toInt() / 100);
+    m_pCue->setStem1vol((m_pEditStem1vol->text()).toDouble() / 100);
 }
 
 void WCueMenuPopup::slotEditStem2vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem2vol((m_pEditStem2vol->text()).toInt() / 100);
+    m_pCue->setStem2vol((m_pEditStem2vol->text()).toDouble() / 100);
 }
 
 void WCueMenuPopup::slotEditStem3vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem3vol((m_pEditStem3vol->text()).toInt() / 100);
+    m_pCue->setStem3vol((m_pEditStem3vol->text()).toDouble() / 100);
 }
 
 void WCueMenuPopup::slotEditStem4vol() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    m_pCue->setStem4vol((m_pEditStem4vol->text()).toInt() / 100);
+    m_pCue->setStem4vol((m_pEditStem4vol->text()).toDouble() / 100);
 }
 // Eve
 
