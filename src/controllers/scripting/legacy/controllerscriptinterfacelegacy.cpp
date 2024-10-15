@@ -1,5 +1,10 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+#include <QTextCodec>
+#else
+#include <QStringEncoder>
+#endif
 #include <gsl/pointers>
 
 #include "control/controlobject.h"
@@ -1051,4 +1056,49 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
     // activate the ramping in scratchProcess()
     m_ramp[deck] = true;
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
+        const QString& value) {
+    switch (targetCharset) {
+    case WellKnownCharsets::Latin1:
+    case WellKnownCharsets::ISO_8859_1:
+        return convertCharset(QStringLiteral("ISO-8859-1"), value);
+    case WellKnownCharsets::Latin9:
+    case WellKnownCharsets::ISO_8859_15:
+        return convertCharset(QStringLiteral("ISO-8859-15"), value);
+    case WellKnownCharsets::UCS2:
+    case WellKnownCharsets::ISO_10646_UCS_2:
+        return convertCharset(QStringLiteral("ISO-10646-UCS-2"), value);
+    default:
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
+        return QByteArray();
+    }
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const QString& targetCharset, const QString& value) {
+    QByteArray encoderNameArray = targetCharset.toUtf8();
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+    auto* pCodec = QTextCodec::codecForName(encoderNameArray);
+    if (!pCodec) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
+    }
+    return pCodec->makeEncoder(QTextCodec::Flag::ConvertInvalidToNull)->fromUnicode(value);
+#else
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QAnyStringView encoderName = QAnyStringView(encoderNameArray);
+#else
+    const char* encoderName = encoderNameArray.constData();
+#endif
+    QStringEncoder fromUtf16 = QStringEncoder(
+            encoderName, QStringEncoder::Flag::ConvertInvalidToNull);
+    if (!fromUtf16.isValid()) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
+    }
+    return fromUtf16(value);
+#endif
 }

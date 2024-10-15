@@ -301,4 +301,33 @@ declare namespace engine {
      *               SoftStart with low factors would take a while until sound is audible. [default = 1.0]
      */
     function softStart(deck: number, activate: boolean, factor?: number): void;
+
+    enum WellKnownCharsets {
+        Latin1,
+        ISO_8859_1,
+        Latin9,
+        ISO_8859_15,
+        UCS2,
+        ISO_10646_UCS_2
+    }
+
+    /**
+     * Converts a string into another charset.
+     *
+     * This function is useful to display text on a device that does not make use of UTF-8.
+     * Available charset names are listed here: http://www.iana.org/assignments/character-sets/character-sets.xhtml.
+     * Characters that are unsupported by target charset will be transformed to null character (0x00).
+     * @param targetCharset The charset to encode the string into.
+     * @param value The string to encode
+     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error.
+     */
+    function convertCharset(targetCharset: string, value: string): ArrayBuffer
+
+    /**
+     * Version of {@link engine.convertCharset} to use with {@link engine.WellKnownCharsets}.
+     * @param targetCharset The charset to encode the string into.
+     * @param value The string to encode
+     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error.
+     */
+    function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer
 }
