@@ -22,7 +22,10 @@ class EncoderWave : public Encoder {
 
     int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
-    void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
+    void updateMetaData(const QString& artist,
+            const QString& title,
+            const QString& album,
+            std::chrono::seconds timecode = {}) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 

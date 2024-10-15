@@ -1,5 +1,7 @@
 #include "encoder/encoderopus.h"
 
+#include <qglobal.h>
+
 #include <QByteArray>
 #include <QMapIterator>
 #include <QRandomGenerator>
@@ -460,10 +462,18 @@ void EncoderOpus::writePage(ogg_packet* pPacket) {
     } while(!ogg_page_eos(&m_oggPage));
 }
 
-void EncoderOpus::updateMetaData(const QString& artist, const QString& title, const QString& album) {
-    m_opusComments.insert("ARTIST", artist);
-    m_opusComments.insert("TITLE", title);
-    m_opusComments.insert("ALBUM", album);
+void EncoderOpus::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds timecode) {
+    // We assume all the base tags are added at the same time, so only check for ARTIST presence
+    if (!m_opusComments.contains("ARTIST")) {
+        m_opusComments.insert("ARTIST", artist);
+        m_opusComments.insert("TITLE", title);
+        m_opusComments.insert("ALBUM", album);
+    }
+    // Tracklist tag not supported in OPUS
+    Q_UNUSED(timecode);
 }
 
 void EncoderOpus::flush() {
