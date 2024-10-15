@@ -237,7 +237,8 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
 
     setTable(m_tempTableName, idColumn, std::move(tableColumns), trackSource);
     setSearch("");
-    setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 

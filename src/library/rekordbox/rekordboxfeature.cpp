@@ -1198,7 +1198,12 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     qDebug() << "RekordboxTrackModel::getTrack";
 
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString location =
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::
+                                         COLUMN_TRACKLOCATIONSTABLE_LOCATION))
+                    .data()
+                    .toString();
 
     if (!QFile(location).exists()) {
         return track;
@@ -1255,7 +1260,11 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     mixxx::audio::SampleRate sampleRate = track->getSampleRate();
 
-    QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
+    QString anlzPath =
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH))
+                    .data()
+                    .toString();
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
 
     if (QFile(anlzPathExt).exists()) {
@@ -1276,11 +1285,14 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // Decision: We normalize the KeyText here to not write garbage to the
     // file metadata and it is unlikely to loose extra info.
     track->setKeys(KeyFactory::makeBasicKeysNormalized(
-            index.sibling(index.row(), fieldIndex("key")).data().toString(),
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY))
+                    .data()
+                    .toString(),
             mixxx::track::io::key::USER));
 
     track->setColor(mixxx::RgbColor::fromQVariant(
-            index.sibling(index.row(), fieldIndex("color")).data()));
+            index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)).data()));
 
     return track;
 }
