@@ -84,9 +84,7 @@ class ColumnCache : public QObject {
         return m_columnIndexByName.value(columnName, -1);
     }
 
-    inline QString columnName(Column column) const {
-        return m_columnNameByEnum[column];
-    }
+    const QString& columnName(Column column) const;
 
     inline QString columnNameForFieldIndex(int index) const {
         if (index < 0 || index >= m_columnsByIndex.size()) {
@@ -112,14 +110,6 @@ class ColumnCache : public QObject {
         m_columnSortByIndex.insert(index, sortFormat);
     }
 
-    void insertColumnNameByEnum(
-            Column column,
-            const QString& name) {
-        DEBUG_ASSERT(!m_columnNameByEnum.contains(column) ||
-                m_columnNameByEnum[column] == name);
-        m_columnNameByEnum.insert(column, name);
-    }
-
     KeyUtils::KeyNotation keyNotation() const {
         return KeyUtils::keyNotationFromNumericValue(
                 m_pKeyNotationCP->get());
@@ -132,7 +122,6 @@ class ColumnCache : public QObject {
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
-    QMap<Column, QString> m_columnNameByEnum;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
