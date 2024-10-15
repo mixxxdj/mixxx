@@ -152,7 +152,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     deck1->slotLoadTrack(pTrack1, false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
-    m_pEngine->process(1024);
+    m_pEngine->process(1024, std::chrono::microseconds(0));
     waitForTrackToBeLoaded(deck1);
     // make sure eject does not trigger 'unreplace':
     // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
@@ -186,14 +186,14 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     deck1->slotLoadTrack(pTrack1, false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
-    m_pEngine->process(1024);
+    m_pEngine->process(1024, std::chrono::microseconds(0));
     waitForTrackToBeLoaded(deck1);
 
     // Load another track, replacing the first, causing it to be unloaded.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
-    m_pEngine->process(1024);
+    m_pEngine->process(1024, std::chrono::microseconds(0));
     waitForTrackToBeLoaded(deck1);
 
     // Ejecting in an empty deck loads the last-ejected track.
@@ -229,7 +229,7 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
     deck1->slotLoadTrack(pTrack1, false);
-    m_pEngine->process(1024);
+    m_pEngine->process(1024, std::chrono::microseconds(0));
     waitForTrackToBeLoaded(deck1);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
@@ -237,7 +237,7 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
-    m_pEngine->process(1024);
+    m_pEngine->process(1024, std::chrono::microseconds(0));
     waitForTrackToBeLoaded(deck1);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 

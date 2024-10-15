@@ -1,8 +1,10 @@
 #pragma once
 
-#include <QString>
 #include <QSharedPointer>
+#include <QString>
 #include <QThread>
+#include <ableton/link/HostTimeFilter.hpp>
+#include <ableton/platforms/stl/Clock.hpp>
 
 #ifdef __LINUX__
 #include <pthread.h>
@@ -22,6 +24,13 @@
 class SoundManager;
 class EngineNetworkStream;
 class SoundDeviceNetworkThread;
+
+// std::chrono::steady_clock
+// -> selected by keyword 'stl' in ableton-link
+// Note that the resolution of std::chrono::steady_clock is not guaranteed
+// to be high resolution, but it is guaranteed to be monotonic.
+// However, on all major platforms, it is high resolution enough.
+using MixxxClockRef = ableton::platforms::stl::Clock;
 
 class SoundDeviceNetwork : public SoundDevice {
   public:
@@ -68,6 +77,8 @@ class SoundDeviceNetwork : public SoundDevice {
     /// The deadline for the next buffer, in microseconds since the Unix epoch.
     qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
+
+    ableton::link::HostTimeFilter<MixxxClockRef> m_hostTimeFilter;
 };
 
 class SoundDeviceNetworkThread : public QThread {
