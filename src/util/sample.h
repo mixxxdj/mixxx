@@ -347,6 +347,15 @@ class SampleUtil {
     static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numFrames);
 
+    // Scales, adds and doubles the mono samples in pSrc to dual mono samples
+    // to pDest
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be added to pDest
+    static void addMonoToStereoWithGain(CSAMPLE_GAIN gain,
+            CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames);
+
     // Adds and doubles the mono samples in pSrc to dual mono samples
     // to pDest.
     // (numFrames) samples will be read from pSrc
