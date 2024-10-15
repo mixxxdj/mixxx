@@ -390,7 +390,8 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         QFileInfo file = findScriptFile(mapping, filename, systemMappingsPath);
         if (file.suffix() == "qml") {
 #ifdef MIXXX_USE_QML
-            QString identifier = scriptFile.attribute("identifier", "");
+            QString identifier = scriptFile.attribute(
+                    "identifier", scriptFile.attribute("functionprefix", ""));
             mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
                     filename,
                     identifier,
