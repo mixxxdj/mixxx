@@ -285,6 +285,8 @@ WLibrary QPlainTextEdit,
 WBeatSpinBox,
 /* Track label inline editor */
 WTrackPropertyEditor,
+#LibraryStarEditor[isKeyboardEditMode="true"],
+#LibraryStarEditor[isKeyboardEditMode="true"]::item,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
@@ -293,6 +295,8 @@ WTrackPropertyEditor,
 }
 WLibrary QLineEdit,
 WTrackPropertyEditor,
+#LibraryStarEditor[isKeyboardEditMode="true"],
+#LibraryStarEditor[isKeyboardEditMode="true"]::item,
 #LibraryBPMSpinBox {
   border: 1px solid #006596;
 }
