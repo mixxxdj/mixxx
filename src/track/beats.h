@@ -26,10 +26,10 @@ class BeatMarker {
   public:
     BeatMarker(mixxx::audio::FramePos position,
             mixxx::audio::FrameDiff_t beatLength,
-            mixxx::audio::BarLength barLength)
+            mixxx::audio::BeatsPerBar beatsPerBar)
             : m_position(position),
               m_beatLength(beatLength),
-              m_beatsPerBar(barLength) {
+              m_beatsPerBar(beatsPerBar) {
         DEBUG_ASSERT(m_position.isValid());
         DEBUG_ASSERT(!m_position.isFractional());
         DEBUG_ASSERT(m_beatLength > 0);
@@ -69,10 +69,10 @@ class BeatMarker {
     }
 
     /// Returns the number of beats per bar..
-    mixxx::audio::BarLength beatsPerBar() const {
+    mixxx::audio::BeatsPerBar beatsPerBar() const {
         return m_beatsPerBar;
     }
-    void setBeatsPerBar(mixxx::audio::BarLength beatsPerBar) {
+    void setBeatsPerBar(mixxx::audio::BeatsPerBar beatsPerBar) {
         m_beatsPerBar = beatsPerBar;
     }
     /// Returns the length of a beat in frame
@@ -83,7 +83,7 @@ class BeatMarker {
   private:
     mixxx::audio::FramePos m_position;
     mixxx::audio::FrameDiff_t m_beatLength;
-    mixxx::audio::BarLength m_beatsPerBar;
+    mixxx::audio::BeatsPerBar m_beatsPerBar;
 };
 
 inline bool operator==(const BeatMarker& lhs, const BeatMarker& rhs) {
@@ -519,12 +519,12 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     /// Adjust the current marker's bar count
     std::optional<BeatsPointer> tryAdjustMarkerBarCount(
-            audio::FramePos position, int adjustment) const;
+            audio::FramePos position, std::int32_t adjustment) const;
 
     /// Stretch the current beat grid and adjust its BPM to fit the grid with an
-    /// even number of beats. If no
+    /// even number of beats. If no marker exist at `position`, a new one will be created
     std::optional<BeatsPointer> tryStretchBeatGrid(
-            audio::FramePos position, int adjustment) const;
+            audio::FramePos position) const;
 
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
@@ -553,7 +553,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     std::vector<BeatMarker> m_markers;
     mixxx::audio::FramePos m_lastMarkerPosition;
-    mixxx::audio::BarLength m_lastBeatsPerBar;
+    mixxx::audio::BeatsPerBar m_lastBeatsPerBar;
     mixxx::Bpm m_lastMarkerBpm;
     mixxx::audio::SampleRate m_sampleRate;
 

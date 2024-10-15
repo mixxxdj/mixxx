@@ -3,7 +3,7 @@
 #include "track/serato/tags.h"
 
 namespace mixxx {
-constexpr audio::BarLength kDefaultBeatPerBar = audio::BarLength(4);
+constexpr audio::BeatsPerBar kDefaultBeatPerBar = audio::BeatsPerBar(4);
 
 SeratoBeatsImporter::SeratoBeatsImporter()
         : BeatsImporter(),

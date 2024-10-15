@@ -13,7 +13,7 @@ namespace {
 
 constexpr auto kBpm = Bpm(120.0);
 constexpr auto kSampleRate = audio::SampleRate(48000);
-constexpr auto kBeatsPerBar = audio::BarLength(4);
+constexpr auto kBeatsPerBar = audio::BeatsPerBar(4);
 constexpr auto kStartPosition = audio::FramePos(400);
 const auto kEndPosition = kStartPosition + 24 * kSampleRate.value();
 constexpr double kMaxBeatError = 1e-9;
@@ -554,10 +554,10 @@ TEST(BeatsTest, FractionalBeats) {
             std::vector<BeatMarker>{
                     BeatMarker{kStartPosition,
                             (60 * kSampleRate) / 120,
-                            mixxx::audio::BarLength(4)},
+                            mixxx::audio::BeatsPerBar(4)},
                     BeatMarker{secondMarkerPosition,
                             (60 * kSampleRate) / 60,
-                            mixxx::audio::BarLength(4)},
+                            mixxx::audio::BeatsPerBar(4)},
             },
             lastMarkerPosition,
             kBpm,
@@ -602,10 +602,10 @@ TEST(BeatsTest, MultipleBeatsPerBar) {
             std::vector<BeatMarker>{
                     BeatMarker{kStartPosition,
                             (60 * kSampleRate) / 120,
-                            mixxx::audio::BarLength(4)},
+                            mixxx::audio::BeatsPerBar(4)},
                     BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2,
                             (60 * kSampleRate) / 60,
-                            mixxx::audio::BarLength(3)},
+                            mixxx::audio::BeatsPerBar(3)},
             },
             kStartPosition + 8 * kSampleRate.value() / 2 +
                     16 * kSampleRate.value(),

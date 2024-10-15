@@ -21,7 +21,7 @@ struct BeatGridV1Data {
 };
 
 constexpr double kEpsilon = 0.01;
-constexpr mixxx::audio::BarLength kDefaultBeatsPerBar = mixxx::audio::BarLength(4);
+constexpr mixxx::audio::BeatsPerBar kDefaultBeatsPerBar = mixxx::audio::BeatsPerBar(4);
 
 // The amount that `Beats::tryAdjustTempo()` changes the last marker's BPM by.
 constexpr double kBpmAdjustStep = 0.01;
@@ -263,7 +263,7 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
 
     auto previousPosition = markerPosition;
     audio::FrameDiff_t previousBeatLengthFrames = 0;
-    mixxx::audio::BarLength beatsPerBar = kDefaultBeatsPerBar;
+    mixxx::audio::BeatsPerBar beatsPerBar = kDefaultBeatsPerBar;
     bool isBeatCounting = isDoubleBeat(beatPositions, 1);
     for (int i = isBeatCounting ? 2 : 1; i < beatPositions.size(); i++) {
         VERIFY_OR_DEBUG_ASSERT(beatPositions[i].isValid() &&
@@ -274,7 +274,7 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
         // If the current beat is a "closing" double beat
         if (isDoubleBeat(beatPositions, i) && isBeatCounting) {
             isBeatCounting = false;
-            beatsPerBar = static_cast<mixxx::audio::BarLength>(
+            beatsPerBar = static_cast<mixxx::audio::BeatsPerBar>(
                     std::lround((std::floor(position - markerPosition) /
                             previousBeatLengthFrames)));
             continue;
@@ -1006,7 +1006,7 @@ std::optional<BeatsPointer> Beats::trySetMarker(audio::FramePos position) const 
 }
 
 std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
-        audio::FramePos position, int adjustment) const {
+        audio::FramePos position, std::int32_t adjustment) const {
     auto markers = m_markers;
 
     auto markerIt = std::upper_bound(markers.begin(),
@@ -1029,9 +1029,9 @@ std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
         }
     } else {
         const auto marker = *markerIt;
-        const int adjustedBeatsPerBar = marker.beatsPerBar() + adjustment;
+        const auto adjustedBeatsPerBar = marker.beatsPerBar() + adjustment;
 
-        if (adjustedBeatsPerBar < 2 || adjustedBeatsPerBar > 32) {
+        if (!adjustedBeatsPerBar.isValid()) {
             qWarning() << "Beats: beat per bar cannot be less than 2 and more than 32!";
             return std::nullopt;
         }
@@ -1040,7 +1040,7 @@ std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
         markerIt = markers.emplace(markerIt,
                 marker.position(),
                 marker.beatsLength(),
-                mixxx::audio::BarLength::valueFromUInt(adjustedBeatsPerBar));
+                mixxx::audio::BeatsPerBar::valueFromUInt(adjustedBeatsPerBar));
     }
 
     return fromBeatMarkers(m_sampleRate,
@@ -1051,9 +1051,8 @@ std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
 }
 
 std::optional<BeatsPointer> Beats::tryStretchBeatGrid(
-        audio::FramePos position, int adjustment) const {
+        audio::FramePos position) const {
     Q_UNUSED(position);
-    Q_UNUSED(adjustment);
     // TODO implement beat stretching
     return std::nullopt;
 }
