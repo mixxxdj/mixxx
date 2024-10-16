@@ -50,22 +50,14 @@ Cue::Cue(
         mixxx::audio::FrameDiff_t length,
         int hotCue,
         const QString& label,
-        mixxx::RgbColor color,
-        int stem1vol,
-        int stem2vol,
-        int stem3vol,
-        int stem4vol)
+        mixxx::RgbColor color)
         : m_bDirty(false), // clear flag after loading from database
           m_dbId(id),
           m_type(type),
           m_startPosition(position),
           m_iHotCue(hotCue),
           m_label(label),
-          m_color(color),
-          m_stem1vol(stem1vol),
-          m_stem2vol(stem2vol),
-          m_stem3vol(stem3vol),
-          m_stem4vol(stem4vol) {
+          m_color(color)) {
     DEBUG_ASSERT(m_dbId.isValid());
     if (length != 0) {
         if (position.isValid()) {
@@ -92,11 +84,7 @@ Cue::Cue(
                           sampleRate)),
           m_iHotCue(cueInfo.getHotCueIndex().value_or(kNoHotCue)),
           m_label(cueInfo.getLabel()),
-          m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)),
-          m_stem1vol(cueInfo.getStem1vol().value_or(kNoHotCue)),
-          m_stem2vol(cueInfo.getStem2vol().value_or(kNoHotCue)),
-          m_stem3vol(cueInfo.getStem3vol().value_or(kNoHotCue)),
-          m_stem4vol(cueInfo.getStem4vol().value_or(kNoHotCue)) {
+          m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
     DEBUG_ASSERT(!m_dbId.isValid());
 }
 
@@ -106,21 +94,13 @@ Cue::Cue(
         int hotCueIndex,
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
-        mixxx::RgbColor color,
-        int stem1vol,
-        int stem2vol,
-        int stem3vol,
-        int stem4vol)
+        mixxx::RgbColor color)
         : m_bDirty(true), // not yet in database, needs to be saved
           m_type(type),
           m_startPosition(startPosition),
           m_endPosition(endPosition),
           m_iHotCue(hotCueIndex),
-          m_color(color),
-          m_stem1vol(stem1vol),
-          m_stem2vol(stem2vol),
-          m_stem3vol(stem3vol),
-          m_stem4vol(stem4vol) {
+          m_color(color) {
     DEBUG_ASSERT(m_iHotCue == kNoHotCue || m_iHotCue >= mixxx::kFirstHotCueIndex);
     DEBUG_ASSERT(m_startPosition.isValid() || m_endPosition.isValid());
     DEBUG_ASSERT(!m_dbId.isValid());
@@ -135,11 +115,7 @@ mixxx::CueInfo Cue::getCueInfo(
             positionFramesToMillis(m_endPosition, sampleRate),
             m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
             m_label,
-            m_color,
-            m_stem1vol == kNoHotCue ? std::nullopt : std::make_optional(m_stem1vol),
-            m_stem2vol == kNoHotCue ? std::nullopt : std::make_optional(m_stem2vol),
-            m_stem3vol == kNoHotCue ? std::nullopt : std::make_optional(m_stem3vol),
-            m_stem4vol == kNoHotCue ? std::nullopt : std::make_optional(m_stem4vol));
+            m_color);
 }
 
 DbId Cue::getId() const {
@@ -248,82 +224,6 @@ mixxx::audio::FrameDiff_t Cue::getLengthFrames() const {
 int Cue::getHotCue() const {
     const auto lock = lockMutex(&m_mutex);
     return m_iHotCue;
-}
-
-int Cue::getStem1vol() const {
-    const auto lock = lockMutex(&m_mutex);
-    return m_stem1vol;
-}
-
-int Cue::getStem2vol() const {
-    const auto lock = lockMutex(&m_mutex);
-    return m_stem2vol;
-}
-
-int Cue::getStem3vol() const {
-    const auto lock = lockMutex(&m_mutex);
-    return m_stem3vol;
-}
-
-int Cue::getStem4vol() const {
-    const auto lock = lockMutex(&m_mutex);
-    return m_stem4vol;
-}
-
-void Cue::setStem1vol(int stem1vol) {
-    auto lock = lockMutex(&m_mutex);
-    if (m_stem1vol == stem1vol) {
-        return;
-    }
-    //    if (stem1vol < -100 || stem1vol > 100) {
-    //        return;
-    //    }
-    m_stem1vol = stem1vol;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
-}
-
-void Cue::setStem2vol(int stem2vol) {
-    auto lock = lockMutex(&m_mutex);
-    if (m_stem2vol == stem2vol) {
-        return;
-    }
-    //    if (stem2vol < -100 || stem2vol > 100) {
-    //        return;
-    //    }
-    m_stem2vol = stem2vol;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
-}
-
-void Cue::setStem3vol(int stem3vol) {
-    auto lock = lockMutex(&m_mutex);
-    if (m_stem3vol == stem3vol) {
-        return;
-    }
-    //    if (stem3vol < -100 || stem1vo3 > 100) {
-    //        return;
-    //    }
-    m_stem3vol = stem3vol;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
-}
-
-void Cue::setStem4vol(int stem4vol) {
-    auto lock = lockMutex(&m_mutex);
-    if (m_stem4vol == stem4vol) {
-        return;
-    }
-    //    if (stem4vol < -100 || stem4vol > 100) {
-    //        return;
-    //    }
-    m_stem4vol = stem4vol;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
 }
 
 QString Cue::getLabel() const {
