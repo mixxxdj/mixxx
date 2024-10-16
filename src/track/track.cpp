@@ -68,10 +68,10 @@ constexpr int kQuickBeatChangeDeltaMillis = 800;
 // Otherwise 3rd party software that picks up the currently
 // playing track from the main window and relies on this
 // formatting would stop working.
-// static
+//static
 const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 
-// static
+//static
 SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
         const UserSettings& userSettings) {
     return SyncTrackMetadataParams{
@@ -126,14 +126,14 @@ Track::~Track() {
     }
 }
 
-// static
+//static
 TrackPointer Track::newTemporary(
         mixxx::FileAccess fileAccess) {
     return std::make_shared<Track>(
             std::move(fileAccess));
 }
 
-// static
+//static
 TrackPointer Track::newDummy(
         const QString& filePath,
         TrackId trackId) {
@@ -680,7 +680,7 @@ void Track::setAlbum(const QString& s) {
     }
 }
 
-QString Track::getAlbumArtist() const {
+QString Track::getAlbumArtist()  const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getAlbumInfo().getArtist();
 }
@@ -694,7 +694,7 @@ void Track::setAlbumArtist(const QString& s) {
     }
 }
 
-QString Track::getYear() const {
+QString Track::getYear()  const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getYear();
 }
@@ -722,7 +722,7 @@ void Track::setComposer(const QString& s) {
     }
 }
 
-QString Track::getGrouping() const {
+QString Track::getGrouping()  const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getGrouping();
 }
@@ -736,12 +736,12 @@ void Track::setGrouping(const QString& s) {
     }
 }
 
-QString Track::getTrackNumber() const {
+QString Track::getTrackNumber()  const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getTrackNumber();
 }
 
-QString Track::getTrackTotal() const {
+QString Track::getTrackTotal()  const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getTrackTotal();
 }
@@ -893,7 +893,7 @@ void Track::initId(TrackId id) {
     // the object has been created.
     VERIFY_OR_DEBUG_ASSERT(!m_record.getId().isValid()) {
         kLogger.warning() << "Cannot change id from"
-                          << m_record.getId() << "to" << id;
+                << m_record.getId() << "to" << id;
         return; // abort
     }
     m_record.setId(id);
@@ -955,11 +955,7 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
                     Cue::kNoHotCue,
                     position,
                     mixxx::audio::kInvalidFramePos,
-                    mixxx::PredefinedColorPalettes::kDefaultCueColor,
-                    100,
-                    100,
-                    100,
-                    100));
+                    mixxx::PredefinedColorPalettes::kDefaultCueColor));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
@@ -1012,11 +1008,7 @@ CuePointer Track::createAndAddCue(
         int hotCueIndex,
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
-        mixxx::RgbColor color,
-        int stem1vol,
-        int stem2vol,
-        int stem3vol,
-        int stem4vol) {
+        mixxx::RgbColor color) {
     VERIFY_OR_DEBUG_ASSERT(hotCueIndex == Cue::kNoHotCue ||
             hotCueIndex >= mixxx::kFirstHotCueIndex) {
         return CuePointer{};
@@ -1029,11 +1021,7 @@ CuePointer Track::createAndAddCue(
             hotCueIndex,
             startPosition,
             endPosition,
-            color,
-            stem1vol,
-            stem2vol,
-            stem3vol,
-            stem4vol));
+            color));
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
@@ -1056,7 +1044,7 @@ CuePointer Track::findCueByType(mixxx::CueType type) const {
         return CuePointer();
     }
     auto locked = lockMutex(&m_qMutex);
-    for (const CuePointer& pCue : m_cuePoints) {
+    for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
             return pCue;
         }
@@ -1431,7 +1419,7 @@ int Track::getRating() const {
     return m_record.getRating();
 }
 
-void Track::setRating(int rating) {
+void Track::setRating (int rating) {
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(m_record.ptrRating(), rating)) {
         markDirtyAndUnlock(&locked);
@@ -1462,7 +1450,7 @@ Keys Track::getKeys() const {
 }
 
 void Track::setKey(mixxx::track::io::key::ChromaticKey key,
-        mixxx::track::io::key::Source keySource) {
+                   mixxx::track::io::key::Source keySource) {
     if (key == mixxx::track::io::key::INVALID) {
         return;
     }
@@ -1484,7 +1472,7 @@ QString Track::getKeyText() const {
 
 // normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
-        mixxx::track::io::key::Source keySource) {
+                       mixxx::track::io::key::Source keySource) {
     auto locked = lockMutex(&m_qMutex);
     if (m_record.updateGlobalKeyNormalizeText(keyText, keySource) == mixxx::UpdateResult::Updated) {
         afterKeysUpdated(&locked);
@@ -1687,8 +1675,8 @@ ExportTrackMetadataResult Track::exportMetadata(
             // to be updated.
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
-                        << "Skip exporting of unmodified track metadata into file:"
-                        << getLocation();
+                            << "Skip exporting of unmodified track metadata into file:"
+                            << getLocation();
             }
             // abort
             return ExportTrackMetadataResult::Skipped;
