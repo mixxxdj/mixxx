@@ -250,14 +250,6 @@ class BeatsPerBar {
   public:
     using value_t = std::uint32_t;
 
-    static BeatsPerBar valueFromUInt(unsigned int value) {
-        VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
-                value <= std::numeric_limits<value_t>::max()) {
-            return BeatsPerBar(0);
-        }
-        return BeatsPerBar(static_cast<value_t>(value));
-    }
-
   private:
     // The default value is invalid and indicates a missing or unknown value.
     static constexpr value_t kValueDefault = 4;

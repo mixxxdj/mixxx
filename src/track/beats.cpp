@@ -277,6 +277,11 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
             beatsPerBar = static_cast<mixxx::audio::BeatsPerBar>(
                     std::lround((std::floor(position - markerPosition) /
                             previousBeatLengthFrames)));
+            if (!beatsPerBar.isValid()) {
+                qWarning() << "Invalid bar definition found in the BeatMap:"
+                           << beatsPerBar << "- Ignoring";
+                beatsPerBar = kDefaultBeatsPerBar;
+            }
             continue;
         }
         audio::FrameDiff_t beatLengthFrames = position - beatPositions[i - 1];
@@ -1040,7 +1045,7 @@ std::optional<BeatsPointer> Beats::tryAdjustMarkerBarCount(
         markerIt = markers.emplace(markerIt,
                 marker.position(),
                 marker.beatsLength(),
-                mixxx::audio::BeatsPerBar::valueFromUInt(adjustedBeatsPerBar));
+                adjustedBeatsPerBar);
     }
 
     return fromBeatMarkers(m_sampleRate,
