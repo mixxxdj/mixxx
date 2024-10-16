@@ -12,12 +12,12 @@
 
 namespace {
 mixxx::Logger kLogger("AnalyzerThread");
+const ConfigKey kKbdEnabledCfgKey = ConfigKey("[Keyboard]", "Enabled");
 } // anonymous namespace
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
-        QLocale& locale,
-        QObject* parent,
-        const char* name)
+        const QLocale& locale,
+        QObject* parent)
         : QObject(parent),
 #ifndef __APPLE__
           m_altPressedWithoutKey(false),
@@ -26,13 +26,12 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
           m_locale(locale),
           m_enabled(false),
           m_autoReloader(RuntimeLoggingCategory(QStringLiteral("kbd_auto_reload"))) {
-    setObjectName(name);
-
-    // get enabled state
-    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
+    // Get the enabled state.
+    // Set the default if the key/value doesn't exist.
+    if (pConfig->getValueString(kKbdEnabledCfgKey).isEmpty()) {
+        pConfig->setValue(kKbdEnabledCfgKey, true);
     }
-    m_enabled = pConfig->getValue<bool>(ConfigKey("[Keyboard]", "Enabled"), true);
+    m_enabled = pConfig->getValue(kKbdEnabledCfgKey, true);
 
     createKeyboardConfig();
 
@@ -228,7 +227,7 @@ void KeyboardEventFilter::setEnabled(bool enabled) {
         kLogger.debug() << "Disable keyboard shortcuts/mappings";
     }
     m_enabled = enabled;
-    m_pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), enabled);
+    m_pConfig->setValue(kKbdEnabledCfgKey, enabled);
     // Shortcuts may be toggled off and on again to make Mixxx discover a new
     // Custom.kbd.cfg, so reload now.
     // Note: the other way around (removing a loaded Custom.kbd.cfg) is covered
@@ -281,8 +280,8 @@ const QString KeyboardEventFilter::buildShortcutString(
     }
 
     // translate shortcut to native text
-    QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText)
-                                     .toString(QKeySequence::NativeText);
+    const QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText)
+                                           .toString(QKeySequence::NativeText);
 
     QString shortcutTooltip;
     shortcutTooltip += tr("Shortcut");
@@ -314,6 +313,7 @@ void KeyboardEventFilter::updateMenuBarActionShortcuts() {
         it.next();
         const QString keyStr = m_pKbdConfig->getValue(it.value().first, it.value().second);
         auto* pAction = it.key();
+        DEBUG_ASSERT(pAction);
         pAction->setShortcut(QKeySequence(keyStr));
     }
 }
@@ -363,8 +363,4 @@ void KeyboardEventFilter::createKeyboardConfig() {
     // Mixxx.
     m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(keyboardFile);
     m_keySequenceToControlHash = m_pKbdConfig->transpose();
-}
-
-std::shared_ptr<ConfigObject<ConfigValueKbd>> KeyboardEventFilter::getKeyboardConfig() {
-    return m_pKbdConfig;
 }

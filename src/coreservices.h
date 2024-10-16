@@ -43,8 +43,6 @@ class CoreServices : public QObject {
         return m_pKeyboardEventFilter;
     }
 
-    std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const;
-
     std::shared_ptr<mixxx::ControlIndicatorTimer> getControlIndicatorTimer() const {
         return m_pControlIndicatorTimer;
     }

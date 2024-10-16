@@ -498,13 +498,8 @@ void CoreServices::initializeQMLSingletons() {
 
 void CoreServices::initializeKeyboard() {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
-
-    QLocale locale = inputLocale();
+    const QLocale locale = inputLocale();
     m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(pConfig, locale);
-}
-
-std::shared_ptr<ConfigObject<ConfigValueKbd>> CoreServices::getKeyboardConfig() const {
-    return m_pKeyboardEventFilter->getKeyboardConfig();
 }
 
 bool CoreServices::initializeDatabase() {

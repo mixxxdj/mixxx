@@ -19,16 +19,15 @@ class KeyboardEventFilter : public QObject {
     Q_OBJECT
   public:
     KeyboardEventFilter(UserSettingsPointer pConfig,
-            QLocale& locale,
-            QObject* parent = nullptr,
-            const char* name = nullptr);
+            const QLocale& locale,
+            QObject* parent = nullptr);
     virtual ~KeyboardEventFilter();
 
     bool eventFilter(QObject* obj, QEvent* e);
 
-    // Set the keyboard config object. KeyboardEventFilter does NOT take
-    // ownership of pKbdConfigObject.
-    std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig();
+    std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const {
+        return m_pKbdConfig;
+    };
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
@@ -109,6 +108,6 @@ class KeyboardEventFilter : public QObject {
     // during skin construction.
     QList<WBaseWidget*> m_widgets;
 
-    // Multi-hash of key sequence to
+    // Multi-hash of key sequence to ConfigKey
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 };
