@@ -73,7 +73,7 @@ class Cue : public QObject {
     void shiftPositionFrames(mixxx::audio::FrameDiff_t frameOffset);
 
     mixxx::audio::FrameDiff_t getLengthFrames() const;
-
+    int getHotCue() const;
     QString getLabel() const;
     void setLabel(const QString& label);
     mixxx::RgbColor getColor() const;
