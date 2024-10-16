@@ -7,6 +7,7 @@
 #include "util/parented_ptr.h"
 
 class Library;
+class SidebarModel;
 
 namespace mixxx {
 namespace qml {
@@ -16,6 +17,7 @@ class QmlLibraryTrackListModel;
 class QmlLibraryProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(mixxx::qml::QmlLibraryTrackListModel* model MEMBER m_pModelProperty CONSTANT)
+    Q_PROPERTY(SidebarModel* sidebarModel MEMBER m_pSidebarModelProperty CONSTANT)
     QML_NAMED_ELEMENT(Library)
     QML_SINGLETON
 
@@ -34,6 +36,7 @@ class QmlLibraryProxy : public QObject {
 
     /// This needs to be a plain pointer because it's used as a `Q_PROPERTY` member variable.
     QmlLibraryTrackListModel* m_pModelProperty;
+    SidebarModel* m_pSidebarModelProperty;
 };
 
 } // namespace qml
