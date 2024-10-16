@@ -231,7 +231,7 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
             value = value.nextSiblingElement("value")) {
         QString val = value.text();
         QColor color = QColor(value.attribute("color"));
-        m_options.append(Item{val, value.attribute("label", val), color});
+        m_options.emplace_back(Item{val, value.attribute("label", val), color});
         if (value.hasAttribute("default")) {
             m_defaultValue = pos;
         }
@@ -294,19 +294,12 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerColorSetting::LegacyControllerColorSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element) {
-    m_defaultValue = QColor(element.attribute("default"));
-    m_savedValue = m_defaultValue;
-    m_editedValue = m_defaultValue;
+        : AbstractLegacyControllerSetting(element),
+          m_defaultValue(QColor(element.attribute("default"))),
+          m_savedValue(m_defaultValue),
+          m_editedValue(m_defaultValue) {
     reset();
     save();
-}
-
-bool LegacyControllerColorSetting::match(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "color",
-                    Qt::CaseInsensitive) == 0;
 }
 
 void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
@@ -317,8 +310,10 @@ void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
     save();
 
     m_savedValue = QColor(in);
+    if (ok != nullptr) {
+        *ok = m_editedValue.isValid();
+    }
     if (!m_editedValue.isValid()) {
-        *ok = false;
         return;
     }
     m_editedValue = m_savedValue;
@@ -363,20 +358,13 @@ QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerFileSetting::LegacyControllerFileSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element) {
-    m_defaultValue = QFileInfo(element.attribute("default"));
-    m_fileFilter = element.attribute("pattern");
-    m_savedValue = m_defaultValue;
-    m_editedValue = m_defaultValue;
+        : AbstractLegacyControllerSetting(element),
+          m_fileFilter(element.attribute("pattern")),
+          m_defaultValue(QFileInfo(element.attribute("default"))),
+          m_savedValue(m_defaultValue),
+          m_editedValue(m_defaultValue) {
     reset();
     save();
-}
-
-bool LegacyControllerFileSetting::match(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "file",
-                    Qt::CaseInsensitive) == 0;
 }
 
 void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
@@ -387,8 +375,10 @@ void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
     save();
 
     m_editedValue = QFileInfo(in);
+    if (ok != nullptr) {
+        *ok = m_editedValue.exists();
+    }
     if (!m_editedValue.exists()) {
-        *ok = false;
         return;
     }
     m_savedValue = m_editedValue;

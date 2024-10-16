@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QColor>
 #include <QFileInfo>
 #include <QJSValue>
@@ -437,7 +439,7 @@ class LegacyControllerColorSetting
   public:
     LegacyControllerColorSetting(const QDomElement& element);
 
-    virtual ~LegacyControllerColorSetting() = default;
+    ~LegacyControllerColorSetting() override;
 
     QJSValue value() const override {
         return QJSValue(stringify());
@@ -475,27 +477,32 @@ class LegacyControllerColorSetting
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerColorSetting(element);
     }
-    static inline bool match(const QDomElement& element);
+    static inline bool match(const QDomElement& element) {
+        return element.hasAttribute("type") &&
+                QString::compare(element.attribute("type"),
+                        "color",
+                        Qt::CaseInsensitive) == 0;
+    }
 
   protected:
     LegacyControllerColorSetting(const QDomElement& element,
             QColor currentValue,
             QColor defaultValue)
             : AbstractLegacyControllerSetting(element),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
+              m_defaultValue(defaultValue),
+              m_savedValue(currentValue) {
     }
 
     virtual QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
-    QColor m_savedValue;
     QColor m_defaultValue;
+    QColor m_savedValue;
 
     QColor m_editedValue;
 
-    friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
-    friend class ControllerS4MK3SettingTest_ensureLibrarySettingValueAndEnumEquals;
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
 };
 
 class LegacyControllerFileSetting
@@ -541,29 +548,33 @@ class LegacyControllerFileSetting
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerFileSetting(element);
     }
-    static inline bool match(const QDomElement& element);
+    static inline bool match(const QDomElement& element) {
+        return element.hasAttribute("type") &&
+                QString::compare(element.attribute("type"),
+                        "file",
+                        Qt::CaseInsensitive) == 0;
+    }
 
   protected:
     LegacyControllerFileSetting(const QDomElement& element,
             const QFileInfo& currentValue,
             const QFileInfo& defaultValue)
             : AbstractLegacyControllerSetting(element),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
+              m_defaultValue(defaultValue),
+              m_savedValue(currentValue) {
     }
 
     virtual QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
-    QFileInfo m_savedValue;
-    QFileInfo m_defaultValue;
-
     QString m_fileFilter;
+    QFileInfo m_defaultValue;
+    QFileInfo m_savedValue;
 
     QFileInfo m_editedValue;
 
-    friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
-    friend class ControllerS4MK3SettingTest_ensureLibrarySettingValueAndEnumEquals;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
 };
 
 template<>
