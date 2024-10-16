@@ -241,7 +241,7 @@ void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
     // to remove duplicate keys or else we'll duplicate those values.
     auto sortedInputKeys = mapping.getInputMappings().uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
-    for (const auto& key : sortedInputKeys) {
+    for (const auto& key : std::as_const(sortedInputKeys)) {
         for (auto it = mapping.getInputMappings().constFind(key);
                 it != mapping.getInputMappings().constEnd() && it.key() == key;
                 ++it) {
@@ -255,7 +255,7 @@ void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
     QDomElement outputs = doc->createElement("outputs");
     auto sortedOutputKeys = mapping.getOutputMappings().uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
-    for (const auto& key : sortedOutputKeys) {
+    for (const auto& key : std::as_const(sortedOutputKeys)) {
         for (auto it = mapping.getOutputMappings().constFind(key);
                 it != mapping.getOutputMappings().constEnd() && it.key() == key;
                 ++it) {

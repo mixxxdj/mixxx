@@ -661,7 +661,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                "position as loop end") +
             noBeatsSeconds;
 
-    QList<double> beatSizes = LoopingControl::getBeatSizes();
+    const QList<double> beatSizes = LoopingControl::getBeatSizes();
 
     QMap<double, QString> humanBeatSizes;
     humanBeatSizes[0.03125] = tr("1/32");

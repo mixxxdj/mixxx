@@ -129,13 +129,13 @@ void WEffectChainPresetButton::populateMenu() {
                 effectSlotNumPrefix + pEffectSlot->getManifest()->displayName(),
                 m_pMenu);
 
-        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
-        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
         int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NumTypes);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
                     static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
-            for (const auto& pParameter : loadedParameters.value(parameterType)) {
+
+            const auto& loadedParameters = pEffectSlot->getLoadedParameters().value(parameterType);
+            for (const auto& pParameter : loadedParameters) {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(true);
                 pCheckbox->setText(pParameter->manifest()->name());
@@ -154,7 +154,8 @@ void WEffectChainPresetButton::populateMenu() {
                 pEffectMenu->addAction(pAction.get());
             }
 
-            for (const auto& pParameter : hiddenParameters.value(parameterType)) {
+            const auto& hiddenParameters = pEffectSlot->getHiddenParameters().value(parameterType);
+            for (const auto& pParameter : hiddenParameters) {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(false);
                 pCheckbox->setText(pParameter->manifest()->name());

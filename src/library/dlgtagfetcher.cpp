@@ -246,30 +246,31 @@ void DlgTagFetcher::slotPrev() {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
+    tags->clear();
+    m_data = Data();
     if (m_pTrack) {
-        tags->clear();
         disconnect(m_pTrack.get(),
                 &Track::changed,
                 this,
                 &DlgTagFetcher::slotTrackChanged);
-        m_data = Data();
     }
-    tags->clear();
 
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
 
     m_coverCache.clear();
-
-    m_pTrack = pTrack;
-    if (!m_pTrack) {
-        return;
-    }
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
     checkBoxTags->setDisabled(true);
     checkBoxCover->setDisabled(true);
     statusMessage->setVisible(false);
+
+    m_pTrack = pTrack;
+    if (!m_pTrack) {
+        loadingProgressBar->setVisible(false);
+        return;
+    }
+
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     loadingProgressBar->setToolTip(QString());

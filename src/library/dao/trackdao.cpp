@@ -124,7 +124,7 @@ void TrackDAO::finish() {
     // Do housekeeping on the LibraryHashes/track_locations tables.
     qDebug() << "Cleaning LibraryHashes/track_locations tables.";
     SqlTransaction transaction(m_database);
-    QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
+    const QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
 
     // Delete any LibraryHashes directories that have been marked as deleted.
     m_libraryHashDao.removeDeletedDirectoryHashes();
@@ -132,7 +132,7 @@ void TrackDAO::finish() {
     // And mark the corresponding tracks in track_locations in the deleted
     // directories as deleted.
     // TODO(XXX) This doesn't handle sub-directories of deleted directories.
-    for (const auto& dir: deletedHashDirs) {
+    for (const auto& dir : deletedHashDirs) {
         markTrackLocationsAsDeleted(m_database, dir);
     }
     transaction.commit();
