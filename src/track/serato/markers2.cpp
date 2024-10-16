@@ -615,10 +615,6 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 pCueEntry->getIndex(),
                 pCueEntry->getLabel(),
                 pCueEntry->getColor().toDisplayedColor(),
-                100,
-                100,
-                100,
-                100,
                 CueFlag::None);
         cueInfos.append(cueInfo);
     }
@@ -642,10 +638,6 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 pLoopEntry->getIndex(),
                 pLoopEntry->getLabel(),
                 std::nullopt, // Serato's Loops don't have a color
-                100,
-                100,
-                100,
-                100,
                 pLoopEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
         // TODO: Add support for "locked" loops
         cueInfos.append(loopInfo);
