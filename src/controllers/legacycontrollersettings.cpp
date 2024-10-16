@@ -302,6 +302,8 @@ LegacyControllerColorSetting::LegacyControllerColorSetting(
     save();
 }
 
+LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
+
 void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
     if (ok != nullptr) {
         *ok = false;
