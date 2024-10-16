@@ -123,6 +123,9 @@ class ColumnCache : public QObject {
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
     // A mapping from column enum to logical index.
+    // Columns in the enums but not in the table are marked by -1
+    // Note: There might be (hidden) columns in the table tracked with
+    // m_columnIndexByName but without a corresponding enum.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
     ControlProxy* m_pKeyNotationCP;
