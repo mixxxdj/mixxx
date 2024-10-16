@@ -776,9 +776,9 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 void MixxxMainWindow::createMenuBar() {
     qWarning() << "     $ createMenuBar";
     ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
-    DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
+    DEBUG_ASSERT(m_pCoreServices->getKeyboardEventFilter());
     m_pMenuBar = make_parented<WMainMenuBar>(
-            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
+            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardEventFilter());
     if (m_pCentralWidget) {
         m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
@@ -833,13 +833,6 @@ void MixxxMainWindow::connectMenuBar() {
             Qt::UniqueConnection);
     // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
     m_pMenuBar->onFullScreenStateChange(isFullScreen());
-
-    // Keyboard shortcuts
-    connect(m_pMenuBar,
-            &WMainMenuBar::toggleKeyboardShortcuts,
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::slotOptionsKeyboard,
-            Qt::UniqueConnection);
 
     // Help
     connect(m_pMenuBar,
