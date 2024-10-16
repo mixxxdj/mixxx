@@ -62,12 +62,6 @@ class WCueMenuPopup : public QWidget {
 
   private slots:
     void slotEditLabel();
-    // EVE
-    void slotEditStem1vol();
-    void slotEditStem2vol();
-    void slotEditStem3vol();
-    void slotEditStem4vol();
-    // EVE
     void slotDeleteCue();
     void slotUpdate();
     /// This slot is called when the saved loop button is being left pressed,
