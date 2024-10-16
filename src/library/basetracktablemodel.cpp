@@ -1115,7 +1115,7 @@ void BaseTrackTableModel::slotRefreshCoverRows(
     if (rows.isEmpty()) {
         return;
     }
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    const int column = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }
