@@ -2767,6 +2767,7 @@ if(QML)
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
+      res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
   target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
@@ -2789,6 +2790,8 @@ if(QML)
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlchainpresetmodel.cpp
     src/qml/qmlwaveformoverview.cpp
+    src/qml/qmlwaveformdisplay.cpp
+    src/waveform/renderers/waveformdisplayrange.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
