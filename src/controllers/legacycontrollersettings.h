@@ -184,7 +184,7 @@ class LegacyControllerBooleanSetting
     bool m_defaultValue;
     bool m_editedValue;
 
-    friend class LegacyControllerMappingSettingsTest_booleanSettingEditing_Test;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, booleanSettingEditing);
 };
 
 template<class SettingType>
@@ -301,8 +301,8 @@ class LegacyControllerNumberSetting
 
     SettingType m_editedValue;
 
-    friend class LegacyControllerMappingSettingsTest_integerSettingEditing_Test;
-    friend class LegacyControllerMappingSettingsTest_doubleSettingEditing_Test;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, integerSettingEditing);
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, doubleSettingEditing);
 };
 
 template<class T>
@@ -429,8 +429,8 @@ class LegacyControllerEnumSetting
 
     size_t m_editedValue;
 
-    friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
-    friend class ControllerS4MK3SettingTest_ensureLibrarySettingValueAndEnumEquals;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
 };
 
 class LegacyControllerColorSetting
