@@ -57,7 +57,7 @@ Cue::Cue(
           m_startPosition(position),
           m_iHotCue(hotCue),
           m_label(label),
-          m_color(color)) {
+          m_color(color) {
     DEBUG_ASSERT(m_dbId.isValid());
     if (length != 0) {
         if (position.isValid()) {
