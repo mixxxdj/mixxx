@@ -21,6 +21,7 @@
 #include "controllers/softtakeover.h"
 #include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlmixxxcontroller.h"
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
@@ -81,15 +82,11 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
     }
 
 #ifdef MIXXX_USE_QML
-    QHash<QString, TransformScreenFrameFunction>& transformScreenFrameFunctions() {
-        return m_transformScreenFrameFunctions;
-    }
-
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>>& renderingScreens() {
         return m_renderingScreens;
     }
 
-    QHash<QString, std::shared_ptr<QQuickItem>>& rootItems() {
+    QHash<QString, mixxx::qml::QmlMixxxController*>& rootItems() {
         return m_rootItems;
     }
 
@@ -98,11 +95,6 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
             const QImage& frame,
             const QDateTime& timestamp) {
         handleScreenFrame(screeninfo, frame, timestamp);
-    }
-
-    TransformScreenFrameFunction newTransformScreenFrameFunction(
-            QMetaMethod method, bool typed) const {
-        return TransformScreenFrameFunction{method, typed};
     }
 #endif
 };
@@ -693,13 +685,8 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
             "Could not find a valid transform function but the screen doesn't "
             "accept raw data. Aborting screen rendering.");
 
-    transformScreenFrameFunctions().insert(
-            dummyScreen.identifier,
-            newTransformScreenFrameFunction(
-                    QMetaMethod(),
-                    false));
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, std::make_shared<QQuickItem>());
+    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxController());
 
     testHandleScreen(
             dummyScreen,
@@ -729,13 +716,8 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
             std::make_shared<MockScreenRender>(dummyScreen);
     EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
-    transformScreenFrameFunctions().insert(
-            dummyScreen.identifier,
-            newTransformScreenFrameFunction(
-                    QMetaMethod(),
-                    false));
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, std::make_shared<QQuickItem>());
+    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxController());
 
     testHandleScreen(
             dummyScreen,
