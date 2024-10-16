@@ -46,10 +46,6 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     int hotcue = row.value(row.indexOf("hotcue")).toInt();
     QString label = labelFromQVariant(row.value(row.indexOf("label")));
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(row.value(row.indexOf("color")));
-    int stem1vol = row.value(row.indexOf("stem1vol")).toInt();
-    int stem2vol = row.value(row.indexOf("stem2vol")).toInt();
-    int stem3vol = row.value(row.indexOf("stem3vol")).toInt();
-    int stem4vol = row.value(row.indexOf("stem4vol")).toInt();
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
     }
@@ -71,11 +67,7 @@ CuePointer cueFromRow(const QSqlRecord& row) {
             lengthFrames,
             hotcue,
             label,
-            *color,
-            stem1vol,
-            stem2vol,
-            stem3vol,
-            stem4vol));
+            *color));
     return pCue;
 }
 
@@ -173,11 +165,7 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
                                      "length=:length,"
                                      "hotcue=:hotcue,"
                                      "label=:label,"
-                                     "color=:color,"
-                                     "stem1vol=:stem1vol,"
-                                     "stem2vol=:stem2vol,"
-                                     "stem3vol=:stem3vol,"
-                                     "stem4vol=:stem4vol"
+                                     "color=:color"
                                      " WHERE id=:id"));
         query.bindValue(":id", cue->getId().toVariant());
     } else {
@@ -185,10 +173,8 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
         query.prepare(
                 QStringLiteral("INSERT INTO " CUE_TABLE
                                " (track_id, type, position, length, hotcue, "
-                               "label, color, stem1vol, stem2vol, stem3vol, "
-                               "stem4vol) VALUES (:track_id, :type, "
-                               ":position, :length, :hotcue, :label, :color, "
-                               ":stem1vol, :stem2vol, :stem3vol, :stem4vol)"));
+                               "label, color) VALUES (:track_id, :type, "
+                               ":position, :length, :hotcue, :label, :color)"));
     }
 
     // Bind values and execute query
@@ -198,11 +184,7 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     query.bindValue(":length", cue->getLengthFrames() * mixxx::kEngineChannelOutputCount);
     query.bindValue(":hotcue", cue->getHotCue());
     query.bindValue(":label", labelToQVariant(cue->getLabel()));
-    query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor())),
-            query.bindValue(":stem1vol", static_cast<int>(cue->getStem1vol())),
-            query.bindValue(":stem2vol", static_cast<int>(cue->getStem2vol())),
-            query.bindValue(":stem3vol", static_cast<int>(cue->getStem3vol())),
-            query.bindValue(":stem4vol", static_cast<int>(cue->getStem4vol()));
+    query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
