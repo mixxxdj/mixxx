@@ -141,7 +141,8 @@ class Controller : public QObject {
 
   public:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
-    // controller. Return true in case of successful completion, false in case of failure.
+    // controller. Return true in case of successful completion, false in case
+    // of partial completion or failure.
     virtual bool sendBytes(const QByteArray& data) = 0;
 
   private: // but used by ControllerManager

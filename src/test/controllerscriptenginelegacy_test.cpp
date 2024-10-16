@@ -56,6 +56,12 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
 
     void TearDown() override {
         mixxx::Time::setTestMode(false);
+#ifdef MIXXX_USE_QML
+        for (auto& item : m_rootItems) {
+            delete item;
+        }
+        m_rootItems.clear();
+#endif
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
@@ -86,7 +92,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         return m_renderingScreens;
     }
 
-    QHash<QString, mixxx::qml::QmlMixxxController*>& rootItems() {
+    QHash<QString, mixxx::qml::QmlMixxxControllerScreen*>& rootItems() {
         return m_rootItems;
     }
 
@@ -686,7 +692,7 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
             "accept raw data. Aborting screen rendering.");
 
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxController());
+    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxControllerScreen());
 
     testHandleScreen(
             dummyScreen,
@@ -717,7 +723,7 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
     EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxController());
+    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxControllerScreen());
 
     testHandleScreen(
             dummyScreen,

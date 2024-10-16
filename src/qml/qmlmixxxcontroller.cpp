@@ -8,11 +8,11 @@
 namespace mixxx {
 namespace qml {
 
-QmlMixxxController::QmlMixxxController(QQuickItem* parent)
+QmlMixxxControllerScreen::QmlMixxxControllerScreen(QQuickItem* parent)
         : QQuickItem(parent) {
 }
 
-void QmlMixxxController::setTransform(const QJSValue& value) {
+void QmlMixxxControllerScreen::setTransform(const QJSValue& value) {
     if (!value.isCallable()) {
         return;
     }
@@ -20,7 +20,7 @@ void QmlMixxxController::setTransform(const QJSValue& value) {
     emit transformChanged();
 }
 
-void QmlMixxxController::setInit(const QJSValue& value) {
+void QmlMixxxControllerScreen::setInit(const QJSValue& value) {
     if (!value.isCallable()) {
         return;
     }
@@ -28,7 +28,7 @@ void QmlMixxxController::setInit(const QJSValue& value) {
     emit initChanged();
 }
 
-void QmlMixxxController::setShutdown(const QJSValue& value) {
+void QmlMixxxControllerScreen::setShutdown(const QJSValue& value) {
     if (!value.isCallable()) {
         return;
     }

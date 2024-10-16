@@ -7,7 +7,7 @@
 namespace mixxx {
 namespace qml {
 
-class QmlMixxxController : public QQuickItem {
+class QmlMixxxControllerScreen : public QQuickItem {
     Q_OBJECT
     QML_NAMED_ELEMENT(Controller)
     Q_PROPERTY(QJSValue init READ getInit WRITE setInit
@@ -18,7 +18,7 @@ class QmlMixxxController : public QQuickItem {
                     NOTIFY transformChanged REQUIRED);
 
   public:
-    explicit QmlMixxxController(QQuickItem* parent = nullptr);
+    explicit QmlMixxxControllerScreen(QQuickItem* parent = nullptr);
 
     void setInit(const QJSValue& value);
     void setShutdown(const QJSValue& value);

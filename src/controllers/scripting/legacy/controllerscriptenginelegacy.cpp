@@ -114,11 +114,11 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 #ifdef MIXXX_USE_QML
     } else {
-        QHashIterator<QString, mixxx::qml::QmlMixxxController*> i(m_rootItems);
+        QHashIterator<QString, mixxx::qml::QmlMixxxControllerScreen*> i(m_rootItems);
         bool success = true;
         while (i.hasNext()) {
             i.next();
-            auto& screen = i.value();
+            const auto& screen = i.value();
             const QString& screenIdentifier = i.key();
 
             if (!screen->getShutdown().isCallable()) {
@@ -148,9 +148,8 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
 }
 bool ControllerScriptEngineLegacy::callInitFunction() {
     // m_pController is nullptr in tests.
-    const auto controllerName = m_pController ? m_pController->getName() : QString{};
     const auto args = QJSValueList{
-            controllerName,
+            m_pController ? m_pController->getName() : QString{},
             m_logger().isDebugEnabled(),
     };
 
@@ -160,10 +159,10 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
 #ifdef MIXXX_USE_QML
     } else {
-        QHashIterator<QString, mixxx::qml::QmlMixxxController*> i(m_rootItems);
+        QHashIterator<QString, mixxx::qml::QmlMixxxControllerScreen*> i(m_rootItems);
         while (i.hasNext()) {
             i.next();
-            auto& screen = i.value();
+            const auto& screen = i.value();
             const QString& screenIdentifier = i.key();
 
             if (!screen->getInit().isCallable()) {
@@ -481,7 +480,7 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
     // evaluating it.
     watchFilePath(qmlFile.file.absoluteFilePath());
 
-    auto pScene = loadQMLFile(qmlFile, pScreen);
+    auto* pScene = loadQMLFile(qmlFile, pScreen);
     if (!pScene) {
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {
@@ -520,7 +519,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         return;
     };
 
-    auto screen = m_rootItems.value(screenInfo.identifier);
+    auto* pScreen = m_rootItems.value(screenInfo.identifier);
 
     if (CmdlineArgs::Instance().getControllerPreviewScreens()) {
         QImage screenDebug(frame);
@@ -550,12 +549,12 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     // compilers that don't support it (e.g. older than Xcode 14.3/macOS 13)
     QByteArray input(reinterpret_cast<const char*>(frame.constBits()), frame.sizeInBytes());
 
-    if (!screen->getTransform().isCallable() && screenInfo.rawData) {
+    if (!pScreen->getTransform().isCallable() && screenInfo.rawData) {
         m_renderingScreens[screenInfo.identifier]->requestSendingFrameData(m_pController, input);
         return;
     }
 
-    if (!screen->getTransform().isCallable()) {
+    if (!pScreen->getTransform().isCallable()) {
         qCWarning(m_logger)
                 << "Could not find a valid transform function but the screen "
                    "doesn't accept raw data. Aborting screen rendering.";
@@ -569,7 +568,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     }
     // During the frame transformation, any QML errors are considered fatal.
     setErrorsAreFatal(true);
-    auto result = screen->getTransform().call(
+    auto result = pScreen->getTransform().call(
             QJSValueList{m_pJSEngine->toScriptValue(input),
                     m_pJSEngine->toScriptValue(timestamp)});
     if (result.isError()) {
@@ -743,7 +742,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
 }
 
 #ifdef MIXXX_USE_QML
-mixxx::qml::QmlMixxxController* ControllerScriptEngineLegacy::loadQMLFile(
+mixxx::qml::QmlMixxxControllerScreen* ControllerScriptEngineLegacy::loadQMLFile(
         const LegacyControllerMapping::ScriptFileInfo& qmlScript,
         std::shared_ptr<ControllerRenderingEngine> pScreen) {
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
@@ -804,8 +803,8 @@ mixxx::qml::QmlMixxxController* ControllerScriptEngineLegacy::loadQMLFile(
         return nullptr;
     }
 
-    mixxx::qml::QmlMixxxController* rootItem =
-            qobject_cast<mixxx::qml::QmlMixxxController*>(pRootObject);
+    mixxx::qml::QmlMixxxControllerScreen* rootItem =
+            qobject_cast<mixxx::qml::QmlMixxxControllerScreen*>(pRootObject);
     if (!rootItem) {
         qWarning("run: Not a QQuickItem");
         delete pRootObject;
