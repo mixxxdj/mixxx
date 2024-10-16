@@ -390,15 +390,18 @@ QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
     auto* pWidget = new QWidget(pParent);
     pWidget->setLayout(new QHBoxLayout);
     auto* pPushButton = new QPushButton(tr("Browse..."), pWidget);
-    auto* pLabel = new QLabel(QStringLiteral("<i>%1</i>").arg(tr("No file selected")), pWidget);
+    auto* pLabel = new QLabel(pWidget);
+    auto setLabelText = [pLabel](QString&& text) {
+        pLabel->setText(QStringLiteral("<i>%1</i>").arg(text));
+    };
     pWidget->layout()->addWidget(pLabel);
     pWidget->layout()->addWidget(pPushButton);
 
-    connect(this, &AbstractLegacyControllerSetting::valueReset, pLabel, [this, pLabel]() {
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pLabel, [this, setLabelText]() {
         if (m_editedValue.exists()) {
-            pLabel->setText(QStringLiteral("<i>%1</i>").arg(m_editedValue.absoluteFilePath()));
+            setLabelText(m_editedValue.absoluteFilePath());
         } else {
-            pLabel->setText(QStringLiteral("<i>%1</i>").arg(tr("No file selected")));
+            setLabelText(tr("No file selected"));
         }
     });
 
@@ -418,7 +421,9 @@ QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
             });
 
     if (m_savedValue.exists()) {
-        pLabel->setText(QStringLiteral("<i>%1</i>").arg(m_savedValue.absoluteFilePath()));
+        setLabelText(m_savedValue.absoluteFilePath());
+    } else {
+        setLabelText(tr("No file selected"));
     }
 
     return pWidget;
