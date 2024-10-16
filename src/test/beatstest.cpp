@@ -13,6 +13,7 @@ namespace {
 
 constexpr auto kBpm = Bpm(120.0);
 constexpr auto kSampleRate = audio::SampleRate(48000);
+constexpr auto kBeatsPerBar = audio::BeatsPerBar(4);
 constexpr auto kStartPosition = audio::FramePos(400);
 const auto kEndPosition = kStartPosition + 24 * kSampleRate.value();
 constexpr double kMaxBeatError = 1e-9;
@@ -20,17 +21,22 @@ constexpr double kMaxBeatError = 1e-9;
 const auto kConstTempoBeats = Beats(
         kStartPosition,
         kBpm,
+        kBeatsPerBar,
         kSampleRate,
         QString());
 
 // Create beats with 8 beats at 120 BPM, then 16 beats at 60 Bpm, followed by 120 BPM.
 const auto kNonConstTempoBeats = Beats(
         std::vector<BeatMarker>{
-                BeatMarker{kStartPosition, 8},
-                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2, 16},
+                BeatMarker{
+                        kStartPosition, (60 * kSampleRate) / 120, kBeatsPerBar},
+                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2,
+                        (60 * kSampleRate) / 60,
+                        kBeatsPerBar},
         },
         kStartPosition + 8 * kSampleRate.value() / 2 + 16 * kSampleRate.value(),
         kBpm,
+        kBeatsPerBar,
         kSampleRate,
         QString());
 
@@ -435,15 +441,15 @@ TEST(BeatsTest, NonConstTempoFromBeatPositions) {
     ASSERT_EQ(3, markers.size());
 
     EXPECT_DOUBLE_EQ(kStartPosition.value(), markers[0].position().value());
-    EXPECT_EQ(8, markers[0].beatsTillNextMarker());
+    EXPECT_EQ(8, markers[0].beatsUntilPositionExtrapolated(markers[1].position()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 8 * beatLengthFrames).value(),
             markers[1].position().value());
-    EXPECT_EQ(16, markers[1].beatsTillNextMarker());
+    EXPECT_EQ(16, markers[1].beatsUntilPositionExtrapolated(markers[2].position()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 40 * beatLengthFrames).value(),
             markers[2].position().value());
-    EXPECT_EQ(16, markers[2].beatsTillNextMarker());
+    EXPECT_EQ(16, markers[2].beatsUntilPositionExtrapolated(beatPositions.last()));
 
     EXPECT_DOUBLE_EQ((kStartPosition + 48 * beatLengthFrames).value(),
             pBeats->getLastMarkerPosition().value());
@@ -535,6 +541,107 @@ TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
     kConstTempoBeats.findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_NEAR(previousBeat.value(), foundPrevBeat.value(), kMaxBeatError);
     EXPECT_NEAR(nextBeat.value(), foundNextBeat.value(), kMaxBeatError);
+}
+
+TEST(BeatsTest, FractionalBeats) {
+    auto secondMarkerPosition = kStartPosition + 4 * (60 * kSampleRate) / 120 + 4800;
+    auto lastMarkerPosition = kStartPosition + 4 * kSampleRate.value() / 2 +
+            4 * kSampleRate.value() - 4800;
+
+    // This is what the beat grid looks like (|| == marker, >/< track start/end)
+    // >.||....|....|....|....|.||........|........|........|.......<||
+    const auto tempoBeats = Beats(
+            std::vector<BeatMarker>{
+                    BeatMarker{kStartPosition,
+                            (60 * kSampleRate) / 120,
+                            mixxx::audio::BeatsPerBar(4)},
+                    BeatMarker{secondMarkerPosition,
+                            (60 * kSampleRate) / 60,
+                            mixxx::audio::BeatsPerBar(4)},
+            },
+            lastMarkerPosition,
+            kBpm,
+            4,
+            kSampleRate,
+            QString());
+
+    auto it = tempoBeats.cfirstmarker();
+    EXPECT_EQ(*it, kStartPosition);
+    EXPECT_EQ(*(++it), kStartPosition + 24000);
+    EXPECT_EQ(*(++it), kStartPosition + 48000);
+    EXPECT_EQ(*(++it), kStartPosition + 72000);
+    EXPECT_EQ(*(++it), kStartPosition + 96000);
+    EXPECT_EQ(*(++it), secondMarkerPosition);
+    EXPECT_EQ(*(++it), secondMarkerPosition + 48000);
+    EXPECT_EQ(*(++it), secondMarkerPosition + 96000);
+    EXPECT_EQ(*(++it), secondMarkerPosition + 144000);
+    EXPECT_EQ(*(++it), lastMarkerPosition);
+    EXPECT_EQ(it, tempoBeats.clastmarker());
+    EXPECT_EQ(*(--it), secondMarkerPosition + 144000);
+    EXPECT_EQ(*(--it), secondMarkerPosition + 96000);
+    EXPECT_EQ(*(--it), secondMarkerPosition + 48000);
+    EXPECT_EQ(*(--it), secondMarkerPosition);
+    EXPECT_EQ(*(--it), kStartPosition + 96000);
+    EXPECT_EQ(*(--it), kStartPosition + 72000);
+    EXPECT_EQ(*(--it), kStartPosition + 48000);
+    EXPECT_EQ(*(--it), kStartPosition + 24000);
+    EXPECT_EQ(*(--it), kStartPosition);
+    EXPECT_EQ(it, tempoBeats.cfirstmarker());
+
+    EXPECT_EQ(*tempoBeats.iteratorFrom(mixxx::audio::FramePos(-1)), kStartPosition);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 24000), kStartPosition + 24000);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 24001), kStartPosition + 48000);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 96000), kStartPosition + 96000);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(kStartPosition + 96001), secondMarkerPosition);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(secondMarkerPosition - 1), secondMarkerPosition);
+    EXPECT_EQ(*tempoBeats.iteratorFrom(secondMarkerPosition + 1), secondMarkerPosition + 48000);
+}
+
+TEST(BeatsTest, MultipleBeatsPerBar) {
+    const auto tempoBeats = Beats(
+            std::vector<BeatMarker>{
+                    BeatMarker{kStartPosition,
+                            (60 * kSampleRate) / 120,
+                            mixxx::audio::BeatsPerBar(4)},
+                    BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2,
+                            (60 * kSampleRate) / 60,
+                            mixxx::audio::BeatsPerBar(3)},
+            },
+            kStartPosition + 8 * kSampleRate.value() / 2 +
+                    16 * kSampleRate.value(),
+            kBpm,
+            2,
+            kSampleRate,
+            QString());
+
+    ASSERT_EQ(tempoBeats.iteratorFrom(kStartPosition).beatsPerBar(), 4);
+    ASSERT_EQ(
+            tempoBeats
+                    .iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2)
+                    .beatsPerBar(),
+            3);
+    ASSERT_EQ(tempoBeats.iteratorFrom(mixxx::audio::FramePos(0)).beatsPerBar(), 4);
+    ASSERT_EQ(
+            tempoBeats
+                    .iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2 +
+                            16 * kSampleRate.value())
+                    .beatsPerBar(),
+            2);
+
+    const QByteArray byteArray = tempoBeats.toByteArray();
+
+    auto pBeats = Beats::fromByteArray(
+            kSampleRate, BEAT_MAP_VERSION, QString(), byteArray);
+    ASSERT_NE(nullptr, pBeats);
+
+    ASSERT_EQ(pBeats->iteratorFrom(kStartPosition).beatsPerBar(), 4);
+    ASSERT_EQ(pBeats->iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2).beatsPerBar(), 3);
+    ASSERT_EQ(pBeats->iteratorFrom(mixxx::audio::FramePos(0)).beatsPerBar(), 4);
+    ASSERT_EQ(
+            pBeats->iteratorFrom(kStartPosition + 8 * kSampleRate.value() / 2 +
+                          16 * kSampleRate.value())
+                    .beatsPerBar(),
+            2);
 }
 
 } // namespace
