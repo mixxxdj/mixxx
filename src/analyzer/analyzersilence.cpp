@@ -106,11 +106,13 @@ SINT AnalyzerSilence::findLastFadeInChunk(std::span<const CSAMPLE> samples) {
 // Find the number of last sound sample where the sound is above kFadeOutThreshold (-12db)
 SINT AnalyzerSilence::findFirstFadeOutChunk(std::span<const CSAMPLE> samples) {
     // Note we are searching backwards from the end here.
-    SINT ret = std::distance(
-                       find_first_above_threshold(samples.rbegin(), samples.rend(), kFadeOutThreshold),
+    SINT ret = std::distance(find_first_above_threshold(samples.rbegin(),
+                                     samples.rend(),
+                                     kFadeOutThreshold),
                        samples.rend()) -
             1;
-    // if we don't find it (track only partially loaded - and/or pathological) give us the track size.
+    // if we don't find it (track only partially loaded - and/or pathological)
+    // give us the track size.
     if (ret == -1) {
         ret = samples.size();
     }
