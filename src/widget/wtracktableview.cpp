@@ -795,7 +795,7 @@ QModelIndexList WTrackTableView::getSelectedRows() const {
 }
 
 QList<int> WTrackTableView::getSelectedRowNumbers() const {
-    QModelIndexList indices = getSelectedRows();
+    const QModelIndexList indices = getSelectedRows();
     QList<int> selectedRows;
     for (const QModelIndex& idx : indices) {
         selectedRows.append(idx.row());

@@ -1147,6 +1147,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/util/autofilereloader.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/clipboard.cpp
@@ -2791,6 +2792,8 @@ if(QML)
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
+    # needed for qml/qmlautoreload.cpp
+    src/util/autofilereloader.cpp
   )
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
