@@ -1,12 +1,8 @@
 #pragma once
 
-#include <unicode/ucnv.h>
-#include <unicode/unistr.h>
-
 #include <QElapsedTimer>
 
 #include "controllers/controllermappinginfo.h"
-#include "scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
@@ -187,8 +183,6 @@ class Controller : public QObject {
     friend class MidiControllerTest;
 };
 
-class Charsets : public QObject {
-};
 // An object of this class gets exposed to the JS engine, so the methods of this class
 // constitute the api that is provided to scripts under "controller" object.
 // See comments on ControllerEngineJSProxy.
@@ -204,39 +198,6 @@ class ControllerJSProxy : public QObject {
     Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int length = 0) {
         Q_UNUSED(length);
         m_pController->send(data, data.length());
-    }
-
-    // Available charsets should be available here:
-    // http://www.iana.org/assignments/character-sets/character-sets.xhtml
-    Q_INVOKABLE QJSValue convertEncoding(const QString& targetCharset, QString& value) {
-        std::shared_ptr<QJSEngine> pJsEngine = m_pController->getScriptEngine()->jsEngine();
-        VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
-            return QJSValue::UndefinedValue;
-        }
-
-        icu::UnicodeString unicodeString;
-        UErrorCode errorCode;
-        UConverter* latin9Converter = ucnv_open(targetCharset.toLocal8Bit().data(), &errorCode);
-
-        if (!U_FAILURE(errorCode)) {
-            ucnv_close(latin9Converter);
-            return QJSValue::UndefinedValue;
-        }
-
-        char* result = nullptr;
-        ucnv_fromUChars(latin9Converter,
-                result,
-                0,
-                &value.data()->unicode(),
-                value.length(),
-                &errorCode);
-        ucnv_close(latin9Converter);
-
-        if (U_SUCCESS(errorCode)) {
-            return pJsEngine->toScriptValue(QByteArray(result));
-        } else {
-            return QJSValue::UndefinedValue;
-        }
     }
 
   private:
