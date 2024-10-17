@@ -87,19 +87,27 @@ bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
 
 // static
 SINT AnalyzerSilence::findFirstSoundInChunk(std::span<const CSAMPLE> samples) {
-    return std::distance(samples.begin(), find_first_above_threshold(samples.begin(), samples.end(), kSilenceThreshold));
+    return std::distance(samples.begin(),
+            find_first_above_threshold(
+                    samples.begin(), samples.end(), kSilenceThreshold));
 }
 
 // static
 SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
     // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
-    SINT ret = std::distance(find_first_above_threshold(samples.rbegin(), samples.rend(), kSilenceThreshold), samples.rend()) - 1;
+    SINT ret = std::distance(find_first_above_threshold(samples.rbegin(),
+                                     samples.rend(),
+                                     kSilenceThreshold),
+                       samples.rend()) -
+            1;
     return ret;
 }
 
 // Find the number of first sound sample where the sound is above kFadeInThreshold (-27db)
 SINT AnalyzerSilence::findLastFadeInChunk(std::span<const CSAMPLE> samples) {
-    SINT ret = std::distance(samples.begin(), find_first_above_threshold(samples.begin(), samples.end(), kFadeInThreshold));
+    SINT ret = std::distance(samples.begin(),
+            find_first_above_threshold(
+                    samples.begin(), samples.end(), kFadeInThreshold));
     return ret;
 }
 
