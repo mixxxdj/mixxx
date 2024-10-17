@@ -35,12 +35,11 @@ class AnalyzerSilence : public Analyzer {
     static void setupOutroCue(Track* pTrack, mixxx::audio::FramePos lastSoundPosition);
 
     /// returns the index of the first sample in the buffer that is above the
-    /// fade out threshold (e.g. -20 dB) or samples.size() if no sample is found
-    /// TODO CHeck if 'samples.size()' is actually meaningful in this context.
+    /// fade in threshold (e.g. -27 dB).
     static SINT findLastFadeInChunk(std::span<const CSAMPLE> samples);
 
-    /// returns the index of the last sample in the buffer that is above that is
-    /// above the fade out threshold (e.g. -20 dB) or samples.size() if no
+    /// returns the index of the last sample in the buffer that is
+    /// above the fade out threshold (e.g. -12 dB) or samples.size() if no
     /// sample is found
     static SINT findFirstFadeOutChunk(std::span<const CSAMPLE> samples);
 
