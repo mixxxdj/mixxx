@@ -100,6 +100,7 @@ case "$1" in
             qt5keychain-dev \
             qtdeclarative5-dev \
             qtscript5-dev \
+            qttools5-dev \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)
