@@ -1,9 +1,7 @@
 #pragma once
 
-#include <unicode/ucnv.h>
-#include <unicode/unistr.h>
-
 #include <QElapsedTimer>
+#include <QTextCodec>
 
 #include "controllers/controllermappinginfo.h"
 #include "scripting/legacy/controllerscriptenginelegacy.h"
@@ -20,7 +18,7 @@ class Controller : public QObject {
     Q_OBJECT
   public:
     explicit Controller(const QString& deviceName);
-    ~Controller() override;  // Subclass should call close() at minimum.
+    ~Controller() override; // Subclass should call close() at minimum.
 
     /// The object that is exposed to the JS scripts as the "controller" object.
     /// Subclasses of Controller can return a subclass of ControllerJSProxy to further
@@ -149,12 +147,13 @@ class Controller : public QObject {
     virtual void sendBytes(const QByteArray& data) = 0;
 
   private: // but used by ControllerManager
-
     virtual int open() = 0;
     virtual int close() = 0;
     // Requests that the device poll if it is a polling device. Returns true
     // if events were handled.
-    virtual bool poll() { return false; }
+    virtual bool poll() {
+        return false;
+    }
 
     // Returns true if this device should receive polling signals via calls to
     // its poll() method.
@@ -187,8 +186,6 @@ class Controller : public QObject {
     friend class MidiControllerTest;
 };
 
-class Charsets : public QObject {
-};
 // An object of this class gets exposed to the JS engine, so the methods of this class
 // constitute the api that is provided to scripts under "controller" object.
 // See comments on ControllerEngineJSProxy.
@@ -199,6 +196,8 @@ class ControllerJSProxy : public QObject {
             : m_pController(m_pController) {
     }
 
+    QHash<QString, QString> m_cache;
+
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
     Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int length = 0) {
@@ -208,35 +207,20 @@ class ControllerJSProxy : public QObject {
 
     // Available charsets should be available here:
     // http://www.iana.org/assignments/character-sets/character-sets.xhtml
-    Q_INVOKABLE QJSValue convertEncoding(const QString& targetCharset, QString& value) {
-        std::shared_ptr<QJSEngine> pJsEngine = m_pController->getScriptEngine()->jsEngine();
-        VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
-            return QJSValue::UndefinedValue;
+    Q_INVOKABLE QByteArray convertEncoding(const QString& targetCharset, const QString& value) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+        auto* codec = QTextCodec::codecForName(targetCharset.toUtf8());
+        if (!codec) {
+            return nullptr;
         }
-
-        icu::UnicodeString unicodeString;
-        UErrorCode errorCode;
-        UConverter* latin9Converter = ucnv_open(targetCharset.toLocal8Bit().data(), &errorCode);
-
-        if (!U_FAILURE(errorCode)) {
-            ucnv_close(latin9Converter);
-            return QJSValue::UndefinedValue;
+        return codec->fromUnicode(value);
+#else
+        QStringEncoder fromUtf8 = QStringEncoder(targetCharset.toUtf8().data());
+        if (!fromUtf8.isValid()) {
+            return nullptr;
         }
-
-        char* result = nullptr;
-        ucnv_fromUChars(latin9Converter,
-                result,
-                0,
-                &value.data()->unicode(),
-                value.length(),
-                &errorCode);
-        ucnv_close(latin9Converter);
-
-        if (U_SUCCESS(errorCode)) {
-            return pJsEngine->toScriptValue(QByteArray(result));
-        } else {
-            return QJSValue::UndefinedValue;
-        }
+        return fromUtf8(value);
+#endif
     }
 
   private:
