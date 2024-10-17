@@ -107,7 +107,7 @@
 
           <WidgetGroup><!-- HotCues -->
             <Layout>vertical</Layout>
-            <SizePolicy>max,min</SizePolicy>
+            <SizePolicy>max,max</SizePolicy>
             <Children>
               <WidgetGroup><!-- HotCues 1-2 / 1-4 -->
                 <Layout>horizontal</Layout>
