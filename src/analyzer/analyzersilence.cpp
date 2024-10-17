@@ -17,19 +17,19 @@ constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 // Don't change these to const as they are used only to feed the
 // fade thresholds which are consts below themselves while we work
 // out which one is best, and you'll just be adding to exe size.
-#define N_10DB_FADEOUT_THRESHOLD 0.3162f
-#define N_12DB_FADEOUT_THRESHOLD 0.2511f
-#define N_15DB_FADEOUT_THRESHOLD 0.1778f
-#define N_18DB_FADEOUT_THRESHOLD 0.1259f
-#define N_20DB_FADEOUT_THRESHOLD 0.1f
-#define N_24DB_FADEOUT_THRESHOLD 0.0631f
-#define N_25DB_FADEOUT_THRESHOLD 0.0562f
-#define N_27DB_FADEOUT_THRESHOLD 0.0447f
-#define N_30DB_FADEOUT_THRESHOLD 0.0316f
-#define N_40DB_FADEOUT_THRESHOLD 0.01f
+#define N_10DB_FADE_THRESHOLD 0.3162f
+#define N_12DB_FADE_THRESHOLD 0.2511f
+#define N_15DB_FADE_THRESHOLD 0.1778f
+#define N_18DB_FADE_THRESHOLD 0.1259f
+#define N_20DB_FADE_THRESHOLD 0.1f
+#define N_24DB_FADE_THRESHOLD 0.0631f
+#define N_25DB_FADE_THRESHOLD 0.0562f
+#define N_27DB_FADE_THRESHOLD 0.0447f
+#define N_30DB_FADE_THRESHOLD 0.0316f
+#define N_40DB_FADE_THRESHOLD 0.01f
 
-constexpr CSAMPLE kFadeInThreshold = N_27DB_FADEOUT_THRESHOLD;
-constexpr CSAMPLE kFadeOutThreshold = N_12DB_FADEOUT_THRESHOLD;
+constexpr CSAMPLE kFadeInThreshold = N_27DB_FADE_THRESHOLD;
+constexpr CSAMPLE kFadeOutThreshold = N_12DB_FADE_THRESHOLD;
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -45,27 +45,14 @@ bool shouldAnalyze(TrackPointer pTrack) {
     return false;
 }
 
-template<typename Iterator>
-Iterator first_sound(Iterator begin, Iterator end) {
-    return std::find_if(begin, end, [](const auto elem) {
-        return fabs(elem) >= kSilenceThreshold;
+template<typename Iterator, typename Threshold>
+Iterator find_first_above_threshold(Iterator begin,
+        Iterator end,
+        Threshold threshold) {
+    return std::find_if(begin, end, [threshold](const auto elem) {
+        return fabs(elem) >= threshold;
     });
 }
-
-template<typename ForwardIterator>
-ForwardIterator last_fade_in_sound(ForwardIterator begin, ForwardIterator end) {
-    return std::find_if(begin, end, [](const auto elem) {
-        return fabs(elem) >= kFadeInThreshold;
-    });
-}
-
-template<typename Iterator>
-Iterator first_fade_out_sound(Iterator begin, Iterator end) {
-    return std::find_if(begin, end, [](const auto elem) {
-        return fabs(elem) >= kFadeOutThreshold;
-    });
-}
-
 } // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
@@ -100,32 +87,33 @@ bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
 
 // static
 SINT AnalyzerSilence::findFirstSoundInChunk(std::span<const CSAMPLE> samples) {
-    return std::distance(samples.begin(), first_sound(samples.begin(), samples.end()));
+    return std::distance(samples.begin(), find_first_above_threshold(samples.begin(), samples.end(), kSilenceThreshold));
 }
 
 // static
 SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
     // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
-    SINT ret = std::distance(first_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
+    SINT ret = std::distance(find_first_above_threshold(samples.rbegin(), samples.rend(), kSilenceThreshold), samples.rend()) - 1;
     return ret;
 }
 
-// static
+// Find the number of first sound sample where the sound is above kFadeInThreshold (-27db)
+SINT AnalyzerSilence::findLastFadeInChunk(std::span<const CSAMPLE> samples) {
+    SINT ret = std::distance(samples.begin(), find_first_above_threshold(samples.begin(), samples.end(), kFadeInThreshold));
+    return ret;
+}
+
+// Find the number of last sound sample where the sound is above kFadeOutThreshold (-12db)
 SINT AnalyzerSilence::findFirstFadeOutChunk(std::span<const CSAMPLE> samples) {
-    // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
+    // Note we are searching backwards from the end here.
     SINT ret = std::distance(
-                       first_fade_out_sound(samples.rbegin(), samples.rend()),
+                       find_first_above_threshold(samples.rbegin(), samples.rend(), kFadeOutThreshold),
                        samples.rend()) -
             1;
+    // if we don't find it (track only partially loaded - and/or pathological) give us the track size.
     if (ret == -1) {
         ret = samples.size();
     }
-    return ret;
-}
-
-// static
-SINT AnalyzerSilence::findLastFadeInChunk(std::span<const CSAMPLE> samples) {
-    SINT ret = std::distance(samples.begin(), last_fade_in_sound(samples.begin(), samples.end()));
     return ret;
 }
 
