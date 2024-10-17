@@ -13,7 +13,7 @@ import Mixxx.Controls 1.0 as MixxxControls
 
 import "." as Skin
 
-Mixxx.Controller {
+Mixxx.ControllerScreen {
     id: root
 
     required property string screenId

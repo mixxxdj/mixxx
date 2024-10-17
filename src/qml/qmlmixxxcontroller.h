@@ -9,7 +9,7 @@ namespace qml {
 
 class QmlMixxxControllerScreen : public QQuickItem {
     Q_OBJECT
-    QML_NAMED_ELEMENT(Controller)
+    QML_NAMED_ELEMENT(ControllerScreen)
     Q_PROPERTY(QJSValue init READ getInit WRITE setInit
                     NOTIFY initChanged REQUIRED);
     Q_PROPERTY(QJSValue shutdown READ getShutdown WRITE setShutdown
