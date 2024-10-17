@@ -1,9 +1,9 @@
-#include "qml/qmlmixxxcontroller.h"
+#include "qml/qmlmixxxcontrollerscreen.h"
 
 #include <QSGNode>
 #include <QSGSimpleRectNode>
 
-#include "moc_qmlmixxxcontroller.cpp"
+#include "moc_qmlmixxxcontrollerscreen.cpp"
 
 namespace mixxx {
 namespace qml {

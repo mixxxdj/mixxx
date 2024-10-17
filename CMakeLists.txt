@@ -2789,7 +2789,7 @@ if(QML)
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlchainpresetmodel.cpp
     src/qml/qmlwaveformoverview.cpp
-    src/qml/qmlmixxxcontroller.cpp
+    src/qml/qmlmixxxcontrollerscreen.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
@@ -2801,7 +2801,7 @@ if(QML)
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
 
-  # Required for src/qml/qmlmixxxcontroller.h, used in controllerscriptenginelegacy_test.cpp
+  # Required for src/qml/qmlmixxxcontrollerscreen.h, used in controllerscriptenginelegacy_test.cpp
   target_link_libraries(mixxx-test PRIVATE Qt6::Quick)
 
   install(

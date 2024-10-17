@@ -17,7 +17,7 @@
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptenginelegacy.cpp"
 #ifdef MIXXX_USE_QML
-#include "qml/qmlmixxxcontroller.h"
+#include "qml/qmlmixxxcontrollerscreen.h"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
 

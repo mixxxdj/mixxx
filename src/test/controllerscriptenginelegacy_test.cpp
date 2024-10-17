@@ -21,7 +21,7 @@
 #include "controllers/softtakeover.h"
 #include "helpers/log_test.h"
 #include "preferences/usersettings.h"
-#include "qml/qmlmixxxcontroller.h"
+#include "qml/qmlmixxxcontrollerscreen.h"
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
