@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QElapsedTimer>
+#include <QTextCodec>
 
 #include "controllers/controllermappinginfo.h"
+#include "scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
@@ -16,7 +18,7 @@ class Controller : public QObject {
     Q_OBJECT
   public:
     explicit Controller(const QString& deviceName);
-    ~Controller() override;  // Subclass should call close() at minimum.
+    ~Controller() override; // Subclass should call close() at minimum.
 
     /// The object that is exposed to the JS scripts as the "controller" object.
     /// Subclasses of Controller can return a subclass of ControllerJSProxy to further
@@ -145,12 +147,13 @@ class Controller : public QObject {
     virtual void sendBytes(const QByteArray& data) = 0;
 
   private: // but used by ControllerManager
-
     virtual int open() = 0;
     virtual int close() = 0;
     // Requests that the device poll if it is a polling device. Returns true
     // if events were handled.
-    virtual bool poll() { return false; }
+    virtual bool poll() {
+        return false;
+    }
 
     // Returns true if this device should receive polling signals via calls to
     // its poll() method.
@@ -193,11 +196,31 @@ class ControllerJSProxy : public QObject {
             : m_pController(m_pController) {
     }
 
+    QHash<QString, QString> m_cache;
+
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
     Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int length = 0) {
         Q_UNUSED(length);
         m_pController->send(data, data.length());
+    }
+
+    // Available charsets should be available here:
+    // http://www.iana.org/assignments/character-sets/character-sets.xhtml
+    Q_INVOKABLE QByteArray convertEncoding(const QString& targetCharset, const QString& value) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+        auto* codec = QTextCodec::codecForName(targetCharset.toUtf8());
+        if (!codec) {
+            return nullptr;
+        }
+        return codec->fromUnicode(value);
+#else
+        QStringEncoder fromUtf8 = QStringEncoder(targetCharset.toUtf8().data());
+        if (!fromUtf8.isValid()) {
+            return nullptr;
+        }
+        return fromUtf8(value);
+#endif
     }
 
   private:
