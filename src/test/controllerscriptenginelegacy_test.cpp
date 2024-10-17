@@ -745,3 +745,29 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
     ASSERT_ALL_EXPECTED_MSG();
 }
 #endif
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUndefinedOnUnknownCharset) {
+    ASSERT_TRUE(evaluate("engine.convertCharset('NULL', 'Hello!')").isUndefined());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
+    const auto result = evaluate(R"Javascript(
+        Array.from(
+            new Uint8Array(
+                engine.convertCharset(engine.WellKnownCharsets.LATIN_9, "Hello!")))
+        .map(it => it.toString(16))
+        .join(",")
+    )Javascript");
+    ASSERT_QSTRING_EQ(result.toString(), "48,65,6c,6c,6f,21");
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
+    const auto result = evaluate(R"Javascript(
+        Array.from(
+            new Uint8Array(
+                engine.convertCharset('ISO-8859-1', "Hello!")))
+        .map(it => it.toString(16))
+        .join(",")
+    )Javascript");
+    ASSERT_QSTRING_EQ(result.toString(), "48,65,6c,6c,6f,21");
+}

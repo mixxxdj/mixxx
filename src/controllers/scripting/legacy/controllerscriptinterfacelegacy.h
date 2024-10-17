@@ -17,6 +17,17 @@ class ConfigKey;
 class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
+    enum WellKnownCharsets {
+        LATIN_1,
+        ISO_8859_1,
+        LATIN_9,
+        ISO_8859_15,
+        UCS_2,
+        ISO_10646_UCS_2
+
+    };
+    Q_ENUM(WellKnownCharsets)
+
     ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine,
             const RuntimeLoggingCategory& logger);
 
@@ -71,6 +82,13 @@ class ControllerScriptInterfaceLegacy : public QObject {
             double factor = 1.8,
             const double rate = -10.0);
     Q_INVOKABLE void softStart(const int deck, bool activate, double factor = 1.0);
+
+    Q_INVOKABLE QByteArray convertCharset(
+            const ControllerScriptInterfaceLegacy::WellKnownCharsets
+                    targetCharset,
+            const QString& value);
+
+    Q_INVOKABLE QByteArray convertCharset(const QString& targetCharset, const QString& value);
 
     bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback

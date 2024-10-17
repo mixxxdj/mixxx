@@ -1,5 +1,8 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+#include <QTextCodec>
+#endif
 #include <gsl/pointers>
 
 #include "control/controlobject.h"
@@ -1046,4 +1049,40 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
     // activate the ramping in scratchProcess()
     m_ramp[deck] = true;
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
+        const QString& value) {
+    switch (targetCharset) {
+    case WellKnownCharsets::LATIN_1:
+    case WellKnownCharsets::ISO_8859_1:
+        return this->convertCharset("ISO-8859-1", value);
+    case WellKnownCharsets::LATIN_9:
+    case WellKnownCharsets::ISO_8859_15:
+        return this->convertCharset("ISO-8859-15", value);
+    case WellKnownCharsets::UCS_2:
+    case WellKnownCharsets::ISO_10646_UCS_2:
+        return this->convertCharset("ISO-10646-UCS-2", value);
+    default:
+        m_pScriptEngineLegacy->throwJSError(QStringLiteral("Unknown charset specified"));
+        return nullptr;
+    }
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const QString& targetCharset, const QString& value) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+    auto* pCodec = QTextCodec::codecForName(targetCharset.toUtf8());
+    if (!pCodec) {
+        return nullptr;
+    }
+    return pCodec->fromUnicode(value)
+#else
+    QStringEncoder fromUtf8 = QStringEncoder(targetCharset.toUtf8().data());
+    if (!fromUtf8.isValid()) {
+        return nullptr;
+    }
+    return fromUtf8(value);
+#endif
 }
