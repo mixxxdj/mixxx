@@ -14,6 +14,11 @@
 #ifdef MIXXX_USE_QML
 class QQuickItem;
 class ControllerRenderingEngine;
+namespace mixxx {
+namespace qml {
+class QmlMixxxControllerScreen;
+}
+} // namespace mixxx
 #endif
 
 /// ControllerScriptEngineLegacy loads and executes controller scripts for the legacy
@@ -84,7 +89,8 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             std::shared_ptr<ControllerRenderingEngine> pScreen);
     void extractTransformFunction(const QMetaObject* metaObject, const QString& screenIdentifier);
 
-    std::shared_ptr<QQuickItem> loadQMLFile(
+    // The returned QmlMixxxController will be owned and managed by the pScreen
+    mixxx::qml::QmlMixxxControllerScreen* loadQMLFile(
             const LegacyControllerMapping::ScriptFileInfo& qmlScript,
             std::shared_ptr<ControllerRenderingEngine> pScreen);
 
@@ -114,9 +120,9 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
     // Contains all the scenes loaded for this mapping. Key is the scene
     // identifier (LegacyControllerMapping::ScreenInfo::identifier), value in
-    // the QML root item
-    QHash<QString, std::shared_ptr<QQuickItem>> m_rootItems;
-    QHash<QString, TransformScreenFrameFunction> m_transformScreenFrameFunctions;
+    // the QML root item. Note that the pointer is owned by the QML scene which
+    // will free them on shutdown (ControllerScriptEngineLegacy::shutdown)
+    QHash<QString, mixxx::qml::QmlMixxxControllerScreen*> m_rootItems;
     QList<LegacyControllerMapping::QMLModuleInfo> m_modules;
     QList<LegacyControllerMapping::ScreenInfo> m_infoScreens;
     QString m_resourcePath{QStringLiteral(".")};
