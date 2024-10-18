@@ -18,6 +18,10 @@
 #include "util/logger.h"
 #include "util/parented_ptr.h"
 #include "wskincolor.h"
+// EBE
+#include "library/trackset/smarties/smartiesfeature.h"
+#include "library/trackset/smarties/smartiesfeaturehelper.h"
+// EVE
 
 #define ENABLE_TRACE_LOG false
 
@@ -540,11 +544,24 @@ void WSearchLineEdit::slotTriggerSearch() {
     m_queryEmitted = true;
 }
 
+// void WSearchLineEdit::slotCreateSmarties() {
+//     m_pSmartiesFeature->slotCreateSmarties();
+// }
+
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
     m_saveTimer.stop();
     QString cText = currentText().trimmed();
     int cIndex = findCurrentTextIndex();
+//    NewSmartiesFeature = new SmartiesFeature(nullptr, nullptr);
+//    addFeature(m_pSmartiesFeature);
+
+//    SmartiesFeature* NewSmartiesFeature;
+//    NewSmartiesFeature->slotCreateSmarties();
+//    NewSmartiesFeature->slotCreateSmartiesFromSearch(cText);
+//    NewSmartiesFeature->slotCreateSmartiesFromSearch(cText, m_pConfig);
+//    NewSmartiesFeature->slotCreateSmarties();
+//      SmartiesFeatureHelper::createEmptySmartiesFromSearch();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "save search. Text:"

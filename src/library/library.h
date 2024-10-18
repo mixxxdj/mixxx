@@ -9,6 +9,9 @@
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
+// EVE
+#include "library/trackset/smarties/smartiesid.h"
+// EVE
 #endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -19,6 +22,9 @@ class AnalysisFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
+// EVE
+class SmartiesFeature;
+// EVE
 class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
@@ -119,6 +125,9 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    // EVE
+    void slotCreateSmarties();
+    // EVE
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;
@@ -140,6 +149,9 @@ class Library: public QObject {
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);
+    // EVE
+    void exportSmarties(SmartiesId smartiesId);
+    // EVE
 #endif
     void saveModelState();
     void restoreModelState();
@@ -170,6 +182,7 @@ class Library: public QObject {
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    SmartiesFeature* m_pSmartiesFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;
