@@ -7,7 +7,7 @@
     group:
     xfaderLeft, xfaderRight: default | warning | off
           Picks a colored icon for L,M,R depending on whether
-          the deck's orientation is the default, set to Master
+          the deck's orientation is the default, set to Main
           or to the opposite side
 -->
 <Template>
@@ -25,13 +25,13 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left_off.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left_off.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left_off.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_left.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
@@ -50,13 +50,13 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid_off.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid_off.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid_off.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_mid.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
@@ -76,13 +76,13 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right_off.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right_off.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right_off.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_aux_right.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>

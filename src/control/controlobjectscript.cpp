@@ -64,7 +64,7 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
         }
     }
 
-    for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
+    for (const auto& priorConnection : std::as_const(m_scriptConnections)) {
         if (conn == priorConnection) {
             qCWarning(m_logger) << "Connection " + conn.id.toString() +
                             " already connected to (" +

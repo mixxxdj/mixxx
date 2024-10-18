@@ -94,20 +94,16 @@ class TrackRecord final {
     }
 
     track::io::key::ChromaticKey getGlobalKey() const {
-        if (getKeys().isValid()) {
-            return getKeys().getGlobalKey();
-        } else {
-            return track::io::key::INVALID;
-        }
+        return getKeys().getGlobalKey();
     }
     bool updateGlobalKey(
             track::io::key::ChromaticKey key,
             track::io::key::Source keySource);
 
     QString getGlobalKeyText() const {
-        return KeyUtils::getGlobalKeyText(getKeys());
+        return KeyUtils::formatGlobalKey(getKeys());
     }
-    UpdateResult updateGlobalKeyText(
+    UpdateResult updateGlobalKeyNormalizeText(
             const QString& keyText,
             track::io::key::Source keySource);
 
@@ -120,10 +116,12 @@ class TrackRecord final {
         /// that allow to monitor the modification time of the file.
         Unknown,
 
-        /// The metadata in Mixxx is up-to-date.
+        /// The metadata in Mixxx is up-to-date, i.e. not older than the
+        /// last modification time stamp of the underlying file.
         Synchronized,
 
-        /// The metadata in Mixxx is older than the metadata stored in file tags.
+        /// The metadata in Mixxx is older than the metadata stored in file tags
+        /// and should be re-imported.
         Outdated,
 
         /// The status could not be determined for whatever reason,

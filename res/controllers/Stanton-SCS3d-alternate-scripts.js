@@ -449,7 +449,7 @@ SCS3D.Agent = function(device) {
     // -> hello,me
     // -> hello,you
     function demux(action) {
-        return function(message, nd) {
+        return function(message, arg) {
             if (!message || message.length < 2) {
                 print("ERROR: demux over invalid message: " + message);
                 return false;
@@ -459,10 +459,10 @@ SCS3D.Agent = function(device) {
                 var i;
                 for (i in message[1]) {
                     var demuxd = [message[0], message[1][i], message[2]];
-                    changed = action(demuxd, nd) || changed;
+                    changed = action(demuxd, arg) || changed;
                 }
             } else {
-                changed = action(message, nd);
+                changed = action(message, arg);
             }
             return changed;
         };

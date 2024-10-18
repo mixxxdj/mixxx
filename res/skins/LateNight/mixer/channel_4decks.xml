@@ -15,15 +15,11 @@
     <Children>
 
       <WidgetGroup>
-        <Size>0min,0me</Size>
-      </WidgetGroup>
-
-      <WidgetGroup>
         <ObjectName>AlignRight</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <Template src="skin:/controls/knob.xml">
+          <Template src="skins:LateNight/controls/knob.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="KnobColor">orange</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
@@ -34,30 +30,33 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+      <!-- In case an EQ/non-EQ effect has less than 3 knobs we need
+           center those vertically. This spacer and the one below knob 3
+           push Gain and QuickEffect etc. to the top/bottom -->
+      <WidgetGroup><Size>1min,3me</Size></WidgetGroup>
 
-      <Template src="skin:/mixer/eq_knob_4decks.xml">
+      <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
         <SetVariable name="EqParameter">3</SetVariable>
         <SetVariable name="EqRange">High</SetVariable>
       </Template>
 
       <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
 
-      <Template src="skin:/mixer/eq_knob_4decks.xml">
+      <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
         <SetVariable name="EqParameter">2</SetVariable>
         <SetVariable name="EqRange">Mid</SetVariable>
       </Template>
 
       <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
 
-      <Template src="skin:/mixer/eq_knob_4decks.xml">
+      <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
         <SetVariable name="EqParameter">1</SetVariable>
         <SetVariable name="EqRange">Low</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+      <WidgetGroup><Size>1min,3me</Size></WidgetGroup>
 
-      <Template src="skin:/mixer/quick_effect_knob_4decks.xml"/>
+      <Template src="skins:LateNight/mixer/quick_effect_knob_4decks.xml"/>
 
       <WidgetGroup>
         <SizePolicy>i,f</SizePolicy>
@@ -82,7 +81,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skins:LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">pfl</SetVariable>
             <SetVariable name="ObjectName">PflButton</SetVariable>
             <SetVariable name="Size">26,26</SetVariable>
@@ -112,8 +111,8 @@
           <SliderComposed><!-- Volume -->
             <TooltipId>channel_volume</TooltipId>
             <Size>42f,107f</Size>
-            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
-            <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <BarColor><Variable name="BarColorVolume"/></BarColor>
             <BarWidth><Variable name="BarWidth"/></BarWidth>
@@ -133,11 +132,9 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/controls/button_xfader_deck.xml"/>
+          <Template src="skins:LateNight/controls/button_xfader_deck.xml"/>
         </Children>
       </WidgetGroup>
-
-      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup><!-- MixerChannel_4Decks -->

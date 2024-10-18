@@ -1,6 +1,8 @@
 #include "qml/qmlconfigproxy.h"
 
+#include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/constants.h"
 
 namespace {
 QVariantList paletteToQColorList(const ColorPalette& palette) {
@@ -10,6 +12,10 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
     }
     return colors;
 }
+
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+
 } // namespace
 
 namespace mixxx {
@@ -30,32 +36,25 @@ QVariantList QmlConfigProxy::getTrackColorPalette() {
     return paletteToQColorList(colorPaletteSettings.getTrackColorPalette());
 }
 
+int QmlConfigProxy::getMultiSamplingLevel() {
+    return static_cast<int>(m_pConfig->getValue(
+            ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+            mixxx::preferences::MultiSamplingMode::Disabled));
+}
+
 // static
 QmlConfigProxy* QmlConfigProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine) {
-    Q_UNUSED(pQmlEngine);
-
     // The implementation of this method is mostly taken from the code example
     // that shows the replacement for `qmlRegisterSingletonInstance()` when
     // using `QML_SINGLETON`.
     // https://doc.qt.io/qt-6/qqmlengine.html#QML_SINGLETON
 
     // The instance has to exist before it is used. We cannot replace it.
-    DEBUG_ASSERT(s_pInstance);
-
-    // The engine has to have the same thread affinity as the singleton.
-    DEBUG_ASSERT(pJsEngine->thread() == s_pInstance->thread());
-
-    // There can only be one engine accessing the singleton.
-    if (s_pJsEngine) {
-        DEBUG_ASSERT(pJsEngine == s_pJsEngine);
-    } else {
-        s_pJsEngine = pJsEngine;
+    VERIFY_OR_DEBUG_ASSERT(s_pUserSettings) {
+        qWarning() << "UserSettings hasn't been registered yet";
+        return nullptr;
     }
-
-    // Explicitly specify C++ ownership so that the engine doesn't delete
-    // the instance.
-    QJSEngine::setObjectOwnership(s_pInstance, QJSEngine::CppOwnership);
-    return s_pInstance;
+    return new QmlConfigProxy(s_pUserSettings, pQmlEngine);
 }
 
 } // namespace qml

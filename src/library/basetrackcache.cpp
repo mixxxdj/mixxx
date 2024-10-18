@@ -1,6 +1,7 @@
 #include "library/basetrackcache.h"
 
 #include "library/queryutil.h"
+#include "library/searchquery.h"
 #include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
 #include "moc_basetrackcache.cpp"
@@ -16,35 +17,21 @@ constexpr bool sDebug = false;
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
-        const QString& tableName,
-        const QString& idColumn,
-        const QStringList& columns,
+        QString tableName,
+        QString idColumn,
+        QStringList columns,
+        QStringList searchColumns,
         bool isCaching)
-        : m_tableName(tableName),
-          m_idColumn(idColumn),
+        : m_tableName(std::move(tableName)),
+          m_idColumn(std::move(idColumn)),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
-          m_columnCache(columns),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
+          m_columnCache(std::move(columns)),
+          m_pQueryParser(std::make_unique<SearchQueryParser>(
+                  pTrackCollection, std::move(searchColumns))),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
-    m_searchColumns << "artist"
-                    << "album"
-                    << "album_artist"
-                    << "location"
-                    << "grouping"
-                    << "comment"
-                    << "title"
-                    << "genre"
-                    << "crate";
-
-    // Convert all the search column names to their field indexes because we use
-    // them a bunch.
-    m_searchColumnIndices.resize(m_searchColumns.size());
-    for (int i = 0; i < m_searchColumns.size(); ++i) {
-        m_searchColumnIndices[i] = m_columnCache.fieldIndex(m_searchColumns[i]);
-    }
 }
 
 BaseTrackCache::~BaseTrackCache() {
@@ -90,7 +77,7 @@ void BaseTrackCache::slotTracksRemoved(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
-    for (const auto& trackId : qAsConst(trackIds)) {
+    for (const auto& trackId : std::as_const(trackIds)) {
         m_trackInfo.remove(trackId);
         m_dirtyTracks.remove(trackId);
     }
@@ -122,10 +109,6 @@ void BaseTrackCache::ensureCached(TrackId trackId) {
 
 void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
     updateTracksInIndex(trackIds);
-}
-
-void BaseTrackCache::setSearchColumns(const QStringList& columns) {
-    m_searchColumns = columns;
 }
 
 const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
@@ -211,7 +194,7 @@ bool BaseTrackCache::updateTrackInIndex(
         return false;
     }
     if (sDebug) {
-        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
+        qDebug() << "updateTrackInIndex:" << pTrack->getLocation();
     }
 
     int numColumns = columnCount();
@@ -227,7 +210,7 @@ bool BaseTrackCache::updateTrackInIndex(
             getTrackValueForColumn(pTrack, i, record[i]);
         }
         if (m_bIsCaching) {
-            replaceRecentTrack(std::move(trackId), std::move(pTrack));
+            replaceRecentTrack(std::move(trackId), pTrack);
         }
     } else {
         if (m_bIsCaching) {
@@ -493,7 +476,6 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     const std::unique_ptr<QueryNode> pQuery =
             m_pQueryParser->parseQuery(
                     searchQuery,
-                    m_searchColumns,
                     queryFragments.join(" AND "));
 
     QString filter = pQuery->toSql();
@@ -551,7 +533,7 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         return;
     }
 
-    for (TrackId trackId: qAsConst(dirtyTracks)) {
+    for (TrackId trackId : std::as_const(dirtyTracks)) {
         // Only get the track if it is in the cache. Tracks that
         // are not cached in memory cannot be dirty.
         TrackPointer pTrack = getRecentTrack(trackId);

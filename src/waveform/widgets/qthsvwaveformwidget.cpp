@@ -1,11 +1,10 @@
 #include "waveform/widgets/qthsvwaveformwidget.h"
 
-#include <QGLContext>
 #include <QPainter>
 #include <QtDebug>
 
 #include "moc_qthsvwaveformwidget.cpp"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererhsv.h"
@@ -15,21 +14,14 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
-        : QGLWidget(parent),
-          WaveformWidgetAbstract(group) {
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
-    addRenderer<WaveformRenderBackground>();
+        : GLWaveformWidgetAbstract(group, parent) {
+    addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererHSV>();
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
-
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
 
     m_initSuccess = init();
 }
@@ -52,7 +44,7 @@ mixxx::Duration QtHSVWaveformWidget::render() {
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
-    QPainter painter(this);
+    QPainter painter(paintDevice());
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();

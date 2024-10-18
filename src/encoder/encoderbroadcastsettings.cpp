@@ -1,5 +1,6 @@
 #include "encoder/encoderbroadcastsettings.h"
-#include "broadcast/defs_broadcast.h"
+
+#include <QDebug>
 
 #define DEFAULT_BITRATE 128
 

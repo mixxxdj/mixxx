@@ -29,6 +29,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
+#include <strings.h>
+#endif
 #include <errno.h>
 
 #include <shoutidjc/shout.h>
@@ -257,7 +260,7 @@ ssize_t shout_send_raw(shout_t *self, const unsigned char *data, size_t len)
             if (self->error != SHOUTERR_SUCCESS)
                 return self->error;
         }
-        return len;
+        return (ssize_t)len;
     }
 
     self->error = shout_queue_data(&self->wqueue, data, len);
@@ -266,7 +269,7 @@ ssize_t shout_send_raw(shout_t *self, const unsigned char *data, size_t len)
 
     ret = send_queue(self);
     if (ret == SHOUTERR_SUCCESS || (len && ret == SHOUTERR_BUSY))
-        return len;
+        return (ssize_t)len;
 
     return ret;
 }
@@ -305,7 +308,7 @@ int shout_delay(shout_t *self)
     if (self->senttime == 0)
         return 0;
 
-    return self->senttime / 1000 - (timing_get_time() - self->starttime);
+    return (int)(self->senttime / 1000 - (timing_get_time() - self->starttime));
 }
 
 shout_metadata_t *shout_metadata_new(void)
@@ -1308,6 +1311,7 @@ retry:
             }
 #endif
             self->state = SHOUT_STATE_REQ_CREATION;
+        /* fall through */
 
         case SHOUT_STATE_REQ_CREATION:
             if ((rc = create_request(self)) != SHOUTERR_SUCCESS)
@@ -1431,12 +1435,12 @@ static int try_write(shout_t *self, const void *data_p, size_t len)
     if (ret < 0) {
         if (shout_conn_recoverable(self)) {
             self->error = SHOUTERR_BUSY;
-            return pos;
+            return (int)pos;
         }
         self->error = SHOUTERR_SOCKET;
         return ret;
     }
-    return pos;
+    return (int)pos;
 }
 
 ssize_t shout_conn_read(shout_t *self, void *buf, size_t len)

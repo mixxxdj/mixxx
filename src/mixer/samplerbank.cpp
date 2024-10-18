@@ -41,10 +41,9 @@ SamplerBank::SamplerBank(UserSettingsPointer pConfig,
             this,
             &SamplerBank::slotSaveSamplerBank);
 
-    m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"), this);
-}
-
-SamplerBank::~SamplerBank() {
+    m_pCONumSamplers = new ControlProxy(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_samplers")),
+            this);
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {
@@ -207,19 +206,17 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                 QString location = e.attribute("location", "");
                 int samplerNum;
 
-                if (!group.isEmpty()
-                        && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
-                    if (m_pPlayerManager->numSamplers() < (unsigned) samplerNum) {
+                if (!group.isEmpty() && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
+                    if (m_pPlayerManager->numSamplers() < (unsigned)samplerNum) {
                         m_pCONumSamplers->set(samplerNum);
                     }
 
                     if (location.isEmpty()) {
-                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group);
+                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group, false);
                     } else {
-                        m_pPlayerManager->slotLoadLocationToPlayer(location, group);
+                        m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
                     }
                 }
-
             }
         }
         n = n.nextSibling();

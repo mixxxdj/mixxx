@@ -104,7 +104,6 @@ Item {
                 target: dryWetKnob
                 visible: true
             }
-
         }
 
         transitions: Transition {
@@ -112,9 +111,7 @@ Item {
                 targets: [effect1, effect2, effect3]
                 duration: 150
             }
-
         }
-
     }
 
     Rectangle {
@@ -148,7 +145,6 @@ Item {
                     text: "▼"
                     checkable: true
                 }
-
             }
 
             Skin.ControlKnob {
@@ -165,7 +161,6 @@ Item {
                 Skin.FadeBehavior on visible {
                     fadeTarget: superKnob
                 }
-
             }
 
             Skin.ControlKnob {
@@ -182,7 +177,6 @@ Item {
                 Skin.FadeBehavior on visible {
                     fadeTarget: dryWetKnob
                 }
-
             }
 
             add: Transition {
@@ -199,11 +193,7 @@ Item {
                     to: 1
                     duration: 150
                 }
-
             }
-
         }
-
     }
-
 }

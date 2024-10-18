@@ -2,7 +2,6 @@
 
 #include "analyzer/constants.h"
 #include "util/assert.h"
-#include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
@@ -86,7 +85,7 @@ bool AnalyzerKeyFinder::initialize(mixxx::audio::SampleRate sampleRate) {
     return true;
 }
 
-bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, SINT iLen) {
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (m_audioData.getSampleCount() == 0) {
         m_audioData.addToSampleCount(iLen);

@@ -1,13 +1,11 @@
 #pragma once
 
-#include <QModelIndexList>
 #include <QObject>
 #include <QString>
 
+#include "audio/frame.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/controls/cuecontrol.h"
-#include "library/playlisttablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/class.h"
@@ -16,6 +14,8 @@ class ControlPushButton;
 class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
+class PlaylistTableModel;
+typedef QList<QModelIndex> QModelIndexList;
 
 class DeckAttributes : public QObject {
     Q_OBJECT
@@ -25,11 +25,11 @@ class DeckAttributes : public QObject {
     virtual ~DeckAttributes();
 
     bool isLeft() const {
-        return m_orientation.get() == EngineChannel::LEFT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::LEFT);
     }
 
     bool isRight() const {
-        return m_orientation.get() == EngineChannel::RIGHT;
+        return m_orientation.get() == static_cast<double>(EngineChannel::RIGHT);
     }
 
     bool isPlaying() const {
@@ -203,6 +203,7 @@ class AutoDJProcessor : public QObject {
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    void autoDJError(AutoDJProcessor::AutoDJError error);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
@@ -219,7 +220,7 @@ class AutoDJProcessor : public QObject {
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
 
-    void controlEnable(double value);
+    void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
@@ -278,7 +279,6 @@ class AutoDJProcessor : public QObject {
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
     void maybeFillRandomTracks();
     UserSettingsPointer m_pConfig;
-    PlayerManagerInterface* m_pPlayerManager;
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;

@@ -337,10 +337,11 @@ function ZoomKey(dir) {
     that.onPushOrig = that.onPush;
     that.onPush = function()
     {
-        if ( ZoomKey.zoom < 6 && this.dir == "+" ) {
+        // range is 1..10
+        if (ZoomKey.zoom < 10 && this.dir === "+") {
             ZoomKey.zoom++;
         }
-        if ( ZoomKey.zoom > 1 && this.dir == "-") {
+        if (ZoomKey.zoom > 1 && this.dir === "-") {
             ZoomKey.zoom--;
         }
 
@@ -400,7 +401,10 @@ NLM.init = function()
 {
         NLM.page = 0;
         NLM.shiftstate = false;
-        NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        NLM.numofdecks = engine.getValue("[App]", "num_decks");
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
         // For testing NLM.numofdecks = 4;
 
         //Init hw
@@ -565,7 +569,6 @@ NLM.incomingData = function(channel, control, value, status, group)
             y = 8; x = 0;
         }
 
-        print( "COO: " + NLM.page + ":" + x + ":" + y);
         NLM.btns[NLM.page][x][y].pressed = pressed;
         NLM.btns[NLM.page][x][y].callback();
 };

@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "controllers/midi/midicontroller.h"
 #include "moc_midioutputhandler.cpp"
 

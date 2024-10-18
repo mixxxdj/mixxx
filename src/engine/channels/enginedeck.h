@@ -3,20 +3,12 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "control/controlproxy.h"
-#include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
 #include "engine/channels/enginechannel.h"
-#include "util/circularbuffer.h"
-
 #include "soundio/soundmanagerutil.h"
 
-class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
-class EngineMaster;
-class EngineVuMeter;
-class EngineEffectsManager;
+class EngineMixer;
 class ControlPushButton;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
@@ -25,37 +17,47 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineDeck(
             const ChannelHandleAndGroup& handleGroup,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             bool primaryDeck);
-    virtual ~EngineDeck();
+    ~EngineDeck() override;
 
-    virtual void process(CSAMPLE* pOutput, const int iBufferSize);
-    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
-    virtual void postProcess(const int iBufferSize);
+    void process(CSAMPLE* pOutput, const int iBufferSize) override;
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
+
+    // postProcessLocalBpm() is called on all decks to update the localBpm after
+    // process() is done. Updated localBpms for all decks are required for the
+    // postProcess() step, to avoid issues with the order they are processed.
+    // It cannot be done during process() because it relies that the localBpm
+    // of all decks are on their old values.
+    void postProcessLocalBpm() override;
+
+    // Update beat distances, sync modes, and other values that are only known
+    // after all other processing is done.
+    void postProcess(const int iBufferSize) override;
 
     // TODO(XXX) This hack needs to be removed.
-    virtual EngineBuffer* getEngineBuffer();
+    EngineBuffer* getEngineBuffer() override;
 
-    virtual bool isActive();
+    EngineChannel::ActiveState updateActiveState() override;
 
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the callback thread of
     // the soundcard this AudioDestination was registered for! Beware, in the
     // case of multiple soundcards, this method is not re-entrant but it may be
-    // concurrent with EngineMaster processing.
-    virtual void receiveBuffer(const AudioInput& input,
+    // concurrent with EngineMixer processing.
+    void receiveBuffer(const AudioInput& input,
             const CSAMPLE* pBuffer,
-            unsigned int nFrames);
+            unsigned int nFrames) override;
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
-    virtual void onInputConfigured(const AudioInput& input);
+    void onInputConfigured(const AudioInput& input) override;
 
     // Called by SoundManager whenever the passthrough input is disconnected
     // from a soundcard input.
-    virtual void onInputUnconfigured(const AudioInput& input);
+    void onInputUnconfigured(const AudioInput& input) override;
 
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;
@@ -64,7 +66,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void noPassthroughInputConfigured();
 
   public slots:
-    void slotPassingToggle(double v);
+    void slotPassthroughToggle(double v);
     void slotPassthroughChangeRequest(double v);
 
   private:
@@ -77,5 +79,4 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ControlPushButton* m_pPassing;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
-    bool m_wasActive;
 };

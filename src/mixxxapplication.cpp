@@ -3,10 +3,12 @@
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
+#include <QtGlobal>
 
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlproxy.h"
+#include "library/relocatedtrack.h"
 #include "library/trackset/crate/crateid.h"
 #include "moc_mixxxapplication.cpp"
 #include "soundio/soundmanagerutil.h"
@@ -21,17 +23,25 @@
 // https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins
 #ifdef QT_STATIC
 #include <QtPlugin>
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WASM)
+Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
+#elif defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#elif defined(Q_OS_IOS)
+Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMacStylePlugin)
+#elif defined(Q_OS_LINUX)
+Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #else
 #error "Q_IMPORT_PLUGIN() for the current patform is missing"
 #endif
+#if !defined(Q_OS_WASM)
 Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
+#endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
@@ -51,6 +61,13 @@ class QMouseEventEditable : public QMouseEvent {
     void setButton(Qt::MouseButton button) {
         b = button;
     }
+#if QT_VERSION <= QT_VERSION_CHECK(5, 12, 4) && defined(__APPLE__)
+    // We also use this class to modify erroneous mouseState. See
+    // MixxxApplication::notify(...) for details.
+    void setButtons(Qt::MouseButtons mouseState) {
+        this->mouseState = mouseState;
+    }
+#endif
 };
 
 } // anonymous namespace
@@ -97,6 +114,10 @@ void MixxxApplication::registerMetaTypes() {
     QMetaType::registerComparators<SoundDeviceId>();
 #endif
 
+    // Library Scanner
+    qRegisterMetaType<RelocatedTrack>();
+    qRegisterMetaType<QList<RelocatedTrack>>();
+
     // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
@@ -115,7 +136,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     // events.
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
-        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        QMouseEventEditable* mouseEvent =
+                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 touchIsRightButton()) {
@@ -127,10 +149,23 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
             mouseEvent->setButton(Qt::RightButton);
             m_rightPressedButtons++;
         }
+#if QT_VERSION <= QT_VERSION_CHECK(5, 12, 4) && defined(__APPLE__)
+        if (mouseEvent->button() == Qt::RightButton && mouseEvent->buttons() == Qt::LeftButton) {
+            // Workaround for a bug in Qt 5.12 qnsview_mouse.mm, where the wrong value is
+            // assigned to the event's mouseState for simulated rightbutton press events
+            // (using ctrl+leftbotton), which results in a missing release event for that
+            // press event.
+            //
+            // Fixed in Qt 5.12.5. See
+            // https://github.com/qt/qtbase/commit/9a47768b46f5e5eed407b70dfa9183fa1d21e242
+            mouseEvent->setButtons(Qt::RightButton);
+        }
+#endif
         break;
     }
     case QEvent::MouseButtonRelease: {
-        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        QMouseEventEditable* mouseEvent =
+                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 m_rightPressedButtons > 0) {

@@ -4,7 +4,7 @@ Description:
 Variables:
   ObjectName        : object name
   ToolTipID         : standard Tooltip from mixxx db
-    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/TooltipIds.cpp
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
   Size              : button size
   state_X_text      : label text for state X
   state_X_pressed   : background graphic for pressed state X
@@ -22,8 +22,8 @@ Variables:
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>

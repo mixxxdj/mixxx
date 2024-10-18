@@ -5,14 +5,15 @@
 #include <QScopedPointer>
 
 #include "engine/controls/enginecontrol.h"
-#include "engine/sync/enginesync.h"
+#include "engine/sync/syncable.h"
 
-class EngineChannel;
 class BpmControl;
 class RateControl;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
+class EngineChannel;
+class EngineSync;
 
 /// SyncControl is the Sync Lock object for playback decks.
 class SyncControl : public EngineControl, public Syncable {
@@ -75,7 +76,6 @@ class SyncControl : public EngineControl, public Syncable {
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
-    void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
@@ -114,8 +114,8 @@ class SyncControl : public EngineControl, public Syncable {
     mixxx::Bpm getLocalBpm() const;
 
     QString m_sGroup;
-    // The only reason we have this pointer is an optimzation so that the
-    // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
+    // The only reason we have this pointer is an optimization so that the
+    // EngineSync can ask us what our EngineChannel is. EngineMixer in turn
     // asks EngineSync what EngineChannel is the "leader" channel.
     EngineChannel* m_pChannel;
     EngineSync* m_pEngineSync;

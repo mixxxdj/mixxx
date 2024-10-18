@@ -19,9 +19,26 @@ realpath() {
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
+if [ -n "${BUILDENV_ARM64}" ]; then
+    VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
+    BUILDENV_BRANCH="2.5-rel"
+    BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-5dd1f25"
+    BUILDENV_SHA256="366cdf780e8d2d3af6b81f63e92df9ab7cb1cac1bb868a8e6a90dd39bf2a00b2"
+else
+    if [ -n "${BUILDENV_RELEASE}" ]; then
+        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+        BUILDENV_BRANCH="2.5-rel"
+        BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-5dd1f25"
+        BUILDENV_SHA256="60f47011dd0809891c172ec0d346a938daa74e83d0558fb2ca985cbc2aa43156"
+    else
+        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
+        BUILDENV_BRANCH="2.5"
+        BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-06fe9b5"
+        BUILDENV_SHA256="5a5cb4d986cd288e216fe3a31f8acdbe4bc7b5b8624688aa18ca132c5cfb39b2"
+    fi
+fi
 
-read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/build_environment"
+MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -39,8 +56,13 @@ case "$1" in
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
-                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/dependencies/2.4/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
+                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip"
+                http_code=$(curl -sI -w "%{http_code}" "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o /dev/null)
+                if [ "$http_code" -ne 200 ]; then
+                    echo "Downloading  failed with HTTP status code: $http_code"
+                    exit 1
+                fi
+                curl "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
@@ -64,12 +86,14 @@ case "$1" in
             echo "Build environment found: ${BUILDENV_PATH}"
         fi
 
-        export VCPKG_ROOT="${BUILDENV_PATH}"
+        export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export CMAKE_GENERATOR=Ninja
+        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
 
         echo_exported_variables() {
-            echo "VCPKG_ROOT=${VCPKG_ROOT}"
+            echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
+            echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
@@ -78,6 +102,8 @@ case "$1" in
             echo ""
             echo "Exported environment variables:"
             echo_exported_variables
+            echo "You can now configure cmake from the command line in an EMPTY build directory via:"
+            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ${MIXXX_ROOT}"
         fi
         ;;
     *)

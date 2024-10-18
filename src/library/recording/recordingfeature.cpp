@@ -1,12 +1,9 @@
 #include "library/recording/recordingfeature.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/library.h"
+#include "library/browse/foldertreemodel.h"
 #include "library/recording/dlgrecording.h"
-#include "library/treeitem.h"
 #include "moc_recordingfeature.cpp"
-#include "recording/recordingmanager.h"
-#include "track/track.h"
 #include "widget/wlibrary.h"
 
 namespace {
@@ -71,6 +68,6 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 void RecordingFeature::activate() {
     emit refreshBrowseModel();
     emit switchToView(kViewName);
-    emit disableSearch();
+    emit requestRestoreSearch();
     emit enableCoverArtDisplay(false);
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "library/basesqltablemodel.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/tracksettablemodel.h"
 
@@ -20,11 +19,15 @@ class CrateTableModel final : public TrackSetTableModel {
 
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of unsuccessful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    int addTracksWithTrackIds(const QModelIndex& index,
+            const QList<TrackId>& tracks,
+            int* pOutInsertionPos) final;
+    bool isLocked() final;
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;
 
   private:
     CrateId m_selectedCrate;
+    QHash<CrateId, QString> m_searchTexts;
 };

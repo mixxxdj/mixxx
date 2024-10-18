@@ -1,5 +1,7 @@
 #include "network/networktask.h"
 
+#include <QNetworkAccessManager>
+
 #include "moc_networktask.cpp"
 #include "util/counter.h"
 #include "util/logger.h"
@@ -31,11 +33,11 @@ NetworkTask::~NetworkTask() {
     s_instanceCounter.increment(-1);
 }
 
-void NetworkTask::invokeStart(int timeoutMillis) {
+void NetworkTask::invokeStart(int timeoutMillis, int delayMillis) {
     QMetaObject::invokeMethod(
             this,
-            [this, timeoutMillis] {
-                this->slotStart(timeoutMillis);
+            [this, timeoutMillis, delayMillis] {
+                this->slotStart(timeoutMillis, delayMillis);
             });
 }
 

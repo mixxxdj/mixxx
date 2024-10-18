@@ -2,10 +2,8 @@
 
 #include <QObject>
 #include <QString>
-#include <QVariant>
 
-#include "control/controlobject.h"
-#include "effects/backends/effectmanifest.h"
+#include "effects/backends/effectmanifestparameter.h"
 #include "util/class.h"
 
 class ControlObject;
@@ -55,6 +53,7 @@ class EffectParameterSlotBase : public QObject {
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
+    void valueChanged(double v);
 
   public slots:
     // Solely for handling control changes

@@ -2,17 +2,21 @@
 
 #include <QDebug>
 
-#include "audio/types.h"
 #include "control/controlencoder.h"
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
+#include "effects/effectbuttonparameterslot.h"
 #include "effects/effectchain.h"
+#include "effects/effectknobparameterslot.h"
+#include "effects/effectparameter.h"
+#include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "engine/effects/engineeffect.h"
 #include "moc_effectslot.cpp"
-#include "util/defs.h"
 #include "util/math.h"
 
 // The maximum number of effect parameters we're going to support.
@@ -123,7 +127,7 @@ EffectSlot::EffectSlot(const QString& group,
     connect(m_pControlMetaParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotEffectMetaParameter(value); });
+            [=, this](double value) { slotEffectMetaParameter(value); });
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
@@ -192,26 +196,11 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
-    //TODO: get actual configuration of engine
-    const mixxx::EngineParameters engineParameters(
-            mixxx::audio::SampleRate(96000),
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-
-    if (isLoaded()) {
-        for (const auto& outputChannel :
-                m_pEffectsManager->registeredOutputChannels()) {
-            pStatesMap->insert(outputChannel.handle(),
-                    m_pEngineEffect->createState(engineParameters));
-        }
-    } else {
-        for (EffectState* pState : *pStatesMap) {
-            if (pState) {
-                delete pState;
-            }
-        }
-        pStatesMap->clear();
+void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
+    if (!m_pEngineEffect) {
+        return;
     }
+    m_pEngineEffect->initalizeInputChannel(inputChannel);
 };
 
 EffectManifestPointer EffectSlot::getManifest() const {
@@ -258,12 +247,14 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
-    if (!pPreset || pPreset->isEmpty()) {
+    EffectManifestPointer pManifest;
+    if (pPreset && !pPreset->isEmpty()) {
+        pManifest = m_pBackendManager->getManifest(pPreset);
+    }
+    if (!pManifest) {
         loadEffectInner(nullptr, nullptr, true);
         return;
     }
-    EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-            pPreset->id(), pPreset->backendType());
     loadEffectInner(pManifest, pPreset, true);
 }
 
@@ -291,6 +282,14 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
+    }
+
+    // Don't load an effect into the '---' preset. The preset would remain
+    // selected in WEffectChainPresetSelector and WEffectChainPresetButton and
+    // therefore couldn't be used to clear the chain.
+    // Instead, load an empty, nameless preset, then load the desired effect.
+    if (m_pChain->isEmptyPlaceholderPresetLoaded()) {
+        m_pChain->loadEmptyNamelessPreset();
     }
 
     m_pManifest = pManifest;
@@ -346,6 +345,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     loadParameters();
 
+    m_pControlMetaParameter->setDefaultValue(pManifest->metaknobDefault());
+
     m_pControlLoaded->forceSet(1.0);
 
     if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
@@ -397,6 +398,8 @@ void EffectSlot::unloadEffect() {
     for (auto& parameterList : m_hiddenParameters) {
         parameterList.clear();
     }
+
+    m_pControlMetaParameter->setDefaultValue(0.0);
 
     m_pManifest.clear();
 
@@ -478,6 +481,9 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
 }
 
 void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2) {
+    if (index1 == index2) {
+        return;
+    }
     VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index1) {
         return;
     }

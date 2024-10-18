@@ -88,8 +88,8 @@ void timing_sleep(uint64_t sleeptime)
 {
     struct timeval sleeper;
 
-    sleeper.tv_sec = sleeptime / 1000;
-    sleeper.tv_usec = (sleeptime % 1000) * 1000;
+    sleeper.tv_sec = (long)(sleeptime / 1000);
+    sleeper.tv_usec = (long)((sleeptime % 1000) * 1000);
 
     /* NOTE:
      * This should be 0 for the first argument.  The linux manpage
@@ -97,7 +97,7 @@ void timing_sleep(uint64_t sleeptime)
      * value.  If you think differerntly, please provide references.
      */
 #ifdef WIN32
-	Sleep(sleeptime);
+	Sleep((DWORD)sleeptime);
 #else
     select(1, NULL, NULL, NULL, &sleeper);
 #endif

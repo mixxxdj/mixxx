@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 
 // Handles drops on decks and samplers

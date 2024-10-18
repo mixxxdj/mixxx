@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
@@ -68,7 +68,6 @@ Item {
                 target: indicatorContainer
                 opacity: 0
             }
-
         }
 
         transitions: Transition {
@@ -82,9 +81,6 @@ Item {
                 property: "opacity"
                 duration: 150
             }
-
         }
-
     }
-
 }

@@ -1,6 +1,8 @@
 #include "widget/wrecordingduration.h"
 
 #include "moc_wrecordingduration.cpp"
+#include "recording/recordingmanager.h"
+#include "skin/legacy/skincontext.h"
 
 WRecordingDuration::WRecordingDuration(QWidget *parent,
                                     RecordingManager* pRecordingManager)

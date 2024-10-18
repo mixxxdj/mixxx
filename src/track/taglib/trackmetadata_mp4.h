@@ -1,10 +1,12 @@
 #pragma once
 
-#include <taglib/mp4tag.h>
+#include <mp4tag.h>
 
-#include "track/taglib/trackmetadata_common.h"
+class QImage;
 
 namespace mixxx {
+
+class TrackMetadata;
 
 namespace taglib {
 
@@ -12,7 +14,8 @@ namespace mp4 {
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::MP4::Tag& tag);
+        const TagLib::MP4::Tag& tag,
+        bool resetMissingTagMetadata);
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

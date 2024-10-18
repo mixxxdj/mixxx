@@ -5,7 +5,6 @@
 #include <QMap>
 #include <QMutex>
 #include <QObject>
-#include <QTimerEvent>
 
 #include "control/controlproxy.h"
 #include "track/track_decl.h"
@@ -21,6 +20,7 @@ class PlayerInfo : public QObject {
     TrackPointer getCurrentPlayingTrack();
     int getCurrentPlayingDeck();
     QMap<QString, TrackPointer> getLoadedTracks();
+    QStringList getPlayerGroupsWithTracksLoaded(const TrackPointerList& tracks) const;
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
 

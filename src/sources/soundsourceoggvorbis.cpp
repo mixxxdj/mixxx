@@ -165,7 +165,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
         // Use 'long' here, because ov_read_float() returns this type.
         // This is an exception from the rule not to any types with
         // differing sizes on different platforms.
-        // https://bugs.launchpad.net/mixxx/+bug/1094143
+        // https://github.com/mixxxdj/mixxx/issues/6812
         const long readResult = ov_read_float(&m_vf, &pcmChannels, numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;

@@ -40,7 +40,7 @@ class CircularBuffer {
     }
 
     // Returns the total capacity of the CircularBuffer in units of T
-    inline unsigned int length() const {
+    constexpr unsigned int length() const {
         return m_iLength;
     }
 

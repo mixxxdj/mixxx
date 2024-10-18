@@ -1,5 +1,5 @@
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
+import Mixxx 1.0 as Mixxx
+import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick 2.12
 
 Mixxx.WaveformOverview {
@@ -42,7 +42,6 @@ Mixxx.WaveformOverview {
                 group: root.group // qmllint disable unqualified
                 hotcueNumber: this.index + 1
             }
-
         }
 
         MixxxControls.WaveformOverviewMarker {
@@ -52,7 +51,6 @@ Mixxx.WaveformOverview {
             group: root.group
             key: "playposition"
         }
-
     }
 
     MouseArea {
@@ -65,8 +63,6 @@ Mixxx.WaveformOverview {
         onPositionChanged: (mouse) => {
             if (this.containsPress)
                 playPositionControl.value = mouse.x / this.width;
-
         }
     }
-
 }

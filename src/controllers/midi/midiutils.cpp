@@ -72,10 +72,8 @@ QString MidiUtils::formatMidiOpCode(const QString& controllerName,
         MidiOpCode opCode,
         mixxx::Duration timestamp) {
     QString msg2;
-    if (timestamp == mixxx::Duration::fromMillis(0)) {
-      msg2 = "outgoing:";
-    } else {
-      msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
+    if (timestamp != mixxx::Duration::fromMillis(0)) {
+        msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
     }
     switch (opCode) {
     case MidiOpCode::PitchBendChange:
@@ -138,10 +136,8 @@ QString MidiUtils::formatMidiOpCode(const QString& controllerName,
 QString MidiUtils::formatSysexMessage(const QString& controllerName, const QByteArray& data,
                                            mixxx::Duration timestamp) {
     QString msg2;
-    if (timestamp == mixxx::Duration::fromMillis(0)) {
-      msg2 = "outgoing:";
-    } else {
-      msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
+    if (timestamp != mixxx::Duration::fromMillis(0)) {
+        msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
     }
     QString message =
             QString("%1: %2 %3 byte sysex: [")

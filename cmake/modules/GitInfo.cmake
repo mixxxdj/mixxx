@@ -33,19 +33,13 @@ if(NOT GIT_DESCRIBE)
     else()
       message(NOTICE "Git branch: ${GIT_BRANCH}")
     endif()
-
-    # Get the number of commits on the working branch
-    execute_process(
-      COMMAND git rev-list --count --first-parent HEAD
-      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-      OUTPUT_VARIABLE GIT_COMMIT_COUNT
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET
-    )
-    if(NOT GIT_COMMIT_COUNT)
-      message(NOTICE "Git commit count: unknown")
-    else()
+    # Get the number of commits since the version tag
+    string(REGEX MATCH ".*-([0-9]*)-.*" GIT_COMMIT_COUNT_MATCH "${GIT_DESCRIBE}")
+    if (GIT_COMMIT_COUNT_MATCH)
+      set(GIT_COMMIT_COUNT "${CMAKE_MATCH_1}")
       message(NOTICE "Git commit count: ${GIT_COMMIT_COUNT}")
+    else()
+      message(NOTICE "Git commit count: unknown")
     endif()
   endif()
 else()

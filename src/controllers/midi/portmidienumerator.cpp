@@ -25,8 +25,10 @@ bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
 // devices that have an equivalent "deviceName" and ### section.
 const QRegularExpression kMidiDeviceNameRegex(QStringLiteral("^(.*) MIDI (\\d+)( .*)?$"));
 
-const QRegularExpression kInputRegex(QStringLiteral("^(.*) in (\\d+)( .*)?$"));
-const QRegularExpression kOutputRegex(QStringLiteral("^(.*) out (\\d+)( .*)?$"));
+const QRegularExpression kInputRegex(QStringLiteral("^(.*) in( \\d+)?( .*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
+const QRegularExpression kOutputRegex(QStringLiteral("^(.*) out( \\d+)?( .*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
 
 // This is a broad pattern that matches a text blob followed by a numeral
 // potentially followed by non-numeric text. The non-numeric requirement is
@@ -79,6 +81,11 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
     // output linked, the MIDI output for the device fails, as the device is
     // NULL in PortMidiController
     if (input_name == "KAOSS DJ CONTROL" && output_name == "KAOSS DJ SOUND") {
+        return true;
+    }
+    // Ableton Push on Windows
+    // Shows 2 different devices for MIDI input and output.
+    if (input_name == "MIDIIN2 (Ableton Push)" && output_name == "MIDIOUT2 (Ableton Push)") {
         return true;
     }
     return false;

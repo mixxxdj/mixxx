@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QButtonGroup>
-#include <QRadioButton>
-#include <QWidget>
 
 #include "encoder/encoder.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -11,6 +9,8 @@
 
 class ControlObject;
 class ControlProxy;
+class QRadioButton;
+class QWidget;
 
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT

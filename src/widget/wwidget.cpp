@@ -1,7 +1,6 @@
 #include "widget/wwidget.h"
 
 #include <QTouchEvent>
-#include <QtDebug>
 
 #include "control/controlproxy.h"
 #include "moc_wwidget.cpp"
@@ -14,7 +13,17 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
           m_scaleFactor(1.0) {
     m_pTouchShift = new ControlProxy("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
+    // Touch events are disabled on macOS to work around the issue that Mac
+    // trackpad events are not processed correctly with Qt 6. Since these events
+    // aren't needed anyway, we can safely disable them. Once upstream (Qt)
+    // fixes the issue, the `#ifndef` can be removed to re-enable touch events.
+    // For details on both the issue and the fix, see
+    // - https://bugreports.qt.io/browse/QTBUG-103935?focusedId=739905#comment-739905
+    // - https://github.com/mixxxdj/mixxx/issues/11869
+    // - https://github.com/mixxxdj/mixxx/pull/11870
+#ifndef __APPLE__
     setAttribute(Qt::WA_AcceptTouchEvents);
+#endif
     setFocusPolicy(Qt::ClickFocus);
 }
 

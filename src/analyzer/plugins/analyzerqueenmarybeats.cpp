@@ -65,7 +65,7 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     return true;
 }
 
-bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, SINT iLen) {
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pDetectionFunction) {
         return false;

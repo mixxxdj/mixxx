@@ -120,8 +120,8 @@ NumarkMixTrackPro.init = function(id) {	// called when the MIDI device is opened
 
 
 // Clipping LED
-	engine.connectControl("[Channel1]","PeakIndicator","NumarkMixTrackPro.Channel1Clip");
-	engine.connectControl("[Channel2]","PeakIndicator","NumarkMixTrackPro.Channel2Clip");
+	engine.connectControl("[Channel1]","peak_indicator","NumarkMixTrackPro.Channel1Clip");
+	engine.connectControl("[Channel2]","peak_indicator","NumarkMixTrackPro.Channel2Clip");
 
 // Stutter beat light
 	engine.connectControl("[Channel1]","beat_active","NumarkMixTrackPro.Stutter1Beat");
@@ -220,8 +220,7 @@ NumarkMixTrackPro.setLED = function(value, status) {
 
 NumarkMixTrackPro.flashLED = function (led, veces){
 	var ndx = Math.random();
-	var func = "NumarkMixTrackPro.doFlash(" + ndx + ", " + veces + ")";
-	var id = engine.beginTimer(120, func);
+	var id = engine.beginTimer(120, NumarkMixTrackPro.doFlash(ndx, veces));
 	NumarkMixTrackPro.ledTimers[ndx] =  new NumarkMixTrackPro.LedTimer(id, led, 0, false);
 }
 
@@ -589,15 +588,15 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 		if (NumarkMixTrackPro.scratchMode[deck-1] && posNeg == -1 && !NumarkMixTrackPro.touch[deck-1]) {
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
-			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
+			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => {NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 		}
 
-	} else { // en stop hace scratch siempre
+    } else { // stop scratching
 
 		if (!NumarkMixTrackPro.touch[deck-1]){
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
-			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
+			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => { NumarkMixTrackPro.jogWheelStopScratch(); }, true);
 		}
 
 	}
@@ -635,11 +634,11 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 
-		NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
+		NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => { NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 
 	} else {
 
-		// si esta en play y el modo scratch desactivado, al presionar el touch no hace nada
+		// if playing and scratch mode is disabled, do nothing on press
 		if (!NumarkMixTrackPro.scratchMode[deck-1] && engine.getValue(group, "play")) return;
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);

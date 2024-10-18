@@ -1,20 +1,9 @@
 #include "widget/wknob.h"
 
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QtDebug>
-
 #include "moc_wknob.cpp"
-#include "util/duration.h"
 
 WKnob::WKnob(QWidget* pParent)
-        : WDisplay(pParent),
-          m_renderTimer(mixxx::Duration::fromMillis(20),
-                        mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer,
-            &WidgetRenderTimer::update,
-            this,
-            QOverload<>::of(&QWidget::update));
+        : WDisplay(pParent) {
     setFocusPolicy(Qt::NoFocus);
 }
 
@@ -38,10 +27,10 @@ void WKnob::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
 }
 
+void WKnob::leaveEvent(QEvent* e) {
+    m_handler.leaveEvent(this, e);
+}
+
 void WKnob::inputActivity() {
-#ifdef __APPLE__
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }

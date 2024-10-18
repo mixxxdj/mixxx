@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QFileInfo>
-#include <QMessageBox>
 
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"

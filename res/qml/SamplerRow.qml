@@ -14,7 +14,5 @@ RowLayout {
             Layout.fillWidth: true
             group: "[Sampler" + (index + 1) + "]"
         }
-
     }
-
 }

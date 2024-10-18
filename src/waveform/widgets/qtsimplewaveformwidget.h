@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QGLWidget>
+#include "glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class QtSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     QtSimpleWaveformWidget(const QString& group, QWidget* parent);
@@ -13,11 +11,18 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform; }
 
-    static inline QString getWaveformWidgetName() { return tr("Simple") + " - Qt"; }
+    static inline QString getWaveformWidgetName() {
+        return tr("Simple") + "- Qt";
+    }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline bool useTextureForWaveform() {
+        return false;
+    }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
+    }
 
   protected:
     virtual void castToQWidget();

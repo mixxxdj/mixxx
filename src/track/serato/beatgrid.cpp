@@ -1,7 +1,5 @@
 #include "track/serato/beatgrid.h"
 
-#include <QtEndian>
-
 #include "util/logger.h"
 
 namespace {
@@ -458,7 +456,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         }
     }
 
-    nonTerminalMarkers.reserve(markers.size());
+    nonTerminalMarkers.reserve(static_cast<int>(markers.size()));
     std::transform(markers.cbegin(),
             markers.cend(),
             std::back_inserter(nonTerminalMarkers),

@@ -1,12 +1,5 @@
 #pragma once
 
-#include <QPixmap>
-#include <QString>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
-
-#include "util/widgetrendertimer.h"
 #include "widget/wdisplay.h"
 #include "widget/knobeventhandler.h"
 
@@ -21,6 +14,7 @@ class WKnob : public WDisplay {
 
   protected:
     void wheelEvent(QWheelEvent *e) override;
+    void leaveEvent(QEvent* e) override;
     void mouseMoveEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseDoubleClickEvent(QMouseEvent* e) override;
@@ -28,8 +22,6 @@ class WKnob : public WDisplay {
     void inputActivity();
 
   private:
-    WidgetRenderTimer m_renderTimer;
-
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;
 };

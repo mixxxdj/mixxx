@@ -1,6 +1,8 @@
 #pragma once
 
 #include "controllers/controllerenumerator.h"
+#include <QtCore/QSharedPointer>
+#include "preferences/usersettings.h"
 
 struct libusb_context;
 
@@ -8,13 +10,13 @@ struct libusb_context;
 class BulkEnumerator : public ControllerEnumerator {
     Q_OBJECT
   public:
-    explicit BulkEnumerator(UserSettingsPointer pConfig);
+    explicit BulkEnumerator(UserSettings *pConfig);
     virtual ~BulkEnumerator();
 
     QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;
-    libusb_context* m_context;
-    UserSettingsPointer m_pConfig;
+    libusb_context *m_context;
+    UserSettings *m_pConfig;
 };

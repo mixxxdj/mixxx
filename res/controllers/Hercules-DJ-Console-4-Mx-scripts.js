@@ -325,10 +325,10 @@ Hercules4Mx.init = function(id, debugging) {
         }
     }
     if (Hercules4Mx.userSettings.useVuMeters) {
-        engine.connectControl("[Master]", "VuMeterL", "Hercules4Mx.onVuMeterMasterL");
-        engine.connectControl("[Master]", "VuMeterR", "Hercules4Mx.onVuMeterMasterR");
+        engine.connectControl("[Main]", "vu_meter_left", "Hercules4Mx.onVuMeterMasterL");
+        engine.connectControl("[Main]", "vu_meter_right", "Hercules4Mx.onVuMeterMasterR");
         for (i = 1; i <= 4; i++) {
-            engine.connectControl("[Channel" + i + "]", "VuMeter", "Hercules4Mx.onVuMeterDeck" + i);
+            engine.connectControl("[Channel" + i + "]", "vu_meter", "Hercules4Mx.onVuMeterDeck" + i);
             engine.connectControl("[Channel" + i + "]", "passthrough", "Hercules4Mx.onKillOrSourceChange" + i);
             engine.connectControl("[EqualizerRack1_[Channel" + i + "]_Effect1]", "button_parameter3", "Hercules4Mx.onKillOrSourceChange" + i);
             engine.connectControl("[EqualizerRack1_[Channel" + i + "]_Effect1]", "button_parameter2", "Hercules4Mx.onKillOrSourceChange" + i);
@@ -343,7 +343,7 @@ Hercules4Mx.init = function(id, debugging) {
         Hercules4Mx.setupFXButtonsCustomMixx21();
     }
 
-    engine.beginTimer(3000, "Hercules4Mx.doDelayedSetup", true);
+    engine.beginTimer(3000, Hercules4Mx.doDelayedSetup, true);
 };
 //timer-called (delayed) setup.
 Hercules4Mx.doDelayedSetup = function() {
@@ -569,7 +569,7 @@ Hercules4Mx.onAutoDJFade = function(value, group, control) {
     //After 5 seconds, restore non-flashing led. It would be perfect if autoDJFade was triggered also
     //when the fading ends, but right now it seems this is not possible. Also, it doesn't seem to be
     //an option to get the duration of the fading, that's why i simply put there 5 seconds.
-    Hercules4Mx.autoDJfadingId = engine.beginTimer(5000, "Hercules4Mx.doEndAutoDJFadeOffAction", true);
+    Hercules4Mx.autoDJfadingId = engine.beginTimer(5000, Hercules4Mx.doEndAutoDJFadeOffAction, true);
 };
 Hercules4Mx.doEndAutoDJFadeOffAction = function() {
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7C, 0x00);
@@ -673,7 +673,7 @@ Hercules4Mx.updateVumeterEvent = function(vumeter, value) {
     var newval = parseInt(value * 0x80);
     if (vumeter.lastvalue !== newval) {
         vumeter.lastvalue = newval;
-        if (engine.getValue(vumeter.source, "PeakIndicator") > 0) {
+        if (engine.getValue(vumeter.source, "peak_indicator") > 0) {
             // IF it clips, we put the top led on and the rest off, which gives a "flash" effect.
             midi.sendShortMsg(vumeter.midichan, vumeter.clip, 0x7F);
             newval = 0;
@@ -1315,8 +1315,8 @@ Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
                 Hercules4Mx.deactivateEditModeAction();
             }
             Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.loop, deck);
-            var splitted = extraparam.split(";");
-            if (splitted[0] === "roll") {
+            var split = extraparam.split(";");
+            if (split[0] === "roll") {
                 engine.setValue(group, "slip_enabled", 1);
             } else {
                 engine.setValue(group, "slip_enabled", 0);
@@ -1364,13 +1364,13 @@ Hercules4Mx.LoopButtonPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
         console.log("Hercules4Mx.LoopButtonPush");
     }
-    var splitted = extraparam.split(";");
-    if (splitted[0] === "roll" && splitted.length === 2) {
+    var split = extraparam.split(";");
+    if (split[0] === "roll" && split.length === 2) {
         if (engine.getValue(group, "loop_enabled") === 0 && value > 0) {
             engine.setValue(group, "slip_enabled", 1);
         }
-        Hercules4Mx.buttonPush(group, fxbutton, value, splitted[1]);
-    } else if (splitted.length === 1) {
+        Hercules4Mx.buttonPush(group, fxbutton, value, split[1]);
+    } else if (split.length === 1) {
         engine.setValue(group, "slip_enabled", 0);
         Hercules4Mx.buttonPush(group, fxbutton, value, extraparam);
     }

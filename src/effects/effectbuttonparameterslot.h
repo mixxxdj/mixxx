@@ -2,13 +2,10 @@
 
 #include <QObject>
 #include <QString>
-#include <QVariant>
 
-#include "control/controlobject.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
-class ControlObject;
 class ControlPushButton;
 
 /// Refer to EffectParameterSlotBase for documentation

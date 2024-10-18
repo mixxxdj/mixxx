@@ -35,9 +35,6 @@ Slider {
                 x: root.horizontal ? (barShape.width * root.value) : barPath.startX
                 y: root.vertical ? (barShape.height * (1 - root.value)) : barPath.startY
             }
-
         }
-
     }
-
 }

@@ -12,9 +12,6 @@
 #include "util/color/rgbcolor.h"
 #include "util/db/dbid.h"
 
-class CueDAO;
-class Track;
-
 class Cue : public QObject {
     Q_OBJECT
 
@@ -56,7 +53,8 @@ class Cue : public QObject {
             mixxx::CueType type,
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
-            mixxx::audio::FramePos endPosition);
+            mixxx::audio::FramePos endPosition,
+            mixxx::RgbColor color);
 
     ~Cue() override = default;
 

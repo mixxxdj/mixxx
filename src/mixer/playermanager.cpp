@@ -2,10 +2,13 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -24,6 +27,8 @@
 namespace {
 
 const mixxx::Logger kLogger("PlayerManager");
+const QString kAppGroup = QStringLiteral("[App]");
+const QString kLegacyGroup = QStringLiteral("[Master]");
 
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
@@ -82,6 +87,10 @@ T* findFirstStoppedPlayerInList(const QList<T*>& players) {
     return nullptr;
 }
 
+inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
+    return pConfig->getSettingsPath() + QStringLiteral("/samplers.xml");
+}
+
 } // anonymous namespace
 
 //static
@@ -94,7 +103,7 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMaster* pEngine)
+        EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
@@ -102,25 +111,30 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pEngine(pEngine),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
-          m_pCONumDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_decks"), true, true)),
-          m_pCONumSamplers(new ControlObject(
-                  ConfigKey("[Master]", "num_samplers"), true, true)),
-          m_pCONumPreviewDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_preview_decks"), true, true)),
-          m_pCONumMicrophones(new ControlObject(
-                  ConfigKey("[Master]", "num_microphones"), true, true)),
-          m_pCONumAuxiliaries(new ControlObject(
-                  ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+          m_pCONumDecks(std::make_unique<ControlObject>(
+                  ConfigKey(kAppGroup, QStringLiteral("num_decks")), true, true)),
+          m_pCONumSamplers(std::make_unique<ControlObject>(
+                  ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true, true)),
+          m_pCONumPreviewDecks(std::make_unique<ControlObject>(
+                  ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), true, true)),
+          m_pCONumMicrophones(std::make_unique<ControlObject>(
+                  ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
+          m_pCONumAuxiliaries(std::make_unique<ControlObject>(
+                  ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+    m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
+    m_pCONumSamplers->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_samplers")));
     m_pCONumSamplers->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumSamplers, Qt::DirectConnection);
+    m_pCONumPreviewDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_preview_decks")));
     m_pCONumPreviewDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumPreviewDecks, Qt::DirectConnection);
+    m_pCONumMicrophones->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_microphones")));
     m_pCONumMicrophones->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumMicrophones, Qt::DirectConnection);
+    m_pCONumAuxiliaries->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_auxiliaries")));
     m_pCONumAuxiliaries->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
 
@@ -135,8 +149,7 @@ PlayerManager::~PlayerManager() {
 
     const auto locker = lockMutex(&m_mutex);
 
-    m_pSamplerBank->saveSamplerBankToPath(
-        m_pConfig->getSettingsPath() + "/samplers.xml");
+    m_pSamplerBank->saveSamplerBankToPath(getDefaultSamplerPath(m_pConfig));
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -148,12 +161,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
-
-    delete m_pCONumSamplers;
-    delete m_pCONumDecks;
-    delete m_pCONumPreviewDecks;
-    delete m_pCONumMicrophones;
-    delete m_pCONumAuxiliaries;
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();
@@ -241,7 +248,7 @@ unsigned int PlayerManager::numDecks() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
-        pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+        pCOPNumDecks = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_decks")));
         if (!pCOPNumDecks->valid()) {
             delete pCOPNumDecks;
             pCOPNumDecks = nullptr;
@@ -259,7 +266,7 @@ unsigned int PlayerManager::numSamplers() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
-        pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        pCOPNumSamplers = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
         if (!pCOPNumSamplers->valid()) {
             delete pCOPNumSamplers;
             pCOPNumSamplers = nullptr;
@@ -278,7 +285,7 @@ unsigned int PlayerManager::numPreviewDecks() {
     ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
-                ConfigKey("[Master]", "num_preview_decks"));
+                ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")));
         if (!pCOPNumPreviewDecks->valid()) {
             delete pCOPNumPreviewDecks;
             pCOPNumPreviewDecks = nullptr;
@@ -333,6 +340,7 @@ void PlayerManager::slotChangeNumSamplers(double v) {
         addSamplerInner();
     }
     m_pCONumSamplers->setAndConfirm(m_samplers.size());
+    emit numberOfSamplersChanged(m_samplers.count());
 }
 
 void PlayerManager::slotChangeNumPreviewDecks(double v) {
@@ -428,20 +436,29 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioPathType::Deck,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    deckIndex),
+            m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-    m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
+    m_pSoundManager->registerInput(AudioInput(AudioPathType::VinylControl,
+                                           0,
+                                           mixxx::audio::ChannelCount::stereo(),
+                                           deckIndex),
+            pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
-    m_pEffectsManager->addDeck(handleGroup.m_name);
+    m_pEffectsManager->addDeck(handleGroup);
+
+    // Setup EQ ControlProxies used for resetting EQs on track load
+    pDeck->setupEqControls();
 }
 
 void PlayerManager::loadSamplers() {
-    m_pSamplerBank->loadSamplerBankFromPath(
-            m_pConfig->getSettingsPath() + "/samplers.xml");
+    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig));
 }
 
 void PlayerManager::addSampler() {
@@ -599,10 +616,17 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 TrackPointer PlayerManager::getLastEjectedTrack() const {
-    if (m_pLibrary) {
-        return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
+    VERIFY_OR_DEBUG_ASSERT(m_pLibrary != nullptr) {
+        return nullptr;
     }
-    return nullptr;
+    return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
+}
+
+TrackPointer PlayerManager::getSecondLastEjectedTrack() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibrary != nullptr) {
+        return nullptr;
+    }
+    return m_pLibrary->trackCollectionManager()->getTrackById(m_secondLastEjectedTrackId);
 }
 
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
@@ -646,28 +670,45 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
         return;
     }
 
-    mixxx::Duration elapsed = m_cloneTimer.restart();
-    // If not present in the config, use & set the default value
-    bool cloneOnDoubleTap = m_pConfig->getValue(
-            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
+    bool clone = false;
+    if (isDeckGroup(group)) {
+        mixxx::Duration elapsed = m_cloneTimer.restart();
+        // If not present in the config, use & set the default value
+        bool cloneOnDoubleTap = m_pConfig->getValue(
+                ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
 
-    // If AutoDJ is enabled, prevent it from cloning decks if the same track
-    // is in the AutoDJ queue twice in a row. This can happen when the option to
-    // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
-    // button repeatedly.
-    // AutoDJProcessor is initialized after PlayerManager, so check that the
-    // ControlProxy is pointing to the real ControlObject.
-    if (!m_pAutoDjEnabled) {
-        m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
+        // If AutoDJ is enabled, prevent it from cloning decks if the same track
+        // is in the AutoDJ queue twice in a row. This can happen when the option to
+        // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
+        // button repeatedly.
+        // AutoDJProcessor is initialized after PlayerManager, so check that the
+        // ControlProxy is pointing to the real ControlObject.
+        if (!m_pAutoDjEnabled) {
+            m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
+        }
+        bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
+                (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+
+        if (cloneOnDoubleTap && m_lastLoadedPlayer == group &&
+                elapsed < mixxx::Duration::fromSeconds(0.5) &&
+                !autoDjSkipClone) {
+            // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
+            // so clone another playing deck instead of loading the selected track
+            clone = true;
+        }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
+        }
     }
-    bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
-            (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 
-    if (cloneOnDoubleTap && m_lastLoadedPlayer == group
-        && elapsed < mixxx::Duration::fromSeconds(0.5)
-        && !autoDjSkipClone) {
-        // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
-        // so clone another playing deck instead of loading the selected track
+    if (clone) {
         pPlayer->slotCloneDeck();
     } else {
         pPlayer->slotLoadTrack(pTrack, play);
@@ -683,16 +724,35 @@ void PlayerManager::slotLoadLocationToPlayer(
     emit loadLocationToPlayer(location, group, play);
 }
 
+void PlayerManager::slotLoadLocationToPlayerMaybePlay(
+        const QString& location, const QString& group) {
+    bool play = false;
+    LoadWhenDeckPlaying loadWhenDeckPlaying = m_pConfig->getValue(
+            kConfigKeyLoadWhenDeckPlaying, kDefaultLoadWhenDeckPlaying);
+    switch (loadWhenDeckPlaying) {
+    case LoadWhenDeckPlaying::AllowButStopDeck:
+    case LoadWhenDeckPlaying::Reject:
+        break;
+    case LoadWhenDeckPlaying::Allow:
+        if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            // deck is currently playing, so immediately play new track
+            play = true;
+        }
+        break;
+    }
+    slotLoadLocationToPlayer(location, group, play);
+}
+
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
-    slotLoadLocationToPlayer(location, groupForDeck(deck - 1));
+    slotLoadLocationToPlayer(location, groupForDeck(deck - 1), false);
 }
 
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
-    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1));
+    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1), false);
 }
 
 void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
-    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1));
+    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1), false);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
@@ -734,7 +794,7 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+        if (m_pTrackAnalysisScheduler->scheduleTrack(track->getId())) {
             m_pTrackAnalysisScheduler->resume();
         }
         // The first progress signal will suspend a running batch analysis
@@ -748,7 +808,12 @@ void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
-    m_lastEjectedTrackId = track->getId();
+    const TrackId id = track->getId();
+    if (id == m_lastEjectedTrackId) {
+        return;
+    }
+    m_secondLastEjectedTrackId = m_lastEjectedTrackId;
+    m_lastEjectedTrackId = id;
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

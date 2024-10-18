@@ -10,7 +10,8 @@
 class QuickEffectChain : public PerGroupEffectChain {
     Q_OBJECT
   public:
-    QuickEffectChain(const QString& group,
+    QuickEffectChain(
+            const ChannelHandleAndGroup& handleAndGroup,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 

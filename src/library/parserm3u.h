@@ -12,8 +12,6 @@
 //
 #pragma once
 
-#include <QDir>
-#include <QTextStream>
 #include <QList>
 #include <QString>
 

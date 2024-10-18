@@ -8,9 +8,7 @@
     color: the knob ring color. carmine, yellow or light_blue
 -->
 <Template>
-  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack1]</SetVariable>
   <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
@@ -28,7 +26,7 @@
           <Number>1</Number>
         </State>
         <Connection>
-          <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
+          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,enabled</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>

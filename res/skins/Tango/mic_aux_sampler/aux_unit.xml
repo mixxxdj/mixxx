@@ -34,22 +34,22 @@ Variables:
             <Alignment>right</Alignment>
           </Label>
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
-            <SetVariable name="TooltipId">master_enable</SetVariable>
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">main_enable</SetVariable>
             <SetVariable name="ObjectName">AuxEnable</SetVariable>
             <SetVariable name="Size">20f,29f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,main_mix</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/mixer/vumeter_mini.xml">
-            <SetVariable name="Size">5f,29f</SetVariable>
+          <Template src="skins:Tango/mixer/vumeter_mini.xml">
+            <SetVariable name="Size">4f,29f</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/knob_textless.xml">
+          <Template src="skins:Tango/controls/knob_textless.xml">
             <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
             <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
             <SetVariable name="Size">28f,28f</SetVariable>
@@ -70,8 +70,8 @@ Variables:
                 <Layout>stacked</Layout>
                 <Children>
                   <!-- Greyed out if no headphone device is configured -->
-                  <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
-                  <Template src="skin:../Tango/controls/button_2state.xml">
+                  <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+                  <Template src="skins:Tango/controls/button_2state.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="Size">18f,18f</SetVariable>
@@ -82,7 +82,7 @@ Variables:
                 </Children>
               </WidgetGroup><!-- /Pfl button + cover -->
 
-              <Template src="skin:../Tango/controls/button_3state_persist.xml">
+              <Template src="skins:Tango/controls/button_3state_persist.xml">
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="ObjectName">AuxXfaderButton</SetVariable>
                 <SetVariable name="Size">18f,15f</SetVariable>
@@ -108,12 +108,12 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
@@ -126,12 +126,12 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">4</SetVariable>
                   </Template>
@@ -145,7 +145,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

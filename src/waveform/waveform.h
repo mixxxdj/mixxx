@@ -7,6 +7,7 @@
 #include <QString>
 #include <vector>
 
+#include "audio/signalinfo.h"
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
 
@@ -35,8 +36,11 @@ class Waveform {
     };
 
     explicit Waveform(const QByteArray& pData = QByteArray());
-    Waveform(int audioSampleRate, int audioSamples,
-             int desiredVisualSampleRate, int maxVisualSamples);
+    Waveform(
+            int audioSampleRate,
+            SINT frameLength,
+            int desiredVisualSampleRate,
+            int maxVisualSamples);
 
     virtual ~Waveform();
 
@@ -71,12 +75,6 @@ class Waveform {
     }
 
     QByteArray toByteArray() const;
-
-    // We do not lock the mutex since m_dataSize and m_visualSampleRate are not
-    // changed after the constructor runs.
-    bool isValid() const {
-        return getDataSize() > 0 && getVisualSampleRate() > 0;
-    }
 
     SaveState saveState() const {
         return m_saveState;

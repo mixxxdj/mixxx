@@ -1,11 +1,11 @@
 #pragma once
 
 #include <QComboBox>
-#include <QDomNode>
-#include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "skin/legacy/skincontext.h"
+
+class QDomNode;
+class SkinContext;
 
 class WComboBox : public QComboBox, public WBaseWidget {
     Q_OBJECT

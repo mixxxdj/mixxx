@@ -17,7 +17,9 @@
               <!-- Sidebar etc. -->
               <WidgetGroup>
                 <!-- Required for restoring the splitter sizes, otherwise the searchbox
-                    would force.expand the left side. -->
+                    would force.expand the left side.
+                    Also required to avoid resize (shrink) glitch with long titles loaded
+                    to the preview deck. -->
                 <SizePolicy>i,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
@@ -38,7 +40,7 @@
                         <MinimumSize>16,16</MinimumSize>
                         <SizePolicy>me,me</SizePolicy>
                         <Connection>
-                          <ConfigKey>[Library],show_coverart</ConfigKey>
+                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>

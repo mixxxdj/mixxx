@@ -1,10 +1,6 @@
 #include "track/beatutils.h"
 
-#include <QList>
-#include <QMap>
-#include <QString>
 #include <QtDebug>
-#include <algorithm>
 
 #include "util/math.h"
 
@@ -152,7 +148,7 @@ mixxx::Bpm BeatUtils::makeConstBpm(
     // This metronome is likely at a full BPM.
     // The track may has intros, outros and bridges without detectable beats.
     // In these regions the detected beat might is floating around and is just wrong.
-    // The track may also has regions with different Rhythm giving Instruments. They
+    // The track may also has regions with different rhythm giving instruments. They
     // have a different shape of onsets and introduce a static beat offset.
     // The track may also have break beats or other issues that makes the detector
     // hook onto a beat that is by an integer fraction off the original metronome.

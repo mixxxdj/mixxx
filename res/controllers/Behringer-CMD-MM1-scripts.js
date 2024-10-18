@@ -536,10 +536,10 @@ CMDMM.init = function () {
       this.speed=navEncoderScale;
     },
   });
-  CMDMM.VuMeterL = engine.makeUnbufferedConnection("[Master]","VuMeterL",function (value) {
+  CMDMM.VuMeterL = engine.makeUnbufferedConnection("[Main]", "vu_meter_left", function(value) {
     midi.sendShortMsg(MIDI.CC, 0x50, (value * 15) + 48);
   });
-  CMDMM.VuMeterR = engine.makeUnbufferedConnection("[Master]","VuMeterR",function (value) {
+  CMDMM.VuMeterR = engine.makeUnbufferedConnection("[Main]", "vu_meter_right", function(value) {
     midi.sendShortMsg(MIDI.CC, 0x51, (value * 15) + 48);
   });
   CMDMM.layer(1);
@@ -549,8 +549,8 @@ CMDMM.init = function () {
 };
 
 CMDMM.shutdown = function () {
-  engine.setParameter("[Master]","VuMeterL",0);
-  engine.setParameter("[Master]","VuMeterR",0);
+  engine.setParameter("[Main]", "vu_meter_left", 0);
+  engine.setParameter("[Main]", "vu_meter_right", 0);
   for (var i = 0; i<127; i++) {
     midi.sendShortMsg(MIDI.noteOn, i, 0);
     // sets the controller to orange (to match the left/right buttons which only light up in orange);

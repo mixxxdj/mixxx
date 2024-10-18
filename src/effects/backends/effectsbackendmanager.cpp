@@ -2,7 +2,11 @@
 
 #include "control/controlobject.h"
 #include "effects/backends/builtin/builtinbackend.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
+#ifdef __AU_EFFECTS__
+#include "effects/backends/audiounit/audiounitbackend.h"
+#endif
 #ifdef __LILV__
 #include "effects/backends/lv2/lv2backend.h"
 #endif
@@ -14,6 +18,9 @@ EffectsBackendManager::EffectsBackendManager() {
     m_pNumEffectsAvailable->setReadOnly();
 
     addBackend(EffectsBackendPointer(new BuiltInBackend()));
+#ifdef __AU_EFFECTS__
+    addBackend(createAudioUnitBackend());
+#endif
 #ifdef __LILV__
     addBackend(EffectsBackendPointer(new LV2Backend()));
 #endif
@@ -89,28 +96,12 @@ EffectManifestPointer EffectsBackendManager::getManifest(
     return pEffectsBackend->getManifest(id);
 }
 
-const QString EffectsBackendManager::getDisplayNameForEffectPreset(
-        EffectPresetPointer pPreset) const {
-    //: Displayed when no effect is loaded
-    QString displayName(kNoEffectString);
-    if (!pPreset || pPreset->isEmpty()) {
-        return displayName;
-    }
-
-    bool manifestFound = false;
-    for (const auto& pManifest : std::as_const(m_manifests)) {
-        if (pManifest->id() == pPreset->id() &&
-                pManifest->backendType() == pPreset->backendType()) {
-            displayName = pManifest->name();
-            manifestFound = true;
-            break;
-        }
-    }
-    if (!manifestFound) {
+EffectManifestPointer EffectsBackendManager::getManifest(EffectPresetPointer pPreset) const {
+    EffectManifestPointer pManifest = getManifest(pPreset->id(), pPreset->backendType());
+    if (!pManifest) {
         qWarning() << "Failed to find manifest for effect preset " << pPreset->id();
-        DEBUG_ASSERT(false);
     }
-    return displayName;
+    return pManifest;
 }
 
 std::unique_ptr<EffectProcessor> EffectsBackendManager::createProcessor(

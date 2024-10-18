@@ -4,6 +4,7 @@
 #include <QStylePainter>
 
 #include "moc_wbattery.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/battery/battery.h"
 #include "util/math.h"
 

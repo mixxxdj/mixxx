@@ -3,8 +3,6 @@
 #include <QMap>
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/types.h"
 
@@ -16,7 +14,10 @@ struct BitCrusherGroupState : public EffectState {
               hold_r(0),
               accumulator(1) {
     }
-    CSAMPLE hold_l, hold_r;
+    ~BitCrusherGroupState() override = default;
+
+    CSAMPLE hold_l;
+    CSAMPLE hold_r;
     // Accumulated fractions of a samplerate period.
     CSAMPLE accumulator;
 };
@@ -24,7 +25,7 @@ struct BitCrusherGroupState : public EffectState {
 class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
   public:
     BitCrusherEffect() = default;
-    virtual ~BitCrusherEffect();
+    ~BitCrusherEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

@@ -99,6 +99,18 @@ void ControllerScriptEngineLegacy::setScriptFiles(
     m_scriptFiles = scripts;
 }
 
+void ControllerScriptEngineLegacy::setSettings(
+        const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings) {
+    m_settings.clear();
+    for (const auto& pSetting : std::as_const(settings)) {
+        QString name = pSetting->variableName();
+        VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
+            continue;
+        }
+        m_settings[name] = pSetting->value();
+    }
+}
+
 bool ControllerScriptEngineLegacy::initialize() {
     if (!ControllerScriptEngineBase::initialize()) {
         return false;
@@ -123,6 +135,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
             new ControllerScriptInterfaceLegacy(this, m_logger);
+
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
@@ -167,11 +180,17 @@ bool ControllerScriptEngineLegacy::initialize() {
 }
 
 void ControllerScriptEngineLegacy::shutdown() {
-    callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+    // There is no js engine if the mapping was not loaded from a file but by
+    // creating a new, empty mapping LegacyMidiControllerMapping with the wizard
+    if (m_pJSEngine) {
+        callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
+    }
     m_scriptWrappedFunctionCache.clear();
     m_incomingDataFunctions.clear();
     m_scriptFunctionPrefixes.clear();
-    ControllerScriptEngineBase::shutdown();
+    if (m_pJSEngine) {
+        ControllerScriptEngineBase::shutdown();
+    }
 }
 
 bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
@@ -186,8 +205,8 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
             static_cast<uint>(data.size()),
     };
 
-    for (const QJSValue& function : std::as_const(m_incomingDataFunctions)) {
-        ControllerScriptEngineBase::executeFunction(function, args);
+    for (auto&& function : m_incomingDataFunctions) {
+        ControllerScriptEngineBase::executeFunction(&function, args);
     }
 
     return true;

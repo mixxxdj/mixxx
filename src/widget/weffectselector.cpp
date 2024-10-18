@@ -1,7 +1,6 @@
 #include "widget/weffectselector.h"
 
 #include <QAbstractItemView>
-#include <QApplication>
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
@@ -12,13 +11,12 @@
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
-          m_iEffectSlotIndex(-1),
           m_pEffectsManager(pEffectsManager),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()) {
     // Prevent this widget from getting focused by Tab/Shift+Tab
     // to avoid interfering with using the library via keyboard.
     // Allow click focus though so the list can always be opened by mouse,
-    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    // see https://github.com/mixxxdj/mixxx/issues/10184
     setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -28,8 +26,6 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);
-    m_iEffectSlotIndex = EffectWidgetUtils::getEffectSlotIndexFromNode(
-            node, context);
 
     if (m_pEffectSlot != nullptr) {
         connect(m_pVisibleEffectsList.data(),
@@ -45,8 +41,10 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
                 this,
                 &WEffectSelector::slotEffectSelected);
     } else {
-        SKIN_WARNING(node, context)
-                << "EffectSelector node could not attach to effect slot.";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectSelector node could not attach to effect "
+                               "slot."));
     }
 
     populate();
@@ -92,12 +90,9 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
     m_pEffectSlot->loadEffectWithDefaults(pManifest);
 
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
-    // After selecting an effect send Shift+Tab to move focus to the next
-    // keyboard-focusable widget (tracks table in official skins) in order
-    // to immediately allow keyboard shortcuts again.
-    QKeyEvent backwardFocusKeyEvent =
-            QKeyEvent{QEvent::KeyPress, Qt::Key_Backtab, Qt::NoModifier};
-    QApplication::sendEvent(this, &backwardFocusKeyEvent);
+    // Clicking an effect item moves keyboard focus to the list view.
+    // Move focus back to the previously focused library widget.
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
 void WEffectSelector::slotEffectUpdated() {

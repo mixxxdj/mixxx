@@ -1,22 +1,25 @@
 #pragma once
 
 #include <QDialog>
+#include <QHash>
 #include <QModelIndex>
 #include <memory>
 
-#include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
+#include "preferences/usersettings.h"
 #include "track/beats.h"
-#include "track/keys.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
+#include "widget/wcolorpickeraction.h"
 
 class TrackModel;
-class DlgTagFetcher;
-class WCoverArtLabel;
+class WColorPickerAction;
 class WStarRating;
+class WCoverArtMenu;
+class WCoverArtLabel;
+class DlgTagFetcher;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -27,6 +30,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
+            UserSettingsPointer pUserSettings,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
 
@@ -35,6 +39,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // directly!
     void loadTrack(TrackPointer pTrack);
     void loadTrack(const QModelIndex& index);
+    void focusField(const QString& property);
 
   signals:
     void next();
@@ -49,8 +54,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotApply();
     void slotCancel();
 
-    void trackUpdated();
-
     void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
     void slotBpmConstChanged(int state);
@@ -58,19 +61,18 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotSpinBpmValueChanged(double value);
 
     void slotKeyTextChanged();
-
+    void slotRatingChanged(int rating);
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();
 
     void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
+    void slotColorButtonClicked();
 
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& info,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
@@ -79,6 +81,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void loadPrevTrack();
     void loadTrackInternal(const TrackPointer& pTrack);
     void reloadTrackBeats(const Track& track);
+    void trackColorDialogSetColor(const mixxx::RgbColor::optional_t& color);
     void saveTrack();
     void clear();
     void init();
@@ -100,6 +103,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
 
+    const UserSettingsPointer m_pUserSettings;
+
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
@@ -114,8 +119,12 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 
+    QHash<QString, QWidget*> m_propertyWidgets;
+
+    parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
+    parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };

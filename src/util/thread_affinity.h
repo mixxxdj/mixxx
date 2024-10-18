@@ -11,7 +11,6 @@
 /// thread of the given QObject pointer. That thread runs
 /// the event loop for this object.
 #define DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(pObject) \
-    DEBUG_ASSERT(pObject);                            \
     DEBUG_ASSERT(pObject->thread() == QThread::currentThread())
 
 /// Assert that the current thread is the same as the main

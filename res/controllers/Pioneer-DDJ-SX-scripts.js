@@ -392,11 +392,13 @@ PioneerDDJSX.init = function(id) {
     };
 
     // set 32 Samplers as default:
-    engine.setValue("[Master]", "num_samplers", 32);
+    if (engine.getValue("[App]", "num_samplers") < 32) {
+        engine.setValue("[App]", "num_samplers", 32);
+    }
 
     // activate vu meter timer for Auto DJ:
     if (PioneerDDJSX.twinkleVumeterAutodjOn) {
-        PioneerDDJSX.vuMeterTimer = engine.beginTimer(200, "PioneerDDJSX.vuMeterTwinkle()");
+        PioneerDDJSX.vuMeterTimer = engine.beginTimer(200, PioneerDDJSX.vuMeterTwinkle);
     }
 
     // initiate control status request:
@@ -483,7 +485,7 @@ PioneerDDJSX.autoDJToggleSyncKey = function(channel, control, value, status, gro
 
 PioneerDDJSX.autoDJTimer = function(value, group, control) {
     if (value) {
-        PioneerDDJSX.autoDJTickTimer = engine.beginTimer(PioneerDDJSX.autoDJTickInterval, "PioneerDDJSX.autoDJControl()");
+        PioneerDDJSX.autoDJTickTimer = engine.beginTimer(PioneerDDJSX.autoDJTickInterval, PioneerDDJSX.autoDJControl);
     } else if (PioneerDDJSX.autoDJTickTimer) {
         engine.stopTimer(PioneerDDJSX.autoDJTickTimer);
         PioneerDDJSX.autoDJTickTimer = 0;
@@ -2048,7 +2050,7 @@ PioneerDDJSX.VuMeterLeds = function(value, group, control) {
 
     value = parseInt(value * 0x76); //full level indicator: 0x7F
 
-    if (engine.getValue(group, "PeakIndicator")) {
+    if (engine.getValue(group, "peak_indicator")) {
         value = value + 0x09;
     }
 
@@ -2206,7 +2208,7 @@ PioneerDDJSX.backButton = function(channel, control, value, status) {
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
     if (value) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 };
 

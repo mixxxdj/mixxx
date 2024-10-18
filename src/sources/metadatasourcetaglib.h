@@ -2,8 +2,6 @@
 
 #include "sources/metadatasource.h"
 
-#include "track/taglib/trackmetadata.h"
-
 namespace mixxx {
 
 // Universal default implementation of IMetadataSource using TagLib.
@@ -23,7 +21,8 @@ class MetadataSourceTagLib : public MetadataSource {
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
 
     std::pair<ExportResult, QDateTime> exportTrackMetadata(
             const TrackMetadata& trackMetadata) const override;

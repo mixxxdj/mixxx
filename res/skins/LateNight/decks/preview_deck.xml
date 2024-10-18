@@ -36,19 +36,20 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
-                          <Text>
+                          <TrackProperty>
                             <ObjectName>PreviewTitle</ObjectName>
                             <TooltipId>text</TooltipId>
                             <Size>0me,20f</Size>
-                            <Group><Variable name="Group"/></Group>
                             <Elide>right</Elide>
-                          </Text>
+                            <Group><Variable name="Group"/></Group>
+                            <Property>info</Property>
+                          </TrackProperty>
                           <Number>
                             <ObjectName>PreviewBPM</ObjectName>
                             <TooltipId>visual_bpm</TooltipId>
                             <Size>45f,20f</Size>
                             <Group><Variable name="Group"/></Group>
-                            <!--CSS alignments not respected, bug lp:605530 -->
+                            <!--CSS alignments not respected, bug #5459 -->
                             <Alignment>right</Alignment>
                             <Connection>
                               <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
@@ -80,7 +81,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_1state.xml">
+                      <Template src="skins:LateNight/controls/button_1state.xml">
                         <SetVariable name="TooltipId">eject</SetVariable>
                         <SetVariable name="ObjectName">EjectButton12</SetVariable>
                         <SetVariable name="BtnType"></SetVariable>
@@ -106,7 +107,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_2state_right_display.xml">
+                      <Template src="skins:LateNight/controls/button_2state_right_display.xml">
                         <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
                         <SetVariable name="ObjectName">PlayPreview</SetVariable>
                         <SetVariable name="Size">34f,34f</SetVariable>
@@ -124,7 +125,7 @@
                     <Layout>vertical</Layout>
                     <Size>0me,34f</Size>
                     <Children>
-                      <Template src="skin:/decks/overview.xml">
+                      <Template src="skins:LateNight/decks/overview.xml">
                         <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizePreview"/></SetVariable>
                         <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                       </Template>
@@ -144,7 +145,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skins:LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="ChannelType">preview</SetVariable>
                 <SetVariable name="VuSize">preview</SetVariable>
               </Template>
@@ -154,8 +155,8 @@
           <SliderComposed>
             <TooltipId>pregain</TooltipId>
             <Size>10f,54f</Size>
-            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_previewdeck.svg</Handle>
-            <Slider>skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_previewdeck.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_previewdeck.svg</Handle>
+            <Slider>skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_previewdeck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="Group"/>,pregain</ConfigKey>
@@ -173,7 +174,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey>[Skin],show_preview_decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

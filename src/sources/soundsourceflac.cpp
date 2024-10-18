@@ -397,7 +397,7 @@ namespace {
 // garbage in the most significant, unused bits of decoded samples.
 // Required at least for libFLAC 1.3.2. This workaround might become
 // obsolete once libFLAC is taking care of these issues internally.
-// https://bugs.launchpad.net/mixxx/+bug/1769717
+// https://github.com/mixxxdj/mixxx/issues/9275
 // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
 
 // We multiply the decoded samples by 2 ^ (32 - m_bitsPerSample) to
@@ -407,7 +407,7 @@ namespace {
 // with epsilon = 1 / 2 ^ bitsPerSample.
 //
 // We have to negate the nominator to compensate for the negative denominator!
-// Otherwise the phase would be inverted: https://bugs.launchpad.net/mixxx/+bug/1933001
+// Otherwise the phase would be inverted: https://github.com/mixxxdj/mixxx/issues/10445
 constexpr CSAMPLE kSampleScaleFactor = -CSAMPLE_PEAK /
         (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
@@ -581,6 +581,11 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     case FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM:
         error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
         break;
+#if FLAC_API_VERSION_CURRENT >= 12
+    case FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA:
+        error = "STREAM_DECODER_ERROR_STATUS_BAD_METADATA";
+        break;
+#endif
     }
     kLogger.warning()
             << "FLAC decoding error" << error

@@ -1,10 +1,10 @@
 #include "dialog/dlgdevelopertools.h"
 
 #include <QDateTime>
+#include <QDir>
 
 #include "control/control.h"
 #include "moc_dlgdevelopertools.cpp"
-#include "util/cmdlineargs.h"
 #include "util/logging.h"
 #include "util/statsmanager.h"
 
@@ -18,6 +18,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_TITLE);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_DESCRIPTION);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_FILTER);
+    m_controlProxyModel.sort(0, Qt::AscendingOrder);
 
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {
@@ -37,7 +38,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         qWarning() << "ERROR: Could not open log file:" << logFileName;
     }
 
-    // Connect search box signals to the library
+    // Set up the control search box
     connect(controlSearch,
             &WSearchLineEdit::search,
             this,

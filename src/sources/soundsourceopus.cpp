@@ -2,7 +2,6 @@
 
 #include <QFileInfo>
 
-#include "audio/streaminfo.h"
 #include "util/logger.h"
 
 namespace mixxx {

@@ -1,17 +1,12 @@
 #pragma once
 
-#include <QModelIndex>
-#include <QWidget>
-
-#include "broadcast/defs_broadcast.h"
-#include "control/controlobject.h"
 #include "preferences/broadcastsettings.h"
-#include "preferences/broadcastsettingsmodel.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
-#include "preferences/usersettings.h"
 
 class ControlProxy;
+class QWidget;
+class QModelIndex;
 
 class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDlg  {
     Q_OBJECT

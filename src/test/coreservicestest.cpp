@@ -22,7 +22,6 @@ TEST_F(CoreServicesTest, DISABLED_TestInitialization) {
 
     EXPECT_NE(pCoreServices->getControllerManager(), nullptr);
     EXPECT_NE(pCoreServices->getEffectsManager(), nullptr);
-    EXPECT_NE(pCoreServices->getLV2Backend(), nullptr);
     EXPECT_NE(pCoreServices->getLibrary(), nullptr);
     EXPECT_NE(pCoreServices->getPlayerManager(), nullptr);
     EXPECT_NE(pCoreServices->getScreensaverManager(), nullptr);

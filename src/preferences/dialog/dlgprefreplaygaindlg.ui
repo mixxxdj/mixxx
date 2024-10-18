@@ -268,7 +268,7 @@
         <property name="text">
          <string>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
 
-The loudness target is approximate and assumes track pregain and master output level are unchanged.</string>
+The loudness target is approximate and assumes track pregain and main output level are unchanged.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

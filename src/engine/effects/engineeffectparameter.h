@@ -34,7 +34,7 @@ class EngineEffectParameter {
     inline int toInt() const {
         return static_cast<int>(m_value);
     }
-    inline int toBool() const {
+    inline bool toBool() const {
         return m_value > 0.0;
     }
 

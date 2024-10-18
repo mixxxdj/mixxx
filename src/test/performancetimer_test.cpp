@@ -5,7 +5,7 @@
 
 // This test was added because of an signed/unsigned underflow bug that
 // affected Windows and (presumably) Symbian.
-// See https://bugs.launchpad.net/mixxx/+bug/1300664
+// See https://github.com/mixxxdj/mixxx/issues/7397
 TEST(PerformanceTimerTest, DifferenceCanBeNegative) {
     PerformanceTimer early;
     early.start();

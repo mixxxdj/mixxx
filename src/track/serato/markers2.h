@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QByteArray>
-#include <QColor>
 #include <QDataStream>
 #include <QList>
 #include <memory>
+#include <optional>
 
 #include "track/cueinfo.h"
+#include "track/serato/color.h"
 #include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
@@ -130,7 +131,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmLockEntry& arg) {
 
 class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2ColorEntry(RgbColor color)
+    SeratoMarkers2ColorEntry(SeratoStoredTrackColor color)
             : m_color(color) {
     }
     SeratoMarkers2ColorEntry() = delete;
@@ -147,18 +148,18 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
 
     QByteArray dump() const override;
 
-    RgbColor getColor() const {
+    SeratoStoredTrackColor getColor() const {
         return m_color;
     }
 
-    void setColor(RgbColor color) {
+    void setColor(SeratoStoredTrackColor color) {
         m_color = color;
     }
 
     quint32 length() const override;
 
   private:
-    RgbColor m_color;
+    SeratoStoredTrackColor m_color;
 };
 
 inline bool operator==(const SeratoMarkers2ColorEntry& lhs,
@@ -177,7 +178,10 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
 
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2CueEntry(quint8 index, quint32 position, RgbColor color, const QString& label)
+    SeratoMarkers2CueEntry(quint8 index,
+            quint32 position,
+            SeratoStoredHotcueColor color,
+            const QString& label)
             : m_index(index),
               m_position(position),
               m_color(color),
@@ -213,11 +217,11 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
         m_position = position;
     }
 
-    RgbColor getColor() const {
+    SeratoStoredHotcueColor getColor() const {
         return m_color;
     }
 
-    void setColor(RgbColor color) {
+    void setColor(SeratoStoredHotcueColor color) {
         m_color = color;
     }
 
@@ -234,7 +238,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   private:
     quint8 m_index;
     quint32 m_position;
-    RgbColor m_color;
+    SeratoStoredHotcueColor m_color;
     QString m_label;
 };
 
@@ -263,7 +267,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
     SeratoMarkers2LoopEntry(quint8 index,
             quint32 startposition,
             quint32 endposition,
-            RgbColor color,
+            SeratoStoredHotcueColor color,
             bool locked,
             const QString& label)
             : m_index(index),
@@ -311,11 +315,11 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
         m_endposition = endposition;
     }
 
-    RgbColor getColor() const {
+    SeratoStoredHotcueColor getColor() const {
         return m_color;
     }
 
-    void setColor(RgbColor color) {
+    void setColor(SeratoStoredHotcueColor color) {
         m_color = color;
     }
 
@@ -341,7 +345,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
     quint8 m_index;
     quint32 m_startposition;
     quint32 m_endposition;
-    RgbColor m_color;
+    SeratoStoredHotcueColor m_color;
     bool m_locked;
     QString m_label;
 };
@@ -373,7 +377,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
 ///
 /// This class includes functions for formatting and parsing SeratoMarkers2
 /// metadata according to the specification:
-/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
+/// https://github.com/Holzhaus/serato-tags/blob/main/docs/serato_markers2.md
 class SeratoMarkers2 final {
   public:
     SeratoMarkers2()
@@ -430,8 +434,11 @@ class SeratoMarkers2 final {
     QList<CueInfo> getCues() const;
     void setCues(const QList<CueInfo>& cueInfos);
 
-    RgbColor::optional_t getTrackColor() const;
-    void setTrackColor(RgbColor color);
+    /// Returns a color if the tag is present and contains a `COLOR` entry.
+    /// Usually, such an entry should always exist, even if the track has no
+    /// color assigned to it in Serato (in that case the color is `0xFFFFFF`).
+    std::optional<SeratoStoredTrackColor> getTrackColor() const;
+    void setTrackColor(SeratoStoredTrackColor color);
 
     bool isBpmLocked() const;
     void setBpmLocked(bool bpmLocked);

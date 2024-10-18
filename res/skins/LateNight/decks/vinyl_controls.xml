@@ -9,27 +9,6 @@
         <Layout>horizontal</Layout>
         <SizePolicy>f,f</SizePolicy>
         <Children>
-
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-
-          <StatusLight>
-            <ObjectName>VinylStatus</ObjectName>
-            <Size>18f,18f</Size>
-            <TooltipId>vinylcontrol_status</TooltipId>
-            <!-- TODO use colors mentioned in tooltip: green, blinking yellow, blue -->
-            <!-- Off -->
-            <PathStatusLight0 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_0.svg</PathStatusLight0>
-            <!-- enabled -->
-            <PathStatusLight1 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_1.svg</PathStatusLight1>
-            <!-- end-of-record warning -->
-            <PathStatusLight2 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_2.svg</PathStatusLight2>
-            <!-- passthrough -->
-            <PathStatusLight3 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_3.svg</PathStatusLight3>
-            <Connection>
-              <ConfigKey><Variable name="Group"/>,vinylcontrol_status</ConfigKey>
-            </Connection>
-          </StatusLight>
-
           <!-- increase margin -->
           <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
 
@@ -38,19 +17,34 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,f</SizePolicy>
             <Children>
-              <!-- &#8202; is a hack to push text labels to the left or right
-                   because the kerning of some letters/numbers destroys the desired
-                   effect of center 'Align' and 'text-alignment' -->
-              <Template src="skin:/controls/button_2state.xml">
-                <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
-                <SetVariable name="ObjectName">VinylButton</SetVariable>
-                <SetVariable name="Size">40f,20f</SetVariable>
-                <SetVariable name="state_0_text">&#8202;VINYL&#8202;</SetVariable>
-                <SetVariable name="state_1_text">&#8202;VINYL&#8202;</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_enabled</SetVariable>
-              </Template>
+              <!-- Transparent 2-state toggle + 4-state status background -->
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>40f,20f</Size>
+                <Children>
+                  <Template src="skins:LateNight/controls/button_2state.xml">
+                    <SetVariable name="TooltipId">vinylcontrol_enabled_status</SetVariable>
+                    <SetVariable name="ObjectName">Blank</SetVariable>
+                    <SetVariable name="Size">40f,20f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_enabled</SetVariable>
+                  </Template>
+                  <!-- &#8202; is a hack to push text labels to the left or right
+                       because the kerning of some letters/numbers destroys the desired
+                       effect of center 'Align' and 'text-alignment' -->
+                  <Template src="skins:LateNight/controls/button_4state_display.xml">
+                    <SetVariable name="ObjectName">VinylStatus</SetVariable>
+                    <SetVariable name="Size">40f,20f</SetVariable>
+                    <SetVariable name="state_0_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="state_1_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="state_2_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="state_3_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,vinylcontrol_status</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
-              <Template src="skin:/controls/button_3state_persist.xml">
+
+              <Template src="skins:LateNight/controls/button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
                 <SetVariable name="Size">46f,20f</SetVariable>
@@ -60,7 +54,7 @@
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_mode</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_3state_persist.xml">
+              <Template src="skins:LateNight/controls/button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylCueButton</SetVariable>
                 <SetVariable name="Size">32f,20f</SetVariable>
@@ -70,7 +64,7 @@
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_cueing</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_2state.xml">
+              <Template src="skins:LateNight/controls/button_2state.xml">
                 <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
                 <SetVariable name="ObjectName">PassthroughButton</SetVariable>
                 <SetVariable name="Size">35f,20f</SetVariable>
@@ -85,7 +79,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_vinylcontrol</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

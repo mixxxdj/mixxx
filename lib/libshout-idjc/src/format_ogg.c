@@ -90,9 +90,9 @@ static int send_ogg(shout_t *self, const unsigned char *data, size_t len)
     char        *buffer;
     ogg_page     page;
 
-    buffer = ogg_sync_buffer(&ogg_data->oy, len);
+    buffer = ogg_sync_buffer(&ogg_data->oy, (long)len);
     memcpy(buffer, data, len);
-    ogg_sync_wrote(&ogg_data->oy, len);
+    ogg_sync_wrote(&ogg_data->oy, (long)len);
 
     while (ogg_sync_pageout(&ogg_data->oy, &page) == 1) {
         if (ogg_page_bos(&page)) {

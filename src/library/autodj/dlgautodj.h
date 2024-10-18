@@ -1,21 +1,19 @@
 #pragma once
 
-#include <QLineEdit>
 #include <QString>
 #include <QWidget>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/ui_dlgautodj.h"
-#include "library/library.h"
 #include "library/libraryview.h"
-#include "library/trackcollection.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
 class PlaylistTableModel;
 class WLibrary;
 class WTrackTableView;
+class Library;
+class KeyboardEventFilter;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
@@ -30,6 +28,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
+    void pasteFromSidebar() override;
     void onSearch(const QString& text) override;
     void activateSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
@@ -42,12 +41,13 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void skipNextButton(bool buttonChecked);
     void fadeNowButton(bool buttonChecked);
     void toggleAutoDJButton(bool enable);
+    void autoDJError(AutoDJProcessor::AutoDJError error);
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
     void slotTransitionModeChanged(int comboboxIndex);
-    void slotRepeatPlaylistChanged(int checkedState);
+    void slotRepeatPlaylistChanged(bool checked);
 
   signals:
     void addRandomTrackButton(bool buttonChecked);

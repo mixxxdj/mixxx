@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/rampingvalue.h"
 
 namespace {
@@ -56,7 +58,7 @@ void WhiteNoiseEffect::processChannel(
 
     std::uniform_real_distribution<> r_distributor(0.0, 1.0);
 
-    for (unsigned int i = 0; i < engineParameters.samplesPerBuffer(); i++) {
+    for (SINT i = 0; i < engineParameters.samplesPerBuffer(); i++) {
         CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNth(i);
 
         float noise = static_cast<float>(

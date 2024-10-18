@@ -16,11 +16,11 @@
 class MetaLinkTest : public BaseEffectTest {
   protected:
     MetaLinkTest()
-            : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
+            : m_main(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
-        m_pEffectsManager->registerInputChannel(m_master);
+        m_pEffectsManager->registerInputChannel(m_main);
         m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
 
@@ -70,7 +70,7 @@ class MetaLinkTest : public BaseEffectTest {
     }
 
     ChannelHandleFactory m_factory;
-    ChannelHandleAndGroup m_master;
+    ChannelHandleAndGroup m_main;
     ChannelHandleAndGroup m_headphone;
 
     EffectSlotPointer m_pEffectSlot;

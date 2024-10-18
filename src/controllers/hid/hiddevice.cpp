@@ -1,5 +1,7 @@
 #include "controllers/hid/hiddevice.h"
 
+#include <hidapi.h>
+
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
@@ -33,17 +35,15 @@ DeviceInfo::DeviceInfo(
           usage_page(device_info.usage_page),
           usage(device_info.usage),
           interface_number(device_info.interface_number),
-          m_pathRaw(device_info.path, mixxx::strnlen(device_info.path, PATH_MAX)),
+          m_pathRaw(device_info.path, mixxx::strnlen_s(device_info.path, PATH_MAX)),
           m_serialNumberRaw(device_info.serial_number,
-                  mixxx::wcsnlen(device_info.serial_number,
+                  mixxx::wcsnlen_s(device_info.serial_number,
                           kDeviceInfoStringMaxLength)),
           m_manufacturerString(mixxx::convertWCStringToQString(
                   device_info.manufacturer_string,
-                  mixxx::wcsnlen(device_info.manufacturer_string,
-                          kDeviceInfoStringMaxLength))),
+                  kDeviceInfoStringMaxLength)),
           m_productString(mixxx::convertWCStringToQString(device_info.product_string,
-                  mixxx::wcsnlen(device_info.product_string,
-                          kDeviceInfoStringMaxLength))),
+                  kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
 }
@@ -107,9 +107,9 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     if (!usage.isEmpty()) {
         parts.append(QStringLiteral("Usage: ") + usage);
     }
-    const QString interface = deviceInfo.formatInterface();
-    if (!interface.isEmpty()) {
-        parts.append(QStringLiteral("Interface: ") + interface);
+    const QString interfaceId = deviceInfo.formatInterface();
+    if (!interfaceId.isEmpty()) {
+        parts.append(QStringLiteral("Interface: ") + interfaceId);
     }
     if (!deviceInfo.manufacturerString().isEmpty()) {
         parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.manufacturerString());
@@ -131,11 +131,11 @@ QString DeviceCategory::guessFromDeviceInfoImpl(
         const DeviceInfo& deviceInfo) const {
     // This should be done somehow else, I know. But at least we get started with
     // the idea of mapping this information
-    const QString interface = deviceInfo.formatInterface();
-    if (!interface.isEmpty()) {
+    const QString interfaceId = deviceInfo.formatInterface();
+    if (!interfaceId.isEmpty()) {
         // TODO: Guess linux device types somehow as well
         // or maybe just fill in the interface number?
-        return tr("HID Interface %1: ").arg(interface) + deviceInfo.formatUsage();
+        return tr("HID Interface %1: ").arg(interfaceId) + deviceInfo.formatUsage();
     }
     if (deviceInfo.usage_page == kGenericDesktopUsagePage) {
         switch (deviceInfo.usage) {

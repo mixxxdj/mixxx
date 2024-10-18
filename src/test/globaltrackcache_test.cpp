@@ -29,11 +29,11 @@ class TrackTitleThread: public QThread {
             // same track twice
             m_recentTrackPtr.reset();
             // Try to resolve the next track by guessing the id
-            const TrackId trackId(loopCount % 2);
+            const TrackId trackId(QVariant(loopCount % 2));
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
                 ASSERT_EQ(trackId, track->getId());
-                // lp1744550: Accessing the track from multiple threads is
+                // #9097: Accessing the track from multiple threads is
                 // required to cause a SIGSEGV
                 if (track->getTitle().isEmpty()) {
                     track->setTitle(
@@ -91,7 +91,7 @@ class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSav
 TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
-    const TrackId trackId(1);
+    const TrackId trackId(QVariant(1));
 
     TrackPointer track;
     {
@@ -147,7 +147,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
     const auto testFile = mixxx::FileInfo(getTestDir().filePath(kTestFile));
 
-    // lp1744550: A decent number of iterations is needed to reliably
+    // #9097: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
     // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
@@ -166,7 +166,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
             if (!trackId.isValid()) {
-                trackId = TrackId(i % 2);
+                trackId = TrackId(QVariant(i % 2));
                 resolver.initTrackIdAndUnlockCache(trackId);
             }
         }
@@ -174,7 +174,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         track = GlobalTrackCacheLocker().lookupTrackById(trackId);
         EXPECT_TRUE(static_cast<bool>(track));
 
-        // lp1744550: Accessing the track from multiple threads is
+        // #9097: Accessing the track from multiple threads is
         // required to cause a SIGSEGV
         track->setArtist(QString("Artist %1").arg(QString::number(i)));
 

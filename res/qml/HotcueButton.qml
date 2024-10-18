@@ -20,7 +20,6 @@ Skin.Button {
         onIsSetChanged: {
             if (!isSet)
                 popup.close();
-
         }
     }
 
@@ -43,5 +42,4 @@ Skin.Button {
             }
         }
     }
-
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 
 class ControlObject;
 class ControlProxy;
@@ -17,7 +17,6 @@ class SamplerBank : public QObject {
   public:
     SamplerBank(UserSettingsPointer pConfig,
             PlayerManager* pPlayerManager);
-    ~SamplerBank() override;
 
     bool saveSamplerBankToPath(const QString& samplerBankPath);
     bool loadSamplerBankFromPath(const QString& samplerBankPath);

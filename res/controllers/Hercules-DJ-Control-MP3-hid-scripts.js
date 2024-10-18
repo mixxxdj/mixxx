@@ -142,7 +142,7 @@ HerculesMP3Hid.init = function() {
 
             if (v < 30) v = 30;
             if (HerculesMP3Hid.track_timer) engine.stopTimer(HerculesMP3Hid.track_timer);
-            HerculesMP3Hid.track_timer = engine.beginTimer(parseInt(5120 / v), 'HerculesMP3Hid.scroll_tracks_joystick');
+            HerculesMP3Hid.track_timer = engine.beginTimer(parseInt(5120 / v), HerculesMP3Hid.scroll_tracks_joystick);
         }
     });
     */
@@ -338,7 +338,9 @@ HerculesMP3Hid.scroll_tracks = function(g, e, v) {
     if (v > 0) {
         engine.setValue("[Playlist]", e == "track_next_a" ? "SelectNextTrack" : "SelectPrevTrack", 1);
         if (!HerculesMP3Hid.scroll_timer) {
-            HerculesMP3Hid.scroll_timer = engine.beginTimer(150, 'HerculesMP3Hid.scroll_tracks("[Playlist]","' + e + '",' + v + ')');
+            HerculesMP3Hid.scroll_timer = engine.beginTimer(150, () => {
+                HerculesMP3Hid.scroll_tracks("[Playlist]", e, v);
+            });
         }
     }
     else {

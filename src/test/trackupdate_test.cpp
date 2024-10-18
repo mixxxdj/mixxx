@@ -44,7 +44,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         auto coverInfo = pTrack->getCoverInfo();
         coverInfo.type = CoverInfo::FILE;
         coverInfo.source = CoverInfo::USER_SELECTED;
-        coverInfo.setImage(QImage(1, 1, QImage::Format_Mono));
+        coverInfo.setImageDigest(QImage(1, 1, QImage::Format_Mono));
         pTrack->setCoverInfo(coverInfo);
         EXPECT_TRUE(pTrack->isDirty());
         return pTrack;

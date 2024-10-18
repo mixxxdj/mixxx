@@ -18,7 +18,7 @@ struct EnginePrimeExportRequest {
     QDir musicFilesDir;
 
     /// Version of Engine Prime database to use when exporting.
-    djinterop::semantic_version exportVersion;
+    djinterop::engine::engine_version exportVersion;
 
     /// Set of crates to export, if `exportSelectedCrates` is set to true.
     ///

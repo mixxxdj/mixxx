@@ -2,11 +2,9 @@
 
 #include <QDir>
 #include <QFile>
-#include <QMessageBox>
-#include <QUrl>
 #include <QtDebug>
 
-#include "library/parser.h"
+#include "errordialoghandler.h"
 
 namespace {
 
@@ -46,17 +44,17 @@ QList<QString> ParserPls::parseAllLocations(const QString& playlistFile) {
          * rather that <LF>
          *
          * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-         * We replace any '\r' with '\n' if applicaple
+         * We replace any '\r' with '\n' if applicable
          * This ensures that playlists from iTunes on OS X can be parsed
          */
-        QByteArray ba = file.readAll();
+        QByteArray byteArray = file.readAll();
         //detect encoding
-        bool isCRLF_encoded = ba.contains("\r\n");
-        bool isCR_encoded = ba.contains("\r");
+        bool isCRLF_encoded = byteArray.contains("\r\n");
+        bool isCR_encoded = byteArray.contains("\r");
         if (isCR_encoded && !isCRLF_encoded) {
-            ba.replace('\r','\n');
+            byteArray.replace('\r', '\n');
         }
-        QTextStream textstream(ba.constData());
+        QTextStream textstream(byteArray.constData());
 
         while(!textstream.atEnd()) {
             QString psLine = getFilePath(&textstream);
@@ -70,6 +68,11 @@ QList<QString> ParserPls::parseAllLocations(const QString& playlistFile) {
 
         file.close();
     }
+
+    qDebug() << "ParserPls::parse() failed"
+             << playlistFile
+             << file.errorString();
+
     return locations;
 }
 
@@ -77,9 +80,13 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(nullptr,
-                QObject::tr("Playlist Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str);
+        ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
+        ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
+        props->setDetails(file.errorString());
+        pDialogHandler->requestErrorDialog(props);
         return false;
     }
     //Base folder of file

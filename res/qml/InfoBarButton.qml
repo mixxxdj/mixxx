@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -49,7 +49,6 @@ AbstractButton {
                 target: colorOverlay
                 color: root.normalColor
             }
-
         }
     ]
 
@@ -73,5 +72,4 @@ AbstractButton {
         source: foreground
         color: root.normalColor
     }
-
 }

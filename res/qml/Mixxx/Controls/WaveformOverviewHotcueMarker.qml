@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
 
@@ -36,9 +36,7 @@ Item {
                 x: 0
                 y: root.height
             }
-
         }
-
     }
 
     Mixxx.ControlProxy {
@@ -76,5 +74,4 @@ Item {
         key: "hotcue_" + root.hotcueNumber + "_color"
         onValueChanged: this.updateColor()
     }
-
 }

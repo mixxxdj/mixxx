@@ -26,6 +26,9 @@ Variables:
     <PlayPosColor>#FF4300</PlayPosColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+    <SlipBorderTopOutlineSize><Variable name="SlipBorderTopOutlineSize"/></SlipBorderTopOutlineSize>
+    <SlipBorderBottomOutlineSize><Variable name="SlipBorderBottomOutlineSize"/></SlipBorderBottomOutlineSize>
     <LabelTextColor>#ffffff</LabelTextColor>
     <LabelBackgroundColor>#85000000</LabelBackgroundColor>
     <DefaultMark>
@@ -80,7 +83,6 @@ Variables:
     <Mark>
       <Control>intro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
@@ -114,7 +116,6 @@ Variables:
     <Mark>
       <Control>outro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>

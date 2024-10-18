@@ -1,12 +1,11 @@
 #include "widget/whotcuebutton.h"
 
-#include <QStyleOption>
-#include <QStylePainter>
-#include <QtDebug>
+#include <QMouseEvent>
 
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
 #include "track/track.h"
+#include "widget/controlwidgetconnection.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
@@ -33,7 +32,10 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     if (ok && hotcue > 0) {
         m_hotcue = hotcue - 1;
     } else {
-        SKIN_WARNING(node, context) << "Hotcue value invalid";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("Hotcue index '%1' invalid")
+                        .arg(context.selectString(node, QStringLiteral("Hotcue"))));
     }
 
     bool okay;
@@ -67,7 +69,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     auto* pLeftConnection = new ControlParameterWidgetConnection(
             this,
-            createConfigKey(QStringLiteral("activate")),
+            getLeftClickConfigKey(), // "activate"
             nullptr,
             ControlParameterWidgetConnection::DIR_FROM_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
@@ -75,7 +77,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     auto* pDisplayConnection = new ControlParameterWidgetConnection(
             this,
-            createConfigKey(QStringLiteral("enabled")),
+            createConfigKey(QStringLiteral("status")),
             nullptr,
             ControlParameterWidgetConnection::DIR_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_NEVER);
@@ -84,7 +86,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     QDomNode con = context.selectNode(node, QStringLiteral("Connection"));
     if (!con.isNull()) {
-        SKIN_WARNING(node, context) << "Additional Connections are not allowed";
+        SKIN_WARNING(node, context, QStringLiteral("Additional Connections are not allowed"));
     }
 }
 
@@ -119,7 +121,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
                 pTrack->removeCue(pHotCue);
                 return;
             }
-            m_pCueMenuPopup->setTrackAndCue(pTrack, pHotCue);
+            m_pCueMenuPopup->setTrackCueGroup(pTrack, pHotCue, m_group);
             // use the bottom left corner as starting point for popup
             m_pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
         }
@@ -200,8 +202,8 @@ void WHotcueButton::slotTypeChanged(double type) {
     case mixxx::CueType::Outro:
         m_type = QStringLiteral("outro");
         break;
-    case mixxx::CueType::AudibleSound:
-        m_type = QStringLiteral("audiblesound");
+    case mixxx::CueType::N60dBSound:
+        m_type = QStringLiteral("n60dbsound");
         break;
     default:
         DEBUG_ASSERT(!"Unknown cue type!");

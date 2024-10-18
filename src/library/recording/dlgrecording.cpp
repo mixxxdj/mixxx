@@ -1,14 +1,12 @@
 #include "library/recording/dlgrecording.h"
 
-
-#include "control/controlobject.h"
-#include "library/trackcollectionmanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "moc_dlgrecording.cpp"
+#include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
-#include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
-#include "widget/wwidget.h"
 
 DlgRecording::DlgRecording(
         WLibrary* parent,
@@ -26,7 +24,7 @@ DlgRecording::DlgRecording(
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
-          m_proxyModel(&m_browseModel),
+          m_proxyModel(&m_browseModel, true),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {

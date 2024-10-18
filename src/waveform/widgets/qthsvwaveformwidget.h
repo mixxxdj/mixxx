@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QGLWidget>
+#include "glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class QtHSVWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class QtHSVWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     virtual ~QtHSVWaveformWidget();
@@ -15,7 +13,12 @@ class QtHSVWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline bool useTextureForWaveform() {
+        return false;
+    }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
+    }
 
   protected:
     virtual void castToQWidget();

@@ -3,11 +3,9 @@
 #include <hidapi.h>
 
 #include "controllers/defs_controllers.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "moc_hidcontroller.cpp"
-#include "util/string.h"
-#include "util/time.h"
-#include "util/trace.h"
+
+class LegacyControllerMapping;
 
 HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)

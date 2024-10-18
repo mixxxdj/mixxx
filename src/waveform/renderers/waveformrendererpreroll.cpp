@@ -1,15 +1,13 @@
-#include <QBrush>
-#include <QPen>
-#include <QPainter>
-#include <QPolygonF>
-
 #include "waveform/renderers/waveformrendererpreroll.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include <QBrush>
+#include <QPainter>
+#include <QPen>
+#include <QPolygonF>
+
 #include "util/painterscope.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
   : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -20,15 +18,15 @@ WaveformRendererPreroll::~WaveformRendererPreroll() {
 
 void WaveformRendererPreroll::setup(
         const QDomNode& node, const SkinContext& context) {
-    m_color.setNamedColor(context.selectString(node, "SignalColor"));
+    m_color = QColor(context.selectString(node, "SignalColor"));
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(event);
 
-    const TrackPointer track = m_waveformRenderer->getTrackInfo();
-    if (!track) {
+    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
         return;
     }
 
@@ -42,7 +40,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     if (preRollVisible || postRollVisible) {
         const double playMarkerPositionFrac = m_waveformRenderer->getPlayMarkerPosition();
         const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-        const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
+        const double numberOfVisibleVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
 
         const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
         const int totalVSamples = m_waveformRenderer->getTotalVSample();
@@ -74,11 +72,19 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         }
 
         if (preRollVisible) {
-            // VSample position of the right-most triangle's tip
+            // VSample position of the right-most triangle's tip just before the track start
             double triangleTipVSamplePosition =
-                    numberOfVSamples * playMarkerPositionFrac -
+                    numberOfVisibleVSamples * playMarkerPositionFrac -
                     currentVSamplePosition;
-
+            // Number of invisible VSamples from the right of the viewport boundary
+            // to the track start
+            double invisibleVSamples = triangleTipVSamplePosition - numberOfVisibleVSamples;
+            // get tip position of the last partial visible triangle to draw only visible triangles
+            if (invisibleVSamples > 0) {
+                triangleTipVSamplePosition -=
+                        floor(invisibleVSamples / polyVSampleOffset) *
+                        polyVSampleOffset;
+            }
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
                     << QPointF(-polyPixelWidth, halfBreadth - halfPolyBreadth)
@@ -94,10 +100,19 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
         if (postRollVisible) {
             const int remainingVSamples = totalVSamples - currentVSamplePosition;
-            // Sample position of the left-most triangle's tip
+            // VSample position of the left-most triangle's tip just after the track end
             double triangleTipVSamplePosition =
-                    playMarkerPositionFrac * numberOfVSamples +
+                    numberOfVisibleVSamples * playMarkerPositionFrac +
                     remainingVSamples;
+            // Number of invisible VSamples from the track end to the right of the
+            // viewport boundary
+            double invisibleVSamples = triangleTipVSamplePosition - numberOfVisibleVSamples;
+            // get tip position of the fist partial visible triangle to draw only visible triangle
+            if (invisibleVSamples > 0) {
+                triangleTipVSamplePosition -=
+                        floor(invisibleVSamples / polyVSampleOffset) *
+                        polyVSampleOffset;
+            }
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
@@ -105,7 +120,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
                     << QPointF(polyPixelWidth, halfBreadth + halfPolyBreadth);
             polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
 
-            for (; triangleTipVSamplePosition < numberOfVSamples;
+            for (; triangleTipVSamplePosition < numberOfVisibleVSamples;
                     triangleTipVSamplePosition += polyVSampleOffset) {
                 painter->drawPolygon(polygon);
                 polygon.translate(polyPixelOffset, 0);

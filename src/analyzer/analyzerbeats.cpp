@@ -5,12 +5,12 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
-#include "track/beatutils.h"
 #include "track/track.h"
 
 // static
@@ -36,15 +36,14 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesReanalyzeImported(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesFastAnalysis(false),
-          m_totalSamples(0),
-          m_iMaxSamplesToProcess(0),
-          m_iCurrentSample(0) {
+          m_maxFramesToProcess(0),
+          m_currentFrame(0) {
 }
 
-bool AnalyzerBeats::initialize(TrackPointer pTrack,
+bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
-    if (totalSamples == 0) {
+        SINT frameLength) {
+    if (frameLength <= 0) {
         return false;
     }
 
@@ -55,13 +54,14 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
         return false;
     }
 
-    bool bpmLock = pTrack->isBpmLocked();
+    bool bpmLock = track.getTrack()->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return false;
     }
 
-    m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
+    m_bPreferencesFixedTempo = track.getOptions().useFixedTempo.value_or(
+            m_bpmSettings.getFixedTempoAssumption());
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
@@ -86,19 +86,18 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
     m_sampleRate = sampleRate;
-    m_totalSamples = totalSamples;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysis) {
-        m_iMaxSamplesToProcess =
-                mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate * mixxx::kAnalysisChannels;
+        m_maxFramesToProcess =
+                mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate;
     } else {
-        m_iMaxSamplesToProcess = m_totalSamples;
+        m_maxFramesToProcess = frameLength;
     }
-    m_iCurrentSample = 0;
+    m_currentFrame = 0;
 
     // if we can load a stored track don't reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(pTrack);
+    bool bShouldAnalyze = shouldAnalyze(track.getTrack());
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
@@ -113,7 +112,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
         }
 
         if (m_pPlugin) {
-            if (m_pPlugin->initialize(sampleRate)) {
+            if (m_pPlugin->initialize(m_sampleRate)) {
                 qDebug() << "Beat calculation started with plugin" << m_pluginId;
             } else {
                 qDebug() << "Beat calculation will not start.";
@@ -195,17 +194,17 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     return true;
 }
 
-bool AnalyzerBeats::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
 
-    m_iCurrentSample += iLen;
-    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
+    m_currentFrame += count / mixxx::kAnalysisChannels;
+    if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore all remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, iLen);
+    return m_pPlugin->processSamples(pIn, count);
 }
 
 void AnalyzerBeats::cleanup() {

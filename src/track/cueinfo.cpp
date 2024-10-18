@@ -4,6 +4,34 @@
 
 namespace mixxx {
 
+namespace {
+
+void assertEndPosition(
+        CueType type,
+        std::optional<double> endPositionMillis) {
+    Q_UNUSED(endPositionMillis);
+    switch (type) {
+    case CueType::HotCue:
+    case CueType::MainCue:
+        DEBUG_ASSERT(!endPositionMillis);
+        break;
+    case CueType::Loop:
+    case CueType::Jump:
+    case CueType::N60dBSound:
+        DEBUG_ASSERT(endPositionMillis);
+        break;
+    case CueType::Intro:
+    case CueType::Outro:
+    case CueType::Invalid:
+        break;
+    case CueType::Beat: // unused
+    default:
+        DEBUG_ASSERT(!"Unknown Loop Type");
+    }
+}
+
+} // namespace
+
 CueInfo::CueInfo()
         : m_type(CueType::Invalid),
           m_startPositionMillis(std::nullopt),
@@ -28,6 +56,7 @@ CueInfo::CueInfo(
           m_label(std::move(label)),
           m_color(color),
           m_flags(flags) {
+    assertEndPosition(type, endPositionMillis);
 }
 
 CueType CueInfo::getType() const {
@@ -48,6 +77,7 @@ std::optional<double> CueInfo::getStartPositionMillis() const {
 
 void CueInfo::setEndPositionMillis(const std::optional<double>& positionMillis) {
     m_endPositionMillis = positionMillis;
+    assertEndPosition(m_type, m_endPositionMillis);
 }
 
 std::optional<double> CueInfo::getEndPositionMillis() const {
@@ -58,8 +88,7 @@ std::optional<int> CueInfo::getHotCueIndex() const {
     return m_hotCueIndex;
 }
 
-void CueInfo::setHotCueIndex(const std::optional<int>& hotCueIndex) {
-    DEBUG_ASSERT(!hotCueIndex || *hotCueIndex >= kFirstHotCueIndex);
+void CueInfo::setHotCueIndex(int hotCueIndex) {
     m_hotCueIndex = hotCueIndex;
 }
 
@@ -116,8 +145,8 @@ QDebug operator<<(QDebug debug, const CueType& cueType) {
     case CueType::Outro:
         debug << "CueType::Outro";
         break;
-    case CueType::AudibleSound:
-        debug << "CueType::AudibleSound";
+    case CueType::N60dBSound:
+        debug << "CueType::N60dBSound";
         break;
     }
     return debug;

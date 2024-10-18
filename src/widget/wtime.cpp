@@ -2,15 +2,15 @@
 
 #include <QLocale>
 #include <QTime>
-#include <QtDebug>
+#include <QTimer>
 
 #include "moc_wtime.cpp"
-#include "util/cmdlineargs.h"
+#include "skin/legacy/skincontext.h"
 
-WTime::WTime(QWidget *parent)
+WTime::WTime(QWidget* parent)
         : WLabel(parent),
           m_sTimeFormat("h:mm AP"),
-          m_iInterval(s_iMinuteInterval) {
+          m_interval(s_iMinuteInterval) {
     m_pTimer = new QTimer(this);
 }
 
@@ -21,7 +21,7 @@ WTime::~WTime() {
 void WTime::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     setTimeFormat(node, context);
-    m_pTimer->start(m_iInterval);
+    m_pTimer->start(m_interval);
     connect(m_pTimer, &QTimer::timeout, this, &WTime::refreshTime);
     refreshTime();
 }
@@ -39,10 +39,10 @@ void WTime::setTimeFormat(const QDomNode& node, const SkinContext& context) {
         QLocale::FormatType format;
         if(secondsFormat == "true" || secondsFormat == "yes") {
             format = QLocale::LongFormat;
-            m_iInterval = s_iSecondInterval;
+            m_interval = s_iSecondInterval;
         } else {
             format = QLocale::ShortFormat;
-            m_iInterval = s_iMinuteInterval;
+            m_interval = s_iMinuteInterval;
         }
         m_sTimeFormat = QLocale().timeFormat(format);
     }

@@ -311,7 +311,7 @@ SCS3M.Agent = function(device) {
     }
 
     // Register a handler for multiple engine values. It will be called
-    // everytime one of the values changes.
+    // every time one of the values changes.
     // controls: list of channel/control pairs to watch
     // handler: will receive list of control values as parameter in same order
     function watchmulti(controls, handler) {
@@ -405,7 +405,7 @@ SCS3M.Agent = function(device) {
         }
     }
 
-    var flushModeset = function() {
+    var flushModeset = () => {
         var message;
 
         // Now we can flush the rest of the messages.
@@ -576,7 +576,7 @@ SCS3M.Agent = function(device) {
         sw.hold = function(onHeld) {
             return function() {
                 heldBegin = true;
-                var switchExpire = engine.beginTimer(200, function() {
+                var switchExpire = engine.beginTimer(200, () => {
                     engine.stopTimer(switchExpire);
                     if (heldBegin) {
                         heldBegin = false;
@@ -869,7 +869,7 @@ SCS3M.Agent = function(device) {
         }
 
         // Light the logo and let it go out to signal an overload
-        watch("[Master]", 'audio_latency_overload', binarylight(
+        watch("[App]", 'audio_latency_overload', binarylight(
             device.logo.on,
             device.logo.off
         ));
@@ -901,8 +901,8 @@ SCS3M.Agent = function(device) {
             watch("[Master]", "volume", patch(device.right.gain.meter.centerbar));
             expect(device.right.gain.slide, budge('[Master]', 'volume'));
 
-            watch("[Master]", "VuMeterL", vupatch(device.left.meter.bar));
-            watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
+            watch("[Main]", "vu_meter_left", vupatch(device.left.meter.bar));
+            watch("[Main]", "vu_meter_right", vupatch(device.right.meter.bar));
         }
 
         if (deck.left.held() || deck.right.held()) {

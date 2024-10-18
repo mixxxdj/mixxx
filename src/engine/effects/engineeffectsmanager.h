@@ -1,16 +1,14 @@
 #pragma once
 
-#include <QScopedPointer>
-
+#include "audio/types.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
-#include "util/fifo.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
 class EngineEffectChain;
 class EngineEffect;
+struct GroupFeatureState;
 
 /// EngineEffectsManager is the entry point for processing effects in the audio
 /// thread. It also passes EffectsRequests from EffectsMessenger down to the
@@ -22,8 +20,8 @@ class EngineEffect;
 ///                                      PFL switch --> QuickEffectChains & StandardEffectChains --> mix channels into headphone mix --> headphone effect processing
 class EngineEffectsManager final : public EffectsRequestHandler {
   public:
-    EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
-    ~EngineEffectsManager();
+    EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe);
+    ~EngineEffectsManager() override = default;
 
     void onCallbackStart();
 
@@ -33,8 +31,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
-            const unsigned int numSamples,
-            const unsigned int sampleRate);
+            unsigned int numSamples,
+            mixxx::audio::SampleRate sampleRate);
 
     /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
     /// the contents of the input buffer.
@@ -42,11 +40,12 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
-            const unsigned int numSamples,
-            const unsigned int sampleRate,
+            unsigned int numSamples,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
-            const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+            CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
+            bool fadeout = false);
 
     /// Process the postfader EngineEffectChains, leaving the pIn buffer unmodified
     /// and mixing the output into the pOut buffer. Using EngineEffectsManager's
@@ -58,11 +57,12 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            const unsigned int numSamples,
-            const unsigned int sampleRate,
+            unsigned int numSamples,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
-            const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+            CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
+            bool fadeout = false);
 
     bool processEffectsRequest(
             EffectsRequest& message,
@@ -88,13 +88,14 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            const unsigned int numSamples,
-            const unsigned int sampleRate,
+            unsigned int numSamples,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
-            const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+            CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
+            bool fadeout = false);
 
-    QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
+    std::unique_ptr<EffectsResponsePipe> m_pResponsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
     QList<EngineEffect*> m_effects;
 

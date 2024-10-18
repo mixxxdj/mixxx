@@ -1,10 +1,12 @@
 #include "widget/woverviewhsv.h"
 
-#include <QPainter>
 #include <QColor>
+#include <QPainter>
 
-#include "util/timer.h"
+#include "moc_woverviewhsv.cpp"
+#include "util/colorcomponents.h"
 #include "util/math.h"
+#include "util/timer.h"
 #include "waveform/waveform.h"
 
 WOverviewHSV::WOverviewHSV(
@@ -16,7 +18,7 @@ WOverviewHSV::WOverviewHSV(
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewHSV::drawNextPixmapPart");
+    ScopedTimer t(u"WOverviewHSV::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 
@@ -28,7 +30,9 @@ bool WOverviewHSV::drawNextPixmapPart() {
     }
 
     const int dataSize = pWaveform->getDataSize();
-    if (dataSize == 0) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    const double trackSamples = getTrackSamples();
+    if (dataSize <= 0 || audioVisualRatio <= 0 || trackSamples <= 0) {
         return false;
     }
 
@@ -36,10 +40,17 @@ bool WOverviewHSV::drawNextPixmapPart() {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255,
+        m_waveformSourceImage = QImage(
+                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
+                2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+        if (dataSize / 2 != m_waveformSourceImage.width()) {
+            qWarning() << "Track duration has changed since last analysis"
+                       << m_waveformSourceImage.width() << "!=" << dataSize / 2;
+        }
     }
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
 
     // Always multiple of 2
     const int waveformCompletion = pWaveform->getCompletion();
@@ -64,11 +75,9 @@ bool WOverviewHSV::drawNextPixmapPart() {
     QPainter painter(&m_waveformSourceImage);
     painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
-    // Get HSV of low color. NOTE(rryan): On ARM, qreal is float so it's
-    // important we use qreal here and not double or float or else we will get
-    // build failures on ARM.
-    qreal h, s, v;
-    m_signalColors.getLowColor().getHsvF(&h, &s, &v);
+    // Get HSV of low color.
+    float h, s, v;
+    getHsvF(m_signalColors.getLowColor(), &h, &s, &v);
 
     QColor color;
     float lo, hi, total;
@@ -105,7 +114,7 @@ bool WOverviewHSV::drawNextPixmapPart() {
             }
 
             // Set color
-            color.setHsvF(h, 1.0-hi, 1.0-lo);
+            color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
             painter.setPen(color);
             painter.drawLine(QPoint(currentCompletion / 2, -maxAll[0]),

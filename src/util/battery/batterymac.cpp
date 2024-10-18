@@ -1,11 +1,12 @@
 #include "util/battery/batterymac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-#include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/ps/IOPSKeys.h>
+#include <IOKit/ps/IOPowerSources.h>
 
 #include <QtDebug>
 
+#include "moc_batterymac.cpp"
 #include "util/mac.h"
 
 BatteryMac::BatteryMac(QObject* pParent)

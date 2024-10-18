@@ -1,8 +1,10 @@
+#include "controllers/bulk/bulkenumerator.h"
+
 #include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
-#include "controllers/bulk/bulkenumerator.h"
 #include "controllers/bulk/bulksupported.h"
+#include "moc_bulkenumerator.cpp"
 
 BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
         : ControllerEnumerator(),
@@ -45,7 +47,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
             struct libusb_device_handle* handle = nullptr;
             err = libusb_open(device, &handle);
             if (err) {
-                qWarning() << "Error opening a device";
+                qWarning() << "Error opening a device:" << libusb_error_name(err);
                 continue;
             }
 

@@ -26,9 +26,11 @@ class EffectManifestParameter {
         LinearInverse,
         Logarithmic,
         LogarithmicInverse,
+        /// A step rotary with integer steps arranged with equal distance on scale
+        Integral,
         /// A step rotary, steps given by m_steps are arranged with equal
         /// distance on scale
-        Integral,
+        // Stepped,
         /// For button and enum controls, not accessible from many controllers,
         /// no linking to meta knob
         Toggle,
@@ -36,13 +38,107 @@ class EffectManifestParameter {
 
     enum class UnitsHint : int {
         Unknown = 0,
-        Time,
-        Hertz,
-        /// Fraction of the Sample Rate
-        SampleRate,
         /// Multiples of a Beat
         Beats,
+        Beat,
+        Bar,
+        BPM,
+        Cent,
+        Centimetre,
+        Coefficient,
+        Decibel,
+        Degree,
+        Frame,
+        Hertz,
+        Inch,
+        KiloHertz,
+        Kilometer,
+        Meter,
+        MegaHertz,
+        Midinote,
+        Mile,
+        Minute,
+        Millmeter,
+        Millisecond,
+        Octave,
+        Percentage,
+        /// Fraction of the Sample Rate
+        SampleRate,
+        Seconds,
+        Semitone12tet,
+        Time, // units?
     };
+
+    const QHash<QString, UnitsHint> lv2UnitToUnitsHintHash{
+            // Add custom LV2 units here (with correct case) and also
+            // in unitsHintStringHash()
+            {QString("bar"), UnitsHint::Bar},
+            {QString("beat"), UnitsHint::Beat},
+            {QString("bpm"), UnitsHint::BPM},
+            {QString("cent"), UnitsHint::Cent},
+            {QString("cm"), UnitsHint::Centimetre},
+            {QString("coef"), UnitsHint::Coefficient},
+            {QString("db"), UnitsHint::Decibel},
+            {QString("degree"), UnitsHint::Degree},
+            {QString("frame"), UnitsHint::Frame},
+            {QString("hz"), UnitsHint::Hertz},
+            {QString("inch"), UnitsHint::Inch},
+            {QString("khz"), UnitsHint::KiloHertz},
+            {QString("km"), UnitsHint::Kilometer},
+            {QString("m"), UnitsHint::Meter},
+            {QString("mhz"), UnitsHint::MegaHertz},
+            {QString("midiNote"), UnitsHint::Midinote},
+            {QString("mile"), UnitsHint::Mile},
+            {QString("min"), UnitsHint::Minute},
+            {QString("mm"), UnitsHint::Millmeter},
+            {QString("ms"), UnitsHint::Millisecond},
+            {QString("oct"), UnitsHint::Octave},
+            {QString("pc"), UnitsHint::Percentage},
+            {QString("s"), UnitsHint::Seconds},
+            {QString("semitone12TET"), UnitsHint::Semitone12tet}};
+
+    UnitsHint lv2UnitToUnitsHint(const QString& lv2) {
+        QHash<QString, UnitsHint>::const_iterator uHintIt =
+                lv2UnitToUnitsHintHash.find(lv2);
+        if (uHintIt == lv2UnitToUnitsHintHash.constEnd()) {
+            return UnitsHint::Unknown;
+        }
+        return uHintIt.value();
+    }
+
+    const QHash<UnitsHint, QString> unitsHintStringHash{
+            {UnitsHint::BPM, QString("BPM")},
+            {UnitsHint::Cent, QString("ct")},
+            {UnitsHint::Centimetre, QString("cm")},
+            {UnitsHint::Decibel, QString("dB")},
+            {UnitsHint::Degree, QString("°")},
+            {UnitsHint::Frame, QString("f")},
+            {UnitsHint::Hertz, QString("Hz")},
+            {UnitsHint::Inch, QString("in")},
+            {UnitsHint::KiloHertz, QString("kHz")},
+            {UnitsHint::Kilometer, QString("km")},
+            {UnitsHint::Meter, QString("m")},
+            {UnitsHint::MegaHertz, QString("MHz")},
+            {UnitsHint::Mile, QString("mi")},
+            {UnitsHint::Minute, QString("min")},
+            {UnitsHint::Millmeter, QString("mm")},
+            {UnitsHint::Millisecond, QString("ms")},
+            {UnitsHint::Octave, QString("oct")},
+            {UnitsHint::Percentage, QString("%")},
+            {UnitsHint::Seconds, QString("s")},
+            {UnitsHint::Semitone12tet, QString("semi")},
+    };
+
+    // Custom units we do not want to use in effect widgets
+    QSet<QString> customUnitsBlacklist = {
+            "(coef)",
+            "G",
+            "samp",
+            "st"};
+
+    bool ignoreCustomUnit(const QString& unit) {
+        return customUnitsBlacklist.contains(unit);
+    }
 
     enum class LinkType : int {
         /// Not controlled by the meta knob
@@ -170,6 +266,10 @@ class EffectManifestParameter {
     }
     void setUnitsHint(UnitsHint unitsHint) {
         m_unitsHint = unitsHint;
+        m_unitString = EffectManifestParameter::unitsHintStringHash.value(unitsHint);
+    }
+    const QString unitString() const {
+        return m_unitString;
     }
 
     LinkType defaultLinkType() const {
@@ -258,6 +358,7 @@ class EffectManifestParameter {
     ParameterType m_parameterType;
     ValueScaler m_valueScaler;
     UnitsHint m_unitsHint;
+    QString m_unitString;
     LinkType m_defaultLinkType;
     LinkInversion m_defaultLinkInversion;
     double m_neutralPointOnScale;
@@ -280,4 +381,10 @@ typedef EffectManifestParameter::ParameterType EffectParameterType;
 
 inline qhash_seed_t qHash(const EffectParameterType& parameterType) {
     return static_cast<qhash_seed_t>(parameterType);
+}
+
+typedef EffectManifestParameter::UnitsHint UnitsHint;
+
+inline qhash_seed_t qHash(const UnitsHint& uhint) {
+    return static_cast<qhash_seed_t>(uhint);
 }

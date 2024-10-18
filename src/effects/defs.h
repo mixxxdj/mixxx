@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QSharedPointer>
 #include <array>
 #include <memory>
@@ -16,6 +17,7 @@ enum class EffectEnableState {
 // The order of the enum values here is used to determine sort order in EffectManifest::alphabetize
 enum class EffectBackendType {
     BuiltIn,
+    AudioUnit,
     LV2,
     Unknown
 };
@@ -39,6 +41,10 @@ constexpr int kNumStandardEffectUnits = 4;
 constexpr int kNumEffectsPerUnit = 4;
 
 const QString kNoEffectString = QStringLiteral("---");
+
+const QString kMixerProfile = QStringLiteral("[Mixer Profile]");
+const QString kHighEqFrequency = QStringLiteral("HiEQFrequency");
+const QString kLowEqFrequency = QStringLiteral("LoEQFrequency");
 
 // NOTE: Setting this to true will enable string manipulation and calls to
 // qDebug() in the audio engine thread. That may cause audio dropouts, so only

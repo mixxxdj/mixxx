@@ -6,7 +6,8 @@
 // Otherwise add it manually.
 // Works around https://bugreports.qt.io/browse/QTBUG-27186
 QString filePathWithSelectedExtension(const QString& fileLocationInput,
-        const QString& fileFilter);
+        const QString& fileFilter,
+        const QString& fileFilters);
 
 // Due to Qt bug https://bugreports.qt.io/browse/QTBUG-27186 we may need to
 // manually add the selected extension to the selected file name.

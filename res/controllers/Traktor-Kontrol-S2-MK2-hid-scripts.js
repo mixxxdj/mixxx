@@ -181,7 +181,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0E, "B", 0x02);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0E, "B", 0x01);
 
-    MessageShort.addControl("[Master]", "maximize_library", 0x0F, "B", 0x04, false, this.toggleButton);
+    MessageShort.addControl("[Skin]", "show_maximized_library", 0x0F, "B", 0x04, false, this.toggleButton);
 
     MessageShort.addControl("[Microphone]", "talkover", 0x0A, "B", 0x08, false, this.toggleButton);
 
@@ -293,8 +293,8 @@ TraktorS2MK2.registerOutputPackets = function() {
         }
     }
 
-    OutputTop.addOutput("[Channel1]", "PeakIndicator", 0x05, "B");
-    OutputTop.addOutput("[Channel2]", "PeakIndicator", 0x0A, "B");
+    OutputTop.addOutput("[Channel1]", "peak_indicator", 0x05, "B");
+    OutputTop.addOutput("[Channel2]", "peak_indicator", 0x0A, "B");
 
     OutputTop.addOutput("[Channel1]", "!flux_button", 0x20, "B");
     OutputTop.addOutput("[Channel1]", "loop_in", 0x21, "B");
@@ -389,8 +389,8 @@ TraktorS2MK2.registerOutputPackets = function() {
     TraktorS2MK2.linkChannelOutput("[Channel2]", "pfl", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[Channel1]", "track_loaded", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[Channel2]", "track_loaded", TraktorS2MK2.outputChannelCallback);
-    TraktorS2MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
-    TraktorS2MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
+    TraktorS2MK2.linkChannelOutput("[Channel1]", "peak_indicator", TraktorS2MK2.outputChannelCallbackDark);
+    TraktorS2MK2.linkChannelOutput("[Channel2]", "peak_indicator", TraktorS2MK2.outputChannelCallbackDark);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorS2MK2.outputChannelCallback);
@@ -401,8 +401,8 @@ TraktorS2MK2.registerOutputPackets = function() {
     TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit1]");
     TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit2]");
 
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", TraktorS2MK2.onVuMeterChanged).trigger();
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", TraktorS2MK2.onVuMeterChanged).trigger();
 
     engine.makeConnection("[Channel1]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
     engine.makeConnection("[Channel2]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
@@ -457,6 +457,9 @@ TraktorS2MK2.lightDeck = function(group) {
 };
 
 TraktorS2MK2.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     if (!(ShiftCueButtonAction === "REWIND" || ShiftCueButtonAction === "REVERSEROLL")) {
         throw new Error("ShiftCueButtonAction must be either \"REWIND\" or \"REVERSEROLL\"\n" +
             "ShiftCueButtonAction is: " + ShiftCueButtonAction);
@@ -553,8 +556,8 @@ TraktorS2MK2.shift = function(field) {
 };
 
 TraktorS2MK2.loadTrackButton = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS2MK2.shiftPressed[group]) {
         engine.setValue(field.group, "eject", field.value);
     } else {
@@ -565,8 +568,8 @@ TraktorS2MK2.loadTrackButton = function(field) {
 TraktorS2MK2.syncButton = function(field) {
     var now = Date.now();
 
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     // If shifted, just toggle.
     // TODO(later version): actually make this enable explicit master.
     if (TraktorS2MK2.shiftPressed[group]) {
@@ -596,8 +599,8 @@ TraktorS2MK2.syncButton = function(field) {
 };
 
 TraktorS2MK2.cueButton = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS2MK2.shiftPressed[group]) {
         if (ShiftCueButtonAction === "REWIND") {
             if (field.value === 0) {
@@ -616,8 +619,8 @@ TraktorS2MK2.playButton = function(field) {
     if (field.value === 0) {
         return;
     }
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS2MK2.shiftPressed[group]) {
         var locked = engine.getValue(field.group, "keylock");
         engine.setValue(field.group, "keylock", !locked);
@@ -661,7 +664,7 @@ TraktorS2MK2.jogTouch = function(field) {
             TraktorS2MK2.finishJogTouch(field.group);
         } else {
             TraktorS2MK2.wheelTouchInertiaTimer[field.group] = engine.beginTimer(
-                inertiaTime, function() {
+                inertiaTime, () => {
                     TraktorS2MK2.finishJogTouch(field.group);
                 }, true);
         }
@@ -685,7 +688,8 @@ TraktorS2MK2.finishJogTouch = function(group) {
         } else {
             // Check again soon.
             TraktorS2MK2.wheelTouchInertiaTimer[group] = engine.beginTimer(
-                1, function() {
+                // FIXME: 1ms is too short, what is appropriate?
+                1, () => { 
                     TraktorS2MK2.finishJogTouch(group);
                 }, true);
         }
@@ -1017,12 +1021,12 @@ TraktorS2MK2.effectFocusButton = function(field) {
     if (field.value > 0) {
         var effectUnitNumber = field.group.slice(-2, -1);
         if (TraktorS2MK2.shiftPressed["[Channel" + effectUnitNumber + "]"]) {
-            engine.setValue(field.group, "load_preset", 1);
+            engine.setValue(field.group, "loaded_chain_preset", 1);
             return;
         }
-        TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, function() {
+        TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, () => {
             TraktorS2MK2.effectFocusChooseModeActive[field.group] = true;
-            TraktorS2MK2.effectButtonLEDconnections[field.group].forEach(function(connection) {
+            TraktorS2MK2.effectButtonLEDconnections[field.group].forEach(connection => {
                 connection.disconnect();
             });
             var makeButtonLEDcallback = function(buttonNumber) {
@@ -1099,7 +1103,7 @@ TraktorS2MK2.effectButton = function(field) {
 
     if (field.value > 0) {
         if (TraktorS2MK2.shiftPressed["[Channel" + effectUnitNumber + "]"]) {
-            engine.setValue(effectUnitGroup, "load_preset", buttonNumber+1);
+            engine.setValue(effectUnitGroup, "loaded_chain_preset", buttonNumber+1);
         } else {
             if (TraktorS2MK2.effectFocusChooseModeActive[effectUnitGroup]) {
                 if (focusedEffect === buttonNumber) {
@@ -1112,7 +1116,7 @@ TraktorS2MK2.effectButton = function(field) {
                 toggle();
                 TraktorS2MK2.effectButtonLongPressTimer[effectUnitGroup][buttonNumber] =
           engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds,
-              function() {
+              () => {
                   TraktorS2MK2.effectButtonIsLongPressed[effectUnitGroup][buttonNumber] = true;
                   TraktorS2MK2.effectButtonLongPressTimer[effectUnitGroup][buttonNumber] = 0;
               },
@@ -1180,8 +1184,8 @@ TraktorS2MK2.topEncoderPress = function(field) {
 };
 
 TraktorS2MK2.leftEncoder = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousLeftEncoder[group]);
     TraktorS2MK2.previousLeftEncoder[group] = field.value;
 
@@ -1211,8 +1215,8 @@ TraktorS2MK2.leftEncoder = function(field) {
 };
 
 TraktorS2MK2.leftEncoderPress = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     TraktorS2MK2.leftEncoderPressed[group] = (field.value > 0);
     if (TraktorS2MK2.shiftPressed[group] && field.value > 0) {
         script.triggerControl(group, "pitch_adjust_set_default");
@@ -1220,8 +1224,8 @@ TraktorS2MK2.leftEncoderPress = function(field) {
 };
 
 TraktorS2MK2.rightEncoder = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousRightEncoder[group]);
     TraktorS2MK2.previousRightEncoder[group] = field.value;
 
@@ -1244,8 +1248,8 @@ TraktorS2MK2.rightEncoderPress = function(field) {
     if (field.value === 0) {
         return;
     }
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     var loopEnabled = engine.getValue(group, "loop_enabled");
     // The actions triggered below change the state of loop_enabled,
     // so to simplify the logic, use script.triggerControl to only act

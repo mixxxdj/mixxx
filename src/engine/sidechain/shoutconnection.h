@@ -2,21 +2,16 @@
 
 #include <engine/sidechain/networkoutputstreamworker.h>
 
-#include <QMessageBox>
 #include <QMutex>
-#include <QObject>
 #include <QSemaphore>
 #include <QSharedPointer>
-#include <QTextCodec>
 #include <QThread>
 #include <QVector>
 #include <QWaitCondition>
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
 #include "preferences/broadcastprofile.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -24,10 +19,10 @@
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
-struct shout;
 typedef struct shout shout_t;
-struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
+
+class QTextCodec;
 
 class ShoutConnection
         : public QThread, public EncoderCallback, public NetworkOutputStreamWorker {
@@ -125,8 +120,8 @@ class ShoutConnection
     UserSettingsPointer m_pConfig;
     BroadcastProfilePtr m_pProfile;
     EncoderPointer m_encoder;
-    ControlProxy* m_pMasterSamplerate;
-    ControlProxy* m_pBroadcastEnabled;
+    PollingControlProxy m_mainSamplerate;
+    PollingControlProxy m_broadcastEnabled;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;

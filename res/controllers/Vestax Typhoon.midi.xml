@@ -485,7 +485,7 @@
       </output>
       <!--<output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x90</status>
         <midino>0x29</midino>
         <on>0x7f</on>
@@ -493,7 +493,7 @@
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x90</status>
         <midino>0x2a</midino>
         <on>0x7f</on>
@@ -501,7 +501,7 @@
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x90</status>
         <midino>0x2b</midino>
         <on>0x7f</on>
@@ -509,7 +509,7 @@
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x90</status>
         <midino>0x2c</midino>
         <on>0x7f</on>
@@ -517,7 +517,7 @@
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x90</status>
         <midino>0x2d</midino>
         <on>0x7f</on>
@@ -541,7 +541,7 @@
       </output>
       <!--<output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x91</status>
         <midino>0x29</midino>
         <on>0x7f</on>
@@ -549,7 +549,7 @@
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x91</status>
         <midino>0x2a</midino>
         <on>0x7f</on>
@@ -557,7 +557,7 @@
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x91</status>
         <midino>0x2b</midino>
         <on>0x7f</on>
@@ -565,7 +565,7 @@
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x91</status>
         <midino>0x2c</midino>
         <on>0x7f</on>
@@ -573,7 +573,7 @@
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0x91</status>
         <midino>0x2d</midino>
         <on>0x7f</on>

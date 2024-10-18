@@ -1,14 +1,17 @@
-#include "widget/wpixmapstore.h"
+#include "widget/paintable.h"
 
-#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QPainter>
+#include <QPixmap>
 #include <QString>
+#include <QSvgRenderer>
 #include <QtDebug>
-
-#include "skin/legacy/imgloader.h"
+#include <memory>
 
 #include "util/math.h"
-#include "util/memory.h"
 #include "util/painterscope.h"
+#include "widget/wpixmapstore.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -132,6 +135,14 @@ QRectF Paintable::rect() const {
         return QRectF(QPointF(0, 0), m_pSvg->defaultSize());
     }
     return QRectF();
+}
+
+QImage Paintable::toImage() const {
+    // Note: m_pPixmap is a QScopedPointer<QPixmap> and not a QPixmap.
+    // This confusion let to the wrong assumption that we could simple
+    //   return m_pPixmap->toImage();
+    // relying on QPixmap returning QImage() when it was null.
+    return m_pPixmap.isNull() ? QImage() : m_pPixmap->toImage();
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {

@@ -10,5 +10,4 @@ TextField {
         color: Theme.embeddedBackgroundColor
         radius: 5
     }
-
 }

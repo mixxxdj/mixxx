@@ -2,14 +2,12 @@
 
 #include <QRandomGenerator>
 #include <QtDebug>
-#include <QtSql>
 
-#include "library/dao/settingsdao.h"
-#include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateschema.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -461,25 +459,29 @@ bool AutoDJCratesDAO::updateLastPlayedDateTime() {
     // WHERE newlastplayed != "";
     QString strSetLog;
     strSetLog.setNum(PlaylistDAO::PLHT_SET_LOG);
-    QString strQuery(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
-            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
-            AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS ", "
-            AUTODJCRATESTABLE_LASTPLAYED ")"
-            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE ".%1, "
-            AUTODJCRATESTABLE_CRATEREFS ", " AUTODJCRATESTABLE_TIMESPLAYED ", "
-            AUTODJCRATESTABLE_AUTODJREFS ", MAX(%3) AS new"
-            AUTODJCRATESTABLE_LASTPLAYED " FROM " PLAYLIST_TRACKS_TABLE ", "
-            AUTODJCRATES_TABLE " WHERE " PLAYLIST_TRACKS_TABLE
-            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE " WHERE %5 = %6) AND "
-            PLAYLIST_TRACKS_TABLE ".%1 = " AUTODJCRATES_TABLE "."
-            AUTODJCRATESTABLE_TRACKID " GROUP BY " PLAYLIST_TRACKS_TABLE
-            ".%1) WHERE new" AUTODJCRATESTABLE_LASTPLAYED " != \"\"")
-            .arg(PLAYLISTTRACKSTABLE_TRACKID, // %1
-                 PLAYLISTTRACKSTABLE_PLAYLISTID, // %2
-                 PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
-                 PLAYLISTTABLE_ID, // %4
-                 PLAYLISTTABLE_HIDDEN, // %5
-                 strSetLog)); // %6
+    QString strQuery(QString(
+            "INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
+            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", " AUTODJCRATESTABLE_LASTPLAYED
+            ")"
+            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE
+            ".%1, " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", MAX(%3) AS new" AUTODJCRATESTABLE_LASTPLAYED
+            " FROM " PLAYLIST_TRACKS_TABLE ", " AUTODJCRATES_TABLE
+            " WHERE " PLAYLIST_TRACKS_TABLE
+            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE
+            " WHERE %5 = %6) AND " PLAYLIST_TRACKS_TABLE
+            ".%1 = " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID
+            " GROUP BY " PLAYLIST_TRACKS_TABLE
+            ".%1) WHERE new" AUTODJCRATESTABLE_LASTPLAYED " != ''")
+                             .arg(PLAYLISTTRACKSTABLE_TRACKID,          // %1
+                                     PLAYLISTTRACKSTABLE_PLAYLISTID,    // %2
+                                     PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
+                                     PLAYLISTTABLE_ID,                  // %4
+                                     PLAYLISTTABLE_HIDDEN,              // %5
+                                     strSetLog));                       // %6
     oQuery.prepare(strQuery);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
@@ -509,26 +511,30 @@ bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(TrackId trackId) {
     // WHERE newlastplayed != "";
     QString strSetLog;
     strSetLog.setNum(PlaylistDAO::PLHT_SET_LOG);
-    oQuery.prepare(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
-            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
-            AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS ", "
-            AUTODJCRATESTABLE_LASTPLAYED ")"
-            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE ".%1, "
-            AUTODJCRATESTABLE_CRATEREFS ", " AUTODJCRATESTABLE_TIMESPLAYED ", "
-            AUTODJCRATESTABLE_AUTODJREFS ", MAX(%3) AS new"
-            AUTODJCRATESTABLE_LASTPLAYED " FROM " PLAYLIST_TRACKS_TABLE ", "
-            AUTODJCRATES_TABLE " WHERE " PLAYLIST_TRACKS_TABLE
-            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE " WHERE %5 = %6) AND "
-            PLAYLIST_TRACKS_TABLE ".%1 = :track_id AND " PLAYLIST_TRACKS_TABLE
+    oQuery.prepare(QString(
+            "INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
+            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", " AUTODJCRATESTABLE_LASTPLAYED
+            ")"
+            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE
+            ".%1, " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", MAX(%3) AS new" AUTODJCRATESTABLE_LASTPLAYED
+            " FROM " PLAYLIST_TRACKS_TABLE ", " AUTODJCRATES_TABLE
+            " WHERE " PLAYLIST_TRACKS_TABLE
+            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE
+            " WHERE %5 = %6) AND " PLAYLIST_TRACKS_TABLE
+            ".%1 = :track_id AND " PLAYLIST_TRACKS_TABLE
             ".%1 = " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID
-            " GROUP BY " PLAYLIST_TRACKS_TABLE ".%1) WHERE new"
-            AUTODJCRATESTABLE_LASTPLAYED " != \"\"")
-            .arg(PLAYLISTTRACKSTABLE_TRACKID, // %1
-                 PLAYLISTTRACKSTABLE_PLAYLISTID, // %2
-                 PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
-                 PLAYLISTTABLE_ID, // %4
-                 PLAYLISTTABLE_HIDDEN, // %5
-                 strSetLog)); // %6
+            " GROUP BY " PLAYLIST_TRACKS_TABLE
+            ".%1) WHERE new" AUTODJCRATESTABLE_LASTPLAYED " != ''")
+                           .arg(PLAYLISTTRACKSTABLE_TRACKID,          // %1
+                                   PLAYLISTTRACKSTABLE_PLAYLISTID,    // %2
+                                   PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
+                                   PLAYLISTTABLE_ID,                  // %4
+                                   PLAYLISTTABLE_HIDDEN,              // %5
+                                   strSetLog));                       // %6
     oQuery.bindValue(":track_id", trackId.toVariant());
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
@@ -557,8 +563,9 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         " WHERE " AUTODJCRATESTABLE_TIMESPLAYED
         " = 0 UNION ALL SELECT COUNT(*) AS count FROM "
         AUTODJACTIVETRACKS_TABLE);
-    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+    if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     int iUnplayedTracks = 0;
@@ -640,8 +647,9 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     oQuery.prepare("SELECT " AUTODJCRATESTABLE_TRACKID " FROM "
         AUTODJACTIVETRACKS_TABLE " LIMIT 1 OFFSET ABS (RANDOM() % :active)");
     oQuery.bindValue (":active", iActiveTracks);
-    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+    if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     if (oQuery.next()) {
@@ -670,8 +678,9 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
     // WHERE autodjrefs > 0;
     oQuery.prepare("SELECT COUNT(*) AS count FROM " AUTODJCRATES_TABLE
         " WHERE " AUTODJCRATESTABLE_AUTODJREFS " > 0" );
-    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+    if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     VERIFY_OR_DEBUG_ASSERT(oQuery.next()) {
@@ -709,8 +718,9 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
                  QString::number(m_iAutoDjPlaylistId), // %3
                  PLAYLISTTABLE_POSITION)); // %4
     oQuery.bindValue (":active", iActiveTracks);
-    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+    if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     if (oQuery.next()) {
@@ -1173,8 +1183,9 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
                    "     WHERE fs_deleted == 1 )"
                    " AND mixxx_deleted != 1" );
     oQuery.bindValue(":id",iPlaylistId);
-    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+    if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     int iTotalTracks = 0;
@@ -1236,8 +1247,9 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
                    " OFFSET :offset");
     oQuery.bindValue(":id", iPlaylistId);
     oQuery.bindValue(":offset", offset);
-    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+    if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
         return TrackId();
     }
     if (oQuery.next()) {

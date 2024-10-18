@@ -3,7 +3,6 @@
 #include <soundtouch/BPMDetect.h>
 
 #include "analyzer/constants.h"
-#include "util/sample.h"
 
 namespace mixxx {
 
@@ -20,7 +19,7 @@ bool AnalyzerSoundTouchBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     return true;
 }
 
-bool AnalyzerSoundTouchBeats::processSamples(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerSoundTouchBeats::processSamples(const CSAMPLE* pIn, SINT iLen) {
     if (!m_pSoundTouch) {
         return false;
     }

@@ -28,6 +28,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
+#include <strings.h>
+#endif
 
 #include <shoutidjc/shout.h>
 #include "shout_private.h"
@@ -36,7 +39,7 @@
 char *shout_http_basic_authorization(shout_t *self)
 {
     char *out, *in;
-    int   len;
+    size_t len;
 
     if (!self || !self->user || !self->password)
         return NULL;

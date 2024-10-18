@@ -23,7 +23,7 @@ TrackRecord::TrackRecord(TrackId id)
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
-    refMetadata().refTrackInfo().setKey(KeyUtils::getGlobalKeyText(keys));
+    refMetadata().refTrackInfo().setKeyText(KeyUtils::formatGlobalKey(keys));
     m_keys = std::move(keys);
 }
 
@@ -42,17 +42,24 @@ bool TrackRecord::updateGlobalKey(
     return false;
 }
 
-UpdateResult TrackRecord::updateGlobalKeyText(
+UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         const QString& keyText,
         track::io::key::Source keySource) {
-    Keys keys = KeyFactory::makeBasicKeysFromText(keyText, keySource);
-    if (keys.getGlobalKey() == track::io::key::INVALID) {
+    // Try to parse the input as a key.
+    mixxx::track::io::key::ChromaticKey newKey =
+            KeyUtils::guessKeyFromText(keyText);
+    if (newKey == mixxx::track::io::key::INVALID) {
+        // revert if we can't guess a valid key from it
         return UpdateResult::Rejected;
     }
-    if (m_keys.getGlobalKey() == keys.getGlobalKey()) {
+
+    // If the new key is the same as the old key, reject the change.
+    if (m_keys.getGlobalKey() == newKey) {
         return UpdateResult::Unchanged;
     }
-    setKeys(keys);
+
+    Keys newKeys = KeyFactory::makeBasicKeys(newKey, keySource);
+    setKeys(newKeys);
     return UpdateResult::Updated;
 }
 
@@ -77,13 +84,12 @@ bool mergeReplayGainMetadataProperty(
     }
     return modified;
 }
-#endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.
 template<typename T>
 bool copyIfNotNull(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isNull() &&
             *pMergedProperty != importedProperty) {
@@ -97,7 +103,7 @@ bool copyIfNotNull(
 // empty = missing.
 template<typename T>
 bool copyIfNotEmpty(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isEmpty() &&
             *pMergedProperty != importedProperty) {
@@ -106,6 +112,7 @@ bool copyIfNotEmpty(
     }
     return false;
 }
+#endif // __EXTRA_METADATA__
 
 } // anonymous namespace
 
@@ -166,21 +173,18 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
     if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
         return SourceSyncStatus::Outdated;
     }
-    // This could actually happen when users replace files with
-    // an older version on the file system. But it should never
-    // happen under normal operation. Otherwise it might indicate
-    // a serious programming error and we should detect it early
-    // before the release. Debug assertions are only enabled in
-    // development and testing versions.
-    VERIFY_OR_DEBUG_ASSERT(getSourceSynchronizedAt() <= fileSourceSynchronizedAt) {
-        kLogger.warning()
+    if (getSourceSynchronizedAt() > fileSourceSynchronizedAt) {
+        // The internal metadata has either been updated and not re-exported (yet)
+        // or the file has been replaced with an older version. In both cases the
+        // file metadata should not be re-imported implicitly and is considered
+        // as synchronized.
+        kLogger.debug()
                 << "Internal source synchronization time stamp"
                 << getSourceSynchronizedAt()
                 << "is ahead of"
                 << fileSourceSynchronizedAt
                 << "for file"
-                << mixxx::FileInfo(fileInfo)
-                << ": Has this file been replaced with an older version?";
+                << mixxx::FileInfo(fileInfo);
     }
     return SourceSyncStatus::Synchronized;
 }

@@ -1,10 +1,8 @@
 #include "library/autodj/autodjfeature.h"
 
 #include <QMenu>
-#include <QMetaObject>
 #include <QtDebug>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
 #include "library/library.h"
@@ -13,10 +11,10 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
-#include "mixer/playermanager.h"
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/clipboard.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -63,7 +61,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             m_iAutoDJPlaylistId);
 
     // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
-    // previous load attempt have been called (lp1941743)
+    // previous load attempt have been called #10504.
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
@@ -165,6 +163,14 @@ void AutoDJFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
+void AutoDJFeature::clear() {
+    m_playlistDao.clearAutoDJQueue();
+}
+
+void AutoDJFeature::paste() {
+    emit pasteFromSidebar();
+}
+
 bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
@@ -187,8 +193,8 @@ bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
 }
 
 // Add a crate to the auto-DJ queue.
-void AutoDJFeature::slotAddCrateToAutoDj(int iCrateId) {
-    m_pTrackCollection->updateAutoDjCrate(CrateId(iCrateId), true);
+void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
+    m_pTrackCollection->updateAutoDjCrate(crateId, true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
@@ -213,11 +219,12 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         }
         // No child item for crate found
         // -> Create and append a new child item for this crate
-        QList<TreeItem*> rows;
-        rows.append(new TreeItem(crate.getName(), crate.getId().toVariant()));
+        // TODO() Use here std::span to get around the heap alloctaion of
+        // std::vector for a single element.
+        std::vector<std::unique_ptr<TreeItem>> rows;
+        rows.push_back(std::make_unique<TreeItem>(crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_pSidebarModel->index(0, 0);
-        m_pSidebarModel->insertTreeItemRows(rows, m_crateList.length(), parentIndex);
-        DEBUG_ASSERT(rows.isEmpty()); // ownership passed to m_pSidebarModel
+        m_pSidebarModel->insertTreeItemRows(std::move(rows), m_crateList.length(), parentIndex);
         m_crateList.append(crate);
     } else {
         // Crate does not exist or is not a source for AutoDJ
@@ -261,7 +268,7 @@ void AutoDJFeature::slotAddRandomTrack() {
                 if (!pRandomTrack->getFileInfo().checkFileExists()) {
                     qWarning() << "Track does not exist:"
                                << pRandomTrack->getInfo()
-                               << pRandomTrack->getFileInfo();
+                               << pRandomTrack->getLocation();
                     pRandomTrack.reset();
                 }
             }
@@ -300,9 +307,10 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
-            int iCrateId = crate.getId().value();
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, iCrateId] { slotAddCrateToAutoDj(iCrateId); });
+            auto crateId = crate.getId();
+            connect(pAction.get(), &QAction::triggered, this, [this, crateId] {
+                slotAddCrateToAutoDj(crateId);
+            });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }

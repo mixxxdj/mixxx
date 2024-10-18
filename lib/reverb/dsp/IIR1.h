@@ -36,7 +36,7 @@ class LP1
 	public:
 		T a0, b1, y1;
 
-		LP1 (double d = 1.)
+		LP1 (T d = 1.)
 			{
 				set (d);
 				y1 = 0.;

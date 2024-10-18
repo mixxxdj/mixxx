@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/tstring.h>
+#include <textidentificationframe.h>
+#include <tstring.h>
 
 #include <QDir>
 #include <QtDebug>
+#include <memory>
 
 #include "test/mixxxtest.h"
 #include "track/beats.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/beatsimporter.h"
-#include "util/memory.h"
 
 namespace {
 

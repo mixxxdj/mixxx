@@ -1695,7 +1695,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.1</minimum>
@@ -1707,7 +1707,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.3</minimum>
@@ -1719,7 +1719,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.5</minimum>
@@ -1731,7 +1731,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.7</minimum>
@@ -1743,7 +1743,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.9</minimum>
@@ -1755,7 +1755,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <description>
                 </description>
                 <minimum>0.5</minimum>
@@ -1767,7 +1767,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.1</minimum>
@@ -1779,7 +1779,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.3</minimum>
@@ -1791,7 +1791,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.5</minimum>
@@ -1803,7 +1803,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.7</minimum>
@@ -1815,7 +1815,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <description>
                 </description>
                 <minimum>0.9</minimum>
@@ -1827,7 +1827,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <description>
                 </description>
                 <minimum>0.5</minimum>

@@ -1,22 +1,25 @@
 <Template>
   <Overview>
     <TooltipId>waveform_overview</TooltipId>
-    <Size>150me,20me</Size>
+    <Size>-1me,20me</Size>
     <Group><Variable name="Group"/></Group>
     <Connection>
       <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
     </Connection>
     <BgColor><Variable name="BgColor"/></BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
-    <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
-    <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
-    <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
-    <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
-    <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
-    <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
+    <!-- Default colors are used for high/mid/low: blue/green/red -->
+    <SignalHighColor></SignalHighColor>
+    <SignalMidColor></SignalMidColor>
+    <SignalLowColor></SignalLowColor>
+    <SignalRGBHighColor></SignalRGBHighColor>
+    <SignalRGBMidColor></SignalRGBMidColor>
+    <SignalRGBLowColor></SignalRGBLowColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+    <PassthroughLabelColor><Variable name="PassthroughLabelColor"/></PassthroughLabelColor>
     <LabelFontSize><Variable name="OverviewFontSize"/></LabelFontSize>
     <DimBrightThreshold><Variable name="DimBrightThresholdOverview"/></DimBrightThreshold>
     <!--LabelTextColor>#fff</LabelTextColor>
@@ -77,7 +80,6 @@
     <Mark>
       <Control>intro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|right</Align>
       <Color><Variable name="IntroOutroColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
@@ -111,7 +113,6 @@
     <Mark>
       <Control>outro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|left</Align>
       <Color><Variable name="IntroOutroColor"/></Color>
       <TextColor>#FFFFFF</TextColor>

@@ -2,7 +2,6 @@
 
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
-#include "mixxxmainwindow.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
@@ -41,6 +40,11 @@ DlgPrefWaveform::DlgPrefWaveform(
             i++) {
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
+
+    // Populate untilMark options
+    untilMarkAlignComboBox->addItem(tr("Top"));
+    untilMarkAlignComboBox->addItem(tr("Center"));
+    untilMarkAlignComboBox->addItem(tr("Bottom"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
@@ -132,6 +136,24 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+    connect(untilMarkShowBeatsCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkShowBeats);
+    connect(untilMarkShowTimeCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkShowTime);
+    connect(untilMarkAlignComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkAlign);
+    connect(untilMarkTextPointSizeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkTextPointSize);
+
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -141,9 +163,9 @@ void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
     if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
-        openGlStatusIcon->setText(factory->getOpenGLVersion());
+        openGlStatusData->setText(factory->getOpenGLVersion());
     } else {
-        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
+        openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
 
     // The combobox holds a list of [handle name, handle index]
@@ -151,6 +173,8 @@ void DlgPrefWaveform::slotUpdate() {
     if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
+
+    updateEnableUntilMark();
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -167,6 +191,13 @@ void DlgPrefWaveform::slotUpdate() {
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
     beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
+
+    untilMarkShowBeatsCheckBox->setChecked(factory->getUntilMarkShowBeats());
+    untilMarkShowTimeCheckBox->setChecked(factory->getUntilMarkShowTime());
+    untilMarkAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toUntilMarkAlignIndex(
+                    factory->getUntilMarkAlign()));
+    untilMarkTextPointSizeSpinBox->setValue(factory->getUntilMarkTextPointSize());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -220,8 +251,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
 
-    // 30FPS is the default
-    frameRateSlider->setValue(30);
+    // 60FPS is the default
+    frameRateSlider->setValue(60);
     endOfTrackWarningTimeSlider->setValue(30);
 
     // Waveform caching enabled.
@@ -251,6 +282,19 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     }
     int handleIndex = waveformTypeComboBox->itemData(index).toInt();
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(handleIndex);
+
+    updateEnableUntilMark();
+}
+
+void DlgPrefWaveform::updateEnableUntilMark() {
+    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark();
+    untilMarkShowBeatsCheckBox->setEnabled(enabled);
+    untilMarkShowTimeCheckBox->setEnabled(enabled);
+    untilMarkAlignLabel->setEnabled(enabled);
+    untilMarkAlignComboBox->setEnabled(enabled);
+    untilMarkTextPointSizeLabel->setEnabled(enabled);
+    untilMarkTextPointSizeSpinBox->setEnabled(enabled);
+    requiresGLSLLabel->setVisible(!enabled);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
@@ -309,6 +353,23 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
+    WaveformWidgetFactory::instance()->setUntilMarkShowBeats(checked);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
+    WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
+    WaveformWidgetFactory::instance()->setUntilMarkAlign(
+            WaveformWidgetFactory::toUntilMarkAlign(index));
+}
+
+void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
+    WaveformWidgetFactory::instance()->setUntilMarkTextPointSize(value);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

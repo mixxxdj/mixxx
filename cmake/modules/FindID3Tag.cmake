@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -50,24 +50,27 @@ endif()
 
 find_path(ID3Tag_INCLUDE_DIR
   NAMES id3tag.h
-  PATHS ${PC_ID3Tag_INCLUDE_DIRS}
+  HINTS ${PC_ID3Tag_INCLUDE_DIRS}
   PATH_SUFFIXES id3tag
   DOC "ID3Tag include directory")
 mark_as_advanced(ID3Tag_INCLUDE_DIR)
 
 find_library(ID3Tag_LIBRARY
   NAMES id3tag
-  PATHS ${PC_ID3Tag_LIBRARY_DIRS}
+  HINTS ${PC_ID3Tag_LIBRARY_DIRS}
   DOC "ID3Tag library"
 )
 mark_as_advanced(ID3Tag_LIBRARY)
 
+if(DEFINED PC_ID3Tag_VERSION AND NOT PC_ID3Tag_VERSION STREQUAL "")
+  set(ID3Tag_VERSION "${PC_ID3Tag_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   ID3Tag
-  DEFAULT_MSG
-  ID3Tag_LIBRARY
-  ID3Tag_INCLUDE_DIR
+  REQUIRED_VARS ID3Tag_LIBRARY ID3Tag_INCLUDE_DIR
+  VERSION_VAR ID3Tag_VERSION
 )
 
 if(ID3Tag_FOUND)

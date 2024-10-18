@@ -17,8 +17,8 @@ enum class CueType {
     Jump = 5,
     Intro = 6,
     Outro = 7,
-    AudibleSound = 8, // range that covers beginning and end of audible
-                      // sound; not shown to user
+    N60dBSound = 8, // range that covers beginning and end of audible
+                    // sound; not shown to user
 };
 
 enum class CueFlag {
@@ -56,8 +56,7 @@ class CueInfo {
             const std::optional<double>& positionMillis = std::nullopt);
 
     std::optional<int> getHotCueIndex() const;
-    void setHotCueIndex(
-            const std::optional<int>& hotCueIndex = std::nullopt);
+    void setHotCueIndex(int hotCueIndex);
 
     QString getLabel() const;
     void setLabel(

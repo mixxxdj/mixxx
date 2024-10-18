@@ -1,6 +1,15 @@
+#if defined(_MSC_VER)
+#pragma warning(push)
+// https://github.com/taglib/taglib/issues/1185
+// warning C4251: 'TagLib::FileName::m_wname': class
+// 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t>>'
+// needs to have dll-interface to be used by clients of class 'TagLib::FileName'
+#pragma warning(disable : 4251)
+#endif
+
 #include "track/taglib/trackmetadata_file.h"
 
-#include <taglib/tfile.h>
+#include <tfile.h>
 
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
@@ -114,8 +123,23 @@ bool hasMP4Tag(TagLib::MP4::File& file) {
 bool readAudioPropertiesFromFile(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file) {
+    // The declaration of TagLib::FileName is platform specific.
+#ifdef _WIN32
+    // For _WIN32 there are two types std::string and std::wstring
+    // we must pick one explicit,
+    // to prevent "use of overloaded operator '<<' is ambiguous" error
+    // on clang-cl builds.
+    // We need to save the filename here because if it was chained
+    // (`file.name().wstr()`) the wstr() result would be dangling.
+    TagLib::FileName filename_owning = file.name();
+    const std::wstring& filename = filename_owning.wstr();
+#else
+    const char* filename = file.name();
+#endif
     if (!file.isValid()) {
-        kLogger.warning() << "Cannot read audio properties from inaccessible/unreadable/invalid file:" << file.name();
+        kLogger.warning() << "Cannot read audio properties from "
+                             "inaccessible/unreadable/invalid file:"
+                          << filename;
         return false;
     }
     if (!pTrackMetadata) {
@@ -126,7 +150,7 @@ bool readAudioPropertiesFromFile(
             file.audioProperties();
     if (!pAudioProperties) {
         kLogger.warning() << "Failed to read audio properties from file"
-                          << file.name();
+                          << filename;
         return false;
     }
     readAudioProperties(pTrackMetadata, *pAudioProperties);
@@ -136,3 +160,7 @@ bool readAudioPropertiesFromFile(
 } // namespace taglib
 
 } // namespace mixxx
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

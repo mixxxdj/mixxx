@@ -1,8 +1,6 @@
 #pragma once
 #include <keyfinder/keyfinder.h>
 
-#include <QObject>
-
 #include "analyzer/plugins/analyzerplugin.h"
 #include "util/types.h"
 
@@ -20,7 +18,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     }
 
     bool initialize(mixxx::audio::SampleRate sampleRate) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     bool finalize() override;
 
     KeyChangeList getKeyChanges() const override {

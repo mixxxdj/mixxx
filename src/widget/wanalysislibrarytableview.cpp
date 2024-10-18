@@ -1,5 +1,6 @@
-#include "library/trackcollection.h"
 #include "widget/wanalysislibrarytableview.h"
+
+#include "moc_wanalysislibrarytableview.cpp"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,

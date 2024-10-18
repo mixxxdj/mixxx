@@ -1,21 +1,22 @@
 #pragma once
 
-#include <QHash>
-#include <QSortFilterProxyModel>
 #include <memory>
 
-#include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllermappinginfo.h"
-#include "controllers/controlleroutputmappingtablemodel.h"
-#include "controllers/dlgcontrollerlearning.h"
-#include "controllers/legacycontrollermapping.h"
+#include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 // Forward declarations
 class Controller;
+class ControllerInputMappingTableModel;
+class ControllerMappingTableProxyModel;
 class ControllerManager;
+class ControllerOutputMappingTableModel;
+class ControlPickerMenu;
+class DlgControllerLearning;
 class MappingInfoEnumerator;
 
 /// Configuration dialog for a single DJ controller
@@ -29,6 +30,7 @@ class DlgPrefController : public DlgPreferencePage {
     virtual ~DlgPrefController();
 
     QUrl helpUrl() const override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
@@ -37,6 +39,8 @@ class DlgPrefController : public DlgPreferencePage {
     void slotApply() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
+
+    void slotRecreateControlPickerMenu();
 
   signals:
     void applyMapping(Controller* pController,
@@ -51,8 +55,11 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current mapping in the combobox and display the
     /// mapping information.
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    void slotInputControlSearch();
+    void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
+    void enableWizardAndIOTabs(bool enable);
 
     // Input mappings
     void addInputMapping();
@@ -74,10 +81,10 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingPathFromIndex(int index) const;
+    QString mappingFilePathFromIndex(int index) const;
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
-    void saveMapping();
+    bool saveMapping();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).
@@ -114,13 +121,14 @@ class DlgPrefController : public DlgPreferencePage {
     const QString m_pUserDir;
     std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
+    parented_ptr<ControlPickerMenu> m_pControlPickerMenu;
     DlgControllerLearning* m_pDlgControllerLearning;
     std::shared_ptr<LegacyControllerMapping> m_pMapping;
     QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
-    QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerMappingTableProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
-    QSortFilterProxyModel* m_pOutputProxyModel;
+    ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
 };

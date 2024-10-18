@@ -1,6 +1,8 @@
 #include "library/dao/settingsdao.h"
 
-#include <QtSql>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "util/assert.h"
 #include "util/logger.h"
@@ -40,10 +42,10 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     query.bindValue(QStringLiteral(":name"), name);
     if (query.exec() && query.first()) {
         QVariant value = query.value(query.record().indexOf(kColumnValue));
-        VERIFY_OR_DEBUG_ASSERT(value.isValid()) {
+        if (!value.isValid()) {
             kLogger.warning() << "Invalid value:" << value;
-        }
-        else {
+            DEBUG_ASSERT("!Invalid value");
+        } else {
             return value.toString();
         }
     }
@@ -69,10 +71,11 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
     }
     query.bindValue(QStringLiteral(":name"), name);
     query.bindValue(QStringLiteral(":value"), value.toString());
-    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+    if (!query.exec()) {
         kLogger.warning()
                 << "Failed to set" << name << "=" << value
                 << query.lastError();
+        DEBUG_ASSERT(!"Failed query");
         return false;
     }
     return true;

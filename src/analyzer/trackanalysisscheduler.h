@@ -6,6 +6,7 @@
 #include <set>
 #include <vector>
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/analyzerthread.h"
 #include "util/db/dbconnectionpool.h"
 
@@ -49,8 +50,8 @@ class TrackAnalysisScheduler : public QObject {
 
     // Schedule single or multiple tracks. After all tracks have been scheduled
     // the caller must invoke resume() once.
-    bool scheduleTrackById(TrackId trackId);
-    int scheduleTracksById(const QList<TrackId>& trackIds);
+    bool scheduleTrack(AnalyzerScheduledTrack track);
+    int scheduleTracks(const QList<AnalyzerScheduledTrack>& tracks);
 
   public slots:
     void suspend();
@@ -99,8 +100,7 @@ class TrackAnalysisScheduler : public QObject {
             return m_analyzerProgress;
         }
 
-        bool submitNextTrack(TrackPointer track) {
-            DEBUG_ASSERT(track);
+        bool submitNextTrack(const AnalyzerTrack& track) {
             DEBUG_ASSERT(m_thread);
             return m_thread->submitNextTrack(std::move(track));
         }
@@ -143,7 +143,7 @@ class TrackAnalysisScheduler : public QObject {
     void emitProgressOrFinished();
 
     bool allTracksFinished() const {
-        return m_queuedTrackIds.empty() &&
+        return m_queuedTracks.empty() &&
                 m_pendingTrackIds.empty();
     }
 
@@ -151,7 +151,7 @@ class TrackAnalysisScheduler : public QObject {
 
     std::vector<Worker> m_workers;
 
-    std::deque<TrackId> m_queuedTrackIds;
+    std::deque<AnalyzerScheduledTrack> m_queuedTracks;
 
     // Tracks that have already been submitted to workers
     // and not yet reported back as finished.

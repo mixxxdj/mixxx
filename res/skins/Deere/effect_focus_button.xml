@@ -21,13 +21,11 @@ Variables:
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text></Text>
           <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
           <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Text></Text>
           <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
           <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
         </State>

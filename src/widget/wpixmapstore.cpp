@@ -1,10 +1,5 @@
 #include "widget/wpixmapstore.h"
 
-#include <QDir>
-#include <QString>
-#include <QtDebug>
-
-#include "util/math.h"
 #include "skin/legacy/imgloader.h"
 
 // static

@@ -1,12 +1,10 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
+#include <memory>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 class GetKeyMode;
@@ -33,7 +31,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
     }
 
     bool initialize(mixxx::audio::SampleRate sampleRate) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     bool finalize() override;
 
     KeyChangeList getKeyChanges() const override {

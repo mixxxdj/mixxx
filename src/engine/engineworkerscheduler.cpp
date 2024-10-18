@@ -1,7 +1,5 @@
 #include "engine/engineworkerscheduler.h"
 
-#include <QtDebug>
-
 #include "engine/engineworker.h"
 #include "moc_engineworkerscheduler.cpp"
 #include "util/compatibility/qmutex.h"

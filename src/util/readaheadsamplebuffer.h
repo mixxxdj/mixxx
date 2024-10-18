@@ -45,7 +45,7 @@ class ReadAheadSampleBuffer final {
             ReadAheadSampleBuffer& that);
 
     // The capacity is limited by the size of the underlying buffer.
-    SINT capacity() const {
+    constexpr SINT capacity() const {
         return m_sampleBuffer.size();
     }
 
@@ -122,7 +122,7 @@ class ReadAheadSampleBuffer final {
 } // namespace mixxx
 
 namespace std {
-    
+
 // Template specialization of std::swap() for ReadAheadSampleBuffer
 template<>
 inline void swap(::mixxx::ReadAheadSampleBuffer& lhs, ::mixxx::ReadAheadSampleBuffer& rhs) {

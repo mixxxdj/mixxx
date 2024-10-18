@@ -1,6 +1,5 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
 #include <QMessageBox>
 
 #include "moc_trackexportdlg.cpp"
@@ -103,7 +102,7 @@ void TrackExportDlg::cancelButtonClicked() {
 void TrackExportDlg::finish() {
     m_worker->stop();
     m_worker->wait();
-    if (m_worker->errorMessage().length()) {
+    if (!m_worker->errorMessage().isEmpty()) {
         QMessageBox::warning(
                 nullptr,
                 tr("Export Error"),

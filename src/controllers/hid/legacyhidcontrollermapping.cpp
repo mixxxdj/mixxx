@@ -5,7 +5,6 @@
 
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
-#include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 
 bool LegacyHidControllerMapping::saveMapping(const QString& fileName) const {

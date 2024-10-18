@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import "Theme"
 
@@ -68,7 +68,6 @@ Item {
         FadeBehavior on visible {
             fadeTarget: rateSlider
         }
-
     }
 
     Rectangle {
@@ -128,7 +127,6 @@ Item {
                     anchors.centerIn: parent
                     text: "FX 1"
                 }
-
             }
 
             Rectangle {
@@ -155,7 +153,6 @@ Item {
                     anchors.centerIn: parent
                     text: "FX 2"
                 }
-
             }
 
             Rectangle {
@@ -214,7 +211,6 @@ Item {
                     group: root.group
                     key: "track_samples"
                 }
-
             }
 
             Item {
@@ -250,7 +246,6 @@ Item {
                     anchors.centerIn: parent
                     source: "images/icon_quantize.svg"
                 }
-
             }
 
             Item {
@@ -286,15 +281,12 @@ Item {
                     anchors.centerIn: parent
                     source: "images/icon_passthrough.svg"
                 }
-
             }
-
         }
 
         FadeBehavior on visible {
             fadeTarget: overview
         }
-
     }
 
     Item {
@@ -351,9 +343,7 @@ Item {
                     width: playButton.height
                     height: playButton.height
                 }
-
             }
-
         }
 
         Skin.SyncButton {
@@ -367,12 +357,10 @@ Item {
         FadeBehavior on visible {
             fadeTarget: buttonBar
         }
-
     }
 
     Mixxx.PlayerDropArea {
         anchors.fill: parent
         group: root.group
     }
-
 }
