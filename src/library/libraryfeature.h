@@ -118,7 +118,7 @@ class LibraryFeature : public QObject {
         Q_UNUSED(globalPos);
         Q_UNUSED(index);
     }
-    // called when F2 key is pressed in WLibrarySidebar
+    // called when F2 or R key is pressed in WLibrarySidebar
     virtual void renameItem(const QModelIndex& index) {
         Q_UNUSED(index);
     }
