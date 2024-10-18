@@ -1,5 +1,64 @@
-blank_issues_enabled: true
-contact_links:
+links:
+  - name: 🐛 Bug Report
+    description: 'Report a bug in Mixxx.'
+    url: bug.yaml
+  - name: 🚀 Feature Request
+    description: 'Suggest a new feature for Mixxx.'
+    url: feature_request.yaml
+  - name: 💡 Documentation Issue
+    description: 'Report an issue with the Mixxx documentation.'
+    url: documentation_issue.yaml
+  - name: 🧰 Translation Issue
+    description: 'Report an issue with the Mixxx translations.'
+    url: translation_issue.yaml
+  - name: 💻 Development Issue
+    description: 'Report an issue with the Mixxx development process.'
+    url: development_issue.yaml
+  - name: 🎨 Design Issue
+    description: 'Report an issue with the Mixxx design.'
+    url: design_issue.yaml
+  - name: 📦 Packaging Issue
+    description: 'Report an issue with the Mixxx packaging.'
+    url: packaging_issue.yaml
+  - name: ⚠️ Security Issue
+    description: 'Report a security issue in Mixxx.'
+    url: security_issue.yaml
+  - name: 💬 Feedback
+    description: 'Provide feedback on Mixxx.'
+    url: feedback.yaml
+  - name: 🚧 Other
+    description: 'Report an issue that doesn't fit into any of the above categories.'
+    url: other.yaml
+  - name: 🆘 Help
+    description: 'Get help with Mixxx.'
+    url: help.yaml
+  - name: 🗣️ Discussion
+    description: 'Start a discussion about Mixxx.'
+    url: discussion.yaml
+  - name: 📢 Announcement
+    description: 'Make an announcement about Mixxx.'
+    url: announcement.yaml
+  - name: 🤖 Automation
+    description: 'Report an issue with the Mixxx automation.'
+    url: automation_issue.yaml
+  - name: 🏗️ Infrastructure Issue
+    description: 'Report an issue with the Mixxx infrastructure.'
+    url: infrastructure_issue.yaml
+  - name: 📊 Analytics Issue
+    description: 'Report an issue with the Mixxx analytics.'
+    url: analytics_issue.yaml
+  - name: 📈 Performance Issue
+    description: 'Report an issue with the Mixxx performance.'
+
   - name: 🤔 Question
+    body: Please describe your question in detail.
     url: https://mixxx.org/forums
-    about: Please use our forums for questions
+    about: Please use our forums for questions.
+    description: Ask a question about Mixxx.
+
+# If you need to add another set of information, use different keys or nest them under a different parent key
+additional_forum:
+  url: https://mixxx.org/forums
+  about: Please use our forums for questions.
+  description: Ask a question about Mixxx.
+
