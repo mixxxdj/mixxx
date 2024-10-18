@@ -66,6 +66,8 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotImportPlaylist();
     void slotImportPlaylistFile(const QString& playlistFile, CrateId crateId);
     void slotCreateImportCrate();
+    void slotCreateImportSubCrate();
+    void slotCreateImportPlaylist(CrateId parentId);
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
     void slotExportTrackFiles();
@@ -134,6 +136,7 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAutoDjTrackSourceAction;
     parented_ptr<QAction> m_pImportPlaylistAction;
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
+    parented_ptr<QAction> m_pCreateImportSubCrateAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
 #ifdef __ENGINEPRIME__
