@@ -125,6 +125,11 @@ void CrateFeature::initActions() {
             &QAction::triggered,
             this,
             &CrateFeature::slotCreateImportCrate);
+    m_pCreateImportSubCrateAction = make_parented<QAction>(tr("Import Sub-Crate"), this);
+    connect(m_pCreateImportSubCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotCreateImportSubCrate);
     m_pExportPlaylistAction = make_parented<QAction>(tr("Export Crate as Playlist"), this);
     connect(m_pExportPlaylistAction.get(),
             &QAction::triggered,
@@ -784,6 +789,14 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
 }
 
 void CrateFeature::slotCreateImportCrate() {
+    slotCreateImportPlaylist(CrateId());
+}
+
+void CrateFeature::slotCreateImportSubCrate() {
+    slotCreateImportPlaylist(crateIdFromIndex(m_lastRightClickedIndex));
+}
+
+void CrateFeature::slotCreateImportPlaylist(CrateId parentId) {
     // Get file to read
     const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
@@ -801,7 +814,9 @@ void CrateFeature::slotCreateImportCrate() {
     for (const QString& playlistFile : playlistFiles) {
         const QFileInfo fileInfo(playlistFile);
 
+        // Set parent crate where the imported crates should be created
         Crate crate;
+        crate.setParentId(parentId);
 
         // Get a valid name
         const QString baseName = fileInfo.completeBaseName();
@@ -812,7 +827,7 @@ void CrateFeature::slotCreateImportCrate() {
             }
             name = name.trimmed();
             if (!name.isEmpty()) {
-                if (!m_pTrackCollection->crates().readCrateByName(crate.getParentId(), name)) {
+                if (!m_pTrackCollection->crates().readCrateByName(parentId, name)) {
                     // unused crate name found
                     crate.setName(std::move(name));
                     DEBUG_ASSERT(crate.hasName());
