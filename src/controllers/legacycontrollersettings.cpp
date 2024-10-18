@@ -3,10 +3,13 @@
 #include <util/assert.h>
 
 #include <QCheckBox>
+#include <QColorDialog>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
+#include <QPushButton>
 #include <QSpinBox>
 
 #include "moc_legacycontrollersettings.cpp"
@@ -54,6 +57,8 @@ LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
     registerType<LegacyControllerIntegerSetting>();
     registerType<LegacyControllerRealSetting>();
     registerType<LegacyControllerEnumSetting>();
+    registerType<LegacyControllerColorSetting>();
+    registerType<LegacyControllerFileSetting>();
 }
 
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
@@ -273,4 +278,111 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
             });
 
     return pComboBox;
+}
+
+LegacyControllerColorSetting::LegacyControllerColorSetting(
+        const QDomElement& element)
+        : AbstractLegacyControllerSetting(element) {
+    m_defaultValue = QColor(element.attribute("default"));
+    m_savedValue = m_defaultValue;
+    m_editedValue = m_defaultValue;
+    reset();
+    save();
+}
+
+bool LegacyControllerColorSetting::match(const QDomElement& element) {
+    return element.hasAttribute("type") &&
+            QString::compare(element.attribute("type"),
+                    "color",
+                    Qt::CaseInsensitive) == 0;
+}
+
+void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
+    if (ok != nullptr) {
+        *ok = false;
+    }
+    reset();
+    save();
+
+    m_savedValue = QColor(in);
+    if (!m_editedValue.isValid()) {
+        *ok = false;
+        return;
+    }
+    m_editedValue = m_savedValue;
+}
+
+QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
+    auto* pPushButton = new QPushButton(tr("Change color"), pParent);
+
+    // connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, pComboBox]() {
+    //     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
+    // });
+
+    connect(pPushButton, &QPushButton::clicked, this, [this, pPushButton](bool) {
+        auto color = QColorDialog::getColor(m_editedValue, pPushButton, tr("Choose a new color"));
+        if (color.isValid()) {
+            m_editedValue = color;
+            emit changed();
+        }
+    });
+
+    return pPushButton;
+}
+
+LegacyControllerFileSetting::LegacyControllerFileSetting(
+        const QDomElement& element)
+        : AbstractLegacyControllerSetting(element) {
+    m_defaultValue = QFileInfo(element.attribute("default"));
+    m_fileFilter = element.attribute("pattern");
+    m_savedValue = m_defaultValue;
+    m_editedValue = m_defaultValue;
+    reset();
+    save();
+}
+
+bool LegacyControllerFileSetting::match(const QDomElement& element) {
+    return element.hasAttribute("type") &&
+            QString::compare(element.attribute("type"),
+                    "file",
+                    Qt::CaseInsensitive) == 0;
+}
+
+void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
+    if (ok != nullptr) {
+        *ok = false;
+    }
+    reset();
+    save();
+
+    m_editedValue = QFileInfo(in);
+    if (!m_editedValue.exists()) {
+        *ok = false;
+        return;
+    }
+    m_savedValue = m_editedValue;
+}
+
+QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
+    auto* pPushButton = new QPushButton(tr("Change file"), pParent);
+
+    // connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, pComboBox]() {
+    //     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
+    // });
+
+    connect(pPushButton,
+            &QPushButton::clicked,
+            this,
+            [this, pPushButton](bool) {
+                auto file = QFileInfo(QFileDialog::getOpenFileName(pPushButton,
+                        tr("Select a file"),
+                        QString(),
+                        m_fileFilter));
+                if (file.exists()) {
+                    m_editedValue = file;
+                    emit changed();
+                }
+            });
+
+    return pPushButton;
 }
