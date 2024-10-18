@@ -8,6 +8,7 @@
 #include "util/math.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveform.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
@@ -40,7 +41,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_pGainControlObject(nullptr),
           m_gain(1.0),
           m_pTrackSamplesControlObject(nullptr),
-          m_trackSamples(0),
+          m_trackSamples(0.0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
           m_passthroughEnabled(false) {
@@ -419,7 +420,7 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available
-    m_trackSamples = -1;
+    m_trackSamples = -1.0;
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();
