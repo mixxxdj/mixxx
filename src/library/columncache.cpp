@@ -207,7 +207,8 @@ void ColumnCache::setColumns(const QStringList& columns) {
         m_columnIndexByName[column] = i;
     }
 
-    DEBUG_ASSERT(std::size(kColumnPropertiesByEnum) == std::size(m_columnIndexByEnum));
+    static_assert(std::size(kColumnPropertiesByEnum) ==
+            sizeof(m_columnIndexByEnum) / sizeof(m_columnIndexByEnum[0]));
     for (std::size_t i = 0; i < std::size(kColumnPropertiesByEnum); ++i) {
         m_columnIndexByEnum[i] = fieldIndex(kColumnPropertiesByEnum[i].name);
     }
