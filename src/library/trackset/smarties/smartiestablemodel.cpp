@@ -122,7 +122,7 @@ bool SmartiesTableModel::addTrack(const QModelIndex& index, const QString& locat
 
 TrackModel::Capabilities SmartiesTableModel::getCapabilities() const {
     Capabilities caps =
-            //            Capability::ReceiveDrops |
+            //  Capability::ReceiveDrops |
             Capability::AddToTrackSet |
             Capability::AddToAutoDJ |
             Capability::EditMetadata |

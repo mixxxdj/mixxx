@@ -18,7 +18,7 @@ class SmartiesFeatureHelper : public QObject {
     ~SmartiesFeatureHelper() override = default;
 
     SmartiesId createEmptySmarties();
-    SmartiesId createEmptySmartiesFromSearch(QString NewSmartiesName);
+    //    SmartiesId createEmptySmartiesFromSearch(QString NewSmartiesName);
     SmartiesId duplicateSmarties(const Smarties& oldSmarties);
 
   private:

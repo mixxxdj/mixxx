@@ -33,20 +33,20 @@ QString SmartiesFeatureHelper::proposeNameForNewSmarties(
     return proposedName;
 }
 
-SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(QString NewSmartiesName) {
-    Smarties newSmarties;
-    auto newName = NewSmartiesName;
-    bool ok = true;
-    if (!ok) {
-        return SmartiesId();
-    }
+// SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(QString NewSmartiesName) {
+//     Smarties newSmarties;
+//     auto newName = NewSmartiesName;
+//     bool ok = true;
+//     if (!ok) {
+//         return SmartiesId();
+//     }
 
-    newSmarties.setName(std::move(newName));
-    SmartiesId newSmartiesId;
-    newSmarties.setId(newSmartiesId);
-    qDebug() << "Created new smarties" << newSmarties;
-    return newSmartiesId;
-}
+//    newSmarties.setName(std::move(newName));
+//    SmartiesId newSmartiesId;
+//    newSmarties.setId(newSmartiesId);
+//    qDebug() << "Created new smarties" << newSmarties;
+//    return newSmartiesId;
+//}
 
 SmartiesId SmartiesFeatureHelper::createEmptySmarties() {
     const QString proposedSmartiesName =

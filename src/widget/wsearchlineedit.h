@@ -13,9 +13,6 @@ class SkinContext;
 class QCompleter;
 class QEvent;
 class QToolButton;
-// EVE
-class SmartiesFeature;
-// EVE
 
 class WSearchLineEdit : public QComboBox, public WBaseWidget {
     Q_OBJECT
@@ -111,10 +108,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     parented_ptr<QCompleter> m_completer;
     parented_ptr<QToolButton> const m_clearButton;
-    // EVE
-    //  SmartiesFeature* m_pSmartiesFeature;
-    SmartiesFeature* NewSmartiesFeature;
-    // EVE
+
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;
     bool m_queryEmitted;

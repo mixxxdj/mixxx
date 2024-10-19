@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "dlgsmarties.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -416,15 +417,15 @@ void SmartiesFeature::onRightClickChild(
 
 // void SmartiesFeature::slotCreateSmartiesFromSearch(QString NewSmartiesName,
 // m_pTrackCollection, usersettingsPointer m_pConfig) {
-void SmartiesFeature::slotCreateSmartiesFromSearch(QString NewSmartiesName) {
-    SmartiesId smartiesId =
-            SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
-                    .createEmptySmartiesFromSearch(NewSmartiesName);
-    if (smartiesId.isValid()) {
-        // expand Smarties and scroll to new smarties
-        m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
-    }
-}
+// void SmartiesFeature::slotCreateSmartiesFromSearch(QString NewSmartiesName) {
+//    SmartiesId smartiesId =
+//            SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
+//                    .createEmptySmartiesFromSearch(NewSmartiesName);
+//    if (smartiesId.isValid()) {
+//        // expand Smarties and scroll to new smarties
+//        m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
+//    }
+//}
 
 void SmartiesFeature::slotCreateSmarties() {
     SmartiesId smartiesId =
@@ -433,6 +434,15 @@ void SmartiesFeature::slotCreateSmarties() {
     if (smartiesId.isValid()) {
         // expand Smarties and scroll to new smarties
         m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
+
+        //        DlgSmarties* smartiesscreen = new DlgSmarties;
+        //        smartiesscreen->show();
+
+        //        void MixxxMainWindow::slotOptionsPreferences() {
+        //            m_pPrefDlg->show();
+        //            m_pPrefDlg->raise();
+        //            m_pPrefDlg->activateWindow();
+        //        }
     }
 }
 

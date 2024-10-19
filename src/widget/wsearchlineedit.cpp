@@ -18,8 +18,9 @@
 #include "util/logger.h"
 #include "util/parented_ptr.h"
 #include "wskincolor.h"
-#include "library/trackset/smarties/smartiesfeature.h"
-#include "library/trackset/smarties/smartiesfeaturehelper.h"
+// EVE
+// #include "library/trackset/smarties/smartiesfeature.h"
+// #include "library/trackset/smarties/smartiesfeaturehelper.h"
 // EVE
 
 #define ENABLE_TRACE_LOG false
@@ -50,27 +51,27 @@ int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
 
 } // namespace
 
-//static
+// static
 constexpr int WSearchLineEdit::kMinDebouncingTimeoutMillis;
 
-//static
+// static
 constexpr int WSearchLineEdit::kDefaultDebouncingTimeoutMillis;
 
-//static
+// static
 constexpr int WSearchLineEdit::kMaxDebouncingTimeoutMillis;
 
-//static
+// static
 constexpr int WSearchLineEdit::kSaveTimeoutMillis;
 
-//static
+// static
 constexpr int WSearchLineEdit::kMaxSearchEntries;
 
-//static
+// static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
 bool WSearchLineEdit::s_completionsEnabled = kCompletionsEnabledDefault;
 bool WSearchLineEdit::s_historyShortcutsEnabled = kHistoryShortcutsEnabledDefault;
 
-//static
+// static
 void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
 }
@@ -203,9 +204,9 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
                 << "Invisible foreground color - using default color as fallback";
         foregroundColor = defaultForegroundColor;
     }
-    //kLogger.debug()
-    //        << "Foreground color:"
-    //        << foregroundColor;
+    // kLogger.debug()
+    //         << "Foreground color:"
+    //         << foregroundColor;
 
     QPalette pal = palette();
     DEBUG_ASSERT(backgroundColor != foregroundColor);
@@ -213,9 +214,9 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     pal.setBrush(foregroundRole(), foregroundColor);
     auto placeholderColor = foregroundColor;
     placeholderColor.setAlpha(placeholderColor.alpha() * 3 / 4); // 75% opaque
-    //kLogger.debug()
-    //        << "Placeholder color:"
-    //        << placeholderColor;
+    // kLogger.debug()
+    //         << "Placeholder color:"
+    //         << placeholderColor;
     pal.setBrush(QPalette::PlaceholderText, placeholderColor);
     setPalette(pal);
 
@@ -543,24 +544,11 @@ void WSearchLineEdit::slotTriggerSearch() {
     m_queryEmitted = true;
 }
 
-// void WSearchLineEdit::slotCreateSmarties() {
-//     m_pSmartiesFeature->slotCreateSmarties();
-// }
-
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
     m_saveTimer.stop();
     QString cText = currentText().trimmed();
     int cIndex = findCurrentTextIndex();
-//    NewSmartiesFeature = new SmartiesFeature(nullptr, nullptr);
-//    addFeature(m_pSmartiesFeature);
-
-//    SmartiesFeature* NewSmartiesFeature;
-//    NewSmartiesFeature->slotCreateSmarties();
-//    NewSmartiesFeature->slotCreateSmartiesFromSearch(cText);
-//    NewSmartiesFeature->slotCreateSmartiesFromSearch(cText, m_pConfig);
-//    NewSmartiesFeature->slotCreateSmarties();
-//      SmartiesFeatureHelper::createEmptySmartiesFromSearch();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "save search. Text:"
