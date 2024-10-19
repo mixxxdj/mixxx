@@ -27,7 +27,7 @@ class allshader::WaveformRendererEndOfTrack final
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     bool init() override;
 
@@ -36,10 +36,6 @@ class allshader::WaveformRendererEndOfTrack final
     bool isSubtreeBlocked() const override;
 
   private:
-    static constexpr float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
-    static constexpr float verticalGradientArray[] = {1.f, 1.f, -1.f, -1.f};
-    static constexpr float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
-
     std::unique_ptr<ControlProxy> m_pEndOfTrackControl;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 

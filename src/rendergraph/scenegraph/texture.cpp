@@ -3,8 +3,8 @@
 
 using namespace rendergraph;
 
-Texture::Texture(Context& context, const QImage& image)
-        : m_pTexture(context.window()->createTextureFromImage(image)) {
+Texture::Texture(Context* pContext, const QImage& image)
+        : m_pTexture(pContext->window()->createTextureFromImage(image)) {
 }
 
 qint64 Texture::comparisonKey() const {

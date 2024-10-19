@@ -1,10 +1,8 @@
 add_library(rendergraph_gl
-../common/engine.cpp
 ../common/node.cpp
 ../common/opacitynode.cpp
 ../common/rendergraph/attributeinit.h
 ../common/rendergraph/attributeset.h
-../common/rendergraph/engine.h
 ../common/rendergraph/geometry.h
 ../common/rendergraph/geometrynode.h
 ../common/rendergraph/material.h
@@ -58,6 +56,7 @@ material.cpp
 materialshader.cpp
 openglnode.cpp
 rendergraph/context.h
+rendergraph/engine.h
 rendergraph/openglnode.h
 texture.cpp
 treenode.cpp

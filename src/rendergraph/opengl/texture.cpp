@@ -18,7 +18,7 @@ QImage premultiplyAlpha(const QImage& image) {
 }
 } // namespace
 
-Texture::Texture(Context& context, const QImage& image)
+Texture::Texture(Context*, const QImage& image)
         : m_pTexture(std::make_unique<QOpenGLTexture>(premultiplyAlpha(image))) {
     m_pTexture->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
     m_pTexture->setWrapMode(QOpenGLTexture::ClampToEdge);

@@ -55,6 +55,48 @@ class rendergraph::RGBAVertexUpdater {
                 rgbar.z(),
                 rgbar.w());
     }
+    int index() const {
+        return static_cast<int>(m_pWrite - m_pData);
+    }
+    void addTriangle(QVector2D p1, QVector2D p2, QVector2D p3, QVector4D rgba) {
+        addTriangle(p1.x(),
+                p1.y(),
+                p2.x(),
+                p2.y(),
+                p3.x(),
+                p3.y(),
+                rgba.x(),
+                rgba.y(),
+                rgba.z(),
+                rgba.w());
+    }
+    void addTriangle(QVector2D p1,
+            QVector2D p2,
+            QVector2D p3,
+            QVector4D rgba1,
+            QVector4D rgba2,
+            QVector4D rgba3) {
+        addTriangle(p1.x(),
+                p1.y(),
+                p2.x(),
+                p2.y(),
+                p3.x(),
+                p3.y(),
+                rgba1.x(),
+                rgba1.y(),
+                rgba1.z(),
+                rgba1.w(),
+                rgba2.x(),
+                rgba2.y(),
+                rgba2.z(),
+                rgba2.w(),
+                rgba3.x(),
+                rgba3.y(),
+                rgba3.z(),
+                rgba3.w());
+    }
+
+  private:
     void addRectangle(float x1, float y1, float x2, float y2, float r, float g, float b, float a) {
         addTriangle(x1, y1, x2, y1, x1, y2, r, g, b, a);
         addTriangle(x1, y2, x2, y2, x2, y1, r, g, b, a);
@@ -127,11 +169,6 @@ class rendergraph::RGBAVertexUpdater {
         *m_pWrite++ = Geometry::RGBAColoredPoint2D{x2, y2, r2, g2, b2, a2};
         *m_pWrite++ = Geometry::RGBAColoredPoint2D{x3, y3, r3, g3, b3, a3};
     }
-    int index() const {
-        return static_cast<int>(m_pWrite - m_pData);
-    }
-
-  private:
     Geometry::RGBAColoredPoint2D* const m_pData;
     Geometry::RGBAColoredPoint2D* m_pWrite;
 };

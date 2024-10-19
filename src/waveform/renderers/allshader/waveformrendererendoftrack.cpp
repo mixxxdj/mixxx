@@ -6,7 +6,9 @@
 
 #include "control/controlproxy.h"
 #include "rendergraph/geometry.h"
-#include "rendergraph/material/endoftrackmaterial.h"
+#include "rendergraph/material/rgbamaterial.h"
+#include "rendergraph/vertexupdaters/rgbavertexupdater.h"
+#include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
@@ -26,13 +28,8 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         : ::WaveformRendererAbstract(waveformWidget),
           m_pEndOfTrackControl(nullptr),
           m_pTimeRemainingControl(nullptr) {
-    setGeometry(std::make_unique<Geometry>(EndOfTrackMaterial::attributes(), 4));
-    setMaterial(std::make_unique<EndOfTrackMaterial>());
+    initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
-
-    geometry().setAttributeValues(0, positionArray, 4);
-    geometry().setAttributeValues(1, horizontalGradientArray, 4);
-    material().setUniform(0, QVector4D{0.f, 0.f, 0.f, 0.f});
 }
 
 void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
@@ -52,9 +49,9 @@ bool WaveformRendererEndOfTrack::init() {
     return true;
 }
 
-void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& skinContext) {
     m_color = QColor(200, 25, 20);
-    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = skinContext.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_color = QColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
@@ -76,11 +73,32 @@ void WaveformRendererEndOfTrack::preprocess() {
     const double alpha = criticalIntensity * blinkIntensity;
 
     if (alpha != 0.0) {
-        QColor color = m_color;
-        color.setAlphaF(static_cast<float>(alpha));
+        QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        float r, g, b, a;
+        getRgbF(m_color, &r, &g, &b, &a);
 
-        material().setUniform(0, color);
+        const float posx0 = 0.f;
+        const float posx1 = size.width() / 2.f;
+        const float posx2 = size.width();
+        const float posy1 = 0.f;
+        const float posy2 = size.height();
+
+        float minAlpha = 0.5f * static_cast<float>(alpha);
+        float maxAlpha = 0.83f * static_cast<float>(alpha);
+
+        geometry().allocate(6 * 2);
+        RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
+        vertexUpdater.addRectangleHGradient(
+                {posx0, posy1}, {posx1, posy2}, {r, g, b, minAlpha}, {r, g, b, minAlpha});
+        vertexUpdater.addRectangleHGradient(
+                {posx1, posy1}, {posx2, posy2}, {r, g, b, minAlpha}, {r, g, b, maxAlpha});
+
+        markDirtyGeometry();
+    } else if (geometry().vertexCount() != 0) {
+        geometry().allocate(0);
+        markDirtyGeometry();
     }
+    markDirtyMaterial();
 }
 
 bool WaveformRendererEndOfTrack::isSubtreeBlocked() const {

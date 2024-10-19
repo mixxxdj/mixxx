@@ -1,5 +1,4 @@
 #include "rendergraph/treenode.h"
-
 #include "rendergraph/engine.h"
 
 using namespace rendergraph;
@@ -9,9 +8,8 @@ void TreeNode::setUsePreprocess(bool value) {
 }
 
 void TreeNode::onAppendChildNode(TreeNode* pChild) {
-    if (engine() != nullptr &&
-            engine() != pChild->engine()) {
-        engine()->addToEngine(pChild);
+    if (backendNode()->engine()) {
+        backendNode()->engine()->add(pChild);
     }
 }
 

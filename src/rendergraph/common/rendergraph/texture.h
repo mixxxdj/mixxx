@@ -12,7 +12,7 @@ class Texture;
 
 class rendergraph::Texture {
   public:
-    Texture(Context& context, const QImage& image);
+    Texture(Context* pContext, const QImage& image);
 
     BaseTexture* backendTexture() const {
         return m_pTexture.get();

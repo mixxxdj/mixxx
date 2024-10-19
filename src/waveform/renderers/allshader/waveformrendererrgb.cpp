@@ -4,7 +4,6 @@
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
 #include "util/math.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
@@ -34,7 +33,10 @@ void WaveformRendererRGB::onSetup(const QDomNode& node) {
 
 void WaveformRendererRGB::preprocess() {
     if (!preprocessInner()) {
-        geometry().allocate(0);
+        if (geometry().vertexCount() != 0) {
+            geometry().allocate(0);
+            markDirtyGeometry();
+        }
     }
 }
 
@@ -71,7 +73,10 @@ bool WaveformRendererRGB::preprocessInner() {
 #endif
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const int length = static_cast<int>(m_waveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const float invDevicePixelRatio = 1.f / devicePixelRatio;
+    const float halfPixelSize = 0.5 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -82,14 +87,14 @@ bool WaveformRendererRGB::preprocessInner() {
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     // applyCompensation = false, as we scale to match filtered.all
     getGains(&allGain, false, &lowGain, &midGain, &highGain);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
+    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
@@ -114,23 +119,24 @@ bool WaveformRendererRGB::preprocessInner() {
 
     const int reserved = numVerticesPerLine *
             // Slip rendere only render a single channel, so the vertices count doesn't change
-            ((splitLeftRight && !m_isSlipRenderer ? length * 2 : length) + 1);
+            ((splitLeftRight && !m_isSlipRenderer ? pixelLength * 2 : pixelLength) + 1);
 
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
     geometry().allocate(reserved);
-    // TODO set dirty for scenegraph
+    markDirtyGeometry();
 
     RGBVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBColoredPoint2D>()};
-    vertexUpdater.addRectangle(0.f,
-            halfBreadth - 0.5f * devicePixelRatio,
-            static_cast<float>(length),
-            m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f * devicePixelRatio,
-            static_cast<float>(m_axesColor_r),
-            static_cast<float>(m_axesColor_g),
-            static_cast<float>(m_axesColor_b));
+    vertexUpdater.addRectangle({0.f,
+                                       halfBreadth - 0.5f},
+            {static_cast<float>(length),
+                    m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f},
+            {static_cast<float>(m_axesColor_r),
+                    static_cast<float>(m_axesColor_g),
+                    static_cast<float>(m_axesColor_b)});
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
-    for (int pos = 0; pos < length; ++pos) {
+    for (int pos = 0; pos < pixelLength; ++pos) {
         const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
         const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
@@ -138,7 +144,7 @@ bool WaveformRendererRGB::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos);
+        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
         // Find the max values for low, mid, high and all in the waveform data.
         // - Max of left and right
@@ -221,25 +227,25 @@ bool WaveformRendererRGB::preprocessInner() {
 
             // Lines are thin rectangles
             if (!splitLeftRight) {
-                vertexUpdater.addRectangle(fpos - 0.5f,
-                        halfBreadth - heightFactorAbs * maxAllChn[0],
-                        fpos + 0.5f,
-                        m_isSlipRenderer
-                                ? halfBreadth
-                                : halfBreadth + heightFactorAbs * maxAllChn[1],
-                        red,
-                        green,
-                        blue);
+                vertexUpdater.addRectangle({fpos - halfPixelSize,
+                                                   halfBreadth - heightFactorAbs * maxAllChn[0]},
+                        {fpos + halfPixelSize,
+                                m_isSlipRenderer
+                                        ? halfBreadth
+                                        : halfBreadth + heightFactorAbs * maxAllChn[1]},
+                        {red,
+                                green,
+                                blue});
             } else {
                 // note: heightFactor is the same for left and right,
                 // but negative for left (chn 0) and positive for right (chn 1)
-                vertexUpdater.addRectangle(fpos - 0.5f,
-                        halfBreadth,
-                        fpos + 0.5f,
-                        halfBreadth + heightFactor[chn] * maxAllChn[chn],
-                        red,
-                        green,
-                        blue);
+                vertexUpdater.addRectangle({fpos - halfPixelSize,
+                                                   halfBreadth},
+                        {fpos + halfPixelSize,
+                                halfBreadth + heightFactor[chn] * maxAllChn[chn]},
+                        {red,
+                                green,
+                                blue});
             }
         }
 
@@ -248,8 +254,7 @@ bool WaveformRendererRGB::preprocessInner() {
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
-    material().setUniform(0, matrix);
+    markDirtyMaterial();
 
     return true;
 }

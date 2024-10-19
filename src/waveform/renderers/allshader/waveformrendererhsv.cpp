@@ -3,7 +3,6 @@
 #include "track/track.h"
 #include "util/colorcomponents.h"
 #include "util/math.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
@@ -179,7 +178,7 @@ void WaveformRendererHSV::paintGL() {
     DEBUG_ASSERT(reserved == m_vertices.size());
     DEBUG_ASSERT(reserved == m_colors.size());
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
+    const QMatrix4x4 matrix; // TODO = m_waveformRenderer->getMatrix(true);
 
     const int matrixLocation = m_shader.matrixLocation();
     const int positionLocation = m_shader.positionLocation();

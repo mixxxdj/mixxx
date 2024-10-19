@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QColor>
-#include <QMatrix4x4>
 #include <QVector2D>
 #include <memory>
 
@@ -29,13 +28,12 @@ class allshader::WaveformRenderMarkRange final : public ::WaveformRendererAbstra
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     void update();
 
   private:
     void updateNode(rendergraph::GeometryNode* pChild,
-            const QMatrix4x4& matrix,
             QColor color,
             QVector2D lt,
             QVector2D rb);

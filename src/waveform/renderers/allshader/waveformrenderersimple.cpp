@@ -137,7 +137,7 @@ void WaveformRendererSimple::paintGL() {
         xVisualFrame += visualIncrementPerPixel;
     }
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
+    const QMatrix4x4 matrix; // TODO = m_waveformRenderer->getMatrix(true);
 
     const int matrixLocation = m_shader.matrixLocation();
     const int colorLocation = m_shader.colorLocation();

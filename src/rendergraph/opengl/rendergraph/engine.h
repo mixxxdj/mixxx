@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMatrix4x4>
 #include <memory>
 #include <vector>
 
@@ -12,17 +13,19 @@ class Engine;
 class rendergraph::Engine {
   public:
     Engine(std::unique_ptr<TreeNode> pNode);
-    void initialize();
     void render();
     void resize(int w, int h);
     void preprocess();
-    void addToEngine(TreeNode* pNode);
+    void add(TreeNode* pNode);
+    const QMatrix4x4& matrix() const {
+        return m_matrix;
+    }
 
   private:
-    void initialize(TreeNode* pNode);
     void render(TreeNode* pNode);
     void resize(TreeNode* pNode, int, int);
 
+    QMatrix4x4 m_matrix;
     const std::unique_ptr<TreeNode> m_pTopNode;
     std::vector<TreeNode*> m_pPreprocessNodes;
     std::vector<TreeNode*> m_pInitializeNodes;

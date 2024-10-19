@@ -6,10 +6,10 @@
 #include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
-class SkinContext;
 
 namespace rendergraph {
 class GeometryNode;
+class Context;
 }
 
 namespace allshader {
@@ -31,15 +31,12 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     void update();
 
-    // Virtual for rendergraph::Node
-    void initialize() override;
-    void resize(int, int) override;
     bool isSubtreeBlocked() const override;
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
 
-    void updatePlayPosMarkTexture();
+    void updatePlayPosMarkTexture(rendergraph::Context* pContext);
 
     void drawTriangle(QPainter* painter,
             const QBrush& fillColor,
@@ -47,12 +44,10 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p2,
             QPointF p3);
 
-    void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
     void updateUntilMark(double playPosition, double markerPosition);
-    void drawUntilMark(const QMatrix4x4& matrix, float x);
+    void drawUntilMark(float x);
     float getMaxHeightForText() const;
     void updateRangeNode(rendergraph::GeometryNode* pNode,
-            const QMatrix4x4& matrix,
             const QRectF& rect,
             QColor color);
 
@@ -66,7 +61,11 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     rendergraph::TreeNode* m_pRangeNodesParent{};
     rendergraph::TreeNode* m_pMarkNodesParent{};
+
     rendergraph::GeometryNode* m_pPlayPosNode;
+    float m_playPosHeight;
+    float m_playPosDevicePixelRatio;
+
     DigitsRenderNode* m_pDigitsRenderNode{};
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);

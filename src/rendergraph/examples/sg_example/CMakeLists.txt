@@ -2,7 +2,7 @@ qt_add_executable(sg_example WIN32 MACOSX_BUNDLE
     customitem.cpp
     customitem.h
     main.cpp
-    ../common/examplenodes.cpp
+    ../common/examplenode.cpp
 )
 
 target_link_libraries(sg_example PRIVATE

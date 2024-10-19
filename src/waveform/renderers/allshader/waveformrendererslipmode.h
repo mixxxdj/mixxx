@@ -24,7 +24,7 @@ class allshader::WaveformRendererSlipMode final
     explicit WaveformRendererSlipMode(
             WaveformWidgetRenderer* waveformWidget);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     bool init() override;
 

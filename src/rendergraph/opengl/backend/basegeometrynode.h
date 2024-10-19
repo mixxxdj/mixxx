@@ -14,6 +14,7 @@ class rendergraph::BaseGeometryNode : public rendergraph::BaseNode,
     BaseGeometryNode() = default;
 
   public:
-    void initializeBackend() override;
-    void renderBackend() override;
+    void initialize() override;
+    void render() override;
+    void resize(int w, int h) override;
 };

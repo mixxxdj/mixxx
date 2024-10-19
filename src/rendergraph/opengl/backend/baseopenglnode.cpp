@@ -4,18 +4,18 @@
 
 using namespace rendergraph;
 
-void BaseOpenGLNode::initializeBackend() {
+void BaseOpenGLNode::initialize() {
     initializeOpenGLFunctions();
     OpenGLNode* pThis = static_cast<OpenGLNode*>(this);
     pThis->initializeGL();
 }
 
-void BaseOpenGLNode::renderBackend() {
+void BaseOpenGLNode::render() {
     OpenGLNode* pThis = static_cast<OpenGLNode*>(this);
     pThis->paintGL();
 }
 
-void BaseOpenGLNode::resizeBackend(int w, int h) {
+void BaseOpenGLNode::resize(int w, int h) {
     OpenGLNode* pThis = static_cast<OpenGLNode*>(this);
     pThis->resizeGL(w, h);
 }

@@ -1,10 +1,8 @@
 add_library(rendergraph_sg
-../common/engine.cpp
 ../common/node.cpp
 ../common/opacitynode.cpp
 ../common/rendergraph/attributeinit.h
 ../common/rendergraph/attributeset.h
-../common/rendergraph/engine.h
 ../common/rendergraph/geometry.h
 ../common/rendergraph/geometrynode.h
 ../common/rendergraph/material.h
@@ -47,7 +45,6 @@ backend/basenode.h
 backend/baseopacitynode.h
 backend/basetexture.h
 context.cpp
-engine.cpp
 geometry.cpp
 geometrynode.cpp
 material.cpp

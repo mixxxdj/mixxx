@@ -14,6 +14,14 @@ class rendergraph::VertexUpdater {
             QVector2D lt, QVector2D rb) {
         addRectangle(lt.x(), lt.y(), rb.x(), rb.y());
     }
+    void addTriangle(QVector2D p1, QVector2D p2, QVector2D p3) {
+        addTriangle(p1.x(), p1.y(), p2.x(), p2.y(), p3.x(), p3.y());
+    }
+    int index() const {
+        return static_cast<int>(m_pWrite - m_pData);
+    }
+
+  private:
     void addRectangle(
             float x1,
             float y1,
@@ -27,11 +35,6 @@ class rendergraph::VertexUpdater {
         *m_pWrite++ = Geometry::Point2D{x2, y2};
         *m_pWrite++ = Geometry::Point2D{x3, y3};
     }
-    int index() const {
-        return static_cast<int>(m_pWrite - m_pData);
-    }
-
-  private:
     Geometry::Point2D* const m_pData;
     Geometry::Point2D* m_pWrite;
 };

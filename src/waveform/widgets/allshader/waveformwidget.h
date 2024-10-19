@@ -27,6 +27,8 @@ class allshader::WaveformWidget final : public ::WGLWidget,
         return m_type;
     }
 
+    void resizeRenderer(int width, int height, float devicePixelRatio) override;
+
     // override for WaveformWidgetAbstract
     mixxx::Duration render() override;
 

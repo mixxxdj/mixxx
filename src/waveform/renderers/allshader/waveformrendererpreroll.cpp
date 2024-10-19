@@ -4,12 +4,10 @@
 #include <QPainterPath>
 #include <array>
 
-#include "rendergraph/context.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/patternmaterial.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
 #include "skin/legacy/skincontext.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 
@@ -78,8 +76,8 @@ WaveformRendererPreroll::WaveformRendererPreroll(
 WaveformRendererPreroll::~WaveformRendererPreroll() = default;
 
 void WaveformRendererPreroll::setup(
-        const QDomNode& node, const SkinContext& context) {
-    m_color = QColor(context.selectString(node, "SignalColor"));
+        const QDomNode& node, const SkinContext& skinContext) {
+    m_color = QColor(skinContext.selectString(node, "SignalColor"));
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
@@ -91,7 +89,13 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
 void WaveformRendererPreroll::preprocess() {
     if (!preprocessInner()) {
-        geometry().allocate(0);
+        if (geometry().vertexCount() != 0) {
+            geometry().allocate(0);
+            markDirtyGeometry();
+        }
+    } else {
+        markDirtyMaterial();
+        markDirtyGeometry();
     }
 }
 
@@ -147,9 +151,8 @@ bool WaveformRendererPreroll::preprocessInner() {
         // has changed size last time.
         m_markerLength = markerLength;
         m_markerBreadth = markerBreadth;
-        Context context;
         dynamic_cast<PatternMaterial&>(material())
-                .setTexture(std::make_unique<Texture>(context,
+                .setTexture(std::make_unique<Texture>(m_waveformRenderer->getContext(),
                         drawPrerollImage(m_markerLength,
                                 m_markerBreadth,
                                 m_waveformRenderer->getDevicePixelRatio(),
@@ -210,10 +213,6 @@ bool WaveformRendererPreroll::preprocessInner() {
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
-
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
-
-    material().setUniform(0, matrix);
 
     return true;
 }

@@ -7,7 +7,6 @@
 #include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 
@@ -23,8 +22,8 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
     setUsePreprocess(true);
 }
 
-void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_color = QColor(context.selectString(node, "BeatColor"));
+void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
+    m_color = QColor(skinContext.selectString(node, "BeatColor"));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
@@ -124,9 +123,6 @@ bool WaveformRenderBeat::preprocessInner() {
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    const QMatrix4x4 matrix = m_waveformRenderer->getMatrix(false);
-
-    material().setUniform(0, matrix);
     material().setUniform(1, m_color);
     markDirtyMaterial();
 

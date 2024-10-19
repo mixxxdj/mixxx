@@ -1,7 +1,7 @@
 qt_add_executable(gl_example
     window.cpp window.h
     main.cpp
-    ../common/examplenodes.cpp
+    ../common/examplenode.cpp
 )
 
 set_target_properties(gl_example PROPERTIES

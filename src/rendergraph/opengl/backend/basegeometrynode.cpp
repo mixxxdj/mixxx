@@ -3,6 +3,7 @@
 #include <QOpenGLTexture>
 
 #include "backend/shadercache.h"
+#include "rendergraph/engine.h"
 #include "rendergraph/geometrynode.h"
 #include "rendergraph/texture.h"
 
@@ -19,13 +20,14 @@ GLenum toGlDrawingMode(Geometry::DrawingMode mode) {
 }
 } // namespace
 
-void BaseGeometryNode::initializeBackend() {
+void BaseGeometryNode::initialize() {
     initializeOpenGLFunctions();
     GeometryNode* pThis = static_cast<GeometryNode*>(this);
     pThis->material().setShader(ShaderCache::getShaderForMaterial(&pThis->material()));
+    pThis->material().setUniform(0, engine()->matrix());
 }
 
-void BaseGeometryNode::renderBackend() {
+void BaseGeometryNode::render() {
     GeometryNode* pThis = static_cast<GeometryNode*>(this);
     Geometry& geometry = pThis->geometry();
     Material& material = pThis->material();
@@ -101,4 +103,10 @@ void BaseGeometryNode::renderBackend() {
     }
 
     shader.release();
+}
+
+void BaseGeometryNode::resize(int, int) {
+    assert(engine() != nullptr);
+    GeometryNode* pThis = static_cast<GeometryNode*>(this);
+    pThis->material().setUniform(0, engine()->matrix());
 }

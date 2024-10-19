@@ -14,7 +14,6 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/texturematerial.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 
 // Render digits using a texture (generated) with digits with blurred dark outline
 
@@ -72,8 +71,10 @@ float allshader::DigitsRenderNode::height() const {
     return m_height;
 }
 
-void allshader::DigitsRenderNode::updateTexture(
-        float fontPointSize, float maxHeight, float devicePixelRatio) {
+void allshader::DigitsRenderNode::updateTexture(rendergraph::Context* pContext,
+        float fontPointSize,
+        float maxHeight,
+        float devicePixelRatio) {
     if (fontPointSize == m_fontPointSize && maxHeight == m_maxHeight) {
         return;
     }
@@ -207,12 +208,11 @@ void allshader::DigitsRenderNode::updateTexture(
         m_offset[NUM_CHARS] = 1.f;
     }
 
-    Context context;
     dynamic_cast<TextureMaterial&>(material())
-            .setTexture(std::make_unique<Texture>(context, image));
+            .setTexture(std::make_unique<Texture>(pContext, image));
 }
 
-void allshader::DigitsRenderNode::update(const QMatrix4x4& matrix,
+void allshader::DigitsRenderNode::update(
         float x,
         float y,
         bool multiLine,
@@ -243,8 +243,6 @@ void allshader::DigitsRenderNode::update(const QMatrix4x4& matrix,
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
-
-    material().setUniform(0, matrix);
 }
 
 void allshader::DigitsRenderNode::clear() {

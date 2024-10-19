@@ -14,7 +14,7 @@ class rendergraph::BaseOpenGLNode : public rendergraph::BaseNode,
     BaseOpenGLNode() = default;
 
   public:
-    void initializeBackend() override;
-    void renderBackend() override;
-    void resizeBackend(int w, int h) override;
+    void initialize() override;
+    void render() override;
+    void resize(int w, int h) override;
 };

@@ -5,7 +5,6 @@
 #include "rendergraph/material/unicolormaterial.h"
 #include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 using namespace rendergraph;
@@ -16,7 +15,7 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* wavefor
         : ::WaveformRendererAbstract(waveformWidget) {
 }
 
-void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& skinContext) {
     m_markRanges.clear();
 
     QDomNode child = node.firstChild();
@@ -26,7 +25,7 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& con
                     WaveformMarkRange(
                             m_waveformRenderer->getGroup(),
                             child,
-                            context,
+                            skinContext,
                             *m_waveformRenderer->getWaveformSignalColors()));
         }
         child = child.nextSibling();
@@ -40,8 +39,6 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformRenderMarkRange::update() {
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
-
     TreeNode* pChild = firstChild();
 
     for (const auto& markRange : m_markRanges) {
@@ -83,7 +80,6 @@ void WaveformRenderMarkRange::update() {
         }
 
         updateNode(static_cast<GeometryNode*>(pChild),
-                matrix,
                 color,
                 {static_cast<float>(startPosition), 0.f},
                 {static_cast<float>(endPosition) + 1.f,
@@ -99,14 +95,14 @@ void WaveformRenderMarkRange::update() {
 }
 
 void WaveformRenderMarkRange::updateNode(GeometryNode* pChild,
-        const QMatrix4x4& matrix,
         QColor color,
         QVector2D lt,
         QVector2D rb) {
     VertexUpdater vertexUpdater{pChild->geometry().vertexDataAs<Geometry::Point2D>()};
     vertexUpdater.addRectangle(lt, rb);
-    pChild->material().setUniform(0, matrix);
     pChild->material().setUniform(1, color);
+    pChild->markDirtyGeometry();
+    pChild->markDirtyMaterial();
 }
 
 } // namespace allshader

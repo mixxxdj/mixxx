@@ -25,7 +25,7 @@ class allshader::WaveformRenderBeat final
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     // Virtuals for rendergraph::Node
     void preprocess() override;

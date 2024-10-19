@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QMatrix4x4>
+
 namespace rendergraph {
 class BaseNode;
+class Engine;
 }
 
 class rendergraph::BaseNode {
@@ -20,13 +23,20 @@ class rendergraph::BaseNode {
     }
     virtual void preprocess() {
     }
-    virtual void renderBackend() {
+    virtual void render() {
     }
-    virtual void initializeBackend() {
+    virtual void initialize() {
     }
-    virtual void resizeBackend(int, int) {
+    virtual void resize(int, int) {
+    }
+    void setEngine(Engine* engine) {
+        m_pEngine = engine;
+    }
+    Engine* engine() const {
+        return m_pEngine;
     }
 
   private:
+    Engine* m_pEngine{};
     bool m_usePreprocess{};
 };
