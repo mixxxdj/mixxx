@@ -124,19 +124,21 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
 
     // Reset the column headers.
     m_columnHeaders.clear();
+
+    VERIFY_OR_DEBUG_ASSERT(tableColumns.size() > 0) {
+        return;
+    }
+
     m_columnHeaders.resize(tableColumns.size());
 
-    // Init the header properties of selected/visible columns.
-    initHeaderProperties();
-}
-
-void BaseTrackTableModel::initHeaderProperties() {
     // Init the mapping of all columns, even for internal columns that are
     // hidden/invisible. Otherwise mapColumn() would not return a valid result
     // for those columns.
     for (int column = 0; column < ColumnCache::NUM_COLUMNS; ++column) {
         setHeaderProperties(static_cast<ColumnCache::Column>(column));
     }
+
+    emit headerDataChanged(Qt::Horizontal, 0, tableColumns.size() - 1);
 }
 
 void BaseTrackTableModel::setHeaderProperties(ColumnCache::Column column) {
@@ -149,21 +151,10 @@ void BaseTrackTableModel::setHeaderProperties(ColumnCache::Column column) {
         return;
     }
     m_columnHeaders[section].column = column;
-    setHeaderData(
-            section,
-            Qt::Horizontal,
-            m_columnCache.columnName(column),
-            TrackModel::kHeaderNameRole);
-    setHeaderData(
-            section,
-            Qt::Horizontal,
-            m_columnCache.columnTitle(column),
-            Qt::DisplayRole);
-    setHeaderData(
-            section,
-            Qt::Horizontal,
-            m_columnCache.columnDefaultWidth(column),
-            TrackModel::kHeaderWidthRole);
+    m_columnHeaders[section].header[TrackModel::kHeaderNameRole] = m_columnCache.columnName(column);
+    m_columnHeaders[section].header[Qt::DisplayRole] = m_columnCache.columnTitle(column);
+    m_columnHeaders[section].header[TrackModel::kHeaderWidthRole] =
+            m_columnCache.columnDefaultWidth(column);
 }
 
 bool BaseTrackTableModel::setHeaderData(

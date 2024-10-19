@@ -158,8 +158,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     //  Overridable functions
     ///////////////////////////////////////////////////////
 
-    virtual void initHeaderProperties();
-
     // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(
             const QModelIndex& index) const;
