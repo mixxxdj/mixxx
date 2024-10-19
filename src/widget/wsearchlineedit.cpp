@@ -18,7 +18,6 @@
 #include "util/logger.h"
 #include "util/parented_ptr.h"
 #include "wskincolor.h"
-// EBE
 #include "library/trackset/smarties/smartiesfeature.h"
 #include "library/trackset/smarties/smartiesfeaturehelper.h"
 // EVE
