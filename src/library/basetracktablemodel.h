@@ -118,10 +118,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static void setApplyPlayedTrackColor(bool apply);
 
   protected:
-    static constexpr int defaultColumnWidth() {
-        return 50;
-    }
-
     // Build a map from the column names to their indices
     // used by fieldIndex().
     void initTableColumnsAndHeaderProperties(
@@ -131,13 +127,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.columnNameForFieldIndex(index);
     }
 
-    // A simple helper function for initializing header title and width.
-    // Note that the ideal width of a column is based on the width of
-    // its data, not the title string itself.
-    void setHeaderProperties(
-            ColumnCache::Column column,
-            const QString& title,
-            int defaultWidth = 0);
+    void setHeaderProperties(ColumnCache::Column column);
 
     ColumnCache::Column mapColumn(int column) const {
         if (column >= 0 && column < m_columnHeaders.size()) {

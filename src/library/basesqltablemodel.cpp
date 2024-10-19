@@ -51,17 +51,6 @@ BaseSqlTableModel::BaseSqlTableModel(
 BaseSqlTableModel::~BaseSqlTableModel() {
 }
 
-void BaseSqlTableModel::initHeaderProperties() {
-    BaseTrackTableModel::initHeaderProperties();
-    // Add playlist columns
-    setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION,
-            tr("#"),
-            30);
-    setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
-            tr("Timestamp"),
-            80);
-}
-
 void BaseSqlTableModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
     for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::IdMax); ++i) {

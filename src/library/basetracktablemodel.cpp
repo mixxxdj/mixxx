@@ -126,144 +126,27 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
     m_columnHeaders.clear();
     m_columnHeaders.resize(tableColumns.size());
 
-    // Init the mapping of all columns, even for internal columns that are
-    // hidden/invisible. Otherwise mapColumn() would not return a valid result
-    // for those columns.
-    for (int columnValue = 0; columnValue < ColumnCache::NUM_COLUMNS; ++columnValue) {
-        const auto column = static_cast<ColumnCache::Column>(columnValue);
-        DEBUG_ASSERT(column != ColumnCache::COLUMN_LIBRARYTABLE_INVALID);
-        const int headerIndex = m_columnCache.fieldIndex(column);
-        if (headerIndex < 0) {
-            // Missing table column.
-            continue;
-        }
-        DEBUG_ASSERT(headerIndex < m_columnHeaders.size());
-        m_columnHeaders[headerIndex].column = column;
-        DEBUG_ASSERT(mapColumn(headerIndex) == column);
-    }
-
     // Init the header properties of selected/visible columns.
     initHeaderProperties();
 }
 
 void BaseTrackTableModel::initHeaderProperties() {
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_ALBUM,
-            tr("Album"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST,
-            tr("Album Artist"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_ARTIST,
-            tr("Artist"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_BITRATE,
-            tr("Bitrate"),
-            defaultColumnWidth());
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_BPM,
-            tr("BPM"),
-            defaultColumnWidth() * 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS,
-            tr("Channels"),
-            defaultColumnWidth() / 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_COLOR,
-            tr("Color"),
-            defaultColumnWidth() / 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_COMMENT,
-            tr("Comment"),
-            defaultColumnWidth() * 6);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER,
-            tr("Composer"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
-            tr("Cover Art"),
-            defaultColumnWidth() / 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED,
-            tr("Date Added"),
-            defaultColumnWidth() * 3);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
-            tr("Last Played"),
-            defaultColumnWidth() * 3);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
-            tr("Duration"),
-            defaultColumnWidth());
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE,
-            tr("Type"),
-            defaultColumnWidth());
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_GENRE,
-            tr("Genre"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_GROUPING,
-            tr("Grouping"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_KEY,
-            tr("Key"),
-            defaultColumnWidth());
-    setHeaderProperties(
-            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
-            tr("Location"),
-            defaultColumnWidth() * 6);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW,
-            tr("Preview"),
-            defaultColumnWidth() / 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_RATING,
-            tr("Rating"),
-            defaultColumnWidth() * 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
-            tr("ReplayGain"),
-            defaultColumnWidth() * 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE,
-            tr("Samplerate"),
-            defaultColumnWidth());
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED,
-            tr("Played"),
-            defaultColumnWidth() * 2);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_TITLE,
-            tr("Title"),
-            defaultColumnWidth() * 4);
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER,
-            tr("Track #"),
-            defaultColumnWidth());
-    setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
-            tr("Year"),
-            defaultColumnWidth());
+    // Init the mapping of all columns, even for internal columns that are
+    // hidden/invisible. Otherwise mapColumn() would not return a valid result
+    // for those columns.
+    for (int column = 0; column < ColumnCache::NUM_COLUMNS; ++column) {
+        setHeaderProperties(static_cast<ColumnCache::Column>(column));
+    }
 }
 
-void BaseTrackTableModel::setHeaderProperties(
-        ColumnCache::Column column,
-        const QString& title,
-        int defaultWidth) {
+void BaseTrackTableModel::setHeaderProperties(ColumnCache::Column column) {
     int section = fieldIndex(column);
     if (section < 0) {
         // Skipping header properties for unsupported column
         return;
     }
-    if (section >= m_columnHeaders.size()) {
-        m_columnHeaders.resize(section + 1);
+    VERIFY_OR_DEBUG_ASSERT(section < m_columnHeaders.size()) {
+        return;
     }
     m_columnHeaders[section].column = column;
     setHeaderData(
@@ -274,12 +157,12 @@ void BaseTrackTableModel::setHeaderProperties(
     setHeaderData(
             section,
             Qt::Horizontal,
-            title,
+            m_columnCache.columnTitle(column),
             Qt::DisplayRole);
     setHeaderData(
             section,
             Qt::Horizontal,
-            defaultWidth,
+            m_columnCache.columnDefaultWidth(column),
             TrackModel::kHeaderWidthRole);
 }
 
@@ -326,9 +209,8 @@ QVariant BaseTrackTableModel::headerData(
             QVariant widthValue = m_columnHeaders.value(section).header.value(role);
             if (widthValue.isValid()) {
                 return widthValue;
-            } else {
-                return defaultColumnWidth();
             }
+            return ColumnCache::defaultColumnWidth();
         }
         case TrackModel::kHeaderNameRole: {
             return m_columnHeaders.value(section).header.value(role);
@@ -538,7 +420,7 @@ QVariant BaseTrackTableModel::data(
     if (role == Qt::SizeHintRole) {
         const auto field = mapColumn(index.column());
         if (field == ColumnCache::COLUMN_LIBRARYTABLE_COLOR) {
-            return QSize(defaultColumnWidth() / 2, 0);
+            return QSize(ColumnCache::defaultColumnWidth() / 2, 0);
         }
     }
 

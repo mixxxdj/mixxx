@@ -95,7 +95,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             QString trackIdColumn,
             QStringList tableColumns,
             QSharedPointer<BaseTrackCache> trackSource);
-    void initHeaderProperties() override;
+
     virtual void initSortColumnMapping();
 
     TrackCollectionManager* const m_pTrackCollectionManager;

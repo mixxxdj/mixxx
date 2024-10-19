@@ -1,5 +1,7 @@
 #include "library/columncache.h"
 
+#include <QCoreApplication>
+
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library_prefs.h"
@@ -13,55 +15,156 @@ const QString kSortNoCase = QStringLiteral("lower(%1)");
 const QString kSortNoCaseLex = mixxx::DbConnection::collateLexicographically(
         QStringLiteral("lower(%1)"));
 
-const QString kColumnNameByEnum[] = {
-        [ColumnCache::COLUMN_LIBRARYTABLE_ID] = LIBRARYTABLE_ID,
-        [ColumnCache::COLUMN_LIBRARYTABLE_ARTIST] = LIBRARYTABLE_ARTIST,
-        [ColumnCache::COLUMN_LIBRARYTABLE_TITLE] = LIBRARYTABLE_TITLE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_ALBUM] = LIBRARYTABLE_ALBUM,
-        [ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST] = LIBRARYTABLE_ALBUMARTIST,
-        [ColumnCache::COLUMN_LIBRARYTABLE_YEAR] = LIBRARYTABLE_YEAR,
-        [ColumnCache::COLUMN_LIBRARYTABLE_GENRE] = LIBRARYTABLE_GENRE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER] = LIBRARYTABLE_COMPOSER,
-        [ColumnCache::COLUMN_LIBRARYTABLE_GROUPING] = LIBRARYTABLE_GROUPING,
-        [ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER] = LIBRARYTABLE_TRACKNUMBER,
-        [ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE] = LIBRARYTABLE_FILETYPE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COMMENT] = LIBRARYTABLE_COMMENT,
-        [ColumnCache::COLUMN_LIBRARYTABLE_DURATION] = LIBRARYTABLE_DURATION,
-        [ColumnCache::COLUMN_LIBRARYTABLE_BITRATE] = LIBRARYTABLE_BITRATE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_BPM] = LIBRARYTABLE_BPM,
-        [ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN] = LIBRARYTABLE_REPLAYGAIN,
-        [ColumnCache::COLUMN_LIBRARYTABLE_CUEPOINT] = LIBRARYTABLE_CUEPOINT,
-        [ColumnCache::COLUMN_LIBRARYTABLE_URL] = LIBRARYTABLE_URL,
-        [ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE] = LIBRARYTABLE_SAMPLERATE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX] = LIBRARYTABLE_WAVESUMMARYHEX,
-        [ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS] = LIBRARYTABLE_CHANNELS,
-        [ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED] = LIBRARYTABLE_MIXXXDELETED,
-        [ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED] = LIBRARYTABLE_DATETIMEADDED,
-        [ColumnCache::COLUMN_LIBRARYTABLE_HEADERPARSED] = LIBRARYTABLE_HEADERPARSED,
-        [ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED] = LIBRARYTABLE_TIMESPLAYED,
-        [ColumnCache::COLUMN_LIBRARYTABLE_PLAYED] = LIBRARYTABLE_PLAYED,
-        [ColumnCache::COLUMN_LIBRARYTABLE_RATING] = LIBRARYTABLE_RATING,
-        [ColumnCache::COLUMN_LIBRARYTABLE_KEY] = LIBRARYTABLE_KEY,
-        [ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID] = LIBRARYTABLE_KEY_ID,
-        [ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK] = LIBRARYTABLE_BPM_LOCK,
-        [ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW] = LIBRARYTABLE_PREVIEW,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COLOR] = LIBRARYTABLE_COLOR,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART] = LIBRARYTABLE_COVERART,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE] = LIBRARYTABLE_COVERART_SOURCE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE] = LIBRARYTABLE_COVERART_TYPE,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION] = LIBRARYTABLE_COVERART_LOCATION,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR] = LIBRARYTABLE_COVERART_COLOR,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST] = LIBRARYTABLE_COVERART_DIGEST,
-        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH] = LIBRARYTABLE_COVERART_HASH,
-        [ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT] = LIBRARYTABLE_LAST_PLAYED_AT,
-        [ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION] = TRACKLOCATIONSTABLE_LOCATION,
-        [ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED] = TRACKLOCATIONSTABLE_FSDELETED,
-        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID] = PLAYLISTTRACKSTABLE_TRACKID,
-        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION] = PLAYLISTTRACKSTABLE_POSITION,
-        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_PLAYLISTID] = PLAYLISTTRACKSTABLE_PLAYLISTID,
-        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED] = PLAYLISTTRACKSTABLE_DATETIMEADDED,
-        [ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH] = REKORDBOX_ANALYZE_PATH};
-static_assert(std::size(kColumnNameByEnum) == ColumnCache::NUM_COLUMNS);
+struct ColumnProperties {
+    QString name;
+    const char* pTrTitle;
+    int defaultWidth;
+};
+
+constexpr int kDefaultColumnWidth = 50;
+
+const ColumnProperties kColumnPropertiesByEnum[] = {
+        [ColumnCache::COLUMN_LIBRARYTABLE_ID] = {LIBRARYTABLE_ID,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_ARTIST] = {LIBRARYTABLE_ARTIST,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Artist"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_TITLE] = {LIBRARYTABLE_TITLE,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Title"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_ALBUM] = {LIBRARYTABLE_ALBUM,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Album"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST] = {LIBRARYTABLE_ALBUMARTIST,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Album Artist"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_YEAR] = {LIBRARYTABLE_YEAR,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Year"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_GENRE] = {LIBRARYTABLE_GENRE,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Genre"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER] = {LIBRARYTABLE_COMPOSER,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Composer"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_GROUPING] = {LIBRARYTABLE_GROUPING,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Grouping"),
+                kDefaultColumnWidth * 4},
+        [ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER] = {LIBRARYTABLE_TRACKNUMBER,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Track #"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE] = {LIBRARYTABLE_FILETYPE,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COMMENT] = {LIBRARYTABLE_COMMENT,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Comment"),
+                kDefaultColumnWidth * 6},
+        [ColumnCache::COLUMN_LIBRARYTABLE_DURATION] = {LIBRARYTABLE_DURATION,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Duration"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_BITRATE] = {LIBRARYTABLE_BITRATE,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Bitrate"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_BPM] = {LIBRARYTABLE_BPM,
+                QT_TRANSLATE_NOOP("ColumnProperties", "BPM"),
+                kDefaultColumnWidth * 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN] = {LIBRARYTABLE_REPLAYGAIN,
+                QT_TRANSLATE_NOOP("ColumnProperties", "ReplayGain"),
+                kDefaultColumnWidth * 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_CUEPOINT] = {LIBRARYTABLE_CUEPOINT,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_URL] = {LIBRARYTABLE_URL,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE] = {LIBRARYTABLE_SAMPLERATE,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Samplerate"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX] = {LIBRARYTABLE_WAVESUMMARYHEX,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS] = {LIBRARYTABLE_CHANNELS,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Channels"),
+                kDefaultColumnWidth / 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED] = {LIBRARYTABLE_MIXXXDELETED,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED] = {LIBRARYTABLE_DATETIMEADDED,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Date Added"),
+                kDefaultColumnWidth * 3},
+        [ColumnCache::COLUMN_LIBRARYTABLE_HEADERPARSED] = {LIBRARYTABLE_HEADERPARSED,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED] = {LIBRARYTABLE_TIMESPLAYED,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_PLAYED] = {LIBRARYTABLE_PLAYED,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Played"),
+                kDefaultColumnWidth * 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_RATING] = {LIBRARYTABLE_RATING,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Rating"),
+                kDefaultColumnWidth * 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_KEY] = {LIBRARYTABLE_KEY,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Key"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID] = {LIBRARYTABLE_KEY_ID,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK] = {LIBRARYTABLE_BPM_LOCK,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW] = {LIBRARYTABLE_PREVIEW,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Preview"),
+                kDefaultColumnWidth / 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COLOR] = {LIBRARYTABLE_COLOR,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Color"),
+                kDefaultColumnWidth / 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART] = {LIBRARYTABLE_COVERART,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Cover Art"),
+                kDefaultColumnWidth / 2},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE] = {LIBRARYTABLE_COVERART_SOURCE,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE] = {LIBRARYTABLE_COVERART_TYPE,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Type"),
+                kDefaultColumnWidth},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION] = {LIBRARYTABLE_COVERART_LOCATION,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR] = {LIBRARYTABLE_COVERART_COLOR,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST] = {LIBRARYTABLE_COVERART_DIGEST,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH] = {LIBRARYTABLE_COVERART_HASH,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT] = {LIBRARYTABLE_LAST_PLAYED_AT,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Last Played"),
+                kDefaultColumnWidth * 3},
+        [ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION] = {TRACKLOCATIONSTABLE_LOCATION,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Location"),
+                kDefaultColumnWidth * 6},
+        [ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED] = {TRACKLOCATIONSTABLE_FSDELETED,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID] = {PLAYLISTTRACKSTABLE_TRACKID,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION] = {PLAYLISTTRACKSTABLE_POSITION,
+                QT_TRANSLATE_NOOP("ColumnProperties", "#"),
+                kDefaultColumnWidth * 30 / 50},
+        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_PLAYLISTID] = {PLAYLISTTRACKSTABLE_PLAYLISTID,
+                nullptr,
+                0},
+        [ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED] = {
+                PLAYLISTTRACKSTABLE_DATETIMEADDED,
+                QT_TRANSLATE_NOOP("ColumnProperties", "Timestamp"),
+                kDefaultColumnWidth * 80 / 50},
+        [ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH] = {REKORDBOX_ANALYZE_PATH, nullptr, 0}};
+static_assert(std::size(kColumnPropertiesByEnum) == ColumnCache::NUM_COLUMNS);
 
 } // namespace
 
@@ -87,9 +190,9 @@ void ColumnCache::setColumns(const QStringList& columns) {
         m_columnIndexByName[column] = i;
     }
 
-    DEBUG_ASSERT(std::size(kColumnNameByEnum) == std::size(m_columnIndexByEnum));
-    for (std::size_t i = 0; i < std::size(kColumnNameByEnum); ++i) {
-        m_columnIndexByEnum[i] = fieldIndex(kColumnNameByEnum[i]);
+    DEBUG_ASSERT(std::size(kColumnPropertiesByEnum) == std::size(m_columnIndexByEnum));
+    for (std::size_t i = 0; i < std::size(kColumnPropertiesByEnum); ++i) {
+        m_columnIndexByEnum[i] = fieldIndex(kColumnPropertiesByEnum[i].name);
     }
 
     m_columnSortByIndex.clear();
@@ -146,6 +249,22 @@ void ColumnCache::slotSetKeySortOrder(double notationValue) {
 }
 
 const QString& ColumnCache::columnName(Column column) const {
-    DEBUG_ASSERT(static_cast<std::size_t>(column) < std::size(kColumnNameByEnum));
-    return kColumnNameByEnum[column];
+    DEBUG_ASSERT(static_cast<std::size_t>(column) < std::size(kColumnPropertiesByEnum));
+    return kColumnPropertiesByEnum[column].name;
+}
+
+QString ColumnCache::columnTitle(Column column) const {
+    DEBUG_ASSERT(static_cast<std::size_t>(column) < std::size(kColumnPropertiesByEnum));
+    return QCoreApplication::translate(
+            "PredefinedColorPalettes", kColumnPropertiesByEnum[column].pTrTitle);
+}
+
+int ColumnCache::columnDefaultWidth(Column column) const {
+    DEBUG_ASSERT(static_cast<std::size_t>(column) < std::size(kColumnPropertiesByEnum));
+    return kColumnPropertiesByEnum[column].defaultWidth;
+}
+
+// static
+int ColumnCache::defaultColumnWidth() {
+    return kDefaultColumnWidth;
 }

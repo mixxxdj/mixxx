@@ -85,6 +85,8 @@ class ColumnCache : public QObject {
     }
 
     const QString& columnName(Column column) const;
+    QString columnTitle(Column column) const;
+    int columnDefaultWidth(Column column) const;
 
     inline QString columnNameForFieldIndex(int index) const {
         if (index < 0 || index >= m_columnsByIndex.size()) {
@@ -114,6 +116,8 @@ class ColumnCache : public QObject {
         return KeyUtils::keyNotationFromNumericValue(
                 m_pKeyNotationCP->get());
     }
+
+    static int defaultColumnWidth();
 
   private slots:
     void slotSetKeySortOrder(double);
