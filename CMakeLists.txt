@@ -1005,6 +1005,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
+  #EVE
+  src/library/trackset/smarties/smartiesfeature.cpp
+  src/library/trackset/smarties/smartiesfeaturehelper.cpp
+  src/library/trackset/smarties/smartiesstorage.cpp
+  src/library/trackset/smarties/smartiestablemodel.cpp
+  src/library/trackset/smarties/dlgsmartiesdlg.ui
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
@@ -2079,6 +2085,8 @@ add_executable(mixxx-test
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
   src/test/cratestorage_test.cpp
+  # EVE
+  src/test/smartiesstorage_test.cpp
   src/test/cue_test.cpp
   src/test/cuecontrol_test.cpp
   src/test/dbconnectionpool_test.cpp
