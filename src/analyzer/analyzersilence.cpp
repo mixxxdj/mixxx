@@ -119,11 +119,6 @@ SINT AnalyzerSilence::findFirstFadeOutChunk(std::span<const CSAMPLE> samples) {
                                      kFadeOutThreshold),
                        samples.rend()) -
             1;
-    // if we don't find it (track only partially loaded - and/or pathological)
-    // give us the track size.
-    if (ret == -1) {
-        ret = samples.size();
-    }
     return ret;
 }
 
@@ -159,14 +154,14 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
     }
     if (m_fadeThresholdFadeInEnd >= 0) {
         const SINT lasttSampleBeforeFadeOut = findFirstFadeOutChunk(samples);
-        if (lasttSampleBeforeFadeOut < (count - 1)) {
+        if (lasttSampleBeforeFadeOut >= 0) {
             m_fadeThresholdFadeOutStart = m_framesProcessed +
                     (lasttSampleBeforeFadeOut / m_channelCount) + 1;
         }
     }
     if (m_fadeThresholdFadeOutStart >= 0) {
         const SINT lastSoundSample = findLastSoundInChunk(samples);
-        if (lastSoundSample < (count - 1)) { // not only sound or silence
+        if (lastSoundSample >= 0) {
             m_signalEnd = m_framesProcessed + (lastSoundSample / m_channelCount) + 1;
         }
     }
