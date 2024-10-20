@@ -24,7 +24,7 @@ ExampleNode::ExampleNode(rendergraph::Context* pContext) {
         TexturedVertexUpdater vertexUpdater{
                 pNode->geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
         vertexUpdater.addRectangle({0, 0}, {100, 100}, {0.f, 0.f}, {1.f, 1.f});
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
     {
         auto pNode = std::make_unique<GeometryNode>();
@@ -36,7 +36,7 @@ ExampleNode::ExampleNode(rendergraph::Context* pContext) {
                         .vertexDataAs<rendergraph::Geometry::Point2D>()};
         vertexUpdater.addRectangle({100, 100}, {160, 160});
         vertexUpdater.addRectangle({200, 160}, {240, 190});
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
     {
         auto pNode = std::make_unique<GeometryNode>();
@@ -47,6 +47,6 @@ ExampleNode::ExampleNode(rendergraph::Context* pContext) {
         vertexUpdater.addRectangle({300, 100}, {340, 140}, {1.f, 0.f, 0.5f});
         vertexUpdater.addRectangleHGradient(
                 {340, 100}, {440, 130}, {0.f, 1.f, 0.5f}, {0.5f, 0.f, 1.f});
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
 }

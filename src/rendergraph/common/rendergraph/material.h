@@ -30,7 +30,7 @@ class rendergraph::Material : public rendergraph::BaseMaterial {
                 pOther->m_uniformsCache.data(),
                 m_uniformsCache.size());
         if (cacheCompareResult != 0) {
-            return cacheCompareResult;
+            return cacheCompareResult < 0 ? -1 : 1;
         }
         // TODO multiple textures
         if (!texture(0) || !pOther->texture(0)) {

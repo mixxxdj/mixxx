@@ -28,6 +28,10 @@ void BaseMaterialShader::updateSampledImage(RenderState& state,
         QSGTexture** texture,
         QSGMaterial* newMaterial,
         QSGMaterial* oldMaterial) {
+    if (!newMaterial || !static_cast<Material*>(newMaterial)->texture(binding)) {
+        *texture = nullptr;
+        return;
+    }
     *texture = static_cast<Material*>(newMaterial)->texture(binding)->backendTexture();
     (*texture)->commitTextureOperations(state.rhi(), state.resourceUpdateBatch());
 }

@@ -18,7 +18,7 @@ void Window::initializeGL() {
     rendergraph::Context context;
 
     auto pExampleNode = std::make_unique<rendergraph::ExampleNode>(&context);
-    m_pEngine = std::make_unique<rendergraph::Engine>(pExampleNode.release());
+    m_pEngine = std::make_unique<rendergraph::Engine>(std::move(pExampleNode));
 }
 
 void Window::resizeGL(int w, int h) {

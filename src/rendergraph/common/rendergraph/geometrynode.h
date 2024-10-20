@@ -16,7 +16,7 @@ class rendergraph::GeometryNode : public rendergraph::NodeInterface<rendergraph:
 
     template<class T_Material>
     void initForRectangles(int numRectangles) {
-        const int verticesPerRectangle = 6; // 2 rectangles
+        const int verticesPerRectangle = 6; // 2 triangles
         setGeometry(std::make_unique<Geometry>(T_Material::attributes(),
                 numRectangles * verticesPerRectangle));
         setMaterial(std::make_unique<T_Material>());

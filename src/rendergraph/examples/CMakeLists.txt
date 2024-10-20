@@ -3,7 +3,9 @@ project(rendergraph LANGUAGES CXX)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick ShaderTools)
 
-qt_standard_project_setup()
+if(NOT(QT_VERSION VERSION_LESS "6.3.0"))
+ qt_standard_project_setup()
+endif()
 
 add_subdirectory(../ rendergraph)
 
