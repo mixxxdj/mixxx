@@ -1090,3 +1090,23 @@ void BaseTrackTableModel::slotCoverFound(
     }
     emit dataChanged(m_toolTipIndex, m_toolTipIndex, {Qt::ToolTipRole});
 }
+
+QVariant BaseTrackTableModel::getFieldVariant(
+        const QModelIndex& index, ColumnCache::Column column) const {
+    return index.sibling(index.row(), fieldIndex(column)).data();
+}
+
+QVariant BaseTrackTableModel::getFieldVariant(
+        const QModelIndex& index, const QString& fieldName) const {
+    return index.sibling(index.row(), fieldIndex(fieldName)).data();
+}
+
+QString BaseTrackTableModel::getFieldString(
+        const QModelIndex& index, ColumnCache::Column column) const {
+    return getFieldVariant(index, column).toString();
+}
+
+QString BaseTrackTableModel::getFieldString(
+        const QModelIndex& index, const QString& fieldName) const {
+    return getFieldVariant(index, fieldName).toString();
+}

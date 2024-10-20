@@ -25,9 +25,6 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
 
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const final;
-
-    QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
-    QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
     void dropTempTable();
 
     BansheeDbConnection* m_pConnection;
