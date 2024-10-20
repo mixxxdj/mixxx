@@ -1,4 +1,6 @@
 #include "rendergraph/texture.h"
+
+#include "rendergraph/assert.h"
 #include "rendergraph/context.h"
 
 using namespace rendergraph;
