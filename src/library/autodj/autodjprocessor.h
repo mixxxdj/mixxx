@@ -155,7 +155,7 @@ class AutoDJProcessor : public QObject {
         ADJ_IS_INACTIVE,
         ADJ_QUEUE_EMPTY,
         ADJ_BOTH_DECKS_PLAYING,
-        ADJ_DECKS_3_4_PLAYING,
+        ADJ_UNUSED_DECK_PLAYING,
         ADJ_NOT_TWO_DECKS
     };
 
