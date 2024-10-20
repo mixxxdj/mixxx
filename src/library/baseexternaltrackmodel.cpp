@@ -42,43 +42,14 @@ BaseExternalTrackModel::~BaseExternalTrackModel() {
 }
 
 TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
-    QString artist =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST))
-                    .data()
-                    .toString();
-    QString title =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE))
-                    .data()
-                    .toString();
-    QString album =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM))
-                    .data()
-                    .toString();
-    QString year =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR))
-                    .data()
-                    .toString();
-    QString genre =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE))
-                    .data()
-                    .toString();
-    float bpm =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM))
-                    .data()
-                    .toString()
-                    .toFloat();
-
-    QString nativeLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION))
-                    .data()
-                    .toString();
+    QString artist = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    QString title = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    QString album = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    QString year = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    QString genre = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    float bpm = getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM).toFloat();
+    QString nativeLocation = getFieldString(
+            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     QString location = QDir::fromNativeSeparators(nativeLocation);
 
     if (location.isEmpty()) {
@@ -124,11 +95,8 @@ TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
         // The external table has foreign Track IDs, so we need to compare
         // by location
         for (int row = 0; row < rowCount(); ++row) {
-            QString nativeLocation = index(row,
-                    fieldIndex(
-                            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION))
-                                             .data()
-                                             .toString();
+            QString nativeLocation = getFieldString(index(row, 0),
+                    ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
             QString location = QDir::fromNativeSeparators(nativeLocation);
             if (location == pTrack->getLocation()) {
                 return TrackId(index(row, 0).data());
