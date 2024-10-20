@@ -95,6 +95,10 @@ class ColumnCache : public QObject {
         return m_columnsByIndex.at(index);
     }
 
+    int maxFieldIndex() const {
+        return m_columnsByIndex.size() - 1;
+    }
+
     inline QString columnSortForFieldIndex(int index) const {
         // Check if there is a special sort clause
         QString format = m_columnSortByIndex.value(index, "%1");
