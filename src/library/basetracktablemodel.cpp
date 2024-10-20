@@ -129,7 +129,7 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         return;
     }
 
-    m_columnHeaders.resize(tableColumns.size());
+    m_columnHeaders.resize(maxFieldIndex() + 1);
 
     // Init the mapping of all columns, even for internal columns that are
     // hidden/invisible. Otherwise mapColumn() would not return a valid result
@@ -142,6 +142,9 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
 }
 
 void BaseTrackTableModel::setHeaderProperties(ColumnCache::Column column) {
+    // fieldIndex() is a virtual function that returns indexes from
+    // this->m_columnCache and BaseTrackCache::m_columnCache, which are the
+    // track meta data columns
     int section = fieldIndex(column);
     if (section < 0) {
         // Skipping header properties for unsupported column

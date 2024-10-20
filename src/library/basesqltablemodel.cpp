@@ -622,11 +622,16 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
         // column or a source column.
         int sourceTableIndex = m_trackSource->fieldIndex(fieldName);
         if (sourceTableIndex > -1) {
-            // Subtract one from the fieldIndex() result to account for the id column
+            // Subtract one from the fieldIndex() because the id column is in both
             return m_tableColumns.size() + sourceTableIndex - 1;
         }
     }
     return tableIndex;
+}
+
+int BaseSqlTableModel::maxFieldIndex() const {
+    // Subtract one to remove the id column which is in both
+    return m_tableColumns.size() + (m_trackSource ? m_trackSource->maxFieldIndex() : 0);
 }
 
 QString BaseSqlTableModel::modelKey(bool noSearch) const {
