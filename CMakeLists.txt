@@ -2801,8 +2801,6 @@ if(QML)
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
 
-  # Required for src/qml/qmlmixxxcontrollerscreen.h, used in controllerscriptenginelegacy_test.cpp
-  target_link_libraries(mixxx-test PRIVATE Qt6::Quick)
 
   install(
     DIRECTORY

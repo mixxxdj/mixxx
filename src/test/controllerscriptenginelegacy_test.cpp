@@ -21,7 +21,9 @@
 #include "controllers/softtakeover.h"
 #include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QML
 #include "qml/qmlmixxxcontrollerscreen.h"
+#endif
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
@@ -57,9 +59,6 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
     void TearDown() override {
         mixxx::Time::setTestMode(false);
 #ifdef MIXXX_USE_QML
-        for (auto& item : m_rootItems) {
-            delete item;
-        }
         m_rootItems.clear();
 #endif
     }
@@ -92,7 +91,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         return m_renderingScreens;
     }
 
-    QHash<QString, mixxx::qml::QmlMixxxControllerScreen*>& rootItems() {
+    std::unordered_map<QString, std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>& rootItems() {
         return m_rootItems;
     }
 
@@ -692,7 +691,7 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
             "accept raw data. Aborting screen rendering.");
 
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxControllerScreen());
+    rootItems().emplace(dummyScreen.identifier, std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,
@@ -723,7 +722,7 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
     EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, new mixxx::qml::QmlMixxxControllerScreen());
+    rootItems().emplace(dummyScreen.identifier, std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,

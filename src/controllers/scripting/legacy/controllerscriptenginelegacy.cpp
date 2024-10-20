@@ -1,5 +1,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
+#include <memory>
+
 #ifdef MIXXX_USE_QML
 #include <QDirIterator>
 #include <QQmlEngine>
@@ -114,13 +116,8 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 #ifdef MIXXX_USE_QML
     } else {
-        QHashIterator<QString, mixxx::qml::QmlMixxxControllerScreen*> i(m_rootItems);
         bool success = true;
-        while (i.hasNext()) {
-            i.next();
-            const auto& screen = i.value();
-            const QString& screenIdentifier = i.key();
-
+        for (const auto& [screenIdentifier, screen] : m_rootItems) {
             if (!screen->getShutdown().isCallable()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
                                   << "has no valid shutdown method.";
@@ -159,12 +156,7 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
 #ifdef MIXXX_USE_QML
     } else {
-        QHashIterator<QString, mixxx::qml::QmlMixxxControllerScreen*> i(m_rootItems);
-        while (i.hasNext()) {
-            i.next();
-            const auto& screen = i.value();
-            const QString& screenIdentifier = i.key();
-
+        for (const auto& [screenIdentifier, screen] : m_rootItems) {
             if (!screen->getInit().isCallable()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
                                   << "has no valid init method.";
@@ -480,7 +472,7 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
     // evaluating it.
     watchFilePath(qmlFile.file.absoluteFilePath());
 
-    auto* pScene = loadQMLFile(qmlFile, pScreen);
+    auto pScene = loadQMLFile(qmlFile, pScreen);
     if (!pScene) {
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {
@@ -494,7 +486,7 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
             this,
             &ControllerScriptEngineLegacy::handleScreenFrame);
     m_renderingScreens.insert(screenIdentifier, pScreen);
-    m_rootItems.insert(screenIdentifier, pScene);
+    m_rootItems.emplace(screenIdentifier, std::move(pScene));
     // In case a rendering issue occurs, we need to shutdown the controller
     // since its only purpose is to render screens. This might not be the case
     // in the future controller modules
@@ -519,7 +511,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         return;
     };
 
-    auto* pScreen = m_rootItems.value(screenInfo.identifier);
+    auto& pScreen = m_rootItems.at(screenInfo.identifier);
 
     if (CmdlineArgs::Instance().getControllerPreviewScreens()) {
         QImage screenDebug(frame);
@@ -742,7 +734,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
 }
 
 #ifdef MIXXX_USE_QML
-mixxx::qml::QmlMixxxControllerScreen* ControllerScriptEngineLegacy::loadQMLFile(
+std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen> ControllerScriptEngineLegacy::loadQMLFile(
         const LegacyControllerMapping::ScriptFileInfo& qmlScript,
         std::shared_ptr<ControllerRenderingEngine> pScreen) {
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
@@ -806,7 +798,7 @@ mixxx::qml::QmlMixxxControllerScreen* ControllerScriptEngineLegacy::loadQMLFile(
     mixxx::qml::QmlMixxxControllerScreen* rootItem =
             qobject_cast<mixxx::qml::QmlMixxxControllerScreen*>(pRootObject);
     if (!rootItem) {
-        qWarning("run: Not a QQuickItem");
+        qWarning("run: Not a MixxxControllerScreen");
         delete pRootObject;
         return nullptr;
     }
@@ -820,7 +812,7 @@ mixxx::qml::QmlMixxxControllerScreen* ControllerScriptEngineLegacy::loadQMLFile(
         rootItem->setHeight(pScreen->quickWindow()->height());
     }
 
-    return rootItem;
+    return std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>(rootItem);
 }
 #endif
 
