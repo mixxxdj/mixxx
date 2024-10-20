@@ -4,6 +4,8 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QSqlTableModel>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
