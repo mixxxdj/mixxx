@@ -1,6 +1,8 @@
 #include "library/basetracktablemodel.h"
 
+#include <QBuffer>
 #include <QGuiApplication>
+#include <QMimeData>
 #include <QScreen>
 #include <QtGlobal>
 

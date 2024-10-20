@@ -5,6 +5,8 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
