@@ -265,16 +265,6 @@ TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     return TrackId();
 }
 
-QVariant BansheePlaylistModel::getFieldVariant(const QModelIndex& index,
-        const QString& fieldName) const {
-    return index.sibling(index.row(), fieldIndex(fieldName)).data();
-}
-
-QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
-        const QString& fieldName) const {
-    return getFieldVariant(index, fieldName).toString();
-}
-
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     QString location = getTrackLocation(index);
 
