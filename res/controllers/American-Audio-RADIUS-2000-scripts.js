@@ -6,7 +6,8 @@
  * The Mapping for the Jog Wheel and Scratch function is great.
  **/
 
-RADIUS2000 = new Controller();
+// eslint-disable-next-line no-var
+var RADIUS2000 = {};
 
 RADIUS2000.currentDeck = function (group) {
     if (group == "[Channel1]")

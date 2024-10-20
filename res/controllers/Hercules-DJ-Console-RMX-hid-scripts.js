@@ -6,8 +6,8 @@
 /*      Based on zestoi's script                                */
 /****************************************************************/
 
-RMX = new Controller();
-
+// eslint-disable-next-line no-var
+var RMX = {};
 RMX.controls  = [];
 RMX.leds      = [];
 RMX.cache_in  = [];

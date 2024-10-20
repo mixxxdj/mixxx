@@ -7,7 +7,8 @@
 /*                                                              */
 /****************************************************************/
 
-HerculesMP3Hid = new Controller();
+// eslint-disable-next-line no-var
+var HerculesMP3Hid = {};
 HerculesMP3Hid.controls = [];
 HerculesMP3Hid.leds = [];
 HerculesMP3Hid.cache_in = [];
