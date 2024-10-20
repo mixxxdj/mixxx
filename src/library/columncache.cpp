@@ -185,24 +185,28 @@ static_assert(std::size(kColumnPropertiesByEnum) == ColumnCache::NUM_COLUMNS);
 
 } // namespace
 
-ColumnCache::ColumnCache(const QStringList& columns) {
+ColumnCache::ColumnCache() {
     m_pKeyNotationCP = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
     // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
     // KeyUtils::CUSTOM as Mixxx is starting.
-
-    setColumns(columns);
 }
 
-void ColumnCache::setColumns(const QStringList& columns) {
-    m_columnsByIndex.clear();
-    m_columnsByIndex.append(columns);
+ColumnCache::ColumnCache(QStringList columns)
+        : ColumnCache::ColumnCache() {
+    setColumns(std::move(columns));
+}
+
+void ColumnCache::setColumns(QStringList columns) {
+    // This is called again when a new playlist/crate is selected
+    // TODO: Split using code to remove this redundant initialization
+    m_columnsByIndex = std::move(columns);
 
     m_columnIndexByName.clear();
-    for (int i = 0; i < columns.size(); ++i) {
-        QString column = columns[i];
+    for (int i = 0; i < m_columnsByIndex.size(); ++i) {
+        const QString& column = m_columnsByIndex[i];
         DEBUG_ASSERT(!m_columnIndexByName.contains(column));
         m_columnIndexByName[column] = i;
     }
