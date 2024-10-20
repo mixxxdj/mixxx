@@ -2,6 +2,8 @@
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
 #include <QTextCodec>
+#else
+#include <QStringEncoder>
 #endif
 #include <gsl/pointers>
 
@@ -1055,18 +1057,18 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
         const QString& value) {
     switch (targetCharset) {
-    case WellKnownCharsets::LATIN_1:
+    case WellKnownCharsets::Latin1:
     case WellKnownCharsets::ISO_8859_1:
-        return this->convertCharset("ISO-8859-1", value);
-    case WellKnownCharsets::LATIN_9:
+        return convertCharset(QStringLiteral("ISO-8859-1"), value);
+    case WellKnownCharsets::Latin9:
     case WellKnownCharsets::ISO_8859_15:
-        return this->convertCharset("ISO-8859-15", value);
-    case WellKnownCharsets::UCS_2:
+        return convertCharset(QStringLiteral("ISO-8859-15"), value);
+    case WellKnownCharsets::UCS2:
     case WellKnownCharsets::ISO_10646_UCS_2:
-        return this->convertCharset("ISO-10646-UCS-2", value);
+        return convertCharset(QStringLiteral("ISO-10646-UCS-2"), value);
     default:
-        m_pScriptEngineLegacy->throwJSError(QStringLiteral("Unknown charset specified"));
-        return nullptr;
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
+        return QByteArray();
     }
 }
 
@@ -1075,14 +1077,20 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
     auto* pCodec = QTextCodec::codecForName(targetCharset.toUtf8());
     if (!pCodec) {
-        return nullptr;
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
     }
-    return pCodec->fromUnicode(value)
+    return pCodec->fromUnicode(value);
 #else
-    QStringEncoder fromUtf8 = QStringEncoder(targetCharset.toUtf8().data());
-    if (!fromUtf8.isValid()) {
-        return nullptr;
+#if QT_VERSION > QT_VERSION_CHECK(6, 8, 0)
+    QStringEncoder fromUtf16 = QStringEncoder(targetCharset.data());
+#else
+    QStringEncoder fromUtf16 = QStringEncoder(targetCharset.toUtf8().data());
+#endif
+    if (!fromUtf16.isValid()) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
     }
-    return fromUtf8(value);
+    return fromUtf16(value);
 #endif
 }

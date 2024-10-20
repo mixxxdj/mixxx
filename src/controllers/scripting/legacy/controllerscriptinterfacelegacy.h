@@ -17,14 +17,13 @@ class ConfigKey;
 class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
-    enum WellKnownCharsets {
-        LATIN_1,
+    enum class WellKnownCharsets {
+        Latin1,
         ISO_8859_1,
-        LATIN_9,
+        Latin9,
         ISO_8859_15,
-        UCS_2,
+        UCS2,
         ISO_10646_UCS_2
-
     };
     Q_ENUM(WellKnownCharsets)
 

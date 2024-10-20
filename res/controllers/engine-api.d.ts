@@ -303,11 +303,11 @@ declare namespace engine {
     function softStart(deck: number, activate: boolean, factor?: number): void;
 
     enum WellKnownCharsets {
-        LATIN_1,
+        Latin1,
         ISO_8859_1,
-        LATIN_9,
+        Latin9,
         ISO_8859_15,
-        UCS_2,
+        UCS2,
         ISO_10646_UCS_2
     }
 
@@ -318,15 +318,15 @@ declare namespace engine {
      * Available charset names are listed here: http://www.iana.org/assignments/character-sets/character-sets.xhtml
      * @param {string} targetCharset The charset to encode the string into.
      * @param {string} value The string to encode
-     * @returns {ArrayBuffer | undefined}The converted String as an array of bytes or undefined if an error happened when performing conversion
+     * @returns {ArrayBuffer} The converted String as an array of bytes. Will return an empty buffer on conversion error.
      */
-    function convertCharset(targetCharset: string, value: string): ArrayBuffer | undefined
+    function convertCharset(targetCharset: string, value: string): ArrayBuffer
 
-  /**
-   * Version of {@link engine.convertCharset} to use with {@link engine.WellKnownCharsets}.
-   * @param {engine.WellKnownCharsets} targetCharset The charset to encode the string into.
-   * @param {string} value The string to encode
-   * @returns {ArrayBuffer | undefined}The converted String as an array of bytes or undefined if an error happened when performing conversion
-   */
-    function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer | undefined
+    /**
+     * Version of {@link engine.convertCharset} to use with {@link engine.WellKnownCharsets}.
+     * @param {engine.WellKnownCharsets} targetCharset The charset to encode the string into.
+     * @param {string} value The string to encode
+     * @returns {ArrayBuffer} The converted String as an array of bytes. Will return an empty buffer on conversion error.
+     */
+    function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer
 }
