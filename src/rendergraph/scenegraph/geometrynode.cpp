@@ -2,8 +2,10 @@
 
 using namespace rendergraph;
 
-GeometryNode::GeometryNode()
-        : TreeNode(this) {
+GeometryNode::GeometryNode() = default;
+
+void GeometryNode::setUsePreprocess(bool value) {
+    setFlag(QSGNode::UsePreprocess, value);
 }
 
 void GeometryNode::setGeometry(std::unique_ptr<Geometry> pGeometry) {

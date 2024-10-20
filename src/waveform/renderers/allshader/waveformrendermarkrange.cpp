@@ -39,7 +39,7 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformRenderMarkRange::update() {
-    TreeNode* pChild = firstChild();
+    GeometryNode* pChild = static_cast<GeometryNode*>(firstChild());
 
     for (const auto& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.
@@ -74,12 +74,13 @@ void WaveformRenderMarkRange::update() {
         color.setAlphaF(0.3f);
 
         if (!pChild) {
-            appendChildNode(std::make_unique<GeometryNode>());
-            pChild = lastChild();
-            static_cast<GeometryNode*>(pChild)->initForRectangles<UniColorMaterial>(1);
+            auto pNode = std::make_unique<GeometryNode>();
+            pChild = pNode.get();
+            pChild->initForRectangles<UniColorMaterial>(1);
+            appendChildNode(pNode.release());
         }
 
-        updateNode(static_cast<GeometryNode*>(pChild),
+        updateNode(pChild,
                 color,
                 {static_cast<float>(startPosition), 0.f},
                 {static_cast<float>(endPosition) + 1.f,
@@ -88,9 +89,9 @@ void WaveformRenderMarkRange::update() {
         pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
     while (pChild) {
-        auto pNext = pChild->nextSibling();
-        removeChildNode(pChild);
-        pChild = pNext;
+        std::unique_ptr<GeometryNode> pNode(pChild);
+        removeChildNode(pNode.get());
+        pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
 }
 

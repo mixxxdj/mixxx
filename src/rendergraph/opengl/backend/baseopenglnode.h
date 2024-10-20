@@ -10,11 +10,18 @@ class BaseOpenGLNode;
 
 class rendergraph::BaseOpenGLNode : public rendergraph::BaseNode,
                                     public QOpenGLFunctions {
-  protected:
-    BaseOpenGLNode() = default;
-
   public:
+    BaseOpenGLNode() = default;
+    virtual ~BaseOpenGLNode() = default;
+
     void initialize() override;
     void render() override;
     void resize(int w, int h) override;
+
+    virtual void initializeGL() {
+    }
+    virtual void paintGL() {
+    }
+    virtual void resizeGL(int, int) {
+    }
 };

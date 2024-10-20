@@ -8,11 +8,11 @@ class Engine;
 }
 
 class rendergraph::BaseNode {
-  protected:
-    BaseNode() = default;
-
   public:
-    void setUsePreprocessFlag(bool value) {
+    BaseNode() = default;
+    virtual ~BaseNode();
+
+    void setUsePreprocess(bool value) {
         m_usePreprocess = value;
     }
     bool usePreprocess() const {
@@ -36,7 +36,33 @@ class rendergraph::BaseNode {
         return m_pEngine;
     }
 
+    void appendChildNode(BaseNode* pChild);
+    void removeAllChildNodes();
+    void removeChildNode(BaseNode* pChild);
+
+    BaseNode* parent() const {
+        return m_pParent;
+    }
+    BaseNode* firstChild() const {
+        return m_pFirstChild;
+    }
+    BaseNode* lastChild() const {
+        return m_pLastChild;
+    }
+    BaseNode* nextSibling() const {
+        return m_pNextSibling;
+    }
+    BaseNode* previousSibling() const {
+        return m_pPreviousSibling;
+    }
+
   private:
     Engine* m_pEngine{};
     bool m_usePreprocess{};
+
+    BaseNode* m_pParent{};
+    BaseNode* m_pFirstChild{};
+    BaseNode* m_pLastChild{};
+    BaseNode* m_pNextSibling{};
+    BaseNode* m_pPreviousSibling{};
 };

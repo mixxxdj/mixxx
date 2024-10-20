@@ -17,8 +17,8 @@ void Window::closeEvent(QCloseEvent*) {
 void Window::initializeGL() {
     rendergraph::Context context;
 
-    auto node = std::make_unique<rendergraph::ExampleNode>(&context);
-    m_pEngine = std::make_unique<rendergraph::Engine>(std::move(node));
+    auto pExampleNode = std::make_unique<rendergraph::ExampleNode>(&context);
+    m_pEngine = std::make_unique<rendergraph::Engine>(pExampleNode.release());
 }
 
 void Window::resizeGL(int w, int h) {

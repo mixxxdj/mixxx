@@ -44,9 +44,9 @@ QSGNode* CustomItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
         material->setColor(QColor(255, 0, 0));
 
         rendergraph::Context context(window());
-        m_pExampleNode = std::make_unique<rendergraph::ExampleNode>(&context);
+        auto pExampleNode = std::make_unique<rendergraph::ExampleNode>(&context);
 
-        bgNode->appendChildNode(m_pExampleNode->backendNode());
+        bgNode->appendChildNode(pExampleNode.release());
 
         node = bgNode;
     } else {

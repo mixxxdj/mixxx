@@ -5,17 +5,21 @@
 
 using namespace rendergraph;
 
-Engine::Engine(std::unique_ptr<TreeNode> pNode)
-        : m_pTopNode(std::move(pNode)) {
-    add(m_pTopNode.get());
+Engine::Engine(BaseNode* pRootNode)
+        : m_pRootNode(pRootNode) {
+    add(m_pRootNode);
 }
 
-void Engine::add(TreeNode* pNode) {
-    assert(pNode->backendNode()->engine() == nullptr || pNode->backendNode()->engine() == this);
-    if (pNode->backendNode()->engine() == nullptr) {
-        pNode->backendNode()->setEngine(this);
+Engine::~Engine() {
+    delete m_pRootNode;
+}
+
+void Engine::add(BaseNode* pNode) {
+    assert(pNode->engine() == nullptr || pNode->engine() == this);
+    if (pNode->engine() == nullptr) {
+        pNode->setEngine(this);
         m_pInitializeNodes.push_back(pNode);
-        if (pNode->backendNode()->usePreprocess()) {
+        if (pNode->usePreprocess()) {
             m_pPreprocessNodes.push_back(pNode);
         }
         pNode = pNode->firstChild();
@@ -26,23 +30,45 @@ void Engine::add(TreeNode* pNode) {
     }
 }
 
-void Engine::render() {
-    if (!m_pInitializeNodes.empty()) {
-        for (auto pNode : m_pInitializeNodes) {
-            pNode->backendNode()->initialize();
+void Engine::remove(BaseNode* pNode) {
+    assert(pNode->engine() == this);
+    pNode->setEngine(nullptr);
+
+    {
+        auto it = std::find(m_pInitializeNodes.begin(), m_pInitializeNodes.end(), pNode);
+        if (it != m_pInitializeNodes.end()) {
+            m_pInitializeNodes.erase(it);
         }
-        m_pInitializeNodes.clear();
     }
-    if (!m_pTopNode->backendNode()->isSubtreeBlocked()) {
-        render(m_pTopNode.get());
+    {
+        auto it = std::find(m_pPreprocessNodes.begin(), m_pPreprocessNodes.end(), pNode);
+        if (it != m_pPreprocessNodes.end()) {
+            m_pPreprocessNodes.erase(it);
+        }
+    }
+
+    if (m_pRootNode == pNode) {
+        m_pRootNode = nullptr;
     }
 }
 
-void Engine::render(TreeNode* pNode) {
-    pNode->backendNode()->render();
+void Engine::render() {
+    if (!m_pInitializeNodes.empty()) {
+        for (auto pNode : m_pInitializeNodes) {
+            pNode->initialize();
+        }
+        m_pInitializeNodes.clear();
+    }
+    if (m_pRootNode && !m_pRootNode->isSubtreeBlocked()) {
+        render(m_pRootNode);
+    }
+}
+
+void Engine::render(BaseNode* pNode) {
+    pNode->render();
     pNode = pNode->firstChild();
     while (pNode) {
-        if (!pNode->backendNode()->isSubtreeBlocked()) {
+        if (!pNode->isSubtreeBlocked()) {
             render(pNode);
         }
         pNode = pNode->nextSibling();
@@ -51,8 +77,8 @@ void Engine::render(TreeNode* pNode) {
 
 void Engine::preprocess() {
     for (auto pNode : m_pPreprocessNodes) {
-        if (!pNode->backendNode()->isSubtreeBlocked()) {
-            pNode->backendNode()->preprocess();
+        if (!pNode->isSubtreeBlocked()) {
+            pNode->preprocess();
         }
     }
 }
@@ -66,11 +92,13 @@ void Engine::resize(int w, int h) {
     //    matrix.translate(0.f, -waveformRenderer->getWidth() * ratio, 0.f);
     //}
 
-    resize(m_pTopNode.get(), w, h);
+    if (m_pRootNode) {
+        resize(m_pRootNode, w, h);
+    }
 }
 
-void Engine::resize(TreeNode* pNode, int w, int h) {
-    pNode->backendNode()->resize(w, h);
+void Engine::resize(BaseNode* pNode, int w, int h) {
+    pNode->resize(w, h);
     pNode = pNode->firstChild();
     while (pNode) {
         resize(pNode, w, h);

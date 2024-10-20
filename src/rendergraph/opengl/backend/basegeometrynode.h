@@ -10,8 +10,9 @@ class BaseGeometryNode;
 
 class rendergraph::BaseGeometryNode : public rendergraph::BaseNode,
                                       public QOpenGLFunctions {
-  protected:
+  public:
     BaseGeometryNode() = default;
+    virtual ~BaseGeometryNode() = default;
 
   public:
     void initialize() override;

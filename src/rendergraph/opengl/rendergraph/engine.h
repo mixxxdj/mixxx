@@ -12,21 +12,24 @@ class Engine;
 
 class rendergraph::Engine {
   public:
-    Engine(std::unique_ptr<TreeNode> pNode);
+    Engine(BaseNode* pRootNode);
+    ~Engine();
+
     void render();
     void resize(int w, int h);
     void preprocess();
-    void add(TreeNode* pNode);
+    void add(BaseNode* pNode);
+    void remove(BaseNode* pNode);
     const QMatrix4x4& matrix() const {
         return m_matrix;
     }
 
   private:
-    void render(TreeNode* pNode);
-    void resize(TreeNode* pNode, int, int);
+    void render(BaseNode* pNode);
+    void resize(BaseNode* pNode, int, int);
 
     QMatrix4x4 m_matrix;
-    const std::unique_ptr<TreeNode> m_pTopNode;
-    std::vector<TreeNode*> m_pPreprocessNodes;
-    std::vector<TreeNode*> m_pInitializeNodes;
+    BaseNode* m_pRootNode{};
+    std::vector<BaseNode*> m_pPreprocessNodes;
+    std::vector<BaseNode*> m_pInitializeNodes;
 };

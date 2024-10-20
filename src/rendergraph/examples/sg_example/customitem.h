@@ -4,9 +4,7 @@
 #include <QQuickItem>
 #include <memory>
 
-namespace rendergraph {
-class Node;
-}
+#include "rendergraph/node.h"
 
 class CustomItem : public QQuickItem {
     Q_OBJECT
@@ -21,9 +19,6 @@ class CustomItem : public QQuickItem {
     void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
 
     bool m_geometryChanged{};
-
-  private:
-    std::unique_ptr<rendergraph::Node> m_pExampleNode;
 };
 
 #endif // CUSTOMITEM_H

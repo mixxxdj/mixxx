@@ -6,16 +6,15 @@ using namespace rendergraph;
 
 void BaseOpenGLNode::initialize() {
     initializeOpenGLFunctions();
-    OpenGLNode* pThis = static_cast<OpenGLNode*>(this);
-    pThis->initializeGL();
+    initializeGL();
 }
 
 void BaseOpenGLNode::render() {
     OpenGLNode* pThis = static_cast<OpenGLNode*>(this);
-    pThis->paintGL();
+    paintGL();
 }
 
 void BaseOpenGLNode::resize(int w, int h) {
     OpenGLNode* pThis = static_cast<OpenGLNode*>(this);
-    pThis->resizeGL(w, h);
+    resizeGL(w, h);
 }

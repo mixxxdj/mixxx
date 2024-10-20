@@ -3,16 +3,15 @@
 #include "backend/basegeometrynode.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material.h"
-#include "rendergraph/treenode.h"
 
 namespace rendergraph {
 class GeometryNode;
 } // namespace rendergraph
 
-class rendergraph::GeometryNode : public rendergraph::BaseGeometryNode,
-                                  public rendergraph::TreeNode {
+class rendergraph::GeometryNode : public rendergraph::BaseGeometryNode {
   public:
     GeometryNode();
+    virtual ~GeometryNode() = default;
 
     template<class T_Material>
     void initForRectangles(int numRectangles) {
@@ -23,6 +22,7 @@ class rendergraph::GeometryNode : public rendergraph::BaseGeometryNode,
         geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
     }
 
+    void setUsePreprocess(bool value);
     void setMaterial(std::unique_ptr<Material> material);
     void setGeometry(std::unique_ptr<Geometry> geometry);
 

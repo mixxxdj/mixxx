@@ -7,10 +7,10 @@ class BaseOpacityNode;
 }
 
 class rendergraph::BaseOpacityNode : public rendergraph::BaseNode {
-  protected:
-    BaseOpacityNode() = default;
-
   public:
+    BaseOpacityNode() = default;
+    virtual ~BaseOpacityNode() = default;
+
     void setOpacity(float opacity) {
         m_opacity = opacity;
     }

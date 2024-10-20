@@ -1,6 +1,4 @@
 add_library(rendergraph_sg
-../common/node.cpp
-../common/opacitynode.cpp
 ../common/rendergraph/attributeinit.h
 ../common/rendergraph/attributeset.h
 ../common/rendergraph/geometry.h
@@ -23,14 +21,12 @@ add_library(rendergraph_sg
 ../common/rendergraph/node.h
 ../common/rendergraph/opacitynode.h
 ../common/rendergraph/texture.h
-../common/rendergraph/treenode.h
 ../common/rendergraph/types.h
 ../common/rendergraph/uniform.h
 ../common/rendergraph/uniformscache.cpp
 ../common/rendergraph/uniformscache.h
 ../common/rendergraph/uniformset.cpp
 ../common/rendergraph/uniformset.h
-../common/treenode.cpp
 ../common/types.cpp
 attributeset.cpp
 backend/baseattributeset.cpp
@@ -51,7 +47,6 @@ material.cpp
 materialshader.cpp
 rendergraph/context.h
 texture.cpp
-treenode.cpp
 )
 
 target_link_libraries(rendergraph_sg PUBLIC
