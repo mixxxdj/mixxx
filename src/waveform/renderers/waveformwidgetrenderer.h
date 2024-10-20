@@ -15,6 +15,10 @@ class VSyncThread;
 class QPainter;
 class WaveformRendererAbstract;
 
+namespace rendergraph {
+class Context;
+}
+
 class WaveformWidgetRenderer {
   public:
     static const double s_waveformMinZoom;
@@ -192,6 +196,14 @@ class WaveformWidgetRenderer {
         return m_trackSamples <= 0.0 || m_pos[::WaveformRendererAbstract::Play] == -1;
     }
 
+    void setContext(rendergraph::Context* pContext) {
+        m_pContext = pContext;
+    }
+
+    rendergraph::Context* getContext() const {
+        return m_pContext;
+    }
+
   protected:
     const QString m_group;
     TrackPointer m_pTrack;
@@ -226,6 +238,8 @@ class WaveformWidgetRenderer {
     double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
+
+    rendergraph::Context* m_pContext;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

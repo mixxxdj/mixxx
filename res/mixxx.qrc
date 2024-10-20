@@ -96,5 +96,9 @@
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
         <file>shaders/stackedsignal.frag</file>
+        <file>shaders/rendergraph/endoftrack.frag.gl</file>
+        <file>shaders/rendergraph/endoftrack.vert.gl</file>
+        <file>shaders/rendergraph/texture.frag.gl</file>
+        <file>shaders/rendergraph/texture.vert.gl</file>
     </qresource>
 </RCC>
