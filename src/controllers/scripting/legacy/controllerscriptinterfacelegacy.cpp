@@ -1,5 +1,8 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+#include <QTextCodec>
+#endif
 #include <gsl/pointers>
 
 #include "control/controlobject.h"
@@ -1046,4 +1049,55 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
     // activate the ramping in scratchProcess()
     m_ramp[deck] = true;
+}
+
+QJSValue ControllerScriptInterfaceLegacy::convertCharset(
+        const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
+        const QString& value) {
+    switch (targetCharset) {
+    case WellKnownCharsets::LATIN_1:
+    case WellKnownCharsets::ISO_8859_1:
+        return this->convertCharset("ISO-8859-1", value);
+    case WellKnownCharsets::LATIN_9:
+    case WellKnownCharsets::ISO_8859_15:
+        return this->convertCharset("ISO-8859-15", value);
+    case WellKnownCharsets::UCS_2:
+    case WellKnownCharsets::ISO_10646_UCS_2:
+        return this->convertCharset("ISO-10646-UCS-2", value);
+    default:
+        m_pScriptEngineLegacy->throwJSError(QStringLiteral("Unknown charset specified"));
+        return QJSValue::UndefinedValue;
+    }
+}
+
+QJSValue ControllerScriptInterfaceLegacy::convertCharset(
+        const QString& targetCharset, const QString& value) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+    auto* pCodec = QTextCodec::codecForName(targetCharset.toUtf8());
+    if (!pCodec) {
+        return QJSValue::UndefinedValue;
+    }
+    const auto byteArray = pCodec->fromUnicode(value);
+#else
+#if QT_VERSION > QT_VERSION_CHECK(6, 8, 0)
+    QStringEncoder fromUtf16 = QStringEncoder(targetCharset.data());
+#else
+    QStringEncoder fromUtf16 = QStringEncoder(targetCharset.toUtf8().data());
+
+#endif
+    if (!fromUtf16.isValid()) {
+        return QJSValue::UndefinedValue;
+    }
+    const QByteArray byteArray = fromUtf16(value);
+#endif
+    auto result = m_pScriptEngineLegacy->jsEngine()->newArray(byteArray.size());
+    for (auto i = 0; i < byteArray.size(); ++i) {
+        result.setProperty(i, byteArray.at(i));
+    }
+    return result;
 }
