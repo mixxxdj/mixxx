@@ -318,15 +318,15 @@ declare namespace engine {
      * Available charset names are listed here: http://www.iana.org/assignments/character-sets/character-sets.xhtml
      * @param {string} targetCharset The charset to encode the string into.
      * @param {string} value The string to encode
-     * @returns {ArrayBuffer | undefined}The converted String as an array of bytes or undefined if an error happened when performing conversion
+     * @returns {number[] | undefined}The converted String as an array of bytes or undefined if an error happened when performing conversion
      */
-    function convertCharset(targetCharset: string, value: string): ArrayBuffer | undefined
+    function convertCharset(targetCharset: string, value: string): Array<number> | undefined
 
   /**
    * Version of {@link engine.convertCharset} to use with {@link engine.WellKnownCharsets}.
    * @param {engine.WellKnownCharsets} targetCharset The charset to encode the string into.
    * @param {string} value The string to encode
-   * @returns {ArrayBuffer | undefined}The converted String as an array of bytes or undefined if an error happened when performing conversion
+   * @returns {number[] | undefined}The converted String as an array of bytes or undefined if an error happened when performing conversion
    */
-    function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer | undefined
+    function convertCharset(targetCharset: WellKnownCharsets, value: string): Array<number> | undefined
 }

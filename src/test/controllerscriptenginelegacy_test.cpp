@@ -751,23 +751,26 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUndefinedOnUnknownCharset
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
-    const auto result = evaluate(R"Javascript(
-        Array.from(
-            new Uint8Array(
-                engine.convertCharset(engine.WellKnownCharsets.LATIN_9, "Hello!")))
-        .map(it => it.toString(16))
-        .join(",")
-    )Javascript");
-    ASSERT_QSTRING_EQ(result.toString(), "48,65,6c,6c,6f,21");
+    const auto result = evaluate(
+            "`${engine.convertCharset(engine.WellKnownCharsets.LATIN_9, 'Hello!')}`");
+    ASSERT_QSTRING_EQ(result.toString(),
+            // int repr for 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21
+            // aka ISO-8859-15 encoding for 'Hello!'
+            "72,101,108,108,111,33");
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
-    const auto result = evaluate(R"Javascript(
-        Array.from(
-            new Uint8Array(
-                engine.convertCharset('ISO-8859-1', "Hello!")))
-        .map(it => it.toString(16))
-        .join(",")
-    )Javascript");
-    ASSERT_QSTRING_EQ(result.toString(), "48,65,6c,6c,6f,21");
+    const auto result = evaluate("`${engine.convertCharset('ISO-8859-15', 'Hello!')}`");
+    ASSERT_QSTRING_EQ(result.toString(),
+            // int repr for 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21
+            // aka ISO-8859-15 encoding for 'Hello!'
+            "72,101,108,108,111,33");
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
+    const auto result = evaluate("`${engine.convertCharset('ISO-8859-15', 'مايأ نامز')}`");
+    ASSERT_QSTRING_EQ(result.toString(),
+            // int repr for 0x1A which is ISO-8859-15 for
+            // https://en.wikipedia.org/wiki/Substitute_character
+            "26,26,26,26,32,26,26,26,26");
 }

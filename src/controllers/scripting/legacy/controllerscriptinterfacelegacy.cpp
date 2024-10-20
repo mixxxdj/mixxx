@@ -1051,7 +1051,7 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
     m_ramp[deck] = true;
 }
 
-QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+QJSValue ControllerScriptInterfaceLegacy::convertCharset(
         const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
         const QString& value) {
     switch (targetCharset) {
@@ -1066,23 +1066,38 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         return this->convertCharset("ISO-10646-UCS-2", value);
     default:
         m_pScriptEngineLegacy->throwJSError(QStringLiteral("Unknown charset specified"));
-        return nullptr;
+        return QJSValue::UndefinedValue;
     }
 }
 
-QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+QJSValue ControllerScriptInterfaceLegacy::convertCharset(
         const QString& targetCharset, const QString& value) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
     auto* pCodec = QTextCodec::codecForName(targetCharset.toUtf8());
     if (!pCodec) {
-        return nullptr;
+        return QJSValue::UndefinedValue;
     }
-    return pCodec->fromUnicode(value)
+    const auto byteArray = pCodec->fromUnicode(value);
 #else
-    QStringEncoder fromUtf8 = QStringEncoder(targetCharset.toUtf8().data());
-    if (!fromUtf8.isValid()) {
-        return nullptr;
-    }
-    return fromUtf8(value);
+#if QT_VERSION > QT_VERSION_CHECK(6, 8, 0)
+    QStringEncoder fromUtf16 = QStringEncoder(targetCharset.data());
+#else
+    QStringEncoder fromUtf16 = QStringEncoder(targetCharset.toUtf8().data());
+
 #endif
+    if (!fromUtf16.isValid()) {
+        return QJSValue::UndefinedValue;
+    }
+    const QByteArray byteArray = fromUtf16(value);
+#endif
+    auto result = m_pScriptEngineLegacy->jsEngine()->newArray(byteArray.size());
+    for (auto i = 0; i < byteArray.size(); ++i) {
+        result.setProperty(i, byteArray.at(i));
+    }
+    return result;
 }
