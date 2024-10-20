@@ -12,7 +12,8 @@
 #endif
 
 #ifdef __LINUX__
-#include <QtDBus>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
 #endif
 
 #ifdef MIXXX_USE_QOPENGL
