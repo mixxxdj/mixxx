@@ -776,7 +776,7 @@ TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     if (index.isValid()) {
-        return TrackId(index.sibling(index.row(), fieldIndex(m_idColumn)).data());
+        return TrackId(getFieldVariant(index, m_idColumn));
     } else {
         return TrackId();
     }
@@ -786,11 +786,8 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return QString();
     }
-    QString nativeLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION))
-                    .data()
-                    .toString();
+    QString nativeLocation = getFieldString(
+            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     return QDir::fromNativeSeparators(nativeLocation);
 }
 
@@ -806,40 +803,17 @@ QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     CoverInfo coverInfo;
     coverInfo.setImageDigest(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_DIGEST))
-                    .data()
-                    .toByteArray(),
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_HASH))
-                    .data()
-                    .toUInt());
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST).toByteArray(),
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH).toUInt());
     coverInfo.color = mixxx::RgbColor::fromQVariant(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_COLOR))
-                    .data());
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR));
     if (coverInfo.hasCacheKey()) {
         coverInfo.type = static_cast<CoverInfo::Type>(
-                index.sibling(index.row(),
-                             fieldIndex(ColumnCache::
-                                             COLUMN_LIBRARYTABLE_COVERART_TYPE))
-                        .data()
-                        .toInt());
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE).toInt());
         coverInfo.source = static_cast<CoverInfo::Source>(
-                index.sibling(index.row(),
-                             fieldIndex(ColumnCache::
-                                             COLUMN_LIBRARYTABLE_COVERART_SOURCE))
-                        .data()
-                        .toInt());
-        coverInfo.coverLocation =
-                index.sibling(index.row(),
-                             fieldIndex(ColumnCache::
-                                             COLUMN_LIBRARYTABLE_COVERART_LOCATION))
-                        .data()
-                        .toString();
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE).toInt());
+        coverInfo.coverLocation = getFieldString(
+                index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION);
         coverInfo.trackLocation = getTrackLocation(index);
     }
     return coverInfo;

@@ -265,13 +265,9 @@ QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
             if (insertionPos == 0) {
                 rows.append(trackRow);
             } else {
-                int pos =
-                        index(
-                                trackRow,
-                                fieldIndex(ColumnCache::
-                                                COLUMN_PLAYLISTTRACKSTABLE_POSITION))
-                                .data()
-                                .toInt();
+                int pos = getFieldVariant(index(trackRow, 0),
+                        ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)
+                                  .toInt();
                 // trackRows includes all instances in the table of the pasted
                 // tracks. We only want to select the ones we just inserted
                 if (pos >= insertionPos && pos < insertionPos + trackIds.size()) {
@@ -861,11 +857,10 @@ QVariant BaseTrackTableModel::roleValue(
 
 bool BaseTrackTableModel::isBpmLocked(
         const QModelIndex& index) const {
-    const auto bpmLockIndex =
-            index.sibling(
-                    index.row(),
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
-    return bpmLockIndex.data().toBool();
+    const bool bpmLockIndex =
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)
+                    .toBool();
+    return bpmLockIndex;
 }
 
 Qt::ItemFlags BaseTrackTableModel::defaultItemFlags(
