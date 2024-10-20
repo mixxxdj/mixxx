@@ -77,7 +77,7 @@ void WaveformRenderMarkRange::update() {
             auto pNode = std::make_unique<GeometryNode>();
             pChild = pNode.get();
             pChild->initForRectangles<UniColorMaterial>(1);
-            appendChildNode(pNode.release());
+            appendChildNode(std::move(pNode));
         }
 
         updateNode(pChild,
@@ -89,8 +89,7 @@ void WaveformRenderMarkRange::update() {
         pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
     while (pChild) {
-        std::unique_ptr<GeometryNode> pNode(pChild);
-        removeChildNode(pNode.get());
+        auto pNode = detachChildNode(pChild);
         pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
 }

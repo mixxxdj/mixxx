@@ -5,13 +5,12 @@
 
 using namespace rendergraph;
 
-Engine::Engine(BaseNode* pRootNode)
-        : m_pRootNode(pRootNode) {
-    add(m_pRootNode);
+Engine::Engine(std::unique_ptr<BaseNode> pRootNode)
+        : m_pRootNode(std::move(pRootNode)) {
+    add(m_pRootNode.get());
 }
 
 Engine::~Engine() {
-    delete m_pRootNode;
 }
 
 void Engine::add(BaseNode* pNode) {
@@ -47,8 +46,8 @@ void Engine::remove(BaseNode* pNode) {
         }
     }
 
-    if (m_pRootNode == pNode) {
-        m_pRootNode = nullptr;
+    if (m_pRootNode.get() == pNode) {
+        m_pRootNode.reset();
     }
 }
 
@@ -60,7 +59,7 @@ void Engine::render() {
         m_pInitializeNodes.clear();
     }
     if (m_pRootNode && !m_pRootNode->isSubtreeBlocked()) {
-        render(m_pRootNode);
+        render(m_pRootNode.get());
     }
 }
 
@@ -93,7 +92,7 @@ void Engine::resize(int w, int h) {
     //}
 
     if (m_pRootNode) {
-        resize(m_pRootNode, w, h);
+        resize(m_pRootNode.get(), w, h);
     }
 }
 

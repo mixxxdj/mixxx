@@ -1,7 +1,11 @@
 #pragma once
 
 #include "backend/baseopacitynode.h"
+#include "rendergraph/nodeinterface.h"
 
 namespace rendergraph {
-using OpacityNode = BaseOpacityNode;
+class OpacityNode;
 } // namespace rendergraph
+
+class rendergraph::OpacityNode : public rendergraph::NodeInterface<rendergraph::BaseOpacityNode> {
+};

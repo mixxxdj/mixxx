@@ -3,12 +3,13 @@
 #include "backend/basegeometrynode.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material.h"
+#include "rendergraph/nodeinterface.h"
 
 namespace rendergraph {
 class GeometryNode;
 } // namespace rendergraph
 
-class rendergraph::GeometryNode : public rendergraph::BaseGeometryNode {
+class rendergraph::GeometryNode : public rendergraph::NodeInterface<rendergraph::BaseGeometryNode> {
   public:
     GeometryNode();
     virtual ~GeometryNode() = default;

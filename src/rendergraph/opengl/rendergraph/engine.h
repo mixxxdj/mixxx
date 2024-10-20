@@ -12,7 +12,7 @@ class Engine;
 
 class rendergraph::Engine {
   public:
-    Engine(BaseNode* pRootNode);
+    Engine(std::unique_ptr<BaseNode> pRootNode);
     ~Engine();
 
     void render();
@@ -29,7 +29,7 @@ class rendergraph::Engine {
     void resize(BaseNode* pNode, int, int);
 
     QMatrix4x4 m_matrix;
-    BaseNode* m_pRootNode{};
+    std::unique_ptr<BaseNode> m_pRootNode;
     std::vector<BaseNode*> m_pPreprocessNodes;
     std::vector<BaseNode*> m_pInitializeNodes;
 };

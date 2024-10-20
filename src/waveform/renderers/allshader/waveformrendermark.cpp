@@ -83,11 +83,11 @@ class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
     float textureHeight() const {
         return waveformMarkNode()->textureHeight();
     }
-    void setNode(std::unique_ptr<Node>&& pNode) {
+    void setNode(std::unique_ptr<WaveformMarkNode>&& pNode) {
         m_pNode = std::move(pNode);
     }
     void moveNodeToChildrenOf(Node* pParent) {
-        pParent->appendChildNode(m_pNode.release());
+        pParent->appendChildNode(std::move(m_pNode));
     }
 
   private:
@@ -95,7 +95,7 @@ class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
         return static_cast<WaveformMarkNode*>(m_pNode.get());
     }
 
-    std::unique_ptr<rendergraph::Node> m_pNode;
+    std::unique_ptr<WaveformMarkNode> m_pNode;
 };
 
 // Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
@@ -136,26 +136,26 @@ allshader::WaveformRenderMark::WaveformRenderMark(
     {
         auto pNode = std::make_unique<Node>();
         m_pRangeNodesParent = pNode.get();
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
 
     {
         auto pNode = std::make_unique<Node>();
         m_pMarkNodesParent = pNode.get();
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
 
     {
         auto pNode = std::make_unique<DigitsRenderNode>();
         m_pDigitsRenderNode = pNode.get();
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
 
     {
         auto pNode = std::make_unique<GeometryNode>();
         m_pPlayPosNode = pNode.get();
         m_pPlayPosNode->initForRectangles<TextureMaterial>(1);
-        appendChildNode(pNode.release());
+        appendChildNode(std::move(pNode));
     }
 }
 
@@ -199,6 +199,16 @@ bool allshader::WaveformRenderMark::isSubtreeBlocked() const {
     return m_isSlipRenderer && !m_waveformRenderer->isSlipActive();
 }
 
+namespace {
+template<class T>
+std::unique_ptr<T> castToUniquePtr(std::unique_ptr<rendergraph::BaseNode>&& pNode) {
+    if (dynamic_cast<T*>(pNode.get())) {
+        return std::unique_ptr<T>(dynamic_cast<T*>(pNode.release()));
+    }
+    return std::unique_ptr<T>();
+}
+} // namespace
+
 void allshader::WaveformRenderMark::update() {
     if (isSubtreeBlocked()) {
         return;
@@ -214,8 +224,7 @@ void allshader::WaveformRenderMark::update() {
     // (transferring ownership). Later in this function we move the
     // visible nodes back to m_pMarkNodesParent children.
     while (auto pChild = m_pMarkNodesParent->firstChild()) {
-        std::unique_ptr<WaveformMarkNode> pNode(static_cast<WaveformMarkNode*>(pChild));
-        m_pMarkNodesParent->removeChildNode(pNode.get());
+        auto pNode = castToUniquePtr<WaveformMarkNode>(m_pMarkNodesParent->detachChildNode(pChild));
         // Determine its WaveformMark
         auto pMark = pNode->m_pOwner;
         auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
@@ -320,7 +329,7 @@ void allshader::WaveformRenderMark::update() {
                     auto pNode = std::make_unique<GeometryNode>();
                     pNode->initForRectangles<RGBAMaterial>(2);
                     pRangeChild = pNode.get();
-                    m_pRangeNodesParent->appendChildNode(pNode.release());
+                    m_pRangeNodesParent->appendChildNode(std::move(pNode));
                 }
 
                 updateRangeNode(pRangeChild,
@@ -343,8 +352,7 @@ void allshader::WaveformRenderMark::update() {
 
     // Remove unused nodes
     while (pRangeChild) {
-        auto pNode = std::unique_ptr<GeometryNode>(pRangeChild);
-        m_pRangeNodesParent->removeChildNode(pNode.get());
+        auto pNode = m_pRangeNodesParent->detachChildNode(pRangeChild);
         pRangeChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
     }
 
