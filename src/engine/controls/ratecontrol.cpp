@@ -9,6 +9,7 @@
 #include "control/controlttrotary.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/pitchbendcontrol.h"
 #include "engine/positionscratchcontroller.h"
 #include "moc_ratecontrol.cpp"
 #include "util/rotary.h"
@@ -20,12 +21,8 @@ constexpr int kRateSensitivityMax = 2500;
 } // namespace
 
 // Static default values for rate buttons (percents)
-ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeCoarse;
-ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeFine;
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeFine;
-int RateControl::m_iRateRampSensitivity;
-RateControl::RampMode RateControl::m_eRateRampMode;
 
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
@@ -36,10 +33,7 @@ RateControl::RateControl(const QString& group,
           m_pBpmControl(nullptr),
           m_wrapAroundCount(0),
           m_jumpPos(mixxx::audio::FramePos()),
-          m_targetPos(mixxx::audio::FramePos()),
-          m_bTempStarted(false),
-          m_tempRateRatio(0.0),
-          m_dRateTempRampChange(0.0) {
+          m_targetPos(mixxx::audio::FramePos()) {
     m_pScratchController = new PositionScratchController(group);
 
     // This is the resulting rate ratio that can be used for display or calculations.
@@ -130,16 +124,6 @@ RateControl::RateControl(const QString& group,
             Qt::DirectConnection);
     m_pButtonRatePermUpSmall->setKbdRepeatable(true);
 
-    // Temporary rate-change buttons
-    m_pButtonRateTempDown =
-        new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    m_pButtonRateTempDownSmall =
-        new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    m_pButtonRateTempUp =
-        new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    m_pButtonRateTempUpSmall =
-        new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-
     // We need the sample rate so we can guesstimate something close
     // what latency is.
     m_pSampleRate = ControlObject::getControl(
@@ -185,10 +169,6 @@ RateControl::~RateControl() {
     delete m_pForwardButton;
     delete m_pBackButton;
 
-    delete m_pButtonRateTempDown;
-    delete m_pButtonRateTempDownSmall;
-    delete m_pButtonRateTempUp;
-    delete m_pButtonRateTempUpSmall;
     delete m_pButtonRatePermDown;
     delete m_pButtonRatePermDownSmall;
     delete m_pButtonRatePermUp;
@@ -208,40 +188,6 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
 }
 
 //static
-void RateControl::setRateRampMode(RampMode mode) {
-    m_eRateRampMode = mode;
-}
-
-//static
-RateControl::RampMode RateControl::getRateRampMode() {
-    return m_eRateRampMode;
-}
-
-//static
-void RateControl::setRateRampSensitivity(int sense) {
-    // Reverse the actual sensitivity value passed.
-    // That way the gui works in an intuitive manner.
-    sense = kRateSensitivityMax - sense + kRateSensitivityMin;
-    if (sense < kRateSensitivityMin) {
-        m_iRateRampSensitivity = kRateSensitivityMin;
-    } else if (sense > kRateSensitivityMax) {
-        m_iRateRampSensitivity = kRateSensitivityMax;
-    } else {
-        m_iRateRampSensitivity = sense;
-    }
-}
-
-//static
-void RateControl::setTemporaryRateChangeCoarseAmount(double v) {
-    m_dTemporaryRateChangeCoarse.setValue(v);
-}
-
-//static
-void RateControl::setTemporaryRateChangeFineAmount(double v) {
-    m_dTemporaryRateChangeFine.setValue(v);
-}
-
-//static
 void RateControl::setPermanentRateChangeCoarseAmount(double v) {
     m_dPermanentRateChangeCoarse.setValue(v);
 }
@@ -249,16 +195,6 @@ void RateControl::setPermanentRateChangeCoarseAmount(double v) {
 //static
 void RateControl::setPermanentRateChangeFineAmount(double v) {
     m_dPermanentRateChangeFine.setValue(v);
-}
-
-//static
-double RateControl::getTemporaryRateChangeCoarseAmount() {
-    return m_dTemporaryRateChangeCoarse.getValue();
-}
-
-//static
-double RateControl::getTemporaryRateChangeFineAmount() {
-    return m_dTemporaryRateChangeFine.getValue();
 }
 
 //static
@@ -392,7 +328,7 @@ double RateControl::calculateSpeed(double baserate,
     *pReportScratching = false;
     *pReportReverse = false;
 
-    processTempRate(samplesPerBuffer);
+    m_pPitchBendControl->processTempRate(samplesPerBuffer, m_pRateRange->get());
 
     double rate;
     const double searching = m_pRateSearch->get();
@@ -445,7 +381,7 @@ double RateControl::calculateSpeed(double baserate,
                     rate = scratchFactor;
                 } else {
                     // add temp rate, but don't go backwards
-                    rate = math_max(speed + getTempRate(), 0.0);
+                    rate = math_max(speed + m_pPitchBendControl->getTempRate(), 0.0);
                     rate += wheelFactor;
                 }
                 rate += jogFactor;
@@ -481,7 +417,7 @@ double RateControl::calculateSpeed(double baserate,
                 double userTweak = 0.0;
                 if (!*pReportScratching) {
                     // Only report user tweak if the user is not scratching.
-                    userTweak = getTempRate() + wheelFactor + jogFactor;
+                    userTweak = m_pPitchBendControl->getTempRate() + wheelFactor + jogFactor;
                 }
                 rate = m_pBpmControl->calcSyncedRate(userTweak);
             }
@@ -499,106 +435,6 @@ double RateControl::calculateSpeed(double baserate,
         }
     }
     return rate;
-}
-
-void RateControl::processTempRate(const std::size_t bufferSamples) {
-    // Code to handle temporary rate change buttons.
-    // We support two behaviors, the standard ramped pitch bending
-    // and pitch shift stepping, which is the old behavior.
-
-    RampDirection rampDirection = RampDirection::None;
-    if (m_pButtonRateTempUp->toBool()) {
-        rampDirection = RampDirection::Up;
-    } else if (m_pButtonRateTempDown->toBool()) {
-        rampDirection = RampDirection::Down;
-    } else if (m_pButtonRateTempUpSmall->toBool()) {
-        rampDirection = RampDirection::UpSmall;
-    } else if (m_pButtonRateTempDownSmall->toBool()) {
-        rampDirection = RampDirection::DownSmall;
-    }
-
-    if (rampDirection != RampDirection::None) {
-        if (m_eRateRampMode == RampMode::Stepping) {
-            if (!m_bTempStarted) {
-                m_bTempStarted = true;
-                // old temporary pitch shift behavior
-                double change = m_dTemporaryRateChangeCoarse.getValue() / 100.0;
-                double csmall = m_dTemporaryRateChangeFine.getValue() / 100.0;
-
-                switch (rampDirection) {
-                case RampDirection::Up:
-                    setRateTemp(change);
-                    break;
-                case RampDirection::Down:
-                    setRateTemp(-change);
-                    break;
-                case RampDirection::UpSmall:
-                    setRateTemp(csmall);
-                    break;
-                case RampDirection::DownSmall:
-                    setRateTemp(-csmall);
-                    break;
-                case RampDirection::None:
-                default:
-                    DEBUG_ASSERT(false);
-                }
-            }
-        } else if (m_eRateRampMode == RampMode::Linear) {
-            if (!m_bTempStarted) {
-                m_bTempStarted = true;
-                double latrate = bufferSamples / m_pSampleRate->get();
-                m_dRateTempRampChange = latrate / (m_iRateRampSensitivity / 100.0);
-            }
-
-            switch (rampDirection) {
-            case RampDirection::Up:
-            case RampDirection::UpSmall:
-                addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                break;
-            case RampDirection::Down:
-            case RampDirection::DownSmall:
-                subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                break;
-            case RampDirection::None:
-            default:
-                DEBUG_ASSERT(false);
-            }
-        }
-    } else if (m_bTempStarted) {
-        m_bTempStarted = false;
-        resetRateTemp();
-    }
-}
-
-double RateControl::getTempRate() {
-    // qDebug() << m_tempRateRatio;
-    return m_tempRateRatio;
-}
-
-void RateControl::setRateTemp(double v) {
-    m_tempRateRatio = v;
-    if (m_tempRateRatio < -1.0) {
-        m_tempRateRatio = -1.0;
-    } else if (m_tempRateRatio > 1.0) {
-        m_tempRateRatio = 1.0;
-    } else if (util_isnan(m_tempRateRatio)) {
-        m_tempRateRatio = 0;
-    }
-}
-
-void RateControl::addRateTemp(double v)
-{
-    setRateTemp(m_tempRateRatio + v);
-}
-
-void RateControl::subRateTemp(double v)
-{
-    setRateTemp(m_tempRateRatio - v);
-}
-
-void RateControl::resetRateTemp(void)
-{
-    setRateTemp(0.0);
 }
 
 bool RateControl::isReverseButtonPressed() {
