@@ -26,7 +26,7 @@ class MockMidiController : public MidiController {
             void(unsigned char status,
                     unsigned char byte1,
                     unsigned char byte2));
-    MOCK_METHOD1(sendBytes, void(const QByteArray& data));
+    MOCK_METHOD1(sendBytes, bool(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
 };
 

@@ -9,6 +9,7 @@
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
+#include "util/cmdlineargs.h"
 #include "util/fpclassify.h"
 #include "util/make_const_iterator.h"
 #include "util/time.h"
@@ -523,7 +524,9 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     m_timers[timerId] = info;
     if (timerId == 0) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Script timer could not be created"));
-    } else if (oneShot) {
+    } else if (oneShot &&
+            // FIXME workaround log spam (Github issue to be created)
+            CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(m_logger) << "Starting one-shot timer:" << timerId;
     } else {
         qCDebug(m_logger) << "Starting timer:" << timerId;
@@ -538,7 +541,9 @@ void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
                                                        .arg(timerId));
         return;
     }
-    qCDebug(m_logger) << "Killing timer:" << timerId;
+    if (CmdlineArgs::Instance().getControllerDebug()) {
+        qCDebug(m_logger) << "Killing timer:" << timerId;
+    }
     killTimer(timerId);
     m_timers.remove(timerId);
 }
