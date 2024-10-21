@@ -12,6 +12,7 @@
 
 namespace {
 constexpr bool kDefaultCueEnabled = true;
+constexpr bool kDefaultTracklistAsComment = true;
 } // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
@@ -75,6 +76,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
+    updateTracklistAsComment();
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -144,6 +146,7 @@ void DlgPrefRecord::slotApply() {
     saveMetaData();
     saveEncoding();
     saveUseCueFile();
+    saveTracklistAsComment();
     saveSplitSize();
 }
 
@@ -178,6 +181,7 @@ void DlgPrefRecord::slotUpdate() {
      // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
+    updateTracklistAsComment();
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -202,6 +206,7 @@ void DlgPrefRecord::slotResetToDefaults() {
     // 4GB splitting is the default
     comboBoxSplitting->setCurrentIndex(4);
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
+    updateTracklistAsComment();
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
@@ -296,6 +301,8 @@ void DlgPrefRecord::setupEncoderUI() {
     if (m_selFormat.internalName == ENCODING_MP3) {
         updateTextQuality();
     }
+
+    updateTracklistAsComment();
 }
 
 void DlgPrefRecord::slotSliderQuality() {
@@ -342,6 +349,19 @@ void DlgPrefRecord::updateTextCompression() {
                     m_selFormat, m_pConfig);
     int quality = settings->getCompressionValues().at(SliderCompression->value());
     TextCompression->setText(QString::number(quality));
+}
+
+void DlgPrefRecord::updateTracklistAsComment() {
+    CheckBoxTracklistAsComment->blockSignals(true);
+    if (m_selFormat.internalName == ENCODING_MP3 || m_selFormat.internalName == ENCODING_WAVE) {
+        CheckBoxTracklistAsComment->setEnabled(true);
+        CheckBoxTracklistAsComment->setChecked(m_pConfig->getValue(
+                ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"), kDefaultTracklistAsComment));
+    } else {
+        CheckBoxTracklistAsComment->setEnabled(false);
+        CheckBoxTracklistAsComment->setChecked(false);
+    }
+    CheckBoxTracklistAsComment->blockSignals(true);
 }
 
 void DlgPrefRecord::slotGroupChanged()
@@ -432,6 +452,11 @@ void DlgPrefRecord::saveEncoding() {
 void DlgPrefRecord::saveUseCueFile() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"),
                    ConfigValue(CheckBoxRecordCueFile->isChecked()));
+}
+
+void DlgPrefRecord::saveTracklistAsComment() {
+    m_pConfig->setValue(ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"),
+            CheckBoxTracklistAsComment->isChecked());
 }
 
 void DlgPrefRecord::saveSplitSize() {
