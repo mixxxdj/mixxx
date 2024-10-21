@@ -36,7 +36,7 @@ class HidController final : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
