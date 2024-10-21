@@ -19,7 +19,6 @@
 
 # Exclude Transifex files from merging
 /res/translations/*.ts merge=ours
-/res/translations/*.qm merge=ours
 
 # Treat serato test data as binary
 *.octet-stream binary

@@ -101,9 +101,10 @@ case "$1" in
             portaudio19-dev \
             protobuf-compiler \
             qtkeychain-qt6-dev \
+            qt6-tools-dev \
+            qt6-tools-dev-tools \
+            qt6-l10n-tools \
             qt6-declarative-private-dev \
-            qt6-base-private-dev \
-            qt6-qpa-plugins \
             qml6-module-qt5compat-graphicaleffects \
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
