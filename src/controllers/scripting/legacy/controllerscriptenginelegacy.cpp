@@ -506,12 +506,13 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         qCWarning(m_logger) << "Unable to find transform function info for the given screen";
         return;
     };
-    VERIFY_OR_DEBUG_ASSERT(m_rootItems.contains(screenInfo.identifier)) {
+    auto itScreen = m_rootItems.find(screenInfo.identifier);
+    VERIFY_OR_DEBUG_ASSERT(itScreen != m_rootItems.end()) {
         qCWarning(m_logger) << "Unable to find a root item for the given screen";
         return;
     };
 
-    auto& pScreen = m_rootItems.at(screenInfo.identifier);
+    auto& pScreen = itScreen->second;
 
     if (CmdlineArgs::Instance().getControllerPreviewScreens()) {
         QImage screenDebug(frame);
