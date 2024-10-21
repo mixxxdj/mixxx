@@ -106,17 +106,6 @@ class ColumnCache : public QObject {
         return format.arg(columnNameForFieldIndex(index));
     }
 
-    void insertColumnSortByEnum(
-            Column column,
-            const QString& sortFormat) {
-        int index = fieldIndex(column);
-        if (index < 0) {
-            return;
-        }
-        DEBUG_ASSERT(!m_columnSortByIndex.contains(index));
-        m_columnSortByIndex.insert(index, sortFormat);
-    }
-
     KeyUtils::KeyNotation keyNotation() const {
         return KeyUtils::keyNotationFromNumericValue(
                 m_pKeyNotationCP->get());
@@ -128,6 +117,18 @@ class ColumnCache : public QObject {
     void slotSetKeySortOrder(double);
 
   private:
+    void insertColumnSortByEnum(
+            Column column,
+            const QString& sortFormat) {
+        int index = fieldIndex(column);
+        if (index < 0) {
+            return;
+        }
+        DEBUG_ASSERT(!m_columnSortByIndex.contains(index));
+        m_columnSortByIndex.insert(index, sortFormat);
+    }
+
+
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
