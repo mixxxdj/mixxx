@@ -91,7 +91,9 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         return m_renderingScreens;
     }
 
-    std::unordered_map<QString, std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>& rootItems() {
+    std::unordered_map<QString,
+            std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>&
+    rootItems() {
         return m_rootItems;
     }
 
@@ -691,7 +693,8 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
             "accept raw data. Aborting screen rendering.");
 
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().emplace(dummyScreen.identifier, std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,
@@ -722,7 +725,8 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
     EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().emplace(dummyScreen.identifier, std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,
