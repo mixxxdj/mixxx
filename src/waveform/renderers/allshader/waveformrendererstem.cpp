@@ -20,8 +20,9 @@ namespace allshader {
 
 WaveformRendererStem::WaveformRendererStem(
         WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererAbstract::PositionSource type,
+        const IVisualGainProvider* visualGainProvider)
+        : WaveformRendererSignalBase(waveformWidget, visualGainProvider),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
     initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);

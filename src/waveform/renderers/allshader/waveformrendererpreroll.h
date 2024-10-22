@@ -29,6 +29,10 @@ class allshader::WaveformRendererPreroll final
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
+    void setup(const QColor& color) {
+        m_color = color;
+    }
+
     // Virtual for rendergraph::Node
     void preprocess() override;
 

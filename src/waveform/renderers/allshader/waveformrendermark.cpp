@@ -172,7 +172,27 @@ allshader::WaveformRenderMark::WaveformRenderMark(
     }
 }
 
-void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+void allshader::WaveformRenderMark::setup(const QColor& fgPlayColor,
+        const QColor& bgPlayColor,
+        bool untilMarkShowBeats,
+        bool untilMarkShowTime,
+        Qt::Alignment untilMarkAlign,
+        int untilMarkTextSize,
+        float untilMarkTextHeightLimit) {
+    m_fgPlayColor = fgPlayColor;
+    m_bgPlayColor = bgPlayColor;
+    m_untilMarkShowBeats = untilMarkShowBeats;
+    m_untilMarkShowTime = untilMarkShowTime;
+    m_untilMarkAlign = untilMarkAlign;
+    m_untilMarkTextSize = untilMarkTextSize;
+    m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
+}
+#endif
+
+void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
     DEBUG_ASSERT(false);
 }
 
@@ -225,12 +245,12 @@ void allshader::WaveformRenderMark::update() {
     // from m_pMarkNodesParent and store each with their mark
     // (transferring ownership). Later in this function we move the
     // visible nodes back to m_pMarkNodesParent children.
-    while (auto pChild = m_pMarkNodesParent->firstChild()) {
+    while (auto* pChild = m_pMarkNodesParent->firstChild()) {
         auto pNode = m_pMarkNodesParent->detachChildNode(pChild);
         WaveformMarkNode* pWaveformMarkNode = static_cast<WaveformMarkNode*>(pNode.get());
         // Determine its WaveformMark
-        auto pMark = pWaveformMarkNode->m_pOwner;
-        auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
+        auto* pMark = pWaveformMarkNode->m_pOwner;
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         // Store the node with the WaveformMark
         pGraphics->attachNode(std::move(pNode));
     }
@@ -272,10 +292,11 @@ void allshader::WaveformRenderMark::update() {
             continue;
         }
 
-        auto pMarkGraphics = pMark->m_pGraphics.get();
-        auto pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
-        if (!pMarkGraphics) // is this even possible?
+        auto* pMarkGraphics = pMark->m_pGraphics.get();
+        auto* pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
+        if (!pMarkGraphics) { // is this even possible?
             continue;
+        }
 
         const float currentMarkPos = static_cast<float>(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
@@ -364,14 +385,26 @@ void allshader::WaveformRenderMark::update() {
                 {1.f, 1.f});
     }
 
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+    if (m_untilMarkShowBeats || m_untilMarkShowTime)
+#else
     if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
-            WaveformWidgetFactory::instance()->getUntilMarkShowTime()) {
+            WaveformWidgetFactory::instance()->getUntilMarkShowTime())
+#endif
+    {
         updateUntilMark(playPosition, nextMarkPosition);
         updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
     }
 }
 
 void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+    const bool untilMarkShowBeats = m_untilMarkShowBeats;
+    const bool untilMarkShowTime = m_untilMarkShowTime;
+    const auto untilMarkAlign = m_untilMarkAlign;
+    const auto untilMarkTextPointSize = m_untilMarkTextSize;
+    const auto untilMarkTextHeightLimit = m_untilMarkTextHeightLimit;
+#else
     const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
     const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
     const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
@@ -382,6 +415,7 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
             WaveformWidgetFactory::instance()
                     ->getUntilMarkTextHeightLimit(); // proportion of waveform
                                                      // height
+#endif
     const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
 
     m_pDigitsRenderNode->updateTexture(m_waveformRenderer->getContext(),
@@ -465,8 +499,13 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
 
     painter.setWorldMatrixEnabled(false);
 
+#ifdef __RENDERGRAPH_IS_OPENGL
     const QColor fgColor{m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor()};
     const QColor bgColor{m_waveformRenderer->getWaveformSignalColors()->getBgColor()};
+#else
+    const QColor& fgColor = m_fgPlayColor;
+    const QColor& bgColor = m_bgPlayColor;
+#endif
 
     // draw dim outlines to increase playpos/waveform contrast
     painter.setPen(bgColor);
@@ -526,7 +565,7 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
                         pMark->generateImage(
                                 m_waveformRenderer->getDevicePixelRatio()));
     } else {
-        auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         pGraphics->updateTexture(m_waveformRenderer->getContext(),
                 pMark->generateImage(
                         m_waveformRenderer->getDevicePixelRatio()));

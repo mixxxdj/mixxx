@@ -15,7 +15,7 @@ class SkinContext;
 
 namespace allshader {
 class WaveformRendererEndOfTrack;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererEndOfTrack final
         : public ::WaveformRendererAbstract,
@@ -29,6 +29,11 @@ class allshader::WaveformRendererEndOfTrack final
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
+    void setup(const QColor& color, int endOfTrackWarningTime) {
+        m_color = color;
+        m_remainingTimeTriggerSeconds = endOfTrackWarningTime;
+    }
+
     bool init() override;
 
     // Virtual for rendergraph::Node
@@ -39,6 +44,7 @@ class allshader::WaveformRendererEndOfTrack final
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     QColor m_color;
+    int m_remainingTimeTriggerSeconds;
     PerformanceTimer m_timer;
 
     bool preprocessInner();

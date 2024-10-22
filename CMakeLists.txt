@@ -1762,6 +1762,7 @@ else()
   )
 endif()
 if(QOPENGL)
+  target_compile_definitions(mixxx-lib PRIVATE __RENDERGRAPH_IS_OPENGL)
   target_sources(
     mixxx-lib
     PRIVATE
@@ -2105,7 +2106,7 @@ if(QT6)
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
   # builds with Qt < 3.21
-  qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
+  qt_add_executable(mixxx WIN32 MACOSX_BUNDLE src/main.cpp MANUAL_FINALIZATION)
 else()
   find_package(Qt5 COMPONENTS Core) # For Qt Core cmake functions
   # This is the first package form the environment, if this fails give hints how to install the environment
@@ -3318,9 +3319,11 @@ if(QML)
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
+      res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
   target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
+  target_compile_definitions(mixxx-qml-lib PRIVATE __RENDERGRAPH_IS_SCENEGRAPH)
   target_sources(
     mixxx-qml-lib
     PRIVATE
@@ -3343,6 +3346,21 @@ if(QML)
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlwaveformoverview.cpp
       src/qml/qmlmixxxcontrollerscreen.cpp
+      src/qml/qmlwaveformdisplay.cpp
+      src/qml/qmlwaveformrenderer.cpp
+      src/waveform/renderers/allshader/digitsrenderer.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/renderers/allshader/waveformrendererslipmode.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererhsv.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
       # The following sources need to be in this target to get QML_ELEMENT properly interpreted
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
@@ -4296,7 +4314,12 @@ if(STEM)
   endif()
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
-    target_sources(mixxx-qml-lib PRIVATE src/qml/qmlstemsmodel.cpp)
+    target_sources(
+      mixxx-qml-lib
+      PRIVATE
+        src/waveform/renderers/allshader/waveformrendererstem.cpp
+        src/qml/qmlstemsmodel.cpp
+    )
   endif()
 endif()
 
@@ -4651,8 +4674,22 @@ endif()
 
 # rendergraph
 add_subdirectory(src/rendergraph)
+target_compile_definitions(
+  rendergraph_gl
+  PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+)
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 target_compile_definitions(mixxx-lib PUBLIC rendergraph=rendergraph_gl)
+target_compile_definitions(mixxx-lib PRIVATE allshader=allshader_gl)
+if(QML)
+  target_compile_definitions(
+    rendergraph_sg
+    PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+  )
+  target_link_libraries(mixxx-qml-lib PRIVATE rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE allshader=allshader_sg)
+endif()
 
 # WavPack audio file support
 find_package(wavpack)

@@ -283,10 +283,10 @@ void DlgPrefWaveform::slotUpdate() {
     endOfTrackWarningTimeSpinBox->setValue(factory->getEndOfTrackWarningTime());
     endOfTrackWarningTimeSlider->setValue(factory->getEndOfTrackWarningTime());
     synchronizeZoomCheckBox->setChecked(factory->isZoomSync());
-    allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
-    lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
-    midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
-    highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
+    allVisualGain->setValue(factory->getVisualGain(FilterIndex::AllChannel));
+    lowVisualGain->setValue(factory->getVisualGain(FilterIndex::Low));
+    midVisualGain->setValue(factory->getVisualGain(FilterIndex::Mid));
+    highVisualGain->setValue(factory->getVisualGain(FilterIndex::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
@@ -566,19 +566,19 @@ void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetVisualGainAll(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(FilterIndex::AllChannel, gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainLow(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(FilterIndex::Low, gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainMid(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(FilterIndex::Mid, gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(FilterIndex::High, gain);
 }
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
