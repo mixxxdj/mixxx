@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rendergraph/openglnode.h"
 #include "shaders/unicolorshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -9,7 +10,9 @@ namespace allshader {
 class WaveformRendererSimple;
 }
 
-class allshader::WaveformRendererSimple final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererSimple final
+        : public allshader::WaveformRendererSignalBase,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererSimple(WaveformWidgetRenderer* waveformWidget);
 
