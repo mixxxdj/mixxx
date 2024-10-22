@@ -28,6 +28,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
+        qWarning() << "  .";
+        qWarning() << "  KbdEvFilter: keypress";
         QKeyEvent* ke = (QKeyEvent *)e;
 
 #ifdef __APPLE__
@@ -40,6 +42,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #endif
 
         if (shouldSkipHeldKey(keyId)) {
+            qWarning() << "  shouldSkipHeldKey" << keyId << ", return";
+            qWarning() << "  .";
             return true;
         }
 
@@ -58,6 +62,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
+                        qWarning()
+                                << "  found control" << control->getKey().group
+                                << control->getKey().item;
                         //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
@@ -68,14 +75,17 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                         control->setValueFromMidi(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
+                        qWarning() << "  Warning: Keyboard key is configured "
+                                      "for nonexistent control:"
+                                   << configKey.group << configKey.item;
                     }
                 }
             }
             return result;
 #ifndef __APPLE__
         } else {
+            qWarning() << "  .";
+            qWarning() << "  keySeq empty, check Alt";
             // getKeySeq() returns empty string if the press was a modifier only
             if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
                 // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
@@ -83,7 +93,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 // Activate this in case there are issues on Windows
                 // || ke->key() == Qt::Key_Alt) {
                 m_altPressedWithoutKey = true;
+                qWarning() << "  -->";
             }
+            qWarning() << "  .";
 #endif
         }
     } else if (e->type() == QEvent::KeyRelease) {
@@ -153,6 +165,9 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
             e->key() == Qt::Key_AltGr) {
         // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
         // avoid returning "khmer vowel sign ie (U+17C0)"
+        qWarning() << "     .";
+        qWarning() << "     kbd getKeySeq: mod only, return";
+        qWarning() << "     .";
         return {};
     }
 
@@ -178,13 +193,13 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     const QString keyseq = QKeySequence(e->key()).toString();
     const QKeySequence k = QKeySequence(modseq + keyseq);
 
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        if (e->type() == QEvent::KeyPress) {
-            qDebug() << "keyboard press: " << k.toString();
-        } else if (e->type() == QEvent::KeyRelease) {
-            qDebug() << "keyboard release: " << k.toString();
-        }
+    // if (CmdlineArgs::Instance().getDeveloper()) {
+    if (e->type() == QEvent::KeyPress) {
+        qWarning() << "kbd filter press: " << k.toString();
+    } else if (e->type() == QEvent::KeyRelease) {
+        qWarning() << "kbd filter release" << k.toString();
     }
+    // }
 
     return k;
 }
