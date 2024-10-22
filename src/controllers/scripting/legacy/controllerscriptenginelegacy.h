@@ -6,10 +6,13 @@
 #include <QMessageBox>
 #ifdef MIXXX_USE_QML
 #include <QMetaMethod>
+
+#include "qml/mixxxscreen.h"
 #endif
 
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/scripting/controllerscriptenginebase.h"
+#include "qml/mixxxcontroller.h"
 
 #ifdef MIXXX_USE_QML
 class QQuickItem;
@@ -79,14 +82,15 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     bool evaluateScriptFile(const QFileInfo& scriptFile);
 #ifdef MIXXX_USE_QML
     bool bindSceneToScreen(
-            const LegacyControllerMapping::ScriptFileInfo& qmlFile,
+            const std::shared_ptr<QQuickItem> pScene,
             const QString& screenIdentifier,
             std::shared_ptr<ControllerRenderingEngine> pScreen);
     void extractTransformFunction(const QMetaObject* metaObject, const QString& screenIdentifier);
 
-    std::shared_ptr<QQuickItem> loadQMLFile(
+    bool instanciateQMLComponent(
             const LegacyControllerMapping::ScriptFileInfo& qmlScript,
-            std::shared_ptr<ControllerRenderingEngine> pScreen);
+            QMap<QString, std::shared_ptr<ControllerRenderingEngine>>
+                    availableScreens);
 
     struct TransformScreenFrameFunction {
         QMetaMethod method;
@@ -111,6 +115,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QJSValue m_makeArrayBufferWrapperFunction;
     QList<QString> m_scriptFunctionPrefixes;
 #ifdef MIXXX_USE_QML
+    QList<std::shared_ptr<mixxx::qml::MixxxController>> m_mixxxController;
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
     // Contains all the scenes loaded for this mapping. Key is the scene
     // identifier (LegacyControllerMapping::ScreenInfo::identifier), value in
