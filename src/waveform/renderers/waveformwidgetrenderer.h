@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMatrix4x4>
+
 #include "track/track_decl.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformmark.h"
@@ -11,7 +13,7 @@
 
 class ControlProxy;
 class VisualPlayPosition;
-class VSyncThread;
+class ISyncTimeProvider;
 class QPainter;
 class WaveformRendererAbstract;
 
@@ -32,18 +34,23 @@ class WaveformWidgetRenderer {
     };
 
   public:
-    explicit WaveformWidgetRenderer(const QString& group);
+    explicit WaveformWidgetRenderer(const QString& group = {});
     virtual ~WaveformWidgetRenderer();
 
     bool init();
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void onPreRender(VSyncThread* vsyncThread);
+    void onPreRender(ISyncTimeProvider* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
     const QString& getGroup() const {
         return m_group;
+    }
+
+    virtual void setGroup(const QString& group) {
+        m_group = group;
+        init();
     }
 
     const TrackPointer& getTrackInfo() const {
@@ -119,7 +126,7 @@ class WaveformWidgetRenderer {
     int getTotalVSample() const {
         return m_totalVSamples;
     }
-    double getZoomFactor() const {
+    double getZoom() const {
         return m_zoomFactor;
     }
     double getGain(bool applyCompensation) const {
@@ -183,6 +190,11 @@ class WaveformWidgetRenderer {
 #ifdef __STEM__
     void selectStem(mixxx::StemChannelSelection stemMask);
 #endif
+
+    void addRenderer(WaveformRendererAbstract* renderer) {
+        m_rendererStack.push_back(renderer);
+    }
+
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
@@ -214,7 +226,7 @@ class WaveformWidgetRenderer {
     }
 
   protected:
-    const QString m_group;
+    QString m_group;
     TrackPointer m_pTrack;
 #ifdef __STEM__
     uint m_selectedStems;

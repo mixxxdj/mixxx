@@ -12,8 +12,10 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
-        WaveformWidgetRenderer* waveformWidget, bool bRgbStacked)
-        : WaveformRendererSignalBase(waveformWidget),
+        WaveformWidgetRenderer* waveformWidget,
+        bool bRgbStacked,
+        const IVisualGainProvider* visualGainProvider)
+        : WaveformRendererSignalBase(waveformWidget, visualGainProvider),
           m_bRgbStacked(bRgbStacked) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);

@@ -3,6 +3,7 @@
 #include "rendergraph/material/rgbmaterial.h"
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -19,12 +20,24 @@ inline float math_pow2(float x) {
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget),
+        WaveformRendererSignalBase::Options options,
+        const IVisualGainProvider* visualGainProvider)
+        : WaveformRendererSignalBase(waveformWidget, visualGainProvider),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
+}
+
+void WaveformRendererRGB::setup(const QColor& axesColor,
+        const QColor& lowColor,
+        const QColor& midColor,
+        const QColor& highColor) {
+    getRgbF(axesColor, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
+
+    getRgbF(lowColor, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+    getRgbF(midColor, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+    getRgbF(highColor, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode&) {
