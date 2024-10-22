@@ -1,7 +1,4 @@
 #include "rendergraph/texture.h"
-#include <qnamespace.h>
-#include <qrgb.h>
-#include "rendergraph/assert.h"
 
 #include <qnamespace.h>
 #include <qrgb.h>

@@ -9,6 +9,7 @@
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
+#include "waveform/ivisualgainprovider.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
@@ -104,12 +105,11 @@ class WaveformWidgetHolder {
 
 //########################################
 
-class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
+class WaveformWidgetFactory : public QObject,
+                              public IVisualGainProvider,
+                              public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
-    //TODO merge this enum with the waveform analyzer one
-    enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
-
     bool setConfig(UserSettingsPointer config);
 
     /// Creates the waveform widget using the type set with setWidgetType
@@ -211,7 +211,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void addVuMeter(WVuMeterLegacy* pWidget);
     void addVuMeter(WVuMeterBase* pWidget);
 
-    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML);
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }

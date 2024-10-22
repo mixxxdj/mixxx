@@ -6,7 +6,7 @@
 
 namespace allshader {
 class WaveformRendererRGB;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererRGB final
         : public allshader::WaveformRendererSignalBase,
@@ -15,10 +15,16 @@ class allshader::WaveformRendererRGB final
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
-            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None);
+            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None,
+            const IVisualGainProvider* visualGainProvider = nullptr);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
+
+    void setup(const QColor& axesColor,
+            const QColor& lowColor,
+            const QColor& midColor,
+            const QColor& highColor);
 
     bool supportsSlip() const override {
         return true;

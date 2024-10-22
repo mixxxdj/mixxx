@@ -79,10 +79,8 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
             kBlinkingPeriodMillis;
 
     const double remainingTime = m_pTimeRemainingControl->get();
-    const double remainingTimeTriggerSeconds =
-            WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
-    const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
-            remainingTimeTriggerSeconds;
+    const double criticalIntensity = (m_remainingTimeTriggerSeconds - remainingTime) /
+            m_remainingTimeTriggerSeconds;
 
     const double alpha = std::clamp(criticalIntensity * blinkIntensity, 0.0, 1.0);
 

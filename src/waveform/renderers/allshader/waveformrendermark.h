@@ -28,6 +28,16 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+    void setup(const QColor& fgPlayColor,
+            const QColor& bgPlayColor,
+            bool untilMarkShowBeats,
+            bool untilMarkShowTime,
+            Qt::Alignment untilMarkAlign,
+            int untilMarkTextSize,
+            float untilMarkTextHeightLimit);
+#endif
+
     bool init() override;
 
     void update();
@@ -68,6 +78,17 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     float m_playPosDevicePixelRatio;
 
     DigitsRenderNode* m_pDigitsRenderNode{};
+
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+    QColor m_fgPlayColor;
+    QColor m_bgPlayColor;
+
+    bool m_untilMarkShowBeats;
+    bool m_untilMarkShowTime;
+    Qt::Alignment m_untilMarkAlign;
+    int m_untilMarkTextSize;
+    float m_untilMarkTextHeightLimit;
+#endif
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
