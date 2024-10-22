@@ -75,7 +75,7 @@ class ColumnCache : public QObject {
     void setColumns(QStringList columns);
 
     inline int fieldIndex(Column column) const {
-        if (column < 0 || column >= NUM_COLUMNS) {
+        if (static_cast<size_t>(column) >= std::size(m_columnIndexByEnum)) {
             return -1;
         }
         return m_columnIndexByEnum[column];
