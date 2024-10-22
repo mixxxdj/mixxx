@@ -57,10 +57,10 @@ void VisualPlayPosition::set(
 }
 
 double VisualPlayPosition::calcOffsetAtNextVSync(
-        ISyncTimeProvider* pSyncTimeProvider, const VisualPlayPositionData& data) {
+        VSyncTimeProvider* pSyncTimeProvider, const VisualPlayPositionData& data) {
     if (data.m_audioBufferMicroS != 0.0) {
-        int refToVSync = pSyncTimeProvider->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int syncIntervalTimeMicros = pSyncTimeProvider->getSyncIntervalTimeMicros();
+        int refToVSync = pSyncTimeProvider->fromTimerToNextSync(data.m_referenceTime).count();
+        int syncIntervalTimeMicros = pSyncTimeProvider->getSyncInterval().count();
         // The positive offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
@@ -151,7 +151,7 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
     return interpolatedPlayPos;
 }
 
-double VisualPlayPosition::getAtNextVSync(ISyncTimeProvider* pSyncTimeProvider) {
+double VisualPlayPosition::getAtNextVSync(VSyncTimeProvider* pSyncTimeProvider) {
     if (m_valid.load()) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pSyncTimeProvider, data);
@@ -162,7 +162,7 @@ double VisualPlayPosition::getAtNextVSync(ISyncTimeProvider* pSyncTimeProvider) 
 }
 
 void VisualPlayPosition::getPlaySlipAtNextVSync(
-        ISyncTimeProvider* pSyncTimeProvider,
+        VSyncTimeProvider* pSyncTimeProvider,
         double* pPlayPosition,
         double* pSlipPosition) {
     if (m_valid.load()) {

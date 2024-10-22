@@ -1,5 +1,7 @@
 #include "backend/baseattributeset.h"
 
+#include <stdexcept>
+
 using namespace rendergraph;
 
 namespace {
@@ -9,6 +11,8 @@ int toQSGGeometryType(const PrimitiveType& t) {
         return QSGGeometry::FloatType;
     case PrimitiveType::UInt:
         return QSGGeometry::UnsignedIntType;
+    default:
+        throw std::runtime_error("not implemented");
     }
 }
 } // namespace

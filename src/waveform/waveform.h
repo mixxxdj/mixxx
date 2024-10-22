@@ -12,7 +12,11 @@
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
 
-enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
+enum BandIndex { AllBand = 0,
+    Low = 1,
+    Mid = 2,
+    High = 3,
+    BandCount = 4 };
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
 struct WaveformFilteredData {

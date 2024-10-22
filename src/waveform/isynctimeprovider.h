@@ -2,8 +2,8 @@
 
 #include "util/performancetimer.h"
 
-class ISyncTimeProvider {
+class VSyncTimeProvider {
   public:
-    virtual int fromTimerToNextSyncMicros(const PerformanceTimer& timer) = 0;
-    virtual int getSyncIntervalTimeMicros() const = 0;
+    virtual std::chrono::microseconds fromTimerToNextSync(const PerformanceTimer& timer) = 0;
+    virtual std::chrono::microseconds getSyncInterval() const = 0;
 };

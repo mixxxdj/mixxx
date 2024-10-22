@@ -33,7 +33,7 @@ class allshader::WaveformRenderMarkRange final : public ::WaveformRendererAbstra
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
-    void update();
+    void update() override;
 
   private:
     void updateNode(rendergraph::GeometryNode* pChild,

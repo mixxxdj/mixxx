@@ -10,7 +10,7 @@
 #include "util/performancetimer.h"
 
 class ControlProxy;
-class ISyncTimeProvider;
+class VSyncTimeProvider;
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time
@@ -68,8 +68,8 @@ class VisualPlayPosition : public QObject {
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
-    double getAtNextVSync(ISyncTimeProvider* pSyncTimeProvider);
-    void getPlaySlipAtNextVSync(ISyncTimeProvider* pSyncTimeProvider,
+    double getAtNextVSync(VSyncTimeProvider* pSyncTimeProvider);
+    void getPlaySlipAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             double* playPosition,
             double* slipPosition);
     double determinePlayPosInLoopBoundries(
@@ -92,7 +92,7 @@ class VisualPlayPosition : public QObject {
     }
 
   private:
-    double calcOffsetAtNextVSync(ISyncTimeProvider* pSyncTimeProvider,
+    double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
     std::atomic<bool> m_valid;

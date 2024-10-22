@@ -10,7 +10,7 @@
 
 class WGLWidget;
 
-class VSyncThread : public QThread, public ISyncTimeProvider {
+class VSyncThread : public QThread, public VSyncTimeProvider {
     Q_OBJECT
   public:
     enum VSyncMode {
@@ -34,16 +34,16 @@ class VSyncThread : public QThread, public ISyncTimeProvider {
     void setSyncIntervalTimeMicros(int usSyncTimer);
     int droppedFrames();
     void setSwapWait(int sw);
-    // ISyncTimerProvider
-    int fromTimerToNextSyncMicros(const PerformanceTimer& timer) override;
+    // VSyncTimerProvider
+    std::chrono::microseconds fromTimerToNextSync(const PerformanceTimer& timer) override;
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void setupSync(WGLWidget* glw, int index);
     void waitUntilSwap(WGLWidget* glw);
     mixxx::Duration sinceLastSwap() const;
-    // ISyncTimerProvider
-    int getSyncIntervalTimeMicros() const override {
-        return m_syncIntervalTimeMicros;
+    // VSyncTimerProvider
+    std::chrono::microseconds getSyncInterval() const override {
+        return std::chrono::microseconds(m_syncIntervalTimeMicros);
     }
     void updatePLL();
     bool pllInitializing() const;

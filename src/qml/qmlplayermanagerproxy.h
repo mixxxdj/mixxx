@@ -18,7 +18,7 @@ class QmlPlayerManagerProxy : public QObject {
             std::shared_ptr<PlayerManager> pPlayerManager,
             QObject* parent = nullptr);
 
-    Q_INVOKABLE QmlPlayerProxy* getPlayer(const QString& deck);
+    Q_INVOKABLE mixxx::qml::QmlPlayerProxy* getPlayer(const QString& deck);
     Q_INVOKABLE void loadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
     Q_INVOKABLE void loadLocationUrlIntoNextAvailableDeck(
             const QUrl& locationUrl, bool play = false);

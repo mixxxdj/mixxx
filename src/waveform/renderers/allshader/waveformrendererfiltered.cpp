@@ -12,7 +12,8 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
-        WaveformWidgetRenderer* waveformWidget, bool bRgbStacked)
+        WaveformWidgetRenderer* waveformWidget,
+        bool bRgbStacked)
         : WaveformRendererSignalBase(waveformWidget),
           m_bRgbStacked(bRgbStacked) {
     initForRectangles<RGBMaterial>(0);

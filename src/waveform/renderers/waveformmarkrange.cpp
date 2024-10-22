@@ -75,6 +75,69 @@ WaveformMarkRange::WaveformMarkRange(
     }
 }
 
+WaveformMarkRange::WaveformMarkRange(
+        const QString& group,
+        const QColor& activeColor,
+        const QColor& disabledColor,
+        double enabledOpacity,
+        double disabledOpacity,
+        const QColor& durationTextColor,
+        const QString& startControl,
+        const QString& endControl,
+        const QString& enabledControl,
+        const QString& visibilityControl,
+        const QString& durationTextLocation)
+        : m_activeColor(activeColor),
+          m_disabledColor(disabledColor),
+          m_enabledOpacity(enabledOpacity),
+          m_disabledOpacity(disabledOpacity),
+          m_durationTextColor(durationTextColor) {
+    if (!startControl.isEmpty()) {
+        DEBUG_ASSERT(!m_markStartPointControl); // has not been created yet
+        m_markStartPointControl = std::make_unique<ControlProxy>(group, startControl);
+    }
+    if (!endControl.isEmpty()) {
+        DEBUG_ASSERT(!m_markEndPointControl); // has not been created yet
+        m_markEndPointControl = std::make_unique<ControlProxy>(group, endControl);
+    }
+
+    if (!enabledControl.isEmpty()) {
+        DEBUG_ASSERT(!m_markEnabledControl); // has not been created yet
+        m_markEnabledControl = std::make_unique<ControlProxy>(group, enabledControl);
+    }
+    if (!visibilityControl.isEmpty()) {
+        DEBUG_ASSERT(!m_markVisibleControl); // has not been created yet
+        ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
+        m_markVisibleControl = std::make_unique<ControlProxy>(key);
+    }
+
+    if (durationTextLocation == "before") {
+        m_durationTextLocation = DurationTextLocation::Before;
+    } else {
+        m_durationTextLocation = DurationTextLocation::After;
+    }
+
+    m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
+
+    if (!m_disabledColor.isValid()) {
+        if (enabledControl.isEmpty()) {
+            m_disabledColor = QColor(Qt::transparent);
+        } else {
+            // Show warning only when there's no EnabledControl,
+            // like for intro & outro ranges.
+            constexpr static QStringView rangeSuffix = u"_start_position";
+            QStringView rangeName = startControl;
+            if (startControl.endsWith(rangeSuffix)) {
+                rangeName.chop(rangeSuffix.length());
+            }
+            int gray = qGray(m_activeColor.rgb());
+            m_disabledColor = QColor(gray, gray, gray);
+            qDebug() << "Didn't get DisabledColor for mark range" << rangeName
+                     << "- using desaturated Color:" << m_disabledColor;
+        }
+    }
+}
+
 bool WaveformMarkRange::active() const {
     const double startValue = start();
     const double endValue = end();
