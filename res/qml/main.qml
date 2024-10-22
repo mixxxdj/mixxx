@@ -98,7 +98,7 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck3waveform
 
             group: "[Channel3]"
@@ -111,7 +111,7 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck1waveform
 
             group: "[Channel1]"
@@ -124,7 +124,7 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck2waveform
 
             group: "[Channel2]"
@@ -137,7 +137,7 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck4waveform
 
             group: "[Channel4]"

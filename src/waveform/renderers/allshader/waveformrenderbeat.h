@@ -20,7 +20,8 @@ class allshader::WaveformRenderBeat final
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play);
+                    ::WaveformRendererAbstract::Play,
+            QColor color = QColor());
 
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;

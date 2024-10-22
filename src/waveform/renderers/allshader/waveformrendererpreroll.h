@@ -21,7 +21,8 @@ class allshader::WaveformRendererPreroll final
     explicit WaveformRendererPreroll(
             WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play);
+                    ::WaveformRendererAbstract::Play,
+            QColor color = QColor(200, 25, 20));
     ~WaveformRendererPreroll() override;
 
     // Pure virtual from WaveformRendererAbstract, not used

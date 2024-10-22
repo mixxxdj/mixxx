@@ -9,14 +9,21 @@ WaveformRenderMarkBase::WaveformRenderMarkBase(
         bool updateImagesImmediately)
         : WaveformRendererAbstract(pWaveformWidgetRenderer),
           m_updateImagesImmediately(updateImagesImmediately) {
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+    m_marks.connectSamplePositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
+    m_marks.connectSampleEndPositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
+    m_marks.connectVisibleChanged(this, &WaveformRenderMarkBase::onMarkChanged);
+#endif
 }
 
 void WaveformRenderMarkBase::setup(const QDomNode& node, const SkinContext& context) {
     WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
     m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+#ifdef __RENDERGRAPH_IS_OPENGL
     m_marks.connectSamplePositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     m_marks.connectSampleEndPositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WaveformRenderMarkBase::onMarkChanged);
+#endif
 }
 
 void WaveformRenderMarkBase::onSetTrack() {

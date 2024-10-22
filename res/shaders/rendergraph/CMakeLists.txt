@@ -23,6 +23,18 @@ qt6_add_shaders(rendergraph_sg "shaders-qsb"
         ${shaders}
 )
 
+if(TARGET mixxx)
+    qt6_add_shaders(mixxx "shaders-qsb"
+        BATCHABLE
+        PRECOMPILE
+        OPTIMIZED
+        PREFIX
+            /shaders/rendergraph
+        FILES
+            ${shaders}
+    )
+endif()
+
 if(USE_QSHADER_FOR_GL)
     message(STATUS "Adding qsb shaders to rendergraph_gl")
     qt6_add_shaders(rendergraph_gl "shaders-qsb"

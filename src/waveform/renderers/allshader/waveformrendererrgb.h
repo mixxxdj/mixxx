@@ -2,6 +2,7 @@
 
 #include "rendergraph/geometrynode.h"
 #include "util/class.h"
+#include "util/colorcomponents.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 namespace allshader {
@@ -13,6 +14,12 @@ class allshader::WaveformRendererRGB final
           public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
+            QColor axesColor,
+            QColor lowColor,
+            QColor midColor,
+            QColor highColor,
+#endif
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
             WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None);

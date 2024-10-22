@@ -22,7 +22,7 @@ class allshader::WaveformRendererEndOfTrack final
           public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererEndOfTrack(
-            WaveformWidgetRenderer* waveformWidget);
+            WaveformWidgetRenderer* waveformWidget, QColor color = QColor());
 
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
@@ -41,6 +41,7 @@ class allshader::WaveformRendererEndOfTrack final
 
     QColor m_color;
     PerformanceTimer m_timer;
+    bool m_hasRendered{false};
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererEndOfTrack);
 };

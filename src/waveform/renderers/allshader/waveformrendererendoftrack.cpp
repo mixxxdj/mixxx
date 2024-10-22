@@ -24,10 +24,11 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
-        WaveformWidgetRenderer* waveformWidget)
+        WaveformWidgetRenderer* waveformWidget, QColor color)
         : ::WaveformRendererAbstract(waveformWidget),
           m_pEndOfTrackControl(nullptr),
-          m_pTimeRemainingControl(nullptr) {
+          m_pTimeRemainingControl(nullptr),
+          m_color(color) {
     initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
 }
@@ -59,6 +60,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
 }
 
 void WaveformRendererEndOfTrack::preprocess() {
+    m_hasRendered = true;
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
     const double blinkIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
@@ -102,7 +104,10 @@ void WaveformRendererEndOfTrack::preprocess() {
 }
 
 bool WaveformRendererEndOfTrack::isSubtreeBlocked() const {
-    return !m_pEndOfTrackControl->toBool();
+    // It is vital that this function returns `false` the first time it gets
+    // called by the rendergraph for obscure reason, or it will crash whenever
+    // this function start returning false
+    return m_hasRendered && !m_pEndOfTrackControl->toBool();
 }
 
 } // namespace allshader
