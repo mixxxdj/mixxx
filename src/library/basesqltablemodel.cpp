@@ -631,7 +631,7 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
 
 int BaseSqlTableModel::endFieldIndex() const {
     // Subtract one to remove the id column which is in both
-    return m_tableColumns.size() + (m_trackSource ? m_trackSource->maxFieldIndex() : 0) - 1;
+    return m_tableColumns.size() + (m_trackSource ? m_trackSource->endFieldIndex() : 0) - 1;
 }
 
 QString BaseSqlTableModel::modelKey(bool noSearch) const {
