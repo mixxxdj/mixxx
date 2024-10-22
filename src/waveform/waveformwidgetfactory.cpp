@@ -605,7 +605,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
-        double previousZoom = previousWidget->getZoomFactor();
+        double previousZoom = previousWidget->getZoom();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
         int previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
         delete previousWidget;
@@ -652,7 +652,7 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
         return;
     }
 
-    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
+    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoom();
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformViewer->setZoom(refZoom);
     }
@@ -707,7 +707,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     if (pWaveformWidget == nullptr || !isZoomSync()) {
         return;
     }
-    double refZoom = pWaveformWidget->getZoomFactor();
+    double refZoom = pWaveformWidget->getZoom();
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         if (holder.m_waveformViewer != viewer) {
@@ -1181,12 +1181,14 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
 #ifdef MIXXX_USE_QOPENGL
     if (m_vsyncThread->vsyncMode() == VSyncThread::ST_PLL) {
         WGLWidget* widget = SharedGLContext::getWidget();
-        connect(widget->getOpenGLWindow(),
-                &QOpenGLWindow::frameSwapped,
-                this,
-                &WaveformWidgetFactory::slotFrameSwapped,
-                Qt::DirectConnection);
-        widget->show();
+        if (widget) {
+            connect(widget->getOpenGLWindow(),
+                    &QOpenGLWindow::frameSwapped,
+                    this,
+                    &WaveformWidgetFactory::slotFrameSwapped,
+                    Qt::DirectConnection);
+            widget->show();
+        }
     }
 #endif
 

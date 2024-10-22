@@ -5,9 +5,12 @@
 
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/math.h"
+#include "waveform/isynctimeprovider.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveform.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
@@ -37,10 +40,11 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_visualPlayPosition(nullptr),
           m_totalVSamples(0),
           m_pRateRatioCO(nullptr),
+          m_pContext(nullptr),
           m_pGainControlObject(nullptr),
           m_gain(1.0),
           m_pTrackSamplesControlObject(nullptr),
-          m_trackSamples(0),
+          m_trackSamples(0.0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
           m_passthroughEnabled(false) {
@@ -76,25 +80,41 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
         delete m_rendererStack[i];
     }
 
-    delete m_pRateRatioCO;
-    delete m_pGainControlObject;
-    delete m_pTrackSamplesControlObject;
-
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     delete m_timer;
 #endif
 }
 
 bool WaveformWidgetRenderer::init() {
-    //qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
+    m_trackPixelCount = 0.0;
+    m_zoomFactor = 1.0;
+    m_visualSamplePerPixel = 1.0;
+    m_audioSamplePerPixel = 1.0;
+    m_totalVSamples = 0;
+    m_gain = 1.0;
+    m_trackSamples = 0.0;
+
+    for (int type = ::WaveformRendererAbstract::Play;
+            type <= ::WaveformRendererAbstract::Slip;
+            type++) {
+        m_firstDisplayedPosition[type] = 0.0;
+        m_lastDisplayedPosition[type] = 0.0;
+        m_posVSample[type] = 0.0;
+        m_pos[type] = -1.0; // disable renderers
+        m_truePosSample[type] = -1.0;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!m_group.isEmpty()) {
+        return false;
+    }
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateRatioCO = new ControlProxy(
+    m_pRateRatioCO = std::make_unique<ControlProxy>(
             m_group, "rate_ratio");
-    m_pGainControlObject = new ControlProxy(
+    m_pGainControlObject = std::make_unique<ControlProxy>(
             m_group, "total_gain");
-    m_pTrackSamplesControlObject = new ControlProxy(
+    m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
             m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
@@ -105,7 +125,7 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
+void WaveformWidgetRenderer::onPreRender(ISyncTimeProvider* vsyncThread) {
     if (m_passthroughEnabled) {
         // disables renderers in draw()
         for (int type = ::WaveformRendererAbstract::Play;
@@ -419,7 +439,7 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available
-    m_trackSamples = -1;
+    m_trackSamples = -1.0;
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();
