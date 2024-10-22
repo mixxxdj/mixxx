@@ -96,8 +96,8 @@ class ColumnCache : public QObject {
         return m_columnsByIndex.at(index);
     }
 
-    int maxFieldIndex() const {
-        return m_columnsByIndex.size() - 1;
+    int endFieldIndex() const {
+        return m_columnsByIndex.size();
     }
 
     inline QString columnSortForFieldIndex(int index) const {

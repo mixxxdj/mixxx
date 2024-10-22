@@ -44,8 +44,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.fieldIndex(column);
     }
 
-    virtual int maxFieldIndex() const {
-        return m_columnCache.maxFieldIndex();
+    virtual int endFieldIndex() const {
+        return m_columnCache.endFieldIndex();
     }
 
     ///////////////////////////////////////////////////////
