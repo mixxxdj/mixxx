@@ -2,6 +2,8 @@
 
 #include "control/controlproxy.h"
 #include "util/colorcomponents.h"
+#include "waveform/ivisualgainprovider.h"
+#include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
 
@@ -10,7 +12,8 @@ const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]")
 } // namespace
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        const IVisualGainProvider* visualGainProvider)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_pEQEnabled(nullptr),
           m_pLowFilterControlObject(nullptr),
@@ -46,7 +49,10 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_rgbMidColor_b(0),
           m_rgbHighColor_r(0),
           m_rgbHighColor_g(0),
-          m_rgbHighColor_b(0) {
+          m_rgbHighColor_b(0),
+          m_visualGainProvider(visualGainProvider != nullptr
+                          ? visualGainProvider
+                          : WaveformWidgetFactory::instance()) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
@@ -174,10 +180,11 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         float* pLowGain,
         float* pMidGain,
         float* pHighGain) {
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     if (pAllGain) {
-        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain(applyCompensation)) *
-                static_cast<CSAMPLE_GAIN>(factory->getVisualGain(WaveformWidgetFactory::All));
+        *pAllGain = static_cast<CSAMPLE_GAIN>(
+                            m_waveformRenderer->getGain(applyCompensation)) *
+                static_cast<CSAMPLE_GAIN>(m_visualGainProvider->getVisualGain(
+                        FilterIndex::AllChannel));
         ;
     }
 
@@ -196,11 +203,11 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
             }
 
             lowGain *= static_cast<CSAMPLE_GAIN>(
-                    factory->getVisualGain(WaveformWidgetFactory::Low));
+                    m_visualGainProvider->getVisualGain(FilterIndex::Low));
             midGain *= static_cast<CSAMPLE_GAIN>(
-                    factory->getVisualGain(WaveformWidgetFactory::Mid));
+                    m_visualGainProvider->getVisualGain(FilterIndex::Mid));
             highGain *= static_cast<CSAMPLE_GAIN>(
-                    factory->getVisualGain(WaveformWidgetFactory::High));
+                    m_visualGainProvider->getVisualGain(FilterIndex::High));
 
             if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
                 lowGain = 0;

@@ -1,5 +1,7 @@
 #include "waveform/waveformwidgetfactory.h"
 
+#include "waveform/waveform.h"
+
 #ifdef MIXXX_USE_QOPENGL
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
@@ -113,7 +115,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
-    m_visualGain[All] = 1.0;
+    m_visualGain[AllChannel] = 1.0;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
@@ -609,7 +611,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
-        double previousZoom = previousWidget->getZoomFactor();
+        double previousZoom = previousWidget->getZoom();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
         int previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
         delete previousWidget;
@@ -656,7 +658,7 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
         return;
     }
 
-    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
+    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoom();
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformViewer->setZoom(refZoom);
     }
@@ -678,7 +680,7 @@ void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
     }
-    if (!m_overviewNormalized && index == FilterIndex::All) {
+    if (!m_overviewNormalized && index == FilterIndex::AllChannel) {
         emit overallVisualGainChanged();
     }
 }
@@ -711,7 +713,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     if (pWaveformWidget == nullptr || !isZoomSync()) {
         return;
     }
-    double refZoom = pWaveformWidget->getZoomFactor();
+    double refZoom = pWaveformWidget->getZoom();
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         if (holder.m_waveformViewer != viewer) {
@@ -1172,9 +1174,12 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
-    const auto vSyncMode = static_cast<VSyncThread::VSyncMode>(
-            m_config->getValue(ConfigKey("[Waveform]", "VSync"), 0));
+void WaveformWidgetFactory::startVSync(
+        GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML) {
+    const auto vSyncMode = useQML
+            ? VSyncThread::ST_TIMER
+            : static_cast<VSyncThread::VSyncMode>(
+                      m_config->getValue(ConfigKey("[Waveform]", "VSync"), 0));
 
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
@@ -1185,12 +1190,14 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
 #ifdef MIXXX_USE_QOPENGL
     if (m_vsyncThread->vsyncMode() == VSyncThread::ST_PLL) {
         WGLWidget* widget = SharedGLContext::getWidget();
-        connect(widget->getOpenGLWindow(),
-                &QOpenGLWindow::frameSwapped,
-                this,
-                &WaveformWidgetFactory::slotFrameSwapped,
-                Qt::DirectConnection);
-        widget->show();
+        if (widget) {
+            connect(widget->getOpenGLWindow(),
+                    &QOpenGLWindow::frameSwapped,
+                    this,
+                    &WaveformWidgetFactory::slotFrameSwapped,
+                    Qt::DirectConnection);
+            widget->show();
+        }
     }
 #endif
 

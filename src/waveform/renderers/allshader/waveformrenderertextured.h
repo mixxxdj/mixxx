@@ -30,7 +30,8 @@ class allshader::WaveformRendererTextured final : public QObject,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
             WaveformRendererSignalBase::Options options =
-                    WaveformRendererSignalBase::Option::None);
+                    WaveformRendererSignalBase::Option::None,
+            const IVisualGainProvider* visualGainProvider = nullptr);
     ~WaveformRendererTextured() override;
 
     // override ::WaveformRendererSignalBase
