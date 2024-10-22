@@ -75,7 +75,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     ///////////////////////////////////////////////////////////////////////////
     int fieldIndex(
             ColumnCache::Column column) const final;
-    int maxFieldIndex() const final;
+    int endFieldIndex() const final;
 
     QString modelKey(bool noSearch) const override;
 

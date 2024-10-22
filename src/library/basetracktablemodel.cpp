@@ -129,7 +129,7 @@ void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         return;
     }
 
-    m_columnHeaders.resize(maxFieldIndex() + 1);
+    m_columnHeaders.resize(endFieldIndex());
 
     // Init the mapping of all columns, even for internal columns that are
     // hidden/invisible. Otherwise mapColumn() would not return a valid result
