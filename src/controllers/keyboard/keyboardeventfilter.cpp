@@ -40,6 +40,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #endif
 
         if (shouldSkipHeldKey(keyId)) {
+            getKeySeq(ke);
+            qWarning() << "  ---skip, already pressed";
             return true;
         }
 
@@ -52,12 +54,19 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             // Check if a shortcut is defined
             bool result = false;
             // using const_iterator here is faster than QMultiHash::values()
+            if (m_keySequenceToControlHash.constFind(ksv) ==
+                    m_keySequenceToControlHash.constEnd()) {
+                qWarning() << "  -> NO control found for" << ksv.value << ks.toString();
+            }
             for (auto it = m_keySequenceToControlHash.constFind(ksv);
                  it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
+                        qWarning()
+                                << "  -> found control" << control->getKey().group
+                                << control->getKey().item;
                         //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
@@ -68,8 +77,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                         control->setValueFromMidi(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
+                        qWarning() << "  Warning: Keyboard key is configured "
+                                      "for nonexistent control:"
+                                   << configKey.group << configKey.item;
                     }
                 }
             }
@@ -78,6 +88,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         } else {
             // getKeySeq() returns empty string if the press was a modifier only
             if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
+                qWarning() << "  Alt only press";
                 // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
                 // Alt modifier is sufficient.
                 // Activate this in case there are issues on Windows
@@ -153,6 +164,7 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
             e->key() == Qt::Key_AltGr) {
         // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
         // avoid returning "khmer vowel sign ie (U+17C0)"
+        qWarning() << "  ( keySeq: mod only )";
         return {};
     }
 
@@ -178,13 +190,13 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     const QString keyseq = QKeySequence(e->key()).toString();
     const QKeySequence k = QKeySequence(modseq + keyseq);
 
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        if (e->type() == QEvent::KeyPress) {
-            qDebug() << "keyboard press: " << k.toString();
-        } else if (e->type() == QEvent::KeyRelease) {
-            qDebug() << "keyboard release: " << k.toString();
-        }
+    // if (CmdlineArgs::Instance().getDeveloper()) {
+    if (e->type() == QEvent::KeyPress) {
+        qWarning() << "  keypress: " << k.toString();
+    } else if (e->type() == QEvent::KeyRelease) {
+        qWarning() << "  keyrelease" << k.toString();
     }
+    // }
 
     return k;
 }
@@ -196,6 +208,19 @@ void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdCo
     // Mixxx.
     m_keySequenceToControlHash = pKbdConfigObject->transpose();
     m_pKbdConfigObject = pKbdConfigObject;
+
+    //    for (auto it = m_pKbdConfigObject->.constBegin();
+    //            it != m_pKbdConfigObject.constEnd(); ++it) {
+    //        transposedHash.insert(it.value(), it.key());
+    //    }
+    //    QMultiHashIterator<ConfigValueKbd, ConfigKey> it(m_keySequenceToControlHash);
+    //    while (it.hasNext()) {
+    //        // This has the same effect as a .values(), just isn't as elegant
+    //        QList<ConfigValueKbd> list = m_keySequenceToControlHash.values(it.next().key());
+    //        for (auto val: list) {
+    //            // call iter.remove() if one of the values meets the criteria
+    //        }
+    //    }
 }
 
 ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {

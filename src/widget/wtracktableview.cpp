@@ -1117,6 +1117,7 @@ void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
+    qWarning() << "     WTrackTableView keypress:" << QKeySequence(event->key()).toString();
     switch (event->key()) {
     case kPropertiesShortcutKey: {
         // Return invokes the double-click action.
@@ -1207,7 +1208,13 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             return;
         }
     }
+    qWarning() << "     --> passed to QTableView";
     QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::keyboardSearch(const QString& search) {
+    qWarning() << "     --> kbd search" << search;
+    QTableView::keyboardSearch(search);
 }
 
 void WTrackTableView::resizeEvent(QResizeEvent* event) {

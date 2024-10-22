@@ -39,6 +39,7 @@ class WTrackTableView : public WLibraryTableView {
     void setFocus() override;
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
+    void keyboardSearch(const QString& search) override;
     void resizeEvent(QResizeEvent* event) override;
     void editSelectedItem();
     void activateSelectedTrack();
