@@ -2474,60 +2474,48 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                                 static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
                 // Add keyboard shortcut info to tooltip string
-                QString key = m_pContext->selectString(con, "ConfigKey");
-                const ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
-                shortcutKeys.append(std::make_pair(configKey, QString()));
-
                 const WSliderComposed* pSlider;
 
                 if (qobject_cast<const  WPushButton*>(pWidget->toQWidget())) {
-                    // check for "_activate", "_toggle"
-                    ConfigKey subkey;
-
-                    subkey = configKey;
-                    subkey.item += "_activate";
-                    shortcutKeys.append(std::make_pair(subkey, tr("activate")));
-
-                    subkey = configKey;
-                    subkey.item += "_toggle";
-                    shortcutKeys.append(std::make_pair(subkey, tr("toggle")));
+                    shortcutKeys.append(std::make_pair(control->getKey(), QString()));
                 } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget())) ||
                         qobject_cast<const WKnobComposed*>(pWidget->toQWidget())) {
+                    const ConfigKey configKey = control->getKey();
                     // check for "_up", "_down", "_up_small", "_down_small"
                     ConfigKey subkey;
 
                     if (pSlider && pSlider->tryParseHorizontal(node)) {
                         subkey = configKey;
-                        subkey.item += "_up";
-                        shortcutKeys.append(std::make_pair(subkey, tr("right")));
-
-                        subkey = configKey;
                         subkey.item += "_down";
                         shortcutKeys.append(std::make_pair(subkey, tr("left")));
 
                         subkey = configKey;
-                        subkey.item += "_up_small";
-                        shortcutKeys.append(std::make_pair(subkey, tr("right small")));
-
-                        subkey = configKey;
                         subkey.item += "_down_small";
                         shortcutKeys.append(std::make_pair(subkey, tr("left small")));
-                    } else { // vertical slider of knob
+
                         subkey = configKey;
                         subkey.item += "_up";
-                        shortcutKeys.append(std::make_pair(subkey, tr("up")));
+                        shortcutKeys.append(std::make_pair(subkey, tr("right")));
 
+                        subkey = configKey;
+                        subkey.item += "_up_small";
+                        shortcutKeys.append(std::make_pair(subkey, tr("right small")));
+                    } else { // vertical slider or knob
                         subkey = configKey;
                         subkey.item += "_down";
                         shortcutKeys.append(std::make_pair(subkey, tr("down")));
 
                         subkey = configKey;
-                        subkey.item += "_up_small";
-                        shortcutKeys.append(std::make_pair(subkey, tr("up small")));
-
-                        subkey = configKey;
                         subkey.item += "_down_small";
                         shortcutKeys.append(std::make_pair(subkey, tr("down small")));
+
+                        subkey = configKey;
+                        subkey.item += "_up";
+                        shortcutKeys.append(std::make_pair(subkey, tr("up")));
+
+                        subkey = configKey;
+                        subkey.item += "_up_small";
+                        shortcutKeys.append(std::make_pair(subkey, tr("up small")));
                     }
                 }
             }
@@ -2535,7 +2523,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
     }
 
     if (!shortcutKeys.isEmpty()) {
-        pWidget->setShortcutKeys(shortcutKeys);
+        pWidget->setShortcutControlsAndCommands(shortcutKeys);
         // KeyboardEventFilter will take care of creating the tooltips,
         // as well as updating them when the mapping file has changed.
         m_pKeyboard->registerShortcutWidget(pWidget);

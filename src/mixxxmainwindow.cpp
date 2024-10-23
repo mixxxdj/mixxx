@@ -463,6 +463,9 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    // Clear widget pointer list before we delete the main widget
+    // to prevent KeyboardEventFilter accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
     m_pCentralWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);

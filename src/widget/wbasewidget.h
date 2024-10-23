@@ -35,10 +35,12 @@ class WBaseWidget {
         updateBaseTooltipOptShortcuts();
     }
 
-    void setShortcutTooltip(const QString& tooltip, bool enabled) {
+    void setShortcutTooltip(const QString& tooltip) {
+        // This may be called even though this widget's shortcuts are unchanged
+        // or while we currently don't show shortcuts, so just set the new string
+        // and don't call updateBaseTooltipOptShortcuts() right away to prevent
+        // thousands of no-ops.
         m_shortcutTooltip = tooltip;
-        m_showKeyboardShortcuts = enabled;
-        updateBaseTooltipOptShortcuts();
     }
 
     QString baseTooltip() const {
@@ -53,16 +55,20 @@ class WBaseWidget {
         return m_baseTooltipOptShortcuts;
     }
 
-    void setShortcutKeys(const QList<std::pair<ConfigKey, QString>>& cfgKeys) {
-        m_shortcutKeys = cfgKeys;
+    void setShortcutControlsAndCommands(
+            const QList<std::pair<ConfigKey, QString>>& controlsCommands) {
+        m_shortcutControlsAndCommands = controlsCommands;
     }
 
-    const QList<std::pair<ConfigKey, QString>> getShortcutKeys() {
-        return m_shortcutKeys;
+    const QList<std::pair<ConfigKey, QString>>& getShortcutControlsAndCommands() const {
+        return m_shortcutControlsAndCommands;
     }
 
     /// Append/remove shortcuts hint when shortcuts are toggled
     void toggleKeyboardShortcutHints(bool enabled) {
+        if (m_showKeyboardShortcuts == enabled) {
+            return;
+        }
         m_showKeyboardShortcuts = enabled;
         updateBaseTooltipOptShortcuts();
     }
@@ -130,7 +136,8 @@ class WBaseWidget {
     QString m_baseTooltip;
     QString m_shortcutTooltip;
     QString m_baseTooltipOptShortcuts;
-    QList<std::pair<ConfigKey, QString>> m_shortcutKeys;
+    // Map of [ConfigKey, tr string] of control or all sub-controls.
+    QList<std::pair<ConfigKey, QString>> m_shortcutControlsAndCommands;
 
     bool m_showKeyboardShortcuts;
 

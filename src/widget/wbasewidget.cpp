@@ -163,7 +163,7 @@ void WBaseWidget::updateTooltip() {
         QStringList debug;
         fillDebugTooltip(&debug);
 
-        QString base = baseTooltipOptShortcuts();
+        const QString base = baseTooltipOptShortcuts();
         if (!base.isEmpty()) {
             debug.append(QString("Tooltip: \"%1\"").arg(base));
         }

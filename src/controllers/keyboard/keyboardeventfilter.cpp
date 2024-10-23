@@ -254,18 +254,21 @@ void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
 
 void KeyboardEventFilter::updateWidgetShortcuts() {
     for (auto* pWidget : m_widgets) {
-        QString shortcutHints;
-        const QList<std::pair<ConfigKey, QString>> keys = pWidget->getShortcutKeys();
+        QStringList shortcutHints;
         QString keyString;
-        for (const auto& key : keys) {
-            keyString = m_pKbdConfig->getValueString(key.first);
+        const QList<std::pair<ConfigKey, QString>> controlsCommands =
+                pWidget->getShortcutControlsAndCommands();
+        for (const auto& [control, command] : controlsCommands) {
+            keyString = m_pKbdConfig->getValueString(control);
             if (!keyString.isEmpty()) {
-                shortcutHints.append(buildShortcutString(keyString, key.second));
+                shortcutHints.append(buildShortcutString(keyString, command));
             }
         }
-        // might be empty
-        pWidget->setShortcutTooltip(shortcutHints, m_enabled);
+        // might be empty to clear the previous tooltip
+        pWidget->setShortcutTooltip(shortcutHints.join("\n"));
     }
+    // Update widget tooltips (WBaseWidget handles no-ops).
+    emit shortcutsEnabled(m_enabled);
 }
 
 void KeyboardEventFilter::clearWidgets() {
