@@ -29,6 +29,12 @@ QDebug operator<<(QDebug dbg, Bitrate arg) {
             << Bitrate::unit();
 }
 
+QDebug operator<<(QDebug dbg, BeatsPerBar arg) {
+    return dbg
+            << static_cast<BeatsPerBar::value_t>(arg)
+            << BeatsPerBar::unit();
+}
+
 } // namespace audio
 
 } // namespace mixxx
