@@ -8,11 +8,12 @@
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 #include "util/logger.h"
+#include "util/timer.h"
 #include "widget/wbasewidget.h"
 
 namespace {
-mixxx::Logger kLogger("AnalyzerThread");
 const ConfigKey kKbdEnabledCfgKey = ConfigKey("[Keyboard]", "Enabled");
+mixxx::Logger kLogger("KeyboardEventFilter");
 } // anonymous namespace
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
@@ -253,6 +254,8 @@ void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
 }
 
 void KeyboardEventFilter::updateWidgetShortcuts() {
+    // kLogger.debug() << "updateWidgetShortcuts";
+    ScopedTimer timer(QStringLiteral("KeyboardEventFilter::updateWidgetShortcuts"));
     for (auto* pWidget : m_widgets) {
         QStringList shortcutHints;
         QString keyString;
@@ -311,6 +314,7 @@ void KeyboardEventFilter::clearMenuBarActions() {
 }
 
 void KeyboardEventFilter::updateMenuBarActionShortcuts() {
+    // kLogger.debug() << "updateMenuBarActionShortcuts";
     QHashIterator<QAction*, std::pair<ConfigKey, QString>> it(m_menuBarActions);
     while (it.hasNext()) {
         it.next();
@@ -322,6 +326,8 @@ void KeyboardEventFilter::updateMenuBarActionShortcuts() {
 }
 
 void KeyboardEventFilter::reloadKeyboardConfig() {
+    kLogger.debug() << "reloadKeyboardConfig, enabled:" << m_enabled;
+    ScopedTimer timer(QStringLiteral("KeyboardEventFilter::reload"));
     createKeyboardConfig();
     updateWidgetShortcuts();
     updateMenuBarActionShortcuts();
