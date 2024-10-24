@@ -1914,6 +1914,12 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
             controlFromConfigKey(pWidget->getClearConfigKey(), false),
             ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
 
+    // The list of ConfigKeys and translatable command strings for the tooltip
+    // is created in WHotcueButton::setup().
+    // KeyboardEventFilter will take care of creating the tooltips,
+    // as well as updating them when the mapping file has changed.
+    m_pKeyboard->registerShortcutWidget(pWidget);
+
     pWidget->Init();
     return pWidget;
 }
@@ -2508,6 +2514,25 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                                 subKey(cfgKey, QStringLiteral("_up_small")),
                                 tr("up small"));
                     }
+                    // Add common PotmeterControls
+                    shortcutKeys.emplace_back(
+                            subKey(cfgKey, QStringLiteral("_set_default")),
+                            tr("set default"));
+                    shortcutKeys.emplace_back(
+                            subKey(cfgKey, QStringLiteral("_set_minus_one")),
+                            tr("set -1"));
+                    shortcutKeys.emplace_back(
+                            subKey(cfgKey, QStringLiteral("_set_zero")),
+                            tr("set 0"));
+                    shortcutKeys.emplace_back(
+                            subKey(cfgKey, QStringLiteral("_set_one")),
+                            tr("set 1"));
+                    shortcutKeys.emplace_back(
+                            subKey(cfgKey, QStringLiteral("_toggle")),
+                            tr("toggle"));
+                    shortcutKeys.emplace_back(
+                            subKey(cfgKey, QStringLiteral("_minus_toggle")),
+                            tr("minus toggle"));
                 }
             }
         }
