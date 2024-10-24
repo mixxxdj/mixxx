@@ -140,7 +140,11 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupWidget(const QDomNode& node, QWidget* pWidget,
                      bool setupPosition=true);
     void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
-    const QString buildShortcutString(const QString& shortcut, const QString& cmd) const;
+
+    /// Helper to create a ConfigKey from a ControlPotmeter base key
+    inline const ConfigKey subKey(const ConfigKey& cfgKey, const QString& subctrl) {
+        return ConfigKey{cfgKey.group, cfgKey.item + subctrl};
+    }
 
     QString getLibraryStyle(const QDomNode& node);
 

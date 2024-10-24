@@ -2473,49 +2473,40 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                         ->addWidgetClickInfo(pWidget->toQWidget(), state, control,
                                 static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
-                // Add keyboard shortcut info to tooltip string
                 const WSliderComposed* pSlider;
 
                 if (qobject_cast<const  WPushButton*>(pWidget->toQWidget())) {
                     shortcutKeys.append(std::make_pair(control->getKey(), QString()));
                 } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget())) ||
                         qobject_cast<const WKnobComposed*>(pWidget->toQWidget())) {
-                    const ConfigKey configKey = control->getKey();
-                    // check for "_up", "_down", "_up_small", "_down_small"
-                    ConfigKey subkey;
-
+                    const ConfigKey cfgKey = control->getKey();
+                    // Add up/down controls with orientation-dependent tr strings
                     if (pSlider && pSlider->tryParseHorizontal(node)) {
-                        subkey = configKey;
-                        subkey.item += "_down";
-                        shortcutKeys.append(std::make_pair(subkey, tr("left")));
-
-                        subkey = configKey;
-                        subkey.item += "_down_small";
-                        shortcutKeys.append(std::make_pair(subkey, tr("left small")));
-
-                        subkey = configKey;
-                        subkey.item += "_up";
-                        shortcutKeys.append(std::make_pair(subkey, tr("right")));
-
-                        subkey = configKey;
-                        subkey.item += "_up_small";
-                        shortcutKeys.append(std::make_pair(subkey, tr("right small")));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_down")),
+                                tr("left"));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_down_small")),
+                                tr("left small"));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_up")),
+                                tr("right"));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_up_small")),
+                                tr("right small"));
                     } else { // vertical slider or knob
-                        subkey = configKey;
-                        subkey.item += "_down";
-                        shortcutKeys.append(std::make_pair(subkey, tr("down")));
-
-                        subkey = configKey;
-                        subkey.item += "_down_small";
-                        shortcutKeys.append(std::make_pair(subkey, tr("down small")));
-
-                        subkey = configKey;
-                        subkey.item += "_up";
-                        shortcutKeys.append(std::make_pair(subkey, tr("up")));
-
-                        subkey = configKey;
-                        subkey.item += "_up_small";
-                        shortcutKeys.append(std::make_pair(subkey, tr("up small")));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_down")),
+                                tr("down"));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_down_small")),
+                                tr("down small"));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_up")),
+                                tr("up"));
+                        shortcutKeys.emplace_back(
+                                subKey(cfgKey, QStringLiteral("_up_small")),
+                                tr("up small"));
                     }
                 }
             }
