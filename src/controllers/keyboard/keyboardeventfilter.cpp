@@ -1,22 +1,46 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
+#include <QAction>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QtDebug>
 
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
+#include "util/logger.h"
+#include "util/timer.h"
+#include "widget/wbasewidget.h"
 
-KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-        QObject* parent,
-        const char* name)
+namespace {
+const ConfigKey kKbdEnabledCfgKey = ConfigKey("[Keyboard]", "Enabled");
+mixxx::Logger kLogger("KeyboardEventFilter");
+} // anonymous namespace
+
+KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
+        const QLocale& locale,
+        QObject* parent)
         : QObject(parent),
 #ifndef __APPLE__
           m_altPressedWithoutKey(false),
 #endif
-          m_pKbdConfigObject(nullptr) {
-    setObjectName(name);
-    setKeyboardConfig(pKbdConfigObject);
+          m_pConfig(pConfig),
+          m_locale(locale),
+          m_enabled(false),
+          m_autoReloader(RuntimeLoggingCategory(QStringLiteral("kbd_auto_reload"))) {
+    // Get the enabled state.
+    // Set the default if the key/value doesn't exist.
+    if (pConfig->getValueString(kKbdEnabledCfgKey).isEmpty()) {
+        pConfig->setValue(kKbdEnabledCfgKey, true);
+    }
+    m_enabled = pConfig->getValue(kKbdEnabledCfgKey, true);
+
+    createKeyboardConfig();
+
+    // For watching the currently loaded mapping file
+    connect(&m_autoReloader,
+            &AutoFileReloader::fileChanged,
+            this,
+            &KeyboardEventFilter::reloadKeyboardConfig);
 }
 
 KeyboardEventFilter::~KeyboardEventFilter() {
@@ -44,6 +68,12 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 
         QKeySequence ks = getKeySeq(ke);
+
+        // If inactive, return after logging the key event in getKeySeq()
+        if (!isEnabled()) {
+            return true;
+        }
+
         if (!ks.isEmpty()) {
 #ifndef __APPLE__
             m_altPressedWithoutKey = false;
@@ -58,7 +88,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
+                        // kLogger.debug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
@@ -68,8 +98,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                         control->setValueFromMidi(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
+                        kLogger.warning() << "Key" << keyId
+                                          << "is configured for nonexistent control:"
+                                          << configKey.group << configKey.item;
                     }
                 }
             }
@@ -109,7 +140,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #endif
         bool autoRepeat = ke->isAutoRepeat();
 
-        //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
+        // kLogger.debug() << "KeyRelease event =" << ke->key()
+        // << "AutoRepeat=" << autoRepeat << "KeyId =" << keyId;
 
         int clearModifiers = 0;
 #ifdef __APPLE__
@@ -129,7 +161,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
+                    // kLogger.debug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
                     pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
@@ -142,7 +174,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        //qDebug() << "QEvent::KeyboardLayoutChange";
+        // kLogger.debug() << "QEvent::KeyboardLayoutChange";
     }
     return false;
 }
@@ -180,24 +212,164 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
     if (CmdlineArgs::Instance().getDeveloper()) {
         if (e->type() == QEvent::KeyPress) {
-            qDebug() << "keyboard press: " << k.toString();
+            kLogger.debug() << "keyboard press: " << k.toString();
         } else if (e->type() == QEvent::KeyRelease) {
-            qDebug() << "keyboard release: " << k.toString();
+            kLogger.debug() << "keyboard release: " << k.toString();
         }
     }
 
     return k;
 }
 
-void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
+void KeyboardEventFilter::setEnabled(bool enabled) {
+    if (enabled) {
+        kLogger.debug() << "Enable keyboard shortcuts/mappings";
+    } else {
+        kLogger.debug() << "Disable keyboard shortcuts/mappings";
+    }
+    m_enabled = enabled;
+    m_pConfig->setValue(kKbdEnabledCfgKey, enabled);
+    // Shortcuts may be toggled off and on again to make Mixxx discover a new
+    // Custom.kbd.cfg, so reload now.
+    // Note: the other way around (removing a loaded Custom.kbd.cfg) is covered
+    // by the auto-reloader and we'll try to load a built-in mapping then.
+    if (enabled) {
+        reloadKeyboardConfig();
+    }
+    // Update widget tooltips
+    emit shortcutsEnabled(enabled);
+}
+
+void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
+    m_widgets.append(pWidget);
+
+    // Tell widgets to reconstruct tooltips when option is toggled.
+    // WBaseWidget is not a QObject, need to use a lambda
+    connect(this,
+            &KeyboardEventFilter::shortcutsEnabled,
+            this,
+            [pWidget](bool enabled) {
+                pWidget->toggleKeyboardShortcutHints(enabled);
+            });
+}
+
+void KeyboardEventFilter::updateWidgetShortcuts() {
+    // kLogger.debug() << "updateWidgetShortcuts";
+    ScopedTimer timer(QStringLiteral("KeyboardEventFilter::updateWidgetShortcuts"));
+    for (auto* pWidget : m_widgets) {
+        QStringList shortcutHints;
+        QString keyString;
+        const QList<std::pair<ConfigKey, QString>> controlsCommands =
+                pWidget->getShortcutControlsAndCommands();
+        for (const auto& [control, command] : controlsCommands) {
+            keyString = m_pKbdConfig->getValueString(control);
+            if (!keyString.isEmpty()) {
+                shortcutHints.append(buildShortcutString(keyString, command));
+            }
+        }
+        // might be empty to clear the previous tooltip
+        pWidget->setShortcutTooltip(shortcutHints.join("\n"));
+    }
+    // Update widget tooltips (WBaseWidget handles no-ops).
+    emit shortcutsEnabled(m_enabled);
+}
+
+void KeyboardEventFilter::clearWidgets() {
+    disconnect();
+    m_widgets.clear();
+}
+
+const QString KeyboardEventFilter::buildShortcutString(
+        const QString& shortcut, const QString& cmd) const {
+    if (shortcut.isEmpty()) {
+        return QString();
+    }
+
+    // translate shortcut to native text
+    const QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText)
+                                           .toString(QKeySequence::NativeText);
+
+    QString shortcutTooltip;
+    shortcutTooltip += tr("Shortcut");
+    if (!cmd.isEmpty()) {
+        shortcutTooltip += " ";
+        shortcutTooltip += cmd;
+    }
+    shortcutTooltip += ": ";
+    shortcutTooltip += nativeShortcut;
+    return shortcutTooltip;
+}
+
+void KeyboardEventFilter::registerMenuBarActionSetShortcut(QAction* pAction,
+        const ConfigKey& command,
+        const QString& defaultShortcut) {
+    const auto cmdStr = std::make_pair(command, defaultShortcut);
+    m_menuBarActions.insert(pAction, cmdStr);
+    pAction->setShortcut(QKeySequence(m_pKbdConfig->getValue(command, defaultShortcut)));
+    pAction->setShortcutContext(Qt::ApplicationShortcut);
+}
+
+void KeyboardEventFilter::clearMenuBarActions() {
+    m_menuBarActions.clear();
+}
+
+void KeyboardEventFilter::updateMenuBarActionShortcuts() {
+    // kLogger.debug() << "updateMenuBarActionShortcuts";
+    QHashIterator<QAction*, std::pair<ConfigKey, QString>> it(m_menuBarActions);
+    while (it.hasNext()) {
+        it.next();
+        const QString keyStr = m_pKbdConfig->getValue(it.value().first, it.value().second);
+        auto* pAction = it.key();
+        DEBUG_ASSERT(pAction);
+        pAction->setShortcut(QKeySequence(keyStr));
+    }
+}
+
+void KeyboardEventFilter::reloadKeyboardConfig() {
+    kLogger.debug() << "reloadKeyboardConfig, enabled:" << m_enabled;
+    ScopedTimer timer(QStringLiteral("KeyboardEventFilter::reload"));
+    createKeyboardConfig();
+    updateWidgetShortcuts();
+    updateMenuBarActionShortcuts();
+}
+
+void KeyboardEventFilter::createKeyboardConfig() {
+    // Remove the previously watched file.
+    // Could be the user mapping has been removed and we'll need to switch
+    // to the built-in default mapping.
+    m_autoReloader.clear();
+
+    // Check first in user's Mixxx directory
+    QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
+    if (QFile::exists(keyboardFile)) {
+        kLogger.debug() << "Found and will use custom keyboard mapping" << keyboardFile;
+    } else {
+        // check if a default keyboard exists
+        const QString resourcePath = m_pConfig->getResourcePath();
+        keyboardFile = QString(resourcePath).append("keyboard/");
+        keyboardFile += m_locale.name();
+        keyboardFile += ".kbd.cfg";
+        if (QFile::exists(keyboardFile)) {
+            kLogger.debug() << "Found and will use default keyboard mapping" << keyboardFile;
+        } else {
+            kLogger.debug() << keyboardFile << " not found, using en_US.kbd.cfg";
+            keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
+            if (!QFile::exists(keyboardFile)) {
+                kLogger.debug() << keyboardFile << " not found, starting without shortcuts";
+                keyboardFile = "";
+            }
+        }
+    }
+    if (!keyboardFile.isEmpty()) {
+        // Watch the loaded file for changes.
+        m_autoReloader.addPath(keyboardFile);
+    }
+
+    // Read the keyboard configuration file and set m_pKbdConfig.
     // Keyboard configs are a surjection from ConfigKey to key sequence. We
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
     // Mixxx.
-    m_keySequenceToControlHash = pKbdConfigObject->transpose();
-    m_pKbdConfigObject = pKbdConfigObject;
-}
-
-ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
-    return m_pKbdConfigObject;
+    m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(keyboardFile);
+    m_keySequenceToControlHash = m_pKbdConfig->transpose();
 }
