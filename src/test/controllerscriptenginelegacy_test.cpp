@@ -659,6 +659,44 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUndefinedOnUnknownCharset) {
+    const auto result = evaluate("engine.convertCharset('NULL', 'Hello!')");
+
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result), QByteArray());
+}
+
+template<int N>
+QByteArray intByteArray(const char (&array)[N]) {
+    return QByteArray(array, N);
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.WellKnownCharsets.Latin9, 'Hello!')");
+
+    // ISO-8859-15 ecoded 'Hello!'
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            intByteArray({0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
+    const auto result = evaluate("engine.convertCharset('ISO-8859-15', 'Hello!')");
+
+    // ISO-8859-15 ecoded 'Hello!'
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            intByteArray({0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
+    const auto result = evaluate("engine.convertCharset('ISO-8859-15', 'مايأ نامز')");
+
+    // 0x1A is ISO-8859-15-encoded substitute character
+    // https://en.wikipedia.org/wiki/Substitute_character
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            intByteArray(
+                    {0x1A, 0x1A, 0x1A, 0x1A, 0x20, 0x1A, 0x1A, 0x1A, 0x1A}));
+}
+
 #ifdef MIXXX_USE_QML
 class MockScreenRender : public ControllerRenderingEngine {
   public:
