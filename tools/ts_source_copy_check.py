@@ -16,6 +16,9 @@ ALLOW_LIST_PATH = "res/translations/source_copy_allow_list.xml"
 PROPOSED_ALLOW_LIST_PATH = (
     "res/translations/source_copy_allow_list_proposed.xml"
 )
+PROPOSED_ALLOW_LIST_PATH_TSV = (
+    "res/translations/source_copy_allow_list_proposed.tsv"
+)
 
 
 def is_untranstaled_allowed(source_text, language):
@@ -119,6 +122,39 @@ def add_to_allow_list(source_text, language):
                 tree, pretty_print=True, xml_declaration=True, encoding="UTF-8"
             )
         )
+
+    # Now create the TSV file with the required format
+    tsv_lines = []
+    tsv_lines.append("lang\tsource")
+
+    for message in root.findall("message"):
+        allow_all_languages = False
+        allow_all_elem = message.find("allow_all_languages")
+        if allow_all_elem is not None:
+            allow_all_languages = allow_all_elem.text == "true"
+        source_elem = message.find("source")
+        source = ""
+        if source_elem is not None and source_elem.text is not None:
+            source = source_elem.text.encode("unicode_escape").decode("utf-8")
+
+        languages_str = ""
+        if allow_all_languages:
+            languages_str = "*"
+        else:
+            languages_elem = message.find("allowed_languages")
+            if languages_elem is not None:
+                languages = [
+                    lang.text for lang in languages_elem.findall("language")
+                ]
+                languages_str = ",".join(languages)
+
+        # Append the row to the list of lines
+        tsv_lines.append(f"{languages_str}\t{source}")
+
+    # Write to a TSV file
+    with open(PROPOSED_ALLOW_LIST_PATH_TSV, "w", encoding="utf-8") as tsv_file:
+        tsv_file.write("\n".join(tsv_lines))
+        tsv_file.write("\n")
 
 
 def check_copied_source_on_lines(rootdir, file_to_format, stylepath=None):

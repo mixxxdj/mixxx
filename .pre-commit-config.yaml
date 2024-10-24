@@ -46,7 +46,7 @@ repos:
         exclude: ^.*(UTF-8-BOM\.txt|\.ts)$
       - id: mixed-line-ending
       - id: trailing-whitespace
-        exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
+        exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|tsv|vert)$
       - id: no-commit-to-branch
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
