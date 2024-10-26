@@ -586,7 +586,7 @@ reapplying those migrations.
   </revision>
   <revision version="40" min_compatible="3">
     <description>
-      Add Smarties Table".
+      Add Smarties Table.
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS smarties (
