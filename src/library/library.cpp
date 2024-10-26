@@ -363,6 +363,10 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::deleteItem,
             m_pSidebarModel,
             &SidebarModel::deleteItem);
+    connect(m_pSidebarModel,
+            &SidebarModel::dataChanged,
+            pSidebarWidget,
+            &WLibrarySidebar::queueHeaderAdjustRequest);
 
     connect(pSidebarWidget,
             &WLibrarySidebar::setLibraryFocus,
