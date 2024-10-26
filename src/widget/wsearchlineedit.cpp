@@ -300,9 +300,6 @@ void WSearchLineEdit::loadQueriesFromConfig() {
 }
 
 void WSearchLineEdit::saveQueriesInConfig() {
-    //    SmartiesFeature* newSmartiesForSearch(pLibrary, pConfig);
-    //    newSmartiesForSearch->slotCreateSmarties();
-
     if (!m_pConfig) {
         return;
     }
@@ -318,23 +315,9 @@ void WSearchLineEdit::saveQueriesInConfig() {
                 ConfigKey(kSavedQueriesConfigGroup, QString::number(index)),
                 itemText(index).trimmed());
     }
-
-    // EVE
-    //  Store smarties queries
-    //    for (int index = 0; index < count(); index++) {
-    //        m_pConfig->setValue(
-    //                ConfigKey(kSmartiesQueriesConfigGroup, QString::number(index)),
-    //                itemText(index).trimmed());
-    //    }
-    //
-    // SmartiesFeature* newSmartiesForSearch(pLibrary, m_pConfig);
-    //    SmartiesFeature* newSmartiesForSearch(m_pLibrary);
-    // newSmartiesForSearch->slotCreateSmarties();
-
-    //     newSmartiesForSearch->slotCreateSmartiesFromSearch(m_pConfig);
-    // EVE
 }
 
+// EVE
 void WSearchLineEdit::slot2Smarties() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -343,66 +326,18 @@ void WSearchLineEdit::slot2Smarties() {
     if (!isEnabled()) {
         return;
     }
-    //    int smartiesQueriesCounter = 0;
-    //    const QList<ConfigKey> smartiesQueryKeys =
-    //            m_pConfig->getKeysWithGroup("[SmartiesQueries]");
-    // m_pConfig->getKeysWithGroup(kSmartiesQueriesConfigGroup);
-    //    QVector<QString> smartiesQueriesStrings;
-    //    for (const auto& smartiesQueryKeys : smartiesQueryKeys) {
-    //        QString smartiesQueriesString =
-    //        m_pConfig->getValueString(smartiesQueryKeys).trimmed(); if
-    //        (smartiesQueriesString.isEmpty() ||
-    //        smartiesQueriesStrings.contains(smartiesQueriesString)) {
-    //            // Don't add duplicate and remove it from the config
-    //            immediately m_pConfig->remove(smartiesQueryKeys);
-    //        } else {
-    //            // Restore query
-    //            // addItem(smartiesQueriesString);
-    //            smartiesQueriesStrings.append(smartiesQueriesString);
-    //            smartiesQueriesCounter = smartiesQueriesCounter + 1;
-    //        }
-    //    }
-    //    for (int index = 0; index < smartiesQueriesCounter; index++) {
-    //        m_pConfig->setValue(
-    //                ConfigKey("[SmartiesQueries]", "2SMARTIES"),
-    //                smartiesQueriesStrings[index].trimmed());
-    //                ConfigKey(kSmartiesQueriesConfigGroup,
-    //                QString::number(index)),
-    //                smartiesQueriesStrings[index].trimmed());
-    //        }
-    // EVE
-    // Store smarties queries
-    m_pConfig->setValue(
-            ConfigKey("[SmartiesQueries]", "2SMARTIES"),
-            currentText().trimmed());
-    //                ConfigKey(kSmartiesQueriesConfigGroup, "2SMARTIES"),
-    //                currentText().trimmed());
-    //            ConfigKey(kSmartiesQueriesConfigGroup, QString::number(smartiesQueriesCounter)),
-    //            currentText().trimmed());
-    /// open smarties -> write sql
-
-    //    QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
-    //    queryGetSearchValue->prepare("Insert into smarties (name, search_input, search_sql");
-    //    queryGetSearchValue->addBindValue(smartiesId.toVariant());
-    //    queryGetSearchValue->exec();
-    //    queryGetSearchValue->next();
-    //    QString searchValue = queryGetSearchValue->value(0).toString();
-    //    qDebug() << "queryGetSearchValue " << queryGetSearchValue;
-    //    qDebug() << "searchValue " << searchValue;
-    //    queryGetSearchValue->clear();
 
     emit newSmarties(getSearchText());
     m_queryEmitted = true;
-
-    //  EVE
 
     setCurrentIndex(-1);
     saveQueriesInConfig();
     lineEdit()->clear();
 
     // Refocus the edit field
-    setFocus(Qt::OtherFocusReason);
+    // setFocus(Qt::OtherFocusReason);
 }
+// EVE
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QComboBox::resizeEvent(e);

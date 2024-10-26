@@ -47,9 +47,6 @@ class SmartiesFeature : public BaseTrackSetFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateSmarties();
-    //    void slotCreateSmartiesFromSearch(QString NewSmartiesName);
-    // void slotCreateSmartiesFromSearch(UserSettingsPointer m_pConfig);
-    //    void slotCreateSmartiesFromSearch();
     void slotCreateSmartiesFromSearch(const QString& text);
     void deleteItem(const QModelIndex& index) override;
     void renameItem(const QModelIndex& index) override;

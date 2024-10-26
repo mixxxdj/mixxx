@@ -34,30 +34,10 @@ QString SmartiesFeatureHelper::proposeNameForNewSmarties(
 }
 
 // EVE
-// SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch() {
 SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& text) {
     Smarties newSmarties;
-    //     const QString kSmartiesConfigGroup = QStringLiteral("[Smarties]");
-    //     const QString kSmartiesQueriesConfigGroup =
-    //     QStringLiteral("[SmartiesQueries]");
-    // auto newName = NewSmartiesName;
-    //     auto newName = smartiesQueryKeys;
-    //     QString smartiesQueriesString =
-    //     m_pConfig->getValueString(kSmartiesQueriesConfigGroup,
-    //     "0").trimmed(); const QString smartiesQueriesString =
-    //     m_pConfig->getValueString(ConfigKey("[SmartiesQueries]",
-    //     "2SMARTIES"));
-
-    //     const QString proposedSmartiesName =
-    //             proposeNameForNewSmarties(tr("Search for ") + smartiesQueriesString);
     const QString proposedSmartiesName =
             proposeNameForNewSmarties(tr("Search for ") + text);
-    //     const QList<ConfigKey> smartiesQueryKeys =
-    //         m_pConfig->getKeysWithGroup(kSmartiesQueriesConfigGroup);
-    //     for (const auto& smartiesQueryKey : smartiesQueryKeys) {
-    //         m_pConfig->remove(smartiesQueryKey);
-    //     }
-
     for (;;) {
         bool ok = false;
         auto newName =
@@ -90,14 +70,10 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
         DEBUG_ASSERT(newSmarties.hasName());
         break;
     }
-    //     newSmarties.setName(std::move(smartiesQueriesString));
-    //     newSmarties.setSearchInput(std::move(smartiesQueriesString));
     newSmarties.setSearchInput(std::move(text));
-    //     newSmarties.setSearchSql(std::move(smartiesQueriesString));
     newSmarties.setSearchSql(std::move(text));
 
     SmartiesId newSmartiesId;
-    //    newSmarties.setId(newSmartiesId);
 
     if (m_pTrackCollection->insertSmarties(newSmarties, &newSmartiesId)) {
         DEBUG_ASSERT(newSmartiesId.isValid());

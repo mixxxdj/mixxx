@@ -421,27 +421,9 @@ void SmartiesFeature::onRightClickChild(
     menu.exec(globalPos);
 }
 
-// void SmartiesFeature::slotCreateSmartiesFromSearch(QString NewSmartiesName,
-//     m_pTrackCollection, usersettingsPointer m_pConfig) {
-//  void SmartiesFeature::slotCreateSmartiesFromSearch(QString NewSmartiesName) {
-// void SmartiesFeature::createEmptySmartiesFromSearch() {
-// void SmartiesFeature::slotCreateSmartiesFromSearch(UserSettingsPointer m_pConfig) {
-// void SmartiesFeature::slotCreateSmartiesFromSearch(UserSettingsPointer m_pConfig) {
-//     SmartiesId smartiesId =
-//             SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
-//                     .createEmptySmartiesFromSearch();
-
-//    if (smartiesId.isValid()) {
-//        // expand Smarties and scroll to new smarties
-//        m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
-//    }
-//}
-
-// void SmartiesFeature::slotCreateSmartiesFromSearch() {
 void SmartiesFeature::slotCreateSmartiesFromSearch(const QString& text) {
     SmartiesId smartiesId =
             SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
-                    //                    .createEmptySmarties();
                     .createEmptySmartiesFromSearch(text);
 
     if (smartiesId.isValid()) {
@@ -466,15 +448,6 @@ void SmartiesFeature::slotCreateSmarties() {
     if (smartiesId.isValid()) {
         // expand Smarties and scroll to new smarties
         m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
-
-        //        DlgSmarties* smartiesscreen = new DlgSmarties;
-        //        smartiesscreen->show();
-
-        //        void MixxxMainWindow::slotOptionsPreferences() {
-        //            m_pPrefDlg->show();
-        //            m_pPrefDlg->raise();
-        //            m_pPrefDlg->activateWindow();
-        //        }
     }
 }
 
