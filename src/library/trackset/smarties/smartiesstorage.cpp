@@ -79,6 +79,13 @@ class SmartiesQueryBinder final {
         m_query.bindValue(placeholder, QVariant(smarties.isAutoDjSource()));
     }
 
+    void bindSearchInput(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getSearchInput()));
+    }
+    void bindSearchSql(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getSearchSql()));
+    }
+
   protected:
     FwdSqlQuery& m_query;
 };
@@ -109,7 +116,9 @@ SmartiesQueryFields::SmartiesQueryFields(const FwdSqlQuery& query)
         : m_iId(query.fieldIndex(SMARTIESTABLE_ID)),
           m_iName(query.fieldIndex(SMARTIESTABLE_NAME)),
           m_iLocked(query.fieldIndex(SMARTIESTABLE_LOCKED)),
-          m_iAutoDjSource(query.fieldIndex(SMARTIESTABLE_AUTODJ_SOURCE)) {
+          m_iAutoDjSource(query.fieldIndex(SMARTIESTABLE_AUTODJ_SOURCE)),
+          m_iSearchInput(query.fieldIndex(SMARTIESTABLE_SEARCH_INPUT)),
+          m_iSearchSql(query.fieldIndex(SMARTIESTABLE_SEARCH_SQL)) {
 }
 
 void SmartiesQueryFields::populateFromQuery(
@@ -119,6 +128,8 @@ void SmartiesQueryFields::populateFromQuery(
     pSmarties->setName(getName(query));
     pSmarties->setLocked(isLocked(query));
     pSmarties->setAutoDjSource(isAutoDjSource(query));
+    pSmarties->setSearchInput(getSearchInput(query));
+    pSmarties->setSearchSql(getSearchSql(query));
 }
 
 SmartiesTrackQueryFields::SmartiesTrackQueryFields(const FwdSqlQuery& query)
@@ -171,29 +182,51 @@ void SmartiesStorage::repairDatabase(const QSqlDatabase& database) {
         }
     }
     {
-        // Fix invalid values in the "locked" column
+        // Delete smarties with empty search_input
         FwdSqlQuery query(database,
-                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
-                        .arg(SMARTIES_TABLE, SMARTIESTABLE_LOCKED));
+                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL")
+                        .arg(SMARTIES_TABLE, SMARTIESTABLE_SEARCH_INPUT));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
-                    << "Fixed boolean values in table" << SMARTIES_TABLE
-                    << "column" << SMARTIESTABLE_LOCKED
-                    << "for" << query.numRowsAffected() << "smarties";
+                    << "Deleted" << query.numRowsAffected()
+                    << "smarties with empty search_input";
         }
     }
     {
-        // Fix invalid values in the "autodj_source" column
+        // Delete smarties with empty search_sql
         FwdSqlQuery query(database,
-                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
-                        .arg(SMARTIES_TABLE, SMARTIESTABLE_AUTODJ_SOURCE));
+                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL")
+                        .arg(SMARTIES_TABLE, SMARTIESTABLE_SEARCH_SQL));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
-                    << "Fixed boolean values in table" << SMARTIES_TABLE
-                    << "column" << SMARTIESTABLE_AUTODJ_SOURCE
-                    << "for" << query.numRowsAffected() << "smarties";
+                    << "Deleted" << query.numRowsAffected()
+                    << "smarties with empty search_sql";
         }
     }
+    //    {
+    //        // Fix invalid values in the "locked" column
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
+    //                        .arg(SMARTIES_TABLE, SMARTIESTABLE_LOCKED));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Fixed boolean values in table" << SMARTIES_TABLE
+    //                    << "column" << SMARTIESTABLE_LOCKED
+    //                    << "for" << query.numRowsAffected() << "smarties";
+    //        }
+    //    }
+    //    {
+    //        // Fix invalid values in the "autodj_source" column
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
+    //                        .arg(SMARTIES_TABLE, SMARTIESTABLE_AUTODJ_SOURCE));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Fixed boolean values in table" << SMARTIES_TABLE
+    //                    << "column" << SMARTIESTABLE_AUTODJ_SOURCE
+    //                    << "for" << query.numRowsAffected() << "smarties";
+    //        }
+    //    }
 
     // Smarties tracks
     {
@@ -261,12 +294,19 @@ bool SmartiesStorage::readSmartiesById(SmartiesId id, Smarties* pSmarties) const
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT * FROM %1 WHERE %2=:id")
                     .arg(SMARTIES_TABLE, SMARTIESTABLE_ID));
+    //                    .arg(SMARTIES_TABLE, SMARTIESTABLE_ID,
+    //                    SMARTIESTABLE_SEARCH_SQL));
+    //            QStringLiteral("SELECT * FROM %1 WHERE (%2=:id AND %3 IS NOT
+    //            NULL AND %4 IS NOT NULL)")
+    //                    .arg(SMARTIES_TABLE, SMARTIESTABLE_ID,
+    //                    SMARTIESTABLE_SEARCH_INPUT,
+    //                    SMARTIESTABLE_SEARCH_SQL));
     query.bindValue(":id", id);
     if (query.execPrepared()) {
         SmartiesSelectResult smarties(std::move(query));
         if ((pSmarties != nullptr) ? smarties.populateNext(pSmarties) : smarties.next()) {
             VERIFY_OR_DEBUG_ASSERT(!smarties.next()) {
-                kLogger.warning() << "Ambiguous smarties id:" << id;
+                kLogger.warning() << "Ambiguous smarties id: maybe nul values" << id;
             }
             return true;
         } else {
@@ -310,62 +350,62 @@ SmartiesSelectResult SmartiesStorage::selectSmarties() const {
     }
 }
 
-SmartiesSelectResult SmartiesStorage::selectSmartiesByIds(
-        const QString& subselectForSmartiesIds,
-        SqlSubselectMode subselectMode) const {
-    QString subselectPrefix;
-    switch (subselectMode) {
-    case SQL_SUBSELECT_IN:
-        if (subselectForSmartiesIds.isEmpty()) {
-            // edge case: no smarties
-            return SmartiesSelectResult();
-        }
-        subselectPrefix = "IN";
-        break;
-    case SQL_SUBSELECT_NOT_IN:
-        if (subselectForSmartiesIds.isEmpty()) {
-            // edge case: all smarties
-            return selectSmarties();
-        }
-        subselectPrefix = "NOT IN";
-        break;
-    }
-    DEBUG_ASSERT(!subselectPrefix.isEmpty());
-    DEBUG_ASSERT(!subselectForSmartiesIds.isEmpty());
+// SmartiesSelectResult SmartiesStorage::selectSmartiesByIds(
+//         const QString& subselectForSmartiesIds,
+//         SqlSubselectMode subselectMode) const {
+//     QString subselectPrefix;
+//     switch (subselectMode) {
+//     case SQL_SUBSELECT_IN:
+//         if (subselectForSmartiesIds.isEmpty()) {
+//             // edge case: no smarties
+//             return SmartiesSelectResult();
+//         }
+//         subselectPrefix = "IN";
+//         break;
+//     case SQL_SUBSELECT_NOT_IN:
+//         if (subselectForSmartiesIds.isEmpty()) {
+//             // edge case: all smarties
+//             return selectSmarties();
+//         }
+//         subselectPrefix = "NOT IN";
+//         break;
+//     }
+//     DEBUG_ASSERT(!subselectPrefix.isEmpty());
+//     DEBUG_ASSERT(!subselectForSmartiesIds.isEmpty());
 
-    FwdSqlQuery query(m_database,
-            mixxx::DbConnection::collateLexicographically(
-                    QStringLiteral("SELECT * FROM %1 "
-                                   "WHERE %2 %3 (%4) "
-                                   "ORDER BY %5")
-                            .arg(SMARTIES_TABLE,
-                                    SMARTIESTABLE_ID,
-                                    subselectPrefix,
-                                    subselectForSmartiesIds,
-                                    SMARTIESTABLE_NAME)));
+//    FwdSqlQuery query(m_database,
+//            mixxx::DbConnection::collateLexicographically(
+//                    QStringLiteral("SELECT * FROM %1 "
+//                                   "WHERE %2 %3 (%4) "
+//                                   "ORDER BY %5")
+//                            .arg(SMARTIES_TABLE,
+//                                    SMARTIESTABLE_ID,
+//                                    subselectPrefix,
+//                                    subselectForSmartiesIds,
+//                                    SMARTIESTABLE_NAME)));
 
-    if (query.execPrepared()) {
-        return SmartiesSelectResult(std::move(query));
-    } else {
-        return SmartiesSelectResult();
-    }
-}
+//    if (query.execPrepared()) {
+//        return SmartiesSelectResult(std::move(query));
+//    } else {
+//        return SmartiesSelectResult();
+//    }
+//}
 
-SmartiesSelectResult SmartiesStorage::selectAutoDjSmarties(bool autoDjSource) const {
-    FwdSqlQuery query(m_database,
-            mixxx::DbConnection::collateLexicographically(
-                    QStringLiteral("SELECT * FROM %1 WHERE %2=:autoDjSource "
-                                   "ORDER BY %3")
-                            .arg(SMARTIES_TABLE,
-                                    SMARTIESTABLE_AUTODJ_SOURCE,
-                                    SMARTIESTABLE_NAME)));
-    query.bindValue(":autoDjSource", QVariant(autoDjSource));
-    if (query.execPrepared()) {
-        return SmartiesSelectResult(std::move(query));
-    } else {
-        return SmartiesSelectResult();
-    }
-}
+// SmartiesSelectResult SmartiesStorage::selectAutoDjSmarties(bool autoDjSource) const {
+//     FwdSqlQuery query(m_database,
+//             mixxx::DbConnection::collateLexicographically(
+//                     QStringLiteral("SELECT * FROM %1 WHERE %2=:autoDjSource "
+//                                    "ORDER BY %3")
+//                             .arg(SMARTIES_TABLE,
+//                                     SMARTIESTABLE_AUTODJ_SOURCE,
+//                                     SMARTIESTABLE_NAME)));
+//     query.bindValue(":autoDjSource", QVariant(autoDjSource));
+//     if (query.execPrepared()) {
+//         return SmartiesSelectResult(std::move(query));
+//     } else {
+//         return SmartiesSelectResult();
+//     }
+// }
 
 SmartiesSummarySelectResult SmartiesStorage::selectSmartiesSummaries() const {
     FwdSqlQuery query(m_database,
@@ -422,6 +462,18 @@ QString SmartiesStorage::formatSubselectQueryForSmartiesTrackIds(SmartiesId smar
                     SMARTIES_TRACKS_TABLE,
                     SMARTIESTRACKSTABLE_SMARTIESID,
                     smartiesId.toString());
+}
+
+QString SmartiesStorage::returnSearchSQLFieldFromTable(SmartiesId smartiesId) {
+    return QStringLiteral(" %1.%2=%3")
+            .arg(SMARTIES_TABLE,
+                    SMARTIESTABLE_ID,
+                    smartiesId.toString());
+    //    return QStringLiteral("SELECT %1 FROM %2 WHERE %3=%4")
+    //            .arg(SMARTIESTABLE_SEARCH_SQL,
+    //                    SMARTIES_TABLE,
+    //                    SMARTIESTRACKSTABLE_SMARTIESID,
+    //                    smartiesId.toString());
 }
 
 QString SmartiesStorage::formatQueryForTrackIdsBySmartiesNameLike(
@@ -492,14 +544,14 @@ SmartiesSummarySelectResult SmartiesStorage::selectSmartiesWithTrackCount(
                                    "%1.%5 in (%9)) AS %6, "
                                    "0 as %7 FROM %2 ORDER BY %8")
                             .arg(
-                                    SMARTIES_TRACKS_TABLE,
-                                    SMARTIES_TABLE,
-                                    SMARTIESTABLE_ID,
-                                    SMARTIESTRACKSTABLE_SMARTIESID,
-                                    SMARTIESTRACKSTABLE_TRACKID,
-                                    SMARTIESSUMMARY_TRACK_COUNT,
-                                    SMARTIESSUMMARY_TRACK_DURATION,
-                                    SMARTIESTABLE_NAME,
+                                    SMARTIES_TRACKS_TABLE,          // 1
+                                    SMARTIES_TABLE,                 // 2
+                                    SMARTIESTABLE_ID,               // 3
+                                    SMARTIESTRACKSTABLE_SMARTIESID, // 4
+                                    SMARTIESTRACKSTABLE_TRACKID,    // 5
+                                    SMARTIESSUMMARY_TRACK_COUNT,    // 6
+                                    SMARTIESSUMMARY_TRACK_DURATION, // 7
+                                    SMARTIESTABLE_NAME,             // 8
                                     joinSqlStringList(trackIds))));
 
     if (query.execPrepared()) {
@@ -520,13 +572,13 @@ SmartiesTrackSelectResult SmartiesStorage::selectTracksSortedBySmartiesNameLike(
                            "JOIN %4 ON %5 = %6 "
                            "WHERE %7 LIKE :smartiesNameLike "
                            "ORDER BY %1")
-                    .arg(SMARTIESTRACKSTABLE_TRACKID,
-                            SMARTIESTRACKSTABLE_SMARTIESID,
-                            SMARTIES_TRACKS_TABLE,
-                            SMARTIES_TABLE,
-                            SMARTIESTABLE_ID,
-                            SMARTIESTRACKSTABLE_SMARTIESID,
-                            SMARTIESTABLE_NAME));
+                    .arg(SMARTIESTRACKSTABLE_TRACKID,       // 1
+                            SMARTIESTRACKSTABLE_SMARTIESID, // 2
+                            SMARTIES_TRACKS_TABLE,          // 3
+                            SMARTIES_TABLE,                 // 4
+                            SMARTIESTABLE_ID,               // 5
+                            SMARTIESTRACKSTABLE_SMARTIESID, // 6
+                            SMARTIESTABLE_NAME));           // 7
     query.bindValue(":smartiesNameLike",
             QVariant(kSqlLikeMatchAll + smartiesNameLike + kSqlLikeMatchAll));
 
@@ -576,13 +628,15 @@ bool SmartiesStorage::onInsertingSmarties(
     }
     FwdSqlQuery query(m_database,
             QStringLiteral(
-                    "INSERT INTO %1 (%2,%3,%4) "
-                    "VALUES (:name,:locked,:autoDjSource)")
+                    "INSERT INTO %1 (%2,%3,%4,%5,%6) "
+                    "VALUES (:name,:locked,:autoDjSource, :searchInput, :searchSql)")
                     .arg(
                             SMARTIES_TABLE,
                             SMARTIESTABLE_NAME,
                             SMARTIESTABLE_LOCKED,
-                            SMARTIESTABLE_AUTODJ_SOURCE));
+                            SMARTIESTABLE_AUTODJ_SOURCE,
+                            SMARTIESTABLE_SEARCH_INPUT,
+                            SMARTIESTABLE_SEARCH_SQL));
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return false;
     }
@@ -590,6 +644,8 @@ bool SmartiesStorage::onInsertingSmarties(
     queryBinder.bindName(":name", smarties);
     queryBinder.bindLocked(":locked", smarties);
     queryBinder.bindAutoDjSource(":autoDjSource", smarties);
+    queryBinder.bindSearchInput(":searchInput", smarties);
+    queryBinder.bindSearchSql(":searchSql", smarties);
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return false;
     }
@@ -615,13 +671,15 @@ bool SmartiesStorage::onUpdatingSmarties(
     FwdSqlQuery query(m_database,
             QString(
                     "UPDATE %1 "
-                    "SET %2=:name,%3=:locked,%4=:autoDjSource "
-                    "WHERE %5=:id")
+                    "SET %2=:name,%3=:locked,%4=:autoDjSource, %5=:searchInput, %6=:searchSql "
+                    "WHERE %7=:id")
                     .arg(
                             SMARTIES_TABLE,
                             SMARTIESTABLE_NAME,
                             SMARTIESTABLE_LOCKED,
                             SMARTIESTABLE_AUTODJ_SOURCE,
+                            SMARTIESTABLE_SEARCH_INPUT,
+                            SMARTIESTABLE_SEARCH_SQL,
                             SMARTIESTABLE_ID));
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return false;
@@ -631,6 +689,8 @@ bool SmartiesStorage::onUpdatingSmarties(
     queryBinder.bindName(":name", smarties);
     queryBinder.bindLocked(":locked", smarties);
     queryBinder.bindAutoDjSource(":autoDjSource", smarties);
+    queryBinder.bindSearchInput(":searchInput", smarties);
+    queryBinder.bindSearchSql(":searchSql", smarties);
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return false;
     }

@@ -31,6 +31,12 @@ class SmartiesQueryFields {
     bool isAutoDjSource(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iAutoDjSource);
     }
+    QString getSearchInput(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iSearchInput).toString();
+    }
+    QString getSearchSql(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iSearchSql).toString();
+    }
 
     void populateFromQuery(
             const FwdSqlQuery& query,
@@ -41,6 +47,8 @@ class SmartiesQueryFields {
     DbFieldIndex m_iName;
     DbFieldIndex m_iLocked;
     DbFieldIndex m_iAutoDjSource;
+    DbFieldIndex m_iSearchInput;
+    DbFieldIndex m_iSearchSql;
 };
 
 class SmartiesSelectResult : public FwdSqlQuerySelectResult {
@@ -60,7 +68,7 @@ class SmartiesSelectResult : public FwdSqlQuerySelectResult {
         }
     }
 
-  private:
+    // private:
     friend class SmartiesStorage;
     SmartiesSelectResult() = default;
     explicit SmartiesSelectResult(FwdSqlQuery&& query)
@@ -69,6 +77,8 @@ class SmartiesSelectResult : public FwdSqlQuerySelectResult {
     }
 
     SmartiesQueryFields m_queryFields;
+
+  private:
 };
 
 class SmartiesSummaryQueryFields : public SmartiesQueryFields {
@@ -279,10 +289,12 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
     // The following list results are ordered by smarties name:
     //  - case-insensitive
     //  - locale-aware
-    SmartiesSelectResult selectSmarties() const; // all smarties
-    SmartiesSelectResult selectSmartiesByIds(    // subset of smarties
-            const QString& subselectForSmartiesIds,
-            SqlSubselectMode subselectMode) const;
+    SmartiesSelectResult selectSmarties()
+            const; // all smarties
+                   //    SmartiesSelectResult selectSmartiesByIds(    // subset
+                   //    of smarties
+                   //            const QString& subselectForSmartiesIds,
+                   //            SqlSubselectMode subselectMode) const;
 
     // TODO(XXX): Move this function into the AutoDJ component after
     // fixing various database design flaws in AutoDJ itself (see also:
@@ -292,7 +304,7 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
     // redesign of the AutoDJ feature has been reached. The main
     // ideas of the new design should be documented for verification
     // before starting to code.
-    SmartiesSelectResult selectAutoDjSmarties(bool autoDjSource = true) const;
+    //    SmartiesSelectResult selectAutoDjSmarties(bool autoDjSource = true) const;
 
     // Smarties content, i.e. the smarties's tracks referenced by id
     uint countSmartiesTracks(SmartiesId smartiesId) const;
@@ -300,6 +312,8 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
     // Format a subselect query for the tracks contained in smarties.
     static QString formatSubselectQueryForSmartiesTrackIds(
             SmartiesId smartiesId); // no db access
+
+    static QString returnSearchSQLFieldFromTable(SmartiesId smartiesId);
 
     QString formatQueryForTrackIdsBySmartiesNameLike(
             const QString& smartiesNameLike) const;      // no db access

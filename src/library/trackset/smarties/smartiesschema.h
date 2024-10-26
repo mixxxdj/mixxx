@@ -7,7 +7,6 @@
 
 const QString SMARTIESTABLE_ID = "id";
 const QString SMARTIESTABLE_NAME = "name";
-
 // TODO(XXX): Fix AutoDJ database design.
 // Smarties should have no dependency on AutoDJ stuff. Which
 // smarties are used as a source for AutoDJ has to be stored
@@ -17,6 +16,8 @@ const QString SMARTIESTABLE_NAME = "name";
 // ideas of the new design should be documented for verification
 // before starting to code.
 const QString SMARTIESTABLE_AUTODJ_SOURCE = "autodj_source";
+const QString SMARTIESTABLE_SEARCH_INPUT = "search_input";
+const QString SMARTIESTABLE_SEARCH_SQL = "search_sql";
 
 const QString SMARTIESTRACKSTABLE_SMARTIESID = "smarties_id";
 const QString SMARTIESTRACKSTABLE_TRACKID = "track_id";

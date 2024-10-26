@@ -14,6 +14,12 @@ class DbNamedEntity: public DbEntity<T> {
     const QString& getName() const {
         return m_name;
     }
+    const QString& getSearchInput() const {
+        return m_searchInput;
+    }
+    const QString& getSearchSql() const {
+        return m_searchSql;
+    }
     void setName(QString name) {
         // Due to missing trimming names with only whitespaces
         // may occur in the database and can't we assert on
@@ -21,6 +27,15 @@ class DbNamedEntity: public DbEntity<T> {
         DEBUG_ASSERT(!name.isEmpty());
         m_name = std::move(name);
     }
+    void setSearchInput(QString searchInput) {
+        DEBUG_ASSERT(!searchInput.isEmpty());
+        m_searchInput = std::move(searchInput);
+    }
+    void setSearchSql(QString searchSql) {
+        DEBUG_ASSERT(!searchSql.isEmpty());
+        m_searchSql = std::move(searchSql);
+    }
+
     void resetName() {
         m_name.clear();
         DEBUG_ASSERT(!hasName());
@@ -34,6 +49,8 @@ class DbNamedEntity: public DbEntity<T> {
 
   private:
     QString m_name;
+    QString m_searchInput;
+    QString m_searchSql;
 };
 
 template<typename T>

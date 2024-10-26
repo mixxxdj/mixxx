@@ -18,9 +18,12 @@
 #include "util/logger.h"
 #include "util/parented_ptr.h"
 #include "wskincolor.h"
+
 // EVE
-// #include "library/trackset/smarties/smartiesfeature.h"
-// #include "library/trackset/smarties/smartiesfeaturehelper.h"
+// #include "library/trackset/smarties/smartiesfeature.cpp"
+#include "library/trackset/smarties/smartiesfeature.h"
+#include "library/trackset/smarties/smartiesfeaturehelper.h"
+#include "library/trackset/smarties/smartiesstorage.h"
 // EVE
 
 #define ENABLE_TRACE_LOG false
@@ -35,6 +38,11 @@ const QString kDisabledText = QStringLiteral("- - -");
 
 const QString kLibraryConfigGroup = QStringLiteral("[Library]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
+
+// EVE
+const QString kSmartiesConfigGroup = QStringLiteral("[Smarties]");
+const QString kSmartiesQueriesConfigGroup = QStringLiteral("[SmartiesQueries]");
+// EVE
 
 // Border width, max. 2 px when focused (in official skins)
 constexpr int kBorderWidth = 2;
@@ -92,6 +100,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
           m_pConfig(pConfig),
           m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
+          // EVE
+          m_2SmartiesButton(make_parented<QToolButton>(this)),
+          // EVE
           m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
@@ -125,6 +136,18 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             &QAbstractButton::clicked,
             this,
             &WSearchLineEdit::slotClearSearch);
+
+    // EVE
+    // m_2SmartiesButton->setCursor(Qt::ArrowCursor);
+    m_2SmartiesButton->setCursor(Qt::PointingHandCursor);
+    m_2SmartiesButton->setObjectName(QStringLiteral("2SmartiesButton"));
+
+    m_2SmartiesButton->hide();
+    connect(m_2SmartiesButton,
+            &QAbstractButton::clicked,
+            this,
+            &WSearchLineEdit::slot2Smarties);
+    // EVE
 
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut,
@@ -226,6 +249,14 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Shortcut") + ": \n" +
             tr("Ctrl+Backspace"));
 
+    // EVE
+    m_2SmartiesButton->setToolTip(tr("Moves the result of the query") + "\n" +
+            tr("to a new smarties container") + "\n\n" +
+
+            tr("Shortcut") + ": \n" +
+            tr("None Yet"));
+    // EVE
+
     setBaseTooltip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
@@ -269,6 +300,9 @@ void WSearchLineEdit::loadQueriesFromConfig() {
 }
 
 void WSearchLineEdit::saveQueriesInConfig() {
+    //    SmartiesFeature* newSmartiesForSearch(pLibrary, pConfig);
+    //    newSmartiesForSearch->slotCreateSmarties();
+
     if (!m_pConfig) {
         return;
     }
@@ -284,6 +318,90 @@ void WSearchLineEdit::saveQueriesInConfig() {
                 ConfigKey(kSavedQueriesConfigGroup, QString::number(index)),
                 itemText(index).trimmed());
     }
+
+    // EVE
+    //  Store smarties queries
+    //    for (int index = 0; index < count(); index++) {
+    //        m_pConfig->setValue(
+    //                ConfigKey(kSmartiesQueriesConfigGroup, QString::number(index)),
+    //                itemText(index).trimmed());
+    //    }
+    //
+    // SmartiesFeature* newSmartiesForSearch(pLibrary, m_pConfig);
+    //    SmartiesFeature* newSmartiesForSearch(m_pLibrary);
+    // newSmartiesForSearch->slotCreateSmarties();
+
+    //     newSmartiesForSearch->slotCreateSmartiesFromSearch(m_pConfig);
+    // EVE
+}
+
+void WSearchLineEdit::slot2Smarties() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "slot2Smarties";
+#endif // ENABLE_TRACE_LOG
+    if (!isEnabled()) {
+        return;
+    }
+    //    int smartiesQueriesCounter = 0;
+    //    const QList<ConfigKey> smartiesQueryKeys =
+    //            m_pConfig->getKeysWithGroup("[SmartiesQueries]");
+    // m_pConfig->getKeysWithGroup(kSmartiesQueriesConfigGroup);
+    //    QVector<QString> smartiesQueriesStrings;
+    //    for (const auto& smartiesQueryKeys : smartiesQueryKeys) {
+    //        QString smartiesQueriesString =
+    //        m_pConfig->getValueString(smartiesQueryKeys).trimmed(); if
+    //        (smartiesQueriesString.isEmpty() ||
+    //        smartiesQueriesStrings.contains(smartiesQueriesString)) {
+    //            // Don't add duplicate and remove it from the config
+    //            immediately m_pConfig->remove(smartiesQueryKeys);
+    //        } else {
+    //            // Restore query
+    //            // addItem(smartiesQueriesString);
+    //            smartiesQueriesStrings.append(smartiesQueriesString);
+    //            smartiesQueriesCounter = smartiesQueriesCounter + 1;
+    //        }
+    //    }
+    //    for (int index = 0; index < smartiesQueriesCounter; index++) {
+    //        m_pConfig->setValue(
+    //                ConfigKey("[SmartiesQueries]", "2SMARTIES"),
+    //                smartiesQueriesStrings[index].trimmed());
+    //                ConfigKey(kSmartiesQueriesConfigGroup,
+    //                QString::number(index)),
+    //                smartiesQueriesStrings[index].trimmed());
+    //        }
+    // EVE
+    // Store smarties queries
+    m_pConfig->setValue(
+            ConfigKey("[SmartiesQueries]", "2SMARTIES"),
+            currentText().trimmed());
+    //                ConfigKey(kSmartiesQueriesConfigGroup, "2SMARTIES"),
+    //                currentText().trimmed());
+    //            ConfigKey(kSmartiesQueriesConfigGroup, QString::number(smartiesQueriesCounter)),
+    //            currentText().trimmed());
+    /// open smarties -> write sql
+
+    //    QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
+    //    queryGetSearchValue->prepare("Insert into smarties (name, search_input, search_sql");
+    //    queryGetSearchValue->addBindValue(smartiesId.toVariant());
+    //    queryGetSearchValue->exec();
+    //    queryGetSearchValue->next();
+    //    QString searchValue = queryGetSearchValue->value(0).toString();
+    //    qDebug() << "queryGetSearchValue " << queryGetSearchValue;
+    //    qDebug() << "searchValue " << searchValue;
+    //    queryGetSearchValue->clear();
+
+    emit newSmarties(getSearchText());
+    m_queryEmitted = true;
+
+    //  EVE
+
+    setCurrentIndex(-1);
+    saveQueriesInConfig();
+    lineEdit()->clear();
+
+    // Refocus the edit field
+    setFocus(Qt::OtherFocusReason);
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
@@ -300,14 +418,33 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         // after skin change/reload.
         refreshState();
     }
+    // EVE
+    if (m_2SmartiesButton->size().height() != innerHeight) {
+        QSize newSize = QSize(innerHeight, innerHeight);
+        m_2SmartiesButton->resize(newSize);
+        m_2SmartiesButton->setIconSize(newSize);
+        // Needed to update the m_2SmartiesButton and the cursor
+        // after skin change/reload.
+        refreshState();
+    }
+    // EVE
     int top = rect().top() + kBorderWidth;
     if (layoutDirection() == Qt::LeftToRight) {
         m_clearButton->move(rect().right() -
                         static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
+        // EVE
+        m_2SmartiesButton->move(rect().right() -
+                        static_cast<int>(1.7 * innerHeight) - kBorderWidth,
+                top);
+        // EVE
     } else {
         m_clearButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
+        // EVE
+        m_2SmartiesButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
+                top);
+        // EVE
     }
 }
 
@@ -697,9 +834,11 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     // Hide clear button if the text is empty and while placeholder is shown,
     // see disableSearch()
     m_clearButton->setVisible(!text.isEmpty());
-
-    // Ensure the text is not obscured by the clear button. Otherwise no text,
-    // no clear button, so the placeholder should use the entire width.
+    // EVE
+    m_2SmartiesButton->setVisible(!text.isEmpty());
+    // EVE
+    //  Ensure the text is not obscured by the clear button. Otherwise no text,
+    //  no clear button, so the placeholder should use the entire width.
     const int innerHeight = height() - 2 * kBorderWidth;
     const int paddingPx = text.isEmpty() ? 0 : innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
@@ -711,6 +850,9 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
             "WSearchLineEdit { padding-%1: %2px; }"
             // With every paintEvent(?) the width of the drop-down button
             // is reset to default, so we need to re-adjust it.
+            // EVE
+            //            "WSearchLineEdit::pointinghand,"
+            // EVE
             "WSearchLineEdit::down-arrow,"
             "WSearchLineEdit::drop-down {"
             "subcontrol-origin: padding;"
@@ -767,6 +909,14 @@ bool WSearchLineEdit::slotClearSearchIfClearButtonHasFocus() {
         return false;
     }
     slotClearSearch();
+    return true;
+}
+
+bool WSearchLineEdit::slot2SmartiesIf2SmartiesButtonHasFocus() {
+    if (!m_2SmartiesButton->hasFocus()) {
+        return false;
+    }
+    slot2Smarties();
     return true;
 }
 

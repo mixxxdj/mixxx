@@ -33,20 +33,89 @@ QString SmartiesFeatureHelper::proposeNameForNewSmarties(
     return proposedName;
 }
 
-// SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(QString NewSmartiesName) {
-//     Smarties newSmarties;
-//     auto newName = NewSmartiesName;
-//     bool ok = true;
-//     if (!ok) {
-//         return SmartiesId();
-//     }
+// EVE
+// SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch() {
+SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& text) {
+    Smarties newSmarties;
+    //     const QString kSmartiesConfigGroup = QStringLiteral("[Smarties]");
+    //     const QString kSmartiesQueriesConfigGroup =
+    //     QStringLiteral("[SmartiesQueries]");
+    // auto newName = NewSmartiesName;
+    //     auto newName = smartiesQueryKeys;
+    //     QString smartiesQueriesString =
+    //     m_pConfig->getValueString(kSmartiesQueriesConfigGroup,
+    //     "0").trimmed(); const QString smartiesQueriesString =
+    //     m_pConfig->getValueString(ConfigKey("[SmartiesQueries]",
+    //     "2SMARTIES"));
 
-//    newSmarties.setName(std::move(newName));
-//    SmartiesId newSmartiesId;
-//    newSmarties.setId(newSmartiesId);
-//    qDebug() << "Created new smarties" << newSmarties;
-//    return newSmartiesId;
-//}
+    //     const QString proposedSmartiesName =
+    //             proposeNameForNewSmarties(tr("Search for ") + smartiesQueriesString);
+    const QString proposedSmartiesName =
+            proposeNameForNewSmarties(tr("Search for ") + text);
+    //     const QList<ConfigKey> smartiesQueryKeys =
+    //         m_pConfig->getKeysWithGroup(kSmartiesQueriesConfigGroup);
+    //     for (const auto& smartiesQueryKey : smartiesQueryKeys) {
+    //         m_pConfig->remove(smartiesQueryKey);
+    //     }
+
+    for (;;) {
+        bool ok = false;
+        auto newName =
+                QInputDialog::getText(
+                        nullptr,
+                        tr("New Smarties From Search"),
+                        tr("Enter name for new smarties:"),
+                        QLineEdit::Normal,
+                        proposedSmartiesName,
+                        &ok)
+                        .trimmed();
+        if (!ok) {
+            return SmartiesId();
+        }
+        if (newName.isEmpty()) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Duplicating Smarties Failed"),
+                    tr("A smarties cannot have a blank name."));
+            continue;
+        }
+        if (m_pTrackCollection->smarties().readSmartiesByName(newName)) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Duplicating Smarties Failed"),
+                    tr("A smarties by that name already exists."));
+            continue;
+        }
+        newSmarties.setName(std::move(newName));
+        DEBUG_ASSERT(newSmarties.hasName());
+        break;
+    }
+    //     newSmarties.setName(std::move(smartiesQueriesString));
+    //     newSmarties.setSearchInput(std::move(smartiesQueriesString));
+    newSmarties.setSearchInput(std::move(text));
+    //     newSmarties.setSearchSql(std::move(smartiesQueriesString));
+    newSmarties.setSearchSql(std::move(text));
+
+    SmartiesId newSmartiesId;
+    //    newSmarties.setId(newSmartiesId);
+
+    if (m_pTrackCollection->insertSmarties(newSmarties, &newSmartiesId)) {
+        DEBUG_ASSERT(newSmartiesId.isValid());
+        newSmarties.setId(newSmartiesId);
+        qDebug() << "Created new smarties" << newSmarties;
+        qDebug() << "Created new smarties ID: " << newSmartiesId;
+    } else {
+        DEBUG_ASSERT(!newSmartiesId.isValid());
+        qWarning() << "Failed to create new smarties"
+                   << "->" << newSmarties.getName();
+        QMessageBox::warning(
+                nullptr,
+                tr("Creating Smarties Failed"),
+                tr("An unknown error occurred while creating smarties: ") + newSmarties.getName());
+    }
+    return newSmartiesId;
+}
+// EVE
 
 SmartiesId SmartiesFeatureHelper::createEmptySmarties() {
     const QString proposedSmartiesName =

@@ -319,6 +319,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::search,
             this,
             &Library::search);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::newSmarties,
+            this,
+            &Library::slotCreateSmartiesFromSearch);
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
@@ -587,6 +591,18 @@ void Library::slotCreatePlaylist() {
 
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
+}
+
+// void Library::newSmartiesFromSearch(const QString& text) {
+// void Library::newSmartiesFromSearch() {
+//     m_pSmartiesFeature->slotCreateSmarties();
+// }
+
+// void Library::slotCreateSmartiesFromSearch() {
+//     m_pSmartiesFeature->slotCreateSmartiesFromSearch();
+// }
+void Library::slotCreateSmartiesFromSearch(const QString& text) {
+    m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
 }
 
 void Library::slotCreateSmarties() {

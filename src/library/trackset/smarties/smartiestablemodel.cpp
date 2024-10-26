@@ -10,6 +10,13 @@
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
+// EVE
+#include "library/trackset/smarties/smartiesschema.h"
+#include "library/trackset/smarties/smartiesstorage.h"
+#include "util/db/fwdsqlqueryselectresult.cpp"
+#include "util/logger.h"
+// EVE
+
 namespace {
 
 const QString kModelName = QStringLiteral("smarties");
@@ -54,23 +61,50 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
     // (mixxx_deleted = 0) from the view.
     // They are kept in the database, because we treat smarties membership as a
     // track property, which persist over a hide / unhide cycle.
+    //    QString queryString =
+    //            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+    //                    "SELECT %2 FROM %3 "
+    //                    "WHERE %4 IN (%5) "
+    //                    "AND %6=0")
+    //                    .arg(tableName, //1
+    //                            columns.join(","),  //2
+    //                            LIBRARY_TABLE, //3
+    //                            LIBRARYTABLE_ID, //4
+    //                            SmartiesStorage::formatSubselectQueryForSmartiesTrackIds(
+    //                                    smartiesId), //5
+    //                            LIBRARYTABLE_MIXXXDELETED); //6
+    QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
+    queryGetSearchValue->prepare("SELECT search_sql from smarties where id=:id");
+    queryGetSearchValue->addBindValue(smartiesId.toVariant());
+
+    queryGetSearchValue->exec();
+    queryGetSearchValue->next();
+    QString searchValue = queryGetSearchValue->value(0).toString();
+    qDebug() << "queryGetSearchValue " << queryGetSearchValue;
+    qDebug() << "searchValue " << searchValue;
+    queryGetSearchValue->clear();
+
     QString queryString =
             QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM %3 "
-                    "WHERE %4 IN (%5) "
-                    "AND %6=0")
-                    .arg(tableName,
-                            columns.join(","),
-                            LIBRARY_TABLE,
-                            LIBRARYTABLE_ID,
-                            SmartiesStorage::formatSubselectQueryForSmartiesTrackIds(
-                                    smartiesId),
-                            LIBRARYTABLE_MIXXXDELETED);
+                    "Where %3.artist like '%" +
+                    searchValue + "%'OR %3.title like '%" + searchValue + "%'")
+                    .arg(tableName,            // 1
+                            columns.join(","), // 2
+                            LIBRARY_TABLE,     // 3
+                            SMARTIES_TABLE,    // 4
+                            SmartiesStorage::returnSearchSQLFieldFromTable(
+                                    smartiesId));
+    qDebug() << "queryString " << queryString;
     FwdSqlQuery(m_database, queryString).execPrepared();
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
+
+    //    columns[0] = "library.id";
+    //    columns[1] = "livrary.preview";
+    //    columns[2] = "livrary.coverart";
     setTable(tableName,
             LIBRARYTABLE_ID,
             columns,
@@ -81,44 +115,44 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
-bool SmartiesTableModel::addTrack(const QModelIndex& index, const QString& location) {
-    Q_UNUSED(index);
+// bool SmartiesTableModel::addTrack(const QModelIndex& index, const QString& location) {
+//     Q_UNUSED(index);
 
-    // This will only succeed if the file actually exist.
-    mixxx::FileInfo fileInfo(location);
-    if (!fileInfo.checkFileExists()) {
-        qDebug() << "SmartiesTableModel::addTrack:"
-                 << "File" << location << "not found";
-        return false;
-    }
+// This will only succeed if the file actually exist.
+//    mixxx::FileInfo fileInfo(location);
+//    if (!fileInfo.checkFileExists()) {
+//        qDebug() << "SmartiesTableModel::addTrack:"
+//                 << "File" << location << "not found";
+//        return false;
+//    }
 
-    // If a track is dropped but it isn't in the library, then add it because
-    // the user probably dropped a file from outside Mixxx into this smarties.
-    // If the track is already contained in the library it will not insert
-    // a duplicate. It also handles unremoving logic if the track has been
-    // removed from the library recently and re-adds it.
-    const TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(fileInfo));
-    if (!pTrack) {
-        qDebug() << "SmartiesTableModel::addTrack:"
-                 << "Failed to add track" << location << "to library";
-        return false;
-    }
+// If a track is dropped but it isn't in the library, then add it because
+// the user probably dropped a file from outside Mixxx into this smarties.
+// If the track is already contained in the library it will not insert
+// a duplicate. It also handles unremoving logic if the track has been
+// removed from the library recently and re-adds it.
+//    const TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+//            TrackRef::fromFileInfo(fileInfo));
+//    if (!pTrack) {
+//        qDebug() << "SmartiesTableModel::addTrack:"
+//                 << "Failed to add track" << location << "to library";
+//        return false;
+//    }
 
-    QList<TrackId> trackIds;
-    trackIds.append(pTrack->getId());
-    if (!m_pTrackCollectionManager->internalCollection()->addSmartiesTracks(
-                m_selectedSmarties, trackIds)) {
-        qDebug() << "SmartiesTableModel::addTrack:"
-                 << "Failed to add track" << location << "to smarties"
-                 << m_selectedSmarties;
-        return false;
-    }
+//    QList<TrackId> trackIds;
+//    trackIds.append(pTrack->getId());
+//    if (!m_pTrackCollectionManager->internalCollection()->addSmartiesTracks(
+//                m_selectedSmarties, trackIds)) {
+//        qDebug() << "SmartiesTableModel::addTrack:"
+//                 << "Failed to add track" << location << "to smarties"
+//                 << m_selectedSmarties;
+//        return false;
+//    }
 
-    // TODO(rryan) just add the track don't select
-    select();
-    return true;
-}
+// TODO(rryan) just add the track don't select
+//    select();
+//    return true;
+//}
 
 TrackModel::Capabilities SmartiesTableModel::getCapabilities() const {
     Capabilities caps =
@@ -141,84 +175,84 @@ TrackModel::Capabilities SmartiesTableModel::getCapabilities() const {
         if (m_pTrackCollectionManager->internalCollection()
                         ->smarties()
                         .readSmartiesById(m_selectedSmarties, &smarties)) {
-            if (smarties.isLocked()) {
-                caps |= Capability::Locked;
-            }
+            //            if (smarties.isLocked()) {
+            //                caps |= Capability::Locked;
+            //            }
         } else {
-            qWarning() << "Failed to read create" << m_selectedSmarties;
+            qWarning() << "Failed to read smarties" << m_selectedSmarties;
         }
     }
 
     return caps;
 }
 
-int SmartiesTableModel::addTracksWithTrackIds(
-        const QModelIndex& index, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
-    Q_UNUSED(index);
+// int SmartiesTableModel::addTracksWithTrackIds(
+//         const QModelIndex& index, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
+//     Q_UNUSED(index);
 
-    if (pOutInsertionPos != nullptr) {
-        // smarties insertion is not done by position, and no duplicates will be added,.
-        // 0 indicates this to the caller.
-        *pOutInsertionPos = 0;
-    }
+//    if (pOutInsertionPos != nullptr) {
+// smarties insertion is not done by position, and no duplicates will be added,.
+// 0 indicates this to the caller.
+//        *pOutInsertionPos = 0;
+//    }
 
-    // If a track is dropped but it isn't in the library, then add it because
-    // the user probably dropped a file from outside Mixxx into this smarties.
-    if (!m_pTrackCollectionManager->internalCollection()->addSmartiesTracks(
-                m_selectedSmarties, trackIds)) {
-        qWarning() << "SmartiesTableModel::addTracks could not add"
-                   << trackIds.size() << "tracks to smarties" << m_selectedSmarties;
-        return 0;
-    }
+// If a track is dropped but it isn't in the library, then add it because
+// the user probably dropped a file from outside Mixxx into this smarties.
+//    if (!m_pTrackCollectionManager->internalCollection()->addSmartiesTracks(
+//                m_selectedSmarties, trackIds)) {
+//        qWarning() << "SmartiesTableModel::addTracks could not add"
+//                   << trackIds.size() << "tracks to smarties" << m_selectedSmarties;
+//        return 0;
+//    }
 
-    select();
-    return trackIds.size();
-}
+//    select();
+//    return trackIds.size();
+//}
 
-bool SmartiesTableModel::isLocked() {
-    Smarties smarties;
-    if (!m_pTrackCollectionManager->internalCollection()
-                    ->smarties()
-                    .readSmartiesById(m_selectedSmarties, &smarties)) {
-        qWarning() << "Failed to read create" << m_selectedSmarties;
-        return false;
-    }
-    return smarties.isLocked();
-}
+// bool SmartiesTableModel::isLocked() {
+//     Smarties smarties;
+//     if (!m_pTrackCollectionManager->internalCollection()
+//                     ->smarties()
+//                     .readSmartiesById(m_selectedSmarties, &smarties)) {
+//         qWarning() << "Failed to read create" << m_selectedSmarties;
+//         return false;
+//     }
+//     return smarties.isLocked();
+// }
 
-void SmartiesTableModel::removeTracks(const QModelIndexList& indices) {
-    VERIFY_OR_DEBUG_ASSERT(m_selectedSmarties.isValid()) {
-        return;
-    }
-    if (indices.empty()) {
-        return;
-    }
+// void SmartiesTableModel::removeTracks(const QModelIndexList& indices) {
+//     VERIFY_OR_DEBUG_ASSERT(m_selectedSmarties.isValid()) {
+//         return;
+//     }
+//     if (indices.empty()) {
+//         return;
+//     }
 
-    Smarties smarties;
-    if (!m_pTrackCollectionManager->internalCollection()
-                    ->smarties()
-                    .readSmartiesById(m_selectedSmarties, &smarties)) {
-        qWarning() << "Failed to read create" << m_selectedSmarties;
-        return;
-    }
+//    Smarties smarties;
+//    if (!m_pTrackCollectionManager->internalCollection()
+//                    ->smarties()
+//                    .readSmartiesById(m_selectedSmarties, &smarties)) {
+//        qWarning() << "Failed to read smarties" << m_selectedSmarties;
+//        return;
+//    }
 
-    VERIFY_OR_DEBUG_ASSERT(!smarties.isLocked()) {
-        return;
-    }
+//    VERIFY_OR_DEBUG_ASSERT(!smarties.isLocked()) {
+//        return;
+//    }
 
-    QList<TrackId> trackIds;
-    trackIds.reserve(indices.size());
-    for (const QModelIndex& index : indices) {
-        trackIds.append(getTrackId(index));
-    }
-    if (!m_pTrackCollectionManager->internalCollection()->removeSmartiesTracks(
-                smarties.getId(), trackIds)) {
-        qWarning() << "Failed to remove tracks from smarties" << smarties;
-        return;
-    }
+//    QList<TrackId> trackIds;
+//    trackIds.reserve(indices.size());
+//    for (const QModelIndex& index : indices) {
+//        trackIds.append(getTrackId(index));
+//    }
+//    if (!m_pTrackCollectionManager->internalCollection()->removeSmartiesTracks(
+//                smarties.getId(), trackIds)) {
+//        qWarning() << "Failed to remove tracks from smarties" << smarties;
+//        return;
+//    }
 
-    select();
-}
+//    select();
+//}
 
 QString SmartiesTableModel::modelKey(bool noSearch) const {
     if (m_selectedSmarties.isValid()) {

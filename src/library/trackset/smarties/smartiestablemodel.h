@@ -1,6 +1,7 @@
 #pragma once
 
 #include "library/trackset/smarties/smartiesid.h"
+#include "library/trackset/smarties/smartiesstorage.h"
 #include "library/trackset/tracksettablemodel.h"
 
 class SmartiesTableModel final : public TrackSetTableModel {
@@ -15,14 +16,14 @@ class SmartiesTableModel final : public TrackSetTableModel {
         return m_selectedSmarties;
     }
 
-    bool addTrack(const QModelIndex& index, const QString& location);
+    //    bool addTrack(const QModelIndex& index, const QString& location);
 
-    void removeTracks(const QModelIndexList& indices) final;
+    //    void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of unsuccessful additions.
-    int addTracksWithTrackIds(const QModelIndex& index,
-            const QList<TrackId>& tracks,
-            int* pOutInsertionPos) final;
-    bool isLocked() final;
+    //    int addTracksWithTrackIds(const QModelIndex& index,
+    //            const QList<TrackId>& tracks,
+    //            int* pOutInsertionPos) final;
+    //    bool isLocked() final;
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;
