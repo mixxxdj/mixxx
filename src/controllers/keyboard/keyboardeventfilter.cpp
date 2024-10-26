@@ -14,6 +14,10 @@
 namespace {
 const ConfigKey kKbdEnabledCfgKey = ConfigKey("[Keyboard]", "Enabled");
 mixxx::Logger kLogger("KeyboardEventFilter");
+
+const QString mappingFilePath(const QString& dir, const QString& fileName) {
+    return QDir(dir).filePath(fileName + QStringLiteral(".kbd.cfg"));
+}
 } // anonymous namespace
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
@@ -52,7 +56,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
+        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
@@ -85,23 +89,25 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             for (auto it = m_keySequenceToControlHash.constFind(ksv);
                  it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
-                if (configKey.group != "[KeyboardShortcuts]") {
-                    ControlObject* control = ControlObject::getControl(configKey);
-                    if (control) {
-                        // kLogger.debug() << configKey << "MidiOpCode::NoteOn" << 1;
-                        // Add key to active key list
-                        m_qActiveKeyList.append(KeyDownInformation(
+                if (configKey.group == "[KeyboardShortcuts]") {
+                    // We don't handle menubar shortcuts here
+                    continue;
+                }
+                ControlObject* control = ControlObject::getControl(configKey);
+                if (control) {
+                    // kLogger.debug() << configKey << "MidiOpCode::NoteOn" << 1;
+                    // Add key to active key list
+                    m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
-                        // Since setting the value might cause us to go down
-                        // a route that would eventually clear the active
-                        // key list, do that last.
-                        control->setValueFromMidi(MidiOpCode::NoteOn, 1);
-                        result = true;
-                    } else {
-                        kLogger.warning() << "Key" << keyId
-                                          << "is configured for nonexistent control:"
-                                          << configKey.group << configKey.item;
-                    }
+                    // Since setting the value might cause us to go down
+                    // a route that would eventually clear the active
+                    // key list, do that last.
+                    control->setValueFromMidi(MidiOpCode::NoteOn, 1);
+                    result = true;
+                } else {
+                    kLogger.warning() << "Key" << keyId
+                                      << "is configured for nonexistent control:"
+                                      << configKey.group << configKey.item;
                 }
             }
             return result;
@@ -138,12 +144,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #else
         int keyId = ke->nativeScanCode();
 #endif
-        bool autoRepeat = ke->isAutoRepeat();
-
         // kLogger.debug() << "KeyRelease event =" << ke->key()
         // << "AutoRepeat=" << autoRepeat << "KeyId =" << keyId;
 
-        int clearModifiers = 0;
+        int clearModifiers = Qt::NoModifier;
 #ifdef __APPLE__
         // OS X apparently doesn't deliver KeyRelease events when you are
         // holding Ctrl. So release all key-presses that were triggered with
@@ -153,13 +157,16 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 #endif
 
+        bool autoRepeat = ke->isAutoRepeat();
         bool matched = false;
-        // Run through list of active keys to see if the released key is active
+        // Run through list of active keys to see if the released key is active.
+        // Start from end because we may remove the current item.
         for (int i = m_qActiveKeyList.size() - 1; i >= 0; i--) {
             const KeyDownInformation& keyDownInfo = m_qActiveKeyList[i];
             ControlObject* pControl = keyDownInfo.pControl;
             if (keyDownInfo.keyId == keyId ||
-                    (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
+                    (clearModifiers != Qt::NoModifier &&
+                            keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
                     // kLogger.debug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
                     pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
@@ -269,7 +276,7 @@ void KeyboardEventFilter::updateWidgetShortcuts() {
             }
         }
         // might be empty to clear the previous tooltip
-        pWidget->setShortcutTooltip(shortcutHints.join("\n"));
+        pWidget->setShortcutTooltip(shortcutHints.join(QStringLiteral("\n")));
     }
     // Update widget tooltips (WBaseWidget handles no-ops).
     emit shortcutsEnabled(m_enabled);
@@ -304,8 +311,7 @@ const QString KeyboardEventFilter::buildShortcutString(
 void KeyboardEventFilter::registerMenuBarActionSetShortcut(QAction* pAction,
         const ConfigKey& command,
         const QString& defaultShortcut) {
-    const auto cmdStr = std::make_pair(command, defaultShortcut);
-    m_menuBarActions.insert(pAction, cmdStr);
+    m_menuBarActions.emplace(pAction, std::make_pair(command, defaultShortcut));
     pAction->setShortcut(QKeySequence(m_pKbdConfig->getValue(command, defaultShortcut)));
     pAction->setShortcutContext(Qt::ApplicationShortcut);
 }
@@ -319,9 +325,9 @@ void KeyboardEventFilter::updateMenuBarActionShortcuts() {
     QHashIterator<QAction*, std::pair<ConfigKey, QString>> it(m_menuBarActions);
     while (it.hasNext()) {
         it.next();
-        const QString keyStr = m_pKbdConfig->getValue(it.value().first, it.value().second);
         auto* pAction = it.key();
         DEBUG_ASSERT(pAction);
+        const QString keyStr = m_pKbdConfig->getValue(it.value().first, it.value().second);
         pAction->setShortcut(QKeySequence(keyStr));
     }
 }
@@ -341,20 +347,18 @@ void KeyboardEventFilter::createKeyboardConfig() {
     m_autoReloader.clear();
 
     // Check first in user's Mixxx directory
-    QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
+    QString keyboardFile = mappingFilePath(m_pConfig->getSettingsPath(), QStringLiteral("Custom"));
     if (QFile::exists(keyboardFile)) {
         kLogger.debug() << "Found and will use custom keyboard mapping" << keyboardFile;
     } else {
         // check if a default keyboard exists
-        const QString resourcePath = m_pConfig->getResourcePath();
-        keyboardFile = QString(resourcePath).append("keyboard/");
-        keyboardFile += m_locale.name();
-        keyboardFile += ".kbd.cfg";
+        const QString resourcePath = m_pConfig->getResourcePath() + QStringLiteral("keyboard/");
+        keyboardFile = mappingFilePath(resourcePath, m_locale.name());
         if (QFile::exists(keyboardFile)) {
             kLogger.debug() << "Found and will use default keyboard mapping" << keyboardFile;
         } else {
-            kLogger.debug() << keyboardFile << " not found, using en_US.kbd.cfg";
-            keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
+            kLogger.debug() << keyboardFile << " not found, try to use en_US.kbd.cfg";
+            keyboardFile = mappingFilePath(resourcePath, QStringLiteral("en_US"));
             if (!QFile::exists(keyboardFile)) {
                 kLogger.debug() << keyboardFile << " not found, starting without shortcuts";
                 keyboardFile = "";
@@ -367,10 +371,12 @@ void KeyboardEventFilter::createKeyboardConfig() {
     }
 
     // Read the keyboard configuration file and set m_pKbdConfig.
-    // Keyboard configs are a surjection from ConfigKey to key sequence. We
-    // invert the mapping to create an injection from key sequence to
+    // Keyboard configs are a surjection from ConfigKey to key sequence.
+    // We invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
     // Mixxx.
     m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(keyboardFile);
+    // TODO Slightly accelerate lookup in eventFilter() by creating a copy
+    // and removing [KeyboardShortcut] mappings (menubar) before transposing?
     m_keySequenceToControlHash = m_pKbdConfig->transpose();
 }
