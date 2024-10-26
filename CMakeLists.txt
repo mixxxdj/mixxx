@@ -1010,7 +1010,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackset/smarties/smartiesfeaturehelper.cpp
   src/library/trackset/smarties/smartiesstorage.cpp
   src/library/trackset/smarties/smartiestablemodel.cpp
-  src/library/trackset/smarties/dlgsmartiesdlg.ui
+  src/library/trackset/smarties/dlgsmartiesinfo.ui
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
