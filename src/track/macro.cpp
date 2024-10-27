@@ -1,7 +1,5 @@
 #include "track/macro.h"
 
-#include <QDebug>
-
 #include "util/assert.h"
 
 const QLoggingCategory kMacroLoggingCategory("macros");

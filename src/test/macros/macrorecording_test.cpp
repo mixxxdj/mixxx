@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "macro_test.h"
 #include "test/signalpathtest.h"
 

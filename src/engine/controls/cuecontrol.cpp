@@ -1,7 +1,5 @@
 #include "engine/controls/cuecontrol.h"
 
-#include <QDebug>
-
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"

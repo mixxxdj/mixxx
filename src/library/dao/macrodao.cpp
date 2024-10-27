@@ -1,6 +1,5 @@
 #include "library/dao/macrodao.h"
 
-#include <QDebug>
 #include <QSqlQuery>
 
 #include "library/queryutil.h"
