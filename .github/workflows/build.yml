@@ -138,7 +138,6 @@ jobs:
 
     env:
       # macOS codesigning
-      APPLE_CODESIGN_IDENTITY: EF241CF990A9BE5477438AEE1F308F76F33FD100
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
@@ -218,6 +217,8 @@ jobs:
           security unlock-keychain -p mixxx Mixxx.keychain
           security import ~/certificate.p12 -k Mixxx.keychain \
             -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
+          security find-certificate -a -Z -k Mixxx.keychain
+          APPLE_CODESIGN_IDENTITY="$(security find-certificate -a -Z -k Mixxx.keychain | grep ^SHA-1 | cut -d " " -f3 | uniq)"
           security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
           # Add keychain to search list
           security list-keychains -s Mixxx.keychain
