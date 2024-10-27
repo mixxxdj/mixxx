@@ -21,7 +21,15 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
           m_iPlaylistId(kInvalidPlaylistId),
           m_keepHiddenTracks(keepHiddenTracks) {
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
-            &PlaylistDAO::tracksChanged,
+            &PlaylistDAO::tracksAdded,
+            this,
+            &PlaylistTableModel::playlistsChanged);
+    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
+            &PlaylistDAO::tracksMoved,
+            this,
+            &PlaylistTableModel::playlistsChanged);
+    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
+            &PlaylistDAO::tracksRemoved,
             this,
             &PlaylistTableModel::playlistsChanged);
 }
@@ -255,6 +263,10 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTracksFromPlaylist(
             m_iPlaylistId,
             std::move(trackPositions));
+
+    if (trackPositions.contains(1)) {
+        emit firstTrackChanged();
+    }
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -280,6 +292,10 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     }
 
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
+
+    if (oldPosition == 1 || newPosition == 1) {
+        emit firstTrackChanged();
+    }
 }
 
 bool PlaylistTableModel::isLocked() {
@@ -323,6 +339,19 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
+const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {
+    if (indices.isEmpty()) {
+        return {};
+    }
+    QList<int> positions;
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (auto idx : indices) {
+        int pos = idx.siblingAtColumn(positionColumn).data().toInt();
+        positions.append(pos);
+    }
+    return positions;
+}
+
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
     if (indices.isEmpty()) {
         return mixxx::Duration::empty();
@@ -363,7 +392,10 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::ResetPlayed |
-            Capability::Analyze;
+            Capability::RemoveFromDisk |
+            Capability::Hide |
+            Capability::Analyze |
+            Capability::Properties;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()
@@ -377,8 +409,9 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     if (m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getHiddenType(m_iPlaylistId) == PlaylistDAO::PLHT_SET_LOG) {
-        // Disable track reordering and adding tracks via drag'n'drop for history playlists
-        caps &= ~(Capability::ReceiveDrops | Capability::Reorder);
+        // Disallow reordering and hiding tracks, as well as adding tracks via
+        // drag'n'drop for history playlists
+        caps &= ~(Capability::ReceiveDrops | Capability::Reorder | Capability::Hide);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {

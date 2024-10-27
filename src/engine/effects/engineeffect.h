@@ -4,13 +4,13 @@
 #include <QSet>
 #include <QString>
 #include <QVector>
+#include <memory>
 
 #include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
@@ -26,6 +26,7 @@ class EngineEffect final : public EffectsRequestHandler {
             const QSet<ChannelHandleAndGroup>& registeredInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
     /// Called in main thread by EffectSlot
+    // Doesn't deal with ownership; only for conditional debug output
     ~EngineEffect();
 
     /// Called from the main thread to make sure that the channel already has states
@@ -71,5 +72,4 @@ class EngineEffect final : public EffectsRequestHandler {
     QVector<EngineEffectParameterPointer> m_parameters;
     QMap<QString, EngineEffectParameterPointer> m_parametersById;
 
-    DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };

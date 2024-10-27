@@ -10,6 +10,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "engine/engine.h"
+#include "library/dao/trackschema.h"
 #include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
@@ -23,7 +24,7 @@ using ::testing::Return;
 
 namespace {
 const int kDefaultTransitionTime = 10;
-const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelOutputCount;
 const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
@@ -33,7 +34,7 @@ class FakeMixer {
     FakeMixer()
             : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
               crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
-        crossfaderReverse.setButtonMode(ControlPushButton::TOGGLE);
+        crossfaderReverse.setButtonMode(mixxx::control::ButtonMode::Toggle);
     }
 
     ControlPotmeter crossfader;
@@ -55,8 +56,8 @@ class FakeDeck : public BaseTrackPlayer {
               outroStartPos(ConfigKey(group, "outro_start_position")),
               outroEndPos(ConfigKey(group, "outro_end_position")),
               orientation(ConfigKey(group, "orientation")) {
-        play.setButtonMode(ControlPushButton::TOGGLE);
-        repeat.setButtonMode(ControlPushButton::TOGGLE);
+        play.setButtonMode(mixxx::control::ButtonMode::Toggle);
+        repeat.setButtonMode(mixxx::control::ButtonMode::Toggle);
         outroStartPos.set(Cue::kNoPosition);
         outroEndPos.set(Cue::kNoPosition);
         orientation.set(orient);

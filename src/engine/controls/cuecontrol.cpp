@@ -140,9 +140,9 @@ CueControl::~CueControl() {
 
 void CueControl::createControls() {
     m_pCueSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_set"));
-    m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
+    m_pCueSet->setButtonMode(mixxx::control::ButtonMode::Trigger);
     m_pCueClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_clear"));
-    m_pCueClear->setButtonMode(ControlPushButton::TRIGGER);
+    m_pCueClear->setButtonMode(mixxx::control::ButtonMode::Trigger);
     m_pCueGoto = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_goto"));
     m_pCueGotoAndPlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_gotoandplay"));
     m_pCuePlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_play"));
@@ -544,7 +544,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekOnLoad(mixxx::audio::kStartFramePos);
         }
-        break;
+        return;
     case SeekOnLoadMode::FirstSound: {
         CuePointer pN60dBSound =
                 pNewTrack->findCueByType(mixxx::CueType::N60dBSound);
@@ -569,8 +569,19 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pCuePoint->get());
         if (mainCuePosition.isValid()) {
             seekOnLoad(mainCuePosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
+        }
+        break;
+    }
+    case SeekOnLoadMode::FirstHotcue: {
+        mixxx::audio::FramePos firstHotcuePosition;
+        HotcueControl* pControl = m_hotcueControls.value(0, nullptr);
+        if (pControl) {
+            firstHotcuePosition = pControl->getPosition();
+            if (firstHotcuePosition.isValid()) {
+                seekOnLoad(firstHotcuePosition);
+                return;
+            }
         }
         break;
     }
@@ -580,16 +591,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pIntroStartPosition->get());
         if (introStartPosition.isValid()) {
             seekOnLoad(introStartPosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
         }
         break;
     }
     default:
         DEBUG_ASSERT(!"Unknown enum value");
-        seekOnLoad(mixxx::audio::kStartFramePos);
         break;
     }
+    seekOnLoad(mixxx::audio::kStartFramePos);
 }
 
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {

@@ -274,7 +274,7 @@ void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
     m_outputFifo->aquireReadRegions(readAvailable,
             &dataPtr1, &size1, &dataPtr2, &size2);
 
-    QVector<NetworkOutputStreamWorkerPtr> workers =
+    const QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
     for (const auto& pWorker : workers) {
         if (pWorker.isNull()) {
@@ -497,7 +497,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     m_pSoundManager->readProcess(framesPerBuffer);
 
     {
-        ScopedTimer t(u"SoundDevicePortAudio::callbackProcess prepare %1",
+        ScopedTimer t(QStringLiteral("SoundDevicePortAudio::callbackProcess prepare %1"),
                 m_deviceId.name);
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }

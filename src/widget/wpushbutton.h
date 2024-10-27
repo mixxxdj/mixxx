@@ -7,6 +7,7 @@
 
 #include "control/controlpushbutton.h"
 #include "util/fpclassify.h"
+#include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
@@ -18,8 +19,9 @@ class WPushButton : public WWidget {
   public:
     explicit WPushButton(QWidget* pParent = nullptr);
     // Used by WPushButtonTest.
-    WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
-                ControlPushButton::ButtonMode rightButtonMode);
+    WPushButton(QWidget* pParent,
+            mixxx::control::ButtonMode leftButtonMode,
+            mixxx::control::ButtonMode rightButtonMode);
 
     Q_PROPERTY(bool pressed READ isPressed);
 
@@ -90,7 +92,7 @@ class WPushButton : public WWidget {
             Paintable::DrawMode mode,
             double scaleFactor);
 
-    void paintOnDevice(QPaintDevice* pd);
+    void paintOnDevice(QPaintDevice* pd, int idx);
 
     // True, if the button is currently pressed
     bool m_bPressed;
@@ -108,8 +110,8 @@ class WPushButton : public WWidget {
     PaintablePointer m_pPixmapBack;
 
     // short click toggle button long click push button
-    ControlPushButton::ButtonMode m_leftButtonMode;
-    ControlPushButton::ButtonMode m_rightButtonMode;
+    mixxx::control::ButtonMode m_leftButtonMode;
+    mixxx::control::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
     QVector<int> m_align;
 
@@ -121,13 +123,14 @@ class WPushButton : public WWidget {
     class LongPressLatching {
       public:
         LongPressLatching(WPushButton* pButton);
-        void paint(QPainter* p, int remainingTime);
+        void paint(QPainter* p);
         void start();
         void stop();
 
       private:
         WPushButton* m_pButton;
         QPixmap m_preLongPressPixmap;
+        PerformanceTimer m_sinceStart;
         QTimer m_animTimer;
     };
 

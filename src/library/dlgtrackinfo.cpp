@@ -294,13 +294,11 @@ void DlgTrackInfo::slotApply() {
 }
 
 void DlgTrackInfo::slotOk() {
-    slotApply();
-    clear();
+    saveTrack();
     accept();
 }
 
 void DlgTrackInfo::slotCancel() {
-    clear();
     reject();
 }
 
@@ -622,6 +620,8 @@ void DlgTrackInfo::saveTrack() {
 
 void DlgTrackInfo::clear() {
     const QSignalBlocker signalBlocker(this);
+
+    setWindowTitle(QString());
 
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),

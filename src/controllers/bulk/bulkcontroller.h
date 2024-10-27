@@ -2,6 +2,7 @@
 
 #include <QAtomicInt>
 #include <QThread>
+#include <optional>
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
@@ -63,7 +64,7 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
     bool matchProductInfo(const ProductInfo& product);
 
@@ -72,12 +73,14 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short vendor_id;
-    unsigned short product_id;
-    unsigned char in_epaddr;
-    unsigned char out_epaddr;
-    QString manufacturer;
-    QString product;
+    std::uint16_t m_vendorId;
+    std::uint16_t m_productId;
+    std::uint8_t m_inEndpointAddr;
+    std::uint8_t m_outEndpointAddr;
+    std::optional<std::uint8_t> m_interfaceNumber;
+
+    QString m_manufacturer;
+    QString m_product;
 
     QString m_sUID;
     BulkReader* m_pReader;

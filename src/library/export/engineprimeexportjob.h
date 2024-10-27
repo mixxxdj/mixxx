@@ -32,6 +32,8 @@ class EnginePrimeExportJob : public QThread {
             TrackCollectionManager* pTrackCollectionManager,
             QSharedPointer<EnginePrimeExportRequest> pRequest);
 
+    ~EnginePrimeExportJob() override;
+
     /// Run the export job.
     void run() override;
 

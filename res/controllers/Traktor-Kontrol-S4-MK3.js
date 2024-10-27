@@ -38,6 +38,11 @@ const KeyboardColors = [
     LedColors.white,
 ];
 
+// Constant used to define custom default pad layout
+const DefaultPadLayoutHotcue = "hotcue";
+const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
+const DefaultPadLayoutKeyboard = "keyboard";
+
 /*
  * USER CONFIGURABLE SETTINGS
  * Change settings in the preferences
@@ -90,10 +95,6 @@ const WheelLedBlinkOnTrackEnd = !!engine.getSetting("wheelLedBlinkOnTrackEnd");
 // Default: false
 const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMicAuxOnShift");
 
-// Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
-// less responsive it gets in Mixxx. Default: 5
-const WheelSpeedSample = engine.getSetting("wheelSpeedSample") || 5;
-
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
 const UseBeatloopRollInsteadOfSampler = !!engine.getSetting("useBeatloopRollInsteadOfSampler");
@@ -112,7 +113,7 @@ const BeatLoopRolls = [
 ];
 
 
-// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
+// Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the scratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
 const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;
@@ -122,11 +123,9 @@ const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") |
 // Default: false
 const UseMotors = !!engine.getSetting("useMotors");
 
-// Define how many wheel moves are sampled to compute the speed when using the motor. This is helpful to mitigate delay that
-// occurs in communication as well as Mixxx limitation to 20ms latency.
-// The more you have, the more the speed is accurate.
-// less responsive it gets in Mixxx. Default: 20
-const TurnTableSpeedSample = engine.getSetting("turnTableSpeedSample") || 20;
+// Define whether or not the jog wheel plater provide a haptic feedback when going over the cue point.
+// Default: true
+const CueHapticFeedback = UseMotors && !!engine.getSetting("cueHapticFeedback");
 
 // Define how much the wheel will resist. It is a similar setting that the Grid+Wheel in Tracktor
 // Value must defined between 0 to 1. 0 is very tight, 1 is very loose.
@@ -137,6 +136,14 @@ const TightnessFactor = engine.getSetting("tightnessFactor") || 0.5;
 // This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
 const MaxWheelForce = engine.getSetting("maxWheelForce") || 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
 
+// Map the mixer potentiometers to different components of the software mixer in Mixxx, on top of the physical control of the hardware
+// mixer embedded in the S4 Mk3. This is useful if you are not using certain S4 Mk3 outputs.
+const SoftwareMixerMain = !!engine.getSetting("softwareMixerMain");
+const SoftwareMixerBooth = !!engine.getSetting("softwareMixerBooth");
+const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
+
+// Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
+const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
@@ -455,13 +462,6 @@ class Deck extends ComponentContainer {
                     engine.setValue(newGroup, "scratch2_enable", true);
                 }, true);
             }
-        }
-
-        if (currentModes.wheelMode === wheelModes.motor) {
-            this.wheelTouch.touched = true;
-            engine.beginTimer(MotorWindDownMilliseconds, () => {
-                this.wheelTouch.touched = false;
-            }, true);
         }
         this.reconnectComponents(function(component) {
             if (component.group === undefined
@@ -1144,6 +1144,42 @@ class Mixer extends ComponentContainer {
             },
         });
 
+        if (SoftwareMixerMain) {
+            this.master = new Pot({
+                group: "[Master]",
+                inKey: "gain",
+                inByte: 22,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+        if (SoftwareMixerBooth) {
+            this.booth = new Pot({
+                group: "[Master]",
+                inKey: "booth_gain",
+                inByte: 24,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+        if (SoftwareMixerHeadphone) {
+            this.cue = new Pot({
+                group: "[Master]",
+                inKey: "headMix",
+                inByte: 28,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+
+            this.pflGain = new Pot({
+                group: "[Master]",
+                inKey: "headGain",
+                inByte: 26,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+
         for (const component of this) {
             if (component.inReport === undefined) {
                 component.inReport = inReports[1];
@@ -1346,7 +1382,7 @@ Button.prototype.colorMap = new ColorMapper({
     0xCCCCCC: LedColors.white,
 });
 
-const wheelRelativeMax = 2 ** 16 - 1;
+const wheelRelativeMax = 2 ** 32 - 1;
 const wheelAbsoluteMax = 2879;
 
 const wheelTimerMax = 2 ** 32 - 1;
@@ -2213,8 +2249,24 @@ class S4Mk3Deck extends Deck {
             samplerPage: 3,
             keyboard: 5,
         };
-        switchPadLayer(this, defaultPadLayer);
-        this.currentPadLayer = this.padLayers.defaultLayer;
+        switch (DefaultPadLayout) {
+        case DefaultPadLayoutHotcue:
+            switchPadLayer(this, hotcuePage2);
+            this.currentPadLayer = this.padLayers.hotcuePage2;
+            break;
+        case DefaultPadLayoutSamplerBeatloop:
+            switchPadLayer(this, samplerOrBeatloopRollPage);
+            this.currentPadLayer = this.padLayers.samplerPage;
+            break;
+        case DefaultPadLayoutKeyboard:
+            switchPadLayer(this, this.keyboard);
+            this.currentPadLayer = this.padLayers.keyboard;
+            break;
+        default:
+            switchPadLayer(this, defaultPadLayer);
+            this.currentPadLayer = this.padLayers.defaultLayer;
+            break;
+        }
 
         this.hotcuePadModeButton = new Button({
             deck: this,
@@ -2306,11 +2358,6 @@ class S4Mk3Deck extends Deck {
         });
 
         this.wheelMode = wheelModes.vinyl;
-        let motorWindDownTimer = 0;
-        const motorWindDownTimerCallback = () => {
-            engine.stopTimer(motorWindDownTimer);
-            motorWindDownTimer = 0;
-        };
         this.turntableButton = UseMotors ? new Button({
             deck: this,
             input: function(press) {
@@ -2319,14 +2366,10 @@ class S4Mk3Deck extends Deck {
                     this.deck.fluxButton.loopModeOff(true);
                     if (this.deck.wheelMode === wheelModes.motor) {
                         this.deck.wheelMode = wheelModes.vinyl;
-                        motorWindDownTimer = engine.beginTimer(MotorWindDownMilliseconds, motorWindDownTimerCallback, true);
                         engine.setValue(this.group, "scratch2_enable", false);
                     } else {
                         this.deck.wheelMode = wheelModes.motor;
                         const group = this.group;
-                        engine.beginTimer(MotorWindUpMilliseconds, () => {
-                            engine.setValue(group, "scratch2_enable", true);
-                        }, true);
                     }
                     this.outTrigger();
                 }
@@ -2347,9 +2390,6 @@ class S4Mk3Deck extends Deck {
                     if (this.deck.wheelMode === wheelModes.vinyl) {
                         this.deck.wheelMode = wheelModes.jog;
                     } else {
-                        if (this.deck.wheelMode === wheelModes.motor) {
-                            motorWindDownTimer = engine.beginTimer(MotorWindDownMilliseconds, motorWindDownTimerCallback, true);
-                        }
                         this.deck.wheelMode = wheelModes.vinyl;
                     }
                     engine.setValue(this.group, "scratch2_enable", false);
@@ -2380,7 +2420,7 @@ class S4Mk3Deck extends Deck {
                 }
             },
             stopScratchWhenOver: function() {
-                if (this.touched || this.deck.wheelMode === wheelModes.motor) {
+                if (this.touched) {
                     return;
                 }
 
@@ -2404,45 +2444,36 @@ class S4Mk3Deck extends Deck {
         this.wheelRelative = new Component({
             oldValue: null,
             deck: this,
-            // We use a rolling average on a sample of speed received. An alternative could
-            // be to compute precise speed as soon as two points have been received. While the
-            // alternative is likely going to reduce the delay. it may introduce imprefection due
-            // to delays that could occurred at various level, so we stick with the naive average for now
-            stack: [],
-            stackIdx: 0,
-            avgSpeed: 0,
-            // There is a second sampling group, larger, that improve precision but increase delay, which
-            // is used in TT mode
-            stackAvg: [],
-            stackAvgIdx: 0,
-            ttAvgSpeed: 0,
-            input: function(value) {
-                const oldValue = this.oldValue;
-                this.oldValue = value;
-                if (oldValue === null) {
+            speed: 0,
+            input: function(value, timestamp) {
+                if (this.oldValue === null) {
                     // This is to avoid the issue where the first time, we diff with 0, leading to the absolute value
+                    this.oldValue = [value, timestamp, 0];
                     return;
+                }
+                let [oldValue, oldTimestamp, speed] = this.oldValue;
+
+                if (timestamp < oldTimestamp) {
+                    oldTimestamp -= wheelRelativeMax;
                 }
 
                 let diff = value - oldValue;
-
                 if (diff > wheelRelativeMax / 2) {
-                    diff = (wheelRelativeMax - value + oldValue) * -1;
-                } else if (diff < -1 * (wheelRelativeMax / 2)) {
-                    diff = wheelRelativeMax - oldValue + value;
+                    oldValue += wheelRelativeMax;
+                } else if (diff < -wheelRelativeMax / 2) {
+                    oldValue -= wheelRelativeMax;
                 }
 
-                this.stack[this.stackIdx] = diff / wheelTimerDelta;
-                this.stackIdx = (this.stackIdx + 1) % WheelSpeedSample;
+                const currentSpeed = (value - oldValue)/(timestamp - oldTimestamp);
+                if ((currentSpeed <= 0) === (speed <= 0)) {
+                    speed = (speed + currentSpeed)/2;
+                } else {
+                    speed = currentSpeed;
+                }
+                this.oldValue = [value, timestamp, speed];
+                this.speed = wheelAbsoluteMax*speed*10;
 
-                this.avgSpeed = (this.stack.reduce((ps, v) => ps + v, 0) / this.stack.length) * wheelTicksPerTimerTicksToRevolutionsPerSecond;
-
-                this.stackAvg[this.stackAvgIdx] = this.avgSpeed;
-                this.stackAvgIdx = (this.stackAvgIdx + 1) % TurnTableSpeedSample;
-
-                this.ttAvgSpeed = this.stackAvg.reduce((ps, v) => ps + v, 0) / this.stackAvg.length;
-
-                if (this.avgSpeed === 0 &&
+                if (this.speed === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
                     this.deck.wheelMode !== wheelModes.motor) {
@@ -2451,13 +2482,13 @@ class S4Mk3Deck extends Deck {
 
                 switch (this.deck.wheelMode) {
                 case wheelModes.motor:
-                    engine.setValue(this.group, "scratch2", this.ttAvgSpeed / baseRevolutionsPerSecond);
+                    engine.setValue(this.group, "scratch2", this.speed);
                     break;
                 case wheelModes.loopIn:
                     {
                         const loopStartPosition = engine.getValue(this.group, "loop_start_position");
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
-                        const value = Math.min(loopStartPosition + (this.avgSpeed * LoopWheelMoveFactor), loopEndPosition - LoopWheelMoveFactor);
+                        const value = Math.min(loopStartPosition + (this.speed * LoopWheelMoveFactor), loopEndPosition - LoopWheelMoveFactor);
                         engine.setValue(
                             this.group,
                             "loop_start_position",
@@ -2468,7 +2499,7 @@ class S4Mk3Deck extends Deck {
                 case wheelModes.loopOut:
                     {
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
-                        const value = loopEndPosition + (this.avgSpeed * LoopWheelMoveFactor);
+                        const value = loopEndPosition + (this.speed * LoopWheelMoveFactor);
                         engine.setValue(
                             this.group,
                             "loop_end_position",
@@ -2478,24 +2509,56 @@ class S4Mk3Deck extends Deck {
                     break;
                 case wheelModes.vinyl:
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
-                        engine.setValue(this.group, "scratch2", this.avgSpeed);
+                        engine.setValue(this.group, "scratch2", this.speed);
                     } else {
-                        engine.setValue(this.group, "jog", this.avgSpeed);
+                        engine.setValue(this.group, "jog", this.speed);
                     }
                     break;
                 default:
-                    engine.setValue(this.group, "jog", this.avgSpeed);
+                    engine.setValue(this.group, "jog", this.speed);
                 }
             },
         });
 
         this.wheelLED = new Component({
             deck: this,
+            lastPos: 0,
             outKey: "playposition",
             output: function(fractionOfTrack) {
                 if (this.deck.wheelMode > wheelModes.motor) {
                     return;
                 }
+                // Emit cue haptic feedback if enabled
+                const samplePos = Math.round(fractionOfTrack * engine.getValue(this.group, "track_samples"));
+                if (this.deck.wheelTouch.touched && CueHapticFeedback) {
+                    const cuePos = engine.getValue(this.group, "cue_point");
+                    const forward = this.lastPos <= samplePos;
+                    let fired = false;
+                    const motorDeckData = new Uint8Array([
+                        1, 0x20, 1, MaxWheelForce & 0xff, MaxWheelForce >> 8,
+                    ]);
+                    if (forward && this.lastPos < cuePos && cuePos < samplePos) {
+                        fired = true;
+                    } else if (!forward && cuePos < this.lastPos && samplePos <= cuePos) {
+                        motorDeckData[1] = 0xe0;
+                        motorDeckData[2] = 0xfe;
+                        fired = true;
+                    }
+                    if (fired) {
+                        const motorData = new Uint8Array([
+                            1, 0x20, 1, 0, 0,
+                            1, 0x20, 1, 0, 0,
+                        ]);
+                        if (this.deck === TraktorS4MK3.leftDeck) {
+                            motorData.set(motorDeckData);
+                        } else {
+                            motorData.set(motorDeckData, 5);
+                        }
+                        controller.sendOutputReport(49, motorData.buffer, true);
+                    }
+                }
+                this.lastPos = samplePos;
+
                 const durationSeconds = engine.getValue(this.group, "duration");
                 const positionSeconds = fractionOfTrack * durationSeconds;
                 const revolutions = positionSeconds * baseRevolutionsPerSecond;
@@ -2580,6 +2643,87 @@ class S4Mk3Deck extends Deck {
             const keyboardPadModeLEDOn = this.currentPadLayer === this.padLayers.keyboard;
             this.stemsPadModeButton.send(this.stemsPadModeButton.color + (keyboardPadModeLEDOn ? this.stemsPadModeButton.brightnessOn : this.stemsPadModeButton.brightnessOff));
         }
+    }
+}
+
+class S4Mk3MotorManager {
+    constructor(deck) {
+        this.deck = deck;
+        this.userHold = 0;
+        this.oldValue = [0, 0];
+        this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute);
+        this.zeroSpeedForce = 1650;
+        this.currentMaxWheelForce = MaxWheelForce;
+    }
+    tick() {
+        const motorData = new Uint8Array([
+            1, 0x20, 1, 0, 0,
+        ]);
+        const maxVelocity = 10;
+        let velocity = 0;
+
+        let expectedSpeed = 0;
+
+        const currentSpeed = this.deck.wheelRelative.speed / baseRevolutionsPerSecond;
+
+        if (this.deck.wheelMode === wheelModes.motor
+            && engine.getValue(this.deck.group, "play")) {
+            expectedSpeed = engine.getValue(this.deck.group, "rate_ratio");
+            const normalisationFactor = 1/expectedSpeed/5;
+            velocity = expectedSpeed + Math.pow(-5 * (expectedSpeed / 1) * (currentSpeed - expectedSpeed), 3);
+        } else if (this.deck.wheelMode !== wheelModes.motor) {
+            if (TightnessFactor > 0.5) {
+                // Super loose
+                const reduceFactor = (Math.min(0.5, TightnessFactor - 0.5) / 0.5) * 0.7;
+                velocity = currentSpeed * reduceFactor;
+            } else if (TightnessFactor < 0.5) {
+                // Super tight
+                const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
+                velocity = expectedSpeed + Math.min(
+                    maxVelocity,
+                    Math.max(
+                        -maxVelocity,
+                        (expectedSpeed - currentSpeed) * reduceFactor
+                    )
+                );
+            }
+        }
+
+        velocity *= this.baseFactor;
+
+        if (velocity < 0) {
+            motorData[1] = 0xe0;
+            motorData[2] = 0xfe;
+            velocity = -velocity;
+        } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
+            velocity += this.zeroSpeedForce;
+        }
+
+        if (!this.isBlockedByUser() && velocity > MaxWheelForce) {
+            this.userHold++;
+        } else if (velocity < MaxWheelForce / 2 && this.userHold > 0) {
+            this.userHold--;
+        }
+
+        if (this.isBlockedByUser()) {
+            engine.setValue(this.deck.group, "scratch2_enable", true);
+            this.currentMaxWheelForce = this.zeroSpeedForce + parseInt(this.baseFactor * expectedSpeed);
+        } else if (expectedSpeed && this.userHold === 0 && !this.deck.wheelTouch.touched) {
+            engine.setValue(this.deck.group, "scratch2_enable", false);
+            this.currentMaxWheelForce = MaxWheelForce;
+        }
+
+        velocity = Math.min(
+            this.currentMaxWheelForce,
+            Math.floor(velocity)
+        );
+
+        motorData[3] = velocity & 0xff;
+        motorData[4] = velocity >> 8;
+        return motorData;
+    }
+    isBlockedByUser() {
+        return this.userHold >= 10;
     }
 }
 
@@ -2933,176 +3077,15 @@ class S4MK3 {
             controller.sendOutputReport(129, deckMeters.buffer);
         });
         if (UseMotors) {
-            engine.beginTimer(20, this.motorCallback.bind(this));
-            this.leftVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
-            this.rightVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
-
-            this.leftFactor = [this.leftVelocityFactor];
-            this.leftFactorIdx = 1;
-            this.rightFactor = [this.rightVelocityFactor];
-            this.rightFactorIdx = 1;
-
-            this.averageLeftCorrectness = [];
-            this.averageLeftCorrectnessIdx = 0;
-            this.averageRightCorrectness = [];
-            this.averageRightCorrectnessIdx = 0;
+            this.leftMotor = new S4Mk3MotorManager(this.leftDeck);
+            this.rightMotor = new S4Mk3MotorManager(this.rightDeck);
+            engine.beginTimer(1, this.motorCallback.bind(this));
         }
-
     }
     motorCallback() {
-        const motorData = new Uint8Array([
-            1, 0x20, 1, 0, 0,
-            1, 0x20, 1, 0, 0,
-
-        ]);
-        const maxVelocity = 10;
-
-        let velocityLeft = 0;
-        let velocityRight = 0;
-
-        let expectedLeftSpeed = 0;
-        let expectedRightSpeed = 0;
-
-        if (this.leftDeck.wheelMode === wheelModes.motor
-            && engine.getValue(this.leftDeck.group, "play")) {
-            expectedLeftSpeed = engine.getValue(this.leftDeck.group, "rate_ratio");
-        }
-
-        if (this.rightDeck.wheelMode === wheelModes.motor
-            && engine.getValue(this.rightDeck.group, "play")) {
-            expectedRightSpeed = engine.getValue(this.rightDeck.group, "rate_ratio");
-        }
-
-        const currentLeftSpeed = this.leftDeck.wheelRelative.avgSpeed / baseRevolutionsPerSecond;
-        const currentRightSpeed = this.rightDeck.wheelRelative.avgSpeed / baseRevolutionsPerSecond;
-
-        if (expectedLeftSpeed) {
-            velocityLeft = expectedLeftSpeed + Math.min(
-                maxVelocity,
-                Math.max(
-                    -maxVelocity,
-                    (expectedLeftSpeed - currentLeftSpeed)
-                )
-            );
-        } else {
-            if (TightnessFactor > 0.5) {
-                // Super loose
-                const reduceFactor = (Math.min(0.5, TightnessFactor - 0.5) / 0.5) * 0.7;
-                velocityLeft = currentLeftSpeed * reduceFactor;
-            } else if (TightnessFactor < 0.5) {
-                // Super tight
-                const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
-                velocityLeft = expectedLeftSpeed + Math.min(
-                    maxVelocity,
-                    Math.max(
-                        -maxVelocity,
-                        (expectedLeftSpeed - currentLeftSpeed) * reduceFactor
-                    )
-                );
-
-            }
-        }
-
-        if (expectedRightSpeed) {
-            velocityRight = expectedRightSpeed + Math.min(
-                maxVelocity,
-                Math.max(
-                    -maxVelocity,
-                    (expectedRightSpeed - currentRightSpeed)
-                )
-            );
-        } else {
-            if (TightnessFactor > 0.5) {
-                // Super loose
-                const reduceFactor = (Math.min(0.5, TightnessFactor - 0.5) / 0.5) * 0.7;
-                velocityRight = currentRightSpeed * reduceFactor;
-            } else if (TightnessFactor < 0.5) {
-                // Super tight
-                const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
-                console.log(reduceFactor);
-                velocityRight = expectedRightSpeed + Math.min(
-                    maxVelocity,
-                    Math.max(
-                        -maxVelocity,
-                        (expectedRightSpeed - currentRightSpeed) * reduceFactor
-                    )
-                );
-
-            }
-        }
-
-        if (velocityLeft < 0) {
-            motorData[1] = 0xe0;
-            motorData[2] = 0xfe;
-            velocityLeft = -velocityLeft;
-        }
-
-        if (velocityRight < 0) {
-            motorData[6] = 0xe0;
-            motorData[7] = 0xfe;
-            velocityRight = -velocityRight;
-        }
-
-        const roundedCurrentLeftSpeed = Math.round(currentLeftSpeed * 100);
-        const roundedCurrentRightSpeed = Math.round(currentRightSpeed * 100);
-
-        velocityLeft = velocityLeft * this.leftVelocityFactor;
-        velocityRight = velocityRight * this.rightVelocityFactor;
-
-        const minNormalFactor = 0.8 * wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
-        const maxNormalFactor = 1.2 * wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
-
-        if (velocityLeft > minNormalFactor && velocityLeft < maxNormalFactor) {
-            this.averageLeftCorrectness[this.averageLeftCorrectnessIdx] = roundedCurrentLeftSpeed;
-            this.averageLeftCorrectnessIdx = (this.averageLeftCorrectnessIdx + 1) % 10;
-            const averageCorrectness = Math.round(this.averageLeftCorrectness.reduce((a, b) => a+b, 0) / this.averageLeftCorrectness.length);
-            this.leftFactor[this.leftFactorIdx] = velocityLeft;
-            this.leftFactorIdx = (this.leftFactorIdx + 1) % 10;
-            const averageFactor = Math.round(this.leftFactor.reduce((a, b) => a+b, 0) / this.leftFactor.length);
-
-
-            if ((averageCorrectness < 100 && velocityLeft > this.leftVelocityFactor) || (averageCorrectness > 100 && velocityLeft < this.leftVelocityFactor)) {
-                this.leftVelocityFactor = averageFactor;
-            }
-        }
-
-        if (velocityRight > minNormalFactor && velocityRight < maxNormalFactor) {
-            this.averageRightCorrectness[this.averageRightCorrectnessIdx] = roundedCurrentRightSpeed / (expectedRightSpeed || 0.001);
-            this.averageRightCorrectnessIdx = (this.averageRightCorrectnessIdx + 1) % 20;
-            const averageCorrectness = Math.round(this.averageRightCorrectness.reduce((a, b) => a+b, 0) / this.averageRightCorrectness.length);
-            this.rightFactor[this.rightFactorIdx] = velocityRight;
-            this.rightFactorIdx = (this.rightFactorIdx + 1) % 20;
-            const averageFactor = Math.round(this.rightFactor.reduce((a, b) => a+b, 0) / this.rightFactor.length);
-
-
-            if ((averageCorrectness < 100 && velocityRight > this.rightVelocityFactor) || (averageCorrectness > 100 && velocityRight < this.rightVelocityFactor)) {
-                this.rightVelocityFactor = averageFactor;
-            }
-        }
-
-        if (velocityLeft) {
-            velocityLeft += wheelAbsoluteMax / 2;
-        }
-
-        if (velocityRight) {
-            velocityRight += wheelAbsoluteMax / 2;
-        }
-
-        velocityLeft = Math.min(
-            MaxWheelForce,
-            Math.floor(velocityLeft)
-        );
-
-        velocityRight = Math.min(
-            MaxWheelForce,
-            Math.floor(velocityRight)
-        );
-
-        motorData[3] = velocityLeft & 0xff;
-        motorData[4] = velocityLeft >> 8;
-
-        motorData[8] = velocityRight & 0xff;
-        motorData[9] = velocityRight >> 8;
+        var motorData = new Uint8Array(10);
+        motorData.set(this.leftMotor.tick());
+        motorData.set(this.rightMotor.tick(), 5);
         controller.sendOutputReport(49, motorData.buffer, true);
     }
     incomingData(data) {
@@ -3123,9 +3106,8 @@ class S4MK3 {
             if (wheelTimerDelta < 0) {
                 wheelTimerDelta += wheelTimerMax;
             }
-
-            this.leftDeck.wheelRelative.input(view.getUint16(12, true));
-            this.rightDeck.wheelRelative.input(view.getUint16(40, true));
+            this.leftDeck.wheelRelative.input(view.getUint32(12, true), view.getUint32(8, true));
+            this.rightDeck.wheelRelative.input(view.getUint32(40, true), view.getUint32(36, true));
         } else {
             console.warn(`Unsupported HID repord with ID ${reportId}. Contains: ${data}`);
         }

@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QJSValue>
-#include <utility>
 
 #include "controllers/controller.h"
-#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/softtakeover.h"
 
@@ -81,7 +80,7 @@ class MidiController : public Controller {
     void slotBeforeEngineShutdown() override;
 
   private slots:
-    bool applyMapping() override;
+    bool applyMapping(const QString& resourcePath) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();

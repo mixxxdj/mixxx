@@ -455,10 +455,12 @@ WWidgetGroup {
   margin-right: -17px; */
 }
 
-#BeatgridButtons {
+#BeatgridButtons,
+#BeatgridButtons WWidgetGroup {
 /* Those buttons are pushed outside the screen by 17px (see above),
   so bring them back in
   padding-right: 17px; */
+  qproperty-layoutSpacing: 1;
 }
 #WaveformContainer1,
 #WaveformContainer2,
@@ -486,27 +488,25 @@ WWidgetGroup {
     image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
-#BeatgridCurpos,
-#BeatgridSlower,
-#BeatgridFaster,
-#BeatgridEarlier,
-#BeatgridLater,
-#HotcuesEarlier,
-#HotcuesLater {
+#BeatgridButtons WPushButton {
   background-color: #333;
   }
-  #BeatgridCurpos:hover,
-  #BeatgridSlower:hover,
-  #BeatgridFaster:hover,
-  #BeatgridEarlier:hover,
-  #BeatgridLater:hover,
-  #HotcuesEarlier:hover,
-  #HotcuesLater:hover {
+  #BeatgridButtons WPushButton:hover {
     background-color: #0f0f0f;
   }
   #BeatgridCurpos {
     image: url(skin:/../Tango/buttons/btn_beats_curpos.svg) no-repeat center center;
   }
+  #BpmLock[value="0"] {
+    image: url(skin:/../Tango/buttons/btn_bpm_unlocked.svg) no-repeat center center;
+    }
+    #BpmLock[value="1"] {
+      image: url(skin:/../Tango/buttons/btn_bpm_locked.svg) no-repeat center center;
+    }
+  #Undo[value="0"] {
+    image: url(skin:/../Tango/buttons/btn_undo.svg) no-repeat center center;
+    }
+
   #BeatgridSlower {
     image: url(skin:/../Tango/buttons/btn_beats_slower.svg) no-repeat center center;
   }
@@ -524,6 +524,9 @@ WWidgetGroup {
   }
   #HotcuesLater {
     image: url(skin:/../Tango/buttons/btn_hotcues_later.svg) no-repeat center center;
+  }
+  #BeatEditCover {
+    background-color: rgba(51, 51, 51, 120);
   }
 
 /*################################################################
@@ -2378,6 +2381,7 @@ WLibrarySidebar QMenu::item:selected,
 WTrackTableViewHeader QMenu QCheckBox:selected,
 WTrackTableViewHeader QMenu QCheckBox:focus,
 WTrackTableViewHeader QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -2414,6 +2418,7 @@ WSearchLineEdit::item:selected,
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
+WLibraryTextBrowser QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -2463,9 +2468,18 @@ WTrackMenu QMenu QCheckBox::indicator {
   WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
     image: url(skin:/../Tango/buttons/btn_lib_checkmark_indeterminate_grey.svg);
   }
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  border: 0px;
+  background-color: transparent;
+  image: url(skin:/../Tango/buttons/btn_search.svg);
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    image: url(skin:/../Tango/buttons/btn_search_disabled.svg);
+  }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {
+#CueDeleteButton,
+#CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   tall button, about the same height as cue number + label edit box */
@@ -2474,10 +2488,20 @@ WTrackMenu QMenu QCheckBox::indicator {
   border: 1px solid #666;
   background-color: #333;
   border-radius: 2px;
-  qproperty-icon: url(skin:/../Tango/buttons/btn_delete.svg);
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-}
+  }
+  #CueDeleteButton {
+    /* Note: we can't use qproperty-icon here because it's evauated only once
+       and therefore won't style the checked state */
+    image: url(skin:/../Tango/buttons/btn_delete.svg);
+  }
+  #CueSavedLoopButton:!checked {
+    image: url(skin:/../Tango/buttons/btn_loop_beatjump_off.svg);
+  }
+  #CueSavedLoopButton:checked {
+    border: 1px solid #666;
+    background-color: #ff7b00;
+    image: url(skin:/../Tango/buttons/btn_loop_beatjump_on_black.svg);
+  }
 #CueLabelEdit {
   border: 1px solid #ff6600;
   border-radius: 0px;
@@ -2594,6 +2618,11 @@ WLibrarySidebar,
 #LibraryPlayedCheckbox::item {
   color: #9e9e9e;
 }
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #9e9e9e;
+}
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
 #LibraryPlayedCheckbox::item,
@@ -2630,7 +2659,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */
@@ -2733,7 +2762,7 @@ WTrackTableViewHeader {
   /*  Library header 'buttons'  */
   WTrackTableViewHeader::section {
     height: 1.1em;
-    padding: 0 0.1em;
+    padding: 0 -0.7em 0 0.1em;
     /*  use 'border-right' so that for the header of the leftmost column
     the border doesn't add to the border of the surrounding qtableview */
     border-right: 1px solid #585858;
@@ -2759,14 +2788,8 @@ WTrackTableViewHeader {
     WTrackTableViewHeader::up-arrow {
       image: url(skin:/../Tango/graphics/library_sort_up.svg);
       }
-      WTrackTableViewHeader::up-arrow:hover {
-        image: url(skin:/../Tango/graphics/library_sort_down.svg);
-      }
     WTrackTableViewHeader::down-arrow {
       image: url(skin:/../Tango/graphics/library_sort_down.svg);
-      }
-      WTrackTableViewHeader::down-arrow:hover {
-        image: url(skin:/../Tango/graphics/library_sort_up.svg);
       }
 
 WLibraryTextBrowser {
@@ -3195,11 +3218,8 @@ WRateRange {
 }
 
 #RateDisplayTopPrefix,
-#RateDisplayTopRate {
-    qproperty-alignment: 'AlignHCenter | AlignTop';
-}
-
 #RateDisplayBottomPrefix,
+#RateDisplayTopRate,
 #RateDisplayBottomRate {
-    qproperty-alignment: 'AlignHCenter | AlignBottom';
+    qproperty-alignment: 'AlignHCenter';
 }

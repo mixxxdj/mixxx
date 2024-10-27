@@ -5,6 +5,7 @@
 
 #include "effects/effectchain.h"
 #include "moc_qmleffectsmanagerproxy.cpp"
+#include "qml/qmlchainpresetmodel.h"
 
 namespace mixxx {
 namespace qml {
@@ -14,7 +15,9 @@ QmlEffectsManagerProxy::QmlEffectsManagerProxy(
         : QObject(parent),
           m_pEffectsManager(pEffectsManager),
           m_pVisibleEffectsModel(
-                  new QmlVisibleEffectsModel(pEffectsManager, this)) {
+                  new QmlVisibleEffectsModel(pEffectsManager, this)),
+          m_pQuickChainPresetModel(
+                  new QmlChainPresetModel(m_pEffectsManager->getChainPresetManager(), this)) {
 }
 
 QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(int unitNumber, int effectNumber) const {

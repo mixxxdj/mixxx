@@ -147,6 +147,11 @@ DlgPreferences::DlgPreferences(
             this,
             &DlgPreferences::reloadUserInterface,
             Qt::DirectConnection);
+    connect(pInterfacePage,
+            &DlgPrefInterface::menuBarAutoHideChanged,
+            this,
+            &DlgPreferences::menuBarAutoHideChanged,
+            Qt::DirectConnection);
     addPageWidget(PreferencesPage(pInterfacePage,
                           new QTreeWidgetItem(
                                   contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -155,17 +160,11 @@ DlgPreferences::DlgPreferences(
 
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
-        DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
         addPageWidget(PreferencesPage(
-                              pWaveformPage,
+                              new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
                 tr("Waveforms"),
                 "ic_preferences_waveforms.svg");
-        connect(pWaveformPage,
-                &DlgPrefWaveform::reloadUserInterface,
-                this,
-                &DlgPreferences::reloadUserInterface,
-                Qt::DirectConnection);
     }
 
     addPageWidget(PreferencesPage(
@@ -424,6 +423,9 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     case QDialogButtonBox::AcceptRole:
         // Same as Apply but close the dialog
         emit applyPreferences();
+        // TODO Unfortunately this will accept() even if DlgPrefSound threw a warning
+        // due to inaccessible device(s) or inapplicable samplerate.
+        // https://github.com/mixxxdj/mixxx/issues/6077
         accept();
         break;
     case QDialogButtonBox::RejectRole:

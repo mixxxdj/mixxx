@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "control/pollingcontrolproxy.h"
 #include "defs_urls.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
@@ -9,6 +10,7 @@
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
+#include "util/parented_ptr.h"
 
 class SoundManager;
 class PlayerManager;
@@ -70,7 +72,12 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void settingChanged();
     void deviceChanged();
     void deviceChannelsChanged();
+    void configuredDeviceNotFound();
     void queryClicked();
+#ifdef __RUBBERBAND__
+    void updateKeylockDualThreadingCheckbox();
+    void updateKeylockMultithreading(bool enabled);
+#endif
 
   private:
     void initializePaths();
@@ -82,16 +89,19 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
-    ControlProxy* m_pAudioLatencyOverloadCount;
-    ControlProxy* m_pOutputLatencyMs;
-    ControlProxy* m_pHeadDelay;
-    ControlProxy* m_pMainDelay;
-    ControlProxy* m_pBoothDelay;
-    ControlProxy* m_pLatencyCompensation;
-    ControlProxy* m_pKeylockEngine;
-    ControlProxy* m_pMainEnabled;
-    ControlProxy* m_pMainMonoMixdown;
-    ControlProxy* m_pMicMonitorMode;
+
+    PollingControlProxy m_pLatencyCompensation;
+    PollingControlProxy m_pMainDelay;
+    PollingControlProxy m_pHeadDelay;
+    PollingControlProxy m_pBoothDelay;
+    PollingControlProxy m_pMicMonitorMode;
+    PollingControlProxy m_pKeylockEngine;
+
+    parented_ptr<ControlProxy> m_pAudioLatencyOverloadCount;
+    parented_ptr<ControlProxy> m_pOutputLatencyMs;
+    parented_ptr<ControlProxy> m_pMainEnabled;
+    parented_ptr<ControlProxy> m_pMainMonoMixdown;
+
     QList<SoundDevicePointer> m_inputDevices;
     QList<SoundDevicePointer> m_outputDevices;
     QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> m_selectedOutputChannelIndices;

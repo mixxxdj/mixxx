@@ -103,7 +103,8 @@ class EngineBuffer : public EngineObject {
     EngineBuffer(const QString& group,
             UserSettingsPointer pConfig,
             EngineChannel* pChannel,
-            EngineMixer* pMixingEngine);
+            EngineMixer* pMixingEngine,
+            mixxx::audio::ChannelCount maxSupportedChannel);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -111,6 +112,9 @@ class EngineBuffer : public EngineObject {
     QString getGroup() const;
     // Return the current rate (not thread-safe)
     double getSpeed() const;
+    mixxx::audio::ChannelCount getChannelCount() const {
+        return m_channelCount;
+    }
     bool getScratching() const;
     bool isReverse() const;
     /// Returns current bpm value (not thread-safe)
@@ -241,7 +245,8 @@ class EngineBuffer : public EngineObject {
     void slotTrackLoaded(
             TrackPointer pTrack,
             mixxx::audio::SampleRate trackSampleRate,
-            double trackNumSamples);
+            mixxx::audio::ChannelCount trackChannelCount,
+            mixxx::audio::FramePos trackNumFrame);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);
     // Fired when passthrough mode is enabled or disabled.
@@ -335,12 +340,17 @@ class EngineBuffer : public EngineObject {
     // List of hints to provide to the CachingReader
     HintVector m_hintList;
 
-    // The current sample to play in the file.
+    // The current frame to play in the file.
     mixxx::audio::FramePos m_playPos;
 
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
     double m_speed_old;
+
+    // The actual speed is the speed calculated from buffer start and end position
+    // It can differ form m_speed_old which holds the requested speed.
+    // It is the average of one fuffer, in case speed ramping is applied in the scalers.
+    double m_actual_speed;
 
     // The previous callback's tempo ratio.
     double m_tempo_ratio_old;
@@ -383,6 +393,7 @@ class EngineBuffer : public EngineObject {
 
     SlipModeState m_slipModeState;
 
+    // Track samples are always given assuming a stereo track
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
@@ -459,6 +470,9 @@ class EngineBuffer : public EngineObject {
     // Records the sample rate so we can detect when it changes. Initialized to
     // 0 to guarantee we see a change on the first callback.
     mixxx::audio::SampleRate m_sampleRate;
+
+    // The current channel count of the loaded track
+    mixxx::audio::ChannelCount m_channelCount;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__

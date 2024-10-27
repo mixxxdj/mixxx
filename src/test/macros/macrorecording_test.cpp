@@ -14,7 +14,6 @@ class MacroRecordingTest : public BaseSignalPathTest {
               m_record(kChannelGroup, QString("macro_%1_record").arg(kMacro)) {
         TrackPointer pTrack = getTestTrack();
         loadTrack(m_pMixerDeck1, pTrack);
-        ProcessBuffer();
     }
 
     MacroControl::Status getStatus() {
@@ -47,6 +46,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
 };
 
 TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
+    ProcessBuffer();
     TestMacro testMacro;
     prepRecording(testMacro.action.getSourcePosition());
 
@@ -91,6 +91,7 @@ TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
 }
 
 TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {
+    ProcessBuffer();
     // Place hotcue 1 at position 0
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_set"), 1.0);
     EXPECT_EQ(ControlObject::get(ConfigKey(kChannelGroup, "hotcue_1_position")), 0);

@@ -1,25 +1,45 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <QScopedPointer>
 #include <QTemporaryFile>
 #include <QThread>
 #include <QtDebug>
+#include <bit>
 #include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#ifdef MIXXX_USE_QML
+#include <QQuickItem>
+
+#include "controllers/controllerenginethreadcontrol.h"
+#include "controllers/rendering/controllerrenderingengine.h"
+#endif
 #include "controllers/softtakeover.h"
+#include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QML
+#include "qml/qmlmixxxcontrollerscreen.h"
+#endif
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
+
+using ::testing::_;
+using namespace std::chrono_literals;
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerScriptEngineLegacyTest : public MixxxTest {
+class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxTest {
   protected:
+    ControllerScriptEngineLegacyTest()
+            : ControllerScriptEngineLegacy(nullptr, logger) {
+    }
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
         QByteArray contentsBa = contents.toLocal8Bit();
         ScopedTemporaryFile pFile = std::make_unique<QTemporaryFile>();
@@ -31,23 +51,24 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
 
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngine->initialize();
+        initialize();
     }
 
     void TearDown() override {
-        delete cEngine;
         mixxx::Time::setTestMode(false);
+#ifdef MIXXX_USE_QML
+        m_rootItems.clear();
+#endif
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
-        return cEngine->evaluateScriptFile(scriptFile);
+        return ControllerScriptEngineLegacy::evaluateScriptFile(scriptFile);
     }
 
     QJSValue evaluate(const QString& code) {
-        return cEngine->jsEngine()->evaluate(code);
+        return jsEngine()->evaluate(code);
     }
 
     bool evaluateAndAssert(const QString& code) {
@@ -65,7 +86,24 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
         application()->processEvents();
     }
 
-    ControllerScriptEngineLegacy* cEngine;
+#ifdef MIXXX_USE_QML
+    QHash<QString, std::shared_ptr<ControllerRenderingEngine>>& renderingScreens() {
+        return m_renderingScreens;
+    }
+
+    std::unordered_map<QString,
+            std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>&
+    rootItems() {
+        return m_rootItems;
+    }
+
+    void testHandleScreen(
+            const LegacyControllerMapping::ScreenInfo& screeninfo,
+            const QImage& frame,
+            const QDateTime& timestamp) {
+        handleScreenFrame(screeninfo, frame, timestamp);
+    }
+#endif
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
@@ -171,7 +209,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
     // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -202,8 +240,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
-    // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -620,3 +657,82 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
+
+#ifdef MIXXX_USE_QML
+class MockScreenRender : public ControllerRenderingEngine {
+  public:
+    MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
+    MOCK_METHOD(void,
+            requestSendingFrameData,
+            (Controller * controller, const QByteArray& frame),
+            (override));
+};
+
+TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
+    SETUP_LOG_CAPTURE();
+    LegacyControllerMapping::ScreenInfo dummyScreen{
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // rawData
+            false                                                  // reversedColor
+    };
+    QImage dummyFrame;
+    // Allocate screen on the heap as it need to outlive the this function,
+    // since the engine will take ownership of it
+    std::shared_ptr<MockScreenRender> pDummyRender =
+            std::make_shared<MockScreenRender>(dummyScreen);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, _)).Times(0);
+    EXPECT_LOG_MSG(QtWarningMsg,
+            "Could not find a valid transform function but the screen doesn't "
+            "accept raw data. Aborting screen rendering.");
+
+    renderingScreens().insert(dummyScreen.identifier, pDummyRender);
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+
+    testHandleScreen(
+            dummyScreen,
+            dummyFrame,
+            QDateTime::currentDateTime());
+
+    ASSERT_ALL_EXPECTED_MSG();
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
+    SETUP_LOG_CAPTURE();
+    LegacyControllerMapping::ScreenInfo dummyScreen{
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // reversedColor
+            true                                                   // rawData
+    };
+    QImage dummyFrame;
+    // Allocate screen on the heap as it need to outlive the this function,
+    // since the engine will take ownership of it
+    std::shared_ptr<MockScreenRender> pDummyRender =
+            std::make_shared<MockScreenRender>(dummyScreen);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
+
+    renderingScreens().insert(dummyScreen.identifier, pDummyRender);
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+
+    testHandleScreen(
+            dummyScreen,
+            dummyFrame,
+            QDateTime::currentDateTime());
+
+    ASSERT_ALL_EXPECTED_MSG();
+}
+#endif

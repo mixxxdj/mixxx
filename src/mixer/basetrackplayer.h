@@ -1,5 +1,8 @@
 #pragma once
 
+#include <gsl/pointers>
+#include <memory>
+
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
 #include "preferences/colorpalettesettings.h"
@@ -8,7 +11,6 @@
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
-#include "util/memory.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
@@ -143,6 +145,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     EngineMixer* m_pEngineMixer;
     TrackPointer m_pLoadedTrack;
     TrackId m_pPrevFailedTrackId;
+    // non-owning reference. Owned by pMixingEngine.
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
@@ -164,6 +167,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
     std::unique_ptr<ControlEncoder> m_pTrackColorSelect;
+
+#ifdef __STEM__
+    // Stems color
+    std::vector<std::unique_ptr<ControlObject>> m_pStemColors;
+#endif
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;

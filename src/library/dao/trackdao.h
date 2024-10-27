@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSet>
 #include <QString>
+#include <memory>
 
 #include "library/dao/dao.h"
 #include "library/dao/macrodao.h"
@@ -11,7 +12,6 @@
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
-#include "util/memory.h"
 
 class SqlTransaction;
 class PlaylistDAO;

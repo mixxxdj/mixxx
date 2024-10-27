@@ -185,7 +185,7 @@ Variables:
                 <Size>50f,-1me</Size>
                 <Children>
                   <WidgetGroup>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- Top range limit + prefix -->
@@ -195,7 +195,7 @@ Variables:
                         <Channel><Variable name="chanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>prefix</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>me,min</SizePolicy>
                       </RateRange>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
@@ -203,13 +203,15 @@ Variables:
                         <Channel><Variable name="chanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>range</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
                     </Children>
                   </WidgetGroup><!-- Pitch range indicators -->
 
+                  <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+
                   <WidgetGroup>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- Bottom range limit + prefix -->
@@ -220,7 +222,7 @@ Variables:
                         <Position>Bottom</Position>
                         <Align>Bottom</Align>
                         <Display>prefix</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>me,min</SizePolicy>
                       </RateRange>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
@@ -228,7 +230,7 @@ Variables:
                         <Channel><Variable name="chanNum" /></Channel>
                         <Align>Bottom</Align>
                         <Display>range</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
                     </Children>
                   </WidgetGroup><!-- Pitch range indicators -->

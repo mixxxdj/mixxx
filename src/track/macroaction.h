@@ -17,7 +17,9 @@ class MacroAction {
     };
 
     MacroAction(mixxx::audio::FramePos source, mixxx::audio::FramePos target)
-            : source(source), target(target), type(Type::Jump) {
+            : source(source),
+              target(target),
+              type(Type::Jump) {
     }
 
     Type getType() const {

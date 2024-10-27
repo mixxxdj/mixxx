@@ -27,7 +27,8 @@ Keys KeyFactory::makeBasicKeys(
         mixxx::track::io::key::Source source) {
     KeyMap key_map;
     key_map.set_global_key(global_key);
-    QString global_key_text = KeyUtils::keyToString(global_key, KeyUtils::KeyNotation::Custom);
+    QString global_key_text = KeyUtils::keyToString(
+            global_key, KeyUtils::KeyNotation::ID3v2);
     key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
     return Keys(key_map);
@@ -105,7 +106,14 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(static_cast<int>(frame));
         }
-        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, totalFrames, sampleRate));
+
+        mixxx::track::io::key::ChromaticKey global_key =
+                KeyUtils::calculateGlobalKey(
+                        key_changes, totalFrames, sampleRate);
+        key_map.set_global_key(global_key);
+        QString global_key_text = KeyUtils::keyToString(
+                global_key, KeyUtils::KeyNotation::ID3v2);
+        key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);

@@ -369,6 +369,7 @@ WEffectSelector QAbstractScrollArea,
   #MainMenu::item:disabled,
   #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
+  WLibraryTextBrowser QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
@@ -396,6 +397,13 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu QMenu QCheckBox::indicator {
     border-width: 1px;
     border-style: solid;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator,
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    border: 0px;
+    background-color: transparent;
+    image: url(skin:/btn/btn_search_menu.svg);
+    margin-left: 2px;
   }
 
 #EffectSelectorGroup[highlight="1"] {
@@ -429,6 +437,23 @@ WCueMenuPopup QLabel {
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
   outline: none;
+}
+#CueSavedLoopButton {
+  /* set any border to allow styles for other properties as well */
+  border: 1px solid #060613;
+/* To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 43px;
+  padding: 0px;
+  background-color: #aab2b7;
+  qproperty-icon: url(skin:/btn/btn_hotcue_loop.png);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  outline: none;
+}
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #F90562;
 }
 #CueLabelEdit {
   border: 1px solid #060613;
@@ -475,6 +500,11 @@ WLibrarySidebar,
 #LibraryBPMButton::item,
 #LibraryPlayedCheckbox::item {
   color: #9e9e9e;
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #9e9e9e;
 }
 
 
@@ -533,7 +563,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #c9c9c9;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */
@@ -733,7 +763,7 @@ WTrackTableViewHeader {
 /*	Library header 'buttons'	*/
 WTrackTableViewHeader::section {
   height: 1.1em;
-  padding: 0.1em;
+  padding: 0.1em -0.7em 0.1em 0.1em;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;

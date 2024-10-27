@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QScopedPointer>
+#include <QtDebug>
+#include <memory>
 
-#include "mixxxtest.h"
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/controls/loopingcontrol.h"
+#include "mixxxtest.h"
 #include "test/mockedenginebackendtest.h"
-#include "util/memory.h"
 
 namespace {
 
@@ -26,6 +26,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         MockedEngineBackendTest::SetUp();
         m_pQuantizeEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "quantize");
         m_pQuantizeEnabled->set(1.0);
+        m_pSlipEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "slip_enabled");
         m_pNextBeat = std::make_unique<PollingControlProxy>(m_sGroup1, "beat_next");
 
         m_pNextBeat->set(-1);
@@ -81,6 +82,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 m_sGroup1, "beatlooproll_2_activate");
         m_pButtonBeatLoopRoll4Activate = std::make_unique<PollingControlProxy>(
                 m_sGroup1, "beatlooproll_4_activate");
+        m_pButtonBeatLoopAnchor = std::make_unique<PollingControlProxy>(
+                m_sGroup1, "loop_anchor");
 
         ProcessBuffer();
     }
@@ -101,6 +104,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<PollingControlProxy> m_pNextBeat;
     std::unique_ptr<PollingControlProxy> m_pClosestBeat;
     std::unique_ptr<PollingControlProxy> m_pQuantizeEnabled;
+    std::unique_ptr<PollingControlProxy> m_pSlipEnabled;
     std::unique_ptr<PollingControlProxy> m_pTrackSamples;
     std::unique_ptr<PollingControlProxy> m_pButtonLoopIn;
     std::unique_ptr<PollingControlProxy> m_pButtonLoopOut;
@@ -117,6 +121,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<PollingControlProxy> m_pButtonPlay;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatMoveForward;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatMoveBackward;
+    std::unique_ptr<PollingControlProxy> m_pButtonBeatLoopAnchor;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatLoop2Activate;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatLoop4Activate;
     std::unique_ptr<PollingControlProxy> m_pBeatLoop1Enabled;
@@ -246,17 +251,8 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeDisabled) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
 }
 
-TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledNoBeats) {
-    m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
-    setCurrentPosition(mixxx::audio::FramePos{50});
-    m_pButtonLoopIn->set(1);
-    m_pButtonLoopIn->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
-}
-
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -268,6 +264,7 @@ TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointInsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -289,18 +286,8 @@ TEST_F(LoopingControlTest, LoopOutButton_QuantizeDisabled) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
 }
 
-TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledNoBeats) {
-    m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
-    setCurrentPosition(mixxx::audio::FramePos{500});
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pButtonLoopOut->set(1);
-    m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
-}
-
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -312,6 +299,7 @@ TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -343,7 +331,7 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer(); // first process to schedule seek in a stopped deck
-    ProcessBuffer(); // them seek
+    ProcessBuffer(); // then seek
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
     // Should adopt the loop size and enable the correct loop control
@@ -359,7 +347,7 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer(); // first process to schedule seek in a stopped deck
-    ProcessBuffer(); // them seek
+    ProcessBuffer(); // then seek
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
@@ -431,6 +419,7 @@ TEST_F(LoopingControlTest, ReloopAndStopButton) {
 }
 
 TEST_F(LoopingControlTest, LoopScale_DoublesLoop) {
+    m_pQuantizeEnabled->set(0);
     setCurrentPosition(mixxx::audio::kStartFramePos);
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
@@ -505,6 +494,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotResizeManualLoop) {
+    m_pQuantizeEnabled->set(0);
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopIn->set(1.0);
     m_pButtonLoopIn->set(0.0);
@@ -556,6 +546,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_DoesNotResizeManualLoop) {
+    m_pQuantizeEnabled->set(0);
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopIn->set(1.0);
     m_pButtonLoopIn->set(0.0);
@@ -733,9 +724,25 @@ TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
     m_pTrack1->trySetBpm(60.0);
     setCurrentPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                                m_pTrackSamples->get()) -
-            200);
+            44100);
+    m_pBeatLoopSize->set(0.5);
+    m_pButtonBeatLoopActivate->set(1.0);
+    m_pButtonBeatLoopActivate->set(0.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
     m_pBeatLoopSize->set(64.0);
     EXPECT_NE(64.0, m_pBeatLoopSize->get());
+    EXPECT_FALSE(m_pBeatLoop64Enabled->toBool());
+}
+
+TEST_F(LoopingControlTest, BeatLoopSize_SetPastTrackEndIfLoopInactive) {
+    // TODO: actually calculate that the beatloop would go beyond
+    // the end of the track
+    m_pTrack1->trySetBpm(60.0);
+    setCurrentPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                               m_pTrackSamples->get()) -
+            44100);
+    m_pBeatLoopSize->set(64.0);
+    EXPECT_EQ(64.0, m_pBeatLoopSize->get());
     EXPECT_FALSE(m_pBeatLoop64Enabled->toBool());
 }
 
@@ -1186,4 +1193,139 @@ TEST_F(LoopingControlTest, BeatLoopRoll_StartPoint) {
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
+}
+
+TEST_F(LoopingControlTest, LoopResizeUsingAnchor) {
+    // Activating a new loop with a loop active should warp the playposition
+    // the same as it does when we scale the loop larger and smaller so we
+    // keep in sync with the beat.
+
+    // Disable quantize for this test
+    m_pQuantizeEnabled->set(0.0);
+
+    m_pTrack1->trySetBpm(23520);
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    setCurrentPosition(mixxx::audio::FramePos{250});
+    m_pButtonReloopToggle->set(1);
+    EXPECT_TRUE(isLoopEnabled());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{300}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
+
+    // Set loop anchor to end
+    m_pButtonBeatLoopAnchor->set(1.0);
+    // Activate a shorter loop
+    m_pButtonBeatLoop2Activate->set(1.0);
+
+    ProcessBuffer();
+
+    // The loop is resized and we should have seeked to a mid-beat part of the
+    // loop.
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{75}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{300}, m_pLoopEndPoint);
+    ProcessBuffer();
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
+
+    // But if looping is not enabled, no warping occurs.
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    setCurrentPosition(mixxx::audio::FramePos{250});
+    m_pButtonReloopToggle->set(1);
+    EXPECT_FALSE(isLoopEnabled());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{300}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
+
+    setCurrentPosition(mixxx::audio::FramePos{400});
+
+    m_pButtonBeatLoop2Activate->set(1.0);
+    ProcessBuffer();
+
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{175}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{400}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{400}, currentFramePos());
+
+    // Set loop anchor to start
+    m_pButtonBeatLoopAnchor->set(0.0);
+    // Activate a larger loop
+    m_pButtonBeatLoop4Activate->set(1.0);
+
+    ProcessBuffer();
+
+    // The loop is resized and its end joint this time
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{175}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{625}, m_pLoopEndPoint);
+    ProcessBuffer();
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{175}, currentFramePos());
+}
+
+TEST_F(LoopingControlTest, LoopBeatloopReverse) {
+    // Activating a new loop with a loop active should warp the playposition
+    // the same as it does when we scale the loop larger and smaller so we
+    // keep in sync with the beat.
+
+    // Disable quantize for this test
+    m_pQuantizeEnabled->set(0.0);
+
+    m_pTrack1->trySetBpm(23520);
+
+    double dBeatSizes[] = {0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8};
+
+    // Test activate (only set the loop)
+    for (unsigned int i = 0; i < (sizeof(dBeatSizes) / sizeof(dBeatSizes[0])); ++i) {
+        m_pLoopEnabled->set(0.0);
+        EXPECT_FALSE(isLoopEnabled());
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+        setCurrentPosition(mixxx::audio::FramePos{1000});
+        auto control = std::make_unique<PollingControlProxy>(
+                ConfigKey(m_sGroup1, QString("beatloop_r%1_activate").arg(dBeatSizes[i])));
+        control->set(1.0);
+        EXPECT_TRUE(isLoopEnabled());
+        EXPECT_FRAMEPOS_EQ_CONTROL(
+                mixxx::audio::FramePos{1000 - dBeatSizes[i] * 112.5},
+                m_pLoopStartPoint);
+        EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+    }
+
+    // Test activate (set the loop and deactivate)
+    for (unsigned int i = 0; i < (sizeof(dBeatSizes) / sizeof(dBeatSizes[0])); ++i) {
+        m_pLoopEnabled->set(0.0);
+        EXPECT_FALSE(isLoopEnabled());
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+        setCurrentPosition(mixxx::audio::FramePos{1000});
+        auto control = std::make_unique<PollingControlProxy>(
+                ConfigKey(m_sGroup1, QString("beatloop_r%1_toggle").arg(dBeatSizes[i])));
+        control->set(1.0);
+        EXPECT_TRUE(isLoopEnabled());
+        EXPECT_FRAMEPOS_EQ_CONTROL(
+                mixxx::audio::FramePos{1000 - dBeatSizes[i] * 112.5},
+                m_pLoopStartPoint);
+        EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+        control->set(1.0);
+        EXPECT_FALSE(isLoopEnabled());
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+    }
+
+    // Test roll activate (only set the loop and slip)
+    for (unsigned int i = 0; i < (sizeof(dBeatSizes) / sizeof(dBeatSizes[0])); ++i) {
+        EXPECT_FALSE(isLoopEnabled());
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+        setCurrentPosition(mixxx::audio::FramePos{1000});
+        auto control = std::make_unique<PollingControlProxy>(
+                ConfigKey(m_sGroup1, QString("beatlooproll_r%1_activate").arg(dBeatSizes[i])));
+        control->set(1.0);
+        EXPECT_TRUE(isLoopEnabled());
+        EXPECT_EQ(1.0, m_pSlipEnabled->get());
+        EXPECT_FRAMEPOS_EQ_CONTROL(
+                mixxx::audio::FramePos{1000 - dBeatSizes[i] * 112.5},
+                m_pLoopStartPoint);
+        EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+        EXPECT_EQ(0.0, m_pButtonBeatLoopAnchor->get());
+        m_pLoopEnabled->set(0.0);
+        EXPECT_FALSE(isLoopEnabled());
+        EXPECT_EQ(0.0, m_pSlipEnabled->get());
+    }
 }

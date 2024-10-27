@@ -133,6 +133,8 @@ class SampleBuffer final {
         SampleUtil::copy(data(), other.data(), std::min<SINT>(size(), other.size()));
     }
 
+    /// Deprecated: use std::span<const CSAMPLE>, SampleBuffer::span() const and
+    /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
     class ReadableSlice final {
       public:
         constexpr ReadableSlice()
@@ -181,6 +183,8 @@ class SampleBuffer final {
         SINT m_length;
     };
 
+    /// Deprecated: use std::span<CSAMPLE>, SampleBuffer::span() and
+    /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
     class WritableSlice final {
       public:
         constexpr WritableSlice()

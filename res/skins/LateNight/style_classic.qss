@@ -195,6 +195,16 @@ WSearchLineEdit,
     border: 1px solid red;
   }
 
+#BeatgridControls,
+#StemControls {
+  border-top: 1px solid #222;
+  border-left: 1px solid #222;
+  border-bottom: 1px solid #111;
+  border-right: 1px solid #111;
+  border-radius: 2px;
+  background-color: #171717;
+  }
+
 #VuMainCover {
   background-color: rgba(21, 21, 21, 150);
 }
@@ -213,6 +223,16 @@ WSearchLineEdit,
 }
 #SkinSettingsMixerToggle {
   background-color: rgba(15, 15, 15, 255);
+}
+
+/* Cover for the beatgrid edit buttons in the waveform container
+   and the CurPos button in the deck settings near the overview.
+   Hue has to match the bg color of the buttons want to we cover */
+#BeatEditCover {
+  background-color: rgba(21, 21, 23, 180);
+}
+#BeatEditCoverDecks {
+  background-color: rgba(30, 30, 30, 180);
 }
 
 /**** ToolBar *******************************/
@@ -1133,7 +1153,12 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #f0bb2b;
+}
   #SkinSettingsNumToggleHeader[displayValue="0"] {
     color: #b9901f;
   }
@@ -1202,7 +1227,8 @@ WBeatSpinBox, #spinBoxTransition,
 #MainMenu::item,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"], /* off */
+#VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
@@ -1213,7 +1239,9 @@ WBeatSpinBox, #spinBoxTransition,
   color: #d2d2d1;
   }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #PassthroughButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
@@ -1294,7 +1322,7 @@ QPushButton#pushButtonRecording:checked {
     border-image: url(skins:LateNight/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 WPushButton#FxAssignButton1[displayValue="0"],
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #SyncDeck[displayValue="0"],
@@ -1307,7 +1335,9 @@ WEffectSelector:!editable,
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-WPushButton#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"],
+WPushButton#VinylStatus[displayValue="3"],
 WPushButton#FxAssignButton1[displayValue="1"],
 #KeyMatchReset[pressed="true"],
 #GuiToggleButton[displayValue="1"],
@@ -1351,6 +1381,7 @@ WEffectSelector[highlight="1"] {  /*
 }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#StemControls WPushButton, WPushButton#StemControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
@@ -1395,11 +1426,12 @@ WPushButton#LibExpand,
 
 /* top-level buttons in transport, fx, micaux and others */
 #BeatgridControls WPushButton[displayValue="0"],
-#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton,
 #PlayCueMini WPushButton[displayValue="0"],
 WPushButton#CueDeck[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
 WPushButton#LoopActivate[displayValue="0"],
+WPushButton#StemMuteButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
@@ -1419,7 +1451,8 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 WPushButton#GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 WPushButton#BroadcastButton[displayValue="0"],
-WPushButton#SkinSettingsToggle[displayValue="0"] {
+WPushButton#SkinSettingsToggle[displayValue="0"],
+WCueMenuPopup QPushButton {
   background-color: #262626;
 }
 
@@ -1443,7 +1476,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #KeyControls WPushButton[pressed="true"],
-#LoopControls WPushButton[value="1"],
+#LoopControls WPushButton[pressed="true"],
 #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
 #EQKillButtonBox WPushButton[displayValue="1"],
@@ -1462,12 +1495,17 @@ QPushButton#pushButtonRecording:checked {
     border-radius: 0px;
   }
 
+/* Orange for Stem Ch Mute buttons */
+WPushButton#StemMuteButton{
+  background-color: #db7700;
+}
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
 WPushButton#QuickEffectButton[displayValue="1"],
 #FxAssignButton1[displayValue="1"],
 #FxAssignButton2[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #659f08;
 }
@@ -1494,14 +1532,15 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #888;
 }
 
+/* pink for error / warning*/
 #BroadcastButton[displayValue="3"],
-#BroadcastButton[displayValue="4"] {
-  /* pink */
+#BroadcastButton[displayValue="4"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
 /* Golden */
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"], /* blinks when the needle reaches the end of the record */
 #PassthroughButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -1603,8 +1642,17 @@ WPushButton#FxExpand[displayValue="0"],
 WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
+#StemControlsToggle,
 #SamplerControlsMini WPushButton,
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"],
+WPushButton#BpmLockToggle[value="1"] {
   background-color: transparent;
 }
 
@@ -1712,6 +1760,12 @@ WPushButton#SamplerExpand[displayValue="0"],
 #LoopOut {
   image: url(skins:LateNight/classic/buttons/btn__loop_out.svg) no-repeat center center;
 }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__loop_anchor_end.svg) no-repeat center center;
+  }
 
 #JumpForward {
   image: url(skins:LateNight/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
@@ -1776,6 +1830,10 @@ WPushButton#SamplerExpand[displayValue="0"],
 /* Mixer buttons */
 #PflButton {
   image: url(skins:LateNight/classic/buttons/btn__pfl.svg) no-repeat center center;
+}
+
+#StemMuteButton[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_mute.svg) no-repeat center center;
 }
 
 #QuickEffectButton[displayValue="0"] {
@@ -1903,6 +1961,26 @@ WPushButton#SamplerExpand[displayValue="0"],
   #BeatgridControlsToggle[displayValue="1"] {
     image: url(skins:LateNight/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
+
+#StemControlsToggle[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_controls_expand.svg) no-repeat center center;
+  }
+  #StemControlsToggle[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
+  }
+
+  #BpmLockToggle[value="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_locked.svg);
+    }
+  #BpmLockToggle[value="0"] {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_unlocked.svg);
+    }
+  #Undo[value="0"] {
+    image: url(skins:LateNight/classic/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/classic/buttons/btn__undo_active.svg) no-repeat center center;
+    }
   #BeatCurposLarge {
     image: url(skins:LateNight/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;
     }
@@ -2028,9 +2106,8 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {  /*
-  padding: 3px 6px; */
-  qproperty-icon: url(skins:LateNight/classic/buttons/btn__delete.svg);
+#CueDeleteButton,
+#CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
@@ -2038,10 +2115,18 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   height: 42px;
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  /* has no effect
-  padding: 0px; */
+}
+#CueDeleteButton {
+  image: url(skins:LateNight/classic/buttons/btn__delete.svg);
+}
+#CueSavedLoopButton {
+  image: url(skins:LateNight/classic/buttons/btn__loop.svg);
+}
+#CueDeleteButton:pressed,
+#CueSavedLoopButton:pressed,
+#CueSavedLoopButton:checked {
+  background-color: #db0000;
+  outline: none;
 }
 
 #CueLabelEdit {
@@ -2131,7 +2216,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
 WLibrarySidebar {
@@ -2182,10 +2267,10 @@ WTrackProperty[selected="true"] {
       image: url(skins:LateNight/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
     }
 #LibraryPlayedCheckbox::indicator:checked {
-  image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
 }
 #LibraryPlayedCheckbox::indicator:unchecked {
-  image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_checkbox.svg);
 }
 
 WCueMenuPopup QPushButton:focus {
@@ -2222,6 +2307,9 @@ WTrackTableViewHeader {
       stop:1 #111);
   }
   WTrackTableViewHeader::section {
+    /* Workaround Qt bug that causes space being reserved for invisible sort indicators.
+       For details see style-plaemon.qss */
+    padding-right: -0.95em;
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
@@ -2535,7 +2623,6 @@ WEffectSelector,
 /* ::indicator:!checked won't work. use 'unchecked' */
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
-WTrackTableViewHeader QMenu::item:selected,
 WTrackTableViewHeader QMenu QCheckBox:selected,
 WTrackTableViewHeader QMenu QCheckBox:focus,
 WTrackTableViewHeader QMenu QCheckBox:hover,
@@ -2544,6 +2631,7 @@ WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
 QLineEdit QMenu::item:selected,
 QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
@@ -2598,6 +2686,7 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
+WLibraryTextBrowser QMenu::item:disabled,
 QLineEdit QMenu::item:disabled,
 QPlainTextEdit QMenu::item:disabled {
   color: #494949;
@@ -2624,16 +2713,8 @@ QPlainTextEdit QMenu::item:disabled {
     WEffectSelector::indicator:checked,
     WEffectChainPresetSelector::indicator:checked,
     #fadeModeCombobox::indicator:checked {
-      width: 13px;
-      height: 13px;
       margin-left: 8px;
     }
-  /* disabled menu item and checkbox */
-  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    background-color: #222;
-  }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
     image: url(skins:LateNight/classic/buttons/btn__lib_checkmark_grey.svg);
   }

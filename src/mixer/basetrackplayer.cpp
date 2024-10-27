@@ -2,6 +2,7 @@
 
 #include <QMessageBox>
 #include <QMetaMethod>
+#include <memory>
 
 #include "control/controlencoder.h"
 #include "control/controlobject.h"
@@ -24,6 +25,9 @@ namespace {
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
+#ifdef __STEM__
+constexpr int kMaxSupportedStems = 4;
+#endif
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
@@ -52,12 +56,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pPrevFailedTrackId(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
-    m_pChannel = new EngineDeck(handleGroup,
+    auto channel = std::make_unique<EngineDeck>(handleGroup,
             pConfig,
             pMixingEngine,
             pEffectsManager,
             defaultOrientation,
             primaryDeck);
+    m_pChannel = channel.get();
 
     m_pInputConfigured = make_parented<ControlProxy>(getGroup(), "input_configured", this);
 #ifdef __VINYLCONTROL__
@@ -67,7 +72,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 #endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
-    pMixingEngine->addChannel(m_pChannel);
+    pMixingEngine->addChannel(std::move(channel));
 
     // Set the routing option defaults for the main and headphone mixes.
     m_pChannel->setMainMix(defaultMainMix);
@@ -111,8 +116,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlPushButton::valueChanged,
             this,
             [this](double value) {
-                if (value > 0)
+                if (value > 0) {
                     BaseTrackPlayerImpl::slotTrackColorSelector(-1);
+                }
             });
 
     m_pTrackColorNext = std::make_unique<ControlPushButton>(
@@ -121,8 +127,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlPushButton::valueChanged,
             this,
             [this](double value) {
-                if (value > 0)
+                if (value > 0) {
                     BaseTrackPlayerImpl::slotTrackColorSelector(1);
+                }
             });
 
     m_pTrackColorSelect = std::make_unique<ControlEncoder>(
@@ -276,6 +283,24 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain);
 
     m_ejectTimer.start();
+
+    if (!primaryDeck) {
+        return;
+    }
+
+#ifdef __STEM__
+    m_pStemColors.reserve(kMaxSupportedStems);
+    QString group = getGroup();
+    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = QStringLiteral("%1Stem%2]")
+                                    .arg(group.left(group.size() - 1),
+                                            QString::number(stemIdx));
+        m_pStemColors.emplace_back(std::make_unique<ControlObject>(
+                ConfigKey(stemGroup, QStringLiteral("color"))));
+        m_pStemColors.back()->set(kNoTrackColor);
+        m_pStemColors.back()->setReadOnly();
+    }
+#endif
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -285,7 +310,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     TrackPointer pTrack(Track::newTemporary());
     pTrack->setAudioProperties(
-            mixxx::kEngineChannelCount,
+            mixxx::kEngineChannelOutputCount,
             mixxx::audio::SampleRate(44100),
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(10));
@@ -365,6 +390,13 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
                 ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_start_position")));
         m_pLoopOutPoint->set(ControlObject::get(
                 ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_end_position")));
+
+#ifdef __STEM__
+        auto* pDeckToClone = qobject_cast<EngineDeck*>(m_pChannelToCloneFrom);
+        if (pDeckToClone && m_pLoadedTrack && m_pLoadedTrack->hasStem() && m_pChannel) {
+            m_pChannel->cloneStemState(pDeckToClone);
+        }
+#endif
     }
 
     connectLoadedTrack();
@@ -662,6 +694,23 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
             }
         }
+
+#ifdef __STEM__
+        if (m_pStemColors.size()) {
+            const auto& stemInfo = m_pLoadedTrack->getStemInfo();
+            DEBUG_ASSERT(stemInfo.size() <= kMaxSupportedStems);
+            int stemIdx = 0;
+            for (const auto& stemColorCo : m_pStemColors) {
+                auto color = kNoTrackColor;
+                if (stemIdx < stemInfo.size()) {
+                    color = trackColorToDouble(mixxx::RgbColor::fromQColor(
+                            stemInfo.at(stemIdx).getColor()));
+                }
+                stemColorCo->forceSet(color);
+                stemIdx++;
+            }
+        }
+#endif
 
         emit newTrackLoaded(m_pLoadedTrack);
         emit trackRatingChanged(m_pLoadedTrack->getRating());

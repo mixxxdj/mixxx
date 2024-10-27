@@ -41,38 +41,38 @@ MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, in
             this,
             &MacroControl::updateRecording);
 
-    m_CORecord.setButtonMode(ControlPushButton::TOGGLE);
+    m_CORecord.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_CORecord,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotRecord);
-    m_COPlay.setButtonMode(ControlPushButton::TOGGLE);
+    m_COPlay.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_COPlay,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotPlay);
-    m_COEnable.setButtonMode(ControlPushButton::TOGGLE);
+    m_COEnable.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_COEnable,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotEnable);
-    m_COLoop.setButtonMode(ControlPushButton::TOGGLE);
+    m_COLoop.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_COLoop,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotLoop);
 
-    m_activate.setButtonMode(ControlPushButton::TRIGGER);
+    m_activate.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_activate,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotActivate);
-    m_toggle.setButtonMode(ControlPushButton::TRIGGER);
+    m_toggle.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_toggle,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotToggle);
-    m_clear.setButtonMode(ControlPushButton::TRIGGER);
+    m_clear.setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(&m_clear,
             &ControlObject::valueChanged,
             this,

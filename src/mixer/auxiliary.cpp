@@ -1,5 +1,7 @@
 #include "mixer/auxiliary.h"
 
+#include <memory>
+
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/engineaux.h"
@@ -16,13 +18,13 @@ Auxiliary::Auxiliary(PlayerManager* pParent,
         EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
-    EngineAux* pAuxiliary = new EngineAux(channelGroup, pEffectsManager);
-    pEngine->addChannel(pAuxiliary);
+    auto pAuxiliary = std::make_unique<EngineAux>(channelGroup, pEffectsManager);
     AudioInput auxInput = AudioInput(AudioPathType::Auxiliary,
             0,
             mixxx::audio::ChannelCount::stereo(),
             index);
-    pSoundManager->registerInput(auxInput, pAuxiliary);
+    pSoundManager->registerInput(auxInput, pAuxiliary.get());
+    pEngine->addChannel(std::move(pAuxiliary));
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
     m_pAuxMainMixEnabled = make_parented<ControlProxy>(group, "main_mix", this);

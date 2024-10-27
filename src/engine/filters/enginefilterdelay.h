@@ -6,7 +6,7 @@
 
 template<unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {
-    static_assert(SIZE % mixxx::kEngineChannelCount == 0,
+    static_assert(SIZE % mixxx::kEngineChannelOutputCount == 0,
             "The buffer size has to be divisible by the number of channels.");
 
   public:
@@ -31,7 +31,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
     }
 
     void setDelay(unsigned int delaySamples) {
-        unsigned int unalignedSamples = delaySamples % mixxx::kEngineChannelCount;
+        unsigned int unalignedSamples = delaySamples % mixxx::kEngineChannelOutputCount;
 
         VERIFY_OR_DEBUG_ASSERT(unalignedSamples == 0) {
             // Round to the previous multiple of the number of channel count.
@@ -39,7 +39,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
         }
 
         VERIFY_OR_DEBUG_ASSERT(delaySamples < SIZE) {
-            delaySamples = SIZE - mixxx::kEngineChannelCount;
+            delaySamples = SIZE - mixxx::kEngineChannelOutputCount;
         }
 
         m_delaySamples = delaySamples;

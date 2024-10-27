@@ -243,7 +243,7 @@ void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
-    QList<Controller*> deviceList = getControllerList(false, true);
+    const QList<Controller*> deviceList = getControllerList(false, true);
     QStringList mappingPaths(getMappingPaths(m_pConfig));
 
     for (Controller* pController : deviceList) {
@@ -300,7 +300,7 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyMapping();
+        pController->applyMapping(m_pConfig->getResourcePath());
     }
 
     pollIfAnyControllersOpen();
@@ -392,7 +392,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
     if (result == 0) {
-        pController->applyMapping();
+        pController->applyMapping(m_pConfig->getResourcePath());
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(

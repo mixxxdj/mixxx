@@ -78,7 +78,7 @@ class JsonWebTask : public WebTask {
 
   signals:
     void failed(
-            const network::JsonWebResponse& response);
+            const mixxx::network::JsonWebResponse& response);
 
   protected:
     // Customizable in derived classes
