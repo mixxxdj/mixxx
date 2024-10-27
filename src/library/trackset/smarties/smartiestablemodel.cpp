@@ -57,54 +57,84 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
             << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
-    // We hide files that have been explicitly deleted in the library
-    // (mixxx_deleted = 0) from the view.
-    // They are kept in the database, because we treat smarties membership as a
-    // track property, which persist over a hide / unhide cycle.
-    //    QString queryString =
-    //            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-    //                    "SELECT %2 FROM %3 "
-    //                    "WHERE %4 IN (%5) "
-    //                    "AND %6=0")
-    //                    .arg(tableName, //1
-    //                            columns.join(","),  //2
-    //                            LIBRARY_TABLE, //3
-    //                            LIBRARYTABLE_ID, //4
-    //                            SmartiesStorage::formatSubselectQueryForSmartiesTrackIds(
-    //                                    smartiesId), //5
-    //                            LIBRARYTABLE_MIXXXDELETED); //6
-    QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
-    queryGetSearchValue->prepare("SELECT search_sql from smarties where id=:id");
-    queryGetSearchValue->addBindValue(smartiesId.toVariant());
 
-    queryGetSearchValue->exec();
-    queryGetSearchValue->next();
-    QString searchValue = queryGetSearchValue->value(0).toString();
-    qDebug() << "queryGetSearchValue " << queryGetSearchValue;
-    qDebug() << "searchValue " << searchValue;
-    queryGetSearchValue->clear();
+    QSqlQuery* queryGetLocked = new QSqlQuery(m_database);
+    queryGetLocked->prepare("SELECT locked from smarties where id=:id");
+    queryGetLocked->addBindValue(smartiesId.toVariant());
+    queryGetLocked->exec();
+    queryGetLocked->next();
+    bool getLocked = queryGetLocked->value(0).toInt();
+    qDebug() << "queryGetLocked " << queryGetLocked;
+    //    qDebug() << "searchValue " << searchValue;
+    queryGetLocked->clear();
 
-    QString queryString =
-            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                    "SELECT %2 FROM %3 "
-                    "Where %3.artist like '%" +
-                    searchValue + "%'OR %3.title like '%" + searchValue + "%'")
-                    .arg(tableName,            // 1
-                            columns.join(","), // 2
-                            LIBRARY_TABLE,     // 3
-                            SMARTIES_TABLE,    // 4
-                            SmartiesStorage::returnSearchSQLFieldFromTable(
-                                    smartiesId));
-    qDebug() << "queryString " << queryString;
-    FwdSqlQuery(m_database, queryString).execPrepared();
+    if (getLocked) {
+        qDebug() << "SMARTIES LOCKED ";
+        QString queryStringTempView =
+                QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                        "SELECT %2 FROM %3 "
+                        "WHERE %4 IN (%5) "
+                        "AND %6=0")
+                        .arg(tableName,            // 1
+                                columns.join(","), // 2
+                                LIBRARY_TABLE,     // 3
+                                LIBRARYTABLE_ID,   // 4
+                                SmartiesStorage::formatSubselectQueryForSmartiesTrackIds(
+                                        smartiesId),        // 5
+                                LIBRARYTABLE_MIXXXDELETED); // 6
+        qDebug() << "queryStringTempView " << queryStringTempView;
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    } else {
+        qDebug() << "SMARTIES NOT LOCKED ";
+        QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
+        queryGetSearchValue->prepare("SELECT search_sql from smarties where id=:id");
+        queryGetSearchValue->addBindValue(smartiesId.toVariant());
+
+        queryGetSearchValue->exec();
+        queryGetSearchValue->next();
+        QString searchValue = queryGetSearchValue->value(0).toString();
+        qDebug() << "queryGetSearchValue " << queryGetSearchValue;
+        qDebug() << "searchValue " << searchValue;
+        queryGetSearchValue->clear();
+
+        QString queryStringDeleteIDFromSmartiesTracks = QString(
+                "DELETE FROM smarties_tracks "
+                "WHERE smarties_id = " +
+                smartiesId.toVariant().toString());
+
+        qDebug() << "queryStringDeleteIDFromSmartiesTracks "
+                 << queryStringDeleteIDFromSmartiesTracks;
+        FwdSqlQuery(m_database, queryStringDeleteIDFromSmartiesTracks).execPrepared();
+
+        QString queryStringIDtoSmartiesTracks = QString(
+                "INSERT OR IGNORE INTO smarties_tracks (smarties_id, track_id) "
+                "SELECT " +
+                smartiesId.toVariant().toString() +
+                ", library.id FROM library "
+                //        "SELECT :smartiesId, library.id FROM library "
+                "WHERE library.artist like '%" +
+                searchValue + "%'OR library.title like '%" + searchValue + "%'");
+
+        qDebug() << "queryStringIDtoSmartiesTracks " << queryStringIDtoSmartiesTracks;
+        FwdSqlQuery(m_database, queryStringIDtoSmartiesTracks).execPrepared();
+
+        QString queryStringTempView =
+                QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                        "SELECT %2 FROM %3 "
+                        "Where %3.artist like '%" +
+                        searchValue + "%'OR %3.title like '%" + searchValue + "%'")
+                        .arg(tableName,            // 1
+                                columns.join(","), // 2
+                                LIBRARY_TABLE);    // 3
+
+        qDebug() << "queryStringTempView " << queryStringTempView;
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    }
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
 
-    //    columns[0] = "library.id";
-    //    columns[1] = "livrary.preview";
-    //    columns[2] = "livrary.coverart";
     setTable(tableName,
             LIBRARYTABLE_ID,
             columns,
@@ -214,7 +244,7 @@ TrackModel::Capabilities SmartiesTableModel::getCapabilities() const {
 //     if (!m_pTrackCollectionManager->internalCollection()
 //                     ->smarties()
 //                     .readSmartiesById(m_selectedSmarties, &smarties)) {
-//         qWarning() << "Failed to read create" << m_selectedSmarties;
+//         qWarning() << "Failed to read smarties" << m_selectedSmarties;
 //         return false;
 //     }
 //     return smarties.isLocked();

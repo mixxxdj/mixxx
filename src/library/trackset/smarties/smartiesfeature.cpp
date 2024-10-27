@@ -49,7 +49,7 @@ using namespace mixxx::library::prefs;
 SmartiesFeature::SmartiesFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseTrackSetFeature(pLibrary, pConfig, "SMARTIESHOME", QStringLiteral("smarties")),
-          //          m_lockedSmartiesIcon(":/images/library/ic_library_locked_tracklist.svg"),
+          m_lockedSmartiesIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_smartiesTableModel(this, pLibrary->trackCollectionManager()) {
     initActions();
@@ -95,11 +95,11 @@ void SmartiesFeature::initActions() {
             &QAction::triggered,
             this,
             &SmartiesFeature::slotDeleteSmarties);
-    //    m_pLockSmartiesAction = make_parented<QAction>(tr("Lock"), this);
-    //    connect(m_pLockSmartiesAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            &SmartiesFeature::slotToggleSmartiesLock);
+    m_pLockSmartiesAction = make_parented<QAction>(tr("Lock"), this);
+    connect(m_pLockSmartiesAction.get(),
+            &QAction::triggered,
+            this,
+            &SmartiesFeature::slotToggleSmartiesLock);
 
     //    m_pAutoDjTrackSourceAction = make_parented<QAction>(tr("Auto DJ Track Source"), this);
     //    m_pAutoDjTrackSourceAction->setCheckable(true);
@@ -240,7 +240,7 @@ void SmartiesFeature::updateTreeItemForSmartiesSummary(
     }
     // Update mutable properties
     pTreeItem->setLabel(formatLabel(smartiesSummary));
-    //    pTreeItem->setIcon(smartiesSummary.isLocked() ? m_lockedSmartiesIcon : QIcon());
+    pTreeItem->setIcon(smartiesSummary.isLocked() ? m_lockedSmartiesIcon : QIcon());
 }
 
 // bool SmartiesFeature::dropAcceptChild(
@@ -391,12 +391,12 @@ void SmartiesFeature::onRightClickChild(
         return;
     }
 
-    //    m_pDeleteSmartiesAction->setEnabled(!smarties.isLocked());
-    //    m_pRenameSmartiesAction->setEnabled(!smarties.isLocked());
+    m_pDeleteSmartiesAction->setEnabled(!smarties.isLocked());
+    m_pRenameSmartiesAction->setEnabled(!smarties.isLocked());
 
     //    m_pAutoDjTrackSourceAction->setChecked(smarties.isAutoDjSource());
 
-    //    m_pLockSmartiesAction->setText(smarties.isLocked() ? tr("Unlock") : tr("Lock"));
+    m_pLockSmartiesAction->setText(smarties.isLocked() ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateSmartiesAction.get());
@@ -404,7 +404,7 @@ void SmartiesFeature::onRightClickChild(
     menu.addAction(m_pRenameSmartiesAction.get());
     menu.addAction(m_pDuplicateSmartiesAction.get());
     menu.addAction(m_pDeleteSmartiesAction.get());
-    //    menu.addAction(m_pLockSmartiesAction.get());
+    menu.addAction(m_pLockSmartiesAction.get());
     menu.addSeparator();
     //    menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
@@ -459,10 +459,10 @@ void SmartiesFeature::deleteItem(const QModelIndex& index) {
 void SmartiesFeature::slotDeleteSmarties() {
     Smarties smarties;
     if (readLastRightClickedSmarties(&smarties)) {
-        //        if (smarties.isLocked()) {
-        //            qWarning() << "Refusing to delete locked smarties" << smarties;
-        //            return;
-        //}
+        if (smarties.isLocked()) {
+            qWarning() << "Refusing to delete locked smarties" << smarties;
+            return;
+        }
         SmartiesId smartiesId = smarties.getId();
         // Store sibling id to restore selection after smarties was deleted
         // to avoid the scroll position being reset to Smarties root item.
@@ -565,17 +565,17 @@ void SmartiesFeature::slotEditSmarties() {
     qDebug() << "Failed to duplicate selected smarties";
 }
 
-// void SmartiesFeature::slotToggleSmartiesLock() {
-//     Smarties smarties;
-//     if (readLastRightClickedSmarties(&smarties)) {
-//         smarties.setLocked(!smarties.isLocked());
-//         if (!m_pTrackCollection->updateSmarties(smarties)) {
-//             qDebug() << "Failed to toggle lock of smarties" << smarties;
-//         }
-//     } else {
-//         qDebug() << "Failed to toggle lock of selected smarties";
-//     }
-// }
+void SmartiesFeature::slotToggleSmartiesLock() {
+    Smarties smarties;
+    if (readLastRightClickedSmarties(&smarties)) {
+        smarties.setLocked(!smarties.isLocked());
+        if (!m_pTrackCollection->updateSmarties(smarties)) {
+            qDebug() << "Failed to toggle lock of smarties" << smarties;
+        }
+    } else {
+        qDebug() << "Failed to toggle lock of selected smarties";
+    }
+}
 
 // void SmartiesFeature::slotAutoDjTrackSourceChanged() {
 //     Smarties smarties;

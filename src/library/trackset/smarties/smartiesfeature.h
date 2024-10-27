@@ -63,7 +63,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
     void slotRenameSmarties();
     void slotDuplicateSmarties();
     //    void slotAutoDjTrackSourceChanged();
-    //    void slotToggleSmartiesLock();
+    void slotToggleSmartiesLock();
     //    void slotImportPlaylist();
     //    void slotImportPlaylistFile(const QString& playlistFile, SmartiesId smartiesId);
     //    void slotCreateImportSmarties();
@@ -102,7 +102,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
     QString formatRootViewHtml() const;
 
-    //    const QIcon m_lockedSmartiesIcon;
+    const QIcon m_lockedSmartiesIcon;
 
     TrackCollection* const m_pTrackCollection;
 
@@ -121,7 +121,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pEditSmartiesAction;
     parented_ptr<QAction> m_pDeleteSmartiesAction;
     parented_ptr<QAction> m_pRenameSmartiesAction;
-    //    parented_ptr<QAction> m_pLockSmartiesAction;
+    parented_ptr<QAction> m_pLockSmartiesAction;
     parented_ptr<QAction> m_pDuplicateSmartiesAction;
     //    parented_ptr<QAction> m_pAutoDjTrackSourceAction;
     //    parented_ptr<QAction> m_pImportPlaylistAction;
