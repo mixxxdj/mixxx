@@ -663,28 +663,28 @@ bool TrackCollection::removeCrateTracks(
 }
 
 // Eve
-bool TrackCollection::removeSmartiesTracks(
-        SmartiesId smartiesId,
-        const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+// bool TrackCollection::removeSmartiesTracks(
+//        SmartiesId smartiesId,
+//        const QList<TrackId>& trackIds) {
+//    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_smarties.onRemovingSmartiesTracks(smartiesId, trackIds)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
-    }
+//    // Transactional
+//    SqlTransaction transaction(m_database);
+//    VERIFY_OR_DEBUG_ASSERT(transaction) {
+//        return false;
+//    }
+//    VERIFY_OR_DEBUG_ASSERT(m_smarties.onRemovingSmartiesTracks(smartiesId, trackIds)) {
+//        return false;
+//    }
+//    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+//        return false;
+//    }
 
-    // Emit signals
-    emit smartiesTracksChanged(smartiesId, QList<TrackId>(), trackIds);
+//    // Emit signals
+//    emit smartiesTracksChanged(smartiesId, QList<TrackId>(), trackIds);
 
-    return true;
-}
+//    return true;
+//}
 // Eve
 
 bool TrackCollection::updateAutoDjCrate(

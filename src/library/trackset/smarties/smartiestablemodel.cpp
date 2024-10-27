@@ -113,16 +113,51 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                 ", library.id FROM library "
                 //        "SELECT :smartiesId, library.id FROM library "
                 "WHERE library.artist like '%" +
-                searchValue + "%'OR library.title like '%" + searchValue + "%'");
-
+                searchValue +
+                "%' "
+                "OR library.title like '%" +
+                searchValue +
+                "%'"
+                "OR library.album like '%" +
+                searchValue +
+                "%' "
+                "OR library.album_artist like '%" +
+                searchValue +
+                "%' "
+                "OR library.composer like '%" +
+                searchValue +
+                "%' "
+                "OR library.genre like '%" +
+                searchValue +
+                "%' "
+                "OR library.comment like '%" +
+                searchValue + "%' ");
         qDebug() << "queryStringIDtoSmartiesTracks " << queryStringIDtoSmartiesTracks;
         FwdSqlQuery(m_database, queryStringIDtoSmartiesTracks).execPrepared();
 
         QString queryStringTempView =
                 QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                         "SELECT %2 FROM %3 "
-                        "Where %3.artist like '%" +
-                        searchValue + "%'OR %3.title like '%" + searchValue + "%'")
+                        "WHERE library.artist like '%" +
+                        searchValue +
+                        "%' "
+                        "OR library.title like '%" +
+                        searchValue +
+                        "%'"
+                        "OR library.album like '%" +
+                        searchValue +
+                        "%' "
+                        "OR library.album_artist like '%" +
+                        searchValue +
+                        "%' "
+                        "OR library.composer like '%" +
+                        searchValue +
+                        "%' "
+                        "OR library.genre like '%" +
+                        searchValue +
+                        "%' "
+                        "OR library.comment like '%" +
+                        searchValue + "%' ")
                         .arg(tableName,            // 1
                                 columns.join(","), // 2
                                 LIBRARY_TABLE);    // 3
@@ -193,7 +228,7 @@ TrackModel::Capabilities SmartiesTableModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
-            Capability::RemoveSmarties |
+            //            Capability::RemoveSmarties |
             Capability::ResetPlayed |
             Capability::Hide |
             Capability::RemoveFromDisk |

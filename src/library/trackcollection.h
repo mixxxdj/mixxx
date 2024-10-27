@@ -96,7 +96,7 @@ class TrackCollection : public QObject,
     bool updateSmarties(const Smarties& smarties);
     bool deleteSmarties(SmartiesId smartiesId);
     bool addSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
-    bool removeSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
+    //    bool removeSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
     // EVE
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
