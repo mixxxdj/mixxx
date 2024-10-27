@@ -12,149 +12,90 @@ from lxml import etree
 import githelper
 
 # Define the path to the allow list XML file
-ALLOW_LIST_PATH = "res/translations/source_copy_allow_list.xml"
+ALLOW_LIST_PATH = "res/translations/source_copy_allow_list.tsv"
 PROPOSED_ALLOW_LIST_PATH = (
-    "res/translations/source_copy_allow_list_proposed.xml"
-)
-PROPOSED_ALLOW_LIST_PATH_TSV = (
     "res/translations/source_copy_allow_list_proposed.tsv"
 )
 
 
 def is_untranstaled_allowed(source_text, language):
-    if os.path.exists(ALLOW_LIST_PATH):
-        parser = etree.XMLParser(recover=True)
-        try:
-            tree = etree.parse(ALLOW_LIST_PATH, parser)
-        except Exception as e:
-            print("XML parsing failed:")
-            print(e)
-            raise e
-        root = tree.getroot()
-    else:
+    if not os.path.exists(ALLOW_LIST_PATH):
         return False
 
-    try:
-        for message in root.findall("message"):
-            if message.find("source").text == source_text:
-                if message.find("allow_all_languages").text == "true":
+    with open(ALLOW_LIST_PATH) as f:
+        for i, line in enumerate(f):
+            if not line.endswith("\n"):
+                print(f"Parse Error: No \\n at {ALLOW_LIST_PATH}:{i + 1}")
+                return False
+            line = line[:-1]
+            try:
+                lang, source = line.split("\t", 1)
+            except Exception as e:
+                print(f"Parse Error at {ALLOW_LIST_PATH}:{i + 1}")
+                print(e)
+            if lang is None or lang == "":
+                print(
+                    f"Parse Error: lang is empty at{ALLOW_LIST_PATH}:{i + 1}"
+                )
+                continue
+            source = source.encode("utf-8").decode("unicode_escape")
+            if source == source_text:
+                if lang == "*":
                     return True
-                languages_elem = message.find("allowed_languages")
-                if languages_elem is None:
-                    return False
-                allowed_languages = {
-                    lang.text for lang in languages_elem.findall("language")
-                }
-                if language in allowed_languages:
+                if language in lang:
                     return True
-
-    except Exception as e:
-        print(f"Parsing failed at {message.base}:{message.sourceline}")
-        print(e)
-        raise e
 
     return False
 
 
 def add_to_allow_list(source_text, language):
-    if os.path.exists(PROPOSED_ALLOW_LIST_PATH):
-        parser = etree.XMLParser(recover=True)
-        try:
-            tree = etree.parse(PROPOSED_ALLOW_LIST_PATH, parser)
-        except Exception as e:
-            print("XML parsing failed:")
-            print(e)
-            raise e
-        root = tree.getroot()
-    else:
-        if os.path.exists(ALLOW_LIST_PATH):
-            parser = etree.XMLParser(recover=True)
-            try:
-                tree = etree.parse(ALLOW_LIST_PATH, parser)
-            except Exception as e:
-                print("XML parsing failed:")
-                print(e)
-                return
-            root = tree.getroot()
-        else:
-            root = etree.Element("allow_list")
-            tree = etree.ElementTree(root)
+    source_text = source_text.encode("unicode_escape").decode("utf-8")
 
-    # Check if the message already exists
-    existing_message = None
-    try:
-        for message in root.findall("message"):
-            if message.find("source").text == source_text:
-                existing_message = message
-                break
-    except Exception as e:
-        print(f"Parsing failed at {message.base}:{message.sourceline}")
-        print(e)
-        raise e
+    allow_list_path = PROPOSED_ALLOW_LIST_PATH
+    if not os.path.exists(allow_list_path) and os.path.exists(ALLOW_LIST_PATH):
+        allow_list_path = ALLOW_LIST_PATH
 
-    if existing_message is not None:
-        allow_all_languages = (
-            existing_message.find("allow_all_languages").text == "true"
-        )
-        if not allow_all_languages:
-            languages_elem = existing_message.find("allowed_languages")
-            if languages_elem is None:
-                languages_elem = etree.SubElement(
-                    existing_message, "allowed_languages"
-                )
-            allowed_languages = {
-                lang.text for lang in languages_elem.findall("language")
-            }
-            if language not in allowed_languages:
-                etree.SubElement(languages_elem, "language").text = language
-    else:
-        message = etree.SubElement(root, "message")
-        etree.SubElement(message, "source").text = source_text
-        etree.SubElement(message, "allow_all_languages").text = "false"
-        languages_elem = etree.SubElement(message, "allowed_languages")
-        etree.SubElement(languages_elem, "language").text = language
-
-    # Write the updated tree to the file with pretty printing
-    etree.indent(root, space="  ")
-    with open(PROPOSED_ALLOW_LIST_PATH, "wb") as f:
-        f.write(
-            etree.tostring(
-                tree, pretty_print=True, xml_declaration=True, encoding="UTF-8"
-            )
-        )
-
-    # Now create the TSV file with the required format
     tsv_lines = []
-    tsv_lines.append("lang\tsource")
+    existing_txt = False
+    if os.path.exists(allow_list_path):
+        with open(allow_list_path) as f:
+            tsv_lines = f.readlines()
 
-    for message in root.findall("message"):
-        allow_all_languages = False
-        allow_all_elem = message.find("allow_all_languages")
-        if allow_all_elem is not None:
-            allow_all_languages = allow_all_elem.text == "true"
-        source_elem = message.find("source")
-        source = ""
-        if source_elem is not None and source_elem.text is not None:
-            source = source_elem.text.encode("unicode_escape").decode("utf-8")
+        # Check if the source_text already exists
+        for i, line in enumerate(tsv_lines):
+            if not line.endswith("\n"):
+                print(f"Parse Error: No \\n at {ALLOW_LIST_PATH}:{i + 1}")
+                return False
+            line = line[:-1]
+            try:
+                lang, source = line.split("\t", 1)
+            except Exception as e:
+                print(f"Parse Error at {allow_list_path}:{i + 1}")
+                print(e)
+            if lang is None or lang == "":
+                print(
+                    f"Parse Error: lang is empty at {allow_list_path}:{i + 1}"
+                )
+                continue
+            if source == source_text:
+                if lang == "*":
+                    # nothing to do
+                    return
+                if language in lang:
+                    # nothing to do
+                    return
+                lang = lang + "," + language
+                tsv_lines[i] = f"{lang}\t{source}\n"
+                existing_txt = True
+                break
+    else:
+        tsv_lines.append("lang\tsource\n")
 
-        languages_str = ""
-        if allow_all_languages:
-            languages_str = "*"
-        else:
-            languages_elem = message.find("allowed_languages")
-            if languages_elem is not None:
-                languages = [
-                    lang.text for lang in languages_elem.findall("language")
-                ]
-                languages_str = ",".join(languages)
+    if not existing_txt:
+        tsv_lines.append(f"{language}\t{source_text}\n")
 
-        # Append the row to the list of lines
-        tsv_lines.append(f"{languages_str}\t{source}")
-
-    # Write to a TSV file
-    with open(PROPOSED_ALLOW_LIST_PATH_TSV, "w", encoding="utf-8") as tsv_file:
-        tsv_file.write("\n".join(tsv_lines))
-        tsv_file.write("\n")
+    with open(PROPOSED_ALLOW_LIST_PATH, "w", encoding="utf-8") as tsv_file:
+        tsv_file.write("".join(tsv_lines))
 
 
 def check_copied_source_on_lines(rootdir, file_to_format, stylepath=None):
@@ -201,7 +142,7 @@ def check_copied_source_on_lines(rootdir, file_to_format, stylepath=None):
                         continue
                     print(
                         "Source copy found at: "
-                        f"{file_to_format.filename}:{line_number}",
+                        f"{file_to_format.filename}:{line_number}\n{source}",
                         file=sys.stderr,
                     )
                     add_to_allow_list(source, lang_code)
