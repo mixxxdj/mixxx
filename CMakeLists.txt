@@ -2789,6 +2789,7 @@ if(QML)
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlchainpresetmodel.cpp
     src/qml/qmlwaveformoverview.cpp
+    src/qml/qmlmixxxcontrollerscreen.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
@@ -2799,6 +2800,7 @@ if(QML)
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+
 
   install(
     DIRECTORY
