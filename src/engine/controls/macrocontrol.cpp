@@ -118,23 +118,21 @@ void MacroControl::process(const double dRate,
 // TODO(xeruf) Verify that all active Macros are fully unloaded and inactive
 // before a new track is loading - https://github.com/mixxxdj/mixxx/pull/2989#issuecomment-753465755
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
-    if (isRecording()) {
-        if (stopRecording()) {
-            m_pMacro->setLabel(m_pMacro->getLabel().append(interruptedSuffix));
-        }
+    if (isRecording() && stopRecording()) {
+        m_pMacro->setLabel(m_pMacro->getLabel().append(interruptedSuffix));
     }
+
     if (!pNewTrack) {
         m_pMacro = nullptr;
         setStatus(Status::NoTrack);
         return;
     }
+
     m_pMacro = pNewTrack->getMacro(m_slot);
     if (m_pMacro->getActions().isEmpty()) {
         setStatus(Status::Empty);
-    } else if (m_pMacro->isEnabled()) {
-        play();
     } else {
-        stop();
+        m_pMacro->isEnabled() ? play() : stop();
     }
 }
 
@@ -222,24 +220,24 @@ bool MacroControl::stopRecording() {
     if (getStatus() == Status::Armed) {
         setStatus(Status::Empty);
         return false;
-    } else {
-        // This will still be the position of the previous track when called from trackLoaded
-        // since trackLoaded is invoked before the SampleOfTrack of the controls is updated.
-        m_pMacro->setEnd(frameInfo().currentPosition);
-        if (m_pMacro->getLabel().isEmpty()) {
-            // Automatically set the start position in seconds as label
-            // if there is no user-defined one
-            auto sampleRate = frameInfo().sampleRate;
-            auto secPos = (sampleRate != 0) ? m_pMacro->getStart() / sampleRate
-                                            : mixxx::audio::FramePos(0);
-            m_pMacro->setLabel(QString::number(secPos.value(), 'f', 2));
-        }
-        setStatus(Status::Recorded);
-        if (m_pMacro->isEnabled()) {
-            slotGotoPlay();
-        }
-        return true;
     }
+
+    // This will still be the position of the previous track when called from trackLoaded
+    // since trackLoaded is invoked before the SampleOfTrack of the controls is updated.
+    m_pMacro->setEnd(frameInfo().currentPosition);
+    if (m_pMacro->getLabel().isEmpty()) {
+        // Automatically set the start position in seconds as label
+        // if there is no user-defined one
+        auto sampleRate = frameInfo().sampleRate;
+        auto secPos = (sampleRate != 0) ? m_pMacro->getStart() / sampleRate
+                                        : mixxx::audio::FramePos(0);
+        m_pMacro->setLabel(QString::number(secPos.value(), 'f', 2));
+    }
+    setStatus(Status::Recorded);
+    if (m_pMacro->isEnabled()) {
+        slotGotoPlay();
+    }
+    return true;
 }
 
 void MacroControl::slotRecord(double value) {
@@ -265,14 +263,10 @@ void MacroControl::slotRecord(double value) {
 }
 
 void MacroControl::slotPlay(double value) {
-    if (value > 0) {
-        if (getStatus() == Status::Recorded) {
-            play();
-        }
-    } else {
-        if (getStatus() == Status::Playing) {
-            stop();
-        }
+    if (value > 0 && getStatus() == Status::Recorded) {
+        play();
+    } else if (value <= 0 && getStatus() == Status::Playing) {
+        stop();
     }
 }
 
