@@ -148,6 +148,10 @@ void EchoEffect::processChannel(
         period = std::max(period, 1 / 8.0);
         delay_frames = static_cast<int>(period * engineParameters.sampleRate());
     }
+    // Set default delay_frames to 1 if it is zero or negative
+    if (delay_frames <= 0) {
+        delay_frames = 1;
+    }
     VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
         delay_frames = 1;
     }
