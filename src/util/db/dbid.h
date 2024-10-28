@@ -28,7 +28,7 @@ class DbId {
     }
     explicit DbId(const int value)
             : m_value(value) {
-        DEBUG_ASSERT(isValid() || (kInvalidValue == m_value));
+        DEBUG_ASSERT(m_value >= kInvalidValue);
     }
 
     explicit DbId(const QVariant& variant)
