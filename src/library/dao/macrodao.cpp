@@ -61,16 +61,47 @@ void MacroDAO::saveMacros(TrackId trackId, const QMap<int, MacroPointer>& macros
     }
 }
 
-QSqlQuery MacroDAO::querySelect(const QString& columns, TrackId trackId) const {
+QString MacroDAO::columnToString(MacroColumn column) const {
+    switch (column) {
+    case MacroColumn::Id:
+        return "id";
+    case MacroColumn::TrackId:
+        return "track_id";
+    case MacroColumn::Slot:
+        return "slot";
+    case MacroColumn::Label:
+        return "label";
+    case MacroColumn::State:
+        return "state";
+    case MacroColumn::Content:
+        return "content";
+    default:
+        DEBUG_ASSERT(false);
+        return QString();
+    }
+}
+
+QSqlQuery MacroDAO::querySelect(const std::vector<MacroColumn>& columns, TrackId trackId) const {
+    QStringList columnNames;
+    for (const auto& column : columns) {
+        columnNames << columnToString(column);
+    }
+    QString columnList = columnNames.join(", ");
+
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT %1 FROM macros WHERE track_id=:trackId")
-                          .arg(columns));
+    query.prepare(QString("SELECT %1 FROM macros WHERE track_id=:trackId").arg(columnList));
     query.bindValue(":trackId", trackId.toVariant());
     return query;
 }
 
 QMap<int, MacroPointer> MacroDAO::loadMacros(TrackId trackId) const {
-    QSqlQuery query = querySelect("*", trackId);
+    std::vector<MacroColumn> columns = {
+            MacroColumn::Id,
+            MacroColumn::Slot,
+            MacroColumn::State,
+            MacroColumn::Label,
+            MacroColumn::Content};
+    QSqlQuery query = querySelect(columns, trackId);
     QMap<int, MacroPointer> result;
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

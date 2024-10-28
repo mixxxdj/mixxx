@@ -12,5 +12,14 @@ class MacroDAO : public virtual DAO {
     QMap<int, MacroPointer> loadMacros(TrackId trackId) const;
 
   private:
-    QSqlQuery querySelect(const QString& columns, TrackId trackId) const;
+    enum class MacroColumn {
+        Id,
+        TrackId,
+        Slot,
+        Label,
+        State,
+        Content
+    };
+    QString columnToString(MacroColumn column) const;
+    QSqlQuery querySelect(const std::vector<MacroColumn>& columns, TrackId trackId) const;
 };
