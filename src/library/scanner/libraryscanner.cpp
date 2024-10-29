@@ -199,7 +199,7 @@ void LibraryScanner::slotStartScan() {
     changeScannerState(SCANNING);
 
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
-    // Store number of existing tracks so we can calculat the number
+    // Store number of existing tracks so we can calculate the number
     // of missing tracks in slotFinishUnhashedScan().
     m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();
     m_numPreviouslyExistingTracks = m_trackDao.getAllExistingTrackLocations().size();
@@ -369,8 +369,7 @@ void LibraryScanner::cleanUpScan() {
                     << "Found"
                     << m_numRelocatedTracks
                     << "moved track(s)";
-            m_scannerGlobal->addedTracks(),
-                    emit tracksRelocated(relocatedTracks);
+            emit tracksRelocated(relocatedTracks);
         }
     }
 
