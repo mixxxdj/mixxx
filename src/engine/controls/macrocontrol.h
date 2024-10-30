@@ -59,7 +59,6 @@ class MacroControl : public EngineControl {
 
     ConfigKey getConfigKey(const QString& name);
     int m_slot;
-    QString m_controlPattern;
 
     /// The unquantized FramePos of a jump that is yet to be processed
     mixxx::audio::FramePos m_queuedJumpTarget;
