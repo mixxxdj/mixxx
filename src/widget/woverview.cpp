@@ -34,7 +34,7 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(-1),
+          m_type(Type::RGB),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -56,7 +56,16 @@ WOverview::WOverview(
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
           m_pHoveredMark(nullptr),
-          m_scaleFactor(1.0) {
+          m_scaleFactor(1.0),
+          m_trackSampleRateControl(
+                  m_group,
+                  QStringLiteral("track_samplerate")),
+          m_trackSamplesControl(
+                  m_group,
+                  QStringLiteral("track_samples")),
+          m_playpositionControl(
+                  m_group,
+                  QStringLiteral("playposition")) {
     m_endOfTrackControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
@@ -65,12 +74,6 @@ WOverview::WOverview(
     // Needed to recalculate range durations when rate slider is moved without the deck playing
     m_pRateRatioControl->connectValueChanged(
             this, &WOverview::onRateRatioChange);
-    m_trackSampleRateControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("track_samplerate"), this, ControlFlag::NoAssertIfMissing);
-    m_trackSamplesControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("track_samples"), this);
-    m_playpositionControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("playposition"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("passthrough"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
@@ -80,8 +83,20 @@ WOverview::WOverview(
             QStringLiteral("[Waveform]"),
             QStringLiteral("WaveformOverviewType"),
             this);
-    m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeChanged);
-    slotTypeChanged(m_pTypeControl->get());
+    m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
+    slotTypeControlChanged(m_pTypeControl->get());
+
+    // Update immediately when the normalize option or the visual gain have been
+    // changed in the preferences.
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overviewNormalizeChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overallVisualGainChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -400,11 +415,10 @@ void WOverview::onPassthroughChange(double v) {
     update();
 }
 
-void WOverview::slotTypeChanged(double v) {
-    int type = static_cast<int>(v);
-    VERIFY_OR_DEBUG_ASSERT(type >= 0 && type <= 2) {
-        type = 2;
-    }
+void WOverview::slotTypeControlChanged(double v) {
+    // Assert that v is in enum range to prevent UB.
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<Type>().keyCount());
+    Type type = static_cast<Type>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -412,6 +426,10 @@ void WOverview::slotTypeChanged(double v) {
     m_type = type;
     m_pWaveform.clear();
     slotWaveformSummaryUpdated();
+}
+
+void WOverview::slotNormalizeOrVisualGainChanged() {
+    update();
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
@@ -549,6 +567,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
+            // Abort dragging
             m_iPickupPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
@@ -562,7 +581,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             // WOverview in the future, another way to associate
             // WaveformMarks with Cues will need to be implemented.
             CuePointer pHoveredCue;
-            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            const QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
             for (const auto& pCue : cueList) {
                 if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
                     pHoveredCue = pCue;
@@ -1002,7 +1021,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
             double markSamples = pMark->getSamplePosition();
             double trackSamples = getTrackSamples();
-            double currentPositionSamples = m_playpositionControl->get() * trackSamples;
+            double currentPositionSamples = m_playpositionControl.get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
@@ -1122,7 +1141,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         qreal timePositionTillEnd = samplePositionToSeconds(
                 (1 - widgetPositionFraction) * trackSamples);
         qreal timeDistance = samplePositionToSeconds(
-                (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
+                (widgetPositionFraction - m_playpositionControl.get()) * trackSamples);
 
         QString timeText = mixxx::Duration::formatTime(timePosition) + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
@@ -1288,11 +1307,11 @@ bool WOverview::drawNextPixmapPart() {
     QPainter painter(&m_waveformSourceImage);
     painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
-    if (m_type == 0) {
+    if (m_type == Type::Filtered) {
         drawNextPixmapPartLMH(&painter, pWaveform, nextCompletion);
-    } else if (m_type == 1) {
+    } else if (m_type == Type::HSV) {
         drawNextPixmapPartHSV(&painter, pWaveform, nextCompletion);
-    } else {
+    } else { // Type::RGB:
         drawNextPixmapPartRGB(&painter, pWaveform, nextCompletion);
     }
 
@@ -1543,7 +1562,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 
 double WOverview::samplePositionToSeconds(double sample) {
     double trackTime = sample /
-            (m_trackSampleRateControl->get() * mixxx::kEngineChannelCount);
+            (m_trackSampleRateControl.get() * mixxx::kEngineChannelCount);
     return trackTime / m_pRateRatioControl->get();
 }
 

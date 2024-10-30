@@ -1,17 +1,19 @@
 #include "library/basetracktablemodel.h"
 
+#include <QBuffer>
 #include <QGuiApplication>
+#include <QMimeData>
 #include <QScreen>
 
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
+#include "library/tabledelegates/checkboxdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
-#include "library/tabledelegates/playcountdelegate.h"
 #include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
@@ -482,7 +484,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-        return new PlayCountDelegate(pTableView);
+        return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
@@ -583,18 +585,6 @@ QVariant BaseTrackTableModel::data(
     return roleValue(index, rawValue(index), role);
 }
 
-QVariant BaseTrackTableModel::rawValue(
-        const QModelIndex& index) const {
-    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
-        return QVariant();
-    }
-    const auto field = mapColumn(index.column());
-    if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-        return QVariant();
-    }
-    return rawSiblingValue(index, field);
-}
-
 QVariant BaseTrackTableModel::rawSiblingValue(
         const QModelIndex& index,
         ColumnCache::Column siblingField) const {
@@ -604,17 +594,13 @@ QVariant BaseTrackTableModel::rawSiblingValue(
     VERIFY_OR_DEBUG_ASSERT(siblingField != ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
         return QVariant();
     }
-    const auto siblingColumn = fieldIndex(siblingField);
+    const int siblingColumn = fieldIndex(siblingField);
     if (siblingColumn < 0) {
         // Unsupported or unknown column/field
         // FIXME: This should never happen but it does. But why??
         return QVariant();
     }
-    VERIFY_OR_DEBUG_ASSERT(siblingColumn != index.column()) {
-        // Prevent infinite recursion
-        return QVariant();
-    }
-    const auto siblingIndex = index.sibling(index.row(), siblingColumn);
+    const QModelIndex siblingIndex = index.sibling(index.row(), siblingColumn);
     return rawValue(siblingIndex);
 }
 
@@ -799,7 +785,7 @@ QVariant BaseTrackTableModel::roleValue(
                 return dt;
             }
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
-                // Timstamp column in history feature:
+                // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
                 return mixxx::displayLocalDateTime(dt);
             }

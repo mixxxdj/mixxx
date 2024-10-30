@@ -485,7 +485,7 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
     // re-enumerate on the next open of the preferences.
     if (!pMappingEnumerator.isNull()) {
         // Get a list of mappings in alphabetical order
-        QList<MappingInfo> systemMappings =
+        const QList<MappingInfo> systemMappings =
                 pMappingEnumerator->getMappingsByExtension(
                         m_pController->mappingExtension());
 

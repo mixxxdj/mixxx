@@ -718,6 +718,9 @@ void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
     }
+    if (!m_overviewNormalized && index == FilterIndex::All) {
+        emit overallVisualGainChanged();
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
@@ -729,6 +732,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
+    emit overviewNormalizeChanged();
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
@@ -1397,6 +1401,7 @@ void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
                 toUntilMarkAlignIndex(m_untilMarkAlign));
     }
 }
+
 void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
     m_untilMarkTextPointSize = value;
     if (m_config) {

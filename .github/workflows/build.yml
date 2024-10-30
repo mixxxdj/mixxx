@@ -131,7 +131,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -313,13 +313,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.3.20
+        uses: azure/trusted-signing-action@v0.4.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: exe
@@ -368,13 +368,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.3.20
+        uses: azure/trusted-signing-action@v0.4.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: msi
@@ -470,7 +470,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -486,7 +486,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
 

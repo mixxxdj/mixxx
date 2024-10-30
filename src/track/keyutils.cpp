@@ -38,31 +38,66 @@ const QString s_sharpSymbol = QString::fromUtf8("♯");
 //static const QString s_flatSymbol = QString::fromUtf8("♭");
 
 const QString s_traditionalKeyNames[] = {
-        QString::fromUtf8("INVALID"),
-        QString::fromUtf8("C"),
-        QString::fromUtf8("D♭"),
-        QString::fromUtf8("D"),
-        QString::fromUtf8("E♭"),
-        QString::fromUtf8("E"),
-        QString::fromUtf8("F"),
-        QString::fromUtf8("F♯/G♭"),
-        QString::fromUtf8("G"),
-        QString::fromUtf8("A♭"),
-        QString::fromUtf8("A"),
-        QString::fromUtf8("B♭"),
-        QString::fromUtf8("B"),
-        QString::fromUtf8("Cm"),
-        QString::fromUtf8("C♯m"),
-        QString::fromUtf8("Dm"),
-        QString::fromUtf8("D♯m/E♭m"),
-        QString::fromUtf8("Em"),
-        QString::fromUtf8("Fm"),
-        QString::fromUtf8("F♯m"),
-        QString::fromUtf8("Gm"),
-        QString::fromUtf8("G♯m"),
-        QString::fromUtf8("Am"),
-        QString::fromUtf8("B♭m"),
-        QString::fromUtf8("Bm")};
+        QStringLiteral(u"INVALID"),
+        QStringLiteral(u"C"),
+        QStringLiteral(u"D♭"),
+        QStringLiteral(u"D"),
+        QStringLiteral(u"E♭"),
+        QStringLiteral(u"E"),
+        QStringLiteral(u"F"),
+        QStringLiteral(u"F♯/G♭"),
+        QStringLiteral(u"G"),
+        QStringLiteral(u"A♭"),
+        QStringLiteral(u"A"),
+        QStringLiteral(u"B♭"),
+        QStringLiteral(u"B"),
+        QStringLiteral(u"Cm"),
+        QStringLiteral(u"C♯m"),
+        QStringLiteral(u"Dm"),
+        QStringLiteral(u"D♯m/E♭m"),
+        QStringLiteral(u"Em"),
+        QStringLiteral(u"Fm"),
+        QStringLiteral(u"F♯m"),
+        QStringLiteral(u"Gm"),
+        QStringLiteral(u"G♯m"),
+        QStringLiteral(u"Am"),
+        QStringLiteral(u"B♭m"),
+        QStringLiteral(u"Bm")};
+
+// ID3v2.3.0 specification (https://id3.org/id3v2.3.0):
+// The 'Initial key' frame contains the musical key in which the sound starts.
+// It is represented as a string with a maximum length of three characters.
+// The ground keys are represented with "A","B","C","D","E", "F" and "G" and halfkeys
+// represented with "b" and "#". Minor is represented as "m". Example "Cbm".
+// Off key is represented with an "o" only.
+const std::array s_IDv3KeyNames = {
+        // these are QStringLiterals because they're used as QStrings below, even though they
+        // only contain ASCII characters
+        QStringLiteral("o"),
+        QStringLiteral("C"),
+        QStringLiteral("Db"),
+        QStringLiteral("D"),
+        QStringLiteral("Eb"),
+        QStringLiteral("E"),
+        QStringLiteral("F"),
+        QStringLiteral("F#"),
+        QStringLiteral("G"),
+        QStringLiteral("Ab"),
+        QStringLiteral("A"),
+        QStringLiteral("Bb"),
+        QStringLiteral("B"),
+        QStringLiteral("Cm"),
+        QStringLiteral("C#m"),
+        QStringLiteral("Dm"),
+        QStringLiteral("Ebm"),
+        QStringLiteral("Em"),
+        QStringLiteral("Fm"),
+        QStringLiteral("F#m"),
+        QStringLiteral("Gm"),
+        QStringLiteral("G#m"),
+        QStringLiteral("Am"),
+        QStringLiteral("Bbm"),
+        QStringLiteral("Bm")};
 
 // Maps an OpenKey number to its major and minor key.
 constexpr ChromaticKey s_openKeyToKeys[][2] = {
@@ -272,6 +307,50 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
 }
 
 // static
+int KeyUtils::keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
+    switch (key) {
+    case mixxx::track::io::key::C_MAJOR:
+    case mixxx::track::io::key::A_MINOR:
+        return 1;
+    case mixxx::track::io::key::G_MAJOR:
+    case mixxx::track::io::key::E_MINOR:
+        return 2;
+    case mixxx::track::io::key::D_MAJOR:
+    case mixxx::track::io::key::B_MINOR:
+        return 3;
+    case mixxx::track::io::key::A_MAJOR:
+    case mixxx::track::io::key::F_SHARP_MINOR:
+        return 4;
+    case mixxx::track::io::key::E_MAJOR:
+    case mixxx::track::io::key::C_SHARP_MINOR:
+        return 5;
+    case mixxx::track::io::key::B_MAJOR:
+    case mixxx::track::io::key::G_SHARP_MINOR:
+        return 6;
+    case mixxx::track::io::key::F_SHARP_MAJOR:
+    case mixxx::track::io::key::E_FLAT_MINOR:
+        return 7;
+    case mixxx::track::io::key::D_FLAT_MAJOR:
+    case mixxx::track::io::key::B_FLAT_MINOR:
+        return 8;
+    case mixxx::track::io::key::A_FLAT_MAJOR:
+    case mixxx::track::io::key::F_MINOR:
+        return 9;
+    case mixxx::track::io::key::E_FLAT_MAJOR:
+    case mixxx::track::io::key::C_MINOR:
+        return 10;
+    case mixxx::track::io::key::B_FLAT_MAJOR:
+    case mixxx::track::io::key::G_MINOR:
+        return 11;
+    case mixxx::track::io::key::F_MAJOR:
+    case mixxx::track::io::key::D_MINOR:
+        return 12;
+    default:
+        return 0;
+    }
+}
+
+// static
 QString KeyUtils::keyToString(ChromaticKey key,
                               KeyNotation notation) {
     if (!ChromaticKey_IsValid(key) ||
@@ -309,6 +388,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
         return QString::number(number) + (major ? "B" : "A") + " (" + trad + ")";
     } else if (notation == KeyNotation::Traditional) {
         return s_traditionalKeyNames[static_cast<int>(key)];
+    } else if (notation == KeyNotation::ID3v2) {
+        return s_IDv3KeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
 }

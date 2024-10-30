@@ -5,6 +5,8 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
@@ -310,7 +312,7 @@ void DlgReplaceCueColor::slotApply() {
     }
 
     // Flush cached tracks to database
-    QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
+    const QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
     for (const TrackId& trackId : cachedTrackIds) {
         TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (pTrack) {

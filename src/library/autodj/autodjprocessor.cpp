@@ -407,6 +407,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             }
         }
 
+        if (pLeftDeck->index > 1 || pRightDeck->index > 1) {
+            // Left and/or right deck is deck 3/4 which may not be visible.
+            // Make sure it is, if the current skin is a 4-deck skin.
+            ControlObject::set(ConfigKey("[Skin]", "show_4decks"), 1);
+        }
+
         // Never load the same track if it is already playing
         if (leftDeckPlaying) {
             removeLoadedTrackFromTopOfQueue(*pLeftDeck);
@@ -533,6 +539,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &DeckAttributes::rateChanged,
                 this,
                 &AutoDJProcessor::playerRateChanged);
+        connect(m_pAutoDJTableModel,
+                &PlaylistTableModel::firstTrackChanged,
+                this,
+                &AutoDJProcessor::playlistFirstTrackChanged);
 
         if (!leftDeckPlaying && !rightDeckPlaying) {
             // Both decks are stopped. Load a track into deck 1 and start it
@@ -1662,6 +1672,22 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
         return;
     }
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
+}
+
+void AutoDJProcessor::playlistFirstTrackChanged() {
+    if constexpr (sDebug) {
+        qDebug() << this << "playlistFirstTrackChanged";
+    }
+    if (m_eState != ADJ_DISABLED) {
+        DeckAttributes* pLeftDeck = getLeftDeck();
+        DeckAttributes* pRightDeck = getRightDeck();
+
+        if (!pLeftDeck->isPlaying()) {
+            loadNextTrackFromQueue(*pLeftDeck);
+        } else if (!pRightDeck->isPlaying()) {
+            loadNextTrackFromQueue(*pRightDeck);
+        }
+    }
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {

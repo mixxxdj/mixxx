@@ -353,8 +353,8 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlProxy> m_pVinylControlMode;
 
     std::unique_ptr<ControlObject> m_pHotcueFocus;
-    std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
-    std::unique_ptr<ControlObject> m_pHotcueFocusColorPrev;
+    std::unique_ptr<ControlPushButton> m_pHotcueFocusColorNext;
+    std::unique_ptr<ControlPushButton> m_pHotcueFocusColorPrev;
 
     parented_ptr<ControlProxy> m_pPassthrough;
 

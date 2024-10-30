@@ -761,7 +761,6 @@ void EngineMixer::process(const int iBufferSize) {
         // record/broadcast signal
         if (m_pEngineEffectsManager) {
             GroupFeatureState mainFeatures;
-            mainFeatures.has_gain = true;
             mainFeatures.gain = m_pMainGain->get();
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_mainOutputHandle.handle(),
@@ -825,7 +824,6 @@ void EngineMixer::applyMainEffects(int bufferSize) {
     // Apply main effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState mainFeatures;
-        mainFeatures.has_gain = true;
         mainFeatures.gain = m_pMainGain->get();
         m_pEngineEffectsManager->processPostFaderInPlace(m_mainHandle.handle(),
                 m_mainHandle.handle(),

@@ -11,6 +11,7 @@
 
 #include <tfile.h>
 
+#include "moc_trackmetadata_file.cpp"
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 
@@ -45,36 +46,72 @@ void readAudioProperties(
 
 namespace taglib {
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+using namespace Qt::Literals::StringLiterals;
+#else
+constexpr inline QLatin1String operator""_L1(const char* str, size_t size) noexcept {
+    return QLatin1String{str, static_cast<int>(size)};
+}
+#endif
+
 // Deduce the TagLib file type from the file name
-FileType getFileTypeFromFileName(
-        const QString& fileName) {
-    DEBUG_ASSERT(!fileName.isEmpty());
-    const QString fileSuffix(fileName.section(QChar('.'), -1).toLower().trimmed());
-    if (QStringLiteral("mp3") == fileSuffix) {
-        return FileType::MP3;
-    }
-    if ((QStringLiteral("m4a") == fileSuffix) || (QStringLiteral("m4v") == fileSuffix)) {
-        return FileType::MP4;
-    }
-    if (QStringLiteral("flac") == fileSuffix) {
-        return FileType::FLAC;
-    }
-    if (QStringLiteral("ogg") == fileSuffix) {
-        return FileType::OGG;
-    }
-    if (QStringLiteral("opus") == fileSuffix) {
-        return FileType::OPUS;
-    }
-    if (QStringLiteral("wav") == fileSuffix) {
-        return FileType::WAV;
-    }
-    if (QStringLiteral("wv") == fileSuffix) {
-        return FileType::WV;
-    }
-    if (fileSuffix.startsWith(QStringLiteral("aif"))) {
-        return FileType::AIFF;
-    }
-    return FileType::Unknown;
+FileType stringToEnumFileType(
+        const QString& fileType) {
+    DEBUG_ASSERT(!fileType.isEmpty());
+
+    struct TypePair {
+        QLatin1String strType;
+        FileType eType;
+    };
+
+    // This table is aligned with detectByExtension() in fileref.cpp
+    constexpr static std::array lookupTable = {
+            TypePair{"mp3"_L1, FileType::MPEG},
+            TypePair{"mp2"_L1, FileType::MPEG},
+            TypePair{"aac"_L1, FileType::MPEG},
+            TypePair{"mpeg"_L1, FileType::MPEG},
+            TypePair{"ogg"_L1, FileType::OggVorbis},
+            TypePair{"oga"_L1, FileType::OggFlac},
+            TypePair{"flac"_L1, FileType::FLAC},
+            TypePair{"mpc"_L1, FileType::MPC},
+            TypePair{"wv"_L1, FileType::WavPack},
+            TypePair{"spx"_L1, FileType::Speex},
+            TypePair{"opus"_L1, FileType::Opus},
+            TypePair{"tta"_L1, FileType::TrueAudio},
+            TypePair{"caf"_L1, FileType::MP4},
+            TypePair{"m4a"_L1, FileType::MP4},
+            TypePair{"m4r"_L1, FileType::MP4},
+            TypePair{"m4b"_L1, FileType::MP4},
+            TypePair{"m4p"_L1, FileType::MP4},
+            TypePair{"m4v"_L1, FileType::MP4},
+            TypePair{"mj2"_L1, FileType::MP4},
+            TypePair{"mov"_L1, FileType::MP4},
+            TypePair{"mp4"_L1, FileType::MP4},
+            TypePair{"3gp"_L1, FileType::MP4},
+            TypePair{"3g2"_L1, FileType::MP4},
+            TypePair{"wma"_L1, FileType::ASF},
+            TypePair{"asf"_L1, FileType::ASF},
+            TypePair{"aiff"_L1, FileType::AIFF},
+            TypePair{"aifc"_L1, FileType::AIFF},
+            TypePair{"wav"_L1, FileType::WAV},
+            TypePair{"ape"_L1, FileType::APE},
+            TypePair{"it"_L1, FileType::IT},
+            TypePair{"mod"_L1, FileType::Mod},
+            TypePair{"module"_L1, FileType::Mod},
+            TypePair{"nst"_L1, FileType::Mod},
+            TypePair{"wow"_L1, FileType::Mod},
+            TypePair{"s3m"_L1, FileType::S3M},
+            TypePair{"xm"_L1, FileType::XM},
+            TypePair{"dsf"_L1, FileType::DSF},
+            TypePair{"dff"_L1, FileType::DSDIFF},
+            TypePair{"dsdiff"_L1, FileType::DSDIFF}};
+
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    const auto it = std::find_if(
+            lookupTable.cbegin(),
+            lookupTable.cend(),
+            [fileType](const auto& pair) { return pair.strType == fileType; });
+    return it != lookupTable.end() ? it->eType : FileType::Unknown;
 }
 
 QDebug operator<<(QDebug debug, FileType fileType) {

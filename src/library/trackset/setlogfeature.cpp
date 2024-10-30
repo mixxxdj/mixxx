@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <QMenu>
+#include <QSqlTableModel>
 
 #include "library/library.h"
 #include "library/library_prefs.h"

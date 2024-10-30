@@ -796,6 +796,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/metronomeclick.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/compressoreffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
@@ -982,11 +983,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/sidebarmodel.cpp
   src/library/starrating.cpp
   src/library/tabledelegates/bpmdelegate.cpp
+  src/library/tabledelegates/checkboxdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
-  src/library/tabledelegates/playcountdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -2114,6 +2115,7 @@ add_executable(mixxx-test
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/itunesxmlimportertest.cpp
+  src/test/keyfactorytest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -2165,6 +2167,7 @@ add_executable(mixxx-test
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
   src/test/trackmetadata_test.cpp
+  src/test/trackmetadataexport_test.cpp
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
@@ -2586,6 +2589,13 @@ add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
 )
 target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
+
+#silence "enumeration values not handled in switch" in generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
@@ -3644,7 +3654,7 @@ else()
   check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
   if(NOT HAVE_GSL_GSL)
     unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
-    message(FATAL_ERROR "ms-gsl deveopment headers (libmsgsl-dev) not found")
+    message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
   endif()
 endif()
 
