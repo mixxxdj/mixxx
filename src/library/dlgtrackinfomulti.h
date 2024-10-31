@@ -101,7 +101,6 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
-    parented_ptr<WStarRating> m_pWStarRating;
     bool m_starRatingModified;
     int m_newRating;
     bool m_colorChanged;
