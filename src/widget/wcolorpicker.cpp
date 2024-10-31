@@ -43,7 +43,10 @@ WColorGridButton::WColorGridButton(const mixxx::RgbColor::optional_t& color,
         int row,
         int column,
         QWidget* parent)
-        : QPushButton(parent), m_color(color), m_row(row), m_column(column) {
+        : QPushButton(parent),
+          m_color(color),
+          m_row(row),
+          m_column(column) {
     if (color) {
         // Set the background color of the button.
         // This can't be overridden in skin stylesheets.
