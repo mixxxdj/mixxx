@@ -31,6 +31,7 @@ class MovingInterquartileMean {
     }
 
   private:
+    double calcMean() const;
     // The list keeps input doubles ordered by value.
     std::vector<double> m_list;
     // The queue keeps a second copy of the list, but in insertion

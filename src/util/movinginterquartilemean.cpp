@@ -24,11 +24,12 @@ double MovingInterquartileMean::insert(double value) {
     // needed using the first std::lower_bound
     m_queue.push(value);
 
-    m_bChanged = true;
-
     DEBUG_ASSERT(std::is_sorted(m_list.cbegin(), m_list.cend()));
 
-    return mean();
+    // no need to set m_bChanged and check m_list.empty().
+    // we know the preconditions are satisfied so call `calcMean()` directly
+    m_dMean = calcMean();
+    return m_dMean;
 }
 
 void MovingInterquartileMean::clear() {
@@ -43,7 +44,13 @@ double MovingInterquartileMean::mean() {
     if (!m_bChanged || m_list.empty()) {
         return m_dMean;
     }
+    m_dMean = calcMean();
+    m_bChanged = false;
+    return m_dMean;
+}
 
+double MovingInterquartileMean::calcMean() const {
+    // assumes m_list is not empty
     auto simpleMean = [](auto begin, auto end) -> double {
         double size = std::distance(begin, end);
         return std::accumulate(begin, end, 0.0) / size;
@@ -51,12 +58,12 @@ double MovingInterquartileMean::mean() {
 
     const auto listSize = m_list.size();
     if (listSize <= 4) {
-        m_dMean = simpleMean(m_list.cbegin(), m_list.cend());
+        return simpleMean(m_list.cbegin(), m_list.cend());
     } else if (listSize % 4 == 0) {
         std::size_t quartileSize = listSize / 4;
         auto start = m_list.cbegin() + quartileSize;
         auto end = m_list.cend() - quartileSize;
-        m_dMean = simpleMean(start, end);
+        return simpleMean(start, end);
     } else {
         // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
         double quartileSize = listSize / 4.0;
@@ -71,9 +78,6 @@ double MovingInterquartileMean::mean() {
             d_sum += *it;
         }
         d_sum += *it * quartileWeight;
-        m_dMean = d_sum / interQuartileRange;
+        return d_sum / interQuartileRange;
     }
-    m_bChanged = false;
-
-    return m_dMean;
 }
