@@ -445,7 +445,7 @@
              </spacer>
             </item>
             <item row="10" column="0" colspan="4">
-             <layout class="QHBoxLayout" name="meatdata_buttons_layout">
+             <layout class="QHBoxLayout" name="metadata_buttons_layout">
               <item>
                <widget class="WBasicPushButton" name="btnImportMetadataFromMusicBrainz">
                 <property name="text">
