@@ -1,11 +1,14 @@
 #include "encoder/encoderwave.h"
 
+#include <sndfile.h>
+
 #include <QtDebug>
 
 #include "audio/types.h"
 #include "encoder/encodercallback.h"
 #include "encoder/encoderwavesettings.h"
 #include "recording/defs_recording.h"
+#include "util/assert.h"
 
 // The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)
@@ -133,6 +136,15 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
 
 // call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderWave::flush() {
+    // AIFF uses COMMENT to store the album info, so we don't store the
+    // tracklist there for backward compatibility.
+    auto trackList = getTrackList().join("\n");
+    if (!trackList.isEmpty() && m_sfInfo.format != SF_FORMAT_AIFF) {
+            int ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, trackList.toUtf8().constData());
+            VERIFY_OR_DEBUG_ASSERT(ret == 0) {
+                qWarning() << "libsndfile error when storing tracklist: %s", sf_error_number(ret);
+            }
+    }
     sf_write_sync(m_pSndfile);
 }
 
@@ -146,10 +158,17 @@ void EncoderWave::encodeBuffer(const CSAMPLE *pBuffer, const int iBufferSize) {
  *
  * Currently this method is used before init() once to save artist, title and album
 */
-void EncoderWave::updateMetaData(const QString& artist, const QString& title, const QString& album) {
-    m_metaDataTitle = title;
-    m_metaDataArtist = artist;
-    m_metaDataAlbum = album;
+void EncoderWave::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds timecode) {
+    if (m_pSndfile == nullptr) {
+            m_metaDataTitle = title;
+            m_metaDataArtist = artist;
+            m_metaDataAlbum = album;
+    } else {
+            addToTracklist(artist, title, timecode);
+    }
 }
 
 void EncoderWave::initStream() {
