@@ -197,7 +197,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
-    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
+    const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
+        return m_waveformWidgetHandles;
+    }
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void destroyWidgets();
 
@@ -217,6 +219,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swapSpinnies();
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
+
+    void overviewNormalizeChanged();
+    void overallVisualGainChanged();
 
   public slots:
     void slotSkinLoaded();

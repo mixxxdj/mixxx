@@ -37,6 +37,8 @@ class SoundSourceSTEM : public SoundSource {
     std::vector<std::unique_ptr<SoundSourceSingleSTEM>> m_pStereoStreams;
     SampleBuffer m_buffer;
 
+    mixxx::audio::ChannelCount m_requestedChannelCount;
+
   protected:
     OpenResult tryOpen(
             OpenMode mode,

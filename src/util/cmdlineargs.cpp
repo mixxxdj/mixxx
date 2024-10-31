@@ -24,18 +24,24 @@ bool calcUseColorsAuto() {
     // see https://no-color.org/
     if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
         return false;
-    } else {
-#ifndef __WINDOWS__
-        if (isatty(fileno(stderr))) {
-            return true;
-        }
-#else
-        if (_isatty(_fileno(stderr))) {
-            return true;
-        }
-#endif
     }
-    return false;
+
+#ifndef __WINDOWS__
+    if (!isatty(fileno(stderr))) {
+        return false;
+    }
+#else
+    if (!_isatty(_fileno(stderr))) {
+        return false;
+    }
+#endif
+
+    // Check if terminal is known to support ANSI colors
+    QString term = QProcessEnvironment::systemEnvironment().value("TERM");
+    return term == "alacritty" || term == "ansi" || term == "cygwin" || term == "linux" ||
+            term.startsWith("screen") || term.startsWith("xterm") ||
+            term.startsWith("vt100") || term.startsWith("rxvt") ||
+            term.endsWith("color");
 }
 
 } // namespace
@@ -43,6 +49,7 @@ bool calcUseColorsAuto() {
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_startAutoDJ(false),
+          m_rescanLibrary(false),
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
@@ -180,6 +187,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "Starts Auto DJ when Mixxx is launched.")
                             : QString());
     parser.addOption(startAutoDJ);
+
+    const QCommandLineOption rescanLibrary(QStringLiteral("rescan-library"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Rescans the library when Mixxx is launched.")
+                            : QString());
+    parser.addOption(rescanLibrary);
 
     // An option with a value
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
@@ -383,6 +396,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     if (parser.isSet(startAutoDJ)) {
         m_startAutoDJ = true;
+    }
+
+    if (parser.isSet(rescanLibrary)) {
+        m_rescanLibrary = true;
     }
 
     if (parser.isSet(settingsPath)) {

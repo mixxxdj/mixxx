@@ -1,7 +1,10 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <gsl/pointers>
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "control/controlpotmeter.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
@@ -298,7 +301,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
 
     if (coScript->addScriptConnection(connection)) {
         return pJsEngine->newQObject(
-                new ScriptConnectionJSProxy(connection));
+                new ScriptConnectionJSProxy(std::move(connection)));
     }
 
     return QJSValue();
@@ -417,19 +420,17 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
             // not break.
             ScriptConnection connection = coScript->firstConnection();
 
-            qCWarning(m_logger) << "Tried to make duplicate connection between (" +
-                            group + ", " + name + ") and " +
-                            passedCallback.toString() +
-                            " but this is not allowed when passing a callback "
-                            "as a string. " +
-                            "If you actually want to create duplicate "
-                            "connections, " +
-                            "use engine.makeConnection. Returning reference to "
-                            "connection " +
-                            connection.id.toString();
+            qCWarning(m_logger).nospace()
+                    << "Tried to make duplicate connection between (" << group
+                    << ", " << name << ") and " << passedCallback.toString()
+                    << " but this is not allowed when passing a callback "
+                       "as a string. If you actually want to create duplicate "
+                       "connections, use engine.makeConnection. "
+                       "Returning reference to connection "
+                    << connection.id.toString();
 
             return pJsEngine->newQObject(
-                    new ScriptConnectionJSProxy(connection));
+                    new ScriptConnectionJSProxy(std::move(connection)));
         }
     } else if (passedCallback.isQObject()) {
         // Assume a ScriptConnection and assume that the script author
@@ -584,11 +585,12 @@ void ControllerScriptInterfaceLegacy::softTakeover(
         const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
-    if (!pControl) {
-        return;
-    }
     if (set) {
-        m_st.enable(pControl);
+        auto* pControlPotmeter = qobject_cast<ControlPotmeter*>(pControl);
+        if (!pControlPotmeter) {
+            return;
+        }
+        m_st.enable(gsl::not_null(pControlPotmeter));
     } else {
         m_st.disable(pControl);
     }
@@ -603,6 +605,17 @@ void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
     }
 
     m_st.ignoreNext(pControl);
+}
+
+bool ControllerScriptInterfaceLegacy::softTakeoverWillIgnore(
+        const QString& group, const QString& name, double parameter) {
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name));
+    if (!pControl) {
+        return false;
+    }
+
+    return m_st.willIgnore(pControl, parameter);
 }
 
 double ControllerScriptInterfaceLegacy::getDeckRate(const QString& group) {

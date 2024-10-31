@@ -163,7 +163,8 @@ class AutoDJProcessor : public QObject {
         FullIntroOutro,
         FadeAtOutroStart,
         FixedFullTrack,
-        FixedSkipSilence
+        FixedSkipSilence,
+        FixedStartCenterSkipSilence
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -219,6 +220,7 @@ class AutoDJProcessor : public QObject {
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
+    void playlistFirstTrackChanged();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
@@ -285,6 +287,7 @@ class AutoDJProcessor : public QObject {
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
+    bool m_crossfaderStartCenter;
 
     QList<DeckAttributes*> m_decks;
 

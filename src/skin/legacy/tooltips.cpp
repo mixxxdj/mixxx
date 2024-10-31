@@ -48,6 +48,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Waveform Overview")
             << tr("Shows information about the track currently loaded in this deck.") << "\n"
             << tr("Left click to jump around in the track.")
+            << tr("Left click and hold allows to preview the position where the play head "
+                  "will jump to on release. Dragging can be aborted with right click.")
             << tr("Right click hotcues to edit their labels and colors.")
             << tr("Right click anywhere else to show the time at that point.")
             << dropTracksHere;
@@ -268,6 +270,9 @@ void Tooltips::addStandardTooltips() {
 
     add("show_beatgrid_controls")
             << tr("Show/hide the beatgrid controls section");
+
+    add("show_stem_controls")
+            << tr("Show/hide the stem mixing controls section");
 
     add("show_library")
             << tr("Show Library")
@@ -1149,6 +1154,22 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle")
             << tr("Toggle the current effect.")
             << eqKillLatch;
+
+    // Stem Channel Controls
+    add("StemLabel")
+            << tr("Stem Label")
+            << tr("Name of the stem stored in the stem file")
+            << tr("Text is displayed in the stem color stored in the stem file")
+            << tr("this stem color is also used for the waveform of this stem");
+
+    add("StemMuteButton")
+            << tr("Stem Mute")
+            << tr("Toggle the stem mute/unmuted");
+
+    add("StemVolumeKnob")
+            << tr("Stem Volume Knob")
+            << tr("Adjusts the volume of the stem")
+            << resetWithRightAndDoubleClick;
 
     // Equalizer Rack Controls
     add("EqualizerRack_effect_parameter")

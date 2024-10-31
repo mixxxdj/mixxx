@@ -28,6 +28,7 @@ IndentCaseLabels: false
 DerivePointerAlignment: false
 SpaceAfterTemplateKeyword: false
 SpacesBeforeTrailingComments: 1
+PackConstructorInitializers: Never
 # StatementMacros don't require a trailing semicolon.
 # Trailing semicolons should be omitted after these macros
 # when compiling with -Wpedantic to avoid warnings.
@@ -41,6 +42,7 @@ StatementMacros:
   - QT_REQUIRE_VERSION
 ---
 Language: ObjC
+ObjCBlockIndentWidth: 4
 # We exclude Objective-C(++) from the second line-wrapping pass in tools/clang_format.py
 # since this pass only applies C++ rules and therefore include the ColumnLimit in the
 # 'main' clang-format config here.

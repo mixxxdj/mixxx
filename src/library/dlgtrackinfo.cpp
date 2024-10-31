@@ -672,6 +672,8 @@ void DlgTrackInfo::saveTrack() {
 void DlgTrackInfo::clear() {
     const QSignalBlocker signalBlocker(this);
 
+    setWindowTitle(QString());
+
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::changed,

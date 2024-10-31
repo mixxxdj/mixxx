@@ -3,35 +3,34 @@ var NumarkScratch = {};
 
 /*
  * USER CONFIGURABLE SETTINGS.
+ * Change settings in the preferences
  */
 
 // Defines the Beatloop Roll sizes for the 4 pads, for available values see:
-// https://manual.mixxx.org/2.4/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatlooproll_X_activate
+// https://manual.mixxx.org/latest/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatlooproll_X_activate
 // Default: [0.25, 0.5, 1, 2]
 NumarkScratch.autoLoopSizes = [
-    "0.25",
-    "0.5",
-    "1",
-    "2",
+    engine.getSetting("beatLoopRollsSize1") || 0.25,
+    engine.getSetting("beatLoopRollsSize2") || 0.5,
+    engine.getSetting("beatLoopRollsSize3") || 1,
+    engine.getSetting("beatLoopRollsSize4") || 2,
 ];
 
 // Defines how the Loop Encoder functions.
 // If 'true' the Encoder scrolls the library/loads track. Shift + Encoder manages looping.
 // If 'false' the Encoder manages looping. Shift + Encoder scrolls the library/loads track (Serato default).
 // Default: false
-NumarkScratch.invertLoopEncoderFunction = false;
+NumarkScratch.invertLoopEncoderFunction = !!engine.getSetting("invertLoopEncoderFunction");
 
-// Defines the bightness of button LEDs when they inactive.
-// '0x00' sets the LEDSs to completely off. '0x01 sets the LEDs to dim.
-// Default: 0x01 (dim)
-NumarkScratch.LOW_LIGHT = 0x01;
+// Define whether or not to keep LEDs dimmed if they are inactive.
+// 0x01 ('true' in UI) will keep them dimmed, 0x00 ('false' in UI) will turn them off. Default: 0x01 ('true')
+NumarkScratch.noLight = 0x00;
+NumarkScratch.dimLight = 0x01;
+components.Button.prototype.off = engine.getSetting("inactiveLightsAlwaysBacklit") ? NumarkScratch.dimLight : NumarkScratch.noLight;
 
 /*
  * CODE
  */
-
-
-components.Button.prototype.off = NumarkScratch.LOW_LIGHT;
 
 NumarkScratch.init = function() {
     // Initialize component containers
@@ -169,8 +168,8 @@ NumarkScratch.XfaderContainer = function() {
             break;
         case 0x7F:  // Picnic Bench/Fast Cut
             engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
-            engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 1);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 999.6);
             break;
         }
     };

@@ -74,6 +74,9 @@
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#ifdef __STEM__
+#include "widget/wstemlabel.h"
+#endif
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wtrackwidgetgroup.h"
@@ -117,7 +120,7 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
     ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
-    controlButton->setButtonMode(ControlPushButton::TOGGLE);
+    controlButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     if (pCreated) {
         *pCreated = true;
@@ -559,7 +562,13 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
-    } else if (nodeName == "Knob") {
+    }
+#ifdef __STEM__
+    else if (nodeName == "StemLabel") {
+        result = wrapWidget(parseStemLabelWidget(node));
+    }
+#endif
+    else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
@@ -731,6 +740,11 @@ void LegacySkinParser::parseChildren(
 }
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
+#ifndef __STEM__
+    if (requiresStem(node)) {
+        return nullptr;
+    }
+#endif
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
     setupBaseWidget(node, pGroup);
     setupWidget(node, pGroup->toQWidget());
@@ -899,11 +913,13 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QLabel* bg = new QLabel(pInnerWidget);
 
     QString filename = m_pContext->selectString(node, "Path");
-    QPixmap* background = WPixmapStore::getPixmapNoCache(
-        m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
+    auto background = WPixmapStore::getPixmapNoCache(
+            m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
 
     bg->move(0, 0);
     if (background != nullptr && !background->isNull()) {
+        // setPixmap makes a copy of the background
+        // which can be disposed of afterwards.
         bg->setPixmap(*background);
     }
 
@@ -928,10 +944,6 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     pOuterWidget->setBackgroundRole(QPalette::Window);
     pOuterWidget->setPalette(palette);
     pOuterWidget->setAutoFillBackground(true);
-
-    // WPixmapStore::getPixmapNoCache() allocated background and gave us
-    // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
-    delete background;
 
     return bg;
 }
@@ -968,6 +980,41 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
             m_pControllerManager->getControllerLearningEventFilter());
     pLabel->Init();
 }
+
+#ifdef __STEM__
+QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
+    WStemLabel* pLabel = new WStemLabel(m_pParent);
+    setupLabelWidget(element, pLabel);
+
+    QString group = lookupNodeGroup(element);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(element,
+                *m_pContext,
+                QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+
+    connect(pPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            pLabel,
+            &WStemLabel::slotTrackLoaded);
+
+    connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            pLabel,
+            &WStemLabel::slotTrackUnloaded);
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        // Set the trackpoinnter to the already loaded track,
+        // needed at skin change
+        pLabel->slotTrackLoaded(pTrack);
+    }
+
+    return pLabel;
+}
+#endif
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
@@ -1566,6 +1613,16 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
 
+    const auto keyColorsEnabled =
+            m_pConfig->getValue(
+                    ConfigKey("[Config]", "key_colors_enabled"),
+                    BaseTrackTableModel::kKeyColorsEnabledDefault);
+    BaseTrackTableModel::setKeyColorsEnabled(keyColorsEnabled);
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    BaseTrackTableModel::setKeyColorPalette(colorPaletteSettings.getConfigKeyColorPalette());
+
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
                     mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
@@ -1728,6 +1785,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
     if (!templateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open template file:" << absolutePath;
+        return QDomElement();
     }
 
     QDomDocument tmpl("template");
@@ -2523,4 +2581,9 @@ QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     // skins directory for the launch image style.
     style.replace("url(skins:", "url(" + m_pConfig->getResourcePath() + "skins/");
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
+}
+
+bool LegacySkinParser::requiresStem(const QDomElement& node) {
+    QDomElement requiresStemNode = node.firstChildElement("RequiresStem");
+    return !requiresStemNode.isNull() && requiresStemNode.text() == "true";
 }

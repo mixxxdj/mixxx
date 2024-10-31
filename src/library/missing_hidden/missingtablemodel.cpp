@@ -88,7 +88,7 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 }
 
 TrackModel::Capabilities MissingTableModel::getCapabilities() const {
-    return Capability::Purge;
+    return Capability::Purge | Capability::Properties;
 }
 
 QString MissingTableModel::modelKey(bool noSearch) const {

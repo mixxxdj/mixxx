@@ -306,23 +306,20 @@ void DlgTrackInfoMulti::updateFromTracks() {
     // If track value differs from the current value, add it to the list.
     // If new and current are identical, keep only one.
     int commonRating = m_trackRecords.first().getRating();
-    for (const auto& rec : m_trackRecords) {
+    for (const auto& rec : std::as_const(m_trackRecords)) {
         if (commonRating != rec.getRating()) {
             commonRating = 0;
             break;
         }
     }
     // Update the star widget
-    // Block signals to not set the 'modified' flag.
-    m_pWStarRating->blockSignals(true);
     m_pWStarRating->slotSetRating(commonRating);
     m_starRatingModified = false;
-    m_pWStarRating->blockSignals(false);
 
     // Same procedure for the track color
     mixxx::RgbColor::optional_t commonColor = m_trackRecords.first().getColor();
     bool multipleColors = false;
-    for (const auto& rec : m_trackRecords) {
+    for (const auto& rec : std::as_const(m_trackRecords)) {
         if (commonColor != rec.getColor()) {
             commonColor = mixxx::RgbColor::nullopt();
             multipleColors = true;
@@ -380,7 +377,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     QSet<uint32_t> samplerates;
     QSet<QString> filetypes;
 
-    for (const auto& rec : m_trackRecords) {
+    for (const auto& rec : std::as_const(m_trackRecords)) {
         titles.insert(rec.getMetadata().getTrackInfo().getTitle());
         artists.insert(rec.getMetadata().getTrackInfo().getArtist());
         aTitles.insert(rec.getMetadata().getAlbumInfo().getTitle());
@@ -654,7 +651,7 @@ void DlgTrackInfoMulti::saveTracks() {
     // and repopulate all these fields.
     disconnectTracksChanged();
     // Update the cached tracks
-    for (const auto& rec : m_trackRecords) {
+    for (const auto& rec : std::as_const(m_trackRecords)) {
         auto pTrack = m_pLoadedTracks.value(rec.getId());
         // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
         // will be updated by the subsequent Track::changed() signal to keep them
@@ -816,7 +813,7 @@ void DlgTrackInfoMulti::slotKeyTextChanged() {
         newKeyText = KeyUtils::keyToString(newKey);
     } else if (newTextInput.isEmpty()) {
         // Empty text is not a valid key but indicates we want to clear the key.
-        newKeyText = QStringLiteral("");
+        newKeyText = QString();
     }
 
     txtKey->blockSignals(true);
@@ -900,7 +897,7 @@ void DlgTrackInfoMulti::updateCoverArtFromTracks() {
         return;
     }
     CoverInfoRelative refCover = m_trackRecords.first().getCoverInfo();
-    for (const auto& rec : m_trackRecords) {
+    for (const auto& rec : std::as_const(m_trackRecords)) {
         if (rec.getCoverInfo() != refCover) {
             refCover.reset();
             break;

@@ -1,5 +1,6 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 
+#include <QFile>
 #include <QtDebug>
 
 #include "engine/readaheadmanager.h"
@@ -18,14 +19,14 @@ using RubberBand::RubberBandStretcher;
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
-          m_buffers{mixxx::SampleBuffer(MAX_BUFFER_LEN), mixxx::SampleBuffer(MAX_BUFFER_LEN)},
-          m_bufferPtrs{m_buffers[0].data(), m_buffers[1].data()},
+          m_buffers(),
+          m_bufferPtrs(),
           m_interleavedReadBuffer(MAX_BUFFER_LEN),
           m_bBackwards(false),
           m_useEngineFiner(false) {
     // Initialize the internal buffers to prevent re-allocations
     // in the real-time thread.
-    onSampleRateChanged();
+    onSignalChanged();
 }
 
 void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
@@ -92,14 +93,33 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     m_dPitchRatio = *pPitchRatio;
 }
 
-void EngineBufferScaleRubberBand::onSampleRateChanged() {
+void EngineBufferScaleRubberBand::onSignalChanged() {
     // TODO: Resetting the sample rate will cause internal
     // memory allocations that may block the real-time thread.
     // When is this function actually invoked??
-    m_rubberBand.clear();
     if (!getOutputSignal().isValid()) {
         return;
     }
+
+    uint8_t channelCount = getOutputSignal().getChannelCount();
+    if (m_buffers.size() != channelCount) {
+        m_buffers.resize(channelCount);
+    }
+
+    if (m_bufferPtrs.size() != channelCount) {
+        m_bufferPtrs.resize(channelCount);
+    }
+
+    m_rubberBand.clear();
+
+    for (int chIdx = 0; chIdx < channelCount; chIdx++) {
+        if (m_buffers[chIdx].size() == MAX_BUFFER_LEN) {
+            continue;
+        }
+        m_buffers[chIdx] = mixxx::SampleBuffer(MAX_BUFFER_LEN);
+        m_bufferPtrs[chIdx] = m_buffers[chIdx].data();
+    }
+
     RubberBandStretcher::Options rubberbandOptions =
             RubberBandStretcher::OptionProcessRealTime;
 #if RUBBERBANDV3
@@ -159,10 +179,46 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
     }
 
     DEBUG_ASSERT(received_frames <= frames);
-    SampleUtil::interleaveBuffer(pBuffer,
-            m_buffers[0].data(frame_offset),
-            m_buffers[1].data(frame_offset),
-            received_frames);
+
+    switch (getOutputSignal().getChannelCount()) {
+    case mixxx::audio::ChannelCount::stereo():
+        SampleUtil::interleaveBuffer(pBuffer,
+                m_buffers[0].data(frame_offset),
+                m_buffers[1].data(frame_offset),
+                received_frames);
+        break;
+    case mixxx::audio::ChannelCount::stem():
+        SampleUtil::interleaveBuffer(pBuffer,
+                m_buffers[0].data(frame_offset),
+                m_buffers[1].data(frame_offset),
+                m_buffers[2].data(frame_offset),
+                m_buffers[3].data(frame_offset),
+                m_buffers[4].data(frame_offset),
+                m_buffers[5].data(frame_offset),
+                m_buffers[6].data(frame_offset),
+                m_buffers[7].data(frame_offset),
+                received_frames);
+        break;
+    default: {
+        int chCount = getOutputSignal().getChannelCount();
+        // The buffers samples are ordered as following
+        //  m_buffers#1 = 11..
+        //  m_buffers#2 = 22..
+        //  m_buffers#3 = 33..
+        //  m_buffers#4 = 44..
+        //  m_buffers#X = XX..
+        // And need to be reordered as following in pBuffer
+        //  1234..X1234...X...
+        //
+        // Because of the unanticipated number of buffer and channel, we cannot
+        // use any SampleUtil in this case
+        for (SINT frameIdx = 0; frameIdx < frames; ++frameIdx) {
+            for (int channel = 0; channel < chCount; channel++) {
+                pBuffer[frameIdx * chCount + channel] = m_buffers[channel].data()[frameIdx];
+            }
+        }
+    } break;
+    }
 
     return received_frames;
 }
@@ -175,11 +231,48 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
     }
     DEBUG_ASSERT(frames <= static_cast<SINT>(m_buffers[0].size()));
 
-    SampleUtil::deinterleaveBuffer(
-            m_buffers[0].data(),
-            m_buffers[1].data(),
-            pBuffer,
-            frames);
+    switch (getOutputSignal().getChannelCount()) {
+    case mixxx::audio::ChannelCount::stereo():
+        SampleUtil::deinterleaveBuffer(
+                m_buffers[0].data(),
+                m_buffers[1].data(),
+                pBuffer,
+                frames);
+        break;
+    case mixxx::audio::ChannelCount::stem():
+        SampleUtil::deinterleaveBuffer(
+                m_buffers[0].data(),
+                m_buffers[1].data(),
+                m_buffers[2].data(),
+                m_buffers[3].data(),
+                m_buffers[4].data(),
+                m_buffers[5].data(),
+                m_buffers[6].data(),
+                m_buffers[7].data(),
+                pBuffer,
+                frames);
+        break;
+    default: {
+        int chCount = getOutputSignal().getChannelCount();
+        // The sampler are ordered as following in pBuffer
+        //    1234..X1234...X...
+        // And need to be reordered as following
+        // m_buffers#1 = 11..
+        // m_buffers#2 = 22..
+        // m_buffers#3 = 33..
+        // m_buffers#4 = 44..
+        // m_buffers#X = XX..
+        //
+        // Because of the unanticipated number of buffer and channel, we cannot
+        // use any SampleUtil in this case
+        for (SINT frameIdx = 0; frameIdx < frames; ++frameIdx) {
+            for (int channel = 0; channel < chCount; channel++) {
+                m_buffers[channel].data()[frameIdx] =
+                        pBuffer[frameIdx * chCount + channel];
+            }
+        }
+    } break;
+    }
 
     {
         ScopedTimer t(QStringLiteral("RubberBand::process"));
@@ -231,7 +324,8 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                     // are going forward or backward.
                     (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                     m_interleavedReadBuffer.data(),
-                    getOutputSignal().frames2samples(next_block_frames_required));
+                    getOutputSignal().frames2samples(next_block_frames_required),
+                    getOutputSignal().getChannelCount());
             const SINT available_frames = getOutputSignal().samples2frames(available_samples);
 
             if (available_frames > 0) {
@@ -278,7 +372,7 @@ bool EngineBufferScaleRubberBand::isEngineFinerAvailable() {
 void EngineBufferScaleRubberBand::useEngineFiner(bool enable) {
     if (isEngineFinerAvailable()) {
         m_useEngineFiner = enable;
-        onSampleRateChanged();
+        onSignalChanged();
     }
 }
 
@@ -307,8 +401,9 @@ void EngineBufferScaleRubberBand::reset() {
     // for more information.
     size_t remaining_padding = getPreferredStartPad();
     const size_t block_size = std::min<size_t>(remaining_padding, m_buffers[0].size());
-    std::fill_n(m_buffers[0].span().begin(), block_size, 0.0f);
-    std::fill_n(m_buffers[1].span().begin(), block_size, 0.0f);
+    for (auto& buffer : m_buffers) {
+        buffer.clear();
+    }
     while (remaining_padding > 0) {
         const size_t pad_samples = std::min<size_t>(remaining_padding, block_size);
         {

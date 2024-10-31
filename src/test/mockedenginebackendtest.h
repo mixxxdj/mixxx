@@ -55,7 +55,8 @@ class MockScaler : public EngineBufferScale {
     }
 
   private:
-    void onSampleRateChanged() override {}
+    void onSignalChanged() override {
+    }
 
     double m_processedTempo;
     double m_processedPitch;

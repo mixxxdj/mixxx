@@ -6,6 +6,7 @@
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
+#include "track/keyfactory.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/time.h"
@@ -167,14 +168,11 @@ void Track::replaceMetadataFromSource(
         // Save some new values for later
         const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
         const QString importedKeyText = importedMetadata.getTrackInfo().getKeyText();
-        // Parse the imported key before entering the locking scope
-        const mixxx::track::io::key::ChromaticKey importedKey =
-                KeyUtils::guessKeyFromText(importedKeyText);
 
         // enter locking scope
         auto locked = lockMutex(&m_qMutex);
 
-        // Preserve the both current bpm and key temporarily to avoid
+        // Preserve current bpm and key temporarily to avoid
         // overwriting with an inconsistent value. The bpm must always be
         // set together with the beat grid and the key text must be parsed
         // and validated.
@@ -206,12 +204,14 @@ void Track::replaceMetadataFromSource(
         modified |= beatsAndBpmModified;
 
         auto keysModified = false;
-        if (importedKey != mixxx::track::io::key::INVALID) {
+        const Keys newKeys = KeyFactory::makeBasicKeysKeepText(
+                importedKeyText, mixxx::track::io::key::FILE_METADATA);
+        if (newKeys.getGlobalKey() != mixxx::track::io::key::INVALID &&
+                m_record.getMetadata().getTrackInfo().getKeyText() != importedKeyText) {
             // Only update the current key with a valid value. Otherwise preserve
             // the existing value.
-            keysModified = m_record.updateGlobalKeyNormalizeText(importedKeyText,
-                                   mixxx::track::io::key::FILE_METADATA) ==
-                    mixxx::UpdateResult::Updated;
+            setKeys(newKeys);
+            keysModified = true;
         }
         modified |= keysModified;
 
@@ -842,7 +842,7 @@ mixxx::audio::SampleRate Track::getSampleRate() const {
     return m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
 }
 
-int Track::getChannels() const {
+mixxx::audio::ChannelCount Track::getChannels() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getStreamInfo().getSignalInfo().getChannelCount();
 }
@@ -1172,7 +1172,7 @@ bool Track::importPendingBeatsWhileLocked() {
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     const auto pBeats =
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource());
+                    getLocation(), getType(), *m_record.getStreamInfoFromSource());
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
@@ -1319,7 +1319,9 @@ bool Track::importPendingCueInfosWhileLocked() {
 
     const QList<mixxx::CueInfo> cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
-                    getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
+                    getLocation(),
+                    getType(),
+                    m_record.getStreamInfoFromSource()->getSignalInfo());
     for (const auto& cueInfo : cueInfos) {
         CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
@@ -1449,22 +1451,26 @@ Keys Track::getKeys() const {
 
 void Track::setKey(mixxx::track::io::key::ChromaticKey key,
                    mixxx::track::io::key::Source keySource) {
-    auto locked = lockMutex(&m_qMutex);
-    if (m_record.updateGlobalKey(key, keySource)) {
-        afterKeysUpdated(&locked);
+    if (key == mixxx::track::io::key::INVALID) {
+        return;
     }
+    const Keys keys = KeyFactory::makeBasicKeys(key, keySource);
+    QMutexLocker lock(&m_qMutex);
+    m_record.setKeys(keys);
+    afterKeysUpdated(&lock);
 }
 
 mixxx::track::io::key::ChromaticKey Track::getKey() const {
     const auto locked = lockMutex(&m_qMutex);
-    return m_record.getGlobalKey();
+    return m_record.getKeys().getGlobalKey();
 }
 
+// returns the formatted key for display purpose
 QString Track::getKeyText() const {
-    const auto locked = lockMutex(&m_qMutex);
-    return m_record.getGlobalKeyText();
+    return KeyUtils::keyToString(getKey());
 }
 
+// normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
     auto locked = lockMutex(&m_qMutex);
@@ -1539,7 +1545,7 @@ bool Track::exportSeratoMetadata() {
     }
 
     const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
-            getLocation(), streamInfo->getSignalInfo());
+            getLocation(), getType(), streamInfo->getSignalInfo());
     pSeratoTags->setCueInfos(cueInfos, timingOffset);
     pSeratoTags->setBeats(m_pBeats,
             streamInfo->getSignalInfo(),

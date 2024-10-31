@@ -374,7 +374,7 @@ WTrackTableViewHeader {
 WTrackTableViewHeader::section {
   height: 1.1em;
   font-weight: bold;
-  padding: 0.1em;
+  padding: 0.1em -1em 0.1em 0.1em;
   background-color: #1A1A1A;
   border-top: none;
   border-left: none;
@@ -1135,6 +1135,7 @@ WTrackProperty:hover {
   border: 1px solid #FF6600;
   border-right: 0px;
   color: #D6D6D6;
+  qproperty-layoutSpacing: 2;
 }
 
 #BpmKeyEditTrigger {
