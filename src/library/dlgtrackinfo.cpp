@@ -75,6 +75,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
     m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("rating", starRating);
     m_propertyWidgets.insert("year", txtYear);
     m_propertyWidgets.insert(kBpmPropertyName, spinBpm);
     m_propertyWidgets.insert("tracknumber", txtTrackNumber);
