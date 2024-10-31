@@ -77,12 +77,14 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
     m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("rating", starRating);
     m_propertyWidgets.insert("year", txtYear);
     m_propertyWidgets.insert("bpm", spinBpm);
     m_propertyWidgets.insert("tracknumber", txtTrackNumber);
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("color", btnColorPicker);
     m_propertyWidgets.insert("datetime_added", txtDateAdded);
     m_propertyWidgets.insert("duration", txtDuration);
     m_propertyWidgets.insert("timesplayed", txtDateLastPlayed);
