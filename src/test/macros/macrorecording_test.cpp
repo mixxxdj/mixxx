@@ -25,7 +25,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
     /// Starts recording and performs the initial jump to samplePos with assertions
     void prepRecording(mixxx::audio::FramePos samplePos) {
         m_record.set(1);
-        ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
+        ASSERT_EQ(getStatus(), MacroControl::Status::RecordingArmed);
 
         m_pEngineBuffer1->seekExact(kStartPos);
         ProcessBuffer();

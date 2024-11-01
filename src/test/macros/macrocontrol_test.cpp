@@ -46,7 +46,7 @@ TEST_F(MacroControlTest, RecordSeek) {
         process(frameRate, position, 1);
     };
     seek(mixxx::audio::FramePos(0));
-    ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
+    ASSERT_EQ(getStatus(), MacroControl::Status::RecordingArmed);
 
     // Initial jump
     mixxx::audio::FramePos startPos(504);
@@ -88,7 +88,7 @@ TEST_F(MacroControlTest, ControlObjects) {
 
     ControlProxy record(kChannelGroup, "macro_2_record");
     record.set(1);
-    ASSERT_STATUS(MacroControl::Status::Armed);
+    ASSERT_STATUS(MacroControl::Status::RecordingArmed);
     EXPECT_EQ(getMacro()->getLabel(), "Intro [Recording]");
     record.set(0);
     ASSERT_STATUS(MacroControl::Status::Empty);
@@ -96,11 +96,11 @@ TEST_F(MacroControlTest, ControlObjects) {
 
     ControlProxy activate(kChannelGroup, "macro_2_activate");
     activate.set(1);
-    ASSERT_STATUS(MacroControl::Status::Armed);
+    ASSERT_STATUS(MacroControl::Status::RecordingArmed);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Empty);
     activate.set(1);
-    ASSERT_STATUS(MacroControl::Status::Armed);
+    ASSERT_STATUS(MacroControl::Status::RecordingArmed);
     EXPECT_EQ(getMacro()->getLabel(), "Intro [Recording]");
 
     // Record

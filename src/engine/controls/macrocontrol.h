@@ -22,11 +22,20 @@ class MacroControl : public EngineControl {
     bool isRecording() const;
 
     enum class Status : int {
+        /// No track is loaded.
         NoTrack = -1,
+        /// There is no recoded macro present.
         Empty = 0,
-        Armed = 1,
+        /// Recording is armed. The next supported action (e.g., a hotcue jump
+        /// will start the recording).
+        RecordingArmed = 1,
+        /// Recording has been started and supported actions will be part of the
+        /// resulting macro.
         Recording = 2,
+        /// There is a recorded macro present, but it's not enabled for
+        /// playback.
         Recorded = 3,
+        /// The macro is currently enabled for playback.
         Playing = 4,
     };
 

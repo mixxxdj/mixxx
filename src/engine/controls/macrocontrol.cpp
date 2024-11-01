@@ -88,7 +88,7 @@ void MacroControl::process(const double dRate,
     if (m_queuedJumpTarget.value() >= 0) {
         // if a cue press doesn't change the position, notifySeek isn't called,
         // thus m_queuedJumpTarget isn't reset
-        if (getStatus() == Status::Armed) {
+        if (getStatus() == Status::RecordingArmed) {
             // start the recording on a cue press even when there is no jump
             notifySeek(currentPosition);
         }
@@ -142,7 +142,7 @@ void MacroControl::notifySeek(mixxx::audio::FramePos position) {
     }
     auto queuedTarget = m_queuedJumpTarget;
     m_queuedJumpTarget = mixxx::audio::FramePos(-1);
-    if (getStatus() == Status::Armed) {
+    if (getStatus() == Status::RecordingArmed) {
         setStatus(Status::Recording);
     }
     if (getStatus() != Status::Recording) {
@@ -174,7 +174,7 @@ MacroPointer MacroControl::getMacro() const {
 }
 
 bool MacroControl::isRecording() const {
-    return getStatus() == Status::Armed || getStatus() == Status::Recording;
+    return getStatus() == Status::RecordingArmed || getStatus() == Status::Recording;
 }
 
 void MacroControl::play() {
@@ -204,7 +204,7 @@ bool MacroControl::updateRecording() {
         m_recordedActions.pop();
         actionsRecorded = true;
     }
-    if (actionsRecorded && getStatus() == Status::Armed) {
+    if (actionsRecorded && getStatus() == Status::RecordingArmed) {
         setStatus(Status::Recording);
     }
     return actionsRecorded;
@@ -217,7 +217,7 @@ bool MacroControl::stopRecording() {
     m_updateRecordingTimer.stop();
     updateRecording();
     m_pMacro->setLabel(m_pMacro->getLabel().remove(kRecordingSuffix));
-    if (getStatus() == Status::Armed) {
+    if (getStatus() == Status::RecordingArmed) {
         setStatus(Status::Empty);
         return false;
     }
@@ -249,7 +249,7 @@ void MacroControl::slotRecord(double value) {
     }
     switch (getStatus()) {
     case Status::Empty:
-        setStatus(Status::Armed);
+        setStatus(Status::RecordingArmed);
         break;
     case Status::Recorded:
         setStatus(Status::Recording);
