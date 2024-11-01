@@ -837,12 +837,12 @@ void DlgTrackInfoMulti::slotCommentBoxIndexChanged() {
 void DlgTrackInfoMulti::commentTextChanged() {
     if (!txtComment->placeholderText().isNull() &&
             !txtComment->toPlainText().isEmpty()) {
-        // The comboox has multiple values and has not been cleared yet,
+        // The combobox has multiple values and has not been cleared yet,
         // and the user typed/pasted a text (might be a whitespace).
         // Let's clear the placeholder text so we know this is new text.
         txtCommentBox->blockSignals(true);
         txtComment->setPlaceholderText(QString());
-        // The Clear item is not needed anymore, remove.
+        // The Clear item is not needed anymore, so remove it.
         txtCommentBox->removeItem(txtCommentBox->findData(kClearItem));
         txtCommentBox->blockSignals(false);
     }
