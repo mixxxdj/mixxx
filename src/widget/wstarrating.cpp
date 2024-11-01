@@ -96,44 +96,21 @@ void WStarRating::keyPressEvent(QKeyEvent* event) {
     QKeyEvent* ke = static_cast<QKeyEvent*>(event);
     int newRating = m_visualStarRating.starCount();
     switch (ke->key()) {
-    case Qt::Key_0: {
-        newRating = 0;
-        break;
-    }
-    case Qt::Key_1: {
-        newRating = 1;
-        break;
-    }
-    case Qt::Key_2: {
-        newRating = 2;
-        break;
-    }
-    case Qt::Key_3: {
-        newRating = 3;
-        break;
-    }
-    case Qt::Key_4: {
-        newRating = 4;
-        break;
-    }
-    case Qt::Key_5: {
-        newRating = 5;
-        break;
-    }
-    case Qt::Key_6: {
-        newRating = 6;
-        break;
-    }
-    case Qt::Key_7: {
-        newRating = 7;
-        break;
-    }
-    case Qt::Key_8: {
-        newRating = 8;
-        break;
-    }
+    case Qt::Key_0:
+    case Qt::Key_1:
+    case Qt::Key_2:
+    case Qt::Key_3:
+    case Qt::Key_4:
+    case Qt::Key_5:
+    case Qt::Key_6:
+    case Qt::Key_7:
+    case Qt::Key_8:
     case Qt::Key_9: {
-        newRating = 9;
+        bool ok = false;
+        int keyInt = ke->text().toInt(&ok);
+        if (ok) {
+            newRating = keyInt;
+        }
         break;
     }
     case Qt::Key_Right:
