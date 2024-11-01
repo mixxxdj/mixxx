@@ -18,6 +18,7 @@
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "util/string.h"
 #include "util/stringformat.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
@@ -54,18 +55,15 @@ QString validEditText(QComboBox* pBox) {
     // flag). For single-value boxes we compare with the original value.
     auto* pLine = pBox->lineEdit();
     const QString origVal = pBox->property(kOrigValProp).toString();
-    QString currVal = pLine->text();
+    const QString currText = pLine->text();
     if ((pBox->count() > 0 && !pLine->placeholderText().isNull()) ||
-            (pBox->count() == 0 && currVal == origVal)) {
+            (pBox->count() == 0 && currText == origVal)) {
         return QString();
     }
     // We have a new text.
     // Remove trailing whitespaces. Keep Leading whitespaces to be consistent
     // with the track table's inline editor.
-    while (currVal.endsWith(' ')) {
-        currVal.chop(1);
-    }
-    return currVal;
+    return mixxx::removeTrailingWhitespaces(currText);
 }
 
 /// Sets the text of a QLabel, either the only/common value or the 'various' string.
@@ -627,10 +625,7 @@ void DlgTrackInfoMulti::saveTracks() {
     if ((txtCommentBox->count() > 0 && txtComment->placeholderText().isNull()) ||
             (txtCommentBox->count() == 0 && currText != origText)) {
         // Remove trailing whitespaces.
-        comment = currText;
-        while (comment.endsWith(' ')) {
-            comment.chop(1);
-        }
+        comment = mixxx::removeTrailingWhitespaces(currText);
     }
 
     for (auto& rec : m_trackRecords) {
