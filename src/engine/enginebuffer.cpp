@@ -236,10 +236,8 @@ EngineBuffer::EngineBuffer(const QString& group,
                 pMacroControl,
                 &MacroControl::slotJumpQueued,
                 Qt::DirectConnection);
-        m_macroControls.append(pMacroControl);
         addControl(pMacroControl);
     }
-    DEBUG_ASSERT(m_macroControls.size() == kMacrosPerChannel);
 
     connect(m_pLoopingControl,
             &LoopingControl::loopReset,

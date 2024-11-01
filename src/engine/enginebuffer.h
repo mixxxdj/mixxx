@@ -327,7 +327,6 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
     FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     CueControl* m_pCueControl;
-    QList<MacroControl*> m_macroControls;
 
     QList<EngineControl*> m_engineControls;
 
