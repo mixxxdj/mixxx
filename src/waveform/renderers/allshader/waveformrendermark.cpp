@@ -18,87 +18,36 @@
 
 using namespace rendergraph;
 
-namespace {
-// On the use of QPainter:
-//
-// The renderers in this folder are optimized to use GLSL shaders and refrain
-// from using QPainter on the QOpenGLWindow, which causes degredated performance.
-//
-// This renderer does use QPainter (indirectly, in WaveformMark::generateImage), but
-// only to draw on a QImage. This is only done once when needed and the images are
-// then used as textures to be drawn with a GLSL shader.
+allshader::WaveformMarkNode::WaveformMarkNode(WaveformMark* pOwner,
+        rendergraph::Context* pContext,
+        const QImage& image)
+        : m_pOwner(pOwner) {
+    initForRectangles<TextureMaterial>(1);
+    updateTexture(pContext, image);
+}
 
-class WaveformMarkNode : public rendergraph::GeometryNode {
-  public:
-    WaveformMark* m_pOwner{};
-
-    WaveformMarkNode(WaveformMark* pOwner, rendergraph::Context* pContext, const QImage& image)
-            : m_pOwner(pOwner) {
-        initForRectangles<TextureMaterial>(1);
-        updateTexture(pContext, image);
-    }
-    void updateTexture(rendergraph::Context* pContext, const QImage& image) {
-        dynamic_cast<TextureMaterial&>(material())
-                .setTexture(std::make_unique<Texture>(pContext, image));
-        m_textureWidth = image.width();
-        m_textureHeight = image.height();
-    }
-    void update(float x, float y, float devicePixelRatio) {
-        TexturedVertexUpdater vertexUpdater{
-                geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
-        vertexUpdater.addRectangle({x, y},
-                {x + m_textureWidth / devicePixelRatio,
-                        y + m_textureHeight / devicePixelRatio},
-                {0.f, 0.f},
-                {1.f, 1.f});
-    }
-    float textureWidth() const {
-        return m_textureWidth;
-    }
-    float textureHeight() const {
-        return m_textureHeight;
-    }
-
-  public:
-    float m_textureWidth{};
-    float m_textureHeight{};
-};
-
-class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
-  public:
-    WaveformMarkNodeGraphics(WaveformMark* pOwner,
-            rendergraph::Context* pContext,
-            const QImage& image)
-            : m_pNode(std::make_unique<WaveformMarkNode>(
-                      pOwner, pContext, image)) {
-    }
-    void updateTexture(rendergraph::Context* pContext, const QImage& image) {
-        waveformMarkNode()->updateTexture(pContext, image);
-    }
-    void update(float x, float y, float devicePixelRatio) {
-        waveformMarkNode()->update(x, y, devicePixelRatio);
-    }
-    float textureWidth() const {
-        return waveformMarkNode()->textureWidth();
-    }
-    float textureHeight() const {
-        return waveformMarkNode()->textureHeight();
-    }
-    void setNode(std::unique_ptr<WaveformMarkNode>&& pNode) {
-        m_pNode = std::move(pNode);
-    }
-    void moveNodeToChildrenOf(rendergraph::Node* pParent) {
-        pParent->appendChildNode(std::move(m_pNode));
-    }
-
-  private:
-    WaveformMarkNode* waveformMarkNode() const {
-        return static_cast<WaveformMarkNode*>(m_pNode.get());
-    }
-
-    std::unique_ptr<WaveformMarkNode> m_pNode;
-};
-} // namespace
+void allshader::WaveformMarkNode::updateTexture(
+        rendergraph::Context* pContext, const QImage& image) {
+    dynamic_cast<TextureMaterial&>(material())
+            .setTexture(std::make_unique<Texture>(pContext, image));
+    m_textureWidth = image.width();
+    m_textureHeight = image.height();
+}
+void allshader::WaveformMarkNode::update(float x, float y, float devicePixelRatio) {
+    TexturedVertexUpdater vertexUpdater{
+            geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
+    vertexUpdater.addRectangle({x, y},
+            {x + m_textureWidth / devicePixelRatio,
+                    y + m_textureHeight / devicePixelRatio},
+            {0.f, 0.f},
+            {1.f, 1.f});
+}
+allshader::WaveformMarkNodeGraphics::WaveformMarkNodeGraphics(WaveformMark* pOwner,
+        rendergraph::Context* pContext,
+        const QImage& image)
+        : m_pNode(std::make_unique<WaveformMarkNode>(
+                  pOwner, pContext, image)) {
+}
 
 // Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
 // from WaveformRenderMarkBase. The base-class takes care of updating the marks
@@ -226,12 +175,13 @@ void allshader::WaveformRenderMark::update() {
     // (transferring ownership). Later in this function we move the
     // visible nodes back to m_pMarkNodesParent children.
     while (auto pChild = m_pMarkNodesParent->firstChild()) {
-        auto pNode = castToUniquePtr<WaveformMarkNode>(m_pMarkNodesParent->detachChildNode(pChild));
+        auto pNode = m_pMarkNodesParent->detachChildNode(pChild);
+        WaveformMarkNode* pWaveformMarkNode = static_cast<WaveformMarkNode*>(pNode.get());
         // Determine its WaveformMark
-        auto pMark = pNode->m_pOwner;
+        auto pMark = pWaveformMarkNode->m_pOwner;
         auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         // Store the node with the WaveformMark
-        pGraphics->setNode(std::move(pNode));
+        pGraphics->attachNode(std::move(pNode));
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -308,7 +258,7 @@ void allshader::WaveformRenderMark::update() {
                     devicePixelRatio);
 
             // transfer back to m_pMarkNodesParent children, for rendering
-            pMarkNodeGraphics->moveNodeToChildrenOf(m_pMarkNodesParent);
+            m_pMarkNodesParent->appendChildNode(pMarkNodeGraphics->detachNode());
 
             visible = true;
         }

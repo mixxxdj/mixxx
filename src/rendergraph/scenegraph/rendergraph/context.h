@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QQuickWindow>
+#include <gsl/pointers>
 
 namespace rendergraph {
 class Context;
@@ -8,8 +9,8 @@ class Context;
 
 class rendergraph::Context {
   public:
-    Context(QQuickWindow* pWindow);
-    QQuickWindow* window() const;
+    Context(gsl::not_null<QQuickWindow*> pWindow);
+    gsl::not_null<QQuickWindow*> window() const;
 
   private:
     QQuickWindow* m_pWindow;

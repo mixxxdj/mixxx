@@ -2,10 +2,10 @@
 
 using namespace rendergraph;
 
-Context::Context(QQuickWindow* pWindow)
+Context::Context(gsl::not_null<QQuickWindow*> pWindow)
         : m_pWindow(pWindow) {
 }
 
-QQuickWindow* Context::window() const {
+gsl::not_null<QQuickWindow*> Context::window() const {
     return m_pWindow;
 }

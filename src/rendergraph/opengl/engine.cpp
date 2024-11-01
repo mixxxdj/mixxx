@@ -11,6 +11,8 @@ Engine::Engine(std::unique_ptr<BaseNode> pRootNode)
 }
 
 Engine::~Engine() {
+    // Explicitly remove the root node (and tree from the engine before deallocating its vectors)
+    remove(m_pRootNode.get());
 }
 
 void Engine::add(BaseNode* pNode) {
