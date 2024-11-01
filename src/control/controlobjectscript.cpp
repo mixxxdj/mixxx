@@ -133,7 +133,8 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // the callback. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
     const QVector<ScriptConnection> connections = m_scriptConnections;
+
     for (auto&& conn: connections) {
-        conn.executeCallback(value);
+          conn.executeCallback(value);
     }
 }
