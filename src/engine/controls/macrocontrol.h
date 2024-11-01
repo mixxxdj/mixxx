@@ -76,7 +76,7 @@ class MacroControl : public EngineControl {
     QTimer m_updateRecordingTimer;
 
     MacroPointer m_pMacro;
-    unsigned int m_nextActionIndex;
+    std::optional<unsigned int> m_nextActionIndex;
 
     ControlObject m_COStatus;
 

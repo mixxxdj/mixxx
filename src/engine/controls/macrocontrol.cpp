@@ -97,19 +97,22 @@ void MacroControl::process(const double dRate,
     if (getStatus() != Status::Playing) {
         return;
     }
-    const MacroAction& nextAction = m_pMacro->getActions().at(m_nextActionIndex);
-    // The process method is called roughly every iBufferSize frames, the
-    // tolerance range is double that to be safe. It is ahead of the position
-    // because the seek is executed in the next EngineBuffer process cycle.
-    if (currentPosition > nextAction.getSourcePosition() - iBufferSize &&
-            currentPosition < nextAction.getSourcePosition() + iBufferSize) {
-        seekExact(nextAction.getTargetPosition());
-        m_nextActionIndex++;
-        if (m_nextActionIndex == m_pMacro->size()) {
-            if (m_pMacro->isLooped()) {
-                m_nextActionIndex = 0;
-            } else {
-                setStatus(Status::Recorded);
+
+    if (m_nextActionIndex.has_value()) {
+        const MacroAction& nextAction = m_pMacro->getActions().at(m_nextActionIndex.value());
+        // The process method is called roughly every iBufferSize frames, the
+        // tolerance range is double that to be safe. It is ahead of the position
+        // because the seek is executed in the next EngineBuffer process cycle.
+        if (currentPosition > nextAction.getSourcePosition() - iBufferSize &&
+                currentPosition < nextAction.getSourcePosition() + iBufferSize) {
+            seekExact(nextAction.getTargetPosition());
+            m_nextActionIndex = m_nextActionIndex.value() + 1;
+            if (m_nextActionIndex == m_pMacro->size()) {
+                if (m_pMacro->isLooped()) {
+                    m_nextActionIndex = 0;
+                } else {
+                    setStatus(Status::Recorded);
+                }
             }
         }
     }
@@ -186,7 +189,7 @@ void MacroControl::play() {
 
 void MacroControl::stop() {
     DEBUG_ASSERT(m_pMacro && !m_pMacro->getActions().isEmpty() && !isRecording());
-    m_nextActionIndex = INT_MAX;
+    m_nextActionIndex = std::nullopt;
     setStatus(Status::Recorded);
     m_pMacro->setState(Macro::StateFlag::Enabled, false);
 }
