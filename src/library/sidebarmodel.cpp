@@ -18,7 +18,7 @@ namespace {
 constexpr int kPressedUntilClickedTimeoutMillis = 300;
 
 /// Enables additional debugging output.
-constexpr bool sDebug = false;
+constexpr bool kDebug = false;
 
 } // anonymous namespace
 
@@ -104,7 +104,7 @@ void SidebarModel::activateDefaultSelection() {
 
 QModelIndex SidebarModel::index(int row, int column,
                                 const QModelIndex& parent) const {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::index row=" << row
                  << "column=" << column << "parent=" << parent;
     }
@@ -143,7 +143,7 @@ QModelIndex SidebarModel::index(int row, int column,
 }
 
 QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
     }
     QModelIndex ind;
@@ -175,7 +175,7 @@ void SidebarModel::paste(const QModelIndex& index) {
 }
 
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::parent index=" << index;
     }
     if (index.isValid()) {
@@ -217,7 +217,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
 }
 
 int SidebarModel::rowCount(const QModelIndex& parent) const {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::rowCount parent=" << parent;
     }
     if (parent.isValid()) {
@@ -237,7 +237,7 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
 
 int SidebarModel::columnCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::columnCount parent=" << parent;
     }
     // TODO(rryan) will we ever have columns? I don't think so.
@@ -261,7 +261,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
 }
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug("SidebarModel::data() row=%d column=%d pointer=%p, role=%d",
                 index.row(),
                 index.column(),
@@ -437,7 +437,7 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
 }
 
 bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
     }
     bool result = false;
@@ -463,7 +463,7 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
 }
 
 bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) const {
-    if constexpr (sDebug) {
+    if constexpr (kDebug) {
         qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     }
     bool result = false;
