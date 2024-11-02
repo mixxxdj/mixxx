@@ -3,6 +3,7 @@
 #include <QList>
 #include <QModelIndex>
 #include <QPointer>
+#include <QSqlDatabase>
 #include <QUrl>
 #include <QVariant>
 
@@ -13,18 +14,35 @@
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 
+// eve db test
+#include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
+#include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
+#include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/smarties/dlgSmartiesinfohelper.h"
+#include "library/trackset/smarties/dlgsmartiesinfo.h"
+#include "library/trackset/smarties/smartiesstorage.h"
+#include "util/thread_affinity.h"
+// eve db test
+
 // forward declaration(s)
 class Library;
 class WLibrarySidebar;
 class QAction;
 class QPoint;
 class SmartiesSummary;
+class dlgSmartiesInfo;
+class dlgSmartiesInfoHelper;
 
 class SmartiesFeature : public BaseTrackSetFeature {
     Q_OBJECT
 
   public:
-    SmartiesFeature(Library* pLibrary,
+    SmartiesFeature(
+            Library* pLibrary,
             UserSettingsPointer pConfig);
     ~SmartiesFeature() override = default;
 
@@ -106,7 +124,10 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
     TrackCollection* const m_pTrackCollection;
 
+    //    dlgSmartiesInfoHelper m_dlgSmartiesInfoHelper;
     SmartiesTableModel m_smartiesTableModel;
+    //    dlgSmartiesInfoHelper m_dlgSmartiesInfoHelper;
+    dlgSmartiesInfo m_dlgSmartiesInfo;
 
     // Stores the id of a smarties in the sidebar that is adjacent to the smarties(smartiesId).
     void storePrevSiblingSmartiesId(SmartiesId smartiesId);
@@ -135,4 +156,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAnalyzeSmartiesAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+
+    //    QList<QVariantList> m_smartiesList;
+    QVariantList smartiesData;
 };

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
-// #include "dlgsmarties.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -26,6 +25,8 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
+// #include "library/trackset/smarties/dlgsmartiesinfo.h"
+// #include "library/trackset/smarties/dlgsmartiesactions.h"
 
 namespace {
 
@@ -46,11 +47,13 @@ const ConfigKey kConfigKeyLastImportExportSmartiesDirectoryKey(
 
 using namespace mixxx::library::prefs;
 
-SmartiesFeature::SmartiesFeature(Library* pLibrary,
+SmartiesFeature::SmartiesFeature(
+        Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseTrackSetFeature(pLibrary, pConfig, "SMARTIESHOME", QStringLiteral("smarties")),
           m_lockedSmartiesIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          //          m_dlgSmartiesInfoHelper(this, pLibrary->trackCollectionManager()),
           m_smartiesTableModel(this, pLibrary->trackCollectionManager()) {
     initActions();
 
@@ -67,9 +70,10 @@ void SmartiesFeature::initActions() {
     connect(m_pCreateSmartiesAction.get(),
             &QAction::triggered,
             this,
-            &SmartiesFeature::slotCreateSmarties);
-    m_pEditSmartiesAction = make_parented<QAction>(tr("Edit"), this);
-    //    m_pEditSmartiesAction->setShortcut(kEditSidebarItemShortcutKey);
+            &SmartiesFeature::slotEditSmarties);
+    //            &SmartiesFeature::slotCreateSmarties);
+    m_pEditSmartiesAction = make_parented<QAction>(tr("Edit Smarties"), this);
+    // m_pEditSmartiesAction->setShortcut(kEditSidebarItemShortcutKey);
     connect(m_pEditSmartiesAction.get(),
             &QAction::triggered,
             this,
@@ -369,6 +373,8 @@ void SmartiesFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateSmartiesAction.get());
     menu.addSeparator();
+    menu.addAction(m_pEditSmartiesAction.get());
+    menu.addSeparator();
     //    menu.addAction(m_pCreateImportPlaylistAction.get());
     // #ifdef __ENGINEPRIME__
     //    menu.addSeparator();
@@ -400,6 +406,8 @@ void SmartiesFeature::onRightClickChild(
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateSmartiesAction.get());
+    menu.addSeparator();
+    menu.addAction(m_pEditSmartiesAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameSmartiesAction.get());
     menu.addAction(m_pDuplicateSmartiesAction.get());
@@ -554,15 +562,80 @@ void SmartiesFeature::slotDuplicateSmarties() {
 void SmartiesFeature::slotEditSmarties() {
     Smarties smarties;
     if (readLastRightClickedSmarties(&smarties)) {
-        SmartiesId newSmartiesId =
-                SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
-                        .duplicateSmarties(smarties);
-        if (newSmartiesId.isValid()) {
-            qDebug() << "Duplicate smarties" << smarties << ", new smarties:" << newSmartiesId;
-            return;
+        SmartiesId smartiesId = smarties.getId();
+
+        qDebug() << "SlotEditSmarties -> smartiesID" << smartiesId;
+
+        // Step 1: Load data into QVariant
+        smartiesData.clear();
+        m_smartiesTableModel.selectSmarties2QVL(smartiesId, smartiesData);
+        qDebug() << "Smarties data loaded into QVariantList:" << smartiesData;
+
+        // Extract previous and next IDs, as well as BOF and EOF flags, from QVariantList
+        QVariant previousId = smartiesData.at(smartiesData.size() - 4);
+        QVariant nextId = smartiesData.at(smartiesData.size() - 3);
+        bool isBOF = smartiesData.at(smartiesData.size() - 2).toBool();
+        bool isEOF = smartiesData.at(smartiesData.size() - 1).toBool();
+
+        // Remove previousId, nextId, isBOF, and isEOF from smartiesData to
+        // prevent interference with other data
+        smartiesData.remove(smartiesData.size() - 1);
+        smartiesData.remove(smartiesData.size() - 1);
+        smartiesData.remove(smartiesData.size() - 1);
+        smartiesData.remove(smartiesData.size() - 1);
+
+        // Step 2: Initialize dlgSmartiesInfo and populate UI
+        dlgSmartiesInfo infoDialog;
+        infoDialog.init(smartiesData);
+
+        // Connect the dataUpdated signal to update smartiesData when Apply is clicked
+        connect(&infoDialog,
+                &dlgSmartiesInfo::dataUpdated,
+                this,
+                [this](const QVariantList& updatedData) {
+                    smartiesData =
+                            updatedData; // Capture the updated data from the UI
+                    qDebug() << "Updated data received from dlgSmartiesInfo:"
+                             << smartiesData;
+                });
+
+        // Handle Next and Previous button signals
+        // Step 3: Connect dlgSmartiesInfo signals to appropriate slots with
+        // context of previous/next IDs
+        //        connect(&infoDialog,
+        //        &dlgSmartiesInfo::requestPreviousSmarties, this, [this]() {
+        //            QVariant previousId = smartiesData.at(smartiesData.size()
+        //            - 4); if (!previousId.isNull()) {
+        //                SmartiesId prevSmartiesId(previousId.toInt());
+        //                smartiesData.clear();
+        //                m_smartiesTableModel.selectSmarties2QVL(prevSmartiesId,
+        //                smartiesData); qDebug() << "Loaded previous smarties
+        //                data into QVariantList:" << smartiesData; emit
+        //                updateSmartiesData(smartiesData);
+        //            }
+        //        });
+
+        //        connect(&infoDialog, &dlgSmartiesInfo::requestNextSmarties,
+        //        this, [this]() {
+        //            QVariant nextId = smartiesData.at(smartiesData.size() -
+        //            3); if (!nextId.isNull()) {
+        //                SmartiesId nextSmartiesId(nextId.toInt());
+        //                smartiesData.clear();
+        //                m_smartiesTableModel.selectSmarties2QVL(nextSmartiesId,
+        //                smartiesData); qDebug() << "Loaded next smarties data
+        //                into QVariantList:" << smartiesData; emit
+        //                updateSmartiesData(smartiesData);
+        //            }
+        //        });
+
+        // Step 3: Execute the dialog
+        if (infoDialog.exec() == QDialog::Accepted) {
+            m_smartiesTableModel.saveQVL2Smarties(smartiesId, smartiesData);
+            qDebug() << "Smarties data saved from QVariantList to database for "
+                        "SmartiesId:"
+                     << smartiesId;
         }
     }
-    qDebug() << "Failed to duplicate selected smarties";
 }
 
 void SmartiesFeature::slotToggleSmartiesLock() {
