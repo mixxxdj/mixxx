@@ -21,6 +21,7 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
             float y,
             const QString& s);
     float height() const;
+    float textWidth(const QString& s) const;
 
   private:
     mixxx::TextureShader m_shader;
