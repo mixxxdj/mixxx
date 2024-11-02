@@ -206,7 +206,6 @@ void allshader::DigitsRenderer::updateTexture(
 }
 
 float allshader::DigitsRenderer::textWidth(const QString& s) const {
-    const int n = s.length();
     const float space = static_cast<float>(m_penWidth) / 2;
     float x = 0;
 
