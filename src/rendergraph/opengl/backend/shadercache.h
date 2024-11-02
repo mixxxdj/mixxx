@@ -36,13 +36,9 @@ class rendergraph::ShaderCache {
         return pResult;
     }
     static void purge() {
-        auto iter = map().begin();
-        while (iter != map().end()) {
-            if (iter->second.use_count() == 1) {
-                iter = map().erase(iter);
-            } else {
-                ++iter;
-            }
-        }
+        std::erase_if(map(), [](const auto& item) {
+            auto const& [key, value] = item;
+            return value.use_count() == 1;
+        });
     }
 };

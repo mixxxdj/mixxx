@@ -35,18 +35,8 @@ void Engine::remove(BaseNode* pNode) {
     assert(pNode->engine() == this);
     pNode->setEngine(nullptr);
 
-    {
-        auto it = std::find(m_pInitializeNodes.begin(), m_pInitializeNodes.end(), pNode);
-        if (it != m_pInitializeNodes.end()) {
-            m_pInitializeNodes.erase(it);
-        }
-    }
-    {
-        auto it = std::find(m_pPreprocessNodes.begin(), m_pPreprocessNodes.end(), pNode);
-        if (it != m_pPreprocessNodes.end()) {
-            m_pPreprocessNodes.erase(it);
-        }
-    }
+    std::erase(m_pInitializeNodes, pNode);
+    std::erase(m_pPreprocessNodes, pNode);
 
     if (m_pRootNode.get() == pNode) {
         m_pRootNode.reset();

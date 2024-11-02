@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(rendergraph LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick ShaderTools)
 
 if(NOT(QT_VERSION VERSION_LESS "6.3.0"))
