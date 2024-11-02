@@ -11,7 +11,7 @@ class CustomItem : public QQuickItem {
 
   public:
     explicit CustomItem(QQuickItem* parent = nullptr);
-    ~CustomItem();
+    ~CustomItem() override;
 
   protected:
     QSGNode* updatePaintNode(QSGNode*, UpdatePaintNodeData*) override;
