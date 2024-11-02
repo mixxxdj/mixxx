@@ -51,7 +51,7 @@ WColorGridButton::WColorGridButton(const mixxx::RgbColor::optional_t& color,
         // Set the background color of the button.
         // This can't be overridden in skin stylesheets.
         setStyleSheet(
-                QString("QPushButton { background-color: %1; }")
+                QStringLiteral("QPushButton { background-color: %1; }")
                         .arg(mixxx::RgbColor::toQString(color.value())));
         setToolTip(mixxx::RgbColor::toQString(color.value()));
     } else {
