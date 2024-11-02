@@ -31,9 +31,9 @@ class rendergraph::VertexUpdater {
         addTriangle(x1, y2, x2, y2, x2, y1);
     }
     void addTriangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-        *m_pWrite++ = Geometry::Point2D{x1, y1};
-        *m_pWrite++ = Geometry::Point2D{x2, y2};
-        *m_pWrite++ = Geometry::Point2D{x3, y3};
+        *m_pWrite++ = Geometry::Point2D{{x1, y1}};
+        *m_pWrite++ = Geometry::Point2D{{x2, y2}};
+        *m_pWrite++ = Geometry::Point2D{{x3, y3}};
     }
     Geometry::Point2D* const m_pData;
     Geometry::Point2D* m_pWrite;

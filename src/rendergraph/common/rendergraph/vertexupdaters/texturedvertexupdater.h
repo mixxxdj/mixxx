@@ -61,9 +61,9 @@ class rendergraph::TexturedVertexUpdater {
             float ty2,
             float tx3,
             float ty3) {
-        *m_pWrite++ = Geometry::TexturedPoint2D{x1, y1, tx1, ty1};
-        *m_pWrite++ = Geometry::TexturedPoint2D{x2, y2, tx2, ty2};
-        *m_pWrite++ = Geometry::TexturedPoint2D{x3, y3, tx3, ty3};
+        *m_pWrite++ = Geometry::TexturedPoint2D{{x1, y1}, {tx1, ty1}};
+        *m_pWrite++ = Geometry::TexturedPoint2D{{x2, y2}, {tx2, ty2}};
+        *m_pWrite++ = Geometry::TexturedPoint2D{{x3, y3}, {tx3, ty3}};
     }
     Geometry::TexturedPoint2D* const m_pData;
     Geometry::TexturedPoint2D* m_pWrite;

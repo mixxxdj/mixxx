@@ -20,7 +20,7 @@ class rendergraph::GeometryNode : public rendergraph::NodeInterface<rendergraph:
         setGeometry(std::make_unique<Geometry>(T_Material::attributes(),
                 numRectangles * verticesPerRectangle));
         setMaterial(std::make_unique<T_Material>());
-        geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+        geometry().setDrawingMode(DrawingMode::Triangles);
     }
 
     void setUsePreprocess(bool value);

@@ -5,7 +5,7 @@
 
 namespace rendergraph {
 class BaseMaterialShader;
-}
+} // namespace rendergraph
 
 class rendergraph::BaseMaterialShader : public QSGMaterialShader {
   protected:

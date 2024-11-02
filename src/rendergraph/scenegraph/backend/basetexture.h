@@ -4,4 +4,4 @@
 
 namespace rendergraph {
 using BaseTexture = QSGTexture;
-}
+} // namespace rendergraph

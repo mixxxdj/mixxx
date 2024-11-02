@@ -1,5 +1,4 @@
-#ifndef CUSTOMITEM_H
-#define CUSTOMITEM_H
+#pragma once
 
 #include <QQuickItem>
 #include <memory>
@@ -20,5 +19,3 @@ class CustomItem : public QQuickItem {
 
     bool m_geometryChanged{};
 };
-
-#endif // CUSTOMITEM_H

@@ -5,7 +5,7 @@
 namespace rendergraph {
 class BaseNode;
 class Engine;
-}
+} // namespace rendergraph
 
 class rendergraph::BaseNode {
   public:
@@ -36,8 +36,9 @@ class rendergraph::BaseNode {
         return m_pEngine;
     }
 
+    // Prefer using NodeInterface<T>::appendChildNode(std::unique_ptr<BaseNode> pNode);
     void appendChildNode(BaseNode* pChild);
-    void removeAllChildNodes();
+    // Prefer using std::unique_ptr<BaseNode> NodeInterface<T>::detachChildNode(BaseNode* pNode);
     void removeChildNode(BaseNode* pChild);
 
     BaseNode* parent() const {
@@ -60,6 +61,7 @@ class rendergraph::BaseNode {
     Engine* m_pEngine{};
     bool m_usePreprocess{};
 
+    // Mimicking scenegraph node hierarchy. A parent owns its children.
     BaseNode* m_pParent{};
     BaseNode* m_pFirstChild{};
     BaseNode* m_pLastChild{};

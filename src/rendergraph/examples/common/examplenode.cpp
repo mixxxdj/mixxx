@@ -30,7 +30,7 @@ ExampleNode::ExampleNode(rendergraph::Context* pContext) {
         auto pNode = std::make_unique<GeometryNode>();
         pNode->initForRectangles<rendergraph::UniColorMaterial>(2);
         pNode->material().setUniform(1, QColor(255, 127, 0));
-        pNode->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+        pNode->geometry().setDrawingMode(DrawingMode::Triangles);
         rendergraph::VertexUpdater vertexUpdater{
                 pNode->geometry()
                         .vertexDataAs<rendergraph::Geometry::Point2D>()};
@@ -41,7 +41,7 @@ ExampleNode::ExampleNode(rendergraph::Context* pContext) {
     {
         auto pNode = std::make_unique<GeometryNode>();
         pNode->initForRectangles<rendergraph::RGBMaterial>(2);
-        pNode->geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+        pNode->geometry().setDrawingMode(DrawingMode::Triangles);
         rendergraph::RGBVertexUpdater vertexUpdater{
                 pNode->geometry().vertexDataAs<Geometry::RGBColoredPoint2D>()};
         vertexUpdater.addRectangle({300, 100}, {340, 140}, {1.f, 0.f, 0.5f});

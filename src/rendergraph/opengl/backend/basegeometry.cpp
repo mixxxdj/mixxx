@@ -7,7 +7,7 @@ using namespace rendergraph;
 
 namespace {
 // to mimic sg default
-constexpr int defaultDrawingMode = static_cast<int>(Geometry::DrawingMode::TriangleStrip);
+constexpr auto defaultDrawingMode = DrawingMode::TriangleStrip;
 } // namespace
 
 BaseGeometry::BaseGeometry(

@@ -4,4 +4,4 @@
 
 namespace rendergraph {
 using BaseTexture = QOpenGLTexture;
-}
+} // namespace rendergraph

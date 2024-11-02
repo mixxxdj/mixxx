@@ -4,4 +4,4 @@
 
 namespace rendergraph {
 using BaseMaterialType = QSGMaterialType;
-}
+} // namespace rendergraph

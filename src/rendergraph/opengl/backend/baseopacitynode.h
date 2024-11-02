@@ -4,7 +4,7 @@
 
 namespace rendergraph {
 class BaseOpacityNode;
-}
+} // namespace rendergraph
 
 class rendergraph::BaseOpacityNode : public rendergraph::BaseNode {
   public:

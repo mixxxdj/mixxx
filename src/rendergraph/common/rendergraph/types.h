@@ -2,6 +2,11 @@
 
 namespace rendergraph {
 
+enum class DrawingMode {
+    Triangles,
+    TriangleStrip
+};
+
 enum class PrimitiveType {
     UInt,
     Float,

@@ -19,6 +19,7 @@ class rendergraph::BaseMaterialShader : public QOpenGLShaderProgram {
     BaseMaterial* lastModifiedByMaterial() const;
     void setLastModifiedByMaterial(BaseMaterial* pMaterial);
 
+  protected:
     std::vector<int> m_attributeLocations;
     std::vector<int> m_uniformLocations;
     BaseMaterial* m_pLastModifiedByMaterial{};

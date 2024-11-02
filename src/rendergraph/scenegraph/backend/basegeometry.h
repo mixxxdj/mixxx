@@ -6,4 +6,4 @@
 
 namespace rendergraph {
 using BaseGeometry = QSGGeometry;
-}
+} // namespace rendergraph

@@ -4,7 +4,7 @@
 
 namespace rendergraph {
 class BaseMaterial;
-}
+} // namespace rendergraph
 
 class rendergraph::BaseMaterial : public QSGMaterial {
   protected:

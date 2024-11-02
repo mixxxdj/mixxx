@@ -5,21 +5,21 @@
 using namespace rendergraph;
 
 namespace {
-QSGGeometry::DrawingMode toSgDrawingMode(Geometry::DrawingMode mode) {
+QSGGeometry::DrawingMode toSgDrawingMode(DrawingMode mode) {
     switch (mode) {
-    case Geometry::DrawingMode::Triangles:
+    case DrawingMode::Triangles:
         return QSGGeometry::DrawTriangles;
-    case Geometry::DrawingMode::TriangleStrip:
+    case DrawingMode::TriangleStrip:
         return QSGGeometry::DrawTriangleStrip;
     }
 }
 
-Geometry::DrawingMode fromSgDrawingMode(unsigned int mode) {
+DrawingMode fromSgDrawingMode(unsigned int mode) {
     switch (mode) {
     case QSGGeometry::DrawTriangles:
-        return Geometry::DrawingMode::Triangles;
+        return DrawingMode::Triangles;
     case QSGGeometry::DrawTriangleStrip:
-        return Geometry::DrawingMode::TriangleStrip;
+        return DrawingMode::TriangleStrip;
     default:
         throw "not implemented";
     }
@@ -57,11 +57,10 @@ void Geometry::setAttributeValues(int attributePosition, const float* from, int 
     }
 }
 
-
-void Geometry::setDrawingMode(Geometry::DrawingMode mode) {
+void Geometry::setDrawingMode(DrawingMode mode) {
     QSGGeometry::setDrawingMode(toSgDrawingMode(mode));
 }
 
-Geometry::DrawingMode Geometry::drawingMode() const {
+DrawingMode Geometry::drawingMode() const {
     return fromSgDrawingMode(QSGGeometry::drawingMode());
 }

@@ -6,7 +6,7 @@
 
 namespace rendergraph {
 class BaseOpenGLNode;
-}
+} // namespace rendergraph
 
 class rendergraph::BaseOpenGLNode : public rendergraph::BaseNode,
                                     public QOpenGLFunctions {

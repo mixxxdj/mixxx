@@ -50,7 +50,7 @@ class rendergraph::BaseGeometry {
     const Attribute* m_pAttributes;
     const int m_attributeCount;
     const int m_sizeOfVertex;
-    int m_drawingMode;
+    DrawingMode m_drawingMode;
     int m_vertexCount;
     std::vector<float> m_vertexData;
 };

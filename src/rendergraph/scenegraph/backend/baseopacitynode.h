@@ -4,4 +4,4 @@
 
 namespace rendergraph {
 using BaseOpacityNode = QSGOpacityNode;
-}
+} // namespace rendergraph

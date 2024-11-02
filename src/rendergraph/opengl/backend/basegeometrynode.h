@@ -14,7 +14,7 @@ class rendergraph::BaseGeometryNode : public rendergraph::BaseNode,
     BaseGeometryNode() = default;
     virtual ~BaseGeometryNode() = default;
 
-  public:
+    // called by Engine
     void initialize() override;
     void render() override;
     void resize(int w, int h) override;

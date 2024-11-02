@@ -4,4 +4,4 @@
 
 namespace rendergraph {
 using BaseGeometryNode = QSGGeometryNode;
-}
+} // namespace rendergraph

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 
 #include "rendergraph/material.h"
 #include "rendergraph/materialshader.h"
@@ -8,14 +8,14 @@
 
 namespace rendergraph {
 class ShaderCache;
-}
+} // namespace rendergraph
 
 class rendergraph::ShaderCache {
   private:
-    static std::map<MaterialType*,
+    static std::unordered_map<MaterialType*,
             std::shared_ptr<MaterialShader>>&
     map() {
-        static std::map<MaterialType*,
+        static std::unordered_map<MaterialType*,
                 std::shared_ptr<MaterialShader>>
                 s_map;
         return s_map;

@@ -10,11 +10,11 @@
 using namespace rendergraph;
 
 namespace {
-GLenum toGlDrawingMode(Geometry::DrawingMode mode) {
+GLenum toGlDrawingMode(DrawingMode mode) {
     switch (mode) {
-    case Geometry::DrawingMode::Triangles:
+    case DrawingMode::Triangles:
         return GL_TRIANGLES;
-    case Geometry::DrawingMode::TriangleStrip:
+    case DrawingMode::TriangleStrip:
         return GL_TRIANGLE_STRIP;
     }
 }

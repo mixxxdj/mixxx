@@ -36,10 +36,10 @@ void Geometry::setAttributeValues(int attributePosition, const float* from, int 
     }
 }
 
-void Geometry::setDrawingMode(Geometry::DrawingMode mode) {
-    m_drawingMode = static_cast<int>(mode);
+void Geometry::setDrawingMode(DrawingMode mode) {
+    m_drawingMode = mode;
 }
 
-Geometry::DrawingMode Geometry::drawingMode() const {
-    return static_cast<Geometry::DrawingMode>(m_drawingMode);
+DrawingMode Geometry::drawingMode() const {
+    return m_drawingMode;
 }

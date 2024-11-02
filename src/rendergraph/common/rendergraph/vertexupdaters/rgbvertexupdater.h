@@ -122,9 +122,9 @@ class rendergraph::RGBVertexUpdater {
             float r,
             float g,
             float b) {
-        *m_pWrite++ = Geometry::RGBColoredPoint2D{x1, y1, r, g, b};
-        *m_pWrite++ = Geometry::RGBColoredPoint2D{x2, y2, r, g, b};
-        *m_pWrite++ = Geometry::RGBColoredPoint2D{x3, y3, r, g, b};
+        *m_pWrite++ = Geometry::RGBColoredPoint2D{{x1, y1}, {r, g, b}};
+        *m_pWrite++ = Geometry::RGBColoredPoint2D{{x2, y2}, {r, g, b}};
+        *m_pWrite++ = Geometry::RGBColoredPoint2D{{x3, y3}, {r, g, b}};
     }
     void addTriangle(float x1,
             float y1,
@@ -141,10 +141,12 @@ class rendergraph::RGBVertexUpdater {
             float r3,
             float g3,
             float b3) {
-        *m_pWrite++ = Geometry::RGBColoredPoint2D{x1, y1, r1, g1, b1};
-        *m_pWrite++ = Geometry::RGBColoredPoint2D{x2, y2, r2, g2, b2};
-        *m_pWrite++ = Geometry::RGBColoredPoint2D{x3, y3, r3, g3, b3};
+        *m_pWrite++ = Geometry::RGBColoredPoint2D{{x1, y1}, {r1, g1, b1}};
+        *m_pWrite++ = Geometry::RGBColoredPoint2D{{x2, y2}, {r2, g2, b2}};
+        *m_pWrite++ = Geometry::RGBColoredPoint2D{{x3, y3}, {r3, g3, b3}};
     }
+
+  private:
     Geometry::RGBColoredPoint2D* const m_pData;
     Geometry::RGBColoredPoint2D* m_pWrite;
 };

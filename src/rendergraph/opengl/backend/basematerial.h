@@ -26,5 +26,7 @@ class rendergraph::BaseMaterial {
 
     void modifyShader();
     bool isLastModifierOfShader() const;
+
+  private:
     std::shared_ptr<MaterialShader> m_pShader;
 };

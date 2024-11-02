@@ -13,6 +13,7 @@ int BaseMaterialShader::uniformLocation(int uniformIndex) const {
 BaseMaterial* BaseMaterialShader::lastModifiedByMaterial() const {
     return m_pLastModifiedByMaterial;
 }
+
 void BaseMaterialShader::setLastModifiedByMaterial(BaseMaterial* pMaterial) {
     m_pLastModifiedByMaterial = pMaterial;
 }
