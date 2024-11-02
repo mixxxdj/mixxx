@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import typing
+import fnmatch
 
 from lxml import etree
 import githelper
@@ -18,33 +19,39 @@ PROPOSED_ALLOW_LIST_PATH = (
 )
 
 
+def parse_line(line, info):
+    if not line.endswith("\n"):
+        print(f"Parse Error: No \\n at {info}")
+        return False
+    line = line[:-1]
+    try:
+        lang, source = line.split("\t", 1)
+    except Exception as e:
+        print(f"Parse Error at {info}")
+        print(e)
+    if lang is None or lang == "":
+        print(f"Parse Error: lang is empty at {info}")
+    return lang, source
+
+
+def fn_match_comma_sep(language, pattern_cs):
+    for lang_pat in pattern_cs.split(","):
+        if fnmatch.fnmatchcase(language, lang_pat):
+            return True
+    return False
+
+
 def is_untranstaled_allowed(source_text, language):
+    source_text = source_text.encode("unicode_escape").decode("utf-8")
+
     if not os.path.exists(ALLOW_LIST_PATH):
         return False
 
     with open(ALLOW_LIST_PATH) as f:
         for i, line in enumerate(f):
-            if not line.endswith("\n"):
-                print(f"Parse Error: No \\n at {ALLOW_LIST_PATH}:{i + 1}")
-                return False
-            line = line[:-1]
-            try:
-                lang, source = line.split("\t", 1)
-            except Exception as e:
-                print(f"Parse Error at {ALLOW_LIST_PATH}:{i + 1}")
-                print(e)
-            if lang is None or lang == "":
-                print(
-                    f"Parse Error: lang is empty at{ALLOW_LIST_PATH}:{i + 1}"
-                )
-                continue
-            source = source.encode("utf-8").decode("unicode_escape")
+            lang, source = parse_line(line, f"{ALLOW_LIST_PATH}:{i + 1}")
             if source == source_text:
-                if lang == "*":
-                    return True
-                if language in lang:
-                    return True
-
+                return fn_match_comma_sep(language, lang)
     return False
 
 
@@ -63,26 +70,9 @@ def add_to_allow_list(source_text, language):
 
         # Check if the source_text already exists
         for i, line in enumerate(tsv_lines):
-            if not line.endswith("\n"):
-                print(f"Parse Error: No \\n at {ALLOW_LIST_PATH}:{i + 1}")
-                return False
-            line = line[:-1]
-            try:
-                lang, source = line.split("\t", 1)
-            except Exception as e:
-                print(f"Parse Error at {allow_list_path}:{i + 1}")
-                print(e)
-            if lang is None or lang == "":
-                print(
-                    f"Parse Error: lang is empty at {allow_list_path}:{i + 1}"
-                )
-                continue
+            lang, source = parse_line(line, f"{allow_list_path}:{i + 1}")
             if source == source_text:
-                if lang == "*":
-                    # nothing to do
-                    return
-                if language in lang:
-                    # nothing to do
+                if fn_match_comma_sep(language, lang):
                     return
                 lang = lang + "," + language
                 tsv_lines[i] = f"{lang}\t{source}\n"
@@ -131,6 +121,8 @@ def check_copied_source_on_lines(rootdir, file_to_format, stylepath=None):
             source = message.find("source").text
             translation_elem = message.find("translation")
             if translation_elem is None:
+                continue
+            if translation_elem.get("type") == "unfinished":
                 continue
             translation = translation_elem.text
             if source != translation:
@@ -188,8 +180,8 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
 
     if ret:
         print(
-            "\n"
-            "All not allowed copied source translations need to be removed"
+            "\n"  # For a distance to the list of findings
+            "All disallowed copied source translations need to be removed"
             " at\n"
             "https://app.transifex.com/mixxx-dj-software and pulled again.\n"
             "If they are intended untranslated use:\n"
