@@ -1,7 +1,6 @@
 #pragma once
 
 #include "backend/basenode.h"
-#include "rendergraph/assert.h"
 
 namespace rendergraph {
 
