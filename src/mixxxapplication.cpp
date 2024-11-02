@@ -78,9 +78,9 @@ class QMouseEventEditable : public QMouseEvent {
 // potentially slow event processing in the application, which could impact
 // performance. With a 60Hz waveform update rate, paint and swap events must be
 // processed through the event queue every 16.6ms, to ensure smooth rendering.
-// Exceeding this processing time can lead to visible delays, therefore 5ms is a
+// Exceeding this processing time can lead to visible delays, therefore 10ms is a
 // reasonable threshold.
-constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(5);
+constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(10);
 
 } // anonymous namespace
 
