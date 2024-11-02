@@ -119,6 +119,7 @@ void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) 
 bool allshader::WaveformRenderMark::init() {
     m_pTimeRemainingControl = std::make_unique<ControlProxy>(
             m_waveformRenderer->getGroup(), "time_remaining");
+    ::WaveformRenderMarkBase::init();
     return true;
 }
 
@@ -149,16 +150,6 @@ void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
 bool allshader::WaveformRenderMark::isSubtreeBlocked() const {
     return m_isSlipRenderer && !m_waveformRenderer->isSlipActive();
 }
-
-namespace {
-template<class T>
-std::unique_ptr<T> castToUniquePtr(std::unique_ptr<rendergraph::BaseNode>&& pNode) {
-    if (dynamic_cast<T*>(pNode.get())) {
-        return std::unique_ptr<T>(dynamic_cast<T*>(pNode.release()));
-    }
-    return std::unique_ptr<T>();
-}
-} // namespace
 
 void allshader::WaveformRenderMark::update() {
     if (isSubtreeBlocked()) {

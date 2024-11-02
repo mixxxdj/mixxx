@@ -231,10 +231,10 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     int m_posVSample[2];
     int m_totalVSamples;
-    ControlProxy* m_pRateRatioCO;
-    ControlProxy* m_pGainControlObject;
+    std::unique_ptr<ControlProxy> m_pRateRatioCO;
+    std::unique_ptr<ControlProxy> m_pGainControlObject;
+    std::unique_ptr<ControlProxy> m_pTrackSamplesControlObject;
     double m_gain;
-    ControlProxy* m_pTrackSamplesControlObject;
     double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right

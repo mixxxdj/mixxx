@@ -59,6 +59,17 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
 }
 
 void WaveformRendererEndOfTrack::preprocess() {
+    if (!preprocessInner()) {
+        geometry().allocate(0);
+        markDirtyGeometry();
+    }
+}
+
+bool WaveformRendererEndOfTrack::preprocessInner() {
+    if (!m_pEndOfTrackControl->toBool()) {
+        return false;
+    }
+
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
     const double blinkIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
@@ -70,39 +81,32 @@ void WaveformRendererEndOfTrack::preprocess() {
     const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
             remainingTimeTriggerSeconds;
 
-    const double alpha = criticalIntensity * blinkIntensity;
+    const double alpha = std::min(1.0, std::max(0.0, criticalIntensity * blinkIntensity));
 
-    if (alpha != 0.0) {
-        QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
-        float r, g, b, a;
-        getRgbF(m_color, &r, &g, &b, &a);
+    QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+    float r, g, b, a;
+    getRgbF(m_color, &r, &g, &b, &a);
 
-        const float posx0 = 0.f;
-        const float posx1 = size.width() / 2.f;
-        const float posx2 = size.width();
-        const float posy1 = 0.f;
-        const float posy2 = size.height();
+    const float posx0 = 0.f;
+    const float posx1 = size.width() / 2.f;
+    const float posx2 = size.width();
+    const float posy1 = 0.f;
+    const float posy2 = size.height();
 
-        float minAlpha = 0.5f * static_cast<float>(alpha);
-        float maxAlpha = 0.83f * static_cast<float>(alpha);
+    float minAlpha = 0.5f * static_cast<float>(alpha);
+    float maxAlpha = 0.83f * static_cast<float>(alpha);
 
-        geometry().allocate(6 * 2);
-        RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
-        vertexUpdater.addRectangleHGradient(
-                {posx0, posy1}, {posx1, posy2}, {r, g, b, minAlpha}, {r, g, b, minAlpha});
-        vertexUpdater.addRectangleHGradient(
-                {posx1, posy1}, {posx2, posy2}, {r, g, b, minAlpha}, {r, g, b, maxAlpha});
+    geometry().allocate(6 * 2);
+    RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
+    vertexUpdater.addRectangleHGradient(
+            {posx0, posy1}, {posx1, posy2}, {r, g, b, minAlpha}, {r, g, b, minAlpha});
+    vertexUpdater.addRectangleHGradient(
+            {posx1, posy1}, {posx2, posy2}, {r, g, b, minAlpha}, {r, g, b, maxAlpha});
 
-        markDirtyGeometry();
-    } else if (geometry().vertexCount() != 0) {
-        geometry().allocate(0);
-        markDirtyGeometry();
-    }
+    markDirtyGeometry();
     markDirtyMaterial();
-}
 
-bool WaveformRendererEndOfTrack::isSubtreeBlocked() const {
-    return !m_pEndOfTrackControl->toBool();
+    return true;
 }
 
 } // namespace allshader

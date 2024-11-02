@@ -5,10 +5,10 @@
 
 #include "control/controlproxy.h"
 #include "track/cue.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;
-class WaveformSignalColors;
 class QOpenGLTexture;
 
 namespace allshader {

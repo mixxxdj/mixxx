@@ -21,12 +21,11 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& ski
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            m_markRanges.push_back(
-                    WaveformMarkRange(
-                            m_waveformRenderer->getGroup(),
-                            child,
-                            skinContext,
-                            *m_waveformRenderer->getWaveformSignalColors()));
+            addRange(WaveformMarkRange(
+                    m_waveformRenderer->getGroup(),
+                    child,
+                    skinContext,
+                    *m_waveformRenderer->getWaveformSignalColors()));
         }
         child = child.nextSibling();
     }

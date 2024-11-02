@@ -129,7 +129,7 @@ class allshader::WaveformMarkNodeGraphics : public ::WaveformMark::Graphics {
 
   private:
     WaveformMarkNode* waveformMarkNode() const {
-        DEBUG_ASSERT(!m_pNode);
+        DEBUG_ASSERT(m_pNode);
         return static_cast<WaveformMarkNode*>(m_pNode.get());
     }
 
