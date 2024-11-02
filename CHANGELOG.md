@@ -4,14 +4,26 @@
 
 ### Controller Mappings
 
+* Denon MC7000: Fix star up/down logic by only handling button down events [#13588](https://github.com/mixxxdj/mixxx/pull/13588)
 * Korg Kaoss DJ: Update script [#12683](https://github.com/mixxxdj/mixxx/pull/12683)
+* MIDI for light: Fix unsound timer handling [#13117](https://github.com/mixxxdj/mixxx/pull/13117)
 * Novation Dicer: Remove flanger mapping with quickeffect toggle
   [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
   [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
+* Novation Launchpad X: Fix detection on macOS
+  [#13691](https://github.com/mixxxdj/mixxx/pull/13691)
+  [#13633](https://github.com/mixxxdj/mixxx/issues/13633)
 * Numark PartyMix: Fix EQ (script binding) display name [#13255](https://github.com/mixxxdj/mixxx/pull/13255)
 * Numark Scratch: Add initial mapping
   [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
   [#13375](https://github.com/mixxxdj/mixxx/pull/13375)
+* Pioneer DDJ-400 and DDJ-FLX4: Remove tap beat mapping to resolve conflict with toggle quantize
+  [#13815](https://github.com/mixxxdj/mixxx/pull/13815)
+  [#13813](https://github.com/mixxxdj/mixxx/issues/13813)
+* Reloop Beatmix 2/4: Fix eject button and jog LED being lit on track unload
+  [#13601](https://github.com/mixxxdj/mixxx/pull/13601)
+  [#13605](https://github.com/mixxxdj/mixxx/pull/13605)
+* Reloop Mixage MK1, MK2, Controller Edition: Add initial mapping [#12296](https://github.com/mixxxdj/mixxx/pull/12296)
 * Sony SIXAXIS: Fix mapping [#13319](https://github.com/mixxxdj/mixxx/pull/13319)
 
 ### Fixes
@@ -49,6 +61,64 @@
 * Fix wrong pitch value on startup, caused by `components.Pot`
   [#11814](https://github.com/mixxxdj/mixxx/issues/11814)
   [#13463](https://github.com/mixxxdj/mixxx/pull/13463)
+* Engine Prime: Fix build-failure [#13397](https://github.com/mixxxdj/mixxx/pull/13397)
+* Engine Prime: Friendlier error message if export fails [#13524](https://github.com/mixxxdj/mixxx/pull/13524)
+* macOs: Fix Keyboard shortcuts by not catching num key modifier
+  [#13481](https://github.com/mixxxdj/mixxx/pull/13481)
+  [#13305](https://github.com/mixxxdj/mixxx/issues/13305)
+* Skins: fix time display to allow AM/PM
+  [#13430](https://github.com/mixxxdj/mixxx/pull/13430)
+  [#13421](https://github.com/mixxxdj/mixxx/issues/13421)
+* Fix detection last sound if track does not end with silence.
+  [#13545](https://github.com/mixxxdj/mixxx/pull/13545)
+  [#13449](https://github.com/mixxxdj/mixxx/issues/13449)
+* Remove false positive critical warning related to library columns
+  [#13165](https://github.com/mixxxdj/mixxx/pull/13165)
+  [#13164](https://github.com/mixxxdj/mixxx/issues/13164)
+* Fix reading metadata for files with wrong extensions
+  [#13218](https://github.com/mixxxdj/mixxx/pull/13218)
+  [#13205](https://github.com/mixxxdj/mixxx/issues/13205)
+* History: remove purged tracks, auto-remove empty playlists
+  [#13579](https://github.com/mixxxdj/mixxx/pull/13579)
+  [#13578](https://github.com/mixxxdj/mixxx/issues/13578)
+* Synchronize AutoDJ next deck with top track in queue
+  [#12909](https://github.com/mixxxdj/mixxx/pull/12909)
+  [#8956](https://github.com/mixxxdj/mixxx/issues/8956)
+* Playlists: Update play duration and bold state in sidebar when dragging tracks into the playlist table
+  [#13591](https://github.com/mixxxdj/mixxx/pull/13591)
+  [#13590](https://github.com/mixxxdj/mixxx/issues/13590)
+  [#13575](https://github.com/mixxxdj/mixxx/pull/13575)
+* Playlists: Keep correct track selection (# position) when sorting
+  [#13103](https://github.com/mixxxdj/mixxx/pull/13103)
+* Track file export: Various fixes
+  [#13610](https://github.com/mixxxdj/mixxx/pull/13610)
+* Controller engine: Unify/improve logging, expand error dialog's Details box
+  [#13626](https://github.com/mixxxdj/mixxx/pull/13626)
+* Fix quantization in the effect engine (metronome effect)
+  [#13636](https://github.com/mixxxdj/mixxx/pull/13636)
+  [#13733](https://github.com/mixxxdj/mixxx/pull/13733)
+* Musicbrainz: Improved messages
+  [#13672](https://github.com/mixxxdj/mixxx/pull/13672)
+  [#13673](https://github.com/mixxxdj/mixxx/pull/13673)
+* Fix ReplayGain detection in case of short tracks
+  [#13680](https://github.com/mixxxdj/mixxx/pull/13680)
+  [#13676](https://github.com/mixxxdj/mixxx/issues/13676)
+  [#13702](https://github.com/mixxxdj/mixxx/issues/13702)
+  [#13703](https://github.com/mixxxdj/mixxx/pull/13703)
+* Track menu: Avoid crash and UX issues with track nullptr
+  [#13685](https://github.com/mixxxdj/mixxx/pull/13685)
+* Disable Properties shortcut in Computer feature views
+  [#13698](https://github.com/mixxxdj/mixxx/pull/13698)
+* Overview waveform: Add tooltip info about left-click dragging
+  [#13739](https://github.com/mixxxdj/mixxx/pull/13739)
+* Make `hotcue_focus_color_next`/`_prev` COs `ControlPushButton`s to allow direct mappings
+  [#13764](https://github.com/mixxxdj/mixxx/pull/13764)
+* Scaled svg cache to speed up drawing in hidpi mode [#13679](https://github.com/mixxxdj/mixxx/pull/13679)
+* Update to libdjinterop 0.22.1 for Enigine Prime 4.0.1 support [#13790](https://github.com/mixxxdj/mixxx/pull/13790)
+* HID: Avoid repeated error messages from hid_write()/hid_read() in case of errors
+  [#13692](https://github.com/mixxxdj/mixxx/pull/13692)
+  [#13660](https://github.com/mixxxdj/mixxx/issues/13660)
+* Fix unnecessary painting with covers in library [#13715](https://github.com/mixxxdj/mixxx/pull/13715)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
