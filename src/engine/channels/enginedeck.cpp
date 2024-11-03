@@ -164,7 +164,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
-    for (size_t stemIdx = 0; stemIdx < stemCount;
+    for (std::size_t stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()
