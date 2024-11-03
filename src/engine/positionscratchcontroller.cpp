@@ -92,7 +92,7 @@ PositionScratchController::~PositionScratchController() {
 
 void PositionScratchController::process(double currentSamplePos,
         double releaseRate,
-        int iBufferSize,
+        std::size_t bufferSize,
         double baseSampleRate,
         int wrappedAround,
         mixxx::audio::FramePos trigger,
@@ -106,7 +106,7 @@ void PositionScratchController::process(double currentSamplePos,
     }
 
     // The latency or time difference between process calls.
-    const double dt = static_cast<double>(iBufferSize) / m_pMainSampleRate->get() / 2;
+    const double dt = static_cast<double>(bufferSize) / m_pMainSampleRate->get() / 2;
 
     // Sample Mouse with fixed timing intervals to iron out significant jitters
     // that are added on the way from mouse to engine thread
@@ -200,7 +200,7 @@ void PositionScratchController::process(double currentSamplePos,
             // Measure the total distance traveled since last frame and add
             // it to the running total. This is required to scratch within loop
             // boundaries. And normalize to one buffer
-            m_samplePosDeltaSum += (sampleDelta) / (iBufferSize * baseSampleRate);
+            m_samplePosDeltaSum += (sampleDelta) / (bufferSize * baseSampleRate);
 
             // Continue with the last rate if we do not have a new
             // Mouse position
@@ -208,7 +208,7 @@ void PositionScratchController::process(double currentSamplePos,
                 // Set the scratch target to the current set position
                 // and normalize to one buffer
                 double scratchTargetDelta = (scratchPosition - m_scratchStartPos) /
-                        (iBufferSize * baseSampleRate);
+                        (bufferSize * baseSampleRate);
 
                 bool calcRate = true;
 

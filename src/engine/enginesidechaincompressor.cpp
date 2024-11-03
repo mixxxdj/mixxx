@@ -42,9 +42,9 @@ void EngineSideChainCompressor::setAboveThreshold(bool value) {
     m_bAboveThreshold = value;
 }
 
-void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBufferSize) {
+void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const std::size_t bufferSize) {
     m_bAboveThreshold = false;
-    for (int i = 0; i + 1 < iBufferSize; i += 2) {
+    for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
         CSAMPLE val = (pIn[i] + pIn[i + 1]) / 2;
         if (val > m_threshold) {
             m_bAboveThreshold = true;
