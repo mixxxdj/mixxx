@@ -97,27 +97,35 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
-    bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsDistanceToMark() const;
+    void setSinceMarkShowBeats(bool value);
+    void setSinceMarkShowTime(bool value);
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
-    void setUntilMarkAlign(Qt::Alignment align);
-    void setUntilMarkTextPointSize(int value);
+    void setDistanceToMarkAlign(Qt::Alignment align);
+    void setDistanceToMarkTextPointSize(int value);
 
+    bool getSinceMarkShowBeats() const {
+        return m_sinceMarkShowBeats;
+    }
+    bool getSinceMarkShowTime() const {
+        return m_sinceMarkShowTime;
+    }
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
     }
     bool getUntilMarkShowTime() const {
         return m_untilMarkShowTime;
     }
-    Qt::Alignment getUntilMarkAlign() const {
-        return m_untilMarkAlign;
+    Qt::Alignment getDistanceToMarkAlign() const {
+        return m_distanceToMarkAlign;
     }
-    int getUntilMarkTextPointSize() const {
-        return m_untilMarkTextPointSize;
+    int getDistanceToMarkTextPointSize() const {
+        return m_distanceToMarkTextPointSize;
     }
 
-    static Qt::Alignment toUntilMarkAlign(int index);
-    static int toUntilMarkAlignIndex(Qt::Alignment align);
+    static Qt::Alignment toDistanceToMarkAlign(int index);
+    static int toDistanceToMarkAlignIndex(Qt::Alignment align);
 
     /// Returns the desired surface format for the OpenGLWindow
     static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
@@ -220,10 +228,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
+    bool m_sinceMarkShowBeats;
+    bool m_sinceMarkShowTime;
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
-    Qt::Alignment m_untilMarkAlign;
-    int m_untilMarkTextPointSize;
+    Qt::Alignment m_distanceToMarkAlign;
+    int m_distanceToMarkTextPointSize;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

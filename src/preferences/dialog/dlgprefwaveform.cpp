@@ -68,10 +68,10 @@ DlgPrefWaveform::DlgPrefWaveform(
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
-    // Populate untilMark options
-    untilMarkAlignComboBox->addItem(tr("Top"));
-    untilMarkAlignComboBox->addItem(tr("Center"));
-    untilMarkAlignComboBox->addItem(tr("Bottom"));
+    // Populate distanceToMark options
+    distanceToMarkAlignComboBox->addItem(tr("Top"));
+    distanceToMarkAlignComboBox->addItem(tr("Center"));
+    distanceToMarkAlignComboBox->addItem(tr("Bottom"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
@@ -163,6 +163,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+    connect(sinceMarkShowBeatsCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetSinceMarkShowBeats);
+    connect(sinceMarkShowTimeCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetSinceMarkShowTime);
     connect(untilMarkShowBeatsCheckBox,
             &QCheckBox::toggled,
             this,
@@ -171,14 +179,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetUntilMarkShowTime);
-    connect(untilMarkAlignComboBox,
+    connect(distanceToMarkAlignComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefWaveform::slotSetUntilMarkAlign);
-    connect(untilMarkTextPointSizeSpinBox,
+            &DlgPrefWaveform::slotSetDistanceToMarkAlign);
+    connect(distanceToMarkTextPointSizeSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
-            &DlgPrefWaveform::slotSetUntilMarkTextPointSize);
+            &DlgPrefWaveform::slotSetDistanceToMarkTextPointSize);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -201,7 +209,7 @@ void DlgPrefWaveform::slotUpdate() {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
-    updateEnableUntilMark();
+    updateEnableDistanceToMark();
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -219,12 +227,14 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
+    sinceMarkShowBeatsCheckBox->setChecked(factory->getSinceMarkShowBeats());
+    sinceMarkShowTimeCheckBox->setChecked(factory->getSinceMarkShowTime());
     untilMarkShowBeatsCheckBox->setChecked(factory->getUntilMarkShowBeats());
     untilMarkShowTimeCheckBox->setChecked(factory->getUntilMarkShowTime());
-    untilMarkAlignComboBox->setCurrentIndex(
-            WaveformWidgetFactory::toUntilMarkAlignIndex(
-                    factory->getUntilMarkAlign()));
-    untilMarkTextPointSizeSpinBox->setValue(factory->getUntilMarkTextPointSize());
+    distanceToMarkAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toDistanceToMarkAlignIndex(
+                    factory->getDistanceToMarkAlign()));
+    distanceToMarkTextPointSizeSpinBox->setValue(factory->getDistanceToMarkTextPointSize());
 
     WOverview::Type cfgOverviewType =
             m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
@@ -309,17 +319,19 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     int handleIndex = waveformTypeComboBox->itemData(index).toInt();
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(handleIndex);
 
-    updateEnableUntilMark();
+    updateEnableDistanceToMark();
 }
 
-void DlgPrefWaveform::updateEnableUntilMark() {
-    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark();
+void DlgPrefWaveform::updateEnableDistanceToMark() {
+    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsDistanceToMark();
+    sinceMarkShowBeatsCheckBox->setEnabled(enabled);
+    sinceMarkShowTimeCheckBox->setEnabled(enabled);
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
-    untilMarkAlignLabel->setEnabled(enabled);
-    untilMarkAlignComboBox->setEnabled(enabled);
-    untilMarkTextPointSizeLabel->setEnabled(enabled);
-    untilMarkTextPointSizeSpinBox->setEnabled(enabled);
+    distanceToMarkAlignLabel->setEnabled(enabled);
+    distanceToMarkAlignComboBox->setEnabled(enabled);
+    distanceToMarkTextPointSizeLabel->setEnabled(enabled);
+    distanceToMarkTextPointSizeSpinBox->setEnabled(enabled);
     requiresGLSLLabel->setVisible(!enabled);
 }
 
@@ -387,6 +399,14 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
 }
 
+void DlgPrefWaveform::slotSetSinceMarkShowBeats(bool checked) {
+    WaveformWidgetFactory::instance()->setSinceMarkShowBeats(checked);
+}
+
+void DlgPrefWaveform::slotSetSinceMarkShowTime(bool checked) {
+    WaveformWidgetFactory::instance()->setSinceMarkShowTime(checked);
+}
+
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowBeats(checked);
 }
@@ -395,13 +415,13 @@ void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
 }
 
-void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
-    WaveformWidgetFactory::instance()->setUntilMarkAlign(
-            WaveformWidgetFactory::toUntilMarkAlign(index));
+void DlgPrefWaveform::slotSetDistanceToMarkAlign(int index) {
+    WaveformWidgetFactory::instance()->setDistanceToMarkAlign(
+            WaveformWidgetFactory::toDistanceToMarkAlign(index));
 }
 
-void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
-    WaveformWidgetFactory::instance()->setUntilMarkTextPointSize(value);
+void DlgPrefWaveform::slotSetDistanceToMarkTextPointSize(int value) {
+    WaveformWidgetFactory::instance()->setDistanceToMarkTextPointSize(value);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

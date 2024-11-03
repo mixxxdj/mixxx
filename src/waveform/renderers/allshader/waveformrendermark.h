@@ -59,17 +59,17 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
     void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
     Distance distanceSinceMark(mixxx::BeatsPointer trackBeats,
-            mixxx::Beats::ConstIterator itCurrentBeat,
             double playPosition,
             double prevMarkPosition);
     Distance distanceUntilMark(mixxx::BeatsPointer trackBeats,
-            mixxx::Beats::ConstIterator itCurrentBeat,
             double playPosition,
             double prevMarkPosition);
     void drawDistance(const QMatrix4x4& matrix,
             float x,
             Qt::Alignment align,
-            const Distance& distance);
+            const Distance& distance,
+            bool showDistanceBeats,
+            bool showDistanceTime);
     float getMaxHeightForText() const;
 
     mixxx::RGBAShader m_rgbaShader;

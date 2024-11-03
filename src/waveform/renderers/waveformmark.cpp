@@ -67,9 +67,7 @@ float overlappingMarkerIncrement(const float labelRectHeight, const float breadt
     return std::max(minIncrement, fullIncrement - std::max(0.f, threshold - breadth));
 }
 
-#define FOO
-
-bool isShowUntilNextPositionControl(const QString& positionControl) {
+bool isShowUntilPositionControl(const QString& positionControl) {
     // To identify which markers are included in the beat/time until next marker
     // display, in addition to the hotcues
 #if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
@@ -104,7 +102,7 @@ WaveformMark::WaveformMark(const QString& group,
           m_level{},
           m_iPriority(priority),
           m_iHotCue(hotCue),
-          m_showUntilNext{} {
+          m_showUntil{} {
     QString positionControl;
     QString endPositionControl;
     QString typeControl;
@@ -112,10 +110,10 @@ WaveformMark::WaveformMark(const QString& group,
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
         typeControl = "hotcue_" + QString::number(hotCue + 1) + "_type";
-        m_showUntilNext = true;
+        m_showUntil = true;
     } else {
         positionControl = context.selectString(node, "Control");
-        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
+        m_showUntil = isShowUntilPositionControl(positionControl);
     }
 
     if (!positionControl.isEmpty()) {
