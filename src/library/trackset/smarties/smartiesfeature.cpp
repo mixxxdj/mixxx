@@ -627,7 +627,7 @@ void SmartiesFeature::slotEditSmarties() {
     qDebug() << "[SMARTIES] [EDIT] - START ----- slotEditSmarties -> "
                 "m_lastRightClickedIndex  = "
              << m_lastRightClickedIndex;
-
+    // Load data into QVariant
     smartiesData.clear();
     m_smartiesTableModel.selectSmarties2QVL(
             smartiesIdFromIndex(m_lastRightClickedIndex), smartiesData);
@@ -656,7 +656,7 @@ void SmartiesFeature::slotEditSmarties() {
         // qDebug() << "SlotEditSmarties -> 2nd smartiesID" << smartiesId;
         //         SmartiesId smartiesId = readLastRightClickedSmarties(smarties);
 
-        // Step 1: Load data into QVariant
+        // Load data into QVariant
         //        smartiesData.clear();
         //        m_smartiesTableModel.selectSmarties2QVL(smartiesIdFromIndex(m_lastRightClickedIndex),
         //        smartiesData); qDebug() << "[SMARTIES] [EDIT] - START -----
@@ -666,7 +666,7 @@ void SmartiesFeature::slotEditSmarties() {
         //        loaded into QVariantList:" << smartiesData; emit
         //        updateSmartiesData(smartiesData);
 
-        // Step 2: Initialize dlgSmartiesInfo and populate UI
+        // Initialize dlgSmartiesInfo & populate UI dialog
         // dlgSmartiesInfo infoDialog;
         dlgSmartiesInfo infoDialog(this); // Pass 'this' to provide the SmartiesFeature instance
         infoDialog.init(smartiesData);
@@ -684,6 +684,26 @@ void SmartiesFeature::slotEditSmarties() {
                     qDebug() << "[SMARTIES] [EDIT] - Updated data received from dlgSmartiesInfo:"
                              << smartiesData;
                 });
+
+        connect(&infoDialog, &dlgSmartiesInfo::requestNewSmarties, this, [this]() {
+            qDebug() << "[SMARTIES] [EDIT] - NEW 01 -> START";
+            SmartiesId smartiesId = SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
+                                            .createEmptySmartiesFromUI();
+            activateSmarties(smartiesId);
+            qDebug() << "[SMARTIES] [EDIT] - NEW 02 -> Activate";
+
+            m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+            qDebug() << "[SMARTIES] [EDIT] - NEW 03 -> m_lastRightClickedIndex";
+            smartiesData.clear();
+            m_smartiesTableModel.selectSmarties2QVL(
+                    smartiesIdFromIndex(m_lastRightClickedIndex),
+                    smartiesData);
+            qDebug() << "[SMARTIES] [EDIT] - NEW 04 -> smartiesData";
+            qDebug() << "[SMARTIES] [EDIT] - NEW 05 -> before signal";
+            slotSmartiesTableChanged(smartiesId);
+            emit updateSmartiesData(smartiesData);
+            qDebug() << "[SMARTIES] [EDIT] - NEW 06 -> SIGNAL -> SmartiesData updated";
+        });
 
         connect(&infoDialog, &dlgSmartiesInfo::requestPreviousSmarties, this, [this]() {
             slotFindPreviousSmarties();
@@ -738,6 +758,7 @@ void SmartiesFeature::slotEditSmarties() {
                 qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 10 SmartiesId "
                             "smartiesId = m_prevSiblingSmarties = "
                          << m_prevSiblingSmarties;
+                slotSmartiesTableChanged(smartiesId);
                 emit updateSmartiesData(smartiesData);
                 qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 11 SIGNAL -> SmartiesData updated";
             }
@@ -795,18 +816,26 @@ void SmartiesFeature::slotEditSmarties() {
                 qDebug() << "[SMARTIES] [EDIT] - NEXT 10 SmartiesId smartiesId "
                             "= m_prevSiblingSmarties = "
                          << m_nextSiblingSmarties;
+                slotSmartiesTableChanged(smartiesId);
                 emit updateSmartiesData(smartiesData);
                 qDebug() << "[SMARTIES] [EDIT] - NEXT 11 SIGNAL -> SmartiesData updated";
             }
         });
 
-        // Step 3: Execute the dialog
+        // Execute & close the dialog
         if (infoDialog.exec() == QDialog::Accepted) {
             m_smartiesTableModel.saveQVL2Smarties(smartiesId, smartiesData);
             qDebug() << "[SMARTIES] [EDIT] - Smarties data saved from QVariantList to database for "
                         "SmartiesId:"
                      << smartiesId;
-            m_pTrackCollection->updateSmarties(smarties);
+            //            m_pTrackCollection->updateSmarties(smarties);
+            //            slotSmartiesTableChanged(smartiesId);
+            //            slotToggleSmartiesLock();
+            //            slotToggleSmartiesLock();
+            //            rebuildChildModel(smartiesId);
+            activateSmarties(smartiesId);
+            rebuildChildModel();
+            m_pTrackCollection->smarties().readSmartiesSummaryById(smartiesId);
             qDebug() << "[SMARTIES] [EDIT] - Smarties sidebar update for SmartiesId";
         }
     }

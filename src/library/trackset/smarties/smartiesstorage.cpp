@@ -192,17 +192,17 @@ void SmartiesStorage::repairDatabase(const QSqlDatabase& database) {
                     << "smarties with empty search_input";
         }
     }
-    {
-        // Delete smarties with empty search_sql
-        FwdSqlQuery query(database,
-                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL")
-                        .arg(SMARTIES_TABLE, SMARTIESTABLE_SEARCH_SQL));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Deleted" << query.numRowsAffected()
-                    << "smarties with empty search_sql";
-        }
-    }
+    //    {
+    // Delete smarties with empty search_sql
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL")
+    //                        .arg(SMARTIES_TABLE, SMARTIESTABLE_SEARCH_SQL));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Deleted" << query.numRowsAffected()
+    //                    << "smarties with empty search_sql";
+    //        }
+    //    }
     //    {
     //        // Fix invalid values in the "locked" column
     //        FwdSqlQuery query(database,

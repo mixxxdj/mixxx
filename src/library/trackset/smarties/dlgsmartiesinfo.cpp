@@ -293,7 +293,9 @@ void dlgSmartiesInfo::onApplyButtonClicked() {
 
 void dlgSmartiesInfo::onNewButtonClicked() {
     // Handle creating a new Smarties entry
-    qDebug() << "[SMARTIES] [EDIT DLG] ---> New button clicked!";
+    emit requestNewSmarties();
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> SIGNAL SND -> New button "
+                "clicked, emitted requestNewwSmarties signal";
 }
 
 void dlgSmartiesInfo::onPreviousButtonClicked() {

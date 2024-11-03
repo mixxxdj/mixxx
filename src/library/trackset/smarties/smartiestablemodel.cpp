@@ -70,7 +70,7 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
     queryGetLocked->clear();
 
     if (getLocked) {
-        qDebug() << "SMARTIES LOCKED ";
+        qDebug() << "[SMARTIES] [LOCKED] -> GET CACHED TRACKS ";
         QString queryStringTempView =
                 QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                         "SELECT %2 FROM %3 "
@@ -83,37 +83,41 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                                 SmartiesStorage::formatSubselectQueryForSmartiesTrackIds(
                                         smartiesId),        // 5
                                 LIBRARYTABLE_MIXXXDELETED); // 6
-        qDebug() << "[SMARTIES] queryStringTempView " << queryStringTempView;
+        qDebug() << "[SMARTIES] [LOCKED] -> GET CACHED TRACKS "
+                    "queryStringTempView "
+                 << queryStringTempView;
         FwdSqlQuery(m_database, queryStringTempView).execPrepared();
     } else {
-        qDebug() << "[SMARTIES] SMARTIES NOT LOCKED ";
-        QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
-        queryGetSearchValue->prepare("SELECT search_sql from smarties where id=:id");
-        queryGetSearchValue->addBindValue(smartiesId.toVariant());
+        qDebug() << "[SMARTIES] [NOT LOCKED]";
+        //        QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
+        //        queryGetSearchValue->prepare("SELECT search_sql from smarties where id=:id");
+        //        queryGetSearchValue->addBindValue(smartiesId.toVariant());
 
-        queryGetSearchValue->exec();
-        queryGetSearchValue->next();
-        QString searchValue = queryGetSearchValue->value(0).toString();
-        qDebug() << "[SMARTIES] queryGetSearchValue " << queryGetSearchValue;
-        qDebug() << "[SMARTIES] searchValue " << searchValue;
-        queryGetSearchValue->clear();
+        //        queryGetSearchValue->exec();
+        //        queryGetSearchValue->next();
+        //        QString searchValue = queryGetSearchValue->value(0).toString();
+        //        qDebug() << "[SMARTIES] queryGetSearchValue " << queryGetSearchValue;
+        //        qDebug() << "[SMARTIES] searchValue " << searchValue;
+        //        queryGetSearchValue->clear();
 
         QString queryStringDeleteIDFromSmartiesTracks = QString(
                 "DELETE FROM smarties_tracks "
                 "WHERE smarties_id = " +
                 smartiesId.toVariant().toString());
-
-        qDebug() << "[SMARTIES] queryStringDeleteIDFromSmartiesTracks "
+        qDebug() << "[SMARTIES] [NOT LOCKED] [DELETE CACHED TRACKS] "
+                    "queryStringDeleteIDFromSmartiesTracks "
                  << queryStringDeleteIDFromSmartiesTracks;
         FwdSqlQuery(m_database, queryStringDeleteIDFromSmartiesTracks).execPrepared();
 
         // Create SQl based on conditions in smarties
         QVariantList smartiesData;
-        qDebug() << "[SMARTIES] CONSTRUCT SQL -> selectSmarties2QVL ";
+        qDebug() << "[SMARTIES] [NOT LOCKED] [CONSTRUCT SQL] -> selectSmarties2QVL ";
         selectSmarties2QVL(smartiesId, smartiesData); // Fetch smarties data
-        qDebug() << "[SMARTIES] CONSTRUCT SQL -> whereClause ";
+        qDebug() << "[SMARTIES] [NOT LOCKED] [CONSTRUCT SQL] -> whereClause ";
         QString whereClause = buildWhereClause(smartiesData); // Get the WHERE clause
-        qDebug() << "[SMARTIES] CONSTRUCT SQL -> whereClause generated:" << whereClause;
+        qDebug() << "[SMARTIES] [NOT LOCKED] [CONSTRUCT SQL] -> whereClause "
+                    "generated:"
+                 << whereClause;
 
         QString queryStringIDtoSmartiesTracks = QString(
                 "INSERT OR IGNORE INTO smarties_tracks (smarties_id, track_id) "
@@ -131,7 +135,9 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
         //                "OR library.composer like '%" + searchValue + "%' "
         //                "OR library.genre like '%" + searchValue + "%' "
         //                "OR library.comment like '%" + searchValue + "%' ");
-        qDebug() << "[SMARTIES] queryStringIDtoSmartiesTracks " << queryStringIDtoSmartiesTracks;
+        qDebug() << "[SMARTIES] [NOT LOCKED] [CREATE CACHE] -> Create temp "
+                    "view queryStringIDtoSmartiesTracks "
+                 << queryStringIDtoSmartiesTracks;
         FwdSqlQuery(m_database, queryStringIDtoSmartiesTracks).execPrepared();
 
         QString queryStringTempView =
@@ -140,25 +146,20 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                         "WHERE " +
                         whereClause)
 
-                        //                        "WHERE library.artist like '%"
-                        //                        + searchValue + "%' " "OR
-                        //                        library.title like '%" +
-                        //                        searchValue + "%'" "OR
-                        //                        library.album like '%" +
-                        //                        searchValue + "%' " "OR
-                        //                        library.album_artist like '%"
-                        //                        + searchValue + "%' " "OR
-                        //                        library.composer like '%" +
-                        //                        searchValue + "%' " "OR
-                        //                        library.genre like '%" +
-                        //                        searchValue + "%' " "OR
-                        //                        library.comment like '%" +
-                        //                        searchValue + "%' ")
+                        //  "WHERE library.artist like '%" + searchValue + "%' " "OR
+                        //  library.title like '%" + searchValue + "%'" "OR
+                        //  library.album like '%" + searchValue + "%' " "OR
+                        //  library.album_artist like '%" + searchValue + "%' " "OR
+                        //  library.composer like '%" + searchValue + "%' " "OR
+                        //  library.genre like '%" + searchValue + "%' " "OR
+                        //  library.comment like '%" + searchValue + "%' ")
                         .arg(tableName,            // 1
                                 columns.join(","), // 2
                                 LIBRARY_TABLE);    // 3
 
-        qDebug() << "[SMARTIES] queryStringTempView " << queryStringTempView;
+        qDebug() << "[SMARTIES] [NOT LOCKED] [CREATE TEMP VIEW] "
+                    "queryStringTempView "
+                 << queryStringTempView;
         FwdSqlQuery(m_database, queryStringTempView).execPrepared();
     }
 
@@ -166,6 +167,7 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
 
+    qDebug() << "[SMARTIES] [LOCKED & NOT LOCKED] [DISPLAY TRACKS]";
     setTable(tableName,
             LIBRARYTABLE_ID,
             columns,

@@ -38,6 +38,7 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     void dataUpdated(const QVariantList& updatedData);
     void requestPreviousSmarties();
     void requestNextSmarties();
+    void requestNewSmarties();
 
   public slots:
     void connectConditions();
