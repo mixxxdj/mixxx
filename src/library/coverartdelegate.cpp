@@ -136,7 +136,7 @@ void CoverArtDelegate::paintItem(
             // Cache miss
             if (m_inhibitLazyLoading) {
                 // We are requesting cache-only covers and got a cache
-                // miss. Maintain them in a list for later lookup
+                // miss. Record row in a list for later lookup.
                 if (!m_cacheMissRows.contains(index.row())) {
                     cleanCacheMissRows();
                     m_cacheMissRows.insert(index.row());
