@@ -1873,17 +1873,6 @@ install(
     "${MIXXX_INSTALL_DATADIR}"
 )
 
-# Translation files
-install(
-  DIRECTORY
-    "${CMAKE_CURRENT_SOURCE_DIR}/res/translations"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-  FILES_MATCHING PATTERN
-    "*.qm"
-)
-
-
 # Font files
 #
 # Font installation is only enabled on Windows and macOS, because on Linux/BSD
@@ -3140,6 +3129,64 @@ elseif(WIN32)
   endif()
 endif()
 
+# Mixxx translation files
+file(GLOB MIXXX_TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/translations/*.ts")
+message(VERBOSE "Mixxx translation files: ${MIXXX_TS_FILES}")
+
+if(QT6)
+  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
+  set_source_files_properties(
+    ${MIXXX_TS_FILES}
+    PROPERTIES OUTPUT_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/res/translations"
+  )
+  if("${QT_VERSION}" VERSION_GREATER_EQUAL "6.7")
+    qt_add_lrelease(
+      TS_FILES ${MIXXX_TS_FILES}
+      LRELEASE_TARGET mixxx-translations
+      EXCLUDE_FROM_ALL
+      NO_GLOBAL_TARGET
+      QM_FILES_OUTPUT_VARIABLE MIXXX_QM_FILES
+      OPTIONS -nounfinished
+    )
+    add_dependencies(mixxx mixxx-translations)
+  else()
+    qt_add_lrelease(
+      mixxx
+      TS_FILES ${MIXXX_TS_FILES}
+      NO_GLOBAL_TARGET
+      QM_FILES_OUTPUT_VARIABLE MIXXX_QM_FILES
+      OPTIONS -nounfinished
+    )
+  endif()
+else()
+  find_program(LRELEASE_EXECUTABLE "lrelease")
+  if(LRELEASE_EXECUTABLE)
+    message(STATUS "Found lrelease: ${LRELEASE_EXECUTABLE}")
+  else()
+    message(FATAL_ERROR "Could NOT find lrelease (missing executable)")
+  endif()
+
+  set(MIXXX_QM_FILES "")
+  foreach(TS_FILE ${MIXXX_TS_FILES})
+    string(REGEX REPLACE "[.]ts$" ".qm" QM_FILE "${TS_FILE}")
+    add_custom_command(
+      OUTPUT "${QM_FILE}"
+      DEPENDS "${TS_FILE}"
+      COMMAND "${LRELEASE_EXECUTABLE}" -nounfinished "${TS_FILE}" -qm "${QM_FILE}"
+    )
+    list(APPEND MIXXX_QM_FILES "${QM_FILE}")
+  endforeach()
+  add_custom_target(mixxx-translations DEPENDS ${MIXXX_QM_FILES})
+  add_dependencies(mixxx mixxx-translations)
+endif()
+install(
+  FILES
+    ${MIXXX_QM_FILES}
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}/translations"
+)
+
+# Qt translation files
 if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
