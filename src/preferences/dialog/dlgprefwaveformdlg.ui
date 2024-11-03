@@ -548,7 +548,7 @@ Select from different types of displays for the waveform, which differ primarily
        </item>
       </layout>
      </item>
-     <item row="14" column="1" colspan="2">
+     <item row="12" column="1" colspan="2">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires a waveform type marked "(GLSL)".</string>
@@ -558,7 +558,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="15" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="cachedWaveforms">
        <property name="text">
         <string>Caching</string>
@@ -568,7 +568,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="15" column="1" colspan="3">
+     <item row="13" column="1" colspan="3">
       <layout class="QGridLayout" name="cachingGridLayout">
        <item row="4" column="0">
         <widget class="QPushButton" name="clearCachedWaveforms">
@@ -620,7 +620,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="17" column="0" colspan="4">
+     <item row="14" column="0" colspan="4">
       <widget class="QGroupBox" name="openGLStatus">
        <property name="title">
         <string>OpenGL status</string>
