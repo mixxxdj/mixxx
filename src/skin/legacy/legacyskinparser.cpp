@@ -2567,8 +2567,23 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
     pWidget->appendBaseTooltip(tooltip);
 }
 
-QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
-    return m_pContext->selectString(node, "LaunchImageStyle");
+QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& skinDoc) {
+    QString schemeLaunchImageStyle;
+    // Check if the skins has color schemes
+    const QDomNode colorSchemeNode =
+            ColorSchemeParser::findConfiguredColorSchemeNode(
+                    skinDoc.toElement(),
+                    m_pConfig);
+    if (!colorSchemeNode.isNull()) {
+        // Check if the selected scheme has a <LaunchImageStyle> node with a string
+        schemeLaunchImageStyle = m_pContext->selectString(colorSchemeNode, "LaunchImageStyle");
+    }
+    if (!schemeLaunchImageStyle.isEmpty()) {
+        return schemeLaunchImageStyle;
+    } else {
+        // Look for the skin's general LaunchImage style
+        return m_pContext->selectString(skinDoc, "LaunchImageStyle");
+    }
 }
 
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
