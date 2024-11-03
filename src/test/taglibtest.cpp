@@ -84,6 +84,7 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
             MixxxTest::getOrInitTestDir().filePath(QStringLiteral("id3-test-data/empty.mp3")),
             tmpFileName);
 
+    // Access the MP3 file indirectly via a symlink when reading & writing the tags
     const QString linkFileName = tempDir.filePath("no_id3v1_mp3_link");
     EXPECT_TRUE(QFile::link(tmpFileName, linkFileName));
 
@@ -103,7 +104,7 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
 
     qDebug() << "Setting track title";
 
-    // Write metadata -> only an ID3v2 tag should be added
+    // Write metadata (via the symlink) -> only an ID3v2 tag should be added
     mixxx::TrackMetadata trackMetadata;
     trackMetadata.refTrackInfo().setTitle(QStringLiteral("title"));
     const auto exported =
@@ -122,9 +123,11 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
         EXPECT_FALSE(mixxx::taglib::hasAPETag(mpegFile));
     }
 
+    // Verify that the symlink still exists and still points to the correct file
     auto linkFileInfoAfter = QFileInfo(linkFileName);
 
     EXPECT_TRUE(linkFileInfoAfter.exists());
     EXPECT_EQ(linkFileInfoAfter.canonicalFilePath().toStdString(), tmpFileName.toStdString());
+    EXPECT_TRUE(linkFileInfoAfter.isSymLink());
 }
 #endif
