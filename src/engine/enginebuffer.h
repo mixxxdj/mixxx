@@ -137,10 +137,10 @@ class EngineBuffer : public EngineObject {
     void requestSyncMode(SyncMode mode);
 
     // The process methods all run in the audio callback.
-    void process(CSAMPLE* pOut, const int iBufferSize) override;
-    void processSlip(int iBufferSize);
+    void process(CSAMPLE* pOut, const std::size_t bufferSize) override;
+    void processSlip(std::size_t bufferSize);
     void postProcessLocalBpm();
-    void postProcess(const int iBufferSize);
+    void postProcess(const std::size_t bufferSize);
 
     /// Returns the seek position iff a seek is currently queued but not yet
     /// processed. If no seek was queued, and invalid frame position is returned.
@@ -264,9 +264,9 @@ class EngineBuffer : public EngineObject {
     void addControl(EngineControl* pControl);
 
     void enableIndependentPitchTempoScaling(bool bEnable,
-                                            const int iBufferSize);
+            const std::size_t bufferSize);
 
-    void updateIndicators(double rate, int iBufferSize);
+    void updateIndicators(double rate, std::size_t bufferSize);
 
     void hintReader(const double rate);
 
@@ -278,7 +278,7 @@ class EngineBuffer : public EngineObject {
     // Read one buffer from the current scaler into the crossfade buffer.  Used
     // for transitioning from one scaler to another, or reseeking a scaler
     // to prevent pops.
-    void readToCrossfadeBuffer(const int iBufferSize);
+    void readToCrossfadeBuffer(const std::size_t bufferSize);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(mixxx::audio::FramePos playpos);
@@ -294,7 +294,7 @@ class EngineBuffer : public EngineObject {
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput,
-            const int iBufferSize,
+            const std::size_t bufferSize,
             mixxx::audio::SampleRate sampleRate);
 
     // Holds the name of the control group
@@ -381,7 +381,7 @@ class EngineBuffer : public EngineObject {
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider
-    int m_iSamplesSinceLastIndicatorUpdate;
+    std::size_t m_samplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
     mixxx::audio::FramePos m_slipPos;
@@ -483,7 +483,7 @@ class EngineBuffer : public EngineObject {
     // to eliminate clicks and pops.
     CSAMPLE* m_pCrossfadeBuffer;
     bool m_bCrossfadeReady;
-    int m_iLastBufferSize;
+    std::size_t m_lastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };

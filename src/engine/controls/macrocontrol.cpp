@@ -81,10 +81,10 @@ MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, in
 
 // FIXME(xeruf) Jumps while paused (e.g. via GotoAndStop) are not properly recorded
 // since this function is not called
-void MacroControl::process(const double dRate,
+void MacroControl::process(const double rate,
         mixxx::audio::FramePos currentPosition,
-        const int iBufferSize) {
-    Q_UNUSED(dRate);
+        const std::size_t bufferSize) {
+    Q_UNUSED(rate);
     if (m_queuedJumpTarget.value() >= 0) {
         // if a cue press doesn't change the position, notifySeek isn't called,
         // thus m_queuedJumpTarget isn't reset
@@ -103,8 +103,8 @@ void MacroControl::process(const double dRate,
         // The process method is called roughly every iBufferSize frames, the
         // tolerance range is double that to be safe. It is ahead of the position
         // because the seek is executed in the next EngineBuffer process cycle.
-        if (currentPosition > nextAction.getSourcePosition() - iBufferSize &&
-                currentPosition < nextAction.getSourcePosition() + iBufferSize) {
+        if (currentPosition > nextAction.getSourcePosition() - bufferSize &&
+                currentPosition < nextAction.getSourcePosition() + bufferSize) {
             seekExact(nextAction.getTargetPosition());
             m_nextActionIndex = m_nextActionIndex.value() + 1;
             if (m_nextActionIndex == m_pMacro->size()) {

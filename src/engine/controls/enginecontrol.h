@@ -52,9 +52,9 @@ class EngineControl : public QObject {
     /// See the above comments for information about guarantees that hold during this call.
     /// An EngineControl can perform any upkeep operations necessary here.
     /// @param dRate current playback rate in audio frames per second
-    virtual void process(const double dRate,
+    virtual void process(const double rate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize);
+            const std::size_t bufferSize);
 
     /// hintReader allows the EngineControl to provide hints to the reader
     /// to indicate that the given portion of a song

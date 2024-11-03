@@ -14,9 +14,9 @@ class MacroControl : public EngineControl {
     MacroControl(const QString& group, UserSettingsPointer pConfig, int slot);
 
     void trackLoaded(TrackPointer pNewTrack) override;
-    void process(const double dRate,
+    void process(const double rate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize) override;
+            const std::size_t bufferSize) override;
     void notifySeek(mixxx::audio::FramePos position) override;
 
     bool isRecording() const;

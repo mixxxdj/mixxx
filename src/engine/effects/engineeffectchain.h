@@ -40,7 +40,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            const unsigned int numSamples,
+            const std::size_t numSamples,
             const mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             bool fadeout);
