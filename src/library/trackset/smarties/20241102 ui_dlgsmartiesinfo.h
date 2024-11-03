@@ -116,7 +116,6 @@ class Ui_dlgSmartiesInfo {
     QPushButton* nextButton;
     QPushButton* applyButton;
     QPushButton* okButton;
-    QPushButton* cancelButton;
 
     void setupUi(QDialog* dlgSmartiesInfo) {
         if (dlgSmartiesInfo->objectName().isEmpty())
@@ -544,11 +543,6 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutButtons->addWidget(okButton);
 
-        cancelButton = new QPushButton(dlgSmartiesInfo);
-        cancelButton->setObjectName("cancelButton");
-
-        horizontalLayoutButtons->addWidget(cancelButton);
-
         verticalLayout->addLayout(horizontalLayoutButtons);
 
         retranslateUi(dlgSmartiesInfo);
@@ -581,7 +575,6 @@ class Ui_dlgSmartiesInfo {
         nextButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Next", nullptr));
         applyButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Apply", nullptr));
         okButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "OK", nullptr));
-        cancelButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Cancel", nullptr));
     } // retranslateUi
 };
 

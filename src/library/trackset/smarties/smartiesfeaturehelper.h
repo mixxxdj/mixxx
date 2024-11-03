@@ -20,6 +20,7 @@ class SmartiesFeatureHelper : public QObject {
     SmartiesId createEmptySmarties();
     //    SmartiesId createEmptySmartiesFromSearch(QString NewSmartiesName);
     //    SmartiesId createEmptySmartiesFromSearch();
+    SmartiesId createEmptySmartiesFromUI();
     SmartiesId createEmptySmartiesFromSearch(const QString& text);
     SmartiesId duplicateSmarties(const Smarties& oldSmarties);
 

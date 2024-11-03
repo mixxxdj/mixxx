@@ -1,15 +1,26 @@
 
 #include "library/trackset/smarties/dlgsmartiesinfo.h"
+// #include "library/trackset/smarties/ui_dlgsmartiesinfo.h"
+
+#include <QDebug>
 
 #include "moc_dlgsmartiesinfo.cpp"
 
 dlgSmartiesInfo::dlgSmartiesInfo(
+        //        QWidget* parent,
+        SmartiesFeature* feature,
         QWidget* parent)
-        : QDialog(parent) {
+        : QDialog(parent),
+          m_feature(feature),
+          m_isUpdatingUI(false) {
     setupUi(this);
+
+    connect(m_feature,
+            &SmartiesFeature::updateSmartiesData,
+            this,
+            &dlgSmartiesInfo::onUpdateSmartiesData);
+
     initializeConditionState(); // Initialize the condition states on UI load
-    connect(nextButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onNextButtonClicked);
-    connect(previousButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onPreviousButtonClicked);
 
     // Connect signals to dynamically adjust condition state when fields change
     for (int i = 0; i < 12; ++i) {
@@ -42,7 +53,15 @@ dlgSmartiesInfo::dlgSmartiesInfo(
 }
 
 void dlgSmartiesInfo::init(const QVariantList& smartiesData) {
-    qDebug() << "Initializing with data:" << smartiesData;
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> Initializing with data:" << smartiesData;
+    populateUI(smartiesData);
+}
+
+void dlgSmartiesInfo::onUpdateSmartiesData(const QVariantList& smartiesData) {
+    m_isUpdatingUI = true; // Set the flag to indicate UI is being updated
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> SIGNAL RCVD Received Signal from "
+                "feature -> Initializing with data:"
+             << smartiesData;
     populateUI(smartiesData);
 }
 
@@ -178,6 +197,11 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
             &QPushButton::clicked,
             this,
             &dlgSmartiesInfo::onOKButtonClicked);
+    connect(
+            cancelButton,
+            &QPushButton::clicked,
+            this,
+            &dlgSmartiesInfo::onCancelButtonClicked);
 }
 
 void dlgSmartiesInfo::connectConditions() {
@@ -211,7 +235,7 @@ void dlgSmartiesInfo::connectConditions() {
 }
 
 QVariantList dlgSmartiesInfo::collectUIChanges() const {
-    qDebug() << "CollectUIChanges Started!";
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> CollectUIChanges Started!";
     QVariantList updatedData;
     updatedData.append(lineEditID->text());
     updatedData.append(lineEditName->text());
@@ -241,7 +265,8 @@ QVariantList dlgSmartiesInfo::collectUIChanges() const {
                 QString("comboBoxCondition%1Combiner").arg(i))
                                    ->currentText();
 
-        qDebug() << "Collecting Condition" << i << ":"
+        qDebug() << "[SMARTIES][EDIT DLG]---> Collecting Condition "
+                 << i << ":"
                  << "Field:" << field
                  << "Operator:" << op
                  << "Value:" << value
@@ -252,44 +277,56 @@ QVariantList dlgSmartiesInfo::collectUIChanges() const {
         updatedData.append(value);
         updatedData.append(combiner);
     }
-    qDebug() << "CollectUIChanges Finished!";
-    qDebug() << "Collected data:" << updatedData;
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> CollectUIChanges Finished!";
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> Collected data:" << updatedData;
     return updatedData;
 }
 
 void dlgSmartiesInfo::onApplyButtonClicked() {
-    qDebug() << "Apply button clicked!";
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> Apply button clicked!";
     QVariantList editedData = collectUIChanges();
-    qDebug() << "Data collected for Apply:" << editedData;
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> Data collected for Apply:" << editedData;
     emit dataUpdated(editedData); // Emit signal with updated data if needed
-    qDebug() << "Data applied without closing the dialog";
-    accept();
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> SIGNAL SND -> Data applied without closing the dialog";
+    //    accept();
 }
 
 void dlgSmartiesInfo::onNewButtonClicked() {
     // Handle creating a new Smarties entry
-    qDebug() << "New button clicked!";
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> New button clicked!";
 }
 
 void dlgSmartiesInfo::onPreviousButtonClicked() {
-    emit requestPreviousSmarties(); // Emit signal to get the previous smarties
-    qDebug() << "Previous button clicked, emitted requestPreviousSmarties signal";
+    //    if (!m_isUpdatingUI) { // Only emit if not in update mode
+    emit requestPreviousSmarties();
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> SIGNAL SND -> Previous button "
+                "clicked, emitted requestPreviousSmarties signal";
+    //    }
 }
 
 void dlgSmartiesInfo::onNextButtonClicked() {
-    emit requestNextSmarties(); // Emit signal to get the next smarties
-    qDebug() << "Next button clicked, emitted requestNextSmarties signal";
+    if (!m_isUpdatingUI) { // Only emit if not in update mode
+        emit requestNextSmarties();
+        qDebug() << "[SMARTIES] [EDIT DLG] ---> SIGNAL SND -> Next button "
+                    "clicked, emitted requestNextSmarties signal";
+    }
 }
 
 void dlgSmartiesInfo::onOKButtonClicked() {
-    emit dataUpdated(smartiesData); // Emit signal with the current data
-    accept();                       // Close the dialog
-    qDebug() << "OK button clicked!";
-    qDebug() << "Data saved and dialog closed";
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> OK button clicked!";
+    QVariantList editedData = collectUIChanges();
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> Data collected for Apply:" << editedData;
+    emit dataUpdated(editedData); // Emit signal with updated data if needed
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> SIGNAL SND -> Data saved and dialog closed";
+    accept();
+}
+
+void dlgSmartiesInfo::onCancelButtonClicked() {
+    qDebug() << "[SMARTIES] [EDIT DLG] ---> Cancel button clicked!";
+    accept();
 }
 
 //  begin sifnal grey out / show next condition
-#include <QDebug> // Include this for debugging output
 
 void dlgSmartiesInfo::updateConditionState() {
     // Call this function on any change to re-evaluate enable states based on user interaction
@@ -330,15 +367,4 @@ void dlgSmartiesInfo::initializeConditionState() {
     }
 }
 
-// buttonFunctions - handle button-related functionalities
-
-void dlgSmartiesInfo::handleButtonFunctions() {
-    // Logic for handling button functionalities can go here.
-    // For example:
-    connect(applyButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onApplyButtonClicked);
-    connect(newButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onNewButtonClicked);
-    connect(previousButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onPreviousButtonClicked);
-    connect(nextButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onNextButtonClicked);
-    connect(okButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onOKButtonClicked);
-}
 //  end sifnal grey out / show next condition

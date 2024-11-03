@@ -59,15 +59,22 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
     TreeItemModel* sidebarModel() const override;
 
+  signals:
+    void updateSmartiesData(const QVariantList& smartiesData);
+
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateSmarties();
+    void slotCreateSmartiesFromUI();
+    void slotFindPreviousSmarties();
+    void slotFindNextSmarties();
     void slotCreateSmartiesFromSearch(const QString& text);
     void deleteItem(const QModelIndex& index) override;
     void renameItem(const QModelIndex& index) override;
+    void SetActiveSmartiesToLastRightClicked(const QModelIndex& index) override;
 
     // #ifdef __ENGINEPRIME__
     //   signals:
@@ -78,6 +85,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
   private slots:
     void slotDeleteSmarties();
     void slotEditSmarties();
+
     void slotRenameSmarties();
     void slotDuplicateSmarties();
     //    void slotAutoDjTrackSourceChanged();
@@ -109,6 +117,8 @@ class SmartiesFeature : public BaseTrackSetFeature {
             TreeItem* pTreeItem,
             const SmartiesSummary& smartiesSummary) const;
 
+    void selectSmartiesForEdit(SmartiesId selectedSmartiesId = SmartiesId());
+
     QModelIndex rebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
     void updateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
 
@@ -127,12 +137,14 @@ class SmartiesFeature : public BaseTrackSetFeature {
     //    dlgSmartiesInfoHelper m_dlgSmartiesInfoHelper;
     SmartiesTableModel m_smartiesTableModel;
     //    dlgSmartiesInfoHelper m_dlgSmartiesInfoHelper;
-    dlgSmartiesInfo m_dlgSmartiesInfo;
+    //    dlgSmartiesInfo m_dlgSmartiesInfo;
 
     // Stores the id of a smarties in the sidebar that is adjacent to the smarties(smartiesId).
     void storePrevSiblingSmartiesId(SmartiesId smartiesId);
+    void storeNextSiblingSmartiesId(SmartiesId smartiesId);
     // Can be used to restore a similar selection after the sidebar model was rebuilt.
     SmartiesId m_prevSiblingSmarties;
+    SmartiesId m_nextSiblingSmarties;
 
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;

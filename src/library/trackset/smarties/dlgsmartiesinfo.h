@@ -8,6 +8,7 @@
 #include "library/trackset/smarties/ui_dlgsmartiesinfo.h"
 // #include "library/trackcollectionmanager.h"
 // #include "library/trackset/smarties/dlgsmartiesinfohelper.h"
+#include "library/trackset/smarties/smartiesfeature.h"
 
 // namespace Ui {
 // class dlgSmartiesInfo;
@@ -20,6 +21,7 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
 
   public:
     explicit dlgSmartiesInfo(
+            SmartiesFeature* feature,
             QWidget* pParent = nullptr);
     //    ~dlgSmartiesInfo();
     //    void loadSmartiesData(const QList<QVariant>& smartiesData, int smartiesId);
@@ -45,7 +47,7 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     void onPreviousButtonClicked();
     void onNextButtonClicked();
     void onOKButtonClicked();
-    void handleButtonFunctions();
+    //    void handleButtonFunctions();
     void initializeConditionState();
 
     //    void saveUIChangesToData(int smartiesId, const QVariantList& smartiesData);
@@ -65,7 +67,13 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     QVariantList collectUIChanges() const;
     void onApplyButton_clicked(); // Slot for Apply button
     void onOkButton_clicked();    // Slot for OK button
+    void onCancelButtonClicked(); // Slot for OK button
+    SmartiesFeature* m_feature;
 
-    // Ui::dlgSmartiesInfo* m_pUI;
-    //    dlgSmartiesInfoHelper* m_pDlgSmartiesInfoHelper;
+    bool m_isUpdatingUI = false; // Flag to prevent signal loops
+                                 // Ui::dlgSmartiesInfo* m_pUI;
+                                 //    dlgSmartiesInfoHelper* m_pDlgSmartiesInfoHelper;
+
+  private slots:
+    void onUpdateSmartiesData(const QVariantList& smartiesData);
 };

@@ -126,8 +126,14 @@ class LibraryFeature : public QObject {
     virtual void deleteItem(const QModelIndex& index) {
         Q_UNUSED(index);
     }
-    // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
-    // This method is executed whenever you **double** click child items
+    // EVE
+    // Called in SmartiesEdit To be able to use the next/previous button
+    virtual void SetActiveSmartiesToLastRightClicked(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+    // EVE
+    //  Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
+    //  This method is executed whenever you **double** click child items
     virtual void onLazyChildExpandation(const QModelIndex& index) {
         Q_UNUSED(index);
     }

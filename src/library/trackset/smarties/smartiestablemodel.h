@@ -18,6 +18,8 @@ class SmartiesTableModel final : public TrackSetTableModel {
         return m_selectedSmarties;
     }
 
+    void loadSmartiesList();
+
     void selectSmarties2QVL(SmartiesId smartiesId, QVariantList& smartiesData);
     //    void selectSmarties2QVL(SmartiesId smartiesId, const QVariantList& smartiesData);
     void saveQVL2Smarties(SmartiesId smartiesId, const QVariantList& smartiesData);
@@ -49,6 +51,7 @@ class SmartiesTableModel final : public TrackSetTableModel {
     QString modelKey(bool noSearch) const override;
 
   private:
+    QList<QVariantList> m_smartiesList;
     SmartiesId m_selectedSmarties;
     QHash<SmartiesId, QString> m_searchTexts;
 };
