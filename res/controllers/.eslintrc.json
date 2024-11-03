@@ -19,6 +19,7 @@
     "Controller": "readonly",
     "Button": "readonly",
     "Control": "readonly",
-    "Deck": "readonly"
+    "Deck": "readonly",
+    "pcon": "readonly"
   }
 }

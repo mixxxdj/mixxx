@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4+">
+    <info>
+        <name>Pioneer Hardware Unlock</name>
+        <author>Swiftb0y</author>
+        <description>"Unlocks" some functions pioneer DJ locks behind licensing, supported (but untested) devices: CDJ-2000NXS2, DJM-900NXS2, CDJ-TOUR1, DJM-TOUR1, XDJ-1000MK2, DJM-450, DJM-250MK2, DJM-750MK2, DJM-V10, XDJ-XZ </description>
+        <manual></manual>
+        <devices>
+            <product protocol="hid" vendor_id="" product_id="" usage_page="" usage="" interface_number="" />
+            <!-- add more once we get to know them -->
+        </devices>
+        <controller id="PioneerUnlock">
+        <scriptfiles>
+            <file functionprefix="" filename="libpcon.js"/>
+            <file filename="Pioneer-HID-unlock-scripts.js" functionprefix="PioneerUnlock"/>
+        </scriptfiles>
+    </controller>
+    </info>
+</MixxxControllerPreset>
