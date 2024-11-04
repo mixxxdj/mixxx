@@ -646,6 +646,10 @@ reapplying those migrations.
       condition12_operator VARCHAR(16),
       condition12_value VARCHAR(255),
       condition12_combiner VARCHAR(4));
+      CREATE TABLE smarties_tracks (
+      smarties_id INTEGER NOT NULL REFERENCES smarties(id),
+      track_id INTEGER NOT NULL REFERENCES "library_old"(id),
+      UNIQUE (smarties_id, track_id))
     </sql>
   </revision>
 </schema>
