@@ -648,7 +648,7 @@ void SmartiesFeature::slotEditSmarties() {
 
         // Initialize dlgSmartiesInfo & populate UI dialog
         // dlgSmartiesInfo infoDialog;
-        dlgSmartiesInfo infoDialog(this); // Pass 'this' to provide the SmartiesFeature instance
+        dlgSmartiesInfo infoDialog(this); // Pass this to provide the SmartiesFeature instance
         infoDialog.init(smartiesData);
         qDebug() << "[SMARTIES] [EDIT] - START ----- INIT DIALOG ";
         //        emit updateSmartiesData(smartiesData);
