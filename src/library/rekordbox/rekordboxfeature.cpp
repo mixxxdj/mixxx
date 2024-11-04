@@ -10,6 +10,7 @@
 #include <QString>
 #include <QTextCodec>
 #include <QtDebug>
+#include <mixer/playerinfo.h>
 
 #include "engine/engine.h"
 #include "library/dao/trackschema.h"
@@ -96,7 +97,9 @@ bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
             "    rating INTEGER,"
             "    analyze_path TEXT UNIQUE,"
             "    device TEXT,"
-            "    color INTEGER"
+            "    color INTEGER,"
+            "    played INTEGER,"
+            "    timesplayed INTEGER"
             ");");
 
     if (!query.exec()) {
@@ -466,10 +469,10 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     query.prepare("INSERT INTO " + kRekordboxLibraryTable +
             " (rb_id, artist, title, album, year,"
             "genre,comment,tracknumber,bpm, bitrate,duration, location,"
-            "rating,key,analyze_path,device,color) VALUES (:rb_id, :artist, "
+            "rating,key,analyze_path,device,color, timesplayed, played) VALUES (:rb_id, :artist, "
             ":title, :album, :year,:genre,"
             ":comment, :tracknumber,:bpm, :bitrate,:duration, :location,"
-            ":rating,:key,:analyze_path,:device,:color)");
+            ":rating,:key,:analyze_path,:device,:color, 0, 0)");
 
     int audioFilesCount = 0;
 
@@ -1096,6 +1099,10 @@ RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
                   kRekordboxPlaylistsTable,
                   kRekordboxPlaylistTracksTable,
                   trackSource) {
+    connect(&PlayerInfo::instance(),
+        &PlayerInfo::currentPlayingTrackChanged,
+        this,
+        &RekordboxPlaylistModel::onPlayingTrackChanged);
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -1192,6 +1199,18 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
                 m_columnIndexBySortColumnId[static_cast<int>(sortColumn)],
                 sortColumn);
     }
+}
+
+QVariant RekordboxPlaylistModel::rawValue(const QModelIndex &index) const {
+    const int column = index.column();
+
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
+        int rbTrackId = index.sibling(index.row(), 0).data().toInt();
+        if (m_played_track_ids.contains(rbTrackId)) {
+            return QVariant(1);
+        }
+    }
+    return BaseExternalPlaylistModel::rawValue(index);
 }
 
 TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
@@ -1294,7 +1313,28 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
 
 bool RekordboxPlaylistModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             BaseExternalPlaylistModel::isColumnInternal(column);
+}
+
+void RekordboxPlaylistModel::onPlayingTrackChanged(TrackPointer pTrack) {
+    if (pTrack) {
+        QSqlQuery query(m_database);
+        query.prepare("select id from " + kRekordboxLibraryTable + " where location=:location");
+        query.bindValue(":location", pTrack->getLocation());
+
+        if (!query.exec()) {
+            return;
+        }
+        int trackId = -1;
+        while (query.next()) {
+             trackId = query.value(query.record().indexOf("id")).toInt();
+        }
+        if (trackId == -1) {
+            return;
+        }
+        m_played_track_ids.insert(trackId);
+    }
 }
 
 RekordboxFeature::RekordboxFeature(
@@ -1306,6 +1346,8 @@ RekordboxFeature::RekordboxFeature(
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
+            LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_PLAYED,
             LIBRARYTABLE_ARTIST,
             LIBRARYTABLE_TITLE,
             LIBRARYTABLE_ALBUM,
