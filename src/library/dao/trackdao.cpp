@@ -73,6 +73,15 @@ QString locationPathPrefixFromRootDir(const QDir& rootDir) {
     return mixxx::FileInfo(rootDir).location() + '/';
 }
 
+QSet<QString> collectTrackLocations(FwdSqlQuery& query) {
+    QSet<QString> locations;
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.fieldValue(locationColumn).toString());
+    }
+    return locations;
+}
+
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
@@ -261,63 +270,39 @@ QList<TrackId> TrackDAO::resolveTrackIds(
 }
 
 QSet<QString> TrackDAO::getAllTrackLocations() const {
-    QSet<QString> locations;
-    QSqlQuery query(m_database);
-    query.prepare(
-            "SELECT track_locations.location "
-            "FROM track_locations "
-            "INNER JOIN library "
-            "ON library.location = track_locations.id");
-    if (!query.exec()) {
+    FwdSqlQuery query(m_database, QStringLiteral("SELECT track_locations.location "
+                                                 "FROM track_locations "
+                                                 "INNER JOIN library "
+                                                 "ON library.location = track_locations.id"));
+    VERIFY_OR_DEBUG_ASSERT(!query.hasError() && query.execPrepared()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        return {};
     }
-
-    int locationColumn = query.record().indexOf("location");
-    while (query.next()) {
-        locations.insert(query.value(locationColumn).toString());
-    }
-    return locations;
+    return collectTrackLocations(query);
 }
 
 QSet<QString> TrackDAO::getAllExistingTrackLocations() const {
-    QSet<QString> locations;
-    QSqlQuery query(m_database);
-    query.prepare(
-            "SELECT track_locations.location "
-            "FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE fs_deleted=0");
-    if (!query.exec()) {
+    FwdSqlQuery query(m_database, QStringLiteral("SELECT track_locations.location "
+                                                 "FROM library INNER JOIN track_locations "
+                                                 "ON library.location = track_locations.id "
+                                                 "WHERE fs_deleted=0"));
+    VERIFY_OR_DEBUG_ASSERT(!query.hasError() && query.execPrepared()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        return {};
     }
-
-    int locationColumn = query.record().indexOf("location");
-    while (query.next()) {
-        locations.insert(query.value(locationColumn).toString());
-    }
-    return locations;
+    return collectTrackLocations(query);
 }
 
 QSet<QString> TrackDAO::getAllMissingTrackLocations() const {
-    QSet<QString> locations;
-    QSqlQuery query(m_database);
-    query.prepare(
-            "SELECT track_locations.location "
-            "FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE fs_deleted=1");
-    if (!query.exec()) {
+    FwdSqlQuery query(m_database, QStringLiteral("SELECT track_locations.location "
+                                                 "FROM library INNER JOIN track_locations "
+                                                 "ON library.location = track_locations.id "
+                                                 "WHERE fs_deleted=1"));
+    VERIFY_OR_DEBUG_ASSERT(!query.hasError() && query.execPrepared()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        return {};
     }
-
-    int locationColumn = query.record().indexOf("location");
-    while (query.next()) {
-        locations.insert(query.value(locationColumn).toString());
-    }
-    return locations;
+    return collectTrackLocations(query);
 }
 
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
