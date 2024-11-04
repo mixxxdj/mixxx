@@ -3,6 +3,7 @@
 #include <QChar>
 #include <QDir>
 #include <QFileInfo>
+#include <QThread>
 #include <QtDebug>
 
 #ifdef __SQLITE3__

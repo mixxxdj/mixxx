@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QHash>
-#include <QtSql>
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"

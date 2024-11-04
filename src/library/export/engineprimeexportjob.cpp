@@ -13,7 +13,6 @@
 #include "library/trackset/crate/crate.h"
 #include "moc_engineprimeexportjob.cpp"
 #include "track/track.h"
-#include "util/optional.h"
 #include "util/thread_affinity.h"
 #include "waveform/waveformfactory.h"
 
@@ -184,7 +183,7 @@ void exportMetadata(
 
     snapshot.track_number = pTrack->getTrackNumber().toInt();
     if (snapshot.track_number == 0) {
-        snapshot.track_number = djinterop::stdx::nullopt;
+        snapshot.track_number = std::nullopt;
     }
 
     snapshot.duration = std::chrono::milliseconds{

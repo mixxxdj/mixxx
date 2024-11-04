@@ -31,12 +31,9 @@
 #ifdef __RUBBERBAND__
 #include "engine/bufferscalers/rubberbandworkerpool.h"
 #endif
-#include "waveform/visualsmanager.h"
 
-class EngineSync;
-
-using ::testing::_;
 using ::testing::Return;
+using ::testing::_;
 
 #define EXPECT_FRAMEPOS_EQ(pos1, pos2)                    \
     EXPECT_EQ((pos1).isValid(), (pos2).isValid());        \
@@ -263,10 +260,9 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pEngineMixer->process(kProcessBufferSize);
     }
 
-    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
-
+    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMixer* m_pEngineMixer;
