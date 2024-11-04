@@ -79,7 +79,7 @@ static inline const char* FindStr4End(const char* p, const char* end) {
 }
 
 // round up to the next highest multiple of 4. unless x is already a multiple of 4
-static inline uint32 RoundUp4(uint32 x) {
+static inline uint32 RoundUp4_UInt32(uint32 x) {
     return (x + 3) & ~((uint32)0x03);
 }
 
@@ -251,7 +251,7 @@ float ReceivedMessageArgument::AsFloatUnchecked() const {
 
     return u.f;
 #else
-    return *(float*)argument_;
+    return *(float*)argumentPtr_;
 #endif
 }
 
@@ -347,7 +347,7 @@ double ReceivedMessageArgument::AsDoubleUnchecked() const {
 
     return u.d;
 #else
-    return *(double*)argument_;
+    return *(double*)argumentPtr_;
 #endif
 }
 
@@ -470,7 +470,8 @@ void ReceivedMessageArgumentIterator::Advance() {
     case BLOB_TYPE_TAG: {
         // treat blob size as an unsigned int for the purposes of this calculation
         uint32 blobSize = ToUInt32(value_.argumentPtr_);
-        value_.argumentPtr_ = value_.argumentPtr_ + osc::OSC_SIZEOF_INT32 + RoundUp4(blobSize);
+        value_.argumentPtr_ = value_.argumentPtr_ + osc::OSC_SIZEOF_INT32 +
+                RoundUp4_UInt32(blobSize);
     } break;
 
     case ARRAY_BEGIN_TYPE_TAG:
@@ -621,7 +622,7 @@ void ReceivedMessage::Init(const char* message, osc_bundle_element_size_t size) 
 
                     // treat blob size as an unsigned int for the purposes of this calculation
                     uint32 blobSize = ToUInt32(argument);
-                    argument = argument + osc::OSC_SIZEOF_INT32 + RoundUp4(blobSize);
+                    argument = argument + osc::OSC_SIZEOF_INT32 + RoundUp4_UInt32(blobSize);
                     if (argument > end)
                         MalformedMessageException("arguments exceed message size");
                 } break;
