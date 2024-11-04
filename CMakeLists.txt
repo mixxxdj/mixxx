@@ -1010,6 +1010,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackset/smarties/smartiesfeaturehelper.cpp
   src/library/trackset/smarties/smartiesstorage.cpp
   src/library/trackset/smarties/smartiestablemodel.cpp
+  src/library/trackset/smarties/dlgsmartiesinfo.cpp
   src/library/trackset/smarties/dlgsmartiesinfo.ui
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
@@ -1366,6 +1367,7 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/engine/channelhandle.h
   src/engine/engine.h
   src/errordialoghandler.h
+  src/library/trackset/smarties/dlgsmartiesinfo.h
   src/track/track.h
   src/track/track_decl.h
   src/track/trackid.h
