@@ -107,13 +107,6 @@ class OutboundPacketStream {
     OutboundPacketStream& operator<<(const InfinitumType& rhs);
     OutboundPacketStream& operator<<(int32 rhs);
 
-#if !(defined(__x86_64__) || defined(_M_X64))
-    OutboundPacketStream& operator<<(int rhs) {
-        *this << (int32)rhs;
-        return *this;
-    }
-#endif
-
     OutboundPacketStream& operator<<(float rhs);
     OutboundPacketStream& operator<<(char rhs);
     OutboundPacketStream& operator<<(const RgbaColor& rhs);

@@ -1,4 +1,5 @@
-
+// Just a comment to het something changed in the pr so the mac os 12
+// // compiler would retry compiling after the brownout
 #include "oscreceiver.h"
 
 #include <QThread>
