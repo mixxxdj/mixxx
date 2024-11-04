@@ -1,5 +1,6 @@
 #include "library/rekordbox/rekordboxfeature.h"
 
+#include <mixer/playerinfo.h>
 #include <mp3guessenc.h>
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
@@ -10,7 +11,6 @@
 #include <QString>
 #include <QTextCodec>
 #include <QtDebug>
-#include <mixer/playerinfo.h>
 
 #include "engine/engine.h"
 #include "library/dao/trackschema.h"
@@ -1100,9 +1100,9 @@ RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
                   kRekordboxPlaylistTracksTable,
                   trackSource) {
     connect(&PlayerInfo::instance(),
-        &PlayerInfo::currentPlayingTrackChanged,
-        this,
-        &RekordboxPlaylistModel::onPlayingTrackChanged);
+            &PlayerInfo::currentPlayingTrackChanged,
+            this,
+            &RekordboxPlaylistModel::onPlayingTrackChanged);
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -1201,7 +1201,7 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
     }
 }
 
-QVariant RekordboxPlaylistModel::rawValue(const QModelIndex &index) const {
+QVariant RekordboxPlaylistModel::rawValue(const QModelIndex& index) const {
     const int column = index.column();
 
     if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
@@ -1328,7 +1328,7 @@ void RekordboxPlaylistModel::onPlayingTrackChanged(TrackPointer pTrack) {
         }
         int trackId = -1;
         while (query.next()) {
-             trackId = query.value(query.record().indexOf("id")).toInt();
+            trackId = query.value(query.record().indexOf("id")).toInt();
         }
         if (trackId == -1) {
             return;
