@@ -13,19 +13,8 @@
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
-
-// eve db test
-// #include "library/dao/analysisdao.h"
-// #include "library/dao/cuedao.h"
-// #include "library/dao/directorydao.h"
-// #include "library/dao/libraryhashdao.h"
-// #include "library/dao/playlistdao.h"
-// #include "library/dao/trackdao.h"
-// #include "library/trackset/crate/cratestorage.h"
 #include "library/trackset/smarties/dlgsmartiesinfo.h"
 #include "library/trackset/smarties/smartiesstorage.h"
-// #include "util/thread_affinity.h"
-//  eve db test
 
 // forward declaration(s)
 class Library;

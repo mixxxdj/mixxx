@@ -99,7 +99,7 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromUI() {
     Smarties newSmarties;
     for (;;) {
         //        bool ok = false;
-        auto newName = proposedSmartiesName;
+        // auto newName = proposedSmartiesName;
         //        auto newName =
         //                        QInputDialog::getText(
         //                        nullptr,
