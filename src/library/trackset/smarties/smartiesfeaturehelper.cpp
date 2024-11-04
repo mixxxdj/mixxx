@@ -94,8 +94,8 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
 // EVE
 
 SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromUI() {
-    const QString proposedSmartiesName =
-            proposeNameForNewSmarties(tr("New Smarties From Edit"));
+    //    const QString proposedSmartiesName =
+    //            proposeNameForNewSmarties(tr("New Smarties From Edit"));
     Smarties newSmarties;
     for (;;) {
         //        bool ok = false;
