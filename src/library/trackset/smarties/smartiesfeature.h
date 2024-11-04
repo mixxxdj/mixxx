@@ -8,13 +8,13 @@
 #include <QVariant>
 
 #include "library/trackset/basetracksetfeature.h"
+#include "library/trackset/smarties/dlgsmartiesinfo.h"
 #include "library/trackset/smarties/smarties.h"
+#include "library/trackset/smarties/smartiesstorage.h"
 #include "library/trackset/smarties/smartiestablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
-#include "library/trackset/smarties/dlgsmartiesinfo.h"
-#include "library/trackset/smarties/smartiesstorage.h"
 
 // forward declaration(s)
 class Library;
