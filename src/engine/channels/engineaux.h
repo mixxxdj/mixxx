@@ -18,7 +18,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     ActiveState updateActiveState() override;
 
     /// Called by EngineMixer whenever is requesting a new buffer of audio.
-    void process(CSAMPLE* pOutput, const int iBufferSize) override;
+    void process(CSAMPLE* pOutput, const std::size_t bufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
     /// This is called by SoundManager whenever there are new samples from the

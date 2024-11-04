@@ -68,7 +68,7 @@ class EngineMixer : public QObject, public AudioSource {
     void onInputConnected(const AudioInput& input);
     void onInputDisconnected(const AudioInput& input);
 
-    void process(const int iBufferSize);
+    void process(const std::size_t bufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
@@ -257,13 +257,13 @@ class EngineMixer : public QObject, public AudioSource {
     // m_activeBusChannels, m_activeHeadphoneChannels, and
     // m_activeTalkoverChannels with each channel that is active for the
     // respective output.
-    void processChannels(int iBufferSize);
+    void processChannels(std::size_t bufferSize);
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
-    void applyMainEffects(int bufferSize);
+    void applyMainEffects(std::size_t bufferSize);
     void processHeadphones(
             const CSAMPLE_GAIN mainMixGainInHeadphones,
-            int iBufferSize);
+            std::size_t bufferSize);
     bool sidechainMixRequired() const;
 
     // non-owning. lifetime bound to EffectsManager

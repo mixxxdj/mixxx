@@ -50,6 +50,7 @@
 #include "util/debug.h"
 #include "util/desktophelper.h"
 #include "util/sandbox.h"
+#include "util/scopedoverridecursor.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -1168,6 +1169,7 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
+    ScopedWaitCursor cursor;
     // safe geometry for later restoration
     const QRect initGeometry = geometry();
 
