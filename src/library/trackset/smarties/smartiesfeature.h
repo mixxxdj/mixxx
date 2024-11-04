@@ -22,7 +22,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackset/crate/cratestorage.h"
-#include "library/trackset/smarties/dlgSmartiesinfohelper.h"
 #include "library/trackset/smarties/dlgsmartiesinfo.h"
 #include "library/trackset/smarties/smartiesstorage.h"
 #include "util/thread_affinity.h"

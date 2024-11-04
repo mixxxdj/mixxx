@@ -26,7 +26,6 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 // #include "library/trackset/smarties/dlgsmartiesinfo.h"
-// #include "library/trackset/smarties/dlgsmartiesactions.h"
 
 namespace {
 
@@ -53,7 +52,6 @@ SmartiesFeature::SmartiesFeature(
         : BaseTrackSetFeature(pLibrary, pConfig, "SMARTIESHOME", QStringLiteral("smarties")),
           m_lockedSmartiesIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
-          //          m_dlgSmartiesInfoHelper(this, pLibrary->trackCollectionManager()),
           m_smartiesTableModel(this, pLibrary->trackCollectionManager()) {
     initActions();
 
@@ -438,15 +436,6 @@ void SmartiesFeature::slotCreateSmartiesFromSearch(const QString& text) {
     if (smartiesId.isValid()) {
         // expand Smarties and scroll to new smarties
         m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
-
-        //        DlgSmarties* smartiesscreen = new DlgSmarties;
-        //        smartiesscreen->show();
-
-        //        void MixxxMainWindow::slotOptionsPreferences() {
-        //            m_pPrefDlg->show();
-        //            m_pPrefDlg->raise();
-        //            m_pPrefDlg->activateWindow();
-        //        }
     }
 }
 
@@ -656,15 +645,6 @@ void SmartiesFeature::slotEditSmarties() {
         // qDebug() << "SlotEditSmarties -> 2nd smartiesID" << smartiesId;
         //         SmartiesId smartiesId = readLastRightClickedSmarties(smarties);
 
-        // Load data into QVariant
-        //        smartiesData.clear();
-        //        m_smartiesTableModel.selectSmarties2QVL(smartiesIdFromIndex(m_lastRightClickedIndex),
-        //        smartiesData); qDebug() << "[SMARTIES] [EDIT] - START -----
-        //        Smarties data loaded into QVariantList:" << smartiesData;
-        //        m_smartiesTableModel.selectSmarties2QVL(smartiesId,
-        //        smartiesData); qDebug() << "CONTINUE before signal : data
-        //        loaded into QVariantList:" << smartiesData; emit
-        //        updateSmartiesData(smartiesData);
 
         // Initialize dlgSmartiesInfo & populate UI dialog
         // dlgSmartiesInfo infoDialog;
