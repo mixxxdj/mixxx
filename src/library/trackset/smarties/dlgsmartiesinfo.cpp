@@ -1,9 +1,9 @@
 
 #include "library/trackset/smarties/dlgsmartiesinfo.h"
 // #include "library/trackset/smarties/ui_dlgsmartiesinfo.h"
-
 #include <QDebug>
 
+#include "library/trackset/smarties/smartiesfeature.h"
 #include "moc_dlgsmartiesinfo.cpp"
 
 dlgSmartiesInfo::dlgSmartiesInfo(

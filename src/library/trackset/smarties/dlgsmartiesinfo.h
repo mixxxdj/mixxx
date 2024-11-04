@@ -5,8 +5,10 @@
 #include <QVariantList>
 #include <QWidget>
 
+// #include "library/trackset/smarties/smartiesfeature.h"
 #include "library/trackset/smarties/ui_dlgsmartiesinfo.h"
-#include "library/trackset/smarties/smartiesfeature.h"
+
+class SmartiesFeature;
 
 class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     Q_OBJECT
@@ -30,11 +32,12 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
   public slots:
     void connectConditions();
     void updateConditionState();
-    void onApplyButtonClicked();
-    void onNewButtonClicked();
-    void onPreviousButtonClicked();
-    void onNextButtonClicked();
-    void onOKButtonClicked();
+    void onApplyButtonClicked();    // Slot for Apply button
+    void onNewButtonClicked();      // Slot for New button
+    void onPreviousButtonClicked(); // Slot for Previous button
+    void onNextButtonClicked();     // Slot for Next button
+    void onOKButtonClicked();       // Slot for OK button
+    void onCancelButtonClicked();   // Slot for Cancel button
     void initializeConditionState();
 
   private:
@@ -42,9 +45,9 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
 
     QVariantList smartiesData;
     QVariantList collectUIChanges() const;
-    void onApplyButton_clicked(); // Slot for Apply button
-    void onOkButton_clicked();    // Slot for OK button
-    void onCancelButtonClicked(); // Slot for OK button
+    //    void onApplyButtonClicked(); // Slot for Apply button
+    //    void onOkButtonClicked();    // Slot for OK button
+    //    void onCancelButtonClicked(); // Slot for OK button
     SmartiesFeature* m_feature;
 
     bool m_isUpdatingUI = false; // Flag to prevent signal loops

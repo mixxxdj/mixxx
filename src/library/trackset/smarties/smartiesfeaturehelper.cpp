@@ -98,7 +98,7 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromUI() {
             proposeNameForNewSmarties(tr("New Smarties From Edit"));
     Smarties newSmarties;
     for (;;) {
-        bool ok = false;
+        //        bool ok = false;
         auto newName = proposedSmartiesName;
         //        auto newName =
         //                        QInputDialog::getText(
