@@ -1324,6 +1324,7 @@ void RekordboxPlaylistModel::onPlayingTrackChanged(TrackPointer pTrack) {
         query.bindValue(":location", pTrack->getLocation());
 
         if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
             return;
         }
         int trackId = -1;
