@@ -1079,10 +1079,23 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             if (indices.isEmpty()) {
                 return;
             }
-            // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi
-            // can focus the respective edit field.
             m_pTrackMenu->loadTrackModelIndices(indices);
-            m_pTrackMenu->slotShowDlgTrackInfo();
+            // Pass the name of the focused column to DlgTrackInfo/~Multi
+            // so they can focus the respective edit field.
+            // We use the column of the current index (last focus cell), even
+            // it may not be part of the selection, we just assume it's in the
+            // desired column.
+            const auto currIdx = currentIndex();
+            if (currIdx.isValid()) {
+                const QString columnName = model()->headerData(
+                                                          currIdx.column(),
+                                                          Qt::Horizontal,
+                                                          TrackModel::kHeaderNameRole)
+                                                   .toString();
+                m_pTrackMenu->showDlgTrackInfo(columnName);
+            } else {
+                m_pTrackMenu->slotShowDlgTrackInfo();
+            }
         }
         return;
     }
