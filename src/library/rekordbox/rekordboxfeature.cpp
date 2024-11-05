@@ -1,6 +1,6 @@
 #include "library/rekordbox/rekordboxfeature.h"
 
-#include <mixer/playerinfo.h>
+#include "mixer/playerinfo.h"
 #include <mp3guessenc.h>
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
