@@ -4,7 +4,6 @@
 #include <QList>
 #include <QUrl>
 #include <QVector>
-#include <QtSql>
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
