@@ -1338,7 +1338,6 @@ void RekordboxPlaylistModel::onPlayingTrackChanged(TrackPointer pTrack) {
     }
     m_played_track_ids.insert(trackId);
 }
-}
 
 RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
