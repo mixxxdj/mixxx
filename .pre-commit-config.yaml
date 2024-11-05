@@ -114,7 +114,6 @@ repos:
     rev: v0.13.0
     hooks:
       - id: markdownlint-cli2
-        language_version: lts
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.29.1
     hooks:
