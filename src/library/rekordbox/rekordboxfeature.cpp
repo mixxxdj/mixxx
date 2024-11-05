@@ -1318,7 +1318,9 @@ bool RekordboxPlaylistModel::isColumnInternal(int column) {
 }
 
 void RekordboxPlaylistModel::onPlayingTrackChanged(TrackPointer pTrack) {
-    if (pTrack) {
+    if (!pTrack) {
+        return;
+    }
         QSqlQuery query(m_database);
         query.prepare("select id from " + kRekordboxLibraryTable + " where location=:location");
         query.bindValue(":location", pTrack->getLocation());
