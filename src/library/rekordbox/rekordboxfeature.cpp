@@ -1,6 +1,5 @@
 #include "library/rekordbox/rekordboxfeature.h"
 
-#include "mixer/playerinfo.h"
 #include <mp3guessenc.h>
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
@@ -20,6 +19,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "mixer/playerinfo.h"
 #include "moc_rekordboxfeature.cpp"
 #include "track/beats.h"
 #include "track/cue.h"
@@ -1321,23 +1321,23 @@ void RekordboxPlaylistModel::onPlayingTrackChanged(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
-        QSqlQuery query(m_database);
-        query.prepare("select id from " + kRekordboxLibraryTable + " where location=:location");
-        query.bindValue(":location", pTrack->getLocation());
+    QSqlQuery query(m_database);
+    query.prepare("select id from " + kRekordboxLibraryTable + " where location=:location");
+    query.bindValue(":location", pTrack->getLocation());
 
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-            return;
-        }
-        int trackId = -1;
-        while (query.next()) {
-            trackId = query.value(query.record().indexOf("id")).toInt();
-        }
-        if (trackId == -1) {
-            return;
-        }
-        m_played_track_ids.insert(trackId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
     }
+    int trackId = -1;
+    while (query.next()) {
+        trackId = query.value(query.record().indexOf("id")).toInt();
+    }
+    if (trackId == -1) {
+        return;
+    }
+    m_played_track_ids.insert(trackId);
+}
 }
 
 RekordboxFeature::RekordboxFeature(
