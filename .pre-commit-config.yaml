@@ -73,7 +73,7 @@ repos:
         files: \.m?[jt]s$
         types: [file]
         stages:
-          - commit
+          - pre-commit
           - manual
         additional_dependencies:
           - eslint@^8.48.0
@@ -89,7 +89,7 @@ repos:
         entry: python tools/clang_format.py
         require_serial: true
         stages:
-          - commit
+          - pre-commit
           - manual
         language: python
         additional_dependencies:
@@ -141,7 +141,7 @@ repos:
         types: [text]
         files: ^.*\.qss$
         stages:
-          - commit
+          - pre-commit
           - manual
       - id: changelog
         name: changelog
