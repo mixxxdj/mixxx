@@ -54,12 +54,27 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
             this, &DlgPrefKey::pluginSelected);
     setScrollSafeGuard(plugincombo);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(banalyzerenabled, &QCheckBox::checkStateChanged,
+#else
     connect(banalyzerenabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::analyzerEnabled);
+#endif
+            this,
+            &DlgPrefKey::analyzerEnabled);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(bfastAnalysisEnabled, &QCheckBox::checkStateChanged,
+#else
     connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::fastAnalysisEnabled);
+#endif
+            this,
+            &DlgPrefKey::fastAnalysisEnabled);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(breanalyzeEnabled, &QCheckBox::checkStateChanged,
+#else
     connect(breanalyzeEnabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::reanalyzeEnabled);
+#endif
+            this,
+            &DlgPrefKey::reanalyzeEnabled);
 
     connect(radioNotationOpenKey, &QRadioButton::toggled,
             this, &DlgPrefKey::setNotationOpenKey);

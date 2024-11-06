@@ -146,15 +146,27 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
      connect(checkBoxEnableReconnect,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
      connect(checkBoxLimitReconnects,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
      connect(enableCustomMetadata,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
 

@@ -27,23 +27,43 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefBeats::pluginSelected);
     connect(checkBoxAnalyzerEnabled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefBeats::analyzerEnabled);
     connect(checkBoxFixedTempo,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefBeats::fixedtempoEnabled);
     connect(checkBoxFastAnalysis,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefBeats::fastAnalysisEnabled);
     connect(checkBoxReanalyze,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefBeats::slotReanalyzeChanged);
     connect(checkBoxReanalyzeImported,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefBeats::slotReanalyzeImportedChanged);
 

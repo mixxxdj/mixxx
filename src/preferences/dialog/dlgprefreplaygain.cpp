@@ -19,7 +19,11 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
           m_enabled(kConfigKey, kReplayGainEnabled) {
     setupUi(this);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(EnableGain, &QCheckBox::checkStateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
+#else
     connect(EnableGain, &QCheckBox::stateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
+#endif
     connect(buttonGroupAnalyzer,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
             &QButtonGroup::idClicked,
@@ -49,7 +53,11 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
     setScrollSafeGuard(SliderDefaultBoost);
 
     connect(checkBoxReanalyze,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefReplayGain::slotSetReanalyze);
 

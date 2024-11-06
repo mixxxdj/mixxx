@@ -21,7 +21,11 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     RequeueIgnoreCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
     connect(RequeueIgnoreCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefAutoDJ::slotToggleRequeueIgnore);
     RequeueIgnoreTimeEdit->setTime(
@@ -54,7 +58,11 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                     : Qt::Unchecked);
     // Be ready to enable and modify the minimum number and un/check the checkbox
     connect(RandomQueueCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefAutoDJ::slotToggleRandomQueue);
     connect(RandomQueueMinimumSpinBox,

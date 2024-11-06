@@ -143,7 +143,11 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotBpmClear);
 
     connect(bpmConst,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgTrackInfo::slotBpmConstChanged);
 

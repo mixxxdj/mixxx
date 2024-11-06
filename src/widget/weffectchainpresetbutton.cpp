@@ -146,7 +146,11 @@ void WEffectChainPresetButton::populateMenu() {
                         pEffectSlot->hideParameter(pParameter);
                     }
                 };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+                connect(pCheckbox.get(), &QCheckBox::checkStateChanged, this, handler);
+#else
                 connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
+#endif
 
                 auto pAction = make_parented<QWidgetAction>(pEffectMenu);
                 pAction->setDefaultWidget(pCheckbox.get());
@@ -166,7 +170,11 @@ void WEffectChainPresetButton::populateMenu() {
                         pEffectSlot->hideParameter(pParameter);
                     }
                 };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+                connect(pCheckbox.get(), &QCheckBox::checkStateChanged, this, handler);
+#else
                 connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
+#endif
 
                 auto pAction = make_parented<QWidgetAction>(pEffectMenu);
                 pAction->setDefaultWidget(pCheckbox.get());
