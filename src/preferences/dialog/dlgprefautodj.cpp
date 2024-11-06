@@ -1,5 +1,9 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#include <QTimeZone>
+#endif
+
 #include "moc_dlgprefautodj.cpp"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
@@ -28,6 +32,13 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 #endif
             this,
             &DlgPrefAutoDJ::slotToggleRequeueIgnore);
+    /// TODO: Once we require at least Qt 6.7, remove this `setTimeZone` call
+    /// and uncomment the corresponding declarations in the UI file instead.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    RequeueIgnoreTimeEdit->setTimeZone(QTimeZone::LocalTime);
+#else
+    RequeueIgnoreTimeEdit->setTimeSpec(Qt::LocalTime);
+#endif
     RequeueIgnoreTimeEdit->setTime(
             QTime::fromString(
                     m_pConfig->getValue(
