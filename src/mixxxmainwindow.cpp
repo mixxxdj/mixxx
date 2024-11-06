@@ -332,6 +332,8 @@ void MixxxMainWindow::initialize() {
         m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
 
+    m_pPrefDlg->setStyleSheet(m_pCentralWidget->styleSheet());
+
     // Check direct rendering and warn user if they don't have it
     if (!CmdlineArgs::Instance().getSafeMode()) {
         checkDirectRendering();
@@ -1205,6 +1207,7 @@ void MixxxMainWindow::rebootMixxxView() {
         return;
     }
     m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+    m_pPrefDlg->setStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
 #ifdef __LINUX__

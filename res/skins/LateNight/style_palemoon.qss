@@ -79,7 +79,8 @@
 #SidebarCoverSplitter:handle,
 #LibrarySplitter::handle,
 #LibraryFeatureControls,
-QAbstractScrollArea::corner {
+QAbstractScrollArea::corner,
+DlgPreferences QAbstractScrollArea::corner {
   border-top: 1px solid #212123;
   border-right: 1px solid #111;
   border-bottom: 1px solid #020202;
@@ -1376,6 +1377,7 @@ WSearchLineEdit QAbstractScrollArea,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
+/*DlgPreferences QAbstractScrollArea,*/
 #GuiToggleButton[displayValue="0"],
 #RecDuration[highlight="0"],
 #BroadcastButton[displayValue="0"],
@@ -2794,7 +2796,8 @@ WTrackTableViewHeader::down-arrow {
 WEffectSelector QAbstractScrollArea QScrollBar,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar,
-WSearchLineEdit QAbstractScrollArea QScrollBar {
+WSearchLineEdit QAbstractScrollArea QScrollBar,
+DlgPreferences QAbstractScrollArea QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
@@ -2805,7 +2808,8 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
-  WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal {
+  WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal,
+  DlgPreferences QAbstractScrollArea QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
@@ -2816,7 +2820,8 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
   WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar:vertical,
-  WSearchLineEdit QAbstractScrollArea QScrollBar:vertical {
+  WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
+  DlgPreferences QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -2834,7 +2839,8 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:horizontal,
-  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal {
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal,
+  DlgPreferences QAbstractScrollArea QScrollBar::handle:horizontal {
     background-color: #333338;
     min-width: 25px;
   }
@@ -2842,7 +2848,8 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
   WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:vertical,
-  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical {
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical,
+  DlgPreferences QAbstractScrollArea QScrollBar::handle:vertical {
     background-color: #333338;
     min-height: 25px;
   }
@@ -2857,7 +2864,9 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-page,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-page,
 WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
-WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page {
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page,
+DlgPreferences QAbstractScrollArea QScrollBar::add-page,
+DlgPreferences QAbstractScrollArea QScrollBar::sub-page {
   min-width: 15px;
   min-height: 15px;
   background-color: #000;
@@ -2873,7 +2882,9 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-line,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-line,
 WSearchLineEdit QAbstractScrollArea QScrollBar::add-line,
-WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line,
+DlgPreferences QAbstractScrollArea QScrollBar::add-line,
+DlgPreferences QAbstractScrollArea QScrollBar::sub-line {
   width: 0px;
   height: 0px;
   border: 0px;
@@ -2884,7 +2895,8 @@ WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
 WEffectSelector QAbstractScrollArea QScrollBar::corner,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::corner,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::corner,
-WSearchLineEdit QAbstractScrollArea QScrollBar::corner {
+WSearchLineEdit QAbstractScrollArea QScrollBar::corner,
+DlgPreferences QAbstractScrollArea QScrollBar::corner {
   border: 0px;
   border: 0px;
   background-color: #1e1e1e;
@@ -3041,7 +3053,8 @@ WEffectSelector QAbstractScrollArea,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetSelector QAbstractScrollArea,
 WSearchLineEdit QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea {
+#fadeModeCombobox QAbstractScrollArea,
+DlgPreferences QComboBox QAbstractScrollArea {
   border: 1px solid #333;
   border-radius: 1px;
 }
@@ -3082,7 +3095,8 @@ WEffectChainPresetButton QMenu QCheckBox,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::item,
 WSearchLineEdit QAbstractScrollArea,
-WSearchLineEdit::item {
+WSearchLineEdit::item,
+DlgPreferences QComboBox QAbstractScrollArea {
   background-color: #151517;
 }
 /* hovered items */
@@ -3127,7 +3141,8 @@ WSearchLineEdit::item:selected,
   }
   WEffectSelector QAbstractItemView,
   WEffectChainPresetSelector QAbstractItemView,
-  WSearchLineEdit QAbstractItemView {
+  WSearchLineEdit QAbstractItemView,
+  DlgPreferences QComboBox QAbstractItemView {
     selection-color: #fff;
     selection-background-color: #2c454f;
     border-radius: 1px;
@@ -3249,3 +3264,314 @@ WSearchLineEdit::indicator:unchecked:selected {
 }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
+
+
+/************** styles for Track Properties & Preferences **********************
+*******************************************************************************/
+DlgPreferences,
+DlgPreferencePage,
+DlgPreferencePage > QWidget,
+DlgPreferences QAbstractScrollArea,
+DlgPreferences QStackedWidget,
+DlgPreferencePage QTabWidget::pane,
+#DlgTrackInfo,
+#DlgTrackInfoMulti,
+#DlgTrackInfo QTabWidget::pane,
+#DlgTrackInfoMulti QTabWidget::pane {
+  background: #282828; /* without ::pane it's rendered as #323232 */
+  padding: 0px;
+  margin: 0px;
+  qproperty-layoutSpacing: 0;
+  }
+  DlgPreferences,
+  #DlgTrackInfo,
+  #DlgTrackInfoMulti {
+    /* we need to set a border to get the bg color */
+    border: 0px solid red;
+  }
+  DlgPreferencePage QTabWidget::pane,
+  #DlgTrackInfo QTabWidget::pane,
+  #DlgTrackInfoMulti QTabWidget::pane {
+    border: 1px solid #444;
+    /* eliminate bottom border of tab */
+    top: -1;
+  }
+
+DlgPreferences QTreeWidget,
+DlgPreferences QListView {
+  background-color: #202020;
+  color: #c2b3a5;
+}
+
+DlgPreferencePage QTabBar::tab-bar {
+  bottom: 1px;
+}
+DlgPreferencePage QTabBar::tab,
+#DlgTrackInfo QTabBar::tab,
+#DlgTrackInfoMulti QTabBar::tab {
+  color: #c2b3a5;
+  background-color: #202020;
+  border: 1px solid #202020;
+  /* fake/restore hidden top border of tab pane */
+  border-bottom: 1px solid #444;
+  border-radius: 2px;
+  padding: 4px 10px;
+  }
+  DlgPreferencePage QTabBar::tab:selected,
+  #DlgTrackInfo QTabBar::tab:selected,
+  #DlgTrackInfoMulti QTabBar::tab:selected {
+    color: #decec0;
+    background-color: #282828;
+    border: 1px solid #444;
+    border-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+  DlgPreferencePage QTabBar::tab:focus,
+  #DlgTrackInfo QTabBar::tab:focus,
+  #DlgTrackInfoMulti QTabBar::tab:focus {
+    /* background-color: none;*/
+    outline: nones;
+    border: 1px solid #257b82;
+    border-bottom: 0px;
+  }
+
+DlgPreferencePage QGroupBox,
+#DlgTrackInfo QGroupBox,
+#DlgTrackInfoMulti QGroupBox {
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 1px;
+  /*padding: 0px;
+  margin-top: 0px;
+  qproperty-layoutSpacing: 0;*/
+  }
+DlgPreferencePage QGroupBox {
+  margin-top: 0.6em;
+  padding-top: 0.2em;
+  }
+  DlgPreferencePage QGroupBox::title {
+    color: #decec0;
+    font-weight: bold;
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0em 0.2em 0 0em;
+    margin: 0px 0px 0px 0em;
+  }
+
+DlgPreferencePage QLabel,
+DlgPreferencePage QCheckBox,
+DlgPreferencePage QRadioButton,
+DlgPreferencePage QCheckBox,
+#DlgTrackInfo QLabel,
+#DlgTrackInfo WStarRating,
+#DlgTrackInfoMulti QLabel,
+#DlgTrackInfoMulti WStarRating {
+  /* same as QTabWidget::pane */
+  background: #282828;
+  color: #c2b3a5;
+}
+
+DlgPreferencePage QLineEdit,
+DlgPreferencePage QSpinBox,
+DlgPreferencePage QDoubleSpinBox,
+#DlgTrackInfo QLineEdit,
+#DlgTrackInfo QPlainTextEdit,
+#DlgTrackInfo QSpinBox,
+#DlgTrackInfo QDoubleSpinBox,
+#DlgTrackInfoMulti QLineEdit,
+#DlgTrackInfoMulti QPlainTextEdit,
+#DlgTrackInfoMulti QSpinBox,
+#DlgTrackInfoMulti QDoubleSpinBox {
+  /* these inherit styles from
+        WLibrary QLineEdit,
+        WLibrary QPlainTextEdit,
+        #LibraryBPMSpinBox
+    so override properties as required */
+  /* Also used for border of CoverArtLabel?? */
+  color: #c2b3a5;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  padding: 2px;
+  }
+  #DlgTrackInfo QPlainTextEdit,
+  #DlgTrackInfoMulti QPlainTextEdit {
+    padding: 0px;
+  }
+  DlgPreferencePage QLineEdit:focus,
+  DlgPreferencePage QPlainTextEdit:focus,
+  DlgPreferencePage QSpinBox:focus,
+  #DlgTrackInfo QLineEdit:focus,
+  #DlgTrackInfo QPlainTextEdit:focus,
+  #DlgTrackInfo QSpinBox:focus,
+  #DlgTrackInfoMulti QLineEdit:focus,
+  #DlgTrackInfoMulti QPlainTextEdit:focus,
+  #DlgTrackInfoMulti QSpinBox:focus {
+    border: 1px solid #257b82;
+  }
+  DlgPreferencePage QLineEdit:disabled,
+  DlgPreferences QComboBox:disabled,
+  DlgPreferencePage QSpinBox:disabled,
+  DlgPreferences QDoubleSpinBox:disabled,
+  #DlgTrackInfo QDoubleSpinBox:disabled,
+  #DlgTrackInfo QCheckBox:disabled {
+    color: #888;
+    background-color: #282828;
+  }
+
+#DlgTrackInfo WCoverArtLabel,
+#DlgTrackInfoMulti WCoverArtLabel {
+  border: 0px;
+}
+
+DlgPreferences QPushButton,
+DlgPreferences QToolButton, /* Library font selector */
+DlgPreferences QComboBox,
+DlgPreferencePage QComboBox,
+#DlgTrackInfo QPushButton,
+#DlgTrackInfoMulti QPushButton {
+  outline: none;
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
+  background-color: #333;
+  color: #decec0;
+  padding: 2px 4px;
+  }
+  DlgPreferencePage QPushButton:focus,
+  #DlgTrackInfo QPushButton:focus,
+  #DlgTrackInfoMulti QPushButton:focus {
+    outline: none;
+    border-width: 2px 2px 2px 2px;
+    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_focus_blue.svg) 2 2 2 2;
+  }
+DlgPreferences QComboBox::drop-down {
+  border: 0px solid green;
+}
+DlgPreferences QComboBox::down-arrow,
+#DlgTrackInfo #btnColorPicker::menu-indicator,
+#DlgTrackInfoMulti #btnColorPicker::menu-indicator {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  image: url(skins:LateNight/palemoon/buttons/btn__fx_selector_down.svg);
+  width: 16px;
+  height: 24px;
+}
+
+DlgPreferences QSpinBox::up-button,
+DlgPreferences QSpinBox::down-button,
+DlgPreferences QDoubleSpinBox::up-button,
+DlgPreferences QDoubleSpinBox::down-button,
+#DlgTrackInfo QDoubleSpinBox::up-button,
+#DlgTrackInfo QDoubleSpinBox::down-button {
+  border: 0;
+  /*  height: 10px;*/
+  /*  width: 28px;*/
+  margin-right: 3px;
+  }
+  DlgPreferences QSpinBox::up-button,
+  DlgPreferences QDoubleSpinBox::up-button,
+  #DlgTrackInfo QDoubleSpinBox::up-button {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_spinbox_up.svg) no-repeat;
+  }
+  DlgPreferences QSpinBox::down-button,
+  DlgPreferences QDoubleSpinBox::down-button,
+  #DlgTrackInfo QDoubleSpinBox::down-button {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_spinbox_down.svg) no-repeat;
+  }
+
+DlgPreferences QCheckBox::indicator,
+DlgPreferences QRadioButton::indicator,
+#DlgTrackInfo QCheckBox::indicator,
+#DlgTrackInfoMulti QCheckBox::indicator {
+  width: 0.8em;
+  height: 0.8em;
+  margin-top: 0.1em; /* align icon with text */
+  }
+  #DlgTrackInfo QCheckBox::indicator:unchecked,
+  #DlgTrackInfoMulti QCheckBox::indicator:unchecked,
+  DlgPreferences QCheckBox::indicator:unchecked {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_checkbox.svg);
+    }
+    #DlgTrackInfo QCheckBox::indicator:disabled:unchecked,
+    #DlgTrackInfoMulti QCheckBox::indicator:disabled:unchecked,
+    DlgPreferences QCheckBox::indicator:disabled:unchecked {
+      image: url(skins:LateNight/palemoon/buttons/btn__pref_checkbox_disabled.svg);
+    }
+  #DlgTrackInfo QCheckBox::indicator:checked,
+  #DlgTrackInfoMulti QCheckBox::indicator:checked,
+  DlgPreferences QCheckBox::indicator:checked {
+    image: url(skins:LateNight/palemoon/buttons/btn__lib_checkmark_blue.svg);
+    }
+    #DlgTrackInfo QCheckBox::indicator:disabled:checked,
+    #DlgTrackInfoMulti QCheckBox::indicator:disabled:checked,
+    DlgPreferences QCheckBox::indicator:disabled:checked {
+      image: url(skins:LateNight/palemoon/buttons/btn__lib_checkmark_grey.svg);
+    }
+
+  DlgPreferences QRadioButton::indicator:checked {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_radio_button_on.svg) center center;
+    }
+    DlgPreferences QRadioButton::indicator:unchecked {
+      image: url(skins:LateNight/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
+    }
+
+DlgPreferences QSlider::groove:horizontal {
+  border: 1px solid #333;
+  border-radius: 2px;
+  background-color: #111;
+  height: 3px;
+  }
+  DlgPreferences QSlider::groove:disabled:horizontal {
+    border: 1px solid #333;
+    border-radius: 2px;
+    background-color: #222;
+    height: 3px;
+  }
+  DlgPreferences QSlider::sub-page:horizontal {
+    height: 4px;
+    background-color: #4097BA;
+    margin: 1px;
+  }
+  DlgPreferences QSlider::sub-page:disabled:horizontal {
+    height: 4px;
+    background-color: #444;
+    margin: 1px;
+  }
+  DlgPreferences QSlider::handle:horizontal {
+    height: 18px;
+    width: 12px;
+    border: 1px solid #666;
+    border-radius: 2px;
+    background-color: #444;
+    /* make handle taller than slider groove */
+    margin: -6px 0px;
+  }
+
+/* TODO Preferences
+  + QSpinBox buttons
+
+  * Controllers: mapping tables
+
+  * Library: directory list view
+
+  * QComboBox views:
+    * white borders at top/bottom
+    * frame
+
+  * Treeview:
+    * selected item colors
+
+  * clicked buttons
+
+  * scrollbars
+
+  * Mixer: crossfader curve graph
+
+  * Broadcasting:
+    * conn. profile table
+    * Description box
+
+  * inactive QCheckBoxes
+
+ */

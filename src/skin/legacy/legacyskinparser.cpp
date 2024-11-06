@@ -2266,7 +2266,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
     // switched to QFrame and there should be no reason we would ever use a
     // QGroupBox in a skin. To support legacy skins, we rewrite QGroupBox
     // selectors to use WWidgetGroup directly.
-    style = style.replace("QGroupBox", "WWidgetGroup");
+    //    style = style.replace("QGroupBox", "WWidgetGroup");
 
     return style;
 }

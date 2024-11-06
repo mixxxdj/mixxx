@@ -91,11 +91,13 @@ DlgPreferences::DlgPreferences(
     }
 
     // Check the text color of the palette for whether to use dark or light icons
-    if (!Color::isDimColor(palette().text().color())) {
-        m_iconsPath.setPath(":/images/preferences/light/");
-    } else {
-        m_iconsPath.setPath(":/images/preferences/dark/");
-    }
+    // TODO Update icons when stylesheet is set
+    // if (!Color::isDimColor(palette().text().color())) {
+    //    m_iconsPath.setPath(":/images/preferences/light/");
+    //} else {
+    //    m_iconsPath.setPath(":/images/preferences/dark/");
+    //}
+    m_iconsPath.setPath(":/images/preferences/light/");
 
     // Construct widgets for use in tabs.
     m_soundPage = PreferencesPage(
