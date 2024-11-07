@@ -139,8 +139,13 @@ void WEffectChainPresetButton::populateMenu() {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(true);
                 pCheckbox->setText(pParameter->manifest()->name());
-                auto handler = [pCheckbox{pCheckbox.get()}, pEffectSlot, pParameter] {
-                    if (pCheckbox->isChecked()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+                auto handler = [pEffectSlot, pParameter](Qt::CheckState state) {
+                    if (state == Qt::Checked) {
+#else
+                auto handler = [pEffectSlot, pParameter](int state) {
+                    if (static_cast<bool>(state)) {
+#endif
                         pEffectSlot->showParameter(pParameter);
                     } else {
                         pEffectSlot->hideParameter(pParameter);
@@ -163,8 +168,13 @@ void WEffectChainPresetButton::populateMenu() {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(false);
                 pCheckbox->setText(pParameter->manifest()->name());
-                auto handler = [pCheckbox{pCheckbox.get()}, pEffectSlot, pParameter] {
-                    if (pCheckbox->isChecked()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+                auto handler = [pEffectSlot, pParameter](Qt::CheckState state) {
+                    if (state == Qt::Checked) {
+#else
+                auto handler = [pEffectSlot, pParameter](int state) {
+                    if (static_cast<bool>(state)) {
+#endif
                         pEffectSlot->showParameter(pParameter);
                     } else {
                         pEffectSlot->hideParameter(pParameter);

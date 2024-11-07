@@ -666,7 +666,11 @@ void DlgTrackInfo::slotBpmClear() {
     bpmTap->setEnabled(true);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgTrackInfo::slotBpmConstChanged(Qt::CheckState state) {
+#else
 void DlgTrackInfo::slotBpmConstChanged(int state) {
+#endif
     if (state == Qt::Unchecked) {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);

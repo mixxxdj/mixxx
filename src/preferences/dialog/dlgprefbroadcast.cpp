@@ -292,15 +292,30 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnDisconnectAll->setEnabled(enabled);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxEnableReconnectChanged(Qt::CheckState state) {
+    widgetReconnectControls->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {
     widgetReconnectControls->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(Qt::CheckState state) {
+    spinBoxMaximumRetries->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(int value) {
     spinBoxMaximumRetries->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::enableCustomMetadataChanged(Qt::CheckState state) {
+    const bool value = (state == Qt::Checked);
+#else
 void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
+#endif
     custom_artist->setEnabled(value);
     custom_title->setEnabled(value);
 }

@@ -121,8 +121,13 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGEnabled() {
-    m_rgSettings.setReplayGainEnabled(EnableGain->isChecked());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefReplayGain::slotSetRGEnabled(Qt::CheckState state) {
+    m_rgSettings.setReplayGainEnabled(state == Qt::Checked);
+#else
+void DlgPrefReplayGain::slotSetRGEnabled(int isChecked) {
+    m_rgSettings.setReplayGainEnabled(static_cast<bool>(isChecked));
+#endif
     slotUpdate();
     slotApply();
 }
@@ -186,8 +191,12 @@ void DlgPrefReplayGain::slotApply() {
     m_enabled.set(EnableGain->isChecked() ? 1.0 : 0.0);
 }
 
-void DlgPrefReplayGain::slotSetReanalyze() {
-    bool checked = checkBoxReanalyze->isChecked();
-    m_rgSettings.setReplayGainReanalyze(checked);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefReplayGain::slotSetReanalyze(Qt::CheckState state) {
+    m_rgSettings.setReplayGainReanalyze(state == Qt::Checked);
+#else
+void DlgPrefReplayGain::slotSetReanalyze(int state) {
+    m_rgSettings.setReplayGainReanalyze(static_cast<bool>(state));
+#endif
     slotApply();
 }

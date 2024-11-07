@@ -109,13 +109,23 @@ void DlgPrefBeats::pluginSelected(int i) {
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBeats::analyzerEnabled(Qt::CheckState state) {
+    m_bAnalyzerEnabled = (state == Qt::Checked);
+#else
 void DlgPrefBeats::analyzerEnabled(int i) {
     m_bAnalyzerEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBeats::fixedtempoEnabled(Qt::CheckState state) {
+    m_bFixedTempoEnabled = (state == Qt::Checked);
+#else
 void DlgPrefBeats::fixedtempoEnabled(int i) {
     m_bFixedTempoEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
@@ -159,18 +169,33 @@ void DlgPrefBeats::slotUpdate() {
     checkBoxReanalyzeImported->setChecked(m_bReanalyzeImported);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBeats::slotReanalyzeChanged(Qt::CheckState state) {
+    m_bReanalyze = (state == Qt::Checked);
+#else
 void DlgPrefBeats::slotReanalyzeChanged(int value) {
     m_bReanalyze = static_cast<bool>(value);
+#endif
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBeats::slotReanalyzeImportedChanged(Qt::CheckState state) {
+    m_bReanalyzeImported = (state == Qt::Checked);
+#else
 void DlgPrefBeats::slotReanalyzeImportedChanged(int value) {
     m_bReanalyzeImported = static_cast<bool>(value);
+#endif
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBeats::fastAnalysisEnabled(Qt::CheckState state) {
+    m_bFastAnalysisEnabled = (state == Qt::Checked);
+#else
 void DlgPrefBeats::fastAnalysisEnabled(int i) {
     m_bFastAnalysisEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
