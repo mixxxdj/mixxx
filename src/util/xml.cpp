@@ -73,10 +73,11 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     const auto parseResult = doc.setContent(&file);
     if (!parseResult) {
-        QString errorString = QString("%1 at line %2, column %3")
-                                      .arg(parseResult.errorMessage)
-                                      .arg(parseResult.errorLine)
-                                      .arg(parseResult.errorColumn);
+        QString errorString =
+                QStringLiteral("%1 at line %2, column %3")
+                        .arg(parseResult.errorMessage,
+                                QString::number(parseResult.errorLine),
+                                QString::number(parseResult.errorColumn));
 
 #else
     QString error;
