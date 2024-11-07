@@ -99,7 +99,7 @@ int EncoderFfmpegCore::getSerial() {
     return l_iSerial;
 }
 
-void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
+void EncoderFfmpegCore::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
     unsigned char *l_strBuffer = NULL;
     int l_iBufferLen = 0;
     //int l_iAudioCpyLen = m_iAudioInputFrameSize *

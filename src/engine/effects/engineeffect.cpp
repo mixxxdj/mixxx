@@ -48,11 +48,9 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
 }
 
 EngineEffect::~EngineEffect() {
-    if (kEffectDebugOutput) {
+    if constexpr (kEffectDebugOutput) {
         qDebug() << debugString() << "destroyed";
     }
-    m_parametersById.clear();
-    m_parameters.clear();
 }
 
 void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
@@ -129,7 +127,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const unsigned int numSamples,
+        const std::size_t numSamples,
         const mixxx::audio::SampleRate sampleRate,
         const EffectEnableState chainEnableState,
         const GroupFeatureState& groupFeatures) {

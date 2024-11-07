@@ -768,6 +768,56 @@ void SampleUtil::mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT
 }
 
 // static
+void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
+        const CSAMPLE* pSrc,
+        SINT numFrames,
+        mixxx::audio::ChannelCount numChannels,
+        int excludeChannelMask) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
+    int stereoChCount = numChannels / mixxx::audio::ChannelCount::stereo();
+    // Making sure we aren't using this function with more channel than supported with the mask
+    DEBUG_ASSERT(stereoChCount < static_cast<int>(sizeof(excludeChannelMask) * 8));
+    SampleUtil::clear(pDest, numFrames * mixxx::audio::ChannelCount::stereo());
+    for (int stemIdx = 0; stemIdx < stereoChCount; stemIdx++) {
+        if (excludeChannelMask >> stemIdx & 0b1) {
+            continue;
+        }
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numFrames; i++) {
+            const int srcIdx = numChannels * i +
+                    stemIdx * mixxx::audio::ChannelCount::stereo();
+            const int destIdx = mixxx::audio::ChannelCount::stereo() * i;
+            pDest[destIdx] +=
+                    pSrc[srcIdx];
+            pDest[destIdx + 1] +=
+                    pSrc[srcIdx + 1];
+        }
+    }
+}
+
+// static
+void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
+        const CSAMPLE* pSrc,
+        SINT numFrames,
+        mixxx::audio::ChannelCount numChannels) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
+    int stereoChCount = numChannels / mixxx::audio::ChannelCount::stereo();
+    SampleUtil::clear(pDest, numFrames * mixxx::audio::ChannelCount::stereo());
+    for (int stemIdx = 0; stemIdx < stereoChCount; stemIdx++) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numFrames; i++) {
+            const int srcIdx = numChannels * i +
+                    stemIdx * mixxx::audio::ChannelCount::stereo();
+            const int destIdx = mixxx::audio::ChannelCount::stereo() * i;
+            pDest[destIdx] +=
+                    pSrc[srcIdx];
+            pDest[destIdx + 1] +=
+                    pSrc[srcIdx + 1];
+        }
+    }
+}
+
+// static
 void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, SINT numFrames) {
     // backward loop
     SINT i = numFrames;
@@ -817,17 +867,35 @@ void SampleUtil::stripMultiToStereo(
 }
 
 // static
-void SampleUtil::copyMultiToStereo(
+void SampleUtil::copyOneStereoFromMulti(
         CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         SINT numFrames,
-        mixxx::audio::ChannelCount numChannels) {
+        mixxx::audio::ChannelCount numChannels,
+        int sourceChannel) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numFrames; ++i) {
-        pDest[i * 2] = pSrc[i * numChannels];
-        pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
+        pDest[i * 2] = pSrc[i * numChannels + sourceChannel];
+        pDest[i * 2 + 1] = pSrc[i * numChannels + sourceChannel + 1];
+    }
+}
+
+// static
+void SampleUtil::insertStereoToMulti(
+        CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames,
+        mixxx::audio::ChannelCount numChannels,
+        int channelOffset) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo() &&
+            channelOffset - 1 < numFrames);
+    // forward loop
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numFrames; ++i) {
+        pDest[i * numChannels + channelOffset] = pSrc[i * 2];
+        pDest[i * numChannels + channelOffset + 1] = pSrc[i * 2 + 1];
     }
 }
 

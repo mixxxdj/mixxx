@@ -21,11 +21,15 @@
 #include "controllers/softtakeover.h"
 #include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QML
+#include "qml/qmlmixxxcontrollerscreen.h"
+#endif
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
 
 using ::testing::_;
+using namespace std::chrono_literals;
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
@@ -47,13 +51,16 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
 
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
         initialize();
     }
 
     void TearDown() override {
         mixxx::Time::setTestMode(false);
+#ifdef MIXXX_USE_QML
+        m_rootItems.clear();
+#endif
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
@@ -80,15 +87,13 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
     }
 
 #ifdef MIXXX_USE_QML
-    QHash<QString, TransformScreenFrameFunction>& transformScreenFrameFunctions() {
-        return m_transformScreenFrameFunctions;
-    }
-
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>>& renderingScreens() {
         return m_renderingScreens;
     }
 
-    QHash<QString, std::shared_ptr<QQuickItem>>& rootItems() {
+    std::unordered_map<QString,
+            std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>&
+    rootItems() {
         return m_rootItems;
     }
 
@@ -97,11 +102,6 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
             const QImage& frame,
             const QDateTime& timestamp) {
         handleScreenFrame(screeninfo, frame, timestamp);
-    }
-
-    TransformScreenFrameFunction newTransformScreenFrameFunction(
-            QMetaMethod method, bool typed) const {
-        return TransformScreenFrameFunction{method, typed};
     }
 #endif
 };
@@ -209,7 +209,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
     // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -240,8 +240,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
-    // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -693,13 +692,9 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
             "Could not find a valid transform function but the screen doesn't "
             "accept raw data. Aborting screen rendering.");
 
-    transformScreenFrameFunctions().insert(
-            dummyScreen.identifier,
-            newTransformScreenFrameFunction(
-                    QMetaMethod(),
-                    false));
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, std::make_shared<QQuickItem>());
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,
@@ -729,13 +724,9 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
             std::make_shared<MockScreenRender>(dummyScreen);
     EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
-    transformScreenFrameFunctions().insert(
-            dummyScreen.identifier,
-            newTransformScreenFrameFunction(
-                    QMetaMethod(),
-                    false));
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, std::make_shared<QQuickItem>());
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,

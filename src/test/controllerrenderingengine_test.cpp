@@ -12,12 +12,13 @@
 #include "test/mixxxtest.h"
 
 using ::testing::_;
+using namespace std::chrono_literals;
 
 class ControllerRenderingEngineTest : public MixxxTest {
   public:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         SETUP_LOG_CAPTURE();
     }
 
@@ -33,7 +34,8 @@ class MockRenderingEngine : public ControllerRenderingEngine {
 };
 
 TEST_F(ControllerRenderingEngineTest, createValidRendererWithSupportedTypes) {
-    for (auto pixelFormat : supportedPixelFormat()) {
+    const auto& supportedPixelFormats = supportedPixelFormat();
+    for (const auto& pixelFormat : supportedPixelFormats) {
         MockRenderingEngine screenTest(LegacyControllerMapping::ScreenInfo{
                 "",                                                    // identifier
                 QSize(0, 0),                                           // size

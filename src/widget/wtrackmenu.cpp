@@ -94,6 +94,8 @@ void storeActionTextAndScaleInProperties(QAction* pAction, const double scale) {
 
 } // namespace
 
+bool WTrackMenu::s_showPurgeSuccessPopup = true;
+
 WTrackMenu::WTrackMenu(
         QWidget* parent,
         UserSettingsPointer pConfig,
@@ -232,6 +234,10 @@ void WTrackMenu::createMenus() {
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
+                        // Ensure it's enabled, else we can't add actions.
+                        VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
+                            m_pSearchRelatedMenu->setEnabled(true);
+                        }
                         m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
                     }
                     m_pSearchRelatedMenu->setEnabled(
@@ -345,14 +351,16 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotRemoveFromDisk);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pStarRatingAction = new WStarRatingAction(this);
         m_pStarRatingAction->setObjectName("RatingAction");
         connect(m_pStarRatingAction,
                 &WStarRatingAction::ratingSet,
                 this,
                 &WTrackMenu::slotSetRating);
+    }
 
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
@@ -631,7 +639,7 @@ void WTrackMenu::setupActions() {
         addMenu(m_pBPMMenu);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         addAction(m_pStarRatingAction);
     }
 
@@ -757,11 +765,9 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
                 break;
             }
         }
-    } else {
-        if (m_pTrack) {
-            anyBpmLocked = m_pTrack->isBpmLocked();
-            anyBpmNotLocked = !anyBpmLocked;
-        }
+    } else if (m_pTrack) {
+        anyBpmLocked = m_pTrack->isBpmLocked();
+        anyBpmNotLocked = !anyBpmLocked;
     }
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
 }
@@ -770,7 +776,7 @@ int WTrackMenu::getCommonTrackRating() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return 0;
     }
-    int commonRating;
+    int commonRating = 0;
     if (m_pTrackModel) {
         const int column =
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_RATING);
@@ -883,8 +889,11 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                         .data()
                         .toString();
         return coverInfo;
-    } else {
+    } else if (m_pTrack) {
         return m_pTrack->getCoverInfoWithLocation();
+    } else {
+        // No track, no track model
+        return CoverInfo();
     }
 }
 
@@ -896,10 +905,25 @@ void WTrackMenu::updateMenus() {
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
 
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        // Enable only if we have one valid track pointer.
+        // this prevents the cursor getting stuck on this menu in case it gets
+        // disabled when encountering a track nullptr in lambda function
+        // connected to aboutToShow() signal (see createMenus()).
+        // Note: track nullptr can happen when TrackDAO returns nullptr because
+        // the selected track references a file referenced by another cached track.
+        DEBUG_ASSERT(m_pSearchRelatedMenu);
+        const auto pTrack = getFirstTrackPointer();
+        m_pSearchRelatedMenu->setEnabled(pTrack != nullptr);
+        // TODO Only enable for single track?
+    }
+
     if (featureIsEnabled(Feature::LoadTo)) {
+        // Enable menus only for single track
         int iNumDecks = static_cast<int>(m_pNumDecks.get());
         m_pDeckMenu->clear();
-        if (iNumDecks > 0) {
+        m_pDeckMenu->setEnabled(singleTrackSelected);
+        if (singleTrackSelected && iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString deckGroup = PlayerManager::groupForDeck(i - 1);
@@ -934,8 +958,9 @@ void WTrackMenu::updateMenus() {
 
         int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
         const int maxSamplersPerMenu = 16;
-        if (iNumSamplers > 0) {
-            m_pSamplerMenu->clear();
+        m_pSamplerMenu->clear();
+        m_pSamplerMenu->setEnabled(singleTrackSelected);
+        if (singleTrackSelected && iNumSamplers > 0) {
             QMenu* pMenu = m_pSamplerMenu;
             int samplersInMenu = 0;
             for (int i = 1; i <= iNumSamplers; ++i) {
@@ -1037,13 +1062,15 @@ void WTrackMenu::updateMenus() {
                 } else if (m_pTrack) {
                     pTrack = m_pTrack;
                 }
-                const double bpm = pTrack->getBpm();
-                appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
-                appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+                if (pTrack) {
+                    const double bpm = pTrack->getBpm();
+                    appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+                }
             }
         }
     }
@@ -1101,12 +1128,14 @@ void WTrackMenu::updateMenus() {
         m_pSelectInLibraryAct->setEnabled(enabled);
     }
 
-    if (featureIsEnabled(Feature::Properties)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         // Might be needed to resize Menu to fit the star rating
         // QResizeEvent resizeEvent(QSize(), m_pStarRatingAction->sizeHint());
         // qApp->sendEvent(m_pStarRatingAction, &resizeEvent);
         m_pStarRatingAction->setRating(getCommonTrackRating());
+    }
 
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct->setEnabled(true);
     }
 
@@ -1390,7 +1419,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
     const PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                              ->internalCollection()
                                              ->getPlaylistDAO();
-    QList<QPair<int, QString>> playlists =
+    const QList<QPair<int, QString>> playlists =
             playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
 
     for (const auto& [id, name] : playlists) {
@@ -2229,10 +2258,10 @@ class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointer
         }
         QString location = pTrack->getLocation();
         QFile file(location);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        if (file.exists() && !file.moveToTrash()) {
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         if (file.exists() && !file.remove()) {
+#else
+        if (file.exists() && !file.moveToTrash()) {
 #endif
             // Deletion failed, log warning and queue location for the
             // Failed Deletions warning.
@@ -2285,22 +2314,21 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         QString delWarningText;
         if (m_pTrackModel) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            delWarningText = tr("Move these files to the trash bin?");
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
             delWarningText = tr("Permanently delete these files from disk?") +
                     QStringLiteral("<br><br><b>") +
                     tr("This can not be undone!") + QStringLiteral("</b>");
+#else
+            delWarningText = tr("Move these files to the trash bin?");
 #endif
         } else { // track menu of track labels
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-
-            delWarningText = tr("Move this track file to the trash bin?");
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
             delWarningText =
                     tr("Permanently delete this track file from disk?") +
                     QStringLiteral("<br><br><b>") +
                     tr("This can not be undone!") + QStringLiteral("</b>");
+#else
+            delWarningText = tr("Move this track file to the trash bin?");
 #endif
         }
         delWarningText.append(QStringLiteral("<br><br>"));
@@ -2395,47 +2423,56 @@ void WTrackMenu::slotRemoveFromDisk() {
         // Purge only those tracks whose files have actually been deleted.
         m_pLibrary->trackCollectionManager()->purgeTracks(tracksToPurge);
 
-        // Show purge summary message
-        QMessageBox msgBoxPurgeTracks;
-        msgBoxPurgeTracks.setIcon(QMessageBox::Information);
-        QString msgTitle;
-        QString msgText;
-        if (m_pTrackModel) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            msgTitle = tr("Track Files Deleted");
+        if (s_showPurgeSuccessPopup) {
+            // Show purge summary message
+            QMessageBox msgBoxPurgeTracks;
+            msgBoxPurgeTracks.setIcon(QMessageBox::Information);
+            QString msgTitle;
+            QString msgText;
+            if (m_pTrackModel) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+                msgTitle = tr("Track Files Deleted");
 #else
-            msgTitle = tr("Track Files Moved To Trash");
+                msgTitle = tr("Track Files Moved To Trash");
 #endif
-            msgText =
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-                    tr("%1 track files were moved to trash and purged "
-                       "from the Mixxx database.")
+                msgText =
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+                        tr("%1 track files were deleted from disk and purged "
+                           "from the Mixxx database.")
 #else
-                    tr("%1 track files were deleted from disk and purged "
-                       "from the Mixxx database.")
+                        tr("%1 track files were moved to trash and purged "
+                           "from the Mixxx database.")
 #endif
-                            .arg(QString::number(tracksToPurge.length())) +
-                    QStringLiteral("<br><br>") +
-                    tr("Note: if you are in the Computer or Recording view you "
-                       "need to click the current view again to see changes.");
-        } else {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            msgTitle = tr("Track File Moved To Trash");
-            msgText = tr(
-                    "Track file was moved to trash and purged "
-                    "from the Mixxx database.");
+                                .arg(QString::number(tracksToPurge.length())) +
+                        QStringLiteral("<br><br>") +
+                        tr("Note: if you are in the Computer or Recording view you "
+                           "need to click the current view again to see changes.");
+            } else {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+                msgTitle = tr("Track File Deleted");
+                msgText = tr(
+                        "Track file was deleted from disk and purged "
+                        "from the Mixxx database.");
 #else
-            msgTitle = tr("Track File Deleted");
-            msgText = tr(
-                    "Track file was deleted from disk and purged "
-                    "from the Mixxx database.");
+                msgTitle = tr("Track File Moved To Trash");
+                msgText = tr(
+                        "Track file was moved to trash and purged "
+                        "from the Mixxx database.");
 #endif
+            }
+            QCheckBox notAgainCB(tr("Don't show again during this session"));
+            notAgainCB.setCheckState(Qt::Unchecked);
+            msgBoxPurgeTracks.setWindowTitle(msgTitle);
+            msgBoxPurgeTracks.setText(msgText);
+            msgBoxPurgeTracks.setTextFormat(Qt::RichText);
+            msgBoxPurgeTracks.setCheckBox(&notAgainCB);
+            msgBoxPurgeTracks.setStandardButtons(QMessageBox::Ok);
+            msgBoxPurgeTracks.exec();
+
+            if (notAgainCB.isChecked()) {
+                s_showPurgeSuccessPopup = false;
+            }
         }
-        msgBoxPurgeTracks.setWindowTitle(msgTitle);
-        msgBoxPurgeTracks.setText(msgText);
-        msgBoxPurgeTracks.setTextFormat(Qt::RichText);
-        msgBoxPurgeTracks.setStandardButtons(QMessageBox::Ok);
-        msgBoxPurgeTracks.exec();
     }
 
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
@@ -2451,18 +2488,18 @@ void WTrackMenu::slotRemoveFromDisk() {
     QString msgText;
     if (m_pTrackModel) {
         msgText =
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-                tr("The following %1 file(s) could not be moved to trash")
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
                 tr("The following %1 file(s) could not be deleted from disk")
+#else
+                tr("The following %1 file(s) could not be moved to trash")
 #endif
                         .arg(QString::number(
                                 tracksToKeep.length()));
     } else {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        msgText = tr("This track file could not be moved to trash");
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         msgText = tr("This track file could not be deleted from disk");
+#else
+        msgText = tr("This track file could not be moved to trash");
 #endif
     }
     notDeletedLabel->setText(msgText);
@@ -2532,8 +2569,11 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                         m_pDlgTrackInfo.release()->deleteLater();
                     }
                 });
-        // Method getFirstTrackPointer() is not applicable here, the dialog
-        // needs an index reference for the Next/Prev navigation.
+        // Method getFirstTrackPointer() is not applicable here!
+        // DlgTrackInfo relies on a track model for certain operations,
+        // for example show/hide the Next/Prev buttons.
+        // It can be loaded with either an index (must have a model),
+        // or a TrackPointer (must NOT have a model then).
         if (m_pTrackModel) {
             m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
         } else {
@@ -2753,7 +2793,7 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::FindOnWeb:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::Properties);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
     case Feature::SelectInLibrary:

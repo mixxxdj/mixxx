@@ -41,7 +41,7 @@ void WVuMeterLegacy::setup(const QDomNode& node, const SkinContext& context) {
         // compatibility.
         setPixmapBackground(
                 context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::FIXED),
+                context.selectScaleMode(backPathNode, Paintable::DrawMode::Fixed),
                 context.getScaleFactor());
     }
 
@@ -50,7 +50,7 @@ void WVuMeterLegacy::setup(const QDomNode& node, const SkinContext& context) {
     // compatibility.
     setPixmaps(context.getPixmapSource(vuNode),
             bHorizontal,
-            context.selectScaleMode(vuNode, Paintable::FIXED),
+            context.selectScaleMode(vuNode, Paintable::DrawMode::Fixed),
             context.getScaleFactor());
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
@@ -84,7 +84,7 @@ void WVuMeterLegacy::setPixmapBackground(
     if (!m_pPixmapBack || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
-    } else if (mode == Paintable::FIXED) {
+    } else if (mode == Paintable::DrawMode::Fixed) {
         setFixedSize(m_pPixmapBack->size());
     }
 }

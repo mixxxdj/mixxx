@@ -54,6 +54,13 @@ void WaveformRendererRGB::paintGL() {
     if (data == nullptr) {
         return;
     }
+#ifdef __STEM__
+    auto stemInfo = pTrack->getStemInfo();
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+        return;
+    }
+#endif
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
@@ -161,8 +168,6 @@ void WaveformRendererRGB::paintGL() {
             float maxLow = static_cast<float>(u8maxLow[chn]);
             float maxMid = static_cast<float>(u8maxMid[chn]);
             float maxHigh = static_cast<float>(u8maxHigh[chn]);
-            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
-            // float maxAllChn[2]{unscale(u8maxAllChn[0]), unscale(u8maxAllChn[1])};
 
             // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
             // We take the square root to get the magnitude below.

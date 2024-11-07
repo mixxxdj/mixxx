@@ -13,13 +13,14 @@
 #include "test/baseeffecttest.h"
 #include "util/time.h"
 
+using namespace std::chrono_literals;
+
 class MetaLinkTest : public BaseEffectTest {
   protected:
     MetaLinkTest()
             : m_main(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
         m_pEffectsManager->registerInputChannel(m_main);
         m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
@@ -126,8 +127,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectEnabled) {
     m_pControlValue->set(0.0);
 
     // Let enough time pass by to exceed soft-takeover's override interval.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-            mixxx::Duration::fromMillis(2));
+    advanceTimePastThreshold(2ms);
 
     // Ignored by SoftTakeover since it is too far from the current
     // parameter value of 0.0.
@@ -148,8 +148,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectDisabled) {
     m_pControlValue->set(0.0);
 
     // Let enough time pass by to exceed soft-takeover's override interval.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-            mixxx::Duration::fromMillis(2));
+    advanceTimePastThreshold(2ms);
 
     m_pEffectSlot->slotEffectMetaParameter(1.0, false);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -166,8 +165,7 @@ TEST_F(MetaLinkTest, SuperToMeta_Softtakeover_EffectEnabled) {
     m_pEffectSlot->setMetaParameter(1.0, true);
 
     // Let enough time pass by to exceed soft-takeover's override interval.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-            mixxx::Duration::fromMillis(2));
+    advanceTimePastThreshold(2ms);
 
     // Ignored by SoftTakeover since it is too far from the current
     // metaknob value of 1.0.
@@ -185,8 +183,7 @@ TEST_F(MetaLinkTest, SuperToMeta_Softtakeover_EffectDisabled) {
     m_pEffectSlot->setMetaParameter(1.0, true);
 
     // Let enough time pass by to exceed soft-takeover's override interval.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-            mixxx::Duration::fromMillis(2));
+    advanceTimePastThreshold(2ms);
 
     m_pChainSlot->setSuperParameter(0.0);
     EXPECT_EQ(0.0, m_pEffectSlot->getMetaParameter());

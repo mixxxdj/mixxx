@@ -329,7 +329,7 @@ bool SeratoMarkers::parse(
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers, data);
     case taglib::FileType::MP4:
@@ -546,7 +546,7 @@ bool SeratoMarkers::parseMP4(
 
 QByteArray SeratoMarkers::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:

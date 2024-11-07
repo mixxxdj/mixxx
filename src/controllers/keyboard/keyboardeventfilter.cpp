@@ -149,36 +149,34 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
 // static
 QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
-    QKeySequence k;
-
     if ((e->key() >= Qt::Key_Shift && e->key() <= Qt::Key_Alt) ||
             e->key() == Qt::Key_AltGr) {
         // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
         // avoid returning "khmer vowel sign ie (U+17C0)"
-        return k;
+        return {};
     }
 
+    // Note: test for individual modifiers, don't use e->modifiers() for composing
+    // the QKeySequence because on macOS arrow key events are sent with the Num
+    // modifier for some reason. This result in a key sequence for which there
+    // would be no match in our keyseq/control hash.
+    // See https://github.com/mixxxdj/mixxx/issues/13305
     QString modseq;
-    // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
-
     if (e->modifiers() & Qt::ShiftModifier) {
         modseq += "Shift+";
     }
-
     if (e->modifiers() & Qt::ControlModifier) {
         modseq += "Ctrl+";
     }
-
     if (e->modifiers() & Qt::AltModifier) {
         modseq += "Alt+";
     }
-
     if (e->modifiers() & Qt::MetaModifier) {
         modseq += "Meta+";
     }
 
-    QString keyseq = QKeySequence(e->key()).toString();
-    k = QKeySequence(modseq + keyseq);
+    const QString keyseq = QKeySequence(e->key()).toString();
+    const QKeySequence k = QKeySequence(modseq + keyseq);
 
     if (CmdlineArgs::Instance().getDeveloper()) {
         if (e->type() == QEvent::KeyPress) {
@@ -188,11 +186,7 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         }
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    return QKeySequence(e->modifiers() | e->key());
-#else
-    return QKeySequence(e->modifiers() + e->key());
-#endif
+    return k;
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {

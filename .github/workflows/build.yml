@@ -121,7 +121,6 @@ jobs:
 
     env:
       # macOS codesigning
-      APPLE_CODESIGN_IDENTITY: EF241CF990A9BE5477438AEE1F308F76F33FD100
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
@@ -134,7 +133,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.1
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -201,12 +200,15 @@ jobs:
           security unlock-keychain -p mixxx Mixxx.keychain
           security import ~/certificate.p12 -k Mixxx.keychain \
             -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
+          security find-certificate -a -Z Mixxx.keychain
+          APPLE_CODESIGN_IDENTITY="$(security find-certificate -a -Z Mixxx.keychain | grep ^SHA-1 | cut -d " " -f3 | uniq)"
           security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
           # Add keychain to search list
           security list-keychains -s Mixxx.keychain
           # Prevent keychain access from timing out
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
+          echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
@@ -316,13 +318,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/azure-code-signing-action@v0.3.0
+        uses: azure/trusted-signing-action@v0.5.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: exe
@@ -371,13 +373,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/azure-code-signing-action@v0.3.0
+        uses: azure/trusted-signing-action@v0.5.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: msi
@@ -473,7 +475,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -489,7 +491,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.1
         with:
           fetch-depth: 0
 

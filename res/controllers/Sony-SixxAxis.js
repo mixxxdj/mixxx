@@ -139,7 +139,7 @@ SonySixxAxis.registerCallbacks = function(id) {
         return;
     }
     if (controller==undefined) {
-        HIDDebug("Error registrering callbacks: controller is undefined");
+        HIDDebug("Error registering callbacks: controller is undefined");
         return;
     }
 

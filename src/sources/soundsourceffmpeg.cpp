@@ -392,12 +392,12 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 list.append("mp4");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mov,mp4,m4a,3gp,3g2,mj2")) {
-                list.append("mov");
+                list.append("mov"); // QuickTime File Format video/quicktime
                 list.append("mp4");
                 list.append("m4a");
-                list.append("3gp");
-                list.append("3g2");
-                list.append("mj2");
+                list.append("3gp"); // 3GPP file format audio/3gpp
+                list.append("3g2"); // 3GPP2 file format audio/3gpp2
+                list.append("mj2"); // Motion JPEG 2000 video/mj2
                 continue;
             } else if (!strcmp(pavInputFormat->name, "opus") ||
                     !strcmp(pavInputFormat->name, "libopus")) {
@@ -426,7 +426,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 continue;
             } else if (!strcmp(pavInputFormat->name, "wma") ||
                     !strcmp(pavInputFormat->name, "xwma")) {
-                list.append("wma");
+                list.append("wma"); // Windows Media Audio audio/x-ms-wma
                 continue;
             */
                 ///////////////////////////////////////////////////////////
@@ -434,22 +434,22 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 ///////////////////////////////////////////////////////////
                 /*
             } else if (!strcmp(pavInputFormat->name, "ac3")) {
-                list.append("ac3");
+                list.append("ac3"); // AC-3 Compressed Audio (Dolby Digital), Revision A audio/ac3
                 continue;
             } else if (!strcmp(pavInputFormat->name, "caf")) {
-                list.append("caf");
+                list.append("caf"); // Apple Lossless
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpc")) {
-                list.append("mpc");
+                list.append("mpc"); // Musepack encoded audio audio/musepack
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpeg")) {
                 list.append("mpeg");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tak")) {
-                list.append("tak");
+                list.append("tak"); // Tom's lossless Audio Kompressor audio/x-tak
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tta")) {
-                list.append("tta");
+                list.append("tta"); // True Audio, version 2
                 continue;
             */
             }

@@ -453,6 +453,16 @@ void PlayerManager::addDeckInner() {
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);
 
+#ifdef __STEM__
+    // Setup stem QuickEffect chain for this deck
+    for (int i = 0; i < 4; i++) {
+        ChannelHandleAndGroup stemHandleGroup =
+                m_pEngine->registerChannelGroup(groupForDeckStem(deckIndex, i));
+        pDeck->getEngineDeck()->addStemHandle(stemHandleGroup);
+        m_pEffectsManager->addStem(stemHandleGroup);
+    }
+#endif
+
     // Setup EQ ControlProxies used for resetting EQs on track load
     pDeck->setupEqControls();
 }

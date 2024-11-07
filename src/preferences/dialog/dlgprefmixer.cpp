@@ -29,6 +29,9 @@ const ConfigKey kEqsOnlyKey = ConfigKey(kMixerProfile, QStringLiteral("EQsOnly")
 const ConfigKey kSingleEqKey = ConfigKey(kMixerProfile, QStringLiteral("SingleEQEffect"));
 const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAutoReset"));
 const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
+#ifdef __STEM__
+const ConfigKey kStemAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("stem_auto_reset"));
+#endif
 const QString kDefaultMainEqId = QString();
 
 const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
@@ -92,6 +95,9 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqEffectsOnly(true),
           m_eqAutoReset(false),
           m_gainAutoReset(false),
+#ifdef __STEM__
+          m_stemAutoReset(true),
+#endif
           m_eqBypass(false),
           m_initializing(true),
           m_updatingMainEQ(false),
@@ -133,6 +139,14 @@ DlgPrefMixer::DlgPrefMixer(
             &QCheckBox::toggled,
             this,
             &DlgPrefMixer::slotGainAutoResetToggled);
+#ifdef __STEM__
+    connect(CheckBoxStemAutoReset,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefMixer::slotStemAutoResetToggled);
+#else
+    CheckBoxStemAutoReset->hide();
+#endif
     connect(CheckBoxBypass,
             &QCheckBox::toggled,
             this,
@@ -468,6 +482,9 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxSingleEqEffect->setChecked(true);
     CheckBoxEqAutoReset->setChecked(false);
     CheckBoxGainAutoReset->setChecked(false);
+#ifdef __STEM__
+    CheckBoxStemAutoReset->setChecked(true);
+#endif
 
     setDefaultShelves();
     comboBoxMainEq->setCurrentIndex(0); // '---' no EQ
@@ -691,6 +708,9 @@ void DlgPrefMixer::slotApply() {
     m_pConfig->set(kEqsOnlyKey, ConfigValue(m_eqEffectsOnly ? 1 : 0));
     m_pConfig->set(kEqAutoResetKey, ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(kGainAutoResetKey, ConfigValue(m_gainAutoReset ? 1 : 0));
+#ifdef __STEM__
+    m_pConfig->set(kStemAutoResetKey, ConfigValue(m_stemAutoReset ? 1 : 0));
+#endif
     applyDeckEQs();
     applyQuickEffects();
 
@@ -752,6 +772,11 @@ void DlgPrefMixer::slotUpdate() {
 
     m_gainAutoReset = m_pConfig->getValue<bool>(kGainAutoResetKey, false);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
+
+#ifdef __STEM__
+    m_stemAutoReset = m_pConfig->getValue(kStemAutoResetKey, true);
+    CheckBoxStemAutoReset->setChecked(m_stemAutoReset);
+#endif
 
     QString eqBaypassCfg = m_pConfig->getValueString(kEnableEqsKey);
     m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1" || eqBaypassCfg.isEmpty());
@@ -912,6 +937,12 @@ void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
 void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
     m_gainAutoReset = checked;
 }
+
+#ifdef __STEM__
+void DlgPrefMixer::slotStemAutoResetToggled(bool checked) {
+    m_stemAutoReset = checked;
+}
+#endif
 
 void DlgPrefMixer::slotBypassEqToggled(bool checked) {
     m_eqBypass = checked;

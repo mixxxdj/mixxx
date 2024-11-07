@@ -13,7 +13,7 @@ import Mixxx.Controls 1.0 as MixxxControls
 
 import "." as Skin
 
-Item {
+Mixxx.ControllerScreen {
     id: root
 
     required property string screenId
@@ -23,7 +23,7 @@ Item {
     property string group: "[Channel1]"
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
 
-    function init(controlerName, isDebug) {
+    init: function(controlerName, isDebug) {
         console.log(`Screen ${root.screenId} has started`)
         switch (root.screenId) {
             case "jog":
@@ -34,13 +34,13 @@ Item {
         }
     }
 
-    function shutdown() {
+    shutdown: function() {
         console.log(`Screen ${root.screenId} is stopping`)
         loader.sourceComponent = splash
     }
 
     // function transformFrame(input: ArrayBuffer, timestamp: date) {
-    function transformFrame(input, timestamp) {
+    transformFrame: function(input, timestamp) {
         return new ArrayBuffer(0);
     }
 

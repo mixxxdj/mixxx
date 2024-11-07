@@ -74,7 +74,16 @@ ControllerRenderingEngine::ControllerRenderingEngine(
         m_GLDataType = GL_UNSIGNED_BYTE;
         break;
     case QImage::Format_RGBA8888:
-        m_GLDataFormat = m_screenInfo.reversedColor ? GL_BGRA : GL_RGBA;
+        if (m_screenInfo.reversedColor) {
+#ifdef __EMSCRIPTEN__
+            m_isValid = false;
+            kLogger.critical() << "Reversed RGBA format is not supported in Emscripten/WebAssembly";
+#else
+            m_GLDataFormat = GL_BGRA;
+#endif
+        } else {
+            m_GLDataFormat = GL_RGBA;
+        }
         m_GLDataType = GL_UNSIGNED_BYTE;
         break;
     default:
@@ -366,7 +375,7 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
     DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     ScopedTimer t(QStringLiteral("ControllerRenderingEngine::send"));
     if (!frame.isEmpty()) {
-        controller->sendBytes(frame);
+        VERIFY_OR_TERMINATE(controller->sendBytes(frame), "Unable to send frame to device");
     }
 
     if (CmdlineArgs::Instance()

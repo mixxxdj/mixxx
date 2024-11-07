@@ -284,6 +284,10 @@ SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
 SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& params) {
+    // Ensure that the source isn't yet opened
+    VERIFY_OR_DEBUG_ASSERT(!m_requestedChannelCount.isValid()) {
+        return OpenResult::Failed;
+    }
     // Open input
     AVFormatContext* pavInputFormatContext =
             SoundSourceFFmpeg::openInputFile(getLocalFileName());
@@ -318,8 +322,6 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
     }
 
     AVStream* firstAudioStream = nullptr;
-    bool openInStereo = params.getSignalInfo().getChannelCount() ==
-            mixxx::audio::ChannelCount::stereo();
     int stemCount = 0;
     OpenParams stemParam = params;
     stemParam.setChannelCount(mixxx::audio::ChannelCount::stereo());
@@ -343,12 +345,8 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
 
         if (!firstAudioStream) {
             firstAudioStream = pavInputFormatContext->streams[streamIdx];
-
-            // If the stem file is requested into a stereo format, then we keep
-            // the main mix, otherwise we continue to iterate to find the stems
-            if (!openInStereo) {
-                continue;
-            }
+            // The main mix is only used to detect the stream parameters
+            continue;
         } else {
             if (pavInputFormatContext->streams[streamIdx]->codecpar->codec_id !=
                     firstAudioStream->codecpar->codec_id) {
@@ -365,12 +363,6 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
                 return OpenResult::Failed;
             }
             stemCount++;
-
-            // If the stem file is requested into a stereo format, then just
-            // count the stems to ensure the right format
-            if (openInStereo) {
-                continue;
-            }
         }
 
         m_pStereoStreams.emplace_back(std::make_unique<SoundSourceSingleSTEM>(getUrl(), streamIdx));
@@ -388,15 +380,16 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         return OpenResult::Failed;
     }
 
-    if (openInStereo) {
-        DEBUG_ASSERT(m_pStereoStreams.size() == 1);
-        // Requesting a stereo stream (used for analysis)
-        initChannelCountOnce(m_pStereoStreams.front()->getSignalInfo().getChannelCount());
+    if (params.getSignalInfo().getChannelCount() == mixxx::audio::ChannelCount::stereo()) {
+        // Requesting a stereo stream (used for samples and preview decks)
+        m_requestedChannelCount = mixxx::audio::ChannelCount::stereo();
+        initChannelCountOnce(mixxx::audio::ChannelCount::stereo());
     } else {
         // No special channel format request
+        m_requestedChannelCount = mixxx::audio::ChannelCount::stem();
         initChannelCountOnce(
-                mixxx::audio::ChannelCount::stereo() *
-                m_pStereoStreams.size());
+                static_cast<int>(mixxx::audio::ChannelCount::stereo() *
+                        m_pStereoStreams.size()));
     }
 
     initSampleRateOnce(m_pStereoStreams.front()->getSignalInfo().getSampleRate());
@@ -414,15 +407,12 @@ void SoundSourceSTEM::close() {
 
 ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
         const WritableSampleFrames& globalSampleFrames) {
-    if (m_pStereoStreams.size() == 1) {
-        // Opened in stereo mode, proxy the read request to the main mix channel
-        return m_pStereoStreams.front()->readSampleFrames(globalSampleFrames);
+    VERIFY_OR_DEBUG_ASSERT(m_requestedChannelCount.isValid()) {
+        return ReadableSampleFrames();
     }
 
-    int stemCount = m_pStereoStreams.size();
-
     VERIFY_OR_DEBUG_ASSERT(globalSampleFrames.writableLength() %
-                    (stemCount * mixxx::audio::ChannelCount::stereo()) ==
+                    m_requestedChannelCount ==
             0) {
         return ReadableSampleFrames();
     };
@@ -441,24 +431,41 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     globalSampleFrames.writableData(),
                     globalSampleFrames.writableLength()));
-    DEBUG_ASSERT(stemSampleLength * stemCount == globalSampleFrames.writableLength());
+    std::size_t stemCount = m_pStereoStreams.size();
     CSAMPLE* pBuffer = globalSampleFrames.writableData();
-    for (int streamIdx = 0; streamIdx < stemCount; streamIdx++) {
+
+    if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo()) {
+        SampleUtil::clear(pBuffer, globalSampleFrames.writableLength());
+    } else {
+        DEBUG_ASSERT(stemSampleLength * static_cast<SINT>(stemCount) ==
+                globalSampleFrames.writableLength());
+    }
+
+    for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
         WritableSampleFrames currentStemFrame = WritableSampleFrames(
                 globalSampleFrames.frameIndexRange(),
                 SampleBuffer::WritableSlice(
                         m_buffer.data(),
                         stemSampleLength));
         m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
-        // TODO(XXX): currently, stem samples are interleaved and packed next to each other as such:
-        //    1L1R1L1R1L1R...2L2R2L2R2L2R2L2R......3L3R3L3R3L3R3L3R......4L4R4L4R4L4R4L4R....
-        //    Can FFmpeg decode as without having to use a decoder per channel?
-        //    1LLLLLLLLLLLLLL....1RRRRRRRRR...2LLLLLLL...?
 
-        // Change the sample layout to interleave all channels together
-        for (SINT i = 0; i < stemSampleLength / 2; i++) {
-            pBuffer[2 * stemCount * i + 2 * streamIdx] = m_buffer[2 * i];
-            pBuffer[2 * stemCount * i + 2 * streamIdx + 1] = m_buffer[2 * i + 1];
+        // TODO(XXX): currently, stem samples are interleaved and packed
+        // next to each other as such:
+        //    1L1R1L1R1L1R...2L2R2L2R2L2R2L2R......3L3R3L3R3L3R3L3R......4L4R4L4R4L4R4L4R....
+        //    Can FFmpeg decode as without having to use a decoder per
+        //    channel? 1LLLLLLLLLLLLLL....1RRRRRRRRR...2LLLLLLL...?
+        if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+            // Change the sample layout to interleave all channels together
+            for (SINT i = 0; i < stemSampleLength / 2; i++) {
+                pBuffer[2 * stemCount * i + 2 * streamIdx] = m_buffer[2 * i];
+                pBuffer[2 * stemCount * i + 2 * streamIdx + 1] = m_buffer[2 * i + 1];
+            }
+        } else {
+            // Change the sample layout to mix all channels together
+            for (SINT i = 0; i < stemSampleLength / 2; i++) {
+                pBuffer[2 * i] += m_buffer[2 * i];
+                pBuffer[2 * i + 1] += m_buffer[2 * i + 1];
+            }
         }
     }
 

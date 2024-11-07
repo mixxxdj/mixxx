@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2024-06-12" timestamp="1718193546">
+    <release version="2.6.0" type="development" date="2024-08-13" timestamp="1723570900">
       <description>
  <p>
   Waveforms
@@ -153,7 +153,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.0" type="development" date="2024-06-12" timestamp="1718193546">
+    <release version="2.5.0" type="development" date="2024-08-13" timestamp="1723570900">
       <description>
  <p>
   Waveforms
@@ -178,6 +178,10 @@
    Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
    #13151
    #12641
+  </li>
+  <li>
+   Allow changing the waveform overview type without reloading the skin
+   #13273
   </li>
  </ul>
  <p>
@@ -336,6 +340,11 @@
    #12638
    #12634
   </li>
+  <li>
+   Show newly added effects, read/write HiddenEffects
+   #13326
+   #11343
+  </li>
  </ul>
  <p>
   Library
@@ -353,6 +362,7 @@
    Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
    #13092
    #10826
+   #13098
   </li>
   <li>
    Search: Add special BPM filters
@@ -436,13 +446,20 @@
    #10652
   </li>
   <li>
-   Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
-   #13092
-   #10826
+   Track menu: Show Properties in Missing and Hidden view
+   #13426
   </li>
   <li>
    Library control: make use of WLibrary::getCurrentTrackTableView()
    #13335
+  </li>
+  <li>
+   Optimize Library scrolling in BPMDelegate::paintItem
+   #13358
+  </li>
+  <li>
+   Library: fix font reset in multiline comment editor
+   #13448
   </li>
  </ul>
  <p>
@@ -480,6 +497,10 @@
   Controller Mappings
  </p>
  <ul>
+  <li>
+   Numark Scratch: Add controller settings
+   #13404
+  </li>
   <li>
    Pioneer DDJ-FLX4: Mapping improvements
    #12842
@@ -768,6 +789,15 @@
    CmdlineArgs: Move config directory to a user-accessible location on iOS
    #12688
   </li>
+  <li>
+   CMakeLists: Work around Qt shader bug with Xcode
+   #13379
+   #13378
+  </li>
+  <li>
+   AudioUnitManager: Disable unavailable in-process instantiation on iOS
+   #13383
+  </li>
  </ul>
  <p>
   Experimental WebAssembly support
@@ -860,6 +890,18 @@
   <li>
    macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
    #12101
+  </li>
+  <li>
+   Drop support for macOS versions earlier than 11
+  </li>
+  <li>
+   Drop support for Windows versions earlier than Windows 10 build 1809
+  </li>
+  <li>
+   Drop support for Ubuntu versions earlier than 22.04
+  </li>
+  <li>
+   Require a C++20 compiler
   </li>
  </ul>
  <p>
@@ -1054,6 +1096,14 @@
    #12798
   </li>
   <li>
+   localDateTimeFromUtc: Make argument a const reference and initialize QDateTime at construction
+   #13359
+  </li>
+  <li>
+   use enum class for waveform overview type
+   #13370
+  </li>
+  <li>
    Update to latest vcpkg dependencies
    #11649
    #12512
@@ -1104,7 +1154,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.2" type="development" date="2024-06-12" timestamp="1718193546">
+    <release version="2.4.2" type="development" date="2024-08-13" timestamp="1723570900">
       <description>
  <p>
   Controller Mappings
@@ -1126,6 +1176,7 @@
   <li>
    Numark Scratch: Add initial mapping
    #4834
+   #13375
   </li>
   <li>
    Sony SIXAXIS: Fix mapping
@@ -1194,6 +1245,16 @@
   <li>
    Fix minor 64 bit CPU performance issue
    #13355
+  </li>
+  <li>
+   Fix clicks at loop-out when looping into lead-in
+   #13294
+  </li>
+  <li>
+   Fix wrong pitch value on startup, caused by
+   components.Pot
+   #11814
+   #13463
   </li>
  </ul>
 </description>
@@ -1566,7 +1627,7 @@
    #11872
   </li>
   <li>
-   Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
+   Add support for overriding analysis settings about variable/constant BPM on a per-track basis
    #10931
   </li>
   <li>
@@ -3550,7 +3611,7 @@
    #11397
   </li>
   <li>
-   Fix drift in analyzis data after exporting metadata to MP3 files with ID3v1.1 tags
+   Fix drift in analysis data after exporting metadata to MP3 files with ID3v1.1 tags
    #11168
    #11159
   </li>
@@ -4957,7 +5018,7 @@
    #2743
   </li>
   <li>
-   Only apply ducking gain in manual ducking mode when talkover is enabed
+   Only apply ducking gain in manual ducking mode when talkover is enabled
    #7668
    #8995
    #8795

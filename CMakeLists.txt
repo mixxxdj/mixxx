@@ -796,6 +796,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/metronomeclick.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/compressoreffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
@@ -982,11 +983,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/sidebarmodel.cpp
   src/library/starrating.cpp
   src/library/tabledelegates/bpmdelegate.cpp
+  src/library/tabledelegates/checkboxdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
-  src/library/tabledelegates/playcountdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -1145,6 +1147,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/util/autofilereloader.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/clipboard.cpp
@@ -1332,6 +1335,7 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/control/control.h
   src/control/controlaudiotaperpot.h
   src/control/controlbehavior.h
+  src/control/controlbuttonmode.h
   src/control/controlcompressingproxy.h
   src/control/controleffectknob.h
   src/control/controlencoder.h
@@ -1441,7 +1445,6 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/util/rampingvalue.h
   src/util/rangelist.h
   src/util/readaheadsamplebuffer.h
-  src/util/reference.h
   src/util/regex.h
   src/util/rescaler.h
   src/util/ringdelaybuffer.h
@@ -2099,6 +2102,7 @@ add_executable(mixxx-test
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/itunesxmlimportertest.cpp
+  src/test/keyfactorytest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -2150,6 +2154,7 @@ add_executable(mixxx-test
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
   src/test/trackmetadata_test.cpp
+  src/test/trackmetadataexport_test.cpp
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
@@ -2320,7 +2325,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.21.0)
+  set(LIBDJINTEROP_VERSION 0.22.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2352,11 +2357,18 @@ if(ENGINEPRIME)
     # For offline builds download the archive file from the URL and
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
+    #
+    # If you want to test (locally) an experimental fork/branch of libdjinterop,
+    # you can comment out URL and URL_HASH and use GIT_REPOSITORY instead:
+    #
+    # GIT_REPOSITORY "https://github.com/abcd/your-fork-of-libdjinterop"
+    # GIT_TAG "origin/name-of-your-branch"
+    #
     ExternalProject_Add(libdjinterop
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=160d4e09b25e859816a6b664058e7c6bc5cd889adeb188a9721c2b65d2133641
+      URL_HASH SHA256=e811158d42c3864f5b682bcf76e0af78278050439d82d14d592dd0a391da6b20
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2552,6 +2564,13 @@ add_library(rekordbox_metadata STATIC EXCLUDE_FROM_ALL
 )
 target_include_directories(rekordbox_metadata SYSTEM PUBLIC lib/rekordbox-metadata)
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
+
+#silence "enumeration values not handled in switch" in generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
@@ -2775,15 +2794,20 @@ if(QML)
     src/qml/qmlplayermanagerproxy.cpp
     src/qml/qmlplayerproxy.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
+    src/qml/qmlchainpresetmodel.cpp
     src/qml/qmlwaveformoverview.cpp
+    src/qml/qmlmixxxcontrollerscreen.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
+    # needed for qml/qmlautoreload.cpp
+    src/util/autofilereloader.cpp
   )
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+
 
   install(
     DIRECTORY
@@ -3449,13 +3473,26 @@ if (STEM)
   target_sources(mixxx-test PUBLIC
     src/test/stemtest.cpp
     src/test/steminfotest.cpp
+    src/test/stemcontrolobjecttest.cpp
   )
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/widget/wstemlabel.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
+    target_sources(mixxx-qml-lib PRIVATE
+      src/qml/qmlstemsmodel.cpp
+    )
+  endif()
 endif()
 
 # Test Suite
@@ -3659,7 +3696,7 @@ else()
   check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
   if(NOT HAVE_GSL_GSL)
     unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
-    message(FATAL_ERROR "ms-gsl deveopment headers (libmsgsl-dev) not found")
+    message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
   endif()
 endif()
 

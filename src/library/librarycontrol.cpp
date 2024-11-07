@@ -221,7 +221,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // This CO is never actually set or read so the value just needs to be not 0
     m_pRefocusPrevWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "refocus_prev_widget"));
-    m_pRefocusPrevWidgetCO->setButtonMode(ControlPushButton::TRIGGER);
+    m_pRefocusPrevWidgetCO->setButtonMode(mixxx::control::ButtonMode::Trigger);
 #ifdef MIXXX_USE_QML
     if (!CmdlineArgs::Instance().isQml())
 #endif
@@ -285,7 +285,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Sort controls
     m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
-    m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortOrder->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
     m_pSortFocusedColumn = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "sort_focused_column"));
@@ -1039,8 +1039,11 @@ void LibraryControl::slotGoToItem(double v) {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &pressSpace);
-        QApplication::sendEvent(QApplication::focusWindow(), &releaseSpace);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &pressSpace);
+            QApplication::sendEvent(pWindow, &releaseSpace);
+        }
         return;
     }
     case FocusWidget::ContextMenu:
@@ -1054,7 +1057,10 @@ void LibraryControl::slotGoToItem(double v) {
         // If Unknown is some other 'untrained' or unresponsive widget
         // GoToItem is inappropriate and we can't do much about that.
         QKeyEvent event = QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &event);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &event);
+        }
         return;
     }
     case FocusWidget::Searchbar:
