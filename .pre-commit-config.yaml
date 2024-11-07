@@ -32,7 +32,7 @@ default_language_version:
   rust: 1.64.0
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: fix-byte-order-marker
         exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|UTF-8-BOM.txt)$
@@ -66,7 +66,7 @@ repos:
           ]
         exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|.*\.(?:pot?|(?<!d\.)ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.8.0
+    rev: v9.14.0
     hooks:
       - id: eslint
         args: [--fix, --report-unused-disable-directives]
@@ -96,12 +96,12 @@ repos:
           - clang-format==16.0.6
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 24.10.0
     hooks:
       - id: black
         files: ^tools/.*$
   - repo: https://github.com/pycqa/flake8
-    rev: "7.1.0"
+    rev: "7.1.1"
     hooks:
       - id: flake8
         files: ^tools/.*$
@@ -111,11 +111,11 @@ repos:
     hooks:
       - id: shellcheck
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.13.0
+    rev: v0.14.0
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.29.1
+    rev: 0.29.4
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/pre-commit/mirrors-prettier
