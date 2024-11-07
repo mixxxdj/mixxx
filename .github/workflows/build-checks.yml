@@ -26,22 +26,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4.2.1
+      - name: Add clazy PPA
+        # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
+        run: |
+          sudo add-apt-repository ppa:daschuer/clazy
+          sudo apt update
       - name: Install build dependencies
         run: tools/debian_buildenv.sh setup
-      - name: Build clazy v1.12
-        if: matrix.name == 'clazy'
-        # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 2404
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y llvm-dev libclang-dev clang
-          git clone --branch v1.12 --single-branch https://github.com/KDE/clazy.git
-          cd clazy
-          mkdir build
-          cd build
-          cmake ..
-          make -j$(nproc)
-          sudo make install
-          clazy --version
       - name: Create build directory
         run: mkdir build
       - name: Configure (clazy)
