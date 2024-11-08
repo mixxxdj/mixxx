@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
-#include <limits>
 
 #include "util/denormalsarezero.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace {
@@ -51,11 +51,11 @@ TEST_F(MathUtilTest, IsNaN) {
 TEST_F(MathUtilTest, IsInf) {
     // Test floats can be recognized as infinity.
     EXPECT_FALSE(util_isinf(0.0f));
-    EXPECT_TRUE(util_isinf(std::numeric_limits<float>::infinity()));
+    EXPECT_TRUE(util_isinf(util_float_infinity()));
 
     // Test doubles can be recognized as infinity.
     EXPECT_FALSE(util_isinf(0.0f));
-    EXPECT_TRUE(util_isinf(std::numeric_limits<double>::infinity()));
+    EXPECT_TRUE(util_isinf(util_double_infinity()));
 }
 
 TEST_F(MathUtilTest, Denormal) {

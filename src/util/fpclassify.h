@@ -24,3 +24,6 @@ int util_isnan(double x);
 
 int util_isinf(float x);
 int util_isinf(double x);
+
+float util_float_infinity();
+double util_double_infinity();
