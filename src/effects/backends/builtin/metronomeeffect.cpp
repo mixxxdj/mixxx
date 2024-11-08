@@ -1,6 +1,7 @@
 #include "metronomeeffect.h"
 
 #include <cmath>
+#include <cstddef>
 #include <limits>
 #include <optional>
 #include <span>
@@ -60,6 +61,15 @@ std::span<CSAMPLE> syncedClickOutput(double beatFractionBufferEnd,
         return output.last(beatToBufferEndSamples);
     }
     return {};
+}
+
+std::span<CSAMPLE> unsyncedClickOutput(mixxx::audio::SampleRate framesPerSecond,
+        std::size_t framesSinceLastClick,
+        double bpm,
+        std::span<CSAMPLE> output) {
+    std::size_t offset = framesSinceLastClick %
+            framesPerBeat(framesPerSecond, bpm);
+    return subspan_clamped(output, offset * mixxx::kEngineChannelOutputCount);
 }
 
 } // namespace
@@ -163,20 +173,17 @@ void MetronomeEffect::processChannel(
     playMonoSamplesWithGain(subspan_clamped(click, gs->framesSinceLastClick), output, gain);
     gs->framesSinceLastClick += engineParameters.framesPerBuffer();
 
-    std::span<CSAMPLE> outputBufferOffset = [&] {
-        if (shouldSync && hasBeatInfo) {
-            return syncedClickOutput(*groupFeatures.beat_fraction_buffer_end,
-                    groupFeatures.beat_length,
-                    output);
-        } else {
-            // EngineParameters::sampleRate in reality returns the framerate.
-            mixxx::audio::SampleRate framesPerSecond = engineParameters.sampleRate();
-            std::size_t offset = gs->framesSinceLastClick %
-                    framesPerBeat(framesPerSecond,
-                            m_pBpmParameter->value());
-            return subspan_clamped(output, offset * mixxx::kEngineChannelOutputCount);
-        }
-    }();
+    std::span<CSAMPLE> outputBufferOffset = shouldSync && hasBeatInfo
+            ? syncedClickOutput(*groupFeatures.beat_fraction_buffer_end,
+                      groupFeatures.beat_length,
+                      output)
+            : unsyncedClickOutput(
+                      engineParameters
+                              .sampleRate(), // engineParameters::sampleRate()
+                                             // in reality returns the frameRate
+                      gs->framesSinceLastClick,
+                      m_pBpmParameter->value(),
+                      output);
 
     if (!outputBufferOffset.empty()) {
         gs->framesSinceLastClick = playMonoSamplesWithGain(click, outputBufferOffset, gain);

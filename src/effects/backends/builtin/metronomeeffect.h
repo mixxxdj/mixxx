@@ -9,7 +9,7 @@
 class MetronomeGroupState final : public EffectState {
   public:
     MetronomeGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters){};
+            : EffectState(engineParameters) {};
     ~MetronomeGroupState() override = default;
 
     std::size_t framesSinceLastClick = 0;
