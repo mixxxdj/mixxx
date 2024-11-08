@@ -227,6 +227,13 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
 
     QDomDocument skin("skin");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = skin.setContent(&skinXmlFile);
+    if (!parseResult) {
+        qDebug() << "LegacySkinParser::openSkin - setContent failed see"
+                 << "line:" << parseResult.errorLine << "column:" << parseResult.errorColumn;
+        qDebug() << "LegacySkinParser::openSkin - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -235,6 +242,7 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
         qDebug() << "LegacySkinParser::openSkin - setContent failed see"
                  << "line:" << errorLine << "column:" << errorColumn;
         qDebug() << "LegacySkinParser::openSkin - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -1732,6 +1740,15 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     }
 
     QDomDocument tmpl("template");
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = tmpl.setContent(&templateFile);
+    if (!parseResult) {
+        qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
+                   << absolutePath << "line:" << parseResult.errorLine
+                   << "column:" << parseResult.errorColumn;
+        qWarning() << "LegacySkinParser::loadTemplate - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -1741,6 +1758,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
         qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
                    << absolutePath << "line:" << errorLine << "column:" << errorColumn;
         qWarning() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 

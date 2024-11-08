@@ -141,7 +141,11 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         pCheckBox->setCheckState(m_editedValue ? Qt::Checked : Qt::Unchecked);
     });
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(pCheckBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) {
+#else
     connect(pCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
+#endif
         m_editedValue = state == Qt::Checked;
         emit changed();
     });
