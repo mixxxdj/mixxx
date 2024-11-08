@@ -1,6 +1,7 @@
 #include "widget/controlwidgetconnection.h"
 
 #include <QStyle>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "moc_controlwidgetconnection.cpp"
@@ -33,9 +34,9 @@ QMetaProperty propertyFromWidget(const QWidget* pWidget, const QString& name) {
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,
         const ConfigKey& key,
-        ValueTransformer* pTransformer)
+        std::unique_ptr<ValueTransformer> pTransformer)
         : m_pWidget(pBaseWidget),
-          m_pValueTransformer(pTransformer) {
+          m_pValueTransformer(std::move(pTransformer)) {
     m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
@@ -64,10 +65,12 @@ double ControlWidgetConnection::getControlParameterForValue(double value) const 
 }
 
 ControlParameterWidgetConnection::ControlParameterWidgetConnection(
-        WBaseWidget* pBaseWidget, const ConfigKey& key,
-        ValueTransformer* pTransformer, DirectionOption directionOption,
+        WBaseWidget* pBaseWidget,
+        const ConfigKey& key,
+        std::unique_ptr<ValueTransformer> pTransformer,
+        DirectionOption directionOption,
         EmitOption emitOption)
-        : ControlWidgetConnection(pBaseWidget, key, pTransformer),
+        : ControlWidgetConnection(pBaseWidget, key, std::move(pTransformer)),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
 }
@@ -120,9 +123,9 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget,
         const ConfigKey& key,
-        ValueTransformer* pTransformer,
+        std::unique_ptr<ValueTransformer> pTransformer,
         const QString& propertyName)
-        : ControlWidgetConnection(pBaseWidget, key, pTransformer),
+        : ControlWidgetConnection(pBaseWidget, key, std::move(pTransformer)),
           m_propertyName(propertyName),
           m_property(propertyFromWidget(pBaseWidget->toQWidget(), propertyName)) {
     // Initial update to synchronize the property in all the sub widgets

@@ -2,21 +2,20 @@
 
 #include <QMetaProperty>
 #include <QObject>
-#include <QScopedPointer>
 #include <QString>
+#include <memory>
 
 #include "control/controlproxy.h"
-#include "util/valuetransformer.h"
 
 class WBaseWidget;
+class ValueTransformer;
 
 class ControlWidgetConnection : public QObject {
     Q_OBJECT
   public:
-    // Takes ownership of pControl and pTransformer.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                            const ConfigKey& key,
-                            ValueTransformer* pTransformer);
+            const ConfigKey& key,
+            std::unique_ptr<ValueTransformer> pTransformer);
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
@@ -41,7 +40,7 @@ class ControlWidgetConnection : public QObject {
     ControlProxy* m_pControl;
 
   private:
-    QScopedPointer<ValueTransformer> m_pValueTransformer;
+    std::unique_ptr<ValueTransformer> m_pValueTransformer;
 };
 
 class ControlParameterWidgetConnection final : public ControlWidgetConnection {
@@ -94,10 +93,10 @@ class ControlParameterWidgetConnection final : public ControlWidgetConnection {
     }
 
     ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
-                                     const ConfigKey& key,
-                                     ValueTransformer* pTransformer,
-                                     DirectionOption directionOption,
-                                     EmitOption emitOption);
+            const ConfigKey& key,
+            std::unique_ptr<ValueTransformer> pTransformer,
+            DirectionOption directionOption,
+            EmitOption emitOption);
 
     void Init();
 
@@ -126,9 +125,9 @@ class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
     Q_OBJECT
   public:
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
-                                    const ConfigKey& key,
-                                    ValueTransformer* pTransformer,
-                                    const QString& propertyName);
+            const ConfigKey& key,
+            std::unique_ptr<ValueTransformer> pTransformer,
+            const QString& propertyName);
 
     QString toDebugString() const override;
 
