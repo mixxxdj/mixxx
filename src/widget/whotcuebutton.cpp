@@ -68,22 +68,22 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoType->connectValueChanged(this, &WHotcueButton::slotTypeChanged);
     slotTypeChanged(m_pCoType->get());
 
-    auto* pLeftConnection = new ControlParameterWidgetConnection(
+    addLeftConnection(std::make_unique<ControlParameterWidgetConnection>(
             this,
             getLeftClickConfigKey(), // "activate"
             nullptr,
             ControlParameterWidgetConnection::DIR_FROM_WIDGET,
-            ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
-    addLeftConnection(pLeftConnection);
+            ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE)
+                    .release());
 
-    auto* pDisplayConnection = new ControlParameterWidgetConnection(
+    auto pDisplayConnection = std::make_unique<ControlParameterWidgetConnection>(
             this,
             createConfigKey(QStringLiteral("status")),
             nullptr,
             ControlParameterWidgetConnection::DIR_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_NEVER);
-    addConnection(pDisplayConnection);
-    setDisplayConnection(pDisplayConnection);
+    setDisplayConnection(pDisplayConnection.get());
+    addConnection(std::move(pDisplayConnection).release());
 
     QDomNode con = context.selectNode(node, QStringLiteral("Connection"));
     if (!con.isNull()) {
