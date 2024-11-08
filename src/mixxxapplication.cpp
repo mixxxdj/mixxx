@@ -15,6 +15,7 @@
 #include "track/track.h"
 #include "track/trackref.h"
 #include "util/cache.h"
+#include "util/cmdlineargs.h"
 #include "util/color/rgbcolor.h"
 #include "util/fileinfo.h"
 #include "util/math.h"
@@ -50,9 +51,9 @@ Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
 #endif // QT_STATIC
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 namespace {
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 /// This class allows to change the button of a mouse event on the fly.
 /// This is required because we want to change the behaviour of Qts mouse
 /// buttony synthesizer without duplicate all the code.
@@ -69,14 +70,25 @@ class QMouseEventEditable : public QMouseEvent {
     }
 #endif
 };
+#endif
+
+// kEventNotifyExecTimeWarningThreshold defines the threshold duration for event
+// processing warnings. If the processing time of an event exceeds this duration
+// in developer mode, a warning will be logged. This is used to identify
+// potentially slow event processing in the application, which could impact
+// performance. With a 60Hz waveform update rate, paint and swap events must be
+// processed through the event queue every 16.6ms, to ensure smooth rendering.
+// Exceeding this processing time can lead to visible delays, therefore 10ms is a
+// reasonable threshold.
+constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(10);
 
 } // anonymous namespace
-#endif
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
           m_rightPressedButtons(0),
-          m_pTouchShift(nullptr) {
+          m_pTouchShift(nullptr),
+          m_isDeveloper(CmdlineArgs::Instance().getDeveloper()) {
     registerMetaTypes();
 
     // Increase the size of the global thread pool to at least
@@ -128,8 +140,8 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // All touch events are translated into two simultaneous events: one for
     // the target QWidgetWindow and one for the target QWidget.
     // A second touch becomes a mouse move without additional press and release
@@ -177,9 +189,32 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     default:
         break;
     }
-    return QApplication::notify(target, event);
+#endif
+
+    PerformanceTimer time;
+
+    if (m_isDeveloper) {
+        time.start();
+    }
+
+    bool ret = QApplication::notify(target, event);
+
+    if (m_isDeveloper && time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+        qDebug() << "Processing event type"
+                 << event->type()
+                 << "for object"
+                 << target->metaObject()->className()
+                 << target->objectName()
+                 << "running in thread:"
+                 << target->thread()->objectName()
+                 << "took"
+                 << time.elapsed().debugMillisWithUnit();
+    }
+
+    return ret;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {
         m_pTouchShift = new ControlProxy(
