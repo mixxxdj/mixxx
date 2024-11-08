@@ -83,7 +83,7 @@ let slicerTrackConnection2;
 let slicerSizeConnection2;
 let slicerBeatConnection2;
 
-DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
+DJCi300.vuMeterUpdateMain = function(value, _group, _control) {
     value = (value * 125);
     midi.sendShortMsg(0xB0, 0x40, value);
     midi.sendShortMsg(0xB0, 0x41, value);
@@ -173,8 +173,8 @@ DJCi300.init = function() {
     // Connect the VUMeters
     engine.makeConnection("[Channel1]", "VuMeter", DJCi300.vuMeterUpdateDeck);
     engine.makeConnection("[Channel2]", "VuMeter", DJCi300.vuMeterUpdateDeck);
-    engine.makeConnection("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMaster);
-    engine.makeConnection("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMaster);
+    engine.makeConnection("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMain);
+    engine.makeConnection("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMain);
 
     // Connect beatmatch LED functions
     engine.makeConnection("[Channel1]", "bpm", DJCi300.updateBeatmatchTempoLED);
