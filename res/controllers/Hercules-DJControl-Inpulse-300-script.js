@@ -65,15 +65,15 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 
 // Pad modes
-DJCi300.padModeNone = -1;
-DJCi300.padModeHotcue = 0;
-DJCi300.padModeRoll = 1;
-DJCi300.padModeSlicer = 2;
-DJCi300.padModeSampler = 3;
-DJCi300.padModeToneplay = 4;
-DJCi300.padModeFX = 5;
-DJCi300.padModeSlicerloop = 6;
-DJCi300.padModeBeatjump = 7;
+DJCi300.padModeNone = 0;
+DJCi300.padModeHotcue = 15;
+DJCi300.padModeRoll = 16;
+DJCi300.padModeSlicer = 17;
+DJCi300.padModeSampler = 18;
+DJCi300.padModeToneplay = 19;
+DJCi300.padModeFX = 20;
+DJCi300.padModeSlicerloop = 21;
+DJCi300.padModeBeatjump = 22;
 
 // Slicer connections
 let slicerSizeConnection1;
@@ -134,8 +134,8 @@ DJCi300.init = function() {
     };
     // Slicer buttons (stores whether or not slicer button is pressed)
     DJCi300.slicerButtonEnabled = {
-        1: [0, 0, 0, 0, 0, 0, 0, 0],
-        2: [0, 0, 0, 0, 0, 0, 0, 0]
+        1: [false, false, false, false, false, false, false, false],
+        2: [false, false, false, false, false, false, false, false]
     };
     // Slicer beat (stores what beat slicer is on)
     DJCi300.slicerBeat = {
@@ -407,7 +407,7 @@ DJCi300._currentPosition = function(deck) {
 DJCi300.changeMode = function(channel, control, value, _status, _group) {
     const deck = channel;
     const oldPadMode = DJCi300.padMode[deck];
-    DJCi300.padMode[deck] = control - 15;
+    DJCi300.padMode[deck] = control;
 
     // Connect slicer functions when entering slicer or slicerloop mode
     if ((DJCi300.padMode[deck] === DJCi300.padModeSlicer) ||
@@ -642,9 +642,9 @@ DJCi300.slicerButton = function(channel, control, value, _status, group) {
 
     // Update array. 1 for on, 0 for off
     if (value) {
-        DJCi300.slicerButtonEnabled[deck][button] = 1;
+        DJCi300.slicerButtonEnabled[deck][button] = true;
     } else {
-        DJCi300.slicerButtonEnabled[deck][button] = 0;
+        DJCi300.slicerButtonEnabled[deck][button] = false;
     }
 
     const start = DJCi300.slicerButtonEnabled[deck].indexOf(1);
