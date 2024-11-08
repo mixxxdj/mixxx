@@ -135,10 +135,10 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     if (m_leftConnections.empty()) {
         if (!m_connections.empty()) {
             // If no left connection is set, the this is the left connection
-            leftConnection = m_connections[0];
+            leftConnection = m_connections[0].get();
         }
     } else {
-        leftConnection = m_leftConnections[0];
+        leftConnection = m_leftConnections[0].get();
     }
 
     if (leftConnection) {

@@ -9,21 +9,7 @@ WBaseWidget::WBaseWidget(QWidget* pWidget)
           m_pWidget(pWidget) {
 }
 
-WBaseWidget::~WBaseWidget() {
-    m_pDisplayConnection = nullptr;
-    while (!m_leftConnections.isEmpty()) {
-        delete m_leftConnections.takeLast();
-    }
-    while (!m_rightConnections.isEmpty()) {
-        delete m_rightConnections.takeLast();
-    }
-    while (!m_connections.isEmpty()) {
-        delete m_connections.takeLast();
-    }
-    while (!m_propertyConnections.isEmpty()) {
-        delete m_propertyConnections.takeLast();
-    }
-}
+WBaseWidget::~WBaseWidget() = default;
 
 void WBaseWidget::Init() {
     if (m_pDisplayConnection) {
@@ -36,19 +22,21 @@ void WBaseWidget::setDisplayConnection(ControlParameterWidgetConnection* pConnec
     m_pDisplayConnection = pConnection;
 }
 
-void WBaseWidget::addConnection(ControlParameterWidgetConnection* pConnection) {
+void WBaseWidget::addConnection(std::unique_ptr<ControlParameterWidgetConnection> pConnection) {
     m_connections.push_back(std::move(pConnection));
 }
 
-void WBaseWidget::addLeftConnection(ControlParameterWidgetConnection* pConnection) {
+void WBaseWidget::addLeftConnection(std::unique_ptr<ControlParameterWidgetConnection> pConnection) {
     m_leftConnections.push_back(std::move(pConnection));
 }
 
-void WBaseWidget::addRightConnection(ControlParameterWidgetConnection* pConnection) {
+void WBaseWidget::addRightConnection(
+        std::unique_ptr<ControlParameterWidgetConnection> pConnection) {
     m_rightConnections.push_back(std::move(pConnection));
 }
 
-void WBaseWidget::addPropertyConnection(ControlWidgetPropertyConnection* pConnection) {
+void WBaseWidget::addPropertyConnection(
+        std::unique_ptr<ControlWidgetPropertyConnection> pConnection) {
     m_propertyConnections.push_back(std::move(pConnection));
 }
 

@@ -2387,8 +2387,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     std::make_unique<ControlWidgetPropertyConnection>(pWidget,
                             control->getKey(),
                             std::move(pTransformer),
-                            property)
-                            .release());
+                            property));
         } else {
             bool nodeValue;
             Qt::MouseButton state = parseButtonState(con, *m_pContext);
@@ -2449,8 +2448,8 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
-            ControlParameterWidgetConnection* pConnection =
-                    new ControlParameterWidgetConnection(pWidget,
+            auto pConnection =
+                    std::make_unique<ControlParameterWidgetConnection>(pWidget,
                             control->getKey(),
                             std::move(pTransformer),
                             static_cast<ControlParameterWidgetConnection::
@@ -2460,19 +2459,19 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
 
             switch (state) {
             case Qt::NoButton:
-                pWidget->addConnection(pConnection);
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
-                    pLastLeftOrNoButtonConnection = pConnection;
+                    pLastLeftOrNoButtonConnection = pConnection.get();
                 }
+                pWidget->addConnection(std::move(pConnection));
                 break;
             case Qt::LeftButton:
-                pWidget->addLeftConnection(pConnection);
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
-                    pLastLeftOrNoButtonConnection = pConnection;
+                    pLastLeftOrNoButtonConnection = pConnection.get();
                 }
+                pWidget->addLeftConnection(std::move(pConnection));
                 break;
             case Qt::RightButton:
-                pWidget->addRightConnection(pConnection);
+                pWidget->addRightConnection(std::move(pConnection));
                 break;
             default:
                 // can't happen. Nothing else is returned by parseButtonState();
