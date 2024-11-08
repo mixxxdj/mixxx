@@ -163,13 +163,13 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             m_handler.setEventWhileDrag(false);
         }
     }
-    if (!m_connections.isEmpty()) {
-        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-        if (defaultConnection) {
-            if (defaultConnection->getEmitOption() &
+    if (!m_connections.empty()) {
+        auto& pDefaultConnection = m_connections[0];
+        if (pDefaultConnection) {
+            if (pDefaultConnection->getEmitOption() &
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
-                defaultConnection->setEmitOption(
+                pDefaultConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
             }
         }

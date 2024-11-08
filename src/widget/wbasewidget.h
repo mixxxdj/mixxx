@@ -53,13 +53,6 @@ class WBaseWidget {
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
 
-    inline const QList<ControlParameterWidgetConnection*>& connections() const {
-        return m_connections;
-    };
-    inline const QList<ControlParameterWidgetConnection*>& leftConnections() const {
-        return m_leftConnections;
-    };
-
 
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is

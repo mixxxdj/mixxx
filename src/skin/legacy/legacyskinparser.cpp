@@ -2383,12 +2383,12 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
         if (m_pContext->hasNodeSelectString(con, "BindProperty", &property)) {
             //qDebug() << "Making property connection for" << property;
 
-            ControlWidgetPropertyConnection* pConnection =
-                    new ControlWidgetPropertyConnection(pWidget,
+            pWidget->addPropertyConnection(
+                    std::make_unique<ControlWidgetPropertyConnection>(pWidget,
                             control->getKey(),
                             std::move(pTransformer),
-                            property);
-            pWidget->addPropertyConnection(pConnection);
+                            property)
+                            .release());
         } else {
             bool nodeValue;
             Qt::MouseButton state = parseButtonState(con, *m_pContext);

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
 
 class WPushButtonTest : public ::testing::Test {

@@ -43,6 +43,8 @@ ControlWidgetConnection::ControlWidgetConnection(
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
+ControlWidgetConnection::~ControlWidgetConnection() = default;
+
 void ControlWidgetConnection::setControlParameter(double parameter) {
     if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transformInverse(parameter);
@@ -76,6 +78,8 @@ ControlParameterWidgetConnection::ControlParameterWidgetConnection(
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
 }
+
+ControlParameterWidgetConnection::~ControlParameterWidgetConnection() = default;
 
 void ControlParameterWidgetConnection::Init() {
     slotControlValueChanged(m_pControl->get());
@@ -133,6 +137,8 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
     // Initial update to synchronize the property in all the sub widgets
     slotControlValueChanged(m_pControl->get());
 }
+
+ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() = default;
 
 QString ControlWidgetPropertyConnection::toDebugString() const {
     const ConfigKey& key = getKey();

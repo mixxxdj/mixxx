@@ -132,13 +132,13 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     ControlParameterWidgetConnection* leftConnection = nullptr;
-    if (m_leftConnections.isEmpty()) {
-        if (!m_connections.isEmpty()) {
+    if (m_leftConnections.empty()) {
+        if (!m_connections.empty()) {
             // If no left connection is set, the this is the left connection
-            leftConnection = m_connections.at(0);
+            leftConnection = m_connections[0];
         }
     } else {
-        leftConnection = m_leftConnections.at(0);
+        leftConnection = m_leftConnections[0];
     }
 
     if (leftConnection) {
@@ -187,8 +187,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    if (!m_rightConnections.isEmpty()) {
-        ControlParameterWidgetConnection* rightConnection = m_rightConnections.at(0);
+    if (!m_rightConnections.empty()) {
+        auto& rightConnection = m_rightConnections[0];
         bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton", false);
         m_rightButtonMode = mixxx::control::ButtonMode::Push;
         if (!rightClickForcePush) {

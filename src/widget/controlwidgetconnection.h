@@ -17,6 +17,7 @@ class ControlWidgetConnection : public QObject {
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
             const ConfigKey& key,
             std::unique_ptr<ValueTransformer> pTransformer);
+    ~ControlWidgetConnection() override;
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
@@ -99,6 +100,8 @@ class ControlParameterWidgetConnection final : public ControlWidgetConnection {
             DirectionOption directionOption,
             EmitOption emitOption);
 
+    ~ControlParameterWidgetConnection() override;
+
     void Init();
 
     QString toDebugString() const override;
@@ -129,6 +132,8 @@ class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
             const ConfigKey& key,
             std::unique_ptr<ValueTransformer> pTransformer,
             const QString& propertyName);
+
+    ~ControlWidgetPropertyConnection() override;
 
     QString toDebugString() const override;
 

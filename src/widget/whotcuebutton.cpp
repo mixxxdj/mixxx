@@ -6,6 +6,7 @@
 #include "moc_whotcuebutton.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
 
 namespace {
