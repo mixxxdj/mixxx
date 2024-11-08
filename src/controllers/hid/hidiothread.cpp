@@ -40,6 +40,7 @@ HidIoThread::HidIoThread(
           m_pHidDevice(pHidDevice),
           m_lastPollSize(0),
           m_pollingBufferIndex(0),
+          m_hidReadErrorLogged(false),
           m_globalOutputReportFifo(),
           m_runLoopSemaphore(1) {
     // Initializing isn't strictly necessary but is good practice.
@@ -99,16 +100,27 @@ void HidIoThread::pollBufferedInputReports() {
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
-            qCWarning(m_logOutput) << "Unable to read buffered HID InputReports from"
-                                   << m_deviceInfo.formatName() << ":"
-                                   << mixxx::convertWCStringToQString(
-                                              hid_error(m_pHidDevice),
-                                              kMaxHidErrorMessageSize);
             DEBUG_ASSERT(bytesRead == -1);
+            if (!m_hidReadErrorLogged) {
+                qCWarning(m_logOutput)
+                        << "Unable to read buffered HID InputReports from"
+                        << m_deviceInfo.formatName() << ":"
+                        << mixxx::convertWCStringToQString(
+                                   hid_error(m_pHidDevice),
+                                   kMaxHidErrorMessageSize)
+                        << "Note that, this message is only logged once and "
+                           "may not appear again until all hid_read errors "
+                           "have disappeared.";
+                // Stop logging error messages if every hid_read() fails to avoid large log files
+                m_hidReadErrorLogged = true;
+            }
             break;
-        } else if (bytesRead == 0) {
-            // No InputReports left to be read
-            break;
+        } else {
+            m_hidReadErrorLogged = false; // Allow to log new errors
+            if (bytesRead == 0) {
+                // No InputReports left to be read
+                break;
+            }
         }
         processInputReport(bytesRead);
     }
