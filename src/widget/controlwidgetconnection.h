@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "util/parented_ptr.h"
 
 class WBaseWidget;
 class ValueTransformer;
@@ -37,7 +38,7 @@ class ControlWidgetConnection : public QObject {
     // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlProxy* m_pControl;
+    parented_ptr<ControlProxy> m_pControl;
 
   private:
     std::unique_ptr<ValueTransformer> m_pValueTransformer;

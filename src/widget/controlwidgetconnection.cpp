@@ -6,6 +6,7 @@
 #include "control/controlproxy.h"
 #include "moc_controlwidgetconnection.cpp"
 #include "util/assert.h"
+#include "util/parented_ptr.h"
 #include "util/valuetransformer.h"
 #include "widget/wbasewidget.h"
 
@@ -35,9 +36,10 @@ ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,
         const ConfigKey& key,
         std::unique_ptr<ValueTransformer> pTransformer)
-        : m_pWidget(pBaseWidget),
+        : QObject(),
+          m_pWidget(pBaseWidget),
+          m_pControl(make_parented<ControlProxy>(key, this, ControlFlag::NoAssertIfMissing)),
           m_pValueTransformer(std::move(pTransformer)) {
-    m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
