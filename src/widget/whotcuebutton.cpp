@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
+#include "widget/wbasewidget.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
@@ -69,21 +70,21 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoType->connectValueChanged(this, &WHotcueButton::slotTypeChanged);
     slotTypeChanged(m_pCoType->get());
 
-    addLeftConnection(std::make_unique<ControlParameterWidgetConnection>(
-            this,
-            getLeftClickConfigKey(), // "activate"
-            nullptr,
-            ControlParameterWidgetConnection::DIR_FROM_WIDGET,
-            ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
+    addConnection(std::make_unique<ControlParameterWidgetConnection>(
+                          this,
+                          getLeftClickConfigKey(), // "activate"
+                          nullptr,
+                          ControlParameterWidgetConnection::DIR_FROM_WIDGET,
+                          ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+            WBaseWidget::ConnectionSide::Left);
 
-    auto pDisplayConnection = std::make_unique<ControlParameterWidgetConnection>(
-            this,
-            createConfigKey(QStringLiteral("status")),
-            nullptr,
-            ControlParameterWidgetConnection::DIR_TO_WIDGET,
-            ControlParameterWidgetConnection::EMIT_NEVER);
-    setDisplayConnection(pDisplayConnection.get());
-    addConnection(std::move(pDisplayConnection));
+    addAndSetDisplayConnection(std::make_unique<ControlParameterWidgetConnection>(
+                                       this,
+                                       createConfigKey(QStringLiteral("status")),
+                                       nullptr,
+                                       ControlParameterWidgetConnection::DIR_TO_WIDGET,
+                                       ControlParameterWidgetConnection::EMIT_NEVER),
+            WBaseWidget::ConnectionSide::None);
 
     QDomNode con = context.selectNode(node, QStringLiteral("Connection"));
     if (!con.isNull()) {

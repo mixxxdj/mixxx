@@ -8,6 +8,7 @@
 #include "control/controlpushbutton.h"
 #include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
+#include "widget/wbasewidget.h"
 
 class WPushButtonTest : public ::testing::Test {
   public:
@@ -22,13 +23,14 @@ class WPushButtonTest : public ::testing::Test {
     WPushButtonTest() {
         pushControl.setButtonMode(mixxx::control::ButtonMode::LongPressLatching);
         pushButton.setStates(2);
-        pushButton.addLeftConnection(
+        pushButton.addConnection(
                 std::make_unique<ControlParameterWidgetConnection>(
                         &pushButton,
                         pushControl.getKey(),
                         nullptr,
                         ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
-                        ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
+                        ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+                WBaseWidget::ConnectionSide::Left);
     }
 };
 

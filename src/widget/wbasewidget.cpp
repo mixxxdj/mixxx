@@ -17,22 +17,27 @@ void WBaseWidget::Init() {
     }
 }
 
-void WBaseWidget::setDisplayConnection(ControlParameterWidgetConnection* pConnection) {
-    //qDebug() << "WBaseWidget::setDisplayConnection()" << pConnection->toDebugString();
-    m_pDisplayConnection = pConnection;
+void WBaseWidget::addConnection(
+        std::unique_ptr<ControlParameterWidgetConnection> pConnection,
+        ConnectionSide side) {
+    switch (side) {
+    case ConnectionSide::None:
+        m_connections.push_back(std::move(pConnection));
+        break;
+    case ConnectionSide::Left:
+        m_leftConnections.push_back(std::move(pConnection));
+        break;
+    case ConnectionSide::Right:
+        m_rightConnections.push_back(std::move(pConnection));
+        break;
+    }
 }
 
-void WBaseWidget::addConnection(std::unique_ptr<ControlParameterWidgetConnection> pConnection) {
-    m_connections.push_back(std::move(pConnection));
-}
-
-void WBaseWidget::addLeftConnection(std::unique_ptr<ControlParameterWidgetConnection> pConnection) {
-    m_leftConnections.push_back(std::move(pConnection));
-}
-
-void WBaseWidget::addRightConnection(
-        std::unique_ptr<ControlParameterWidgetConnection> pConnection) {
-    m_rightConnections.push_back(std::move(pConnection));
+void WBaseWidget::addAndSetDisplayConnection(
+        std::unique_ptr<ControlParameterWidgetConnection> pConnection,
+        ConnectionSide side) {
+    m_pDisplayConnection = pConnection.get();
+    addConnection(std::move(pConnection), side);
 }
 
 void WBaseWidget::addPropertyConnection(
