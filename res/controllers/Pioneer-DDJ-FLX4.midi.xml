@@ -118,7 +118,7 @@
                 <group>[Channel1]</group>
                 <key>reverseroll</key>
                 <status>0x90</status>
-                <midino>0x47</midino>
+                <midino>0x0E</midino>
                 <options>
                     <Normal/>
                 </options>
@@ -138,7 +138,7 @@
                 <group>[Channel2]</group>
                 <key>reverseroll</key>
                 <status>0x91</status>
-                <midino>0x47</midino>
+                <midino>0x0E</midino>
                 <options>
                     <Normal/>
                 </options>
