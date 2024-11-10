@@ -27,6 +27,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4.2.1
       - name: Add clazy PPA
+        if: matrix.name == 'clazy'
         # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
         run: |
           sudo add-apt-repository ppa:daschuer/clazy
@@ -39,6 +40,7 @@ jobs:
         if: matrix.name == 'clazy'
         # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
         run: |
+          clazy --version
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
             -DWARNINGS_FATAL=ON \
