@@ -78,13 +78,16 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
 
     if (!smartiesData.isEmpty()) {
         lineEditID->setText(smartiesData[0].toString());
+        lineEditID->setReadOnly(true);
         lineEditName->setText(smartiesData[1].toString());
         spinBoxCount->setValue(smartiesData[2].toInt());
         checkBoxShow->setChecked(smartiesData[3].toBool());
         buttonLock->setText(smartiesData[4].toBool() ? "Unlock" : "Lock");
         checkBoxAutoDJ->setChecked(smartiesData[5].toBool());
         lineEditSearchInput->setText(smartiesData[6].toString());
+        lineEditSearchSQL->setReadOnly(true);
         lineEditSearchSQL->setText(smartiesData[7].toString());
+        textEditSearchSQL->setText(smartiesData[7].toString());
 
         QStringList fieldOptions = {"",
                 "artist",
@@ -265,7 +268,7 @@ QVariantList dlgSmartiesInfo::collectUIChanges() const {
                 QString("comboBoxCondition%1Combiner").arg(i))
                                    ->currentText();
 
-        qDebug() << "[SMARTIES][EDIT DLG]---> Collecting Condition "
+        qDebug() << "[SMARTIES] [EDIT DLG]---> Collecting Condition "
                  << i << ":"
                  << "Field:" << field
                  << "Operator:" << op

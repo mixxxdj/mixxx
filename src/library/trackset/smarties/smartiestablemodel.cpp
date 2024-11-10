@@ -26,18 +26,20 @@ const QString kModelName = QStringLiteral("smarties");
 
 SmartiesTableModel::SmartiesTableModel(
         QObject* pParent,
-        TrackCollectionManager* pTrackCollectionManager)
+        TrackCollectionManager* pTrackCollectionManager,
+        TrackCollection* pTrackCollection)
         : TrackSetTableModel(
                   pParent,
                   pTrackCollectionManager,
-                  "mixxx.db.model.smarties") {
+                  "mixxx.db.model.smarties"),
+          m_pTrackCollection(pTrackCollection) {
 }
 
 void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
     // qDebug() << "SmartiesTableModel::setSmarties()" << smartiesId;
     if (smartiesId == m_selectedSmarties) {
         qDebug() << "[SMARTIES] Already focused on smarties " << smartiesId;
-        return;
+        //        return;
     }
     // Store search text
     QString currSearch = currentSearch();
@@ -51,7 +53,11 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
 
     m_selectedSmarties = smartiesId;
 
+    QString checkStamp = QDateTime::currentDateTime().toString("hhmmss");
     QString tableName = QStringLiteral("smarties_%1").arg(m_selectedSmarties.toString());
+    QString tableNameOld =
+            QStringLiteral("smarties_%1_%2")
+                    .arg(m_selectedSmarties.toString(), checkStamp);
     QStringList columns;
     columns << LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
@@ -59,17 +65,23 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
             // the same value as the cover digest.
             << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
 
-    QSqlQuery* queryGetLocked = new QSqlQuery(m_database);
-    queryGetLocked->prepare("SELECT locked from smarties where id=:id");
-    queryGetLocked->addBindValue(smartiesId.toVariant());
-    queryGetLocked->exec();
-    queryGetLocked->next();
-    bool getLocked = queryGetLocked->value(0).toInt();
-    qDebug() << "[SMARTIES] queryGetLocked " << queryGetLocked;
-    //    qDebug() << "searchValue " << searchValue;
-    queryGetLocked->clear();
+    bool getLocked;
+    FwdSqlQuery queryGetLocked(m_database,
+            QStringLiteral("SELECT locked from smarties where id=:smartiesId"));
+    queryGetLocked.bindValue(":smartiesId", smartiesId);
+    qDebug() << "[SMARTIES] [LOCKED ?] -> get locked: queryGetLocked "
+             << "SELECT locked from smarties where id = "
+             << smartiesId;
+
+    if (queryGetLocked.execPrepared() && queryGetLocked.next()) {
+        getLocked = queryGetLocked.fieldValue(0).toBool();
+    } else {
+        getLocked = false;
+    }
+    qDebug() << "[SMARTIES] [LOCKED ?] -> locked: " << getLocked;
 
     if (getLocked) {
+        // read cache = tracks from smarties_tracks
         qDebug() << "[SMARTIES] [LOCKED] -> GET CACHED TRACKS ";
         QString queryStringTempView =
                 QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -89,21 +101,13 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
         FwdSqlQuery(m_database, queryStringTempView).execPrepared();
     } else {
         qDebug() << "[SMARTIES] [NOT LOCKED]";
-        //        QSqlQuery* queryGetSearchValue = new QSqlQuery(m_database);
-        //        queryGetSearchValue->prepare("SELECT search_sql from smarties where id=:id");
-        //        queryGetSearchValue->addBindValue(smartiesId.toVariant());
 
-        //        queryGetSearchValue->exec();
-        //        queryGetSearchValue->next();
-        //        QString searchValue = queryGetSearchValue->value(0).toString();
-        //        qDebug() << "[SMARTIES] queryGetSearchValue " << queryGetSearchValue;
-        //        qDebug() << "[SMARTIES] searchValue " << searchValue;
-        //        queryGetSearchValue->clear();
-
+        // delete cache = delete tracks in smarties_tracks table witg selected id
         QString queryStringDeleteIDFromSmartiesTracks = QString(
                 "DELETE FROM smarties_tracks "
                 "WHERE smarties_id = " +
                 smartiesId.toVariant().toString());
+
         qDebug() << "[SMARTIES] [NOT LOCKED] [DELETE CACHED TRACKS] "
                     "queryStringDeleteIDFromSmartiesTracks "
                  << queryStringDeleteIDFromSmartiesTracks;
@@ -111,6 +115,7 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
 
         // Create SQl based on conditions in smarties
         QVariantList smartiesData;
+        smartiesData.clear();
         qDebug() << "[SMARTIES] [NOT LOCKED] [CONSTRUCT SQL] -> selectSmarties2QVL ";
         selectSmarties2QVL(smartiesId, smartiesData); // Fetch smarties data
         qDebug() << "[SMARTIES] [NOT LOCKED] [CONSTRUCT SQL] -> whereClause ";
@@ -119,6 +124,7 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                     "generated:"
                  << whereClause;
 
+        // create cache = put tracks in smarties_tracks table witg selected id
         QString queryStringIDtoSmartiesTracks = QString(
                 "INSERT OR IGNORE INTO smarties_tracks (smarties_id, track_id) "
                 "SELECT " +
@@ -127,32 +133,25 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                 //        "SELECT :smartiesId, library.id FROM library "
                 "WHERE " +
                 whereClause);
-
-        //                "WHERE library.artist like '%" + searchValue + "%' "
-        //                "OR library.title like '%" + searchValue + "%'"
-        //                "OR library.album like '%" + searchValue + "%' "
-        //                "OR library.album_artist like '%" + searchValue + "%' "
-        //                "OR library.composer like '%" + searchValue + "%' "
-        //                "OR library.genre like '%" + searchValue + "%' "
-        //                "OR library.comment like '%" + searchValue + "%' ");
+        FwdSqlQuery(m_database, queryStringIDtoSmartiesTracks).execPrepared();
         qDebug() << "[SMARTIES] [NOT LOCKED] [CREATE CACHE] -> Create temp "
                     "view queryStringIDtoSmartiesTracks "
                  << queryStringIDtoSmartiesTracks;
+
+        // QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(tableName);
+        QString queryStringDropView = QString("Alter table rename %1 to %2 ")
+                                              .arg(tableName, tableNameOld);
         FwdSqlQuery(m_database, queryStringIDtoSmartiesTracks).execPrepared();
+        // qDebug() << "[SMARTIES] [NOT LOCKED] [CREATE CACHE] -> Drop view "
+        qDebug() << "[SMARTIES] [NOT LOCKED] [CREATE CACHE] -> Rename TEMP table"
+                    "queryStringDropView "
+                 << queryStringDropView;
 
         QString queryStringTempView =
                 QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                         "SELECT %2 FROM %3 "
                         "WHERE " +
                         whereClause)
-
-                        //  "WHERE library.artist like '%" + searchValue + "%' " "OR
-                        //  library.title like '%" + searchValue + "%'" "OR
-                        //  library.album like '%" + searchValue + "%' " "OR
-                        //  library.album_artist like '%" + searchValue + "%' " "OR
-                        //  library.composer like '%" + searchValue + "%' " "OR
-                        //  library.genre like '%" + searchValue + "%' " "OR
-                        //  library.comment like '%" + searchValue + "%' ")
                         .arg(tableName,            // 1
                                 columns.join(","), // 2
                                 LIBRARY_TABLE);    // 3
@@ -336,7 +335,7 @@ QString SmartiesTableModel::modelKey(bool noSearch) const {
 }
 
 void SmartiesTableModel::selectSmarties2QVL(SmartiesId smartiesId, QVariantList& smartiesData) {
-    qDebug() << "selectSmarties2QVL start with SmartiesId:" << smartiesId;
+    qDebug() << "[SMARTIES] [selectSmarties2QVL] start with SmartiesId:" << smartiesId;
 
     // Assuming m_database is properly connected
     QSqlQuery* query = new QSqlQuery(m_database);
@@ -368,7 +367,9 @@ void SmartiesTableModel::selectSmarties2QVL(SmartiesId smartiesId, QVariantList&
                                 .toString());
             }
 
-            qDebug() << "selectSmarties2QVL loaded data into QVariantList:" << smartiesData;
+            qDebug() << "[SMARTIES] [selectSmarties2QVL] loaded data into "
+                        "QVariantList:"
+                     << smartiesData;
             // Retrieve previous and next record IDs
             //            QVariant previousId = getPreviousRecordId(smartiesId);
             //            QVariant nextId = getNextRecordId(smartiesId);
@@ -385,10 +386,13 @@ void SmartiesTableModel::selectSmarties2QVL(SmartiesId smartiesId, QVariantList&
             //            smartiesData.append(isBOF);
             //            smartiesData.append(isEOF);
         } else {
-            qDebug() << "selectSmarties2QVL: No data found for SmartiesId:" << smartiesId;
+            qDebug() << "[SMARTIES] [selectSmarties2QVL] No data found for "
+                        "SmartiesId:"
+                     << smartiesId;
         }
     } else {
-        qDebug() << "selectSmarties2QVL: Failed to execute query -" << query->lastError();
+        qDebug() << "[SMARTIES] [selectSmarties2QVL] Failed to execute query -"
+                 << query->lastError();
     }
     delete query;
 }
@@ -414,8 +418,12 @@ QVariant SmartiesTableModel::getNextRecordId(SmartiesId currentId) {
 }
 
 void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantList& smartiesData) {
-    qDebug() << "saveQVL2Smarties starts for ID:" << smartiesId;
-
+    qDebug() << "[SMARTIES] [saveQVL2Smarties] starts for ID:" << smartiesId;
+    qDebug() << "[SMARTIES] [saveQVL2Smarties] UPDATE SQL WhereClause "
+             << buildWhereClause(smartiesData).replace("'", "");
+    QString whereClause2Save = buildWhereClause(smartiesData);
+    qDebug() << "[SMARTIES] [saveQVL2Smarties] UPDATE SQL WhereClause "
+             << whereClause2Save.replace("'", "");
     // Core update for basic fields
     QString coreUpdate = QString(
             "UPDATE smarties SET name = '" + smartiesData[1].toString() +
@@ -435,14 +443,18 @@ void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantL
             "search_input = '" +
             smartiesData[6].toString() +
             "', "
+            //            "search_sql = '" +
+            //            smartiesData[7].toString() +
             "search_sql = '" +
-            smartiesData[7].toString() +
+            whereClause2Save.replace("'", "") +
             "' "
             "WHERE id = " +
             smartiesData[0].toString());
+    //    qDebug() << "UPDATE SQL WhereClause " <<
+    //    buildWhereClause(smartiesData).replace("'", "\'");
 
     if (!FwdSqlQuery(m_database, coreUpdate).execPrepared()) {
-        qDebug() << "Core Update failed:";
+        qDebug() << "[SMARTIES] [saveQVL2Smarties] Core Update failed:";
         return;
     }
 
@@ -452,7 +464,7 @@ void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantL
     QString conditionUpdate1 = buildConditionUpdateQuery(smartiesData, 8, 19);
     //    query.prepare(conditionUpdate1);
     if (!FwdSqlQuery(m_database, conditionUpdate1).execPrepared()) {
-        qDebug() << "Condition Update 1 failed:";
+        qDebug() << "[SMARTIES] [saveQVL2Smarties] Condition Update 1 failed:";
         return;
     }
     conditionUpdate1.clear();
@@ -461,7 +473,7 @@ void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantL
     QString conditionUpdate2 = buildConditionUpdateQuery(smartiesData, 20, 31);
     //    query.prepare(conditionUpdate2);
     if (!FwdSqlQuery(m_database, conditionUpdate2).execPrepared()) {
-        qDebug() << "Condition Update 2 failed:";
+        qDebug() << "[SMARTIES] [saveQVL2Smarties] Condition Update 2 failed:";
         return;
     }
     conditionUpdate2.clear();
@@ -470,7 +482,7 @@ void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantL
     QString conditionUpdate3 = buildConditionUpdateQuery(smartiesData, 32, 43);
     //    query.prepare(conditionUpdate3);
     if (!FwdSqlQuery(m_database, conditionUpdate3).execPrepared()) {
-        qDebug() << "Condition Update 3 failed:";
+        qDebug() << "[SMARTIES] [saveQVL2Smarties] Condition Update 3 failed:";
         return;
     }
     conditionUpdate3.clear();
@@ -479,12 +491,12 @@ void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantL
     QString conditionUpdate4 = buildConditionUpdateQuery(smartiesData, 44, 55);
     //    query.prepare(conditionUpdate4);
     if (!FwdSqlQuery(m_database, conditionUpdate4).execPrepared()) {
-        qDebug() << "Condition Update 4 failed:";
+        qDebug() << "[SMARTIES] [saveQVL2Smarties] Condition Update 4 failed:";
         return;
     }
     conditionUpdate4.clear();
 
-    qDebug() << "saveQVL2Smarties completed for ID:" << smartiesId;
+    qDebug() << "[SMARTIES] [saveQVL2Smarties] completed for ID:" << smartiesId;
 }
 
 QString SmartiesTableModel::buildConditionUpdateQuery(
@@ -551,7 +563,7 @@ QString SmartiesTableModel::buildConditionUpdateQuery(
 }
 
 void SmartiesTableModel::getWhereClauseForSmarties(SmartiesId smartiesId) {
-    qDebug() << "getWhereClauseForSmarties starts for SmartiesId:" << smartiesId;
+    qDebug() << "[SMARTIES] [getWhereClauseForSmarties] starts for SmartiesId:" << smartiesId;
 
     QVariantList smartiesData;
 
@@ -585,26 +597,26 @@ void SmartiesTableModel::getWhereClauseForSmarties(SmartiesId smartiesId) {
                                 .toString());
             }
 
-            qDebug() << "[SMARTIES] CONSTRUCT SQL -> getWhereClauseForSmarties "
+            qDebug() << "[SMARTIES] [CONSTRUCT SQL] -> getWhereClauseForSmarties "
                         "loaded data into QVariantList:"
                      << smartiesData;
 
             // Step 2: Build the WHERE clause using the populated smartiesData
             QString whereClause = buildWhereClause(smartiesData);
-            qDebug() << "[SMARTIES] CONSTRUCT SQL -> WHERE clause generated:" << whereClause;
+            qDebug() << "[SMARTIES] [CONSTRUCT SQL] -> WHERE clause generated:" << whereClause;
 
             // Example of using the whereClause in another SQL query
             QString finalQuery = QString("SELECT * FROM your_table %1").arg(whereClause);
-            qDebug() << "[SMARTIES] CONSTRUCT SQL -> Final SQL query:" << finalQuery;
+            qDebug() << "[SMARTIES] [CONSTRUCT SQL] -> Final SQL query:" << finalQuery;
 
         } else {
             qDebug()
-                    << "[SMARTIES] CONSTRUCT SQL -> getWhereClauseForSmarties: "
+                    << "[SMARTIES] [CONSTRUCT SQL] -> getWhereClauseForSmarties: "
                        "No data found for SmartiesId:"
                     << smartiesId;
         }
     } else {
-        qDebug() << "[SMARTIES] CONSTRUCT SQL -> getWhereClauseForSmarties: "
+        qDebug() << "[SMARTIES] [CONSTRUCT SQL] -> getWhereClauseForSmarties: "
                     "Failed to execute query -"
                  << query->lastError();
     }
@@ -617,8 +629,10 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
     bool hasConditions = false;
 
     QStringList combinerOptions = {") END", "AND", "OR", ") AND (", ") OR ("};
-    // Assuming searchValue is at index 7 (you may adjust this index as needed)
-    QString searchValue = smartiesData[7].toString();
+    // Assuming searchValue is at index 6 (search_input)
+    QString searchValue = smartiesData[6].toString(); // search_input
+    // Assuming searchValue is at index 7 (search_dql)
+    // QString searchValue = smartiesData[7].toString(); // seatch_dql
 
     for (int i = 1; i <= 12; ++i) {
         int baseIndex = 8 + (i - 1) * 4; // Adjusting for the correct index in smartiesData
@@ -680,6 +694,6 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
 
     whereClause += ")";
 
-    qDebug() << "[SMARTIES] CONSTRUCT SQL -> Constructed WHERE clause:" << whereClause;
+    qDebug() << "[SMARTIES] [CONSTRUCT SQL] -> Constructed WHERE clause:" << whereClause;
     return whereClause;
 }

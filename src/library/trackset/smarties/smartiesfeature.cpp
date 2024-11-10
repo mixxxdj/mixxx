@@ -14,6 +14,7 @@
 #include "library/parsercsv.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/playlistfeature.h"
 #include "library/trackset/smarties/smartiesfeaturehelper.h"
 #include "library/trackset/smarties/smartiessummary.h"
 #include "library/treeitem.h"
@@ -46,13 +47,18 @@ const ConfigKey kConfigKeyLastImportExportSmartiesDirectoryKey(
 
 using namespace mixxx::library::prefs;
 
-SmartiesFeature::SmartiesFeature(
-        Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : BaseTrackSetFeature(pLibrary, pConfig, "SMARTIESHOME", QStringLiteral("smarties")),
-          m_lockedSmartiesIcon(":/images/library/ic_library_locked_tracklist.svg"),
-          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
-          m_smartiesTableModel(this, pLibrary->trackCollectionManager()) {
+SmartiesFeature::SmartiesFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseTrackSetFeature(pLibrary,
+                  pConfig,
+                  "SMARTIESHOME",
+                  QStringLiteral("smarties")),
+          m_lockedSmartiesIcon(
+                  ":/images/library/ic_library_locked_tracklist.svg"),
+          m_pTrackCollection(
+                  pLibrary->trackCollectionManager()->internalCollection()),
+          m_smartiesTableModel(this,
+                  pLibrary->trackCollectionManager(),
+                  pLibrary->trackCollectionManager()->internalCollection()) {
     initActions();
 
     // construct child model
@@ -68,8 +74,8 @@ void SmartiesFeature::initActions() {
     connect(m_pCreateSmartiesAction.get(),
             &QAction::triggered,
             this,
-            &SmartiesFeature::slotEditSmarties);
-    //            &SmartiesFeature::slotCreateSmarties);
+            //            &SmartiesFeature::slotEditSmarties);
+            &SmartiesFeature::slotCreateSmarties);
     m_pEditSmartiesAction = make_parented<QAction>(tr("Edit Smarties"), this);
     // m_pEditSmartiesAction->setShortcut(kEditSidebarItemShortcutKey);
     connect(m_pEditSmartiesAction.get(),
@@ -579,6 +585,7 @@ void SmartiesFeature::slotDuplicateSmarties() {
         SmartiesId newSmartiesId =
                 SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
                         .duplicateSmarties(smarties);
+        //        m_pUpdateDuplicateSmarties
         if (newSmartiesId.isValid()) {
             qDebug() << "Duplicate smarties" << smarties << ", new smarties:" << newSmartiesId;
             return;
@@ -659,10 +666,12 @@ void SmartiesFeature::slotEditSmarties() {
                 &dlgSmartiesInfo::dataUpdated,
                 this,
                 [this](const QVariantList& updatedData) {
+                    
                     smartiesData =
                             updatedData; // Capture the updated data from the UI
                     qDebug() << "[SMARTIES] [EDIT] - Updated data received from dlgSmartiesInfo:"
                              << smartiesData;
+
                 });
 
         connect(&infoDialog, &dlgSmartiesInfo::requestNewSmarties, this, [this]() {
@@ -808,14 +817,10 @@ void SmartiesFeature::slotEditSmarties() {
             qDebug() << "[SMARTIES] [EDIT] - Smarties data saved from QVariantList to database for "
                         "SmartiesId:"
                      << smartiesId;
-            //            m_pTrackCollection->updateSmarties(smarties);
-            //            slotSmartiesTableChanged(smartiesId);
-            //            slotToggleSmartiesLock();
-            //            slotToggleSmartiesLock();
-            //            rebuildChildModel(smartiesId);
+
             activateSmarties(smartiesId);
-            rebuildChildModel();
-            m_pTrackCollection->smarties().readSmartiesSummaryById(smartiesId);
+            slotSmartiesTableChanged(smartiesId);
+            QModelIndex constructChildModel(indexFromSmartiesId(smartiesId));
             qDebug() << "[SMARTIES] [EDIT] - Smarties sidebar update for SmartiesId";
         }
     }

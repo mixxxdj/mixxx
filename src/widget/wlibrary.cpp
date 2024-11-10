@@ -34,6 +34,8 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {
     //qDebug() << "WLibrary::registerView" << name;
+    qDebug() << "[WLibrary] [registerView] -> name " << name;
+    qDebug() << "[WLibrary] [registerView] -> pview " << pView;
     const auto lock = lockMutex(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
@@ -52,6 +54,7 @@ bool WLibrary::registerView(const QString& name, QWidget* pView) {
 void WLibrary::switchToView(const QString& name) {
     const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
+    qDebug() << "[WLibrary] [switchToView] -> name " << name;
 
     LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
             currentWidget());
@@ -59,6 +62,7 @@ void WLibrary::switchToView(const QString& name) {
     QWidget* pWidget = m_viewMap.value(name, nullptr);
     if (pWidget != nullptr) {
         LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
+
         if (pLibraryView == nullptr) {
             qDebug() << "WARNING: Attempted to switch to view" << name << "with WLibrary "
                      << "which does not implement the LibraryView interface. "
@@ -80,15 +84,19 @@ void WLibrary::switchToView(const QString& name) {
 void WLibrary::pasteFromSidebar() {
     QWidget* pCurrent = currentWidget();
     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+    qDebug() << "[WLibrary] [search] -> current " << pCurrent;
+    qDebug() << "[WLibrary] [pasteDromSidebar] -> pview " << pView;
     if (pView) {
         pView->pasteFromSidebar();
     }
 }
 
 void WLibrary::search(const QString& name) {
+    qDebug() << "[WLibrary] [search] -> name " << name;
     auto lock = lockMutex(&m_mutex);
     QWidget* pCurrent = currentWidget();
     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+    qDebug() << "[WLibrary] [search] -> pview " << pView;
     if (pView == nullptr) {
         qDebug() << "WARNING: Attempted to search in view" << name << "with WLibrary "
                  << "which does not implement the LibraryView interface. Ignoring.";

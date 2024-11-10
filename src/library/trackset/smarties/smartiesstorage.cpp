@@ -52,6 +52,7 @@ const QString kSmartiesSummaryViewSelect =
 const QString kSmartiesSummaryViewQuery =
         QStringLiteral(
                 "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS %2 %3 "
+                //                "CREATE TEMPORARY VIEW %1 AS %2 %3 "
                 "GROUP BY %4.%5")
                 .arg(
                         SMARTIES_SUMMARY_VIEW,
@@ -84,6 +85,324 @@ class SmartiesQueryBinder final {
     }
     void bindSearchSql(const QString& placeholder, const Smarties& smarties) const {
         m_query.bindValue(placeholder, QVariant(smarties.getSearchSql()));
+    }
+    void bindCondition1Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition1Operator()));
+    }
+    void bindCondition2Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition2Operator()));
+    }
+    void bindCondition3Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition3Operator()));
+    }
+    void bindCondition4Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition4Operator()));
+    }
+    void bindCondition5Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition5Operator()));
+    }
+    void bindCondition6Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition6Operator()));
+    }
+    void bindCondition7Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition7Operator()));
+    }
+    void bindCondition8Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition8Operator()));
+    }
+    void bindCondition9Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition9Operator()));
+    }
+    void bindCondition10Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition10Operator()));
+    }
+    void bindCondition11Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition11Operator()));
+    }
+    void bindCondition12Operator(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition12Operator()));
+    }
+
+    void bindCondition1Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition1Value()));
+    }
+    void bindCondition2Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition2Value()));
+    }
+    void bindCondition3Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition3Value()));
+    }
+    void bindCondition4Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition4Value()));
+    }
+    void bindCondition5Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition5Value()));
+    }
+    void bindCondition6Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition6Value()));
+    }
+    void bindCondition7Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition7Value()));
+    }
+    void bindCondition8Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition8Value()));
+    }
+    void bindCondition9Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition9Value()));
+    }
+    void bindCondition10Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition10Value()));
+    }
+    void bindCondition11Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition11Value()));
+    }
+    void bindCondition12Value(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition12Value()));
+    }
+
+    void bindCondition1Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition1Combiner()));
+    }
+    void bindCondition2Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition2Combiner()));
+    }
+    void bindCondition3Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition3Combiner()));
+    }
+    void bindCondition4Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition4Combiner()));
+    }
+    void bindCondition5Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition5Combiner()));
+    }
+    void bindCondition6Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition6Combiner()));
+    }
+    void bindCondition7Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition7Combiner()));
+    }
+    void bindCondition8Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition8Combiner()));
+    }
+    void bindCondition9Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition9Combiner()));
+    }
+    void bindCondition10Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition10Combiner()));
+    }
+    void bindCondition11Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition11Combiner()));
+    }
+    void bindCondition12Combiner(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition12Combiner()));
+    }
+
+    void bindCondition1Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition1Field()));
+    }
+    void bindCondition2Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition2Field()));
+    }
+    void bindCondition3Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition3Field()));
+    }
+    void bindCondition4Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition4Field()));
+    }
+    void bindCondition5Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition5Field()));
+    }
+    void bindCondition6Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition6Field()));
+    }
+    void bindCondition7Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition7Field()));
+    }
+    void bindCondition8Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition8Field()));
+    }
+    void bindCondition9Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition9Field()));
+    }
+    void bindCondition10Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition10Field()));
+    }
+    void bindCondition11Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition11Field()));
+    }
+    void bindCondition12Field(const QString& placeholder, const Smarties& smarties) const {
+        m_query.bindValue(placeholder, QVariant(smarties.getCondition12Field()));
+    }
+    void bindConditionField(const QString& fieldName, const Smarties& smarties, int index) {
+        switch (index) {
+        case 1:
+            bindCondition1Field(fieldName, smarties);
+            break;
+        case 2:
+            bindCondition2Field(fieldName, smarties);
+            break;
+        case 3:
+            bindCondition3Field(fieldName, smarties);
+            break;
+        case 4:
+            bindCondition4Field(fieldName, smarties);
+            break;
+        case 5:
+            bindCondition5Field(fieldName, smarties);
+            break;
+        case 6:
+            bindCondition6Field(fieldName, smarties);
+            break;
+        case 7:
+            bindCondition7Field(fieldName, smarties);
+            break;
+        case 8:
+            bindCondition8Field(fieldName, smarties);
+            break;
+        case 9:
+            bindCondition9Field(fieldName, smarties);
+            break;
+        case 10:
+            bindCondition10Field(fieldName, smarties);
+            break;
+        case 11:
+            bindCondition11Field(fieldName, smarties);
+            break;
+        case 12:
+            bindCondition12Field(fieldName, smarties);
+            break;
+        default:
+            break;
+        }
+    }
+
+    void bindConditionOperator(const QString& operatorName, const Smarties& smarties, int index) {
+        switch (index) {
+        case 1:
+            bindCondition1Operator(operatorName, smarties);
+            break;
+        case 2:
+            bindCondition2Operator(operatorName, smarties);
+            break;
+        case 3:
+            bindCondition3Operator(operatorName, smarties);
+            break;
+        case 4:
+            bindCondition4Operator(operatorName, smarties);
+            break;
+        case 5:
+            bindCondition5Operator(operatorName, smarties);
+            break;
+        case 6:
+            bindCondition6Operator(operatorName, smarties);
+            break;
+        case 7:
+            bindCondition7Operator(operatorName, smarties);
+            break;
+        case 8:
+            bindCondition8Operator(operatorName, smarties);
+            break;
+        case 9:
+            bindCondition9Operator(operatorName, smarties);
+            break;
+        case 10:
+            bindCondition10Operator(operatorName, smarties);
+            break;
+        case 11:
+            bindCondition11Operator(operatorName, smarties);
+            break;
+        case 12:
+            bindCondition12Operator(operatorName, smarties);
+            break;
+        default:
+            break;
+        }
+    }
+
+    void bindConditionValue(const QString& valueName, const Smarties& smarties, int index) {
+        switch (index) {
+        case 1:
+            bindCondition1Value(valueName, smarties);
+            break;
+        case 2:
+            bindCondition2Value(valueName, smarties);
+            break;
+        case 3:
+            bindCondition3Value(valueName, smarties);
+            break;
+        case 4:
+            bindCondition4Value(valueName, smarties);
+            break;
+        case 5:
+            bindCondition5Value(valueName, smarties);
+            break;
+        case 6:
+            bindCondition6Value(valueName, smarties);
+            break;
+        case 7:
+            bindCondition7Value(valueName, smarties);
+            break;
+        case 8:
+            bindCondition8Value(valueName, smarties);
+            break;
+        case 9:
+            bindCondition9Value(valueName, smarties);
+            break;
+        case 10:
+            bindCondition10Value(valueName, smarties);
+            break;
+        case 11:
+            bindCondition11Value(valueName, smarties);
+            break;
+        case 12:
+            bindCondition12Value(valueName, smarties);
+            break;
+        default:
+            break;
+        }
+    }
+
+    void bindConditionCombiner(const QString& combinerName, const Smarties& smarties, int index) {
+        switch (index) {
+        case 1:
+            bindCondition1Combiner(combinerName, smarties);
+            break;
+        case 2:
+            bindCondition2Combiner(combinerName, smarties);
+            break;
+        case 3:
+            bindCondition3Combiner(combinerName, smarties);
+            break;
+        case 4:
+            bindCondition4Combiner(combinerName, smarties);
+            break;
+        case 5:
+            bindCondition5Combiner(combinerName, smarties);
+            break;
+        case 6:
+            bindCondition6Combiner(combinerName, smarties);
+            break;
+        case 7:
+            bindCondition7Combiner(combinerName, smarties);
+            break;
+        case 8:
+            bindCondition8Combiner(combinerName, smarties);
+            break;
+        case 9:
+            bindCondition9Combiner(combinerName, smarties);
+            break;
+        case 10:
+            bindCondition10Combiner(combinerName, smarties);
+            break;
+        case 11:
+            bindCondition11Combiner(combinerName, smarties);
+            break;
+        case 12:
+            bindCondition12Combiner(combinerName, smarties);
+            break;
+        default:
+            break;
+        }
     }
 
   protected:
@@ -118,7 +437,55 @@ SmartiesQueryFields::SmartiesQueryFields(const FwdSqlQuery& query)
           m_iLocked(query.fieldIndex(SMARTIESTABLE_LOCKED)),
           m_iAutoDjSource(query.fieldIndex(SMARTIESTABLE_AUTODJ_SOURCE)),
           m_iSearchInput(query.fieldIndex(SMARTIESTABLE_SEARCH_INPUT)),
-          m_iSearchSql(query.fieldIndex(SMARTIESTABLE_SEARCH_SQL)) {
+          m_iSearchSql(query.fieldIndex(SMARTIESTABLE_SEARCH_SQL)),
+          m_iCondition1Field(query.fieldIndex(SMARTIESTABLE_CONDITION_1_FIELD)),
+          m_iCondition1Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_1_OPERATOR)),
+          m_iCondition1Value(query.fieldIndex(SMARTIESTABLE_CONDITION_1_VALUE)),
+          m_iCondition1Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_1_COMBINER)),
+          m_iCondition2Field(query.fieldIndex(SMARTIESTABLE_CONDITION_2_FIELD)),
+          m_iCondition2Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_2_OPERATOR)),
+          m_iCondition2Value(query.fieldIndex(SMARTIESTABLE_CONDITION_2_VALUE)),
+          m_iCondition2Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_2_COMBINER)),
+          m_iCondition3Field(query.fieldIndex(SMARTIESTABLE_CONDITION_3_FIELD)),
+          m_iCondition3Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_3_OPERATOR)),
+          m_iCondition3Value(query.fieldIndex(SMARTIESTABLE_CONDITION_3_VALUE)),
+          m_iCondition3Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_3_COMBINER)),
+          m_iCondition4Field(query.fieldIndex(SMARTIESTABLE_CONDITION_4_FIELD)),
+          m_iCondition4Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_4_OPERATOR)),
+          m_iCondition4Value(query.fieldIndex(SMARTIESTABLE_CONDITION_4_VALUE)),
+          m_iCondition4Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_4_COMBINER)),
+          m_iCondition5Field(query.fieldIndex(SMARTIESTABLE_CONDITION_5_FIELD)),
+          m_iCondition5Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_5_OPERATOR)),
+          m_iCondition5Value(query.fieldIndex(SMARTIESTABLE_CONDITION_5_VALUE)),
+          m_iCondition5Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_5_COMBINER)),
+          m_iCondition6Field(query.fieldIndex(SMARTIESTABLE_CONDITION_6_FIELD)),
+          m_iCondition6Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_6_OPERATOR)),
+          m_iCondition6Value(query.fieldIndex(SMARTIESTABLE_CONDITION_6_VALUE)),
+          m_iCondition6Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_6_COMBINER)),
+          m_iCondition7Field(query.fieldIndex(SMARTIESTABLE_CONDITION_7_FIELD)),
+          m_iCondition7Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_7_OPERATOR)),
+          m_iCondition7Value(query.fieldIndex(SMARTIESTABLE_CONDITION_7_VALUE)),
+          m_iCondition7Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_7_COMBINER)),
+          m_iCondition8Field(query.fieldIndex(SMARTIESTABLE_CONDITION_8_FIELD)),
+          m_iCondition8Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_8_OPERATOR)),
+          m_iCondition8Value(query.fieldIndex(SMARTIESTABLE_CONDITION_8_VALUE)),
+          m_iCondition8Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_8_COMBINER)),
+          m_iCondition9Field(query.fieldIndex(SMARTIESTABLE_CONDITION_9_FIELD)),
+          m_iCondition9Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_9_OPERATOR)),
+          m_iCondition9Value(query.fieldIndex(SMARTIESTABLE_CONDITION_9_VALUE)),
+          m_iCondition9Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_9_COMBINER)),
+          m_iCondition10Field(query.fieldIndex(SMARTIESTABLE_CONDITION_10_FIELD)),
+          m_iCondition10Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_10_OPERATOR)),
+          m_iCondition10Value(query.fieldIndex(SMARTIESTABLE_CONDITION_10_VALUE)),
+          m_iCondition10Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_10_COMBINER)),
+          m_iCondition11Field(query.fieldIndex(SMARTIESTABLE_CONDITION_11_FIELD)),
+          m_iCondition11Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_11_OPERATOR)),
+          m_iCondition11Value(query.fieldIndex(SMARTIESTABLE_CONDITION_11_VALUE)),
+          m_iCondition11Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_11_COMBINER)),
+          m_iCondition12Field(query.fieldIndex(SMARTIESTABLE_CONDITION_12_FIELD)),
+          m_iCondition12Operator(query.fieldIndex(SMARTIESTABLE_CONDITION_12_OPERATOR)),
+          m_iCondition12Value(query.fieldIndex(SMARTIESTABLE_CONDITION_12_VALUE)),
+          m_iCondition12Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_12_COMBINER)) {
 }
 
 void SmartiesQueryFields::populateFromQuery(
@@ -130,6 +497,54 @@ void SmartiesQueryFields::populateFromQuery(
     pSmarties->setAutoDjSource(isAutoDjSource(query));
     pSmarties->setSearchInput(getSearchInput(query));
     pSmarties->setSearchSql(getSearchSql(query));
+    pSmarties->setCondition1Field(getCondition1Field(query));
+    pSmarties->setCondition2Field(getCondition2Field(query));
+    pSmarties->setCondition3Field(getCondition3Field(query));
+    pSmarties->setCondition4Field(getCondition4Field(query));
+    pSmarties->setCondition5Field(getCondition5Field(query));
+    pSmarties->setCondition6Field(getCondition6Field(query));
+    pSmarties->setCondition7Field(getCondition7Field(query));
+    pSmarties->setCondition8Field(getCondition8Field(query));
+    pSmarties->setCondition9Field(getCondition9Field(query));
+    pSmarties->setCondition10Field(getCondition10Field(query));
+    pSmarties->setCondition11Field(getCondition11Field(query));
+    pSmarties->setCondition12Field(getCondition12Field(query));
+    pSmarties->setCondition1Operator(getCondition1Operator(query));
+    pSmarties->setCondition2Operator(getCondition2Operator(query));
+    pSmarties->setCondition3Operator(getCondition3Operator(query));
+    pSmarties->setCondition4Operator(getCondition4Operator(query));
+    pSmarties->setCondition5Operator(getCondition5Operator(query));
+    pSmarties->setCondition6Operator(getCondition6Operator(query));
+    pSmarties->setCondition7Operator(getCondition7Operator(query));
+    pSmarties->setCondition8Operator(getCondition8Operator(query));
+    pSmarties->setCondition9Operator(getCondition9Operator(query));
+    pSmarties->setCondition10Operator(getCondition10Operator(query));
+    pSmarties->setCondition11Operator(getCondition11Operator(query));
+    pSmarties->setCondition12Operator(getCondition12Operator(query));
+    pSmarties->setCondition1Value(getCondition1Value(query));
+    pSmarties->setCondition2Value(getCondition2Value(query));
+    pSmarties->setCondition3Value(getCondition3Value(query));
+    pSmarties->setCondition4Value(getCondition4Value(query));
+    pSmarties->setCondition5Value(getCondition5Value(query));
+    pSmarties->setCondition6Value(getCondition6Value(query));
+    pSmarties->setCondition7Value(getCondition7Value(query));
+    pSmarties->setCondition8Value(getCondition8Value(query));
+    pSmarties->setCondition9Value(getCondition9Value(query));
+    pSmarties->setCondition10Value(getCondition10Value(query));
+    pSmarties->setCondition11Value(getCondition11Value(query));
+    pSmarties->setCondition12Value(getCondition12Value(query));
+    pSmarties->setCondition1Combiner(getCondition1Combiner(query));
+    pSmarties->setCondition2Combiner(getCondition2Combiner(query));
+    pSmarties->setCondition3Combiner(getCondition3Combiner(query));
+    pSmarties->setCondition4Combiner(getCondition4Combiner(query));
+    pSmarties->setCondition5Combiner(getCondition5Combiner(query));
+    pSmarties->setCondition6Combiner(getCondition6Combiner(query));
+    pSmarties->setCondition7Combiner(getCondition7Combiner(query));
+    pSmarties->setCondition8Combiner(getCondition8Combiner(query));
+    pSmarties->setCondition9Combiner(getCondition9Combiner(query));
+    pSmarties->setCondition10Combiner(getCondition10Combiner(query));
+    pSmarties->setCondition11Combiner(getCondition11Combiner(query));
+    pSmarties->setCondition12Combiner(getCondition12Combiner(query));
 }
 
 SmartiesTrackQueryFields::SmartiesTrackQueryFields(const FwdSqlQuery& query)
@@ -321,19 +736,25 @@ bool SmartiesStorage::readSmartiesByName(const QString& name, Smarties* pSmartie
             QStringLiteral("SELECT * FROM %1 WHERE %2=:name")
                     .arg(SMARTIES_TABLE, SMARTIESTABLE_NAME));
     query.bindValue(":name", name);
+    qDebug() << "[SMARTIES] [POPULATING] 0";
     if (query.execPrepared()) {
         SmartiesSelectResult smarties(std::move(query));
         if ((pSmarties != nullptr) ? smarties.populateNext(pSmarties) : smarties.next()) {
+            qDebug() << "[SMARTIES] [POPULATING] 1";
             VERIFY_OR_DEBUG_ASSERT(!smarties.next()) {
                 kLogger.warning() << "Ambiguous smarties name:" << name;
+                qDebug() << "[SMARTIES] [POPULATING] 2";
             }
             return true;
         } else {
+            qDebug() << "[SMARTIES] [POPULATING] 3";
             if (kLogger.debugEnabled()) {
                 kLogger.debug() << "Smarties not found by name:" << name;
+                qDebug() << "[SMARTIES] [POPULATING] 4";
             }
         }
     }
+    qDebug() << "[SMARTIES] [POPULATING] 5";
     return false;
 }
 
@@ -600,6 +1021,42 @@ SmartiesTrackSelectResult SmartiesStorage::selectTracksSortedBySmartiesNameLike(
 //     }
 // }
 
+void SmartiesStorage::createSmartiesQSet(SmartiesId smartiesId) {
+    QSet<SmartiesId> clear();
+
+    int tracksInSmarties;
+    FwdSqlQuery queryCount(m_database,
+            QStringLiteral("SELECT COUNT(*) FROM %1").arg(SMARTIES_TRACKS_TABLE));
+    if (queryCount.execPrepared() && queryCount.next()) {
+        tracksInSmarties = queryCount.fieldValue(0).toInt();
+    } else {
+        tracksInSmarties = 0;
+    }
+    qDebug() << "[SMARTIES] [QSET] [COUNT] -> tracksInSmarties: " << tracksInSmarties;
+
+    //    FwdSqlQuery query(m_database,
+    //            QStringLiteral("SELECT %2 FROM %1 WHERE %3=:smartiesId")
+    //                    .arg(SMARTIES_TRACKS_TABLE,
+    //                            SMARTIESTRACKSTABLE_TRACKID,
+    //                            SMARTIESTRACKSTABLE_SMARTIESID));
+    //    query.bindValue(":smartiesId", smartiesId);
+    //    getLocked = queryGetLocked.fieldValue(0).toBool();
+
+    //    if (query.execPrepared()) {
+    //        return SmartiesTrackSelectResult(std::move(query));
+    //    } else {
+    //        return SmartiesTrackSelectResult();
+    //    }
+
+    //    for (const auto& trackId : trackIds) {
+    //        SmartiesTrackSelectResult smartiesTracks(selectTrackSmartiesSorted(trackId));
+    //        while (smartiesTracks.next()) {
+    //            DEBUG_ASSERT(smartiesTracks.trackId() == trackId);
+    //            trackSmarties.insert(smartiesTracks.smartiesId());
+    //        }
+    //    }
+}
+
 QSet<SmartiesId> SmartiesStorage::collectSmartiesIdsOfTracks(const QList<TrackId>& trackIds) const {
     // NOTE(uklotzde): One query per track id. This could be optimized
     // by querying for chunks of track ids and collecting the results.
@@ -618,6 +1075,52 @@ QSet<SmartiesId> SmartiesStorage::collectSmartiesIdsOfTracks(const QList<TrackId
     return trackSmarties;
 }
 
+/// original
+// bool SmartiesStorage::onInsertingSmarties(
+//         const Smarties& smarties,
+//         SmartiesId* pSmartiesId) {
+//     VERIFY_OR_DEBUG_ASSERT(!smarties.getId().isValid()) {
+//         kLogger.warning()
+//                 << "Cannot insert smarties with a valid id:" << smarties.getId();
+//         return false;
+//     }
+//     FwdSqlQuery query(m_database,
+//             QStringLiteral(
+//                     "INSERT INTO %1 (%2,%3,%4,%5, %6) "
+//                     "VALUES (:name, :locked, :autoDjSource, :searchInput, :searchSql)")
+//                     .arg(
+//                             SMARTIES_TABLE,
+//                             SMARTIESTABLE_NAME,
+//                             SMARTIESTABLE_LOCKED,
+//                             SMARTIESTABLE_AUTODJ_SOURCE,
+//                             SMARTIESTABLE_SEARCH_INPUT,
+//                             SMARTIESTABLE_SEARCH_SQL));
+//     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
+//         return false;
+//     }
+//     SmartiesQueryBinder queryBinder(query);
+//     queryBinder.bindName(":name", smarties);
+//     queryBinder.bindLocked(":locked", smarties);
+//     queryBinder.bindAutoDjSource(":autoDjSource", smarties);
+//     queryBinder.bindSearchInput(":searchInput", smarties);
+//     queryBinder.bindSearchSql(":searchSql", smarties);
+
+//    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+//        return false;
+//    }
+//    if (query.numRowsAffected() > 0) {
+//        DEBUG_ASSERT(query.numRowsAffected() == 1);
+//        if (pSmartiesId != nullptr) {
+//            *pSmartiesId = SmartiesId(query.lastInsertId());
+//            DEBUG_ASSERT(pSmartiesId->isValid());
+//        }
+//        return true;
+//    } else {
+//        return false;
+//    }
+//}
+/////
+
 bool SmartiesStorage::onInsertingSmarties(
         const Smarties& smarties,
         SmartiesId* pSmartiesId) {
@@ -627,16 +1130,94 @@ bool SmartiesStorage::onInsertingSmarties(
         return false;
     }
     FwdSqlQuery query(m_database,
-            QStringLiteral(
-                    "INSERT INTO %1 (%2,%3,%4,%5,%6) "
-                    "VALUES (:name,:locked,:autoDjSource, :searchInput, :searchSql)")
-                    .arg(
-                            SMARTIES_TABLE,
+            QStringLiteral("INSERT INTO %1 "
+                           "(%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13,%14,%15,%"
+                           "16,%17,%18,%19,"
+                           "%20,%21,%22,%23,%24,%25,%26,%27,%28,%29,%30,%31,%"
+                           "32,%33,%34,%35,%36,%37,%38,%39,"
+                           "%40,%41,%42,%43,%44,%45,%46,%47,%48,%49,%50,%51,%"
+                           "52,%53,%54) "
+                           "VALUES (:name, :locked, :autoDjSource, "
+                           ":searchInput, :searchSql, "
+                           ":condition1_field, :condition1_operator, "
+                           ":condition1_value, :condition1_combiner, "
+                           ":condition2_field, :condition2_operator, "
+                           ":condition2_value, :condition2_combiner, "
+                           ":condition3_field, :condition3_operator, "
+                           ":condition3_value, :condition3_combiner, "
+                           ":condition4_field, :condition4_operator, "
+                           ":condition4_value, :condition4_combiner, "
+                           ":condition5_field, :condition5_operator, "
+                           ":condition5_value, :condition5_combiner, "
+                           ":condition6_field, :condition6_operator, "
+                           ":condition6_value, :condition6_combiner, "
+                           ":condition7_field, :condition7_operator, "
+                           ":condition7_value, :condition7_combiner, "
+                           ":condition8_field, :condition8_operator, "
+                           ":condition8_value, :condition8_combiner, "
+                           ":condition9_field, :condition9_operator, "
+                           ":condition9_value, :condition9_combiner, "
+                           ":condition10_field, :condition10_operator, "
+                           ":condition10_value, :condition10_combiner, "
+                           ":condition11_field, :condition11_operator, "
+                           ":condition11_value, :condition11_combiner, "
+                           ":condition12_field, :condition12_operator, "
+                           ":condition12_value, :condition12_combiner) ")
+                    .arg(SMARTIES_TABLE,
                             SMARTIESTABLE_NAME,
                             SMARTIESTABLE_LOCKED,
                             SMARTIESTABLE_AUTODJ_SOURCE,
-                            SMARTIESTABLE_SEARCH_INPUT,
-                            SMARTIESTABLE_SEARCH_SQL));
+                            SMARTIESTABLE_SEARCH_INPUT, // 5
+                            SMARTIESTABLE_SEARCH_SQL,
+                            SMARTIESTABLE_CONDITION_1_FIELD,
+                            SMARTIESTABLE_CONDITION_1_OPERATOR,
+                            SMARTIESTABLE_CONDITION_1_VALUE,
+                            SMARTIESTABLE_CONDITION_1_COMBINER, // 10
+                            SMARTIESTABLE_CONDITION_2_FIELD,
+                            SMARTIESTABLE_CONDITION_2_OPERATOR,
+                            SMARTIESTABLE_CONDITION_2_VALUE,
+                            SMARTIESTABLE_CONDITION_2_COMBINER,
+                            SMARTIESTABLE_CONDITION_3_FIELD, // 15
+                            SMARTIESTABLE_CONDITION_3_OPERATOR,
+                            SMARTIESTABLE_CONDITION_3_VALUE,
+                            SMARTIESTABLE_CONDITION_3_COMBINER,
+                            SMARTIESTABLE_CONDITION_4_FIELD,
+                            SMARTIESTABLE_CONDITION_4_OPERATOR, // 20
+                            SMARTIESTABLE_CONDITION_4_VALUE,
+                            SMARTIESTABLE_CONDITION_4_COMBINER,
+                            SMARTIESTABLE_CONDITION_5_FIELD,
+                            SMARTIESTABLE_CONDITION_5_OPERATOR,
+                            SMARTIESTABLE_CONDITION_5_VALUE, // 25
+                            SMARTIESTABLE_CONDITION_5_COMBINER,
+                            SMARTIESTABLE_CONDITION_6_FIELD,
+                            SMARTIESTABLE_CONDITION_6_OPERATOR,
+                            SMARTIESTABLE_CONDITION_6_VALUE,
+                            SMARTIESTABLE_CONDITION_6_COMBINER, // 30
+                            SMARTIESTABLE_CONDITION_7_FIELD,
+                            SMARTIESTABLE_CONDITION_7_OPERATOR,
+                            SMARTIESTABLE_CONDITION_7_VALUE,
+                            SMARTIESTABLE_CONDITION_7_COMBINER,
+                            SMARTIESTABLE_CONDITION_8_FIELD, // 35
+                            SMARTIESTABLE_CONDITION_8_OPERATOR,
+                            SMARTIESTABLE_CONDITION_8_VALUE,
+                            SMARTIESTABLE_CONDITION_8_COMBINER,
+                            SMARTIESTABLE_CONDITION_9_FIELD,
+                            SMARTIESTABLE_CONDITION_9_OPERATOR, // 40
+                            SMARTIESTABLE_CONDITION_9_VALUE,
+                            SMARTIESTABLE_CONDITION_9_COMBINER,
+                            SMARTIESTABLE_CONDITION_10_FIELD,
+                            SMARTIESTABLE_CONDITION_10_OPERATOR,
+                            SMARTIESTABLE_CONDITION_10_VALUE, // 45
+                            SMARTIESTABLE_CONDITION_10_COMBINER,
+                            SMARTIESTABLE_CONDITION_11_FIELD,
+                            SMARTIESTABLE_CONDITION_11_OPERATOR,
+                            SMARTIESTABLE_CONDITION_11_VALUE,
+                            SMARTIESTABLE_CONDITION_11_COMBINER, // 50
+                            SMARTIESTABLE_CONDITION_12_FIELD,
+                            SMARTIESTABLE_CONDITION_12_OPERATOR,
+                            SMARTIESTABLE_CONDITION_12_VALUE,
+                            SMARTIESTABLE_CONDITION_12_COMBINER)); // 54
+
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return false;
     }
@@ -646,9 +1227,24 @@ bool SmartiesStorage::onInsertingSmarties(
     queryBinder.bindAutoDjSource(":autoDjSource", smarties);
     queryBinder.bindSearchInput(":searchInput", smarties);
     queryBinder.bindSearchSql(":searchSql", smarties);
+    // Loop from 1 to 12 to bind all condition parameters dynamically
+    // Call the corresponding bind methods on queryBinder, querybinder procedure
+    // is longer but this procedure is a bit smaller... I don't know what's
+    // right
+    for (int i = 1; i <= 12; ++i) {
+        QString suffix = QString::number(i);
+        queryBinder.bindConditionField(QString(":condition%1_field").arg(suffix), smarties, i);
+        queryBinder.bindConditionOperator(
+                QString(":condition%1_operator").arg(suffix), smarties, i);
+        queryBinder.bindConditionValue(QString(":condition%1_value").arg(suffix), smarties, i);
+        queryBinder.bindConditionCombiner(
+                QString(":condition%1_combiner").arg(suffix), smarties, i);
+    }
+
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return false;
     }
+
     if (query.numRowsAffected() > 0) {
         DEBUG_ASSERT(query.numRowsAffected() == 1);
         if (pSmartiesId != nullptr) {

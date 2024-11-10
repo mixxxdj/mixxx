@@ -27,111 +27,109 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_dlgSmartiesInfo {
-  public:
-    QVBoxLayout* verticalLayout;
-    QGroupBox* groupBox;
-    QLineEdit* lineEditID;
-    QLabel* labelID;
-    QLabel* labelName;
-    QLineEdit* lineEditName;
-    QLabel* labelCount;
-    QSpinBox* spinBoxCount;
-    QLabel* labelShow;
-    QCheckBox* checkBoxShow;
-    QLabel* labelLocked;
-    QPushButton* buttonLock;
-    QLabel* labelAutoDJ;
-    QCheckBox* checkBoxAutoDJ;
-    QLabel* labelSearchInput;
-    QLineEdit* lineEditSearchInput;
-    QLabel* labelSearchSQL;
-    QLineEdit* lineEditSearchSQL;
-    QTextEdit* textEditSearchSQL;
-    QLabel* labelConditions;
-    QScrollArea* scrollAreaConditions;
-    QWidget* scrollAreaWidgetContents;
-    QVBoxLayout* verticalLayoutConditions;
-    QHBoxLayout* horizontalLayoutCondition1;
-    QComboBox* comboBoxCondition1Field;
-    QComboBox* comboBoxCondition1Operator;
-    QLineEdit* lineEditCondition1Value;
-    QComboBox* comboBoxCondition1Combiner;
-    QHBoxLayout* horizontalLayoutCondition2;
-    QComboBox* comboBoxCondition2Field;
-    QComboBox* comboBoxCondition2Operator;
-    QLineEdit* lineEditCondition2Value;
-    QComboBox* comboBoxCondition2Combiner;
-    QHBoxLayout* horizontalLayoutCondition3;
-    QComboBox* comboBoxCondition3Field;
-    QComboBox* comboBoxCondition3Operator;
-    QLineEdit* lineEditCondition3Value;
-    QComboBox* comboBoxCondition3Combiner;
-    QHBoxLayout* horizontalLayoutCondition4;
-    QComboBox* comboBoxCondition4Field;
-    QComboBox* comboBoxCondition4Operator;
-    QLineEdit* lineEditCondition4Value;
-    QComboBox* comboBoxCondition4Combiner;
-    QHBoxLayout* horizontalLayoutCondition5;
-    QComboBox* comboBoxCondition5Field;
-    QComboBox* comboBoxCondition5Operator;
-    QLineEdit* lineEditCondition5Value;
-    QComboBox* comboBoxCondition5Combiner;
-    QHBoxLayout* horizontalLayoutCondition6;
-    QComboBox* comboBoxCondition6Field;
-    QComboBox* comboBoxCondition6Operator;
-    QLineEdit* lineEditCondition6Value;
-    QComboBox* comboBoxCondition6Combiner;
-    QHBoxLayout* horizontalLayoutCondition7;
-    QComboBox* comboBoxCondition7Field;
-    QComboBox* comboBoxCondition7Operator;
-    QLineEdit* lineEditCondition7Value;
-    QComboBox* comboBoxCondition7Combiner;
-    QHBoxLayout* horizontalLayoutCondition8;
-    QComboBox* comboBoxCondition8Field;
-    QComboBox* comboBoxCondition8Operator;
-    QLineEdit* lineEditCondition8Value;
-    QComboBox* comboBoxCondition8Combiner;
-    QHBoxLayout* horizontalLayoutCondition9;
-    QComboBox* comboBoxCondition9Field;
-    QComboBox* comboBoxCondition9Operator;
-    QLineEdit* lineEditCondition9Value;
-    QComboBox* comboBoxCondition9Combiner;
-    QHBoxLayout* horizontalLayoutCondition10;
-    QComboBox* comboBoxCondition10Field;
-    QComboBox* comboBoxCondition10Operator;
-    QLineEdit* lineEditCondition10Value;
-    QComboBox* comboBoxCondition10Combiner;
-    QHBoxLayout* horizontalLayoutCondition11;
-    QComboBox* comboBoxCondition11Field;
-    QComboBox* comboBoxCondition11Operator;
-    QLineEdit* lineEditCondition11Value;
-    QComboBox* comboBoxCondition11Combiner;
-    QHBoxLayout* horizontalLayoutCondition12;
-    QComboBox* comboBoxCondition12Field;
-    QComboBox* comboBoxCondition12Operator;
-    QLineEdit* lineEditCondition12Value;
-    QComboBox* comboBoxCondition12Combiner;
-    QHBoxLayout* horizontalLayoutButtons;
-    QPushButton* newButton;
-    QPushButton* previousButton;
-    QPushButton* nextButton;
-    QPushButton* applyButton;
-    QPushButton* okButton;
-    QPushButton* cancelButton;
+class Ui_dlgSmartiesInfo
+{
+public:
+    QVBoxLayout *verticalLayout;
+    QGroupBox *groupBox;
+    QLineEdit *lineEditID;
+    QLabel *labelID;
+    QLabel *labelName;
+    QLineEdit *lineEditName;
+    QLabel *labelCount;
+    QSpinBox *spinBoxCount;
+    QLabel *labelShow;
+    QCheckBox *checkBoxShow;
+    QLabel *labelLocked;
+    QPushButton *buttonLock;
+    QLabel *labelAutoDJ;
+    QCheckBox *checkBoxAutoDJ;
+    QLabel *labelSearchInput;
+    QLineEdit *lineEditSearchInput;
+    QLabel *labelSearchSQL;
+    QTextEdit *textEditSearchSql;
+    QLabel *labelConditions;
+    QScrollArea *scrollAreaConditions;
+    QWidget *scrollAreaWidgetContents;
+    QVBoxLayout *verticalLayoutConditions;
+    QHBoxLayout *horizontalLayoutCondition1;
+    QComboBox *comboBoxCondition1Field;
+    QComboBox *comboBoxCondition1Operator;
+    QLineEdit *lineEditCondition1Value;
+    QComboBox *comboBoxCondition1Combiner;
+    QHBoxLayout *horizontalLayoutCondition2;
+    QComboBox *comboBoxCondition2Field;
+    QComboBox *comboBoxCondition2Operator;
+    QLineEdit *lineEditCondition2Value;
+    QComboBox *comboBoxCondition2Combiner;
+    QHBoxLayout *horizontalLayoutCondition3;
+    QComboBox *comboBoxCondition3Field;
+    QComboBox *comboBoxCondition3Operator;
+    QLineEdit *lineEditCondition3Value;
+    QComboBox *comboBoxCondition3Combiner;
+    QHBoxLayout *horizontalLayoutCondition4;
+    QComboBox *comboBoxCondition4Field;
+    QComboBox *comboBoxCondition4Operator;
+    QLineEdit *lineEditCondition4Value;
+    QComboBox *comboBoxCondition4Combiner;
+    QHBoxLayout *horizontalLayoutCondition5;
+    QComboBox *comboBoxCondition5Field;
+    QComboBox *comboBoxCondition5Operator;
+    QLineEdit *lineEditCondition5Value;
+    QComboBox *comboBoxCondition5Combiner;
+    QHBoxLayout *horizontalLayoutCondition6;
+    QComboBox *comboBoxCondition6Field;
+    QComboBox *comboBoxCondition6Operator;
+    QLineEdit *lineEditCondition6Value;
+    QComboBox *comboBoxCondition6Combiner;
+    QHBoxLayout *horizontalLayoutCondition7;
+    QComboBox *comboBoxCondition7Field;
+    QComboBox *comboBoxCondition7Operator;
+    QLineEdit *lineEditCondition7Value;
+    QComboBox *comboBoxCondition7Combiner;
+    QHBoxLayout *horizontalLayoutCondition8;
+    QComboBox *comboBoxCondition8Field;
+    QComboBox *comboBoxCondition8Operator;
+    QLineEdit *lineEditCondition8Value;
+    QComboBox *comboBoxCondition8Combiner;
+    QHBoxLayout *horizontalLayoutCondition9;
+    QComboBox *comboBoxCondition9Field;
+    QComboBox *comboBoxCondition9Operator;
+    QLineEdit *lineEditCondition9Value;
+    QComboBox *comboBoxCondition9Combiner;
+    QHBoxLayout *horizontalLayoutCondition10;
+    QComboBox *comboBoxCondition10Field;
+    QComboBox *comboBoxCondition10Operator;
+    QLineEdit *lineEditCondition10Value;
+    QComboBox *comboBoxCondition10Combiner;
+    QHBoxLayout *horizontalLayoutCondition11;
+    QComboBox *comboBoxCondition11Field;
+    QComboBox *comboBoxCondition11Operator;
+    QLineEdit *lineEditCondition11Value;
+    QComboBox *comboBoxCondition11Combiner;
+    QHBoxLayout *horizontalLayoutCondition12;
+    QComboBox *comboBoxCondition12Field;
+    QComboBox *comboBoxCondition12Operator;
+    QLineEdit *lineEditCondition12Value;
+    QComboBox *comboBoxCondition12Combiner;
+    QHBoxLayout *horizontalLayoutButtons;
+    QPushButton *newButton;
+    QPushButton *previousButton;
+    QPushButton *nextButton;
+    QPushButton *applyButton;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
 
-    void setupUi(QDialog* dlgSmartiesInfo) {
+    void setupUi(QDialog *dlgSmartiesInfo)
+    {
         if (dlgSmartiesInfo->objectName().isEmpty())
             dlgSmartiesInfo->setObjectName("dlgSmartiesInfo");
-        dlgSmartiesInfo->resize(869, 729);
+        dlgSmartiesInfo->resize(853, 691);
         verticalLayout = new QVBoxLayout(dlgSmartiesInfo);
         verticalLayout->setObjectName("verticalLayout");
         groupBox = new QGroupBox(dlgSmartiesInfo);
         groupBox->setObjectName("groupBox");
-        groupBox->setMinimumSize(QSize(0, 220));
-        QFont font;
-        font.setBold(true);
-        groupBox->setFont(font);
+        groupBox->setMinimumSize(QSize(0, 180));
         lineEditID = new QLineEdit(groupBox);
         lineEditID->setObjectName("lineEditID");
         lineEditID->setGeometry(QRect(120, 20, 60, 20));
@@ -208,29 +206,15 @@ class Ui_dlgSmartiesInfo {
         labelSearchSQL->setGeometry(QRect(20, 110, 80, 20));
         labelSearchSQL->setMinimumSize(QSize(80, 20));
         labelSearchSQL->setMaximumSize(QSize(80, 20));
-        lineEditSearchSQL = new QLineEdit(groupBox);
-        lineEditSearchSQL->setObjectName("lineEditSearchSQL");
-        lineEditSearchSQL->setGeometry(QRect(120, 110, 700, 20));
-        lineEditSearchSQL->setMinimumSize(QSize(700, 20));
-        lineEditSearchSQL->setMaximumSize(QSize(400, 20));
-        QFont font1;
-        font1.setPointSize(16);
-        font1.setBold(true);
-        lineEditSearchSQL->setFont(font1);
-        textEditSearchSQL = new QTextEdit(groupBox);
-        textEditSearchSQL->setObjectName("textEditSearchSQL");
-        textEditSearchSQL->setGeometry(QRect(120, 140, 700, 71));
-        QFont font2;
-        font2.setPointSize(14);
-        font2.setBold(false);
-        textEditSearchSQL->setFont(font2);
+        textEditSearchSql = new QTextEdit(groupBox);
+        textEditSearchSql->setObjectName("textEditSearchSql");
+        textEditSearchSql->setGeometry(QRect(120, 110, 691, 60));
 
         verticalLayout->addWidget(groupBox);
 
         labelConditions = new QLabel(dlgSmartiesInfo);
         labelConditions->setObjectName("labelConditions");
         labelConditions->setMinimumSize(QSize(60, 15));
-        labelConditions->setFont(font);
 
         verticalLayout->addWidget(labelConditions);
 
@@ -239,7 +223,7 @@ class Ui_dlgSmartiesInfo {
         scrollAreaConditions->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 849, 431));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 833, 433));
         verticalLayoutConditions = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayoutConditions->setObjectName("verticalLayoutConditions");
         horizontalLayoutCondition1 = new QHBoxLayout();
@@ -263,6 +247,7 @@ class Ui_dlgSmartiesInfo {
         comboBoxCondition1Combiner->setObjectName("comboBoxCondition1Combiner");
 
         horizontalLayoutCondition1->addWidget(comboBoxCondition1Combiner);
+
 
         verticalLayoutConditions->addLayout(horizontalLayoutCondition1);
 
@@ -288,6 +273,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition2->addWidget(comboBoxCondition2Combiner);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition2);
 
         horizontalLayoutCondition3 = new QHBoxLayout();
@@ -311,6 +297,7 @@ class Ui_dlgSmartiesInfo {
         comboBoxCondition3Combiner->setObjectName("comboBoxCondition3Combiner");
 
         horizontalLayoutCondition3->addWidget(comboBoxCondition3Combiner);
+
 
         verticalLayoutConditions->addLayout(horizontalLayoutCondition3);
 
@@ -336,6 +323,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition4->addWidget(comboBoxCondition4Combiner);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition4);
 
         horizontalLayoutCondition5 = new QHBoxLayout();
@@ -359,6 +347,7 @@ class Ui_dlgSmartiesInfo {
         comboBoxCondition5Combiner->setObjectName("comboBoxCondition5Combiner");
 
         horizontalLayoutCondition5->addWidget(comboBoxCondition5Combiner);
+
 
         verticalLayoutConditions->addLayout(horizontalLayoutCondition5);
 
@@ -384,6 +373,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition6->addWidget(comboBoxCondition6Combiner);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition6);
 
         horizontalLayoutCondition7 = new QHBoxLayout();
@@ -407,6 +397,7 @@ class Ui_dlgSmartiesInfo {
         comboBoxCondition7Combiner->setObjectName("comboBoxCondition7Combiner");
 
         horizontalLayoutCondition7->addWidget(comboBoxCondition7Combiner);
+
 
         verticalLayoutConditions->addLayout(horizontalLayoutCondition7);
 
@@ -432,6 +423,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition8->addWidget(comboBoxCondition8Combiner);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition8);
 
         horizontalLayoutCondition9 = new QHBoxLayout();
@@ -455,6 +447,7 @@ class Ui_dlgSmartiesInfo {
         comboBoxCondition9Combiner->setObjectName("comboBoxCondition9Combiner");
 
         horizontalLayoutCondition9->addWidget(comboBoxCondition9Combiner);
+
 
         verticalLayoutConditions->addLayout(horizontalLayoutCondition9);
 
@@ -480,6 +473,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition10->addWidget(comboBoxCondition10Combiner);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition10);
 
         horizontalLayoutCondition11 = new QHBoxLayout();
@@ -504,6 +498,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition11->addWidget(comboBoxCondition11Combiner);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition11);
 
         horizontalLayoutCondition12 = new QHBoxLayout();
@@ -527,6 +522,7 @@ class Ui_dlgSmartiesInfo {
         comboBoxCondition12Combiner->setObjectName("comboBoxCondition12Combiner");
 
         horizontalLayoutCondition12->addWidget(comboBoxCondition12Combiner);
+
 
         verticalLayoutConditions->addLayout(horizontalLayoutCondition12);
 
@@ -566,44 +562,41 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutButtons->addWidget(cancelButton);
 
+
         verticalLayout->addLayout(horizontalLayoutButtons);
+
 
         retranslateUi(dlgSmartiesInfo);
 
         QMetaObject::connectSlotsByName(dlgSmartiesInfo);
     } // setupUi
 
-    void retranslateUi(QDialog* dlgSmartiesInfo) {
-        dlgSmartiesInfo->setWindowTitle(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties Info", nullptr));
-        groupBox->setTitle(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties INFO", nullptr));
+    void retranslateUi(QDialog *dlgSmartiesInfo)
+    {
+        dlgSmartiesInfo->setWindowTitle(QCoreApplication::translate("dlgSmartiesInfo", "Smarties Info", nullptr));
+        groupBox->setTitle(QCoreApplication::translate("dlgSmartiesInfo", "Smarties INFO", nullptr));
         labelID->setText(QCoreApplication::translate("dlgSmartiesInfo", "ID:", nullptr));
         labelName->setText(QCoreApplication::translate("dlgSmartiesInfo", "Name:", nullptr));
         labelCount->setText(QCoreApplication::translate("dlgSmartiesInfo", "Count:", nullptr));
         labelShow->setText(QCoreApplication::translate("dlgSmartiesInfo", "Show", nullptr));
         labelLocked->setText(QCoreApplication::translate("dlgSmartiesInfo", "Locked:", nullptr));
         buttonLock->setText(QCoreApplication::translate("dlgSmartiesInfo", "Lock", nullptr));
-        labelAutoDJ->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "AutoDJ Source", nullptr));
-        labelSearchInput->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Search Input:", nullptr));
-        labelSearchSQL->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Search SQL:", nullptr));
-        labelConditions->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties Conditions:", nullptr));
+        labelAutoDJ->setText(QCoreApplication::translate("dlgSmartiesInfo", "AutoDJ Source", nullptr));
+        labelSearchInput->setText(QCoreApplication::translate("dlgSmartiesInfo", "Search Input:", nullptr));
+        labelSearchSQL->setText(QCoreApplication::translate("dlgSmartiesInfo", "Search SQL:", nullptr));
+        labelConditions->setText(QCoreApplication::translate("dlgSmartiesInfo", "Smarties Conditions:", nullptr));
         newButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "New", nullptr));
-        previousButton->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Previous", nullptr));
+        previousButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Previous", nullptr));
         nextButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Next", nullptr));
         applyButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Apply", nullptr));
         okButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "OK", nullptr));
         cancelButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Cancel", nullptr));
     } // retranslateUi
+
 };
 
 namespace Ui {
-class dlgSmartiesInfo : public Ui_dlgSmartiesInfo {};
+    class dlgSmartiesInfo: public Ui_dlgSmartiesInfo {};
 } // namespace Ui
 
 QT_END_NAMESPACE

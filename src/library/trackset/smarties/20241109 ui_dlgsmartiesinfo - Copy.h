@@ -21,7 +21,6 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
-#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -47,7 +46,6 @@ class Ui_dlgSmartiesInfo {
     QLineEdit* lineEditSearchInput;
     QLabel* labelSearchSQL;
     QLineEdit* lineEditSearchSQL;
-    QTextEdit* textEditSearchSQL;
     QLabel* labelConditions;
     QScrollArea* scrollAreaConditions;
     QWidget* scrollAreaWidgetContents;
@@ -123,15 +121,12 @@ class Ui_dlgSmartiesInfo {
     void setupUi(QDialog* dlgSmartiesInfo) {
         if (dlgSmartiesInfo->objectName().isEmpty())
             dlgSmartiesInfo->setObjectName("dlgSmartiesInfo");
-        dlgSmartiesInfo->resize(869, 729);
+        dlgSmartiesInfo->resize(800, 600);
         verticalLayout = new QVBoxLayout(dlgSmartiesInfo);
         verticalLayout->setObjectName("verticalLayout");
         groupBox = new QGroupBox(dlgSmartiesInfo);
         groupBox->setObjectName("groupBox");
-        groupBox->setMinimumSize(QSize(0, 220));
-        QFont font;
-        font.setBold(true);
-        groupBox->setFont(font);
+        groupBox->setMinimumSize(QSize(0, 150));
         lineEditID = new QLineEdit(groupBox);
         lineEditID->setObjectName("lineEditID");
         lineEditID->setGeometry(QRect(120, 20, 60, 20));
@@ -165,12 +160,12 @@ class Ui_dlgSmartiesInfo {
         spinBoxCount->setMaximumSize(QSize(60, 20));
         labelShow = new QLabel(groupBox);
         labelShow->setObjectName("labelShow");
-        labelShow->setGeometry(QRect(600, 50, 50, 20));
+        labelShow->setGeometry(QRect(600, 80, 50, 20));
         labelShow->setMinimumSize(QSize(50, 20));
         labelShow->setMaximumSize(QSize(50, 20));
         checkBoxShow = new QCheckBox(groupBox);
         checkBoxShow->setObjectName("checkBoxShow");
-        checkBoxShow->setGeometry(QRect(580, 52, 30, 20));
+        checkBoxShow->setGeometry(QRect(580, 82, 30, 20));
         checkBoxShow->setMinimumSize(QSize(30, 20));
         checkBoxShow->setMaximumSize(QSize(30, 20));
         labelLocked = new QLabel(groupBox);
@@ -185,12 +180,12 @@ class Ui_dlgSmartiesInfo {
         buttonLock->setMaximumSize(QSize(60, 20));
         labelAutoDJ = new QLabel(groupBox);
         labelAutoDJ->setObjectName("labelAutoDJ");
-        labelAutoDJ->setGeometry(QRect(600, 80, 80, 20));
+        labelAutoDJ->setGeometry(QRect(600, 110, 80, 20));
         labelAutoDJ->setMinimumSize(QSize(80, 20));
         labelAutoDJ->setMaximumSize(QSize(80, 20));
         checkBoxAutoDJ = new QCheckBox(groupBox);
         checkBoxAutoDJ->setObjectName("checkBoxAutoDJ");
-        checkBoxAutoDJ->setGeometry(QRect(580, 84, 30, 13));
+        checkBoxAutoDJ->setGeometry(QRect(580, 114, 30, 13));
         checkBoxAutoDJ->setMinimumSize(QSize(30, 0));
         checkBoxAutoDJ->setMaximumSize(QSize(30, 20));
         labelSearchInput = new QLabel(groupBox);
@@ -210,27 +205,15 @@ class Ui_dlgSmartiesInfo {
         labelSearchSQL->setMaximumSize(QSize(80, 20));
         lineEditSearchSQL = new QLineEdit(groupBox);
         lineEditSearchSQL->setObjectName("lineEditSearchSQL");
-        lineEditSearchSQL->setGeometry(QRect(120, 110, 700, 20));
-        lineEditSearchSQL->setMinimumSize(QSize(700, 20));
+        lineEditSearchSQL->setGeometry(QRect(120, 110, 400, 20));
+        lineEditSearchSQL->setMinimumSize(QSize(400, 20));
         lineEditSearchSQL->setMaximumSize(QSize(400, 20));
-        QFont font1;
-        font1.setPointSize(16);
-        font1.setBold(true);
-        lineEditSearchSQL->setFont(font1);
-        textEditSearchSQL = new QTextEdit(groupBox);
-        textEditSearchSQL->setObjectName("textEditSearchSQL");
-        textEditSearchSQL->setGeometry(QRect(120, 140, 700, 71));
-        QFont font2;
-        font2.setPointSize(14);
-        font2.setBold(false);
-        textEditSearchSQL->setFont(font2);
 
         verticalLayout->addWidget(groupBox);
 
         labelConditions = new QLabel(dlgSmartiesInfo);
         labelConditions->setObjectName("labelConditions");
         labelConditions->setMinimumSize(QSize(60, 15));
-        labelConditions->setFont(font);
 
         verticalLayout->addWidget(labelConditions);
 
@@ -239,7 +222,7 @@ class Ui_dlgSmartiesInfo {
         scrollAreaConditions->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 849, 431));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 780, 372));
         verticalLayoutConditions = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayoutConditions->setObjectName("verticalLayoutConditions");
         horizontalLayoutCondition1 = new QHBoxLayout();

@@ -4,13 +4,16 @@
 #include "library/trackset/smarties/smartiesstorage.h"
 #include "library/trackset/tracksettablemodel.h"
 
+class TrackCollection;
+
 class SmartiesTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:
     SmartiesTableModel(
             QObject* parent,
-            TrackCollectionManager* pTrackCollectionManager);
+            TrackCollectionManager* pTrackCollectionManager,
+            TrackCollection* pTrackCollection);
     ~SmartiesTableModel() final = default;
 
     void selectSmarties(SmartiesId smartiesId = SmartiesId());
@@ -26,9 +29,9 @@ class SmartiesTableModel final : public TrackSetTableModel {
     //    void getNextSmartiesId(const QString& currentSmartiesId);
     //    void getPreviousSmartiesId(const QString& currentSmartiesId);
 
-    bool executeSegmentedUpdate(const QString& queryStr, const QString& label);
+    //    bool executeSegmentedUpdate(const QString& queryStr, const QString& label);
 
-    QString buildCoreUpdateQuery(const QVariantList& smartiesData);
+    //    QString buildCoreUpdateQuery(const QVariantList& smartiesData);
     QString buildConditionUpdateQuery(const QVariantList& smartiesData, int startIdx, int endIdx);
 
     void getWhereClauseForSmarties(SmartiesId smartiesId);
@@ -54,4 +57,5 @@ class SmartiesTableModel final : public TrackSetTableModel {
     QList<QVariantList> m_smartiesList;
     SmartiesId m_selectedSmarties;
     QHash<SmartiesId, QString> m_searchTexts;
+    TrackCollection* m_pTrackCollection;
 };

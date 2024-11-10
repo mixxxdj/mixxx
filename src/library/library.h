@@ -143,8 +143,6 @@ class Library: public QObject {
     void search(const QString& text);
     // EVE
     //    void newSmartiesFromSearch(const QString& text);
-    //    void newSmartiesFromSearch();
-    //    void newSmartiesFromSearch(const QString& text);
     // EVE
     void disableSearch();
     void pasteFromSidebar();

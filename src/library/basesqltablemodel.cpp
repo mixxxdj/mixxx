@@ -20,6 +20,8 @@
 #include "util/duration.h"
 #include "util/performancetimer.h"
 #include "util/platform.h"
+// EVE
+#include "library/trackset/smarties/smartiesschema.h"
 
 namespace {
 
@@ -220,13 +222,50 @@ void BaseSqlTableModel::select() {
 
     PerformanceTimer time;
     time.start();
+    if (m_tableName.startsWith("smarties")) {
+        // EVE drop view and rebuild it for Smarties
+        qDebug() << "[BaseSqlTableModel] [SELECT] -> [SMARTIES] Drop temp table " << m_tableName;
+        QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
+        FwdSqlQuery(m_database, queryStringDropView).execPrepared();
+        qDebug() << "[BaseSqlTableModel] [SELECT] -> [SMARTIES] REBUILD TEMP";
+        QStringList columns;
+        QString smartiesId = m_tableName;
+        smartiesId = smartiesId.replace("smarties_", "");
+        columns << LIBRARYTABLE_ID
+                << "'' AS " + LIBRARYTABLE_PREVIEW
+                << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+        QString queryStringTempView =
+                QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                        "SELECT %2 FROM %3 "
+                        "WHERE %4 IN (SELECT %5 FROM %6 WHERE %7 = %8) "
+                        "AND %9=0")
+                        .arg(m_tableName,                       // 1
+                                columns.join(","),              // 2
+                                LIBRARY_TABLE,                  // 3
+                                LIBRARYTABLE_ID,                // 4
+                                SMARTIESTRACKSTABLE_TRACKID,    // 5
+                                SMARTIES_TRACKS_TABLE,          // 6
+                                SMARTIESTRACKSTABLE_SMARTIESID, // 7
+                                smartiesId,                     // 8
+                                LIBRARYTABLE_MIXXXDELETED);     // 9
+        qDebug() << "[BaseSqlTableModel] [SELECT] -> [SMARTIES] Rebuild temp "
+                    "view -> queryStringTempView "
+                 << queryStringTempView;
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    }
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
                                   .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
 
+    qDebug() << "[BaseSqlTableModel] [SELECT] -------------BaseSqlTableModel - "
+                "select() ---- queryString -------- "
+             << queryString;
+
     if (sDebug) {
-        qDebug() << this << "select() executing:" << queryString;
+        qDebug() << "[BaseSqlTableModel] [SELECT] " << this
+                 << " select() executing : " << queryString;
     }
 
     QSqlQuery query(m_database);

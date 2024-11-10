@@ -593,14 +593,6 @@ void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
-// void Library::newSmartiesFromSearch(const QString& text) {
-// void Library::newSmartiesFromSearch() {
-//     m_pSmartiesFeature->slotCreateSmarties();
-// }
-
-// void Library::slotCreateSmartiesFromSearch() {
-//     m_pSmartiesFeature->slotCreateSmartiesFromSearch();
-// }
 void Library::slotCreateSmartiesFromSearch(const QString& text) {
     m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
 }

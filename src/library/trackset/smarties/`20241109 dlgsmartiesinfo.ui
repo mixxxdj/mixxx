@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>869</width>
-    <height>729</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,14 +19,8 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>220</height>
+       <height>150</height>
       </size>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
      </property>
      <property name="title">
       <string>Smarties INFO</string>
@@ -179,7 +173,7 @@
       <property name="geometry">
        <rect>
         <x>600</x>
-        <y>50</y>
+        <y>80</y>
         <width>50</width>
         <height>20</height>
        </rect>
@@ -204,7 +198,7 @@
       <property name="geometry">
        <rect>
         <x>580</x>
-        <y>52</y>
+        <y>82</y>
         <width>30</width>
         <height>20</height>
        </rect>
@@ -276,7 +270,7 @@
       <property name="geometry">
        <rect>
         <x>600</x>
-        <y>80</y>
+        <y>110</y>
         <width>80</width>
         <height>20</height>
        </rect>
@@ -301,7 +295,7 @@
       <property name="geometry">
        <rect>
         <x>580</x>
-        <y>84</y>
+        <y>114</y>
         <width>30</width>
         <height>13</height>
        </rect>
@@ -396,13 +390,13 @@
        <rect>
         <x>120</x>
         <y>110</y>
-        <width>700</width>
+        <width>400</width>
         <height>20</height>
        </rect>
       </property>
       <property name="minimumSize">
        <size>
-        <width>700</width>
+        <width>400</width>
         <height>20</height>
        </size>
       </property>
@@ -411,30 +405,6 @@
         <width>400</width>
         <height>20</height>
        </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="textEditSearchSQL">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>140</y>
-        <width>700</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
       </property>
      </widget>
     </widget>
@@ -446,12 +416,6 @@
        <width>60</width>
        <height>15</height>
       </size>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
      </property>
      <property name="text">
       <string>Smarties Conditions:</string>
@@ -468,8 +432,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>849</width>
-        <height>431</height>
+        <width>780</width>
+        <height>372</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayoutConditions">
