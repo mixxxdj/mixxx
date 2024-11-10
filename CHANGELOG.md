@@ -5,6 +5,7 @@
 ### Controller Mappings
 
 * Denon MC7000: Fix star up/down logic by only handling button down events [#13588](https://github.com/mixxxdj/mixxx/pull/13588)
+* Intech TEK2: Add initial mapping [#13521](https://github.com/mixxxdj/mixxx/pull/13521)
 * Korg Kaoss DJ: Update script [#12683](https://github.com/mixxxdj/mixxx/pull/12683)
 * MIDI for light: Fix unsound timer handling [#13117](https://github.com/mixxxdj/mixxx/pull/13117)
 * Novation Dicer: Remove flanger mapping with quickeffect toggle
@@ -17,9 +18,10 @@
 * Numark Scratch: Add initial mapping
   [#4834](https://github.com/mixxxdj/mixxx/pull/4834)
   [#13375](https://github.com/mixxxdj/mixxx/pull/13375)
-* Pioneer DDJ-400 and DDJ-FLX4: Remove tap beat mapping to resolve conflict with toggle quantize
+* Pioneer DDJ-400 and DDJ-FLX4: Remove tap beat mapping to resolve conflict with toggle quantize and fix shift + play
   [#13815](https://github.com/mixxxdj/mixxx/pull/13815)
   [#13813](https://github.com/mixxxdj/mixxx/issues/13813)
+  [#13857](https://github.com/mixxxdj/mixxx/pull/13857)
 * Reloop Beatmix 2/4: Fix eject button and jog LED being lit on track unload
   [#13601](https://github.com/mixxxdj/mixxx/pull/13601)
   [#13605](https://github.com/mixxxdj/mixxx/pull/13605)
@@ -119,6 +121,9 @@
   [#13692](https://github.com/mixxxdj/mixxx/pull/13692)
   [#13660](https://github.com/mixxxdj/mixxx/issues/13660)
 * Fix unnecessary painting with covers in library [#13715](https://github.com/mixxxdj/mixxx/pull/13715)
+* Fix check for unrelated decks playing when starting Auto DJ
+  [#13762](https://github.com/mixxxdj/mixxx/pull/13762)
+  [#13734](https://github.com/mixxxdj/mixxx/issues/13734)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
