@@ -30,7 +30,7 @@ class BrowseThread : public QThread {
     Q_OBJECT
   public:
     virtual ~BrowseThread();
-    void requestPopulateModel(mixxx::FileAccess path, BrowseTableModel* client);
+    void requestPopulateModel(mixxx::FileAccess path, BrowseTableModel* modelObserver);
     void run();
     static BrowseThreadPointer getInstanceRef();
 
@@ -41,13 +41,13 @@ class BrowseThread : public QThread {
   private:
     BrowseThread(QObject *parent = 0);
 
-    void populateModel(mixxx::FileAccess path, BrowseTableModel* client);
+    void populateModel(mixxx::FileAccess path, BrowseTableModel* modelObserver);
 
     QMutex m_mutex;
     QWaitCondition m_condition;
 
-    // You must hold m_mutex to touch m_path, m_model_observer or m_bRun
+    // You must hold m_mutex to touch m_path, m_modelObserver or m_bRun
     mixxx::FileAccess m_path;
-    BrowseTableModel* m_model_observer;
+    BrowseTableModel* m_modelObserver;
     bool m_bRun;
 };

@@ -26,7 +26,7 @@ constexpr int kRowBatchSize = 10;
  * make sense to use this class in non-GUI threads
  */
 BrowseThread::BrowseThread(QObject* parent)
-        : QThread{parent}, m_model_observer{}, m_bRun{} {
+        : QThread{parent}, m_modelObserver{}, m_bRun{} {
     // Start thread
     start(QThread::LowPriority);
     qDebug() << "Wait to start browser background thread";
@@ -71,14 +71,14 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     return strong;
 }
 
-void BrowseThread::requestPopulateModel(mixxx::FileAccess path, BrowseTableModel* client) {
+void BrowseThread::requestPopulateModel(mixxx::FileAccess path, BrowseTableModel* modelObserver) {
     // Inform the thread to populate a new path.
     // Note: if another request is currently being processed, this will replace it.
 
-    qDebug() << "Request populate model" << path.info() << client;
+    qDebug() << "Request populate model" << path.info() << modelObserver;
     m_mutex.lock();
     m_path = std::move(path);
-    m_model_observer = client;
+    m_modelObserver = modelObserver;
     m_condition.wakeOne();
     m_mutex.unlock();
 }
@@ -100,7 +100,7 @@ void BrowseThread::run() {
             m_condition.wait(&m_mutex);
         }
         auto path = std::move(m_path);
-        auto modelObserver = m_model_observer;
+        auto modelObserver = m_modelObserver;
         auto bRun = m_bRun;
         m_path = mixxx::FileAccess();
         m_mutex.unlock();
