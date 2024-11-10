@@ -1197,7 +1197,11 @@ void setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Tr
     if (!value.isNull() && value.canConvert<quint64>()) {
         DEBUG_ASSERT(value.isValid());
         const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+        sourceSynchronizedAt.setTimeZone(QTimeZone::UTC);
+#else
         sourceSynchronizedAt.setTimeSpec(Qt::UTC);
+#endif
         sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
     }
     pTrack->setSourceSynchronizedAt(sourceSynchronizedAt);
