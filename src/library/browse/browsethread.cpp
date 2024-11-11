@@ -88,8 +88,8 @@ void BrowseThread::requestPopulateModel(mixxx::FileAccess path, BrowseTableModel
     m_requestMutex.lock();
     m_requestedPath = std::move(path);
     m_pModelObserver = pModelObserver;
-    m_requestCondition.wakeOne();
     m_requestMutex.unlock();
+    m_requestCondition.wakeOne();
 }
 
 void BrowseThread::run() {
@@ -98,8 +98,8 @@ void BrowseThread::run() {
     // Inform the constructor the thread started
     m_requestMutex.lock();
     m_requestedRunState = true;
-    m_requestCondition.wakeOne();
     m_requestMutex.unlock();
+    m_requestCondition.wakeOne();
 
     while (true) {
         // Wait for a new population request, or for a termination request
