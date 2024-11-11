@@ -57,14 +57,14 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
         if (newName.isEmpty()) {
             QMessageBox::warning(
                     nullptr,
-                    tr("Duplicating Smarties Failed"),
+                    tr("Creating Smarties Failed"),
                     tr("A smarties cannot have a blank name."));
             continue;
         }
         if (m_pTrackCollection->smarties().readSmartiesByName(newName)) {
             QMessageBox::warning(
                     nullptr,
-                    tr("Duplicating Smarties Failed"),
+                    tr("Creating Smarties Failed"),
                     tr("A smarties by that name already exists."));
             continue;
         }

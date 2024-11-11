@@ -20,6 +20,12 @@ dlgSmartiesInfo::dlgSmartiesInfo(
             this,
             &dlgSmartiesInfo::onUpdateSmartiesData);
 
+    // Initialize the lock-button states on UI load
+    connect(buttonLock,
+            &QPushButton::clicked,
+            this,
+            &dlgSmartiesInfo::toggleLockStatus);
+
     initializeConditionState(); // Initialize the condition states on UI load
 
     // Connect signals to dynamically adjust condition state when fields change
@@ -72,6 +78,8 @@ QVariant dlgSmartiesInfo::getUpdatedData() const {
 }
 
 void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
+    m_isUpdatingUI = true; // Set update flag to prevent emitting signals during population
+
     if (smartiesData.isEmpty()) {
         return; // No data found for this ID
     }
@@ -87,7 +95,22 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
         lineEditSearchInput->setText(smartiesData[6].toString());
         lineEditSearchSQL->setReadOnly(true);
         lineEditSearchSQL->setText(smartiesData[7].toString());
+        lineEditSearchSQL->setToolTip(
+                tr("This field can be seen as 'information', it is the result "
+                   "of the conditions in this window.") +
+                "\n" +
+                tr("This field gets calculated when you press Apply / ok, you "
+                   "can have an idea of the result.") +
+                "\n");
         textEditSearchSQL->setText(smartiesData[7].toString());
+        textEditSearchSQL->setToolTip(
+                tr("This field (the same as the one above can be seen as "
+                   "'information', it is the result of the conditions in this "
+                   "window.") +
+                "\n" +
+                tr("This view exists only to let you see the vomplete sql "
+                   "statement in a scrollable form.") +
+                "\n");
 
         QStringList fieldOptions = {"",
                 "artist",
@@ -96,8 +119,38 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
                 "album_artist",
                 "genre",
                 "comment",
-                "composer"};
-        QStringList operatorOptions = {"",
+                "composer",
+                "filetype",
+                "key",
+                "year",
+                "datetime_added",
+                "last_played_at",
+                "duration",
+                "bpm",
+                "played",
+                "timesplayed",
+                "rating"};
+        QStringList stringFieldOptions = {"",
+                "artist",
+                "title",
+                "album",
+                "album_artist",
+                "genre",
+                "comment",
+                "composer",
+                "filetype",
+                "key"};
+        QStringList dateFieldOptions = {"",
+                "year",
+                "datetime_added",
+                "last_played_at"};
+        QStringList numberFieldOptions = {"",
+                "duration",
+                "bpm",
+                "played",
+                "timesplayed",
+                "rating"};
+        QStringList stringOperatorOptions = {"",
                 "contains",
                 "does not contain",
                 "is",
@@ -106,44 +159,154 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
                 "ends with",
                 "is not empty",
                 "is empty"};
+        QStringList dateOperatorOptions = {"",
+                "before",
+                "after",
+                "is"};
+        QStringList numberOperatorOptions = {"",
+                "smaller than",
+                "bigger than",
+                "is",
+                "is not"};
+
         QStringList combinerOptions = {"", ") END", "AND", "OR", ") AND (", ") OR ("};
 
         int conditionStartIndex = 8; // Adjust based on smartiesData format
         for (int i = 0; i < 12; ++i) {
             int baseIndex = conditionStartIndex + i * 4;
 
+            // Populate fieldComboBox
             auto* fieldComboBox = findChild<QComboBox*>(
                     QString("comboBoxCondition%1Field").arg(i + 1));
             if (fieldComboBox) {
+                //                fieldComboBox->setPlaceholderText(tr("Choose Field"));
                 fieldComboBox->clear();
                 fieldComboBox->addItems(fieldOptions);
+                fieldComboBox->setToolTip(tr("Create a new condition") +
+                        "\n\n" +
+                        tr("You can create a condition by following 4 steps:") +
+                        "\n" + tr("1. Select the field") + "\n" +
+                        tr("2. Select the operator") + "\n" +
+                        tr("3. Enter the value to compare with") + "\n" +
+                        tr("4. Select the condition combiner") + "\n\n" +
+                        tr("In fact you're creating the whereclause in a sql "
+                           "query:") +
+                        "\n" +
+                        tr("SELECT * FROM LIBRARY WHERE ( ---The condition "
+                           "you're creating here---'") +
+                        "\n\n" + tr("1. Select the Condition Field") + "\n\n" +
+                        tr("All fields that can be used in the condition") +
+                        "\n" + tr("are listed in the selection box.") + "\n" +
+                        tr("The fields are divided in groups:") + "\n" +
+                        tr("Fields which contain text ") + "\n" +
+                        tr("    -> artist, title, album, album_artist, ") +
+                        "\n" +
+                        tr("       genre, comment, composer, filetype, key") +
+                        "\n" + tr("Fields which contain 'a kind of date'") +
+                        "\n" +
+                        tr("    -> year, datetime_added, last_played_at") +
+                        "\n" + tr("Fields which contain 'a kind of number'") +
+                        "\n" +
+                        tr("    -> duration, bpm, played, timesplayed, "
+                           "rating") +
+                        "\n");
+
+                // Get the field value from smartiesData
                 QString fieldText = smartiesData[baseIndex].isNull()
                         ? ""
                         : smartiesData[baseIndex].toString();
-                int index = fieldComboBox->findText(fieldText);
-                if (index != -1) {
-                    fieldComboBox->setCurrentIndex(index);
+                int fieldIndex = fieldComboBox->findText(fieldText);
+
+                if (fieldIndex != -1) {
+                    fieldComboBox->setCurrentIndex(fieldIndex);
                 } else if (!fieldText.isEmpty()) {
                     fieldComboBox->insertItem(0, fieldText);
                     fieldComboBox->setCurrentIndex(0);
                 }
-            }
 
+                // Connect field change to update operator combo box
+                connect(fieldComboBox,
+                        &QComboBox::currentIndexChanged,
+                        this,
+                        [this,
+                                fieldComboBox,
+                                i,
+                                stringFieldOptions,
+                                dateFieldOptions,
+                                numberFieldOptions]() {
+                            updateOperatorComboBox(fieldComboBox,
+                                    i,
+                                    stringFieldOptions,
+                                    dateFieldOptions,
+                                    numberFieldOptions);
+                        });
+            } // Populate operatorComboBox based on field type
             auto* operatorComboBox = findChild<QComboBox*>(
                     QString("comboBoxCondition%1Operator").arg(i + 1));
             if (operatorComboBox) {
                 operatorComboBox->clear();
-                operatorComboBox->addItems(operatorOptions);
+
+                // Determine which operator options to display based on the selected field
+                QString selectedField = fieldComboBox ? fieldComboBox->currentText() : QString();
+                if (stringFieldOptions.contains(selectedField)) {
+                    operatorComboBox->addItems(stringOperatorOptions);
+                } else if (dateFieldOptions.contains(selectedField)) {
+                    operatorComboBox->addItems(dateOperatorOptions);
+                } else if (numberFieldOptions.contains(selectedField)) {
+                    operatorComboBox->addItems(numberOperatorOptions);
+                }
+
+                // Get the operator value from smartiesData
                 QString operatorText = smartiesData[baseIndex + 1].isNull()
                         ? ""
                         : smartiesData[baseIndex + 1].toString();
-                int index = operatorComboBox->findText(operatorText);
-                if (index != -1) {
-                    operatorComboBox->setCurrentIndex(index);
+
+                int operatorIndex = operatorComboBox->findText(operatorText);
+                if (operatorIndex != -1) {
+                    operatorComboBox->setCurrentIndex(operatorIndex);
                 } else if (!operatorText.isEmpty()) {
                     operatorComboBox->insertItem(0, operatorText);
                     operatorComboBox->setCurrentIndex(0);
                 }
+                operatorComboBox->setToolTip(
+                        tr("2. Select the Condition Operator") + "\n\n" +
+                        tr("The choice between operators depends on the chosen "
+                           "field:") +
+                        "\n\n" + tr("Fields which contain text ") + "\n" +
+                        tr("    -> artist, title, album, album_artist, ") +
+                        "\n" +
+                        tr("       genre, comment, composer, filetype, key") +
+                        "\n" + tr("can only have a text-operator") + "\n" +
+                        tr("    -> contains, does not contain, is, is not,") +
+                        "\n" +
+                        tr("       starts with, ends with, is not empty, is "
+                           "empty") +
+                        "\n" +
+                        tr("       contain will return more results than "
+                           "is...") +
+                        "\n\n" + tr("Fields which contain 'a kind of date'") +
+                        "\n" +
+                        tr("    -> year, datetime_added, last_played_at") +
+                        "\n" + tr("can only have a date-operator") + "\n" +
+                        tr("    -> before, after, is, is not") + "\n\n" +
+                        tr("       before and after will have more results "
+                           "than is,") +
+                        "\n" +
+                        tr("       you can create 2 conditions to narrow your "
+                           "result;") +
+                        "\n" +
+                        tr("       year > 1685 AND year < 1990 will result in "
+                           "the tracks in the") +
+                        "\n" +
+                        tr("       2nd part of the eighties (if you filled in "
+                           "the year-trackfield") +
+                        "\n\n" + tr("Fields which contain 'a kind of number'") +
+                        "\n" +
+                        tr("    -> duration, bpm, played, timesplayed, "
+                           "rating") +
+                        "\n" + tr("can only have a number-operator") + "\n" +
+                        tr("    -> smaller than, bigger than, is, is not") +
+                        "\n");
             }
 
             auto* valueLineEdit = findChild<QLineEdit*>(
@@ -152,6 +315,60 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
                 valueLineEdit->setText(smartiesData[baseIndex + 2].isNull()
                                 ? ""
                                 : smartiesData[baseIndex + 2].toString());
+                valueLineEdit->setToolTip(tr("3. Enter the Condition Value") +
+                        "\n\n" +
+                        tr("The Condition Value is the value rhe condition is "
+                           "comparing with.") +
+                        "\n" +
+                        tr("Depending on the field and the operator different "
+                           "kinds of values are possible.") +
+                        "\n" +
+                        tr("If you selected a field which contains text ") +
+                        "\n" +
+                        tr("    -> artist, title, album, album_artist, ") +
+                        "\n" +
+                        tr("       genre, comment, composer, filetype, key") +
+                        "\n" + tr("and a text-operator") + "\n" +
+                        tr("    -> contains, does not contain, is, is not,") +
+                        "\n" +
+                        tr("       starts with, ends with, is not empty, is "
+                           "empty") +
+                        "\n\n" +
+                        tr("You can enter a string value: a part of / complete "
+                           "name of an artist, album...") +
+                        "\n" +
+                        tr("If you selected a field which contains 'a kind of "
+                           "date'") +
+                        "\n\n" +
+                        tr("    -> year, datetime_added, last_played_at") +
+                        "\n" + tr("and a a date-operator") + "\n" +
+                        tr("    -> before, after, is, is not") + "\n" +
+                        tr("       You can enter for conditions with year a "
+                           "year as YYYY (eg 1985 or 2002)") +
+                        "\n" +
+                        tr("       You can enter for conditions with "
+                           "datetime_added the date as YYYY-MM-DD ") +
+                        "\n" + tr("       (1985-10-21 or 2002-01-01)") + "\n" +
+                        tr("       You can enter for conditions with "
+                           "last_played_at you can enter the number of days, "
+                           "(last_played_at < 30 ") +
+                        "\n" +
+                        tr("       will return all played tracks in the last "
+                           "month,") +
+                        "\n" +
+                        tr("       you can combine conditions to narrow the "
+                           "search result.") +
+                        "\n\n" +
+                        tr("If you selected a field which contains 'a kind of "
+                           "number'") +
+                        "\n" +
+                        tr("    -> duration, bpm, played, timesplayed, "
+                           "rating") +
+                        "\n" + tr("and a number-operator") + "\n" +
+                        tr("    -> smaller than, bigger than, is, is not") +
+                        "\n" +
+                        tr("       You can enter an number to compare with.") +
+                        "\n");
             }
 
             auto* combinerComboBox = findChild<QComboBox*>(
@@ -169,6 +386,51 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
                     combinerComboBox->insertItem(0, combinerText);
                     combinerComboBox->setCurrentIndex(0);
                 }
+                combinerComboBox->setToolTip(
+                        tr("4. Select the Condition Combiner") + "\n\n" +
+                        tr("Every condition has to end with ') END'") + "\n" +
+                        tr("because they all start with a '('") + "\n" +
+                        tr("as you could see in the field-tooltip.") + "\n\n" +
+                        tr("Between the different conditions are 'combiners "
+                           "used") +
+                        "\n\n" +
+                        tr("You have the choice between 'AND' & 'OR'") +
+                        "\n\n" +
+                        tr("with 'AND' you can make clear that both Conditions "
+                           "need to be forfilled ") +
+                        "\n\n" +
+                        tr("eg: (Artist contains Prince AND title contains "
+                           "rain) will return in the track Purple rain,") +
+                        "\n" +
+                        tr("    or Prince, if you have that track in your "
+                           "collection.") +
+                        "\n" +
+                        tr("    (Artist contains Prince OR title contains "
+                           "rain) will return in all tracks of Prince ") +
+                        "\n" +
+                        tr("    AND all tracks with 'rain' in the title.") +
+                        "\n\n" +
+                        tr("The possibility to use parenthesis is to make "
+                           "conditions clear and more extensive") +
+                        "\n\n" +
+                        tr("eg: (Artist contains Prince AND title contains "
+                           "rain) OR (Artist contains lovesymbol) OR") +
+                        "\n" +
+                        tr("    (Artist contains TAFNAP) OR (Artist contains "
+                           "time) OR (Artist contains NPG)") +
+                        "\n" +
+                        tr("    Will return all 'purple rain' - tracks from "
+                           "'prince' + all tracks from his ") +
+                        "\n" + tr("    'lovesymbol'-name") + "\n" +
+                        tr("    + all tracks from his TAFNAP-time and the "
+                           "songs he created with 'the time',") +
+                        "\n" +
+                        tr("    the new power generation ...if you have those "
+                           "tracks.") +
+                        "\n\n" +
+                        tr("Parenthesis and the right USE of 'AND' and 'OR' "
+                           "can guve your condition results or not.") +
+                        "\n");
             }
         }
     }
@@ -205,6 +467,50 @@ void dlgSmartiesInfo::populateUI(const QVariantList& smartiesData) {
             &QPushButton::clicked,
             this,
             &dlgSmartiesInfo::onCancelButtonClicked);
+    // set
+    m_isUpdatingUI = false;
+}
+
+void dlgSmartiesInfo::updateOperatorComboBox(
+        QComboBox* fieldComboBox,
+        int conditionIndex,
+        const QStringList& stringFieldOptions,
+        const QStringList& dateFieldOptions,
+        const QStringList& numberFieldOptions) {
+    // Operator combo box must be appropriate to the selected field combo box
+    auto* operatorComboBox = findChild<QComboBox*>(
+            QString("comboBoxCondition%1Operator").arg(conditionIndex + 1));
+    if (!operatorComboBox) {
+        return;
+    }
+    //    operatorComboBox->setPlaceholderText(tr("Choose Operator (choice
+    //    restricted by type of field)"));
+    operatorComboBox->clear();
+
+    // Get the selected field from the fieldComboBox
+    QString selectedField = fieldComboBox->currentText();
+
+    // Define operator lists based on field types
+    if (stringFieldOptions.contains(selectedField)) {
+        operatorComboBox->addItems({"",
+                "contains",
+                "does not contain",
+                "is",
+                "is not",
+                "starts with",
+                "ends with",
+                "is not empty",
+                "is empty"});
+    } else if (dateFieldOptions.contains(selectedField)) {
+        operatorComboBox->addItems({"", "before", "after", "is"});
+    } else if (numberFieldOptions.contains(selectedField)) {
+        operatorComboBox->addItems({"", "smaller than", "bigger than", "is", "is not"});
+    }
+
+    // Ensure default operator is set when switching fields
+    if (!m_isUpdatingUI) {
+        operatorComboBox->setCurrentIndex(0);
+    }
 }
 
 void dlgSmartiesInfo::connectConditions() {
@@ -237,6 +543,15 @@ void dlgSmartiesInfo::connectConditions() {
     }
 }
 
+// Changes the lock-button states in the UI
+void dlgSmartiesInfo::toggleLockStatus() {
+    if (buttonLock->text() == "Lock") {
+        buttonLock->setText("Unlock");
+    } else {
+        buttonLock->setText("Lock");
+    }
+}
+
 QVariantList dlgSmartiesInfo::collectUIChanges() const {
     qDebug() << "[SMARTIES] [EDIT DLG] ---> CollectUIChanges Started!";
     QVariantList updatedData;
@@ -248,13 +563,6 @@ QVariantList dlgSmartiesInfo::collectUIChanges() const {
     updatedData.append(checkBoxAutoDJ->isChecked());
     updatedData.append(lineEditSearchInput->text());
     updatedData.append(lineEditSearchSQL->text());
-
-    //    for (int i = 1; i <= 12; ++i) {
-    //        updatedData.append(findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i))->currentText());
-    //        updatedData.append(findChild<QComboBox*>(QString("comboBoxCondition%1Operator").arg(i))->currentText());
-    //        updatedData.append(findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i))->text());
-    //        updatedData.append(findChild<QComboBox*>(QString("comboBoxCondition%1Combiner").arg(i))->currentText());
-    //    }
 
     for (int i = 1; i <= 12; ++i) {
         QString field = findChild<QComboBox*>(

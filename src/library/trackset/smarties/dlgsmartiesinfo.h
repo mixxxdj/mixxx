@@ -40,6 +40,12 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     void onCancelButtonClicked();   // Slot for Cancel button
     void initializeConditionState();
 
+    void updateOperatorComboBox(QComboBox* fieldComboBox,
+            int conditionIndex,
+            const QStringList& stringFieldOptions,
+            const QStringList& dateFieldOptions,
+            const QStringList& numberFieldOptions);
+
   private:
     void populateUI(const QVariantList& smartiesData);
 
@@ -54,4 +60,5 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
 
   private slots:
     void onUpdateSmartiesData(const QVariantList& smartiesData);
+    void toggleLockStatus();
 };

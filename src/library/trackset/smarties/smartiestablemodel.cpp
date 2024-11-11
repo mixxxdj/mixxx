@@ -642,6 +642,28 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
         QString value = smartiesData[baseIndex + 2].toString();
         QString combiner = smartiesData[baseIndex + 3].toString();
 
+        QStringList stringFieldOptions = {"artist",
+                "title",
+                "album",
+                "album_artist",
+                "genre",
+                "comment",
+                "composer",
+                "filetype",
+                "key"};
+        QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
+        QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+        QStringList stringOperatorOptions = {"contains",
+                "does not contain",
+                "is",
+                "is not",
+                "starts with",
+                "ends with",
+                "is not empty",
+                "is empty"};
+        QStringList dateOperatorOptions = {"before", "after"};
+        QStringList numberOperatorOptions = {"smaller than", "bigger than", "is", "is not"};
+
         // Check if field, operator, and value are not null
         if (!field.isEmpty() && !op.isEmpty() && !value.isEmpty()) {
             hasConditions = true;
@@ -649,29 +671,119 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
             // Prepare the condition
             QString condition;
 
-            // Handle operator translations
-            if (op == "contains") {
-                condition = QString("library.%1 LIKE '%%2%'").arg(field, value);
-            } else if (op == "does not contain") {
-                condition = QString("library.%1 NOT LIKE '%%2%'").arg(field, value);
-            } else if (op == "starts with") {
-                condition = QString("library.%1 LIKE '%2%%'").arg(field, value);
-            } else if (op == "ends with") {
-                condition = QString("library.%1 LIKE '%%2'").arg(field, value);
-            } else if (op == "is not empty") {
-                condition = QString("library.%1 IS NOT NULL").arg(field);
-            } else if (op == "is empty") {
-                condition = QString("library.%1 IS NULL").arg(field);
-            } else if (op == "is") {
-                condition = QString("library.%1 = '%2'").arg(field, value);
-            } else if (op == "is not") {
-                condition = QString("library.%1 != '%2'").arg(field, value);
-            } else {
-                continue; // Skip unrecognized operators
+            // fields like strings -> operator translations
+            if (stringFieldOptions.contains(field)) {
+                if (op == "contains") {
+                    condition = QString("library.%1 LIKE '%%2%'").arg(field, value);
+                } else if (op == "does not contain") {
+                    condition = QString("library.%1 NOT LIKE '%%2%'").arg(field, value);
+                } else if (op == "starts with") {
+                    condition = QString("library.%1 LIKE '%2%'").arg(field, value);
+                } else if (op == "ends with") {
+                    condition = QString("library.%1 LIKE '%%2'").arg(field, value);
+                } else if (op == "is not empty") {
+                    condition = QString("library.%1 IS NOT NULL").arg(field);
+                } else if (op == "is empty") {
+                    condition = QString("library.%1 IS NULL").arg(field);
+                } else if (op == "is") {
+                    condition = QString("library.%1 = '%2'").arg(field, value);
+                } else if (op == "is not") {
+                    condition = QString("library.%1 != '%2'").arg(field, value);
+                } else {
+                    continue; // Skip unrecognized operators
+                }
             }
-
+            // year field -> operator translations
+            if (field == "year") {
+                if (op == "before") {
+                    condition = QString(
+                            "CAST(substr(library.%1,1,4) as INTEGER) < %2")
+                                        .arg(field, value);
+                } else if (op == "after") {
+                    condition = QString(
+                            "CAST(substr(library.%1,1,4) as INTEGER) > %2")
+                                        .arg(field, value);
+                } else if (op == "is") {
+                    condition = QString(
+                            "CAST(substr(library.%1,1,4) as INTEGER) = %2")
+                                        .arg(field, value);
+                } else {
+                    continue; // Skip unrecognized operators
+                }
+            }
+            // fields like dates -> operator translations
+            if (field == "datetime_added" || field == "last_played_at") {
+                if (value.indexOf("-", 0) > 1) {
+                    if (op == "before") {
+                        condition =
+                                QString("strftime('%Y-%m-%d',library.%1) < "
+                                        "strftime('%Y-%m-%d','%2')")
+                                        .arg(field, value);
+                    } else if (op == "after") {
+                        condition =
+                                QString("strftime('%Y-%m-%d',library.%1) > "
+                                        "strftime('%Y-%m-%d','%2')")
+                                        .arg(field, value);
+                    } else if (op == "is") {
+                        condition =
+                                QString("strftime('%Y-%m-%d',library.%1) = "
+                                        "strftime('%Y-%m-%d','%2')")
+                                        .arg(field, value);
+                    } else {
+                        continue; // Skip unrecognized operators
+                    }
+                } else {
+                    QDate nowDateStamp = QDate::currentDate();
+                    if (op == "before") {
+                        condition =
+                                QString("strftime('%Y-%m-%d',library.%1) < "
+                                        "strftime('%Y-%m-%d','%2')")
+                                        .arg(field,
+                                                nowDateStamp
+                                                        .addDays(value.toInt() *
+                                                                -1)
+                                                        .toString(
+                                                                "yyyy-MM-dd"));
+                    } else if (op == "after") {
+                        condition =
+                                QString("strftime('%Y-%m-%d',library.%1) > "
+                                        "strftime('%Y-%m-%d','%2')")
+                                        .arg(field,
+                                                nowDateStamp
+                                                        .addDays(value.toInt() *
+                                                                -1)
+                                                        .toString(
+                                                                "yyyy-MM-dd"));
+                    } else if (op == "is") {
+                        condition =
+                                QString("strftime('%Y-%m-%d',library.%1) = "
+                                        "strftime('%Y-%m-%d','%2')")
+                                        .arg(field,
+                                                nowDateStamp
+                                                        .addDays(value.toInt() *
+                                                                -1)
+                                                        .toString(
+                                                                "yyyy-MM-dd"));
+                    } else {
+                        continue; // Skip unrecognized operators
+                    }
+                }
+            }
+            // fields like numbers -> operator translations
+            if (numberFieldOptions.contains(field)) {
+                if (op == "smaller than") {
+                    condition = QString("library.%1 < %2").arg(field, value);
+                } else if (op == "bigger than") {
+                    condition = QString("library.%1 > %2").arg(field, value);
+                } else if (op == "is") {
+                    condition = QString("library.%1 = %2").arg(field, value);
+                } else if (op == "is not") {
+                    condition = QString("library.%1 <> %2").arg(field, value);
+                } else {
+                    continue; // Skip unrecognized operators
+                }
+            }
             whereClause += condition;
-
             // Add combiner if not the last condition
             if (i < 12 && combinerOptions.contains(combiner)) {
                 whereClause += " " + combiner.replace(") END", "") +

@@ -431,6 +431,8 @@ QString joinSqlStringList(const QList<TrackId>& trackIds) {
 
 } // anonymous namespace
 
+// Next is to make the extra's in the smarties name (numbers - duration - locked)
+// + duplicate smarties
 SmartiesQueryFields::SmartiesQueryFields(const FwdSqlQuery& query)
         : m_iId(query.fieldIndex(SMARTIESTABLE_ID)),
           m_iName(query.fieldIndex(SMARTIESTABLE_NAME)),
@@ -488,6 +490,8 @@ SmartiesQueryFields::SmartiesQueryFields(const FwdSqlQuery& query)
           m_iCondition12Combiner(query.fieldIndex(SMARTIESTABLE_CONDITION_12_COMBINER)) {
 }
 
+// Next is to make the extra's in the smarties name (numbers - duration - locked)
+// fill fields with values
 void SmartiesQueryFields::populateFromQuery(
         const FwdSqlQuery& query,
         Smarties* pSmarties) const {
@@ -552,9 +556,10 @@ SmartiesTrackQueryFields::SmartiesTrackQueryFields(const FwdSqlQuery& query)
           m_iTrackId(query.fieldIndex(SMARTIESTRACKSTABLE_TRACKID)) {
 }
 
+// Exists in crates
 // TrackQueryFields::TrackQueryFields(const FwdSqlQuery& query)
 //         : m_iTrackId(query.fieldIndex(SMARTIESTRACKSTABLE_TRACKID)) {
-// }
+//}
 
 SmartiesSummaryQueryFields::SmartiesSummaryQueryFields(const FwdSqlQuery& query)
         : SmartiesQueryFields(query),
@@ -596,17 +601,17 @@ void SmartiesStorage::repairDatabase(const QSqlDatabase& database) {
                     << "smarties with empty names";
         }
     }
-    {
-        // Delete smarties with empty search_input
-        FwdSqlQuery query(database,
-                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL")
-                        .arg(SMARTIES_TABLE, SMARTIESTABLE_SEARCH_INPUT));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Deleted" << query.numRowsAffected()
-                    << "smarties with empty search_input";
-        }
-    }
+    //    {
+    //        // Delete smarties with empty search_input
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL")
+    //                        .arg(SMARTIES_TABLE, SMARTIESTABLE_SEARCH_INPUT));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Deleted" << query.numRowsAffected()
+    //                    << "smarties with empty search_input";
+    //        }
+    //    }
     //    {
     // Delete smarties with empty search_sql
     //        FwdSqlQuery query(database,
@@ -1021,42 +1026,6 @@ SmartiesTrackSelectResult SmartiesStorage::selectTracksSortedBySmartiesNameLike(
 //     }
 // }
 
-void SmartiesStorage::createSmartiesQSet(SmartiesId smartiesId) {
-    QSet<SmartiesId> clear();
-
-    int tracksInSmarties;
-    FwdSqlQuery queryCount(m_database,
-            QStringLiteral("SELECT COUNT(*) FROM %1").arg(SMARTIES_TRACKS_TABLE));
-    if (queryCount.execPrepared() && queryCount.next()) {
-        tracksInSmarties = queryCount.fieldValue(0).toInt();
-    } else {
-        tracksInSmarties = 0;
-    }
-    qDebug() << "[SMARTIES] [QSET] [COUNT] -> tracksInSmarties: " << tracksInSmarties;
-
-    //    FwdSqlQuery query(m_database,
-    //            QStringLiteral("SELECT %2 FROM %1 WHERE %3=:smartiesId")
-    //                    .arg(SMARTIES_TRACKS_TABLE,
-    //                            SMARTIESTRACKSTABLE_TRACKID,
-    //                            SMARTIESTRACKSTABLE_SMARTIESID));
-    //    query.bindValue(":smartiesId", smartiesId);
-    //    getLocked = queryGetLocked.fieldValue(0).toBool();
-
-    //    if (query.execPrepared()) {
-    //        return SmartiesTrackSelectResult(std::move(query));
-    //    } else {
-    //        return SmartiesTrackSelectResult();
-    //    }
-
-    //    for (const auto& trackId : trackIds) {
-    //        SmartiesTrackSelectResult smartiesTracks(selectTrackSmartiesSorted(trackId));
-    //        while (smartiesTracks.next()) {
-    //            DEBUG_ASSERT(smartiesTracks.trackId() == trackId);
-    //            trackSmarties.insert(smartiesTracks.smartiesId());
-    //        }
-    //    }
-}
-
 QSet<SmartiesId> SmartiesStorage::collectSmartiesIdsOfTracks(const QList<TrackId>& trackIds) const {
     // NOTE(uklotzde): One query per track id. This could be optimized
     // by querying for chunks of track ids and collecting the results.
@@ -1132,11 +1101,10 @@ bool SmartiesStorage::onInsertingSmarties(
     FwdSqlQuery query(m_database,
             QStringLiteral("INSERT INTO %1 "
                            "(%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13,%14,%15,%"
-                           "16,%17,%18,%19,"
-                           "%20,%21,%22,%23,%24,%25,%26,%27,%28,%29,%30,%31,%"
-                           "32,%33,%34,%35,%36,%37,%38,%39,"
-                           "%40,%41,%42,%43,%44,%45,%46,%47,%48,%49,%50,%51,%"
-                           "52,%53,%54) "
+                           "16,%17,%18,%19,%20,%21,%22,%23,%24,%25,%26,%27,%28,"
+                           "%29,%30,%31,%32,%33,%34,%35,%36,%37,%38,%39,%40,"
+                           "%41,%42,%43,%44,%45,%46,%47,%48,%49,%50,%51,%52,"
+                           "%53,%54) "
                            "VALUES (:name, :locked, :autoDjSource, "
                            ":searchInput, :searchSql, "
                            ":condition1_field, :condition1_operator, "

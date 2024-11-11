@@ -19,6 +19,14 @@ class SmartiesQueryFields {
     explicit SmartiesQueryFields(const FwdSqlQuery& query);
     virtual ~SmartiesQueryFields() = default;
 
+    void bindConditionField(const QString& fieldName, const Smarties& smarties, int index);
+    void bindConditionOperator(const QString& operatorName, const Smarties& smarties, int index);
+    void bindConditionValue(const QString& valueName, const Smarties& smarties, int index);
+    void bindConditionCombiner(const QString& combinerName, const Smarties& smarties, int index);
+
+    void populateFromQuery(const FwdSqlQuery& query, Smarties* pSmarties) const;
+
+  private slots:
     SmartiesId getId(const FwdSqlQuery& query) const {
         return SmartiesId(query.fieldValue(m_iId));
     }
@@ -37,7 +45,7 @@ class SmartiesQueryFields {
     QString getSearchSql(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iSearchSql).toString();
     }
-    // Conditions
+    //  Conditions
     QString getCondition1Field(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition1Field).toString();
     }
@@ -182,14 +190,6 @@ class SmartiesQueryFields {
     QString getCondition12Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition12Combiner).toString();
     }
-    void bindConditionField(const QString& fieldName, const Smarties& smarties, int index);
-    void bindConditionOperator(const QString& operatorName, const Smarties& smarties, int index);
-    void bindConditionValue(const QString& valueName, const Smarties& smarties, int index);
-    void bindConditionCombiner(const QString& combinerName, const Smarties& smarties, int index);
-
-    void populateFromQuery(
-            const FwdSqlQuery& query,
-            Smarties* pSmarties) const;
 
   private:
     DbFieldIndex m_iId;
@@ -431,8 +431,6 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
             const QSqlDatabase& database) override;
     void disconnectDatabase() override;
 
-    void createSmartiesQSet(SmartiesId smartiesId);
-
     /////////////////////////////////////////////////////////////////////////
     // Smarties write operations (transactional, non-const)
     // Only invoked by TrackCollection!
@@ -450,80 +448,17 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
     //      for notifications
     /////////////////////////////////////////////////////////////////////////
 
-    bool onInsertingSmarties(
-            const Smarties& smarties,
-            SmartiesId* pSmartiesId = nullptr);
+    bool onInsertingSmarties(const Smarties& smarties, SmartiesId* pSmartiesId = nullptr);
 
-    void updateDuplicateSmarties(
-            const Smarties& smarties,
-            SmartiesId* pSmartiesId,
-            QString* SearchInput,
-            QString* SearchSql,
-            QString* Condition1Field,
-            QString* Condition1Operator,
-            QString* Condition1Value,
-            QString* Condition1Combiner,
-            QString* Condition2Field,
-            QString* Condition2Operator,
-            QString* Condition2Value,
-            QString* Condition2Combiner,
-            QString* Condition3Field,
-            QString* Condition3Operator,
-            QString* Condition3Value,
-            QString* Condition3Combiner,
-            QString* Condition4Field,
-            QString* Condition4Operator,
-            QString* Condition4Value,
-            QString* Condition4Combiner,
-            QString* Condition5Field,
-            QString* Condition5Operator,
-            QString* Condition5Value,
-            QString* Condition5Combiner,
-            QString* Condition6Field,
-            QString* Condition6Operator,
-            QString* Condition6Value,
-            QString* Condition6Combiner,
-            QString* Condition7Field,
-            QString* Condition7Operator,
-            QString* Condition7Value,
-            QString* Condition7Combiner,
-            QString* Condition8Field,
-            QString* Condition8Operator,
-            QString* Condition8Value,
-            QString* Condition8Combiner,
-            QString* Condition9Field,
-            QString* Condition9Operator,
-            QString* Condition9Value,
-            QString* Condition9Combiner,
-            QString* Condition10Field,
-            QString* Condition10Operator,
-            QString* Condition10Value,
-            QString* Condition10Combiner,
-            QString* Condition11Field,
-            QString* Condition11Operator,
-            QString* Condition11Value,
-            QString* Condition11Combiner,
-            QString* Condition12Field,
-            QString* Condition12Operator,
-            QString* Condition12Value,
-            QString* Condition12Combiner);
+    bool onUpdatingSmarties(const Smarties& smarties);
 
-    bool onUpdatingSmarties(
-            const Smarties& smarties);
+    bool onDeletingSmarties(SmartiesId smartiesId);
 
-    bool onDeletingSmarties(
-            SmartiesId smartiesId);
+    bool onAddingSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
 
-    bool onAddingSmartiesTracks(
-            SmartiesId smartiesId,
-            const QList<TrackId>& trackIds);
+    bool onRemovingSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
 
-    bool onRemovingSmartiesTracks(
-            SmartiesId smartiesId,
-            const QList<TrackId>& trackIds);
-
-    bool onPurgingTracks(
-            const QList<TrackId>& trackIds);
+    bool onPurgingTracks(const QList<TrackId>& trackIds);
 
     /////////////////////////////////////////////////////////////////////////
     // Smarties read operations (read-only, const)
