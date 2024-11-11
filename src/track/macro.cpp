@@ -95,7 +95,7 @@ void Macro::addAction(const MacroAction& action) {
 
 mixxx::audio::FramePos Macro::getStart() const {
     VERIFY_OR_DEBUG_ASSERT(!getActions().isEmpty()) {
-        return mixxx::audio::FramePos(0);
+        return mixxx::audio::FramePos();
     }
     return m_actions.first().getTargetPosition();
 }

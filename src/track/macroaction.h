@@ -12,7 +12,7 @@ namespace proto = mixxx::track::io;
 /// but that is subject to change.
 class MacroAction {
   public:
-    enum class Type : uint32_t {
+    enum class Type {
         Jump = 0
     };
 
