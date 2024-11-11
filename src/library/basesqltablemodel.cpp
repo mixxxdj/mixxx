@@ -462,7 +462,8 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
-
+    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> searchText " << searchText;
+    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> extraFilter " << extraFilter;
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
@@ -480,6 +481,8 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
+    qDebug() << "[BASETRACKTABLEMODEL] [SEARCH] -> searchText " << searchText;
+    qDebug() << "[BASETRACKTABLEMODEL] [SEARCH] -> extraFilter " << extraFilter;
     setSearch(searchText, extraFilter);
     select();
 }

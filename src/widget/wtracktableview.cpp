@@ -550,7 +550,6 @@ void WTrackTableView::onSearch(const QString& text) {
     bool queryIsLessSpecific = SearchQueryParser::queryIsLessSpecific(
             pTrackModel->currentSearch(), text);
     qDebug() << "[WTrackTableView] [SEARCH] -> result " << text;
-    qDebug() << "[WTrackTableView] [SEARCH] -> result " << pTrackModel->currentSearch(), text;
     QList<TrackId> selectedTracks = getSelectedTrackIds();
     TrackId prevTrack = getCurrentTrackId();
     saveCurrentIndex();
