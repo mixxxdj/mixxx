@@ -111,7 +111,7 @@ repos:
     hooks:
       - id: shellcheck
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.15.0
+    rev: v0.14.0
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/python-jsonschema/check-jsonschema
@@ -124,7 +124,7 @@ repos:
       - id: prettier
         types: [yaml]
   - repo: https://github.com/qarmin/qml_formatter.git
-    rev: latest # No release tag yet including #6 fix
+    rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
     hooks:
       - id: qml_formatter
   - repo: local
