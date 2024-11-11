@@ -49,143 +49,143 @@ class SmartiesQueryFields {
     QString getCondition1Field(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition1Field).toString();
     }
-    QString getCondition2Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition2Field).toString();
-    }
-    QString getCondition3Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition3Field).toString();
-    }
-    QString getCondition4Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition4Field).toString();
-    }
-    QString getCondition5Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition5Field).toString();
-    }
-    QString getCondition6Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition6Field).toString();
-    }
-    QString getCondition7Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition7Field).toString();
-    }
-    QString getCondition8Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition8Field).toString();
-    }
-    QString getCondition9Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition9Field).toString();
-    }
-    QString getCondition10Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition10Field).toString();
-    }
-    QString getCondition11Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition11Field).toString();
-    }
-    QString getCondition12Field(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition12Field).toString();
-    }
     QString getCondition1Operator(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition1Operator).toString();
-    }
-    QString getCondition2Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition2Operator).toString();
-    }
-    QString getCondition3Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition3Operator).toString();
-    }
-    QString getCondition4Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition4Operator).toString();
-    }
-    QString getCondition5Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition5Operator).toString();
-    }
-    QString getCondition6Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition6Operator).toString();
-    }
-    QString getCondition7Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition7Operator).toString();
-    }
-    QString getCondition8Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition8Operator).toString();
-    }
-    QString getCondition9Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition9Operator).toString();
-    }
-    QString getCondition10Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition10Operator).toString();
-    }
-    QString getCondition11Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition11Operator).toString();
-    }
-    QString getCondition12Operator(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition12Operator).toString();
     }
     QString getCondition1Value(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition1Value).toString();
     }
-    QString getCondition2Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition2Value).toString();
-    }
-    QString getCondition3Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition3Value).toString();
-    }
-    QString getCondition4Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition4Value).toString();
-    }
-    QString getCondition5Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition5Value).toString();
-    }
-    QString getCondition6Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition6Value).toString();
-    }
-    QString getCondition7Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition7Value).toString();
-    }
-    QString getCondition8Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition8Value).toString();
-    }
-    QString getCondition9Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition9Value).toString();
-    }
-    QString getCondition10Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition10Value).toString();
-    }
-    QString getCondition11Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition11Value).toString();
-    }
-    QString getCondition12Value(const FwdSqlQuery& query) const {
-        return query.fieldValue(m_iCondition12Value).toString();
-    }
     QString getCondition1Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition1Combiner).toString();
+    }
+    QString getCondition2Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition2Field).toString();
+    }
+    QString getCondition2Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition2Operator).toString();
+    }
+    QString getCondition2Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition2Value).toString();
     }
     QString getCondition2Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition2Combiner).toString();
     }
+    QString getCondition3Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition3Field).toString();
+    }
+    QString getCondition3Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition3Operator).toString();
+    }
+    QString getCondition3Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition3Value).toString();
+    }
     QString getCondition3Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition3Combiner).toString();
+    }
+    QString getCondition4Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition4Field).toString();
+    }
+    QString getCondition4Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition4Operator).toString();
+    }
+    QString getCondition4Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition4Value).toString();
     }
     QString getCondition4Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition4Combiner).toString();
     }
+    QString getCondition5Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition5Field).toString();
+    }
+    QString getCondition5Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition5Operator).toString();
+    }
+    QString getCondition5Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition5Value).toString();
+    }
     QString getCondition5Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition5Combiner).toString();
+    }
+    QString getCondition6Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition6Field).toString();
+    }
+    QString getCondition6Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition6Operator).toString();
+    }
+    QString getCondition6Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition6Value).toString();
     }
     QString getCondition6Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition6Combiner).toString();
     }
+    QString getCondition7Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition7Field).toString();
+    }
+    QString getCondition7Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition7Operator).toString();
+    }
+    QString getCondition7Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition7Value).toString();
+    }
     QString getCondition7Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition7Combiner).toString();
+    }
+    QString getCondition8Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition8Field).toString();
+    }
+    QString getCondition8Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition8Operator).toString();
+    }
+    QString getCondition8Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition8Value).toString();
     }
     QString getCondition8Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition8Combiner).toString();
     }
+    QString getCondition9Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition9Field).toString();
+    }
+    QString getCondition9Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition9Operator).toString();
+    }
+    QString getCondition9Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition9Value).toString();
+    }
     QString getCondition9Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition9Combiner).toString();
+    }
+    QString getCondition10Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition10Field).toString();
+    }
+    QString getCondition10Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition10Operator).toString();
+    }
+    QString getCondition10Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition10Value).toString();
     }
     QString getCondition10Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition10Combiner).toString();
     }
+    QString getCondition11Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition11Field).toString();
+    }
+    QString getCondition11Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition11Operator).toString();
+    }
+    QString getCondition11Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition11Value).toString();
+    }
     QString getCondition11Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition11Combiner).toString();
+    }
+    QString getCondition12Field(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition12Field).toString();
+    }
+    QString getCondition12Operator(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition12Operator).toString();
+    }
+    QString getCondition12Value(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCondition12Value).toString();
     }
     QString getCondition12Combiner(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iCondition12Combiner).toString();
@@ -199,52 +199,52 @@ class SmartiesQueryFields {
     DbFieldIndex m_iSearchInput;
     DbFieldIndex m_iSearchSql;
     DbFieldIndex m_iCondition1Field;
-    DbFieldIndex m_iCondition2Field;
-    DbFieldIndex m_iCondition3Field;
-    DbFieldIndex m_iCondition4Field;
-    DbFieldIndex m_iCondition5Field;
-    DbFieldIndex m_iCondition6Field;
-    DbFieldIndex m_iCondition7Field;
-    DbFieldIndex m_iCondition8Field;
-    DbFieldIndex m_iCondition9Field;
-    DbFieldIndex m_iCondition10Field;
-    DbFieldIndex m_iCondition11Field;
-    DbFieldIndex m_iCondition12Field;
     DbFieldIndex m_iCondition1Operator;
-    DbFieldIndex m_iCondition2Operator;
-    DbFieldIndex m_iCondition3Operator;
-    DbFieldIndex m_iCondition4Operator;
-    DbFieldIndex m_iCondition5Operator;
-    DbFieldIndex m_iCondition6Operator;
-    DbFieldIndex m_iCondition7Operator;
-    DbFieldIndex m_iCondition8Operator;
-    DbFieldIndex m_iCondition9Operator;
-    DbFieldIndex m_iCondition10Operator;
-    DbFieldIndex m_iCondition11Operator;
-    DbFieldIndex m_iCondition12Operator;
     DbFieldIndex m_iCondition1Value;
-    DbFieldIndex m_iCondition2Value;
-    DbFieldIndex m_iCondition3Value;
-    DbFieldIndex m_iCondition4Value;
-    DbFieldIndex m_iCondition5Value;
-    DbFieldIndex m_iCondition6Value;
-    DbFieldIndex m_iCondition7Value;
-    DbFieldIndex m_iCondition8Value;
-    DbFieldIndex m_iCondition9Value;
-    DbFieldIndex m_iCondition10Value;
-    DbFieldIndex m_iCondition11Value;
-    DbFieldIndex m_iCondition12Value;
     DbFieldIndex m_iCondition1Combiner;
+    DbFieldIndex m_iCondition2Field;
+    DbFieldIndex m_iCondition2Operator;
+    DbFieldIndex m_iCondition2Value;
     DbFieldIndex m_iCondition2Combiner;
+    DbFieldIndex m_iCondition3Field;
+    DbFieldIndex m_iCondition3Operator;
+    DbFieldIndex m_iCondition3Value;
     DbFieldIndex m_iCondition3Combiner;
+    DbFieldIndex m_iCondition4Field;
+    DbFieldIndex m_iCondition4Operator;
+    DbFieldIndex m_iCondition4Value;
     DbFieldIndex m_iCondition4Combiner;
+    DbFieldIndex m_iCondition5Field;
+    DbFieldIndex m_iCondition5Operator;
+    DbFieldIndex m_iCondition5Value;
     DbFieldIndex m_iCondition5Combiner;
+    DbFieldIndex m_iCondition6Field;
+    DbFieldIndex m_iCondition6Operator;
+    DbFieldIndex m_iCondition6Value;
     DbFieldIndex m_iCondition6Combiner;
+    DbFieldIndex m_iCondition7Field;
+    DbFieldIndex m_iCondition7Operator;
+    DbFieldIndex m_iCondition7Value;
     DbFieldIndex m_iCondition7Combiner;
+    DbFieldIndex m_iCondition8Field;
+    DbFieldIndex m_iCondition8Operator;
+    DbFieldIndex m_iCondition8Value;
     DbFieldIndex m_iCondition8Combiner;
+    DbFieldIndex m_iCondition9Field;
+    DbFieldIndex m_iCondition9Operator;
+    DbFieldIndex m_iCondition9Value;
     DbFieldIndex m_iCondition9Combiner;
+    DbFieldIndex m_iCondition10Field;
+    DbFieldIndex m_iCondition10Operator;
+    DbFieldIndex m_iCondition10Value;
     DbFieldIndex m_iCondition10Combiner;
+    DbFieldIndex m_iCondition11Field;
+    DbFieldIndex m_iCondition11Operator;
+    DbFieldIndex m_iCondition11Value;
     DbFieldIndex m_iCondition11Combiner;
+    DbFieldIndex m_iCondition12Field;
+    DbFieldIndex m_iCondition12Operator;
+    DbFieldIndex m_iCondition12Value;
     DbFieldIndex m_iCondition12Combiner;
 };
 

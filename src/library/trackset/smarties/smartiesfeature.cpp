@@ -820,7 +820,7 @@ void SmartiesFeature::slotEditSmarties() {
 
             activateSmarties(smartiesId);
             slotSmartiesTableChanged(smartiesId);
-            QModelIndex constructChildModel(indexFromSmartiesId(smartiesId));
+            // QModelIndex constructChildModel(indexFromSmartiesId(smartiesId));
             qDebug() << "[SMARTIES] [EDIT] - Smarties sidebar update for SmartiesId";
         }
     }
