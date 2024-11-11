@@ -42,7 +42,7 @@ class BrowseThread : public QThread {
     BrowseThread(QObject *parent = 0);
 
     void requestStop();
-    void populateModel(mixxx::FileAccess path, BrowseTableModel* pModelObserver);
+    void populateModel(const mixxx::FileAccess& path, BrowseTableModel* pModelObserver);
 
     QMutex m_requestMutex;
     QWaitCondition m_requestCondition;

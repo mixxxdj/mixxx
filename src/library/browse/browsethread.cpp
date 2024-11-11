@@ -152,7 +152,7 @@ public:
 
 } // namespace
 
-void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* pModelObserver) {
+void BrowseThread::populateModel(const mixxx::FileAccess& path, BrowseTableModel* pModelObserver) {
     // Executed by the thread run for incoming populate model requests
 
     if (!path.info().hasLocation()) {
