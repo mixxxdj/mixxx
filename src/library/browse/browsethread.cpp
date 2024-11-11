@@ -26,29 +26,34 @@ constexpr int kRowBatchSize = 10;
  * make sense to use this class in non-GUI threads
  */
 BrowseThread::BrowseThread(QObject* parent)
-        : QThread{parent}, m_modelObserver{}, m_bRun{} {
+        : QThread{parent}, m_pModelObserver{}, m_requestedRunState{} {
     // Start thread
     start(QThread::LowPriority);
+
     qDebug() << "Wait to start browser background thread";
     // Wait until the thread is running
-    m_mutex.lock();
-    while (!m_bRun) {
-        m_condition.wait(&m_mutex);
+    m_requestMutex.lock();
+    while (!m_requestedRunState) {
+        m_requestCondition.wait(&m_requestMutex);
     }
-    m_mutex.unlock();
+    m_requestMutex.unlock();
     qDebug() << "Browser background thread started";
 }
 
 BrowseThread::~BrowseThread() {
-    qDebug() << "Wait to terminate browser background thread";
     // Inform the thread we want it to terminate
-    m_mutex.lock();
-    m_bRun = false;
-    m_condition.wakeOne();
-    m_mutex.unlock();
+    requestStop();
     // Wait until thread terminated
     wait();
     qDebug() << "Browser background thread terminated";
+}
+
+void BrowseThread::requestStop() {
+    qDebug() << "Request to terminate browser background thread";
+    m_requestMutex.lock();
+    m_requestedRunState = false;
+    m_requestMutex.unlock();
+    m_requestCondition.wakeOne();
 }
 
 // static
@@ -60,50 +65,54 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     static QWeakPointer<BrowseThread> s_weakInstanceRef;
     static QMutex s_mutex;
 
-    s_mutex.lock();
     BrowseThreadPointer strong = s_weakInstanceRef.toStrongRef();
+
     if (!strong) {
-        strong = BrowseThreadPointer(new BrowseThread());
-        s_weakInstanceRef = strong.toWeakRef();
+        s_mutex.lock();
+        strong = s_weakInstanceRef.toStrongRef();
+        if (!strong) {
+            strong = BrowseThreadPointer(new BrowseThread());
+            s_weakInstanceRef = strong.toWeakRef();
+        }
+        s_mutex.unlock();
     }
-    s_mutex.unlock();
 
     return strong;
 }
 
-void BrowseThread::requestPopulateModel(mixxx::FileAccess path, BrowseTableModel* modelObserver) {
+void BrowseThread::requestPopulateModel(mixxx::FileAccess path, BrowseTableModel* pModelObserver) {
     // Inform the thread to populate a new path.
     // Note: if another request is currently being processed, this will replace it.
 
-    qDebug() << "Request populate model" << path.info() << modelObserver;
-    m_mutex.lock();
-    m_path = std::move(path);
-    m_modelObserver = modelObserver;
-    m_condition.wakeOne();
-    m_mutex.unlock();
+    qDebug() << "Request populate model" << path.info() << pModelObserver;
+    m_requestMutex.lock();
+    m_requestedPath = std::move(path);
+    m_pModelObserver = pModelObserver;
+    m_requestCondition.wakeOne();
+    m_requestMutex.unlock();
 }
 
 void BrowseThread::run() {
     QThread::currentThread()->setObjectName("BrowseThread");
 
     // Inform the constructor the thread started
-    m_mutex.lock();
-    m_bRun = true;
-    m_condition.wakeOne();
-    m_mutex.unlock();
+    m_requestMutex.lock();
+    m_requestedRunState = true;
+    m_requestCondition.wakeOne();
+    m_requestMutex.unlock();
 
     while (true) {
         // Wait for a new population request, or for a termination request
         qDebug() << "Wait for a new population request";
-        m_mutex.lock();
-        while (!m_path.isSet() && m_bRun) {
-            m_condition.wait(&m_mutex);
+        m_requestMutex.lock();
+        while (!m_requestedPath.isSet() && m_requestedRunState) {
+            m_requestCondition.wait(&m_requestMutex);
         }
-        auto path = std::move(m_path);
-        auto modelObserver = m_modelObserver;
-        auto bRun = m_bRun;
-        m_path = mixxx::FileAccess();
-        m_mutex.unlock();
+        auto path = std::move(m_requestedPath);
+        auto pModelObserver = m_pModelObserver;
+        auto bRun = m_requestedRunState;
+        m_requestedPath = mixxx::FileAccess();
+        m_requestMutex.unlock();
 
         Trace trace("BrowseThread");
 
@@ -114,7 +123,7 @@ void BrowseThread::run() {
         } else {
             qDebug() << "New population request";
             // Populate the model
-            populateModel(path, modelObserver);
+            populateModel(path, pModelObserver);
         }
     }
 }
@@ -141,7 +150,7 @@ public:
 
 } // namespace
 
-void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* modelObserver) {
+void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* pModelObserver) {
     // Executed by the thread run for incoming populate model requests
 
     if (!path.info().hasLocation()) {
@@ -149,7 +158,7 @@ void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* model
         qWarning() << "Skipping" << path.info();
         return;
     }
-    qDebug() << "populateModel" << path.info() << modelObserver;
+    qDebug() << "populateModel" << path.info() << pModelObserver;
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
     const QStringList nameFilters = SoundSourceProxy::getSupportedFileNamePatterns();
@@ -161,7 +170,7 @@ void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* model
     // remove all rows
     // This is a blocking operation
     // see signal/slot connection in BrowseTableModel
-    emit clearModel(modelObserver);
+    emit clearModel(pModelObserver);
 
     QList<QList<QStandardItem*>> rows;
     rows.reserve(kRowBatchSize);
@@ -175,12 +184,12 @@ void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* model
         // was received, we abort the current request. This happens if a user
         // quickly jumps through the folders and the current task becomes
         // "dirty".
-        m_mutex.lock();
-        const bool abortProcess = !m_bRun ||
-                (m_path.isSet() &&
-                        (m_path.info() != path.info() ||
-                                modelObserver != m_modelObserver));
-        m_mutex.unlock();
+        m_requestMutex.lock();
+        const bool abortProcess = !m_requestedRunState ||
+                (m_requestedPath.isSet() &&
+                        (m_requestedPath.info() != path.info() ||
+                                m_pModelObserver != pModelObserver));
+        m_requestMutex.unlock();
         if (abortProcess) {
             qDebug() << "Abort populateModel";
             // The run function will take care of the new request.
@@ -333,7 +342,7 @@ void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* model
         // Will limit GUI freezing
         if (row % kRowBatchSize == 0) {
             // this is a blocking operation
-            emit rowsAppended(rows, modelObserver);
+            emit rowsAppended(rows, pModelObserver);
             qDebug() << "Append" << rows.count() << "tracks from "
                      << path.info().locationPath();
             rows.clear();
@@ -341,6 +350,6 @@ void BrowseThread::populateModel(mixxx::FileAccess path, BrowseTableModel* model
         // Sleep additionally for 20ms which prevents us from GUI freezes
         msleep(20);
     }
-    emit rowsAppended(rows, modelObserver);
+    emit rowsAppended(rows, pModelObserver);
     qDebug() << "Append last" << rows.count() << "tracks from" << path.info().locationPath();
 }
