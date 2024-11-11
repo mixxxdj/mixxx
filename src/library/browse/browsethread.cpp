@@ -26,7 +26,9 @@ constexpr int kRowBatchSize = 10;
  * make sense to use this class in non-GUI threads
  */
 BrowseThread::BrowseThread(QObject* parent)
-        : QThread{parent}, m_pModelObserver{}, m_requestedRunState{} {
+        : QThread{parent},
+          m_pModelObserver{},
+          m_requestedRunState{} {
     // Start thread
     start(QThread::LowPriority);
 
