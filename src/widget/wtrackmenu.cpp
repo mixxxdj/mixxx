@@ -1552,7 +1552,17 @@ void WTrackMenu::slotPopulateCrateMenu() {
 
         m_pCrateMenu->addAction(pAction.get());
         connect(pAction.get(), &QAction::triggered, this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+        connect(pCheckBox.get(),
+                &QCheckBox::checkStateChanged,
+                this,
+                [this, pCheckBox{pCheckBox.get()}] {
+                    updateSelectionCrates(pCheckBox);
+                });
+#else
         connect(pCheckBox.get(), &QCheckBox::stateChanged, this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
+#endif
     }
     m_pCrateMenu->addSeparator();
     QAction* newCrateAction = new QAction(tr("Add to New Crate"), m_pCrateMenu);
