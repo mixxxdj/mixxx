@@ -651,18 +651,19 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
                 "composer",
                 "filetype",
                 "key"};
-        QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
+        //        QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
         QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
-        QStringList stringOperatorOptions = {"contains",
-                "does not contain",
-                "is",
-                "is not",
-                "starts with",
-                "ends with",
-                "is not empty",
-                "is empty"};
-        QStringList dateOperatorOptions = {"before", "after"};
-        QStringList numberOperatorOptions = {"smaller than", "bigger than", "is", "is not"};
+        //        QStringList stringOperatorOptions = {"contains",
+        //                "does not contain",
+        //                "is",
+        //                "is not",
+        //                "starts with",
+        //                "ends with",
+        //                "is not empty",
+        //                "is empty"};
+        //        QStringList dateOperatorOptions = {"before", "after"};
+        //        QStringList numberOperatorOptions = {"smaller than", "bigger
+        //        than", "is", "is not"};
 
         // Check if field, operator, and value are not null
         if (!field.isEmpty() && !op.isEmpty() && !value.isEmpty()) {
