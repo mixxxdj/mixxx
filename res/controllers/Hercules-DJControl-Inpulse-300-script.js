@@ -637,8 +637,8 @@ DJCi300.slicerButton = function(channel, control, value, _status, group) {
         DJCi300.slicerButtonEnabled[deck][button] = false;
     }
 
-    const start = DJCi300.slicerButtonEnabled[deck].indexOf(1);
-    const end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(1) + 1;
+    const start = DJCi300.slicerButtonEnabled[deck].indexOf(true);
+    const end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(true) + 1;
 
     // If the slicer points are uninitialized, then do nothing. Otherwise:
     if (DJCi300.slicerPoints[deck][0] !== -1) {
