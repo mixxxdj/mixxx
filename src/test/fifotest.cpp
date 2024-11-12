@@ -8,8 +8,8 @@
 namespace {
 
 struct Param {
-    std::size_t requestedBufferSize;
-    std::size_t expectedBufferSize;
+    int requestedBufferSize;
+    int expectedBufferSize;
     int offset;
 };
 
@@ -56,8 +56,8 @@ TEST_P(FifoTest, readAvailableTest) {
     ASSERT_EQ(100, fifo.readAvailable());
     ASSERT_EQ(50, fifo.read(data.data(), 50));
     ASSERT_EQ(50, fifo.readAvailable());
-    ASSERT_EQ(static_cast<int>(param.expectedBufferSize - 50), fifo.write(data.data(), 1000000));
-    ASSERT_EQ(static_cast<int>(param.expectedBufferSize), fifo.readAvailable());
+    ASSERT_EQ(param.expectedBufferSize - 50, fifo.write(data.data(), 1000000));
+    ASSERT_EQ(param.expectedBufferSize, fifo.readAvailable());
 }
 
 TEST_P(FifoTest, flushReadTest) {
@@ -75,12 +75,12 @@ TEST_P(FifoTest, flushReadTest) {
 
     ASSERT_EQ(0, fifo.readAvailable());
     ASSERT_EQ(100, fifo.write(data.data(), 100));
-    ASSERT_EQ(static_cast<int>((param.offset + 50) % param.expectedBufferSize),
+    ASSERT_EQ((param.offset + 50) % param.expectedBufferSize,
             fifo.flushReadData(50));
-    ASSERT_EQ(static_cast<int>((param.offset + 100) % param.expectedBufferSize),
+    ASSERT_EQ((param.offset + 100) % param.expectedBufferSize,
             fifo.flushReadData(1000000));
-    ASSERT_EQ(static_cast<int>(param.expectedBufferSize), fifo.write(data.data(), 1000000));
-    ASSERT_EQ(static_cast<int>(param.expectedBufferSize), fifo.readAvailable());
+    ASSERT_EQ(param.expectedBufferSize, fifo.write(data.data(), 1000000));
+    ASSERT_EQ(param.expectedBufferSize, fifo.readAvailable());
 }
 
 TEST_P(FifoTest, readWriteStressTest) {
@@ -104,7 +104,7 @@ TEST_P(FifoTest, readWriteStressTest) {
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_int_distribution<int> dist(
-            0, static_cast<int>(param.expectedBufferSize + param.expectedBufferSize / 10));
+            0, param.expectedBufferSize + param.expectedBufferSize / 10);
 
     while (k < 1000000) {
         int n = dist(mt);
@@ -112,10 +112,10 @@ TEST_P(FifoTest, readWriteStressTest) {
         for (int i = 0; i < m; i++) {
             wdata[i] = k++;
         }
-        ASSERT_EQ(static_cast<int>(m), fifo.write(wdata.data(), n));
+        ASSERT_EQ(m, fifo.write(wdata.data(), n));
         n = dist(mt);
         m = std::min(n, fifo.readAvailable());
-        ASSERT_EQ(static_cast<int>(m), fifo.read(rdata.data(), n));
+        ASSERT_EQ(m, fifo.read(rdata.data(), n));
         for (int i = 0; i < m; i++) {
             ASSERT_EQ(j++, rdata[i]);
         }
@@ -152,8 +152,8 @@ TEST_P(FifoTest, readWriteStressTestRegions) {
         ring_buffer_size_t size1;
         uint32_t* ptr2;
         ring_buffer_size_t size2;
-        ASSERT_EQ(static_cast<int>(m), fifo.aquireWriteRegions(n, &ptr1, &size1, &ptr2, &size2));
-        ASSERT_EQ(static_cast<int>(m), size1 + size2);
+        ASSERT_EQ(m, fifo.aquireWriteRegions(n, &ptr1, &size1, &ptr2, &size2));
+        ASSERT_EQ(m, size1 + size2);
         for (int i = 0; i < size1; i++) {
             ptr1[i] = k++;
         }
@@ -163,8 +163,8 @@ TEST_P(FifoTest, readWriteStressTestRegions) {
         fifo.releaseWriteRegions(m);
         n = dist(mt);
         m = std::min(n, fifo.readAvailable());
-        ASSERT_EQ(static_cast<int>(m), fifo.aquireReadRegions(n, &ptr1, &size1, &ptr2, &size2));
-        ASSERT_EQ(static_cast<int>(m), size1 + size2);
+        ASSERT_EQ(m, fifo.aquireReadRegions(n, &ptr1, &size1, &ptr2, &size2));
+        ASSERT_EQ(m, size1 + size2);
         for (int i = 0; i < size1; i++) {
             ASSERT_EQ(j++, ptr1[i]);
         }
