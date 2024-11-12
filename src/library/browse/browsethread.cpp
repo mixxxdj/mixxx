@@ -28,32 +28,33 @@ constexpr int kRowBatchSize = 10;
 BrowseThread::BrowseThread(QObject* parent)
         : QThread{parent},
           m_pModelObserver{},
-          m_requestedRunState{} {
-    // Start thread
+          m_runState{} {
+    qDebug() << "Starting browser background thread";
     start(QThread::LowPriority);
-
-    qDebug() << "Wait to start browser background thread";
-    // Wait until the thread is running
-    m_requestMutex.lock();
-    while (!m_requestedRunState) {
-        m_requestCondition.wait(&m_requestMutex);
-    }
-    m_requestMutex.unlock();
-    qDebug() << "Browser background thread started";
+    qDebug() << "Wait for browser background thread start";
+    waitUntilThreadIsRunning();
+    qDebug() << "Browser background thread has started";
 }
 
 BrowseThread::~BrowseThread() {
-    // Inform the thread we want it to terminate
-    requestStop();
-    // Wait until thread terminated
+    qDebug() << "Request to terminate browser background thread";
+    requestThreadToStop();
+    qDebug() << "Wait for browser background thread to finish";
     wait();
     qDebug() << "Browser background thread terminated";
 }
 
-void BrowseThread::requestStop() {
-    qDebug() << "Request to terminate browser background thread";
+void BrowseThread::waitUntilThreadIsRunning() {
     m_requestMutex.lock();
-    m_requestedRunState = false;
+    while (!m_runState) {
+        m_requestCondition.wait(&m_requestMutex);
+    }
+    m_requestMutex.unlock();
+}
+
+void BrowseThread::requestThreadToStop() {
+    m_requestMutex.lock();
+    m_runState = false;
     m_requestMutex.unlock();
     m_requestCondition.wakeOne();
 }
@@ -62,7 +63,7 @@ void BrowseThread::requestStop() {
 BrowseThreadPointer BrowseThread::getInstanceRef() {
     // We create a single BrowseThread instead which is used by multiple
     // BrowseTableModel instances. We store a weakpointer so when all
-    // BrowseTableModel have been destroyed, so it the BrowseThread.
+    // BrowseTableModel have been destroyed, so is the BrowseThread.
 
     static QWeakPointer<BrowseThread> s_weakInstanceRef;
     static QMutex s_mutex;
@@ -99,7 +100,7 @@ void BrowseThread::run() {
 
     // Inform the constructor the thread started
     m_requestMutex.lock();
-    m_requestedRunState = true;
+    m_runState = true;
     m_requestMutex.unlock();
     m_requestCondition.wakeOne();
 
@@ -107,12 +108,12 @@ void BrowseThread::run() {
         // Wait for a new population request, or for a termination request
         qDebug() << "Wait for a new population request";
         m_requestMutex.lock();
-        while (!m_requestedPath.isSet() && m_requestedRunState) {
+        while (!m_requestedPath.isSet() && m_runState) {
             m_requestCondition.wait(&m_requestMutex);
         }
         auto path = std::move(m_requestedPath);
         auto pModelObserver = m_pModelObserver;
-        auto bRun = m_requestedRunState;
+        auto bRun = m_runState;
         m_requestedPath = mixxx::FileAccess();
         m_requestMutex.unlock();
 
@@ -187,7 +188,7 @@ void BrowseThread::populateModel(const mixxx::FileAccess& path, BrowseTableModel
         // quickly jumps through the folders and the current task becomes
         // "dirty".
         m_requestMutex.lock();
-        const bool abortProcess = !m_requestedRunState ||
+        const bool abortProcess = !m_runState ||
                 (m_requestedPath.isSet() &&
                         (m_requestedPath.info() != path.info() ||
                                 m_pModelObserver != pModelObserver));
