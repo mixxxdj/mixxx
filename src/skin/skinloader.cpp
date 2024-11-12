@@ -199,6 +199,11 @@ LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) const {
     return pLaunchImage;
 }
 
+QString SkinLoader::extractRulesFromStylesheet(const QString& styleSheet,
+        const QStringList& selectors) const {
+    return LegacySkinParser::extractRulesFromStylesheet(styleSheet, selectors);
+}
+
 QString SkinLoader::pickResizableSkin(const QString& oldSkin) const {
     if (oldSkin.contains("latenight", Qt::CaseInsensitive)) {
         return "LateNight";

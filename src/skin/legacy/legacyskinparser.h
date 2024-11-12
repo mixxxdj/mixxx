@@ -58,6 +58,11 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     static QString getStyleFromNode(const QDomNode& node);
     static QDomElement openSkin(const QString& skinPath);
+    /// Does what it says: returns all rules for the given selectors
+    /// Note: tested only with single strings, eg. "#MainMenu"
+    static QString extractRulesFromStylesheet(
+            const QString& styleSheet,
+            const QStringList& selectors);
 
   private:
 

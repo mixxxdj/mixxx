@@ -2630,6 +2630,45 @@ QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
 }
 
+/// static
+QString LegacySkinParser::extractRulesFromStylesheet(
+        const QString& styleSheet,
+        const QStringList& selectors) {
+    // First remove css comments so we can use a simple selector RegEx
+    QString st = styleSheet; // gcc warns when I use std::move: "redundant move"
+    static const QRegularExpression commRegEx("\\/\\*(.|[\\r\\n])*?\\*\\/");
+    st.remove(commRegEx);
+
+    QString extrStyle;
+    // Find all rules for any of the selectors
+    const QRegularExpression styleRegex(
+            QStringLiteral("((?<![\\S])(%1)[\\s,][^}]+})")
+                    .arg(selectors.join('|')));
+    for (auto& match : styleRegex.globalMatch(st)) {
+        auto all = match.captured();
+        extrStyle.append(all);
+        // extrStyle.append('\n'); // to make debug output more readable
+    }
+
+    // enable only this, not all 'sDebug' branches
+    if (false) {
+        qWarning() << "     .";
+        qWarning() << "     extractRulesFromStylesheet";
+        qWarning() << "     selector(s):";
+        for (const auto& sel : selectors) {
+            qWarning() << "       " << sel;
+        }
+        qWarning() << "     .";
+        const QStringList prefSplit = extrStyle.split('\n');
+        for (const auto& line : prefSplit) {
+            qWarning() << "     " << line;
+        }
+        qWarning() << "     .";
+    }
+
+    return extrStyle;
+}
+
 bool LegacySkinParser::requiresStem(const QDomElement& node) {
     QDomElement requiresStemNode = node.firstChildElement("RequiresStem");
     return !requiresStemNode.isNull() && requiresStemNode.text() == "true";

@@ -782,7 +782,11 @@ void MixxxMainWindow::createMenuBar() {
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
     if (m_pCentralWidget) {
-        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+        const QString mainMenuStyle =
+                m_pSkinLoader->extractRulesFromStylesheet(
+                        m_pCentralWidget->styleSheet(),
+                        QStringList{QStringLiteral("#MainMenu")});
+        m_pMenuBar->setStyleSheet(mainMenuStyle);
     }
     setMenuBar(m_pMenuBar);
 }
@@ -1263,13 +1267,22 @@ void MixxxMainWindow::styleMenubarPreferencesAndDialogs() {
     // 3.5s with Core i7-8665u for PaleMoon stylesheet (~3700 lines)
     // Duration seemed to depends in the stylesheet size, so I tried to extract
     // relevant parts from skin stylesheet on the fly with regex: ~8 ms
-    m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+    const QString mainMenuStyle =
+            m_pSkinLoader->extractRulesFromStylesheet(
+                    m_pCentralWidget->styleSheet(),
+                    QStringList{QStringLiteral("#MainMenu")});
+    m_pMenuBar->setStyleSheet(mainMenuStyle);
     qWarning() << "     .";
     qWarning() << "     setStyle menubar" << t.elapsed(false).debugMillisWithUnit();
     qWarning() << "     .";
     t.restart(true);
 
-    m_pPrefDlg->setStyleSheet(m_pCentralWidget->styleSheet());
+    const QString dlgPrefStyle =
+            m_pSkinLoader->extractRulesFromStylesheet(
+                    m_pCentralWidget->styleSheet(),
+                    QStringList{QStringLiteral("DlgPreferences"),
+                            QStringLiteral("DlgPreferencePage")});
+    m_pPrefDlg->setStyleSheet(dlgPrefStyle);
     qWarning() << "     setStyle pref   " << t.elapsed(false).debugMillisWithUnit();
     qWarning() << "     .";
     qWarning() << "################################" << tg.elapsed(false).debugMillisWithUnit();
