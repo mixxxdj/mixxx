@@ -25,7 +25,9 @@ class WCoverArtLabel;
 class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     Q_OBJECT
   public:
-    explicit DlgTrackInfoMulti(UserSettingsPointer pUserSettings);
+    explicit DlgTrackInfoMulti(
+            QWidget* pParent,
+            UserSettingsPointer pUserSettings);
     ~DlgTrackInfoMulti() override = default;
 
     void loadTracks(const QList<TrackPointer>& pTracks);

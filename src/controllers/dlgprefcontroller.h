@@ -35,6 +35,13 @@ class DlgPrefController : public DlgPreferencePage {
     QUrl helpUrl() const override;
     void keyPressEvent(QKeyEvent* pEvent) override;
 
+    /// Reload the mappings in the dropdown dialog.
+    /// Convenience method to be called by DlgPrefControllers.
+    /// Used to rebuild the mappings list with dark/light icons
+    /// matching the current color palette.
+    void enumerateMappings();
+    void enumerateMappings(const QString& selectedMappingPath);
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -94,7 +101,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFilePathFromIndex(int index) const;
-    QString askForMappingName(const QString& prefilledName = QString()) const;
+    QString askForMappingName(const QString& prefilledName = QString());
     void applyMappingChanges();
     bool saveMapping();
     void initTableView(QTableView* pTable);
@@ -118,9 +125,6 @@ class DlgPrefController : public DlgPreferencePage {
     bool isDirty() const {
         return m_bDirty;
     }
-
-    /// Reload the mappings in the dropdown dialog
-    void enumerateMappings(const QString& selectedMappingPath);
     MappingInfo enumerateMappingsFromEnumerator(
             QSharedPointer<MappingInfoEnumerator> pMappingEnumerator,
             const QIcon& icon = QIcon());

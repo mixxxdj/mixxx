@@ -140,10 +140,13 @@ void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(UserSettingsPointer pConfig, const TrackModel* pTrackModel)
+DlgTagFetcher::DlgTagFetcher(
+        QWidget* pParent,
+        UserSettingsPointer pConfig,
+        const TrackModel* pTrackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
-        : QDialog(nullptr),
+        : QDialog(pParent),
           m_pConfig(pConfig),
           m_pTrackModel(pTrackModel),
           m_tagFetcher(this),

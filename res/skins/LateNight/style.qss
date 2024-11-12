@@ -100,7 +100,7 @@ QLabel#labelRecStatistics {
 
 /* It is difficult to achieve identical styles WMainMenuBar #MainMenu
   on Windows AND Linux because item and checkbox properties are rendered
-  slightly different.
+  slightly differently.
   For details see
     * default-menu-styles-linux.qss
     * default-menu-styles-windows.qss

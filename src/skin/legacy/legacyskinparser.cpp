@@ -29,6 +29,7 @@
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
+#include "util/widgethelper.h"
 #include "util/xml.h"
 #include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -500,7 +501,11 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
 
         if (newStyle) {
             // New style skins are just a WidgetGroup at the root.
-            result.append(parseWidgetGroup(node));
+            QWidget* skin = parseWidgetGroup(node);
+            // Set an object name so we can address child dialogs
+            // with the skin's stylesheet.
+            skin->setObjectName(mixxx::widgethelper::skinWidgetName());
+            result.append(skin);
         } else {
             // From here on is loading for legacy skins only.
             QWidget* pOuterWidget = new QWidget(m_pParent);
@@ -2292,13 +2297,6 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
         // If no src attribute, use the node data as text.
         style = styleElement.text();
     }
-
-    // Legacy fixes: In Mixxx <1.12.0 we used QGroupBox for WWidgetGroup. Some
-    // skin writers used QGroupBox for styling. In 1.12.0 onwards, we have
-    // switched to QFrame and there should be no reason we would ever use a
-    // QGroupBox in a skin. To support legacy skins, we rewrite QGroupBox
-    // selectors to use WWidgetGroup directly.
-    style = style.replace("QGroupBox", "WWidgetGroup");
 
     return style;
 }

@@ -14,6 +14,7 @@
 #include "effects/presets/effectxmlelements.h"
 #include "moc_effectchainpresetmanager.cpp"
 #include "util/filename.h"
+#include "util/widgethelper.h"
 #include "util/xml.h"
 
 namespace {
@@ -108,7 +109,8 @@ EffectChainPresetPointer EffectChainPresetManager::quickEffectPresetAtIndex(
 }
 
 bool EffectChainPresetManager::importPreset() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
+    QStringList fileNames = QFileDialog::getOpenFileNames(
+            mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
             tr("Import effect chain preset"),
             QDir::homePath(),
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
@@ -210,7 +212,7 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
     }
 
     QFileDialog saveFileDialog(
-            nullptr,
+            mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
             tr("Export effect chain preset"),
             QString(),
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
@@ -227,7 +229,7 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
 
     QFile file(fileName);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        QMessageBox msgBox;
+        QMessageBox msgBox(mixxx::widgethelper::getSkinWidget()); // parent to apply skin styles
         msgBox.setText(tr("Error exporting effect chain preset"));
         msgBox.setInformativeText(
                 tr("Could not save effect chain preset \"%1\" to file \"%2\".")
@@ -252,7 +254,7 @@ bool EffectChainPresetManager::renamePreset(const QString& oldName) {
         return false;
     }
     if (m_effectChainPresets.value(oldName)->isReadOnly()) {
-        QMessageBox msgBox;
+        QMessageBox msgBox(mixxx::widgethelper::getSkinWidget()); // parent to apply skin styles
         msgBox.setText(tr("Effect chain preset can not be renamed"));
         msgBox.setInformativeText(
                 tr("Effect chain preset \"%1\" is read-only and can not be renamed.")
@@ -268,7 +270,8 @@ bool EffectChainPresetManager::renamePreset(const QString& oldName) {
     while (newName.isEmpty() || m_effectChainPresets.contains(newName) ||
             newName == kNoEffectString) {
         bool okay = false;
-        newName = QInputDialog::getText(nullptr,
+        newName = QInputDialog::getText(
+                mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                 tr("Rename effect chain preset"),
                 errorText + "\n" + tr("New name for effect chain preset") +
                         QStringLiteral(" \"") + oldName + QStringLiteral("\""),
@@ -311,7 +314,7 @@ bool EffectChainPresetManager::renamePreset(const QString& oldName) {
     QFile oldFile(directoryPath + kFolderDelimiter +
             mixxx::filename::sanitize(oldName) + kXmlFileExtension);
     if (!oldFile.remove()) {
-        QMessageBox msgBox;
+        QMessageBox msgBox(mixxx::widgethelper::getSkinWidget()); // parent to apply skin styles
         msgBox.setText(tr("Error removing old effect chain preset"));
         msgBox.setInformativeText(
                 tr("Could not remove old effect chain preset \"%1\"")
@@ -341,7 +344,7 @@ bool EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
         return false;
     }
     if (m_effectChainPresets.value(chainPresetName)->isReadOnly()) {
-        QMessageBox msgBox;
+        QMessageBox msgBox(mixxx::widgethelper::getSkinWidget()); // parent to apply skin styles
         msgBox.setText(tr("Effect chain preset can not be deleted"));
         msgBox.setInformativeText(
                 tr("Effect chain preset \"%1\" is read-only and can not be deleted.")
@@ -350,7 +353,8 @@ bool EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
         msgBox.exec();
         return false;
     }
-    auto pressedButton = QMessageBox::question(nullptr,
+    auto pressedButton = QMessageBox::question(
+            mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
             tr("Remove effect chain preset"),
             tr("Are you sure you want to delete the effect chain preset "
                "\"%1\"?")
@@ -458,7 +462,8 @@ bool EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     }
     while (name.isEmpty() || m_effectChainPresets.contains(name) || name == kNoEffectString) {
         bool okay = false;
-        name = QInputDialog::getText(nullptr,
+        name = QInputDialog::getText(
+                mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                 tr("Save preset for effect chain"),
                 errorText + "\n" + tr("Name for new effect chain preset:"),
                 QLineEdit::Normal,

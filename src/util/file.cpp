@@ -4,6 +4,8 @@
 #include <QRegExp> // required for 'indexIn(QString &str, int pos)
 #include <QRegularExpression>
 
+#include "util/widgethelper.h"
+
 namespace {
 
 const QRegularExpression kExtractExtensionRegex(R"(\(\*\.(.*)\)$)");
@@ -59,7 +61,7 @@ QString getFilePathWithVerifiedExtensionFromFileDialog(
 
     while (true) {
         fileLocation = QFileDialog::getSaveFileName(
-                nullptr,
+                mixxx::widgethelper::getSkinWidget(),
                 caption,
                 selectedDirectory,
                 fileFilters,

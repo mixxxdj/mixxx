@@ -4,6 +4,7 @@
 #include <QStandardPaths>
 
 #include "moc_trackexportwizard.cpp"
+#include "util/widgethelper.h"
 
 void TrackExportWizard::exportTracks() {
     if (!selectDestinationDirectory()) {
@@ -32,6 +33,7 @@ bool TrackExportWizard::selectDestinationDirectory() {
                    ConfigValue(destDir));
 
     m_worker.reset(new TrackExportWorker(destDir, m_tracks));
-    m_dialog.reset(new TrackExportDlg(m_parent, m_pConfig, m_worker.data()));
+    m_dialog.reset(new TrackExportDlg(
+            mixxx::widgethelper::getSkinWidget(), m_pConfig, m_worker.data()));
     return true;
 }

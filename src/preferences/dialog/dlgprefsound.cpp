@@ -365,7 +365,7 @@ void DlgPrefSound::slotApply() {
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
-        QMessageBox::warning(nullptr, tr("Configuration error"), error);
+        QMessageBox::warning(this, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;
@@ -780,7 +780,7 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
     if (!enabled) {
         return;
     }
-    QMessageBox msg;
+    QMessageBox msg(this);
     msg.setIcon(QMessageBox::Warning);
     msg.setWindowTitle(tr("Are you sure?"));
     msg.setText(

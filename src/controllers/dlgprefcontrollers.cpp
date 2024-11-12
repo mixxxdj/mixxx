@@ -244,9 +244,10 @@ void DlgPrefControllers::setupControllerWidgets() {
         }();
 
         m_pDlgPreferences->addPageWidget(
-                DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
-                pController->getName(),
-                treeImage);
+                DlgPreferences::PreferencesPage(pControllerDlg,
+                        pControllerTreeItem,
+                        pController->getName(),
+                        treeImage));
 
         m_pControllersRootItem->addChild(pControllerTreeItem);
         m_controllerTreeItems.append(pControllerTreeItem);
@@ -255,6 +256,12 @@ void DlgPrefControllers::setupControllerWidgets() {
         QFont temp = pControllerTreeItem->font(0);
         temp.setBold(pController->isOpen());
         pControllerTreeItem->setFont(0, temp);
+    }
+}
+
+void DlgPrefControllers::updateMappingIconsInControllerPages() {
+    for (auto page : std::as_const(m_controllerPages)) {
+        page->enumerateMappings();
     }
 }
 

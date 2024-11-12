@@ -100,10 +100,10 @@ void setCommonValueOrVariousStringAndFormatFont(QLabel* pLabel,
 
 } // namespace
 
-DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
-        // No parent because otherwise it inherits the style parent's
-        // style which can make it unreadable. Bug #673411
-        : QDialog(nullptr),
+DlgTrackInfoMulti::DlgTrackInfoMulti(
+        QWidget* pParent,
+        UserSettingsPointer pUserSettings)
+        : QDialog(pParent),
           m_pUserSettings(std::move(pUserSettings)),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),

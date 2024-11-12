@@ -1258,7 +1258,7 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
             }
         }
 
-        QMessageBox msg;
+        QMessageBox msg(this);
         msg.setIcon(QMessageBox::Question);
         msg.setWindowTitle(title);
         msg.setText(message);
