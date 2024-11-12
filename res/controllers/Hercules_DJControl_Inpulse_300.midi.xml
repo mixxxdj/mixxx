@@ -1,11 +1,11 @@
-<?xml version="1.3" encoding="UTF-8"?>
-<MixxxMIDIPreset mixxxVersion="2.2" schemaVersion="1">
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxMIDIPreset mixxxVersion="2.4" schemaVersion="1">
 	<info>
 		<name>Hercules DJControl Inpulse 300</name>
-		<author>DJ Phatso for Hercules Technical Support</author>
-		<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
-		<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
-		<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
+			<author>DJ Phatso for Hercules Technical Support</author>
+			<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
+			<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
+			<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
 	</info>
 	<controller id="DJControl Inpulse 300">
 		<scriptfiles>
@@ -156,22 +156,22 @@
 			<!--Loop In/Out-->
 			<control>
 				<group>[Channel1]</group>
-				<key>beatloop_4_activate</key>
+				<key>DJCi300.loopInButton</key>
 				<description>Loop In button</description>
 				<status>0x91</status>
 				<midino>0x09</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>reloop_toggle</key>
+				<key>DJCi300.loopOutButton</key>
 				<description>Loop Out button</description>
 				<status>0x91</status>
 				<midino>0x0A</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 
@@ -386,22 +386,22 @@
 			<!--Loop In/Out-->
 			<control>
 				<group>[Channel2]</group>
-				<key>beatloop_4_activate</key>
+				<key>DJCi300.loopInButton</key>
 				<description>Loop In button</description>
 				<status>0x92</status>
 				<midino>0x09</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>reloop_toggle</key>
+				<key>DJCi300.loopOutButton</key>
 				<description>Loop Out button</description>
 				<status>0x92</status>
 				<midino>0x0A</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 
@@ -1402,44 +1402,39 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
-
-
-
 			<control>
 				<group>[Channel1]</group>
-				<key>reset_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 1</description>
 				<status>0x96</status>
 				<midino>0x48</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_up</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 2</description>
 				<status>0x96</status>
 				<midino>0x49</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_up_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 3</description>
 				<status>0x96</status>
 				<midino>0x4A</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 4</description>
 				<status>0x96</status>
 				<midino>0x4B</midino>
@@ -1449,37 +1444,37 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>sync_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 5</description>
 				<status>0x96</status>
 				<midino>0x4C</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_down</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 6</description>
 				<status>0x96</status>
 				<midino>0x4D</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>pitch_down_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 7</description>
 				<status>0x96</status>
 				<midino>0x4E</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 8</description>
 				<status>0x96</status>
 				<midino>0x4F</midino>
@@ -1487,8 +1482,6 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
 
 			<!--Slicer LOOP-->
 			<control>
@@ -2385,44 +2378,39 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
-
-
-
 			<control>
 				<group>[Channel2]</group>
-				<key>reset_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 1</description>
 				<status>0x97</status>
 				<midino>0x48</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_up</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 2</description>
 				<status>0x97</status>
 				<midino>0x49</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_up_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 3</description>
 				<status>0x97</status>
 				<midino>0x4A</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 4</description>
 				<status>0x97</status>
 				<midino>0x4B</midino>
@@ -2432,37 +2420,37 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>sync_key</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 5</description>
 				<status>0x97</status>
 				<midino>0x4C</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_down</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 6</description>
 				<status>0x97</status>
 				<midino>0x4D</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>pitch_down_small</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 7</description>
 				<status>0x97</status>
 				<midino>0x4E</midino>
 				<options>
-					<normal />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.toneplayShift</key>
+				<key>DJCi300.toneplay</key>
 				<description>SHIFT + PAD 8</description>
 				<status>0x97</status>
 				<midino>0x4F</midino>
@@ -2470,9 +2458,6 @@
 					<Script-Binding/>
 				</options>
 			</control>
-
-
-
 
 			<!--Slicer LOOP-->
 			<control>
@@ -2805,7 +2790,6 @@
 			</control>
 
 			<!-- CC's MIDI Channel 3 (0xB2  Deck B - Standard mode)-->
-
 
 			<!-- Volume-->
 			<control>
@@ -3234,292 +3218,324 @@
 			<!--LED HOT CUE (Normal Mode)-->
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x96</status>
 				<midino>0x00</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x96</status>
 				<midino>0x01</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x96</status>
 				<midino>0x02</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x96</status>
 				<midino>0x03</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x96</status>
 				<midino>0x04</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x96</status>
 				<midino>0x05</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x96</status>
 				<midino>0x06</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x96</status>
 				<midino>0x07</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x97</status>
 				<midino>0x00</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x97</status>
 				<midino>0x01</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x97</status>
 				<midino>0x02</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x97</status>
 				<midino>0x03</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x97</status>
 				<midino>0x04</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x97</status>
 				<midino>0x05</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x97</status>
 				<midino>0x06</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x97</status>
 				<midino>0x07</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<!--LED HOT CUE (SHIFT Mode)-->
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x96</status>
 				<midino>0x08</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x96</status>
 				<midino>0x09</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x96</status>
 				<midino>0x0A</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x96</status>
 				<midino>0x0B</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x96</status>
 				<midino>0x0C</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x96</status>
 				<midino>0x0D</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x96</status>
 				<midino>0x0E</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x96</status>
 				<midino>0x0F</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x97</status>
 				<midino>0x08</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x97</status>
 				<midino>0x09</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x97</status>
 				<midino>0x0A</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x97</status>
 				<midino>0x0B</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x97</status>
 				<midino>0x0C</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x97</status>
 				<midino>0x0D</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x97</status>
 				<midino>0x0E</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x97</status>
 				<midino>0x0F</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<!--LED Roll-->
 			<output>
