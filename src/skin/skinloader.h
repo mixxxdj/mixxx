@@ -36,6 +36,9 @@ class SkinLoader : public QObject {
     QDir getSytemSkinDir() const;
     QList<SkinPointer> getUserSkins() const;
     QList<SkinPointer> getSystemSkins() const;
+    /// Relay to LegacySkinParser::extractRulesFromStylesheet
+    QString extractRulesFromStylesheet(const QString& styleSheet,
+            const QStringList& selectors) const;
 
   private slots:
     void slotNumMicsChanged(double numMics);
