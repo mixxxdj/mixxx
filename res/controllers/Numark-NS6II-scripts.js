@@ -563,6 +563,7 @@ NS6II.Display = function(channelOffset) {
         duration: 0,
         // stored as 1% = 100
         rate: 0,
+        rateDir: 1, // 1 or -1 (like the CO)
         trackLoaded: false,
         // stored as rotations per second instead of rpm.
         vinylControlSpeedTypeRatio: 0,
@@ -572,6 +573,11 @@ NS6II.Display = function(channelOffset) {
         deckInfoCache.vinylControlSpeedTypeRatio = value/60;
     });
     vinylControlSpeedTypeConnection.trigger();
+
+    const rateDirConnection = engine.makeConnection(deck, "rate_dir", function(value) {
+        deckInfoCache.rateDir = value;
+    });
+    rateDirConnection.trigger();
 
     this.keylockUI = new NS6II.DisplayElement({
         midi: [0x90 + channelOffset, 0x0D],
@@ -604,7 +610,7 @@ NS6II.Display = function(channelOffset) {
         outKey: "rate",
         outValueScale: function(value) {
             return NS6II.numberToSysex(
-                value * deckInfoCache.rate,
+                value * deckInfoCache.rate * deckInfoCache.rateDir,
                 true,
                 6
             );
