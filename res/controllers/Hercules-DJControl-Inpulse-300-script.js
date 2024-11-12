@@ -451,7 +451,7 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
         if (button <= 8) {
             // Jump to the most recently used hotcue
             const recentHotcue = engine.getValue(`[Channel${  deck  }]`, "hotcue_focus");
-            if ((recentHotcue !== -1) && (engine.getValue(`[Channel${  deck  }]`,
+            if ((recentHotcue > 0) && (engine.getValue(`[Channel${  deck  }]`,
                 `hotcue_${  recentHotcue  }_enabled`))) {
 
                 engine.setValue(`[Channel${  deck  }]`, `hotcue_${  recentHotcue  }_goto`, 1);
