@@ -98,7 +98,7 @@ class FIFO {
         *dataPtr1 = m_data.data() + readIndex;
         *dataPtr2 = *sizePtr2 == 0 ? nullptr : m_data.data();
 
-        return count;
+        return static_cast<int>(count);
     }
     // Advance the read index after aquireReadRegions. Count should
     // be the return value of aquireReadRegions, which is the total
