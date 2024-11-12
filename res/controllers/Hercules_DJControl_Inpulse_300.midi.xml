@@ -2944,7 +2944,7 @@
 			<!-- CC's MIDI Channel 6 (0xB5  Deck B - SHIFT mode)-->
 			<!--Jog wheel-->
 			<control>
-				<group>[Channel1]</group>
+				<group>[Channel2]</group>
 				<key>DJCi300.jogWheel</key>
 				<description>SHIFT + Bend Deck B (Jog-Wheel)</description>
 				<status>0xB5</status>
