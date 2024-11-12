@@ -164,37 +164,32 @@ DJCi300.init = function() {
     midi.sendShortMsg(0x97, 0x40, 0x7F);
     midi.sendShortMsg(0x97, 0x48, 0x7F);
 
-    //Softtakeover for Pitch fader
-    engine.softTakeover("[Channel1]", "rate", true);
-    engine.softTakeover("[Channel2]", "rate", true);
-    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
-    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
-
-    // Connect the VUMeters
-    engine.makeConnection("[Channel1]", "VuMeter", DJCi300.vuMeterUpdateDeck);
-    engine.makeConnection("[Channel2]", "VuMeter", DJCi300.vuMeterUpdateDeck);
+    // Connect master VUMeters
     engine.makeConnection("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMain);
     engine.makeConnection("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMain);
 
-    // Connect beatmatch LED functions
-    engine.makeConnection("[Channel1]", "bpm", DJCi300.updateBeatmatchTempoLED);
-    engine.makeConnection("[Channel2]", "bpm", DJCi300.updateBeatmatchTempoLED);
-    // We only connect channel 1 here because beatmatch is only enabled when both decks are connected anyway
-    // This saves resources
+    for (const group of ["[Channel1]","[Channel2]"]) {
+        // Connect left and right VUMeters
+        engine.makeConnection(group, "VuMeter", DJCi300.vuMeterUpdateDeck);
+
+        //Softtakeover for Pitch fader
+        engine.softTakeover(group, "rate", true);
+        engine.softTakeoverIgnoreNextValue(group, "rate");
+
+        // Connect jogwheel functions
+        engine.makeConnection(group, "scratch2", DJCi300.updateScratchAction);
+
+        // Connect the toneplay LED updates
+        engine.makeConnection(group, "pitch", DJCi300.updateToneplayLED);
+
+        // Connect beatmatch LED functions
+        engine.makeConnection(group, "bpm", DJCi300.updateBeatmatchTempoLED);
+        // We also want to update all beatmatch LEDs when a song is played/paused
+        engine.makeConnection(group, "play", DJCi300.updateBeatmatchAlignLED);
+        engine.makeConnection(group, "play", DJCi300.updateBeatmatchTempoLED);
+    }
+    // Only connect one channel to updateBeatmatchAlignLED because beatmatch LEDs are only enabled when both decks are playing
     engine.makeConnection("[Channel1]", "beat_distance", DJCi300.updateBeatmatchAlignLED);
-    // We also want to update all beatmatch LEDs when a song is played
-    engine.makeConnection("[Channel1]", "play", DJCi300.updateBeatmatchAlignLED);
-    engine.makeConnection("[Channel2]", "play", DJCi300.updateBeatmatchAlignLED);
-    engine.makeConnection("[Channel1]", "play", DJCi300.updateBeatmatchTempoLED);
-    engine.makeConnection("[Channel2]", "play", DJCi300.updateBeatmatchTempoLED);
-
-    // Connect jogwheel functions
-    engine.makeConnection("[Channel1]", "scratch2", DJCi300.updateScratchAction);
-    engine.makeConnection("[Channel2]", "scratch2", DJCi300.updateScratchAction);
-
-    // Connect the toneplay LED updates
-    engine.makeConnection("[Channel1]", "pitch", DJCi300.updateToneplayLED);
-    engine.makeConnection("[Channel2]", "pitch", DJCi300.updateToneplayLED);
 
     // Define slicer connections by connecting them
     DJCi300.connectSlicerFunctions(1);
