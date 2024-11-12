@@ -75,10 +75,19 @@ TEST_P(FifoTest, flushReadTest) {
 
     ASSERT_EQ(0, fifo.readAvailable());
     ASSERT_EQ(100, fifo.write(data.data(), 100));
-    ASSERT_EQ((param.offset + 50) % param.expectedBufferSize,
-            fifo.flushReadData(50));
-    ASSERT_EQ((param.offset + 100) % param.expectedBufferSize,
-            fifo.flushReadData(1000000));
+
+    int expected;
+    expected = (param.offset + 50) % param.expectedBufferSize;
+    if (expected < 0) {
+        expected += param.expectedBufferSize;
+    }
+    ASSERT_EQ(expected, fifo.flushReadData(50));
+
+    expected = (param.offset + 100) % param.expectedBufferSize;
+    if (expected < 0) {
+        expected += param.expectedBufferSize;
+    }
+    ASSERT_EQ(expected, fifo.flushReadData(1000000));
     ASSERT_EQ(param.expectedBufferSize, fifo.write(data.data(), 1000000));
     ASSERT_EQ(param.expectedBufferSize, fifo.readAvailable());
 }
