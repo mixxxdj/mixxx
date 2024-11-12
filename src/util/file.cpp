@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 
 #include "util/assert.h"
+#include "util/widgethelper.h"
 
 namespace {
 
@@ -63,7 +64,7 @@ QString getFilePathWithVerifiedExtensionFromFileDialog(
 
     while (true) {
         fileLocation = QFileDialog::getSaveFileName(
-                nullptr,
+                mixxx::widgethelper::getSkinWidget(),
                 caption,
                 selectedDirectory,
                 fileFilters,

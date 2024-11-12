@@ -35,13 +35,20 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     struct PreferencesPage {
         PreferencesPage() {
         }
-        PreferencesPage(DlgPreferencePage* pDlg, QTreeWidgetItem* pTreeItem)
+        PreferencesPage(DlgPreferencePage* pDlg,
+                QTreeWidgetItem* pTreeItem,
+                const QString& pageTitle,
+                const QString& iconFile)
                 : pDlg(pDlg),
-                  pTreeItem(pTreeItem) {
+                  pTreeItem(pTreeItem),
+                  title(pageTitle),
+                  iconFileName(iconFile) {
         }
 
         DlgPreferencePage* pDlg;
         QTreeWidgetItem* pTreeItem;
+        QString title;
+        QString iconFileName;
     };
 
     DlgPreferences(
@@ -55,9 +62,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(PreferencesPage page,
-            const QString& pageTitle,
-            const QString& iconFile);
+    void addPageWidget(const PreferencesPage& page);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(const QString& pageTitle, DlgPreferencePage* pPage);
@@ -94,6 +99,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QList<PreferencesPage> m_allPages;
     void onShow();
     void onHide();
+    void updateTreeIcons();
+    void selectIconsPath();
     QRect getDefaultGeometry();
 
     QAbstractButton* m_pApplyButton;
