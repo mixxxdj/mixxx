@@ -66,6 +66,7 @@ DJCi300.kScratchActionSeek = 2;
 
 // Pad modes
 DJCi300.padModeNone = 0;
+// These correspond directly to the MIDI control values
 DJCi300.padModeHotcue = 15;
 DJCi300.padModeRoll = 16;
 DJCi300.padModeSlicer = 17;
@@ -164,8 +165,8 @@ DJCi300.init = function() {
     midi.sendShortMsg(0x97, 0x48, 0x7F);
 
     // Connect master VUMeters
-    engine.makeConnection("[Master]", "vu_meter_left", DJCi300.vuMeterUpdateMain);
-    engine.makeConnection("[Master]", "vu_meter_right", DJCi300.vuMeterUpdateMain);
+    engine.makeConnection("[Main]", "vu_meter_left", DJCi300.vuMeterUpdateMain);
+    engine.makeConnection("[Main]", "vu_meter_right", DJCi300.vuMeterUpdateMain);
 
     for (const group of ["[Channel1]","[Channel2]"]) {
         // Connect left and right VUMeters
