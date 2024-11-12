@@ -1463,7 +1463,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
 
         do {
             bool ok = false;
-            name = QInputDialog::getText(nullptr,
+            name = QInputDialog::getText(this,
                     tr("Create New Playlist"),
                     tr("Enter name for new playlist:"),
                     QLineEdit::Normal,
@@ -1474,11 +1474,11 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
                 return;
             }
             if (playlistDao.getPlaylistIdFromName(name) != -1) {
-                QMessageBox::warning(nullptr,
+                QMessageBox::warning(this,
                         tr("Playlist Creation Failed"),
                         tr("A playlist by that name already exists."));
             } else if (name.isEmpty()) {
-                QMessageBox::warning(nullptr,
+                QMessageBox::warning(this,
                         tr("Playlist Creation Failed"),
                         tr("A playlist cannot have a blank name."));
             } else {
@@ -1487,7 +1487,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
         } while (!validNameGiven);
         iPlaylistId = playlistDao.createPlaylist(name); //-1 is changed to the new playlist ID return from the DAO
         if (iPlaylistId == -1) {
-            QMessageBox::warning(nullptr,
+            QMessageBox::warning(this,
                     tr("Playlist Creation Failed"),
                     tr("An unknown error occurred while creating playlist: ") + name);
             return;
@@ -2315,7 +2315,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         // First, create the list view for the files to be deleted
         // NOTE(ronso0) We could also make this a table to allow showing
         // artist and title if file names don't suffice to identify tracks.
-        QListWidget* delListWidget = new QListWidget();
+        QListWidget* delListWidget = new QListWidget(this);
         delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::MinimumExpanding));
         delListWidget->setFocusPolicy(Qt::ClickFocus);
@@ -2379,7 +2379,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         delLayout->addWidget(delButtons);
 
         // Create and populate the dialog
-        QDialog dlgDelConfirm;
+        QDialog dlgDelConfirm(this);
         dlgDelConfirm.setModal(true); // just to be sure
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         dlgDelConfirm.setWindowTitle(tr("Delete Track Files"));
@@ -2435,7 +2435,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         if (s_showPurgeSuccessPopup) {
             // Show purge summary message
-            QMessageBox msgBoxPurgeTracks;
+            QMessageBox msgBoxPurgeTracks(this);
             msgBoxPurgeTracks.setIcon(QMessageBox::Information);
             QString msgTitle;
             QString msgText;
@@ -2530,7 +2530,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     notDeletedLayout->addWidget(notDeletedListWidget);
     notDeletedLayout->addWidget(notDeletedButtons);
 
-    QDialog dlgNotDeleted;
+    QDialog dlgNotDeleted(this);
     dlgNotDeleted.setModal(true);
     dlgNotDeleted.setWindowTitle(tr("Remaining Track File(s)"));
     dlgNotDeleted.setLayout(notDeletedLayout);
@@ -2549,6 +2549,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Use the batch editor.
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
+                this,
                 m_pConfig);
         connect(m_pDlgTrackInfoMulti.get(),
                 &QDialog::finished,
@@ -2569,6 +2570,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+                this,
                 m_pConfig,
                 m_pTrackModel);
         connect(m_pDlgTrackInfo.get(),
@@ -2609,7 +2611,9 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     }
     // Create a fresh dialog on invocation
     m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-            m_pConfig, m_pTrackModel);
+            this,
+            m_pConfig,
+            m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
             this,

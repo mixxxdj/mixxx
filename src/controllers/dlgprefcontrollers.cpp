@@ -204,9 +204,10 @@ void DlgPrefControllers::setupControllerWidgets() {
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
         m_pDlgPreferences->addPageWidget(
-                DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
-                pController->getName(),
-                "ic_preferences_controllers.svg");
+                DlgPreferences::PreferencesPage(pControllerDlg,
+                        pControllerTreeItem,
+                        pController->getName(),
+                        "ic_preferences_controllers.svg"));
 
         m_pControllersRootItem->addChild(pControllerTreeItem);
         m_controllerTreeItems.append(pControllerTreeItem);
@@ -215,6 +216,12 @@ void DlgPrefControllers::setupControllerWidgets() {
         QFont temp = pControllerTreeItem->font(0);
         temp.setBold(pController->isOpen());
         pControllerTreeItem->setFont(0, temp);
+    }
+}
+
+void DlgPrefControllers::updateMappingIconsInControllerPages() {
+    for (auto page : std::as_const(m_controllerPages)) {
+        page->enumerateMappings();
     }
 }
 

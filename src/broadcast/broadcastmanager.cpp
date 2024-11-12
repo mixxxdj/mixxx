@@ -9,6 +9,7 @@
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
+#include "util/widgethelper.h"
 
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");
@@ -102,8 +103,10 @@ void BroadcastManager::slotControlEnabled(double v) {
         if (!atLeastOneEnabled) {
             m_pBroadcastEnabled->set(false);
             emit broadcastEnabled(0.0);
-            QMessageBox::warning(nullptr, tr("Action failed"),
-                                tr("Please enable at least one connection to use Live Broadcasting."));
+            QMessageBox::warning(
+                    mixxx::widgethelper::getSkinWidget(),
+                    tr("Action failed"),
+                    tr("Please enable at least one connection to use Live Broadcasting."));
             return;
         }
 
