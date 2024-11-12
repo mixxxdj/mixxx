@@ -75,14 +75,6 @@ DJCi300.padModeFX = 20;
 DJCi300.padModeSlicerloop = 21;
 DJCi300.padModeBeatjump = 22;
 
-// Slicer connections
-let slicerSizeConnection1;
-let slicerTrackConnection1;
-let slicerBeatConnection1;
-let slicerTrackConnection2;
-let slicerSizeConnection2;
-let slicerBeatConnection2;
-
 DJCi300.vuMeterUpdateMain = function(value, _group, _control) {
     value = (value * 125);
     midi.sendShortMsg(0xB0, 0x40, value);
@@ -142,6 +134,13 @@ DJCi300.init = function() {
         1: 0,
         2: 0
     };
+
+    // Slicer connections
+    DJCi300.slicerConnections = {
+        size: [undefined, undefined], // Connected to beatloop_size
+        beat: [undefined, undefined], // Connected to beat_distance
+        load: [undefined, undefined], // Connected to LoadSelectedTrack
+    }
 
     // Loop variables
     // loopMode is on (equal to 1) if the current loop is created by the "Loop In" button
@@ -524,27 +523,23 @@ DJCi300.updateToneplayLED = function(value, group, _control) {
 
 // Functions that connect and disconnect slicer functions to Mixxx callbacks, respectively
 DJCi300.connectSlicerFunctions = function(deck) {
+    const index = deck - 1;
     if (deck === 1) {
-        slicerSizeConnection1 = engine.makeConnection("[Channel1]", "beatloop_size", DJCi300.slicerChangeSize);
-        slicerTrackConnection1 = engine.makeConnection("[Channel1]", "LoadSelectedTrack", DJCi300.slicerLoadTrack);
-        slicerBeatConnection1 = engine.makeConnection("[Channel1]", "beat_distance", DJCi300.slicerCountBeat);
+        DJCi300.slicerConnections[size][index] = engine.makeConnection("[Channel1]", "beatloop_size", DJCi300.slicerChangeSize);
+        DJCi300.slicerConnections[load][index] = engine.makeConnection("[Channel1]", "LoadSelectedTrack", DJCi300.slicerLoadTrack);
+        DJCi300.slicerConnections[beat][index] = engine.makeConnection("[Channel1]", "beat_distance", DJCi300.slicerCountBeat);
     } else {
-        slicerTrackConnection2 = engine.makeConnection("[Channel2]", "LoadSelectedTrack", DJCi300.slicerLoadTrack);
-        slicerSizeConnection2 = engine.makeConnection("[Channel2]", "beatloop_size", DJCi300.slicerChangeSize);
-        slicerBeatConnection2 = engine.makeConnection("[Channel2]", "beat_distance", DJCi300.slicerCountBeat);
+        DJCi300.slicerConnections[size][index] = engine.makeConnection("[Channel2]", "beatloop_size", DJCi300.slicerChangeSize);
+        DJCi300.slicerConnections[load][index] = engine.makeConnection("[Channel2]", "LoadSelectedTrack", DJCi300.slicerLoadTrack);
+        DJCi300.slicerConnections[beat][index] = engine.makeConnection("[Channel2]", "beat_distance", DJCi300.slicerCountBeat);
     }
 };
 
 DJCi300.disconnectSlicerFunctions = function(deck) {
-    if (deck === 1) {
-        if (slicerSizeConnection1.isConnected) { slicerSizeConnection1.disconnect(); }
-        if (slicerTrackConnection1.isConnected) { slicerTrackConnection1.disconnect(); }
-        if (slicerBeatConnection1.isConnected) { slicerBeatConnection1.disconnect(); }
-    } else {
-        if (slicerSizeConnection2.isConnected) { slicerSizeConnection2.disconnect(); }
-        if (slicerTrackConnection2.isConnected) { slicerTrackConnection2.disconnect(); }
-        if (slicerBeatConnection2.isConnected) { slicerBeatConnection2.disconnect(); }
-    }
+    const index = deck - 1;
+    if (DJCi300.slicerConnections[size][index].isConnected) { DJCi300.slicerConnections[size][index].disconnect(); }
+    if (DJCi300.slicerConnections[load][index].isConnected) { DJCi300.slicerConnections[load][index].disconnect(); }
+    if (DJCi300.slicerConnections[beat][index].isConnected) { DJCi300.slicerConnections[beat][index].disconnect(); }
 };
 
 // This function is called every time we enter slicer mode
