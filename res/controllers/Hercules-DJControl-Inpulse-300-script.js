@@ -301,7 +301,7 @@ DJCi300._convertWheelRotation = function(value) {
 // This is called immediately after the wheel is released and we want to switch between scratching and jogging gracefully.
 // It is also connected to callbacks and called regularly to see if the wheel has slowed down enough. Once it does, then we switch from scratching to jogging
 DJCi300.updateScratchAction = function(value, group, _control) {
-    const deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = script.deckFromGroup(group);
 
     // Stop scratching only if the jogwheel is slow enough and the wheels are not being touched
     if (((Math.abs(value) < DJCi300.slipThreshold)) && (engine.isScratching(deck))
@@ -591,7 +591,7 @@ DJCi300.slicerClear = function(deck) {
 
 // This function calls slicerClear when a new track is loaded
 DJCi300.slicerLoadTrack = function(_value, group, _control) {
-    const deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = script.deckFromGroup(group);
     DJCi300.disconnectSlicerFunctions(deck);
     DJCi300.slicerClear(deck);
     DJCi300.updateSlicerLED(deck);
@@ -599,14 +599,14 @@ DJCi300.slicerLoadTrack = function(_value, group, _control) {
 
 // This function calls slicerInit when the length of the slicer section is adjusted
 DJCi300.slicerChangeSize = function(_value, group, _control) {
-    const deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = script.deckFromGroup(group);
     DJCi300.slicerInit(deck, DJCi300.slicerPoints[deck][0]);
 };
 
 // This function counts the beat that the slicer is on
 // This is useful for moving the loop forward or lighting the LEDs
 DJCi300.slicerCountBeat = function(_value, group, _control) {
-    const deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = script.deckFromGroup(group);
 
     // Calculate current position in samples
     const currentPos = DJCi300._currentPosition(deck);
