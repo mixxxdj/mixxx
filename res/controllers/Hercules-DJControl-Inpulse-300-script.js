@@ -165,12 +165,12 @@ DJCi300.init = function() {
     midi.sendShortMsg(0x97, 0x48, 0x7F);
 
     // Connect master VUMeters
-    engine.makeConnection("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMain);
-    engine.makeConnection("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMain);
+    engine.makeConnection("[Master]", "vu_meter_left", DJCi300.vuMeterUpdateMain);
+    engine.makeConnection("[Master]", "vu_meter_right", DJCi300.vuMeterUpdateMain);
 
     for (const group of ["[Channel1]","[Channel2]"]) {
         // Connect left and right VUMeters
-        engine.makeConnection(group, "VuMeter", DJCi300.vuMeterUpdateDeck);
+        engine.makeConnection(group, "vu_meter", DJCi300.vuMeterUpdateDeck);
 
         //Softtakeover for Pitch fader
         engine.softTakeover(group, "rate", true);
