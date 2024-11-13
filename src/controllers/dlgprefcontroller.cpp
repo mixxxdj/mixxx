@@ -143,6 +143,24 @@ DlgPrefController::DlgPrefController(
     // Product-String is always available
     m_ui.labelProductValue->setText(m_pController->getProductString());
 
+    if (auto vid = m_pController->getVendorId()) {
+        m_ui.labelVidValue->setText(QString::number(*vid, 16).toUpper().rightJustified(4, '0'));
+        m_ui.labelVid->setVisible(true);
+        m_ui.labelVidValue->setVisible(true);
+    } else {
+        m_ui.labelVid->setVisible(false);
+        m_ui.labelVidValue->setVisible(false);
+    }
+
+    if (auto pid = m_pController->getProductId()) {
+        m_ui.labelPidValue->setText(QString::number(*pid, 16).toUpper().rightJustified(4, '0'));
+        m_ui.labelPid->setVisible(true);
+        m_ui.labelPidValue->setVisible(true);
+    } else {
+        m_ui.labelPid->setVisible(false);
+        m_ui.labelPidValue->setVisible(false);
+    }
+
     auto serialNo = m_pController->getSerialNumber();
     if (!serialNo.isEmpty()) {
         m_ui.labelSerialNumberValue->setText(serialNo);

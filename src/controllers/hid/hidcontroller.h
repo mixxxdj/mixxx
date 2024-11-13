@@ -26,12 +26,21 @@ class HidController final : public Controller {
     DataRepresentationProtocol getDataRepresentationProtocol() const override {
         return DataRepresentationProtocol::HID;
     }
-
+    // Note, that for non-USB devices, the VendorString/ProductString can
+    // contain the driver manufacturer, instead of the actual device
+    // manufacturer. The VID/PID is a more reliable way to identify a HID
+    // device.
     QString getVendorString() const override {
         return m_deviceInfo.getVendorString();
     }
     QString getProductString() const override {
         return m_deviceInfo.getProductString();
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return m_deviceInfo.getProductId();
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return m_deviceInfo.getVendorId();
     }
     QString getSerialNumber() const override {
         return m_deviceInfo.getSerialNumber();

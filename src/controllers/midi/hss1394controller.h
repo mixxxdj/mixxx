@@ -52,6 +52,12 @@ class Hss1394Controller : public MidiController {
     QString getProductString() const override {
         return m_deviceInfo.sName.c_str();
     }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
     QString getSerialNumber() const override {
         return QString();
     }

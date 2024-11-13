@@ -40,10 +40,16 @@ class MockMidiController : public MidiController {
         static const QString manufacturer = "Test Manufacturer";
         return manufacturer;
     }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
 
     QString getProductString() const override {
         static const QString product = "Test Product";
         return product;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
     }
 
     QString getSerialNumber() const override {

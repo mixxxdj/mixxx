@@ -65,6 +65,8 @@ class Controller : public QObject {
 
     virtual QString getVendorString() const = 0;
     virtual QString getProductString() const = 0;
+    virtual std::optional<uint16_t> getVendorId() const = 0;
+    virtual std::optional<uint16_t> getProductId() const = 0;
     virtual QString getSerialNumber() const = 0;
     virtual std::optional<uint8_t> getUsbInterfaceNumber() const = 0;
 
