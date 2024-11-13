@@ -92,7 +92,7 @@ class FIFO {
 // Windows compilation and should be done in a follow-up PR.
 // using ring_buffer_size_t = int;
 
-template <class DataType>
+template<class DataType>
 class FIFO {
   public:
     using size_type = std::size_t;
@@ -164,9 +164,9 @@ class FIFO {
     // the second region will be nullptr and size 0.
     int aquireReadRegions(size_type count,
             DataType** dataPtr1,
-            int* sizePtr1,
+            ring_buffer_size_t* sizePtr1,
             DataType** dataPtr2,
-            int* sizePtr2) {
+            ring_buffer_size_t* sizePtr2) {
         size_type readIndex = m_readIndex.load(std::memory_order_relaxed);
         const size_type writeIndex = m_writeIndex.load(std::memory_order_acquire);
         const size_type available = writeIndex - readIndex;
@@ -190,9 +190,9 @@ class FIFO {
     // Same as aquireReadRegions, for write operations
     int aquireWriteRegions(size_type count,
             DataType** dataPtr1,
-            int* sizePtr1,
+            ring_buffer_size_t* sizePtr1,
             DataType** dataPtr2,
-            int* sizePtr2) {
+            ring_buffer_size_t* sizePtr2) {
         const size_type readIndex = m_readIndex.load(std::memory_order_acquire);
         size_type writeIndex = m_writeIndex.load(std::memory_order_relaxed);
         const size_type available = m_size - (writeIndex - readIndex);
