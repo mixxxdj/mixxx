@@ -58,8 +58,8 @@
           <widget class="QGroupBox" name="groupBoxDeviceInfo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="title">
@@ -222,94 +222,88 @@
              </widget>
             </item>
             <item row="4" column="0">
-                   <widget class="QLabel" name="labelVid">
-                     <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                       </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                       <string>Vendor ID</string>
-                     </property>
-                     <property name="text">
-                       <string>VID:</string>
-                     </property>
-                     <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                     </property>
-                   </widget>
-                 </item>
-                 <item row="4" column="1">
-                   <widget class="QLabel" name="labelVidValue">
-                     <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                       </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                       <size>
-                         <width>0</width>
-                         <height>0</height>
-                       </size>
-                     </property>
-                     <property name="toolTip">
-                       <string notr="true"/>
-                     </property>
-                     <property name="text">
-                       <string notr="true">1234</string>
-                     </property>
-                     <property name="wordWrap">
-                       <bool>true</bool>
-                     </property>
-                   </widget>
-                 </item>
-                 <item row="5" column="0">
-                   <widget class="QLabel" name="labelPid">
-                     <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                       </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                       <string>Product ID</string>
-                     </property>
-                     <property name="text">
-                       <string>PID:</string>
-                     </property>
-                     <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                     </property>
-                   </widget>
-                 </item>
-                 <item row="5" column="1">
-                   <widget class="QLabel" name="labelPidValue">
-                     <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                       </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                       <size>
-                         <width>0</width>
-                         <height>0</height>
-                       </size>
-                     </property>
-                     <property name="toolTip">
-                       <string notr="true"/>
-                     </property>
-                     <property name="text">
-                       <string notr="true">0000</string>
-                     </property>
-                     <property name="wordWrap">
-                       <bool>true</bool>
-                     </property>
-                   </widget>
-                 </item>
-                 <item row="6" column="0">
+             <widget class="QLabel" name="labelVid">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Vendor ID</string>
+              </property>
+              <property name="text">
+               <string>VID:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLabel" name="labelVidValue">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string notr="true">(XXXX)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="labelPid">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Product ID</string>
+              </property>
+              <property name="text">
+               <string>PID:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLabel" name="labelPidValue">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string notr="true">(XXXX)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
              <widget class="QLabel" name="labelSerialNumber">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -386,6 +380,82 @@
              </widget>
             </item>
             <item row="8" column="0">
+             <widget class="QLabel" name="labelHidUsagePage">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>HID Usage-Page:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="1">
+             <widget class="QLabel" name="labelHidUsagePageValue">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string notr="true">(e.g. 000D Digitizers)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QLabel" name="labelHidUsage">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>HID Usage:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1">
+             <widget class="QLabel" name="labelHidUsageValue">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string notr="true">(e.g. 0005 Touch Pad)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="0">
              <spacer name="verticalSpacerDeviceinfo">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -411,8 +481,8 @@
            <widget class="QLabel" name="labelMappingName">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
             <property name="text">

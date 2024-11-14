@@ -49,7 +49,21 @@ class HidController final : public Controller {
     std::optional<uint8_t> getUsbInterfaceNumber() const override {
         return m_deviceInfo.getUsbInterfaceNumber();
     }
+    uint16_t getUsagePage() const {
+        return m_deviceInfo.getUsagePage();
+    }
 
+    uint16_t getUsage() const {
+        return m_deviceInfo.getUsage();
+    }
+
+    QString getUsagePageDescription() const {
+        return m_deviceInfo.getUsagePageDescription();
+    }
+
+    QString getUsageDescription() const {
+        return m_deviceInfo.getUsageDescription();
+    }
     bool isMappable() const override {
         if (!m_pMapping) {
             return false;

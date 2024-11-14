@@ -1,0 +1,12 @@
+The file HidUsageTables.json is the official HID Usage definition file from the standard downloaded from https://www.usb.org/hid
+
+HID Usage Tables
+The HID Usage Tables 1.5 document defines constants (Usages) that can be interpreted by an application to identify the purpose and meaning of a data field in a HID report. Usages are also used to define the meaning of groups of related data items. This is accomplished by the hierarchical assignment of Usage information to Collections.
+Usages identify the purpose of a collection and the items it contains. Each Input, Output, Feature, and/or Collection data item within a Collection item can be assigned a purpose with its own Usage item. Usages assigned to a Collection apply to the items within the collection.
+The HID Usage Tables 1.5 document also includes all Usage definitions as a JSON file as an attachment to the PDF. The PDF serves as the 'single' source of truth.
+
+
+The document is published under the following terms:
+
+     LEGAL DISCLAIMER
+THESE SPECIFICATIONS ARE PROVIDED “AS IS” AND WITHOUT ANY WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED. WITHOUT LIMITATION, THERE IS NO WARRANTY OF NON-INFRINGEMENT, NO WARRANTY OF MERCHANTABILITY, AND NO WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE. ALL WARRANTIES ARE EXPRESSLY DISCLAIMED. USER ASSUMES THE FULL RISK OF USING THESE SPECIFICATIONS. IN NO EVENT SHALL USB-IF OR THE USB 3.0 PROMOTERS BE LIABLE FOR ANY ACTUAL, DIRECT, INDIRECT, PUNITIVE, OR CONSEQUENTIAL DAMAGES ARISING FROM SUCH USE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.

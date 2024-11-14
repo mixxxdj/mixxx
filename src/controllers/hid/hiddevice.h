@@ -5,6 +5,7 @@
 #include <string>
 
 #include "controllers/controller.h"
+#include "controllers/hid/hidusagetables.h"
 
 struct ProductInfo;
 struct hid_device_info;
@@ -37,7 +38,7 @@ constexpr unsigned short kAppleIncVendorId = 0x004c;
 class DeviceInfo final {
   public:
     explicit DeviceInfo(
-            const hid_device_info& device_info);
+            const hid_device_info& device_info, const HidUsageTables& hidUsageTables);
 
     // The VID.
     unsigned short getVendorId() const {
@@ -82,6 +83,22 @@ class DeviceInfo final {
         return m_physicalTransportProtocol;
     }
 
+    uint16_t getUsagePage() const {
+        return usage_page;
+    }
+
+    uint16_t getUsage() const {
+        return usage;
+    }
+
+    QString getUsagePageDescription() const {
+        return m_hidUsageTables.getUsagePageDescription(usage_page);
+    }
+
+    QString getUsageDescription() const {
+        return m_hidUsageTables.getUsageDescription(usage_page, usage);
+    }
+
     bool isValid() const {
         return !getProductString().isNull() && !getSerialNumber().isNull();
     }
@@ -117,6 +134,8 @@ class DeviceInfo final {
     QString m_manufacturerString;
     QString m_productString;
     QString m_serialNumber;
+
+    const HidUsageTables& m_hidUsageTables;
 };
 
 } // namespace hid

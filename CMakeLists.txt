@@ -3737,6 +3737,7 @@ if(HID)
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/hidusagetables.cpp
     src/controllers/hid/legacyhidcontrollermapping.cpp
     src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
   )

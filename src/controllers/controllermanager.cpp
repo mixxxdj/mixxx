@@ -162,7 +162,7 @@ void ControllerManager::slotInitialize() {
     m_enumerators.append(new BulkEnumerator());
 #endif
 #ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
+    m_enumerators.append(new HidEnumerator(m_pConfig));
 #endif
 }
 

@@ -5,7 +5,6 @@
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
-#include "util/path.h" // for PATH_MAX on Windows
 #include "util/string.h"
 
 namespace {
@@ -27,7 +26,7 @@ namespace mixxx {
 namespace hid {
 
 DeviceInfo::DeviceInfo(
-        const hid_device_info& device_info)
+        const hid_device_info& device_info, const HidUsageTables& hidUsageTables)
         : vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
           release_number(device_info.release_number),
@@ -44,7 +43,8 @@ DeviceInfo::DeviceInfo(
           m_productString(mixxx::convertWCStringToQString(device_info.product_string,
                   kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
-                  m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
+                  m_serialNumberRaw.data(), m_serialNumberRaw.size())),
+          m_hidUsageTables(hidUsageTables) {
     switch (device_info.bus_type) {
     case HID_API_BUS_USB:
         m_physicalTransportProtocol = PhysicalTransportProtocol::USB;
