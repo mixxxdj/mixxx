@@ -31,13 +31,23 @@
 
           <Template src="skins:LateNight/fx/focus_button.xml"/>
 
-          <Template src="skins:LateNight/controls/button_2state.xml">
-            <SetVariable name="TooltipId">EffectSlot_uiShown</SetVariable>
-            <SetVariable name="ObjectName">FxUiButton</SetVariable>
-            <SetVariable name="BtnSize">square</SetVariable>
-            <SetVariable name="Size">26f,26f</SetVariable>
-            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit_FxNum"/>],uiShown</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_2state.xml">
+                <SetVariable name="TooltipId">EffectSlot_uiShown</SetVariable>
+                <SetVariable name="ObjectName">FxUiButton</SetVariable>
+                <SetVariable name="BtnSize">square</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit_FxNum"/>],uiShown</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_effectuibuttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <Template src="skins:LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>

@@ -82,6 +82,7 @@
     <!-- Effects -->
       <attribute persist="true" config_key="[Skin],show_effectrack">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_effectuibuttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
     <!-- Samplers -->
       <attribute persist="true" config_key="[Skin],show_samplers">0</attribute>
