@@ -2244,12 +2244,6 @@ add_custom_target(mixxx-gitinfo
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
-    src/util/gitinfostore.cpp
-)
-target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
-add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
-
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
@@ -3164,6 +3158,14 @@ if(APPLE OR WIN32)
       "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
   )
 endif()
+
+add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
+    src/util/gitinfostore.cpp
+)
+# QtCore for QString
+target_link_libraries(mixxx-gitinfostore PUBLIC Qt${QT_VERSION_MAJOR}::Core)
+target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
+add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
 
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL

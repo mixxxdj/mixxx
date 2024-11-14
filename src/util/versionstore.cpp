@@ -30,9 +30,20 @@ namespace {
 
 const QVersionNumber kMixxxVersionNumber = QVersionNumber(
         MIXXX_VERSION_MAJOR, MIXXX_VERSION_MINOR, MIXXX_VERSION_PATCH);
-const QString kMixxxVersionSuffix = QString(MIXXX_VERSION_SUFFIX);
+const QString kMixxxVersionSuffix = QStringLiteral(MIXXX_VERSION_SUFFIX);
 const QString kMixxx = QStringLiteral("Mixxx");
-const QString kBuildFlags = QString(MIXXX_BUILD_FLAGS);
+const QString kBuildFlags = QStringLiteral(MIXXX_BUILD_FLAGS);
+
+QString ebur128Version() {
+    int major = 0;
+    int minor = 0;
+    int patch = 0;
+    ebur128_get_version(&major, &minor, &patch);
+    return QStringLiteral("%1.%2.%3")
+            .arg(QString::number(major),
+                    QString::number(minor),
+                    QString::number(patch));
+}
 
 } // namespace
 
@@ -64,56 +75,58 @@ QString VersionStore::applicationName() {
     return kMixxx;
 }
 
+// MSVC doesn't properly evaluate #if in macro arguments (such as QStringLiteral)
+// So I work around that using these #defines.
 // static
-QString VersionStore::platform() {
 #ifdef Q_OS_IOS
-    QString base = QStringLiteral("iOS");
+#define OS_VERSION_STR "iOS"
 #elif defined(Q_OS_MACOS)
-    QString base = QStringLiteral("macOS");
+#define OS_VERSION_STR "macOS"
 #elif defined(__LINUX__)
-    QString base = QStringLiteral("Linux");
+#define OS_VERSION_STR "Linux"
 #elif defined(__WINDOWS__)
-    QString base = QStringLiteral("Windows");
+#define OS_VERSION_STR "Windows"
 // Mixxx's CMakeLists.txt does not define this, but FreeBSD's ports system does.
 #elif defined(__FREEBSD__)
-    QString base = QStringLiteral("FreeBSD");
+#define OS_VERSION_STR "FreeBSD"
 #elif defined(__BSD__)
-    QString base = QStringLiteral("BSD");
+#define OS_VERSION_STR "BSD"
 #elif defined(__EMSCRIPTEN__)
-    QString base = QStringLiteral("Emscripten");
+#define OS_VERSION_STR "Emscripten"
 #else
-    QString base = QStringLiteral("Unknown OS");
+#define OS_VERSION_STR "Unknown OS"
 #endif
 
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || \
         defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64) || \
         defined(AMD64) || defined(EM64T) || defined(x86_64)
-    base.append(" x86_64");
+#define PLATFORM_STR "x86_64"
 #elif defined(i386) || defined(__i386) || defined(__i386__) ||     \
         defined(__IA32__) || defined(_M_IX86) || defined(_X86_) || \
         defined(__X86__) || defined(__I86__)
-    base.append(" x86");
+#define PLATFORM_STR "x86"
 #elif defined(IA64)
-    base.append(" IA64");
+#define PLATFORM_STR "IA64"
 #elif defined(__aarch64__)
-    base.append(" ARM64");
+#define PLATFORM_STR "IA64"
 #elif defined(__arm__) || defined(__thumb__) || defined(_ARM) || \
         defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)
-    base.append(" ARM");
+#define PLATFORM_STR "ARM"
 #elif defined(mips) || defined(__mips)
-    base.append(" MIPS");
+#define PLATFORM_STR "MIPS"
 #elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || \
         defined(__ppc__) || defined(__ppc) || defined(__PPC__) ||             \
         defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) ||   \
         defined(_M_PPC)
-    base.append(" PowerPC");
+#define PLATFORM_STR "PowerPC"
 #elif defined(__wasm32__)
-    base.append(" Wasm32");
+#define PLATFORM_STR "Wasm32"
 #elif defined(__wasm__)
-    base.append(" Wasm");
+#define PLATFORM_STR "Wasm"
 #endif
 
-    return base;
+QString VersionStore::platform() {
+    return QStringLiteral(OS_VERSION_STR " " PLATFORM_STR);
 }
 
 // static
@@ -152,18 +165,10 @@ QString VersionStore::buildFlags() {
 }
 
 QStringList VersionStore::dependencyVersions() {
-    char sndfile_version[128];
-    sf_command(nullptr, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
-    // Null-terminate just in case.
-    sndfile_version[sizeof(sndfile_version) - 1] = '\0';
-
-    int eburMaj = 0;
-    int eburMin = 0;
-    int eburP = 0;
-    ebur128_get_version(&eburMaj, &eburMin, &eburP);
 
     // WARNING: may be inaccurate since some come from compile-time header
     // definitions instead of the actual dynamically loaded library).
+
     QStringList result;
     result
             // Should be accurate.
@@ -192,14 +197,12 @@ QStringList VersionStore::dependencyVersions() {
                        .arg(QString::number(CHROMAPRINT_VERSION_MAJOR),
                                QString::number(CHROMAPRINT_VERSION_MINOR),
                                QString::number(CHROMAPRINT_VERSION_PATCH))
-            << QString("libebur128: %1.%2.%3")
-                       .arg(QString::number(eburMaj),
-                               QString::number(eburMin),
-                               QString::number(eburP))
+            << QString("libebur128: %1")
+                       .arg(ebur128Version())
             // Should be accurate.
             << QString("Vorbis: %1").arg(vorbis_version_string())
             // Should be accurate.
-            << QString("libsndfile: %1").arg(sndfile_version)
+            << QString("libsndfile: %1").arg(sf_version_string())
             // The version of the FLAC headers Mixxx was compiled with.
             << QString("FLAC: %1").arg(FLAC__VERSION_STRING)
             << QString("libmp3lame: %1").arg(get_lame_version());
@@ -226,8 +229,8 @@ void VersionStore::logBuildDetails() {
 
     QStringList depVersions = dependencyVersions();
     qDebug() << "Compile time library versions:";
-    foreach (const QString& depVersion, depVersions) {
-        qDebug() << qPrintable(depVersion);
+    for (const QString& depVersion : depVersions) {
+        qDebug() << depVersion;
     }
 
     qDebug() << "QStandardPaths::writableLocation(HomeLocation):"
