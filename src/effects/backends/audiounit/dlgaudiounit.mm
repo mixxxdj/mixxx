@@ -13,11 +13,12 @@
 
 #include <QString>
 #include <QtGlobal>
+#include <variant>
 
 namespace {
 
-NSView* _Nullable createNativeUI(
-        AudioUnitManagerPointer pManager, CGSize size, QString& outError) {
+std::variant<NSView* _Nonnull, QString> createNativeUI(
+        AudioUnitManagerPointer pManager, CGSize size) {
     QString name = pManager->getName();
     qDebug() << "Loading UI of Audio Unit" << name << "with width" << size.width
              << "and height" << size.height;
@@ -25,9 +26,8 @@ NSView* _Nullable createNativeUI(
     AudioUnit _Nullable audioUnit = pManager->getAudioUnit();
 
     if (audioUnit == nil) {
-        outError = "Cannot create UI of Audio Unit " + name +
+        return "Cannot create UI of Audio Unit " + name +
                 " without an instance";
-        return nil;
     }
 
     // See
@@ -42,15 +42,13 @@ NSView* _Nullable createNativeUI(
             &dataSize,
             nullptr);
     if (infoStatus != noErr) {
-        outError = "No Cocoa UI available for Audio Unit " + name;
-        return nil;
+        return "No Cocoa UI available for Audio Unit " + name;
     }
 
     uint32_t numberOfClasses =
             (dataSize - sizeof(CFURLRef)) / sizeof(CFStringRef);
     if (numberOfClasses == 0) {
-        outError = "No view classes available for Audio Unit " + name;
-        return nil;
+        return "No view classes available for Audio Unit " + name;
     }
 
     std::unique_ptr<AudioUnitCocoaViewInfo[]> cocoaViewInfo =
@@ -63,16 +61,14 @@ NSView* _Nullable createNativeUI(
             cocoaViewInfo.get(),
             &dataSize);
     if (status != noErr) {
-        outError = "Could not fetch Cocoa UI for Audio Unit " + name;
-        return nil;
+        return "Could not fetch Cocoa UI for Audio Unit " + name;
     }
 
     NSURL* viewBundleLocation =
             (__bridge NSURL*)cocoaViewInfo.get()->mCocoaAUViewBundleLocation;
     if (viewBundleLocation == nil) {
-        outError = "Cannot create UI of Audio Unit " + name +
+        return "Cannot create UI of Audio Unit " + name +
                 " without view bundle path";
-        return nil;
     }
 
     // We only use the first view as in the Cocoa AU host example linked earlier
@@ -80,36 +76,29 @@ NSView* _Nullable createNativeUI(
             (__bridge NSString*)cocoaViewInfo.get()->mCocoaAUViewClass[0];
     ;
     if (factoryClassName == nil) {
-        outError = "Cannot create UI of Audio Unit " + name +
+        return "Cannot create UI of Audio Unit " + name +
                 " without factory class name";
-        return nil;
     }
 
     NSBundle* viewBundle = [NSBundle bundleWithURL:viewBundleLocation];
     if (viewBundle == nil) {
-        outError = "Could not load view bundle of Audio Unit " + name;
-        return nil;
+        return "Could not load view bundle of Audio Unit " + name;
     }
 
     Class factoryClass = [viewBundle classNamed:factoryClassName];
     if (factoryClass == nil) {
-        outError =
-                "Could not load view factory class from bundle of Audio Unit " +
+        return "Could not load view factory class from bundle of Audio Unit " +
                 name;
-        return nil;
     }
 
     id<AUCocoaUIBase> factoryInstance = [[factoryClass alloc] init];
     if (factoryInstance == nil) {
-        outError =
-                "Could not instantiate factory for view of Audio Unit " + name;
-        return nil;
+        return "Could not instantiate factory for view of Audio Unit " + name;
     }
 
     NSView* view = [factoryInstance uiViewForAudioUnit:audioUnit withSize:size];
     if (view == nil) {
-        outError = "Could not instantiate view of Audio Unit " + name;
-        return nil;
+        return "Could not instantiate view of Audio Unit " + name;
     }
 
     qDebug() << "Successfully loaded UI of Audio Unit" << name;
@@ -135,10 +124,10 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
             NSWindowStyleMaskHUDWindow];
     [dialogWindow setLevel:NSFloatingWindowLevel];
 
-    QString error = "Could not load UI of Audio Unit";
-    NSView* audioUnitView = createNativeUI(pManager, size().toCGSize(), error);
+    auto result = createNativeUI(pManager, size().toCGSize());
 
-    if (audioUnitView != nil) {
+    if (std::holds_alternative<NSView* _Nonnull>(result)) {
+        NSView* _Nonnull audioUnitView = std::get<NSView* _Nonnull>(result);
         [dialogView addSubview:audioUnitView];
 
         // Automatically resize the dialog to fit the view after layout
@@ -155,6 +144,7 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
                             [dialogWindow setContentSize:size];
                         }];
     } else {
+        QString error = std::get<QString>(result);
         qWarning() << error;
 
         // Fall back to a generic UI if possible
