@@ -1878,7 +1878,10 @@ if(APPLE)
     )
     target_link_libraries(
       mixxx-lib
-      PRIVATE "-weak_framework AudioToolbox" "-weak_framework AVFAudio"
+      PRIVATE
+        "-weak_framework AudioToolbox"
+        "-weak_framework AVFAudio"
+        "-weak_framework CoreAudioKit"
     )
     target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
   endif()

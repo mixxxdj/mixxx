@@ -2,8 +2,9 @@
 #import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AudioUnit/AUCocoaUIView.h>
+#import <CoreAudioKit/CoreAudioKit.h>
 #import <CoreAudioTypes/CoreAudioBaseTypes.h>
-#include <CoreAudioTypes/CoreAudioTypes.h>
+#import <CoreAudioTypes/CoreAudioTypes.h>
 
 #include <QLabel>
 #include <QMutex>
@@ -263,24 +264,28 @@ std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
     std::unique_ptr<QDialog> dialog = std::make_unique<QDialog>();
     dialog->setWindowTitle(name);
 
+    // See
+    // https://lists.qt-project.org/pipermail/interest/2014-January/010655.html
+    // for why we need this slightly convoluted cast
+    NSView* dialogView =
+            (__bridge NSView*)reinterpret_cast<void*>(dialog->winId());
+
     QString error = "Could not load UI of Audio Unit";
-    NSView* view = createNativeUI(dialog->size().toCGSize(), error);
+    NSView* audioUnitView = createNativeUI(dialog->size().toCGSize(), error);
 
-    if (view != nil) {
-        // See
-        // https://lists.qt-project.org/pipermail/interest/2014-January/010655.html
-        // for why we need this slightly convoluted cast
-        NSView* dialogView =
-                (__bridge NSView*)reinterpret_cast<void*>(dialog->winId());
-
-        [dialogView addSubview:view];
+    if (audioUnitView != nil) {
+        [dialogView addSubview:audioUnitView];
     } else {
         qWarning() << error;
 
-        QVBoxLayout* layout = new QVBoxLayout();
-        layout->addWidget(new QLabel(
-                error.isNull() ? "Could not load UI of Audio Unit" : error));
-        dialog->setLayout(layout);
+        // Fall back to a generic UI if possible
+        AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+        if (audioUnit != nil) {
+            AUGenericView* genericView =
+                    [[AUGenericView alloc] initWithAudioUnit:audioUnit];
+            genericView.showsExpertParameters = YES;
+            [dialogView addSubview:genericView];
+        }
     }
 
     return dialog;
