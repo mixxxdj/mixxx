@@ -1,9 +1,13 @@
 #pragma once
 
 #include <QDebug>
+#include <QDialog>
 #include <QHash>
+#include <QLabel>
 #include <QPair>
 #include <QString>
+#include <QVBoxLayout>
+#include <memory>
 
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
@@ -110,6 +114,9 @@ class EffectProcessor {
     /// the dry signal is delayed to overlap with the output wet signal
     /// after processing all effects in the effects chain.
     virtual SINT getGroupDelayFrames() = 0;
+
+    /// Creates a dialog hosting plugin-specific UI, if supported.
+    virtual std::unique_ptr<QDialog> createUI() = 0;
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
@@ -146,6 +153,20 @@ class EffectProcessorImpl : public EffectProcessor {
     /// can override this method and set actual number of frames for the effect delay.
     virtual SINT getGroupDelayFrames() override {
         return 0;
+    }
+
+    std::unique_ptr<QDialog> createUI() override {
+        QLabel* label = new QLabel();
+        label->setText("This effect has no UI");
+
+        QVBoxLayout* layout = new QVBoxLayout();
+        layout->addWidget(label);
+
+        std::unique_ptr<QDialog> dialog = std::make_unique<QDialog>();
+        dialog->setWindowTitle("No UI available");
+        dialog->setLayout(layout);
+
+        return dialog;
     }
 
     void process(const ChannelHandle& inputHandle,
