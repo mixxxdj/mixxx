@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QDialog>
 #include <QMap>
 #include <QSet>
 #include <QString>
@@ -13,6 +12,8 @@
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "util/types.h"
+
+class QDialog;
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
 /// between an EffectSlot and the EffectProcessor. It implements the logic to handle
