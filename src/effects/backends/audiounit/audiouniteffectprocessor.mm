@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QtGlobal>
 #include <algorithm>
+#include <memory>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -303,7 +304,6 @@ NSView* _Nullable AudioUnitEffectProcessor::createNativeUI(
     // https://developer.apple.com/library/archive/samplecode/CocoaAUHost/Listings/Source_CAUHWindowController_mm.html
 
     uint32_t dataSize;
-    AudioUnitCocoaViewInfo* cocoaViewInfo = nil;
 
     OSStatus infoStatus = AudioUnitGetPropertyInfo(audioUnit,
             kAudioUnitProperty_CocoaUI,
@@ -323,24 +323,22 @@ NSView* _Nullable AudioUnitEffectProcessor::createNativeUI(
         return nil;
     }
 
+    std::unique_ptr<AudioUnitCocoaViewInfo[]> cocoaViewInfo =
+            std::make_unique<AudioUnitCocoaViewInfo[]>(numberOfClasses);
+
     OSStatus status = AudioUnitGetProperty(audioUnit,
             kAudioUnitProperty_CocoaUI,
             kAudioUnitScope_Global,
             0,
-            cocoaViewInfo,
+            cocoaViewInfo.get(),
             &dataSize);
     if (status != noErr) {
         outError = "Could not fetch Cocoa UI for Audio Unit " + name;
         return nil;
     }
 
-    if (cocoaViewInfo == nil) {
-        outError = "Could not fetch Cocoa view info for Audio Unit " + name;
-        return nil;
-    }
-
     NSURL* viewBundleLocation =
-            (__bridge NSURL*)cocoaViewInfo->mCocoaAUViewBundleLocation;
+            (__bridge NSURL*)cocoaViewInfo.get()->mCocoaAUViewBundleLocation;
     if (viewBundleLocation == nil) {
         outError = "Cannot create UI of Audio Unit " + name +
                 " without view bundle path";
@@ -349,7 +347,7 @@ NSView* _Nullable AudioUnitEffectProcessor::createNativeUI(
 
     // We only use the first view as in the Cocoa AU host example linked earlier
     NSString* factoryClassName =
-            (__bridge NSString*)cocoaViewInfo->mCocoaAUViewClass[0];
+            (__bridge NSString*)cocoaViewInfo.get()->mCocoaAUViewClass[0];
     ;
     if (factoryClassName == nil) {
         outError = "Cannot create UI of Audio Unit " + name +
