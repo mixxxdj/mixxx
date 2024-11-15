@@ -1,10 +1,13 @@
 #import <AVFAudio/AVFAudio.h>
 #import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <AudioUnit/AUCocoaUIView.h>
 #import <CoreAudioTypes/CoreAudioBaseTypes.h>
 #include <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QLabel>
 #include <QMutex>
+#include <QVBoxLayout>
 #include <QtGlobal>
 #include <algorithm>
 
@@ -255,17 +258,114 @@ void AudioUnitEffectProcessor::syncStreamFormat(
 
 std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
     std::unique_ptr<QDialog> dialog = std::make_unique<QDialog>();
+    dialog->setWindowTitle("Audio Unit UI");
 
-    // See
-    // https://lists.qt-project.org/pipermail/interest/2014-January/010655.html
-    // for why we need this slightly convoluted cast to obtain the native view
-    NSView* view = (__bridge NSView*)reinterpret_cast<void*>(dialog->winId());
+    NSView* view = createNativeUI(dialog->size().toCGSize());
 
-    // Set up a demo view
-    NSTextField* text =
-            [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 200, 200)];
-    text.stringValue = @"Test 123";
-    [view addSubview:text];
+    if (view != nil) {
+        // See
+        // https://lists.qt-project.org/pipermail/interest/2014-January/010655.html
+        // for why we need this slightly convoluted cast
+        NSView* dialogView =
+                (__bridge NSView*)reinterpret_cast<void*>(dialog->winId());
+
+        [dialogView addSubview:view];
+    } else {
+        QVBoxLayout* layout = new QVBoxLayout();
+        layout->addWidget(new QLabel("Could not load Audio Unit UI"));
+        dialog->setLayout(layout);
+    }
 
     return dialog;
+}
+
+NSView* _Nullable AudioUnitEffectProcessor::createNativeUI(CGSize size) {
+    qDebug() << "Loading Audio Unit UI with width" << size.width << "and height"
+             << size.height;
+
+    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+
+    if (audioUnit == nil) {
+        qWarning() << "Cannot create UI without an Audio Unit instance";
+        return nil;
+    }
+
+    // See
+    // https://developer.apple.com/library/archive/samplecode/CocoaAUHost/Listings/Source_CAUHWindowController_mm.html
+
+    uint32_t dataSize;
+    AudioUnitCocoaViewInfo* cocoaViewInfo = nil;
+
+    OSStatus infoStatus = AudioUnitGetPropertyInfo(audioUnit,
+            kAudioUnitProperty_CocoaUI,
+            kAudioUnitScope_Global,
+            0,
+            &dataSize,
+            nullptr);
+    if (infoStatus != noErr) {
+        qWarning() << "No Cocoa UI available for Audio Unit";
+        return nil;
+    }
+
+    uint32_t numberOfClasses =
+            (dataSize - sizeof(CFURLRef)) / sizeof(CFStringRef);
+    if (numberOfClasses == 0) {
+        qWarning() << "No view classes available for Audio Unit";
+        return nil;
+    }
+
+    OSStatus status = AudioUnitGetProperty(audioUnit,
+            kAudioUnitProperty_CocoaUI,
+            kAudioUnitScope_Global,
+            0,
+            cocoaViewInfo,
+            &dataSize);
+    if (status != noErr) {
+        qWarning() << "Could not fetch Cocoa UI for Audio Unit";
+        return nil;
+    }
+
+    NSURL* viewBundleLocation =
+            (__bridge NSURL*)cocoaViewInfo->mCocoaAUViewBundleLocation;
+    if (viewBundleLocation == nil) {
+        qWarning() << "Cannot create Audio Unit UI without view bundle path";
+        return nil;
+    }
+
+    // We only use the first view as in the Cocoa AU host example linked earlier
+    NSString* factoryClassName =
+            (__bridge NSString*)cocoaViewInfo->mCocoaAUViewClass[0];
+    ;
+    if (factoryClassName == nil) {
+        qWarning() << "Cannot create Audio Unit UI without factory class name";
+        return nil;
+    }
+
+    NSBundle* viewBundle = [NSBundle bundleWithURL:viewBundleLocation];
+    if (viewBundle == nil) {
+        qWarning() << "Could not load Audio Unit view bundle";
+        return nil;
+    }
+
+    Class factoryClass = [viewBundle classNamed:factoryClassName];
+    if (factoryClass == nil) {
+        qWarning() << "Could not load factory class for Audio Unit view from "
+                      "bundle";
+        return nil;
+    }
+
+    id<AUCocoaUIBase> factoryInstance = [[factoryClass alloc] init];
+    if (factoryInstance == nil) {
+        qWarning() << "Could not instantiate factory for Audio Unit view";
+        return nil;
+    }
+
+    NSView* view = [factoryInstance uiViewForAudioUnit:audioUnit withSize:size];
+    if (view == nil) {
+        qWarning() << "Could not instantiate Audio Unit view";
+        return nil;
+    }
+
+    qDebug() << "Successfully loaded Audio Unit UI";
+    return view;
 }
