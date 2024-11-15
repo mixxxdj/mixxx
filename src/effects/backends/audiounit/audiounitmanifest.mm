@@ -19,7 +19,11 @@ AudioUnitManifest::AudioUnitManifest(
     setVersion(QString::fromNSString([component versionString]));
     setDescription(QString::fromNSString([component typeName]));
     setAuthor(QString::fromNSString([component manufacturerName]));
-    setHasUI([component hasCustomView]);
+
+    // All audio units provide a UI (not just if [component hasCustomView] is
+    // set) since they provide a generic fallback UI, which may be useful for
+    // effects with many different parameters.
+    setHasUI(true);
 
     // Instantiate audio unit (out-of-process) to load parameters
     AudioUnitManagerPointer pManager = AudioUnitManager::create(component);
