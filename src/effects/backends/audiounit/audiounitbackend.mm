@@ -3,10 +3,12 @@
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <Foundation/Foundation.h>
+#import <dispatch/dispatch.h>
 
 #include <QDebug>
 #include <QHash>
 #include <QList>
+#include <QMutex>
 #include <QString>
 #include <memory>
 
@@ -14,6 +16,7 @@
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "effects/backends/audiounit/audiounitmanifest.h"
 #include "effects/defs.h"
+#include "util/compatibility/qmutex.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
@@ -61,6 +64,7 @@ class AudioUnitBackend : public EffectsBackend {
   private:
     NSMutableDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
     QHash<QString, EffectManifestPointer> m_manifestsById;
+    QMutex m_mutex;
 
     void loadAudioUnits() {
         qDebug() << "Loading audio units...";
@@ -83,24 +87,54 @@ class AudioUnitBackend : public EffectsBackend {
         };
 
         // Find the audio units
-        // TODO: Should we perform this asynchronously (e.g. using Qt's
-        // threading or GCD)?
         auto manager =
                 [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
         auto components = [manager componentsMatchingDescription:description];
 
-        // Assign ids to the components
+        // Load component manifests (parameters etc.) concurrently since this
+        // requires instantiating the corresponding Audio Units. We use Grand
+        // Central Dispatch (GCD) for this instead of Qt's threading facilities
+        // since GCD is a bit more lightweight and generally preferred for
+        // Apple API-related stuff.
+
+        dispatch_group_t group = dispatch_group_create();
+
         for (AVAudioUnitComponent* component in components) {
             qDebug() << "Found audio unit" << [component name];
 
             QString effectId = QString::fromNSString(
                     [NSString stringWithFormat:@"%@~%@~%@",
-                              [component manufacturerName],
-                              [component name],
-                              [component versionString]]);
+                            [component manufacturerName],
+                            [component name],
+                            [component versionString]]);
+
+            // Register component
             m_componentsById[effectId.toNSString()] = component;
-            m_manifestsById[effectId] = EffectManifestPointer(
-                    new AudioUnitManifest(effectId, component));
+
+            // Use a concurrent background GCD queue to load manifest
+            dispatch_queue_t queue = dispatch_get_global_queue(
+                    DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+            dispatch_group_async(group, queue, ^{
+                // Load manifest (potentially slow blocking operation)
+                auto manifest = EffectManifestPointer(
+                        new AudioUnitManifest(effectId, component));
+
+                // Register manifest
+                auto locker = lockMutex(&m_mutex);
+                m_manifestsById[effectId] = manifest;
+            });
+        }
+
+        int64_t timeoutMs = 10000;
+
+        qDebug() << "Waiting for audio unit manifests to be loaded...";
+        if (dispatch_group_wait(group,
+                    dispatch_time(DISPATCH_TIME_NOW, timeoutMs * 1000000)) ==
+                0) {
+            qDebug() << "Successfully loaded audio unit manifests";
+        } else {
+            qWarning() << "Timed out while loading audio unit manifests";
         }
     }
 };
