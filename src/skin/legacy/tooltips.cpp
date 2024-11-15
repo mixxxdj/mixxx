@@ -1093,7 +1093,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Clear")
             << tr("Clear the current effect.");
 
-    add("EffectSlot_uiShown")
+    add("EffectSlot_ui_shown")
             << tr("Show Effect UI")
             << tr("Displays the UI for the given effect if available");
 
