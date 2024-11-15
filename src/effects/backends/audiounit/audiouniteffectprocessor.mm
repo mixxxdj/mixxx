@@ -270,6 +270,13 @@ std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
     NSView* dialogView =
             (__bridge NSView*)reinterpret_cast<void*>(dialog->winId());
 
+    // Style effect UI as a floating, but non-modal, HUD window
+    NSWindow* dialogWindow = [dialogView window];
+    [dialogWindow setStyleMask:NSWindowStyleMaskTitled |
+            NSWindowStyleMaskClosable | NSWindowStyleMaskResizable |
+            NSWindowStyleMaskHUDWindow];
+    [dialogWindow setLevel:NSFloatingWindowLevel];
+
     QString error = "Could not load UI of Audio Unit";
     NSView* audioUnitView = createNativeUI(dialog->size().toCGSize(), error);
 
