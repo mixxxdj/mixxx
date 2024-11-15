@@ -19,6 +19,7 @@ AudioUnitManifest::AudioUnitManifest(
     setVersion(QString::fromNSString([component versionString]));
     setDescription(QString::fromNSString([component typeName]));
     setAuthor(QString::fromNSString([component manufacturerName]));
+    setHasUI([component hasCustomView]);
 
     // Instantiate audio unit (out-of-process) to load parameters
     AudioUnitManagerPointer pManager = AudioUnitManager::create(component);
