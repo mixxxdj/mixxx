@@ -282,6 +282,20 @@ std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
 
     if (audioUnitView != nil) {
         [dialogView addSubview:audioUnitView];
+
+        // Automatically resize the dialog to fit the view after layout
+        [audioUnitView setPostsFrameChangedNotifications:YES];
+        [[NSNotificationCenter defaultCenter]
+                addObserverForName:NSViewFrameDidChangeNotification
+                            object:audioUnitView
+                             queue:[NSOperationQueue mainQueue]
+                        usingBlock:^(NSNotification* notification) {
+                            NSView* audioUnitView =
+                                    (NSView*)notification.object;
+                            NSWindow* dialogWindow = audioUnitView.window;
+                            CGSize size = audioUnitView.frame.size;
+                            [dialogWindow setContentSize:size];
+                        }];
     } else {
         qWarning() << error;
 
