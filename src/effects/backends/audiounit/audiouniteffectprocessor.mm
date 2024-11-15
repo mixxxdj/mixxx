@@ -274,7 +274,7 @@ std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
     NSWindow* dialogWindow = [dialogView window];
     [dialogWindow setStyleMask:NSWindowStyleMaskTitled |
             NSWindowStyleMaskClosable | NSWindowStyleMaskResizable |
-            NSWindowStyleMaskHUDWindow];
+            NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskHUDWindow];
     [dialogWindow setLevel:NSFloatingWindowLevel];
 
     QString error = "Could not load UI of Audio Unit";
