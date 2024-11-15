@@ -334,6 +334,11 @@ NSView* _Nullable AudioUnitEffectProcessor::createNativeUI(
         return nil;
     }
 
+    if (cocoaViewInfo == nil) {
+        outError = "Could not fetch Cocoa view info for Audio Unit " + name;
+        return nil;
+    }
+
     NSURL* viewBundleLocation =
             (__bridge NSURL*)cocoaViewInfo->mCocoaAUViewBundleLocation;
     if (viewBundleLocation == nil) {
