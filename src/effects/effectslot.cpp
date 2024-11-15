@@ -74,6 +74,13 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::updateEngineState);
 
+    m_pControlUIShown = std::make_unique<ControlPushButton>(ConfigKey(m_group, "ui_shown"));
+    m_pControlUIShown->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+    connect(m_pControlUIShown.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectSlot::updateEffectUIShown);
+
     m_pControlNextEffect = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "next_effect"));
     connect(m_pControlNextEffect.get(),
@@ -193,6 +200,21 @@ void EffectSlot::updateEngineState() {
         for (auto const& pParameter : parameterList) {
             pParameter->updateEngineState();
         }
+    }
+}
+
+void EffectSlot::updateEffectUIShown() {
+    if (!m_pEngineEffect) {
+        return;
+    }
+
+    if (m_pControlUIShown->toBool()) {
+        if (!m_pEffectUI) {
+            m_pEffectUI = m_pEngineEffect->createUI();
+        }
+        m_pEffectUI->show();
+    } else {
+        m_pEffectUI = nullptr;
     }
 }
 

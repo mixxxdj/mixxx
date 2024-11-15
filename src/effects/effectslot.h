@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDialog>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
@@ -141,6 +142,7 @@ class EffectSlot : public QObject {
 
   private slots:
     void updateEngineState();
+    void updateEffectUIShown();
     void visibleEffectsListChanged();
 
   private:
@@ -182,12 +184,15 @@ class EffectSlot : public QObject {
     QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameters;
     QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameterSlots;
     std::unique_ptr<ControlPushButton> m_pControlEnabled;
+    std::unique_ptr<ControlPushButton> m_pControlUIShown;
     std::unique_ptr<ControlObject> m_pControlNextEffect;
     std::unique_ptr<ControlObject> m_pControlPrevEffect;
     std::unique_ptr<ControlObject> m_pControlLoadedEffect;
     std::unique_ptr<ControlEncoder> m_pControlEffectSelector;
     std::unique_ptr<ControlObject> m_pControlClear;
     std::unique_ptr<ControlPotmeter> m_pControlMetaParameter;
+
+    std::unique_ptr<QDialog> m_pEffectUI;
 
     SoftTakeover m_metaknobSoftTakeover;
 
