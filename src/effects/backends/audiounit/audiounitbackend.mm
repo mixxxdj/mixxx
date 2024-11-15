@@ -18,7 +18,7 @@
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
   public:
-    AudioUnitBackend() : m_componentsById([[NSDictionary alloc] init]) {
+    AudioUnitBackend() : m_componentsById([[NSMutableDictionary alloc] init]) {
         loadAudioUnits();
     }
 
@@ -59,18 +59,23 @@ class AudioUnitBackend : public EffectsBackend {
     }
 
   private:
-    NSDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
+    NSMutableDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
     QHash<QString, EffectManifestPointer> m_manifestsById;
 
     void loadAudioUnits() {
         qDebug() << "Loading audio units...";
 
+        loadAudioUnitsOfType(kAudioUnitType_Effect);
+        loadAudioUnitsOfType(kAudioUnitType_MusicEffect);
+    }
+
+    void loadAudioUnitsOfType(OSType componentType) {
         // See
         // https://developer.apple.com/documentation/audiotoolbox/audio_unit_v3_plug-ins/incorporating_audio_effects_and_instruments?language=objc
 
         // Create a query for audio components
         AudioComponentDescription description = {
-                .componentType = kAudioUnitType_Effect,
+                .componentType = componentType,
                 .componentSubType = 0,
                 .componentManufacturer = 0,
                 .componentFlags = 0,
@@ -85,10 +90,6 @@ class AudioUnitBackend : public EffectsBackend {
         auto components = [manager componentsMatchingDescription:description];
 
         // Assign ids to the components
-        NSMutableDictionary<NSString*, AVAudioUnitComponent*>* componentsById =
-                [[NSMutableDictionary alloc] init];
-        QHash<QString, EffectManifestPointer> manifestsById;
-
         for (AVAudioUnitComponent* component in components) {
             qDebug() << "Found audio unit" << [component name];
 
@@ -97,13 +98,10 @@ class AudioUnitBackend : public EffectsBackend {
                               [component manufacturerName],
                               [component name],
                               [component versionString]]);
-            componentsById[effectId.toNSString()] = component;
-            manifestsById[effectId] = EffectManifestPointer(
+            m_componentsById[effectId.toNSString()] = component;
+            m_manifestsById[effectId] = EffectManifestPointer(
                     new AudioUnitManifest(effectId, component));
         }
-
-        m_componentsById = componentsById;
-        m_manifestsById = manifestsById;
     }
 };
 
