@@ -1,6 +1,7 @@
 #pragma once
 
 #import <AVFAudio/AVFAudio.h>
+#import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
@@ -68,4 +69,6 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
 
     void syncParameters();
     void syncStreamFormat(const mixxx::EngineParameters& engineParameters);
+
+    NSView* _Nullable createNativeUI(CGSize size);
 };
