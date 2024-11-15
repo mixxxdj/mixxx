@@ -69,6 +69,4 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
 
     void syncParameters();
     void syncStreamFormat(const mixxx::EngineParameters& engineParameters);
-
-    NSView* _Nullable createNativeUI(CGSize size, QString& outError);
 };

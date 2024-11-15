@@ -1599,6 +1599,7 @@ if(APPLE)
       src/effects/backends/audiounit/audiounitmanager.mm
       src/effects/backends/audiounit/audiouniteffectprocessor.mm
       src/effects/backends/audiounit/audiounitmanifest.mm
+      src/effects/backends/audiounit/dlgaudiounit.mm
     )
     target_link_libraries(mixxx-lib PRIVATE
       "-weak_framework AudioToolbox"
