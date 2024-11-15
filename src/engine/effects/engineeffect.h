@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDialog>
 #include <QMap>
 #include <QSet>
 #include <QString>
@@ -58,6 +59,8 @@ class EngineEffect final : public EffectsRequestHandler {
     SINT getGroupDelayFrames() {
         return m_pProcessor->getGroupDelayFrames();
     }
+
+    std::unique_ptr<QDialog> createUI();
 
   private:
     QString debugString() const {
