@@ -140,7 +140,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }
 
-bool MixxxApplication::notify(QObject* target, QEvent* event) {
+bool MixxxApplication::notify(QObject* pTarget, QEvent* event) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // All touch events are translated into two simultaneous events: one for
     // the target QWidgetWindow and one for the target QWidget.
@@ -197,18 +197,27 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         time.start();
     }
 
-    bool ret = QApplication::notify(target, event);
+    bool ret = QApplication::notify(pTarget, event);
 
-    if (m_isDeveloper && time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
-        qDebug() << "Processing event type"
-                 << event->type()
-                 << "for object"
-                 << target->metaObject()->className()
-                 << target->objectName()
-                 << "running in thread:"
-                 << target->thread()->objectName()
-                 << "took"
-                 << time.elapsed().debugMillisWithUnit();
+    if (m_isDeveloper &&
+            time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+        if (event->type() == QEvent::DeferredDelete) {
+            // pTarget can be already dangling in case of DeferredDelete
+            qDebug() << "Processing QEvent::DeferredDelete"
+                     << "for object"
+                     << static_cast<void*>(pTarget) // will print dangling address
+                     << "took"
+                     << time.elapsed().debugMillisWithUnit();
+        } else {
+            qDebug() << "Processing"
+                     << event->type()
+                     << "for object"
+                     << pTarget // will print address, class and object name
+                     << "running in thread:"
+                     << pTarget->thread()->objectName()
+                     << "took"
+                     << time.elapsed().debugMillisWithUnit();
+        }
     }
 
     return ret;
