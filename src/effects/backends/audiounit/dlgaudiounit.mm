@@ -131,8 +131,8 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
     // Style effect UI as a floating, but non-modal, HUD window
     NSWindow* dialogWindow = [dialogView window];
     [dialogWindow setStyleMask:NSWindowStyleMaskTitled |
-            NSWindowStyleMaskClosable | NSWindowStyleMaskResizable |
-            NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskHUDWindow];
+            NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow |
+            NSWindowStyleMaskHUDWindow];
     [dialogWindow setLevel:NSFloatingWindowLevel];
 
     QString error = "Could not load UI of Audio Unit";
