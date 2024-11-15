@@ -1,4 +1,5 @@
 #import <AVFAudio/AVFAudio.h>
+#import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioBaseTypes.h>
 #include <CoreAudioTypes/CoreAudioTypes.h>
@@ -250,4 +251,21 @@ void AudioUnitEffectProcessor::syncStreamFormat(
             }
         }
     }
+}
+
+std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
+    std::unique_ptr<QDialog> dialog = std::make_unique<QDialog>();
+
+    // See
+    // https://lists.qt-project.org/pipermail/interest/2014-January/010655.html
+    // for why we need this slightly convoluted cast to obtain the native view
+    NSView* view = (__bridge NSView*)reinterpret_cast<void*>(dialog->winId());
+
+    // Set up a demo view
+    NSTextField* text =
+            [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 200, 200)];
+    text.stringValue = @"Test 123";
+    [view addSubview:text];
+
+    return dialog;
 }

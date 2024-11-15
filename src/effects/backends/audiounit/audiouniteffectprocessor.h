@@ -4,8 +4,10 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QDialog>
 #include <QList>
 #include <atomic>
+#include <memory>
 
 #include "audio/types.h"
 #include "effects/backends/audiounit/audiounitmanager.h"
@@ -53,6 +55,8 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
             const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
+
+    std::unique_ptr<QDialog> createUI() override;
 
   private:
     AudioUnitManagerPointer m_pManager;
