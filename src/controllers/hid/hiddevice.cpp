@@ -9,14 +9,6 @@
 
 namespace {
 
-constexpr unsigned short kGenericDesktopPointerUsage = 0x01;
-constexpr unsigned short kGenericDesktopJoystickUsage = 0x04;
-constexpr unsigned short kGenericDesktopGamePadUsage = 0x05;
-constexpr unsigned short kGenericDesktopKeypadUsage = 0x07;
-constexpr unsigned short kGenericDesktopMultiaxisControllerUsage = 0x08;
-
-constexpr unsigned short kAppleInfraredControlProductId = 0x8242;
-
 constexpr std::size_t kDeviceInfoStringMaxLength = 512;
 
 } // namespace
