@@ -142,7 +142,7 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
 
         // Automatically resize the dialog to fit the view after layout
         [audioUnitView setPostsFrameChangedNotifications:YES];
-        [[NSNotificationCenter defaultCenter]
+        m_resizeObserver = [[NSNotificationCenter defaultCenter]
                 addObserverForName:NSViewFrameDidChangeNotification
                             object:audioUnitView
                              queue:[NSOperationQueue mainQueue]
@@ -155,4 +155,8 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
                             setFixedSize(qSize);
                         }];
     }
+}
+
+DlgAudioUnit::~DlgAudioUnit() {
+    [[NSNotificationCenter defaultCenter] removeObserver:m_resizeObserver];
 }
