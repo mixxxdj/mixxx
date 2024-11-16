@@ -149,9 +149,10 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
                         usingBlock:^(NSNotification* notification) {
                             NSView* audioUnitView =
                                     (NSView*)notification.object;
-                            CGSize size = audioUnitView.frame.size;
-                            resize(static_cast<int>(size.width),
-                                    static_cast<int>(size.height));
+                            CGSize cgSize = audioUnitView.frame.size;
+                            QSize qSize(static_cast<int>(cgSize.width),
+                                    static_cast<int>(cgSize.height));
+                            setFixedSize(qSize);
                         }];
     }
 }
