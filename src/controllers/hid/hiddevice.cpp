@@ -56,34 +56,6 @@ DeviceInfo::DeviceInfo(
     }
 }
 
-QString DeviceInfo::formatInterface() const {
-    if (m_usbInterfaceNumber < 0) {
-        return QString();
-    }
-    return QChar('#') + QString::number(m_usbInterfaceNumber);
-}
-
-QString DeviceInfo::formatVID() const {
-    return QStringLiteral("%1").arg(vendor_id, 4, 16, QLatin1Char('0'));
-}
-
-QString DeviceInfo::formatPID() const {
-    return QStringLiteral("%1").arg(product_id, 4, 16, QLatin1Char('0'));
-}
-
-QString DeviceInfo::formatReleaseNumber() const {
-    return QString::number(releaseNumberBCD(), 16);
-}
-
-QString DeviceInfo::formatUsage() const {
-    if (usage_page == 0 && usage == 0) {
-        return QString();
-    }
-    return QStringLiteral("%1").arg(usage_page, 4, 16, QLatin1Char('0')) +
-            QLatin1Char(':') +
-            QStringLiteral("%1").arg(usage, 4, 16, QLatin1Char('0'));
-}
-
 QString DeviceInfo::formatName() const {
     // We include the last 4 digits of the serial number and the
     // interface number to allow the user (and Mixxx!) to keep
@@ -105,19 +77,37 @@ QString DeviceInfo::formatName() const {
 QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     QStringList parts;
     parts.reserve(8);
-    // "VID:PID vReleaseNumber"
-    parts.append(deviceInfo.formatVID() +
-            QLatin1Char(':') +
-            deviceInfo.formatPID() +
-            QLatin1String(" r") +
-            deviceInfo.formatReleaseNumber());
-    const QString usage = deviceInfo.formatUsage();
-    if (!usage.isEmpty()) {
-        parts.append(QStringLiteral("Usage: ") + usage);
-    }
-    const QString interfaceId = deviceInfo.formatInterface();
-    if (!interfaceId.isEmpty()) {
-        parts.append(QStringLiteral("Interface: ") + interfaceId);
+
+    auto formatHex = [](unsigned short value) {
+        return QString::number(value, 16).toUpper().rightJustified(4, '0');
+    };
+
+    parts.append(QStringLiteral("VID:%1 PID:%2")
+                    .arg(formatHex(deviceInfo.getVendorId()),
+                            formatHex(deviceInfo.getProductId())));
+
+    static const QMap<PhysicalTransportProtocol, QString> protocolMap = {
+            {PhysicalTransportProtocol::USB, QStringLiteral("USB")},
+            {PhysicalTransportProtocol::BlueTooth, QStringLiteral("Bluetooth")},
+            {PhysicalTransportProtocol::I2C, QStringLiteral("I2C")},
+            {PhysicalTransportProtocol::SPI, QStringLiteral("SPI")},
+            {PhysicalTransportProtocol::FireWire, QStringLiteral("Firewire")},
+            {PhysicalTransportProtocol::UNKNOWN, QStringLiteral("Unknown")}};
+
+    parts.append(QStringLiteral("Physical: %1")
+                    .arg(protocolMap.value(
+                            deviceInfo.getPhysicalTransportProtocol(),
+                            QStringLiteral("Unknown"))));
+
+    parts.append(QStringLiteral("Usage-Page: %1 %2")
+                    .arg(formatHex(deviceInfo.getUsagePage()),
+                            deviceInfo.getUsagePageDescription()));
+    parts.append(QStringLiteral("Usage: %1 %2")
+                    .arg(formatHex(deviceInfo.getUsage()), deviceInfo.getUsageDescription()));
+
+    if (deviceInfo.getUsbInterfaceNumber()) {
+        parts.append(QStringLiteral("Interface: #%1")
+                        .arg(deviceInfo.getUsbInterfaceNumber().value()));
     }
     if (!deviceInfo.getVendorString().isEmpty()) {
         parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.getVendorString());
@@ -128,6 +118,7 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     if (!deviceInfo.getSerialNumber().isEmpty()) {
         parts.append(QStringLiteral("S/N: ") + deviceInfo.getSerialNumber());
     }
+
     const auto dbgState = QDebugStateSaver(dbg);
     return dbg.nospace().noquote()
             << QStringLiteral("{ ")

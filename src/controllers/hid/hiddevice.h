@@ -93,12 +93,6 @@ class DeviceInfo final {
     bool isValid() const {
         return !getProductString().isNull() && !getSerialNumber().isNull();
     }
-
-    QString formatVID() const;
-    QString formatPID() const;
-    QString formatReleaseNumber() const;
-    QString formatInterface() const;
-    QString formatUsage() const;
     QString formatName() const;
 
     bool matchProductInfo(
