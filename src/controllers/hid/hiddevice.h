@@ -32,15 +32,26 @@ class DeviceInfo final {
             const hid_device_info& device_info, const HidUsageTables& hidUsageTables);
 
     // The VID.
-    unsigned short getVendorId() const {
+    uint16_t getVendorId() const {
         return vendor_id;
     }
     // The PID.
-    unsigned short getProductId() const {
+    uint16_t getProductId() const {
         return product_id;
     }
-    /// The release number as a binary-coded decimal (BCD).
-    unsigned short releaseNumberBCD() const {
+
+    /// The releaseNumberBCD returns the version of the USB specification to
+    /// which the device conforms. The bcdUSB field contains a BCD version
+    /// number in the format 0xJJMN:
+    /// - JJ: major version number
+    /// - M: minor version number
+    /// - N: sub-minor version number
+    /// Examples:
+    /// - 0200H represents USB 2.0 specification
+    /// - 0300H represents USB 3.0 specification
+    /// - 0310H represents USB 3.1 specification
+    /// Note, that many devices have not set this field as intended
+    uint16_t releaseNumberBCD() const {
         return release_number;
     }
 
@@ -110,6 +121,7 @@ class DeviceInfo final {
     unsigned short release_number;
     unsigned short usage_page;
     unsigned short usage;
+
     PhysicalTransportProtocol m_physicalTransportProtocol;
     int m_usbInterfaceNumber;
 
