@@ -9,4 +9,8 @@ class DlgAudioUnit : public DlgEffect {
 
   public:
     DlgAudioUnit(AudioUnitManagerPointer pManager);
+    virtual ~DlgAudioUnit();
+
+  private:
+    id m_resizeObserver;
 };
