@@ -142,7 +142,7 @@ class EffectSlot : public QObject {
 
   private slots:
     void updateEngineState();
-    void updateEffectUIShown();
+    void updateEffectUI();
     void visibleEffectsListChanged();
 
   private:
