@@ -17,6 +17,7 @@ class DlgEffect : public QDialog {
     virtual ~DlgEffect();
 
     void setCustomUI(QWidget* customUI);
+    void setClosesWithoutSignal(bool closesWithoutSignal);
 
   signals:
     void closed();
@@ -26,4 +27,5 @@ class DlgEffect : public QDialog {
 
   private:
     QWidget* m_customUI;
+    bool m_closesWithoutSignal;
 };

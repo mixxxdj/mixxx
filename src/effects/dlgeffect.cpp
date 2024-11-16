@@ -4,7 +4,8 @@
 
 #include "moc_dlgeffect.cpp"
 
-DlgEffect::DlgEffect(QWidget* customUI) {
+DlgEffect::DlgEffect(QWidget* customUI)
+        : m_closesWithoutSignal(false) {
     setWindowTitle("Effect");
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
     setCustomUI(customUI);
@@ -20,7 +21,13 @@ void DlgEffect::setCustomUI(QWidget* customUI) {
     m_customUI = customUI;
 }
 
+void DlgEffect::setClosesWithoutSignal(bool closesWithoutSignal) {
+    m_closesWithoutSignal = closesWithoutSignal;
+}
+
 void DlgEffect::closeEvent(QCloseEvent* e) {
     Q_UNUSED(e);
-    emit closed();
+    if (!m_closesWithoutSignal) {
+        emit closed();
+    }
 }
