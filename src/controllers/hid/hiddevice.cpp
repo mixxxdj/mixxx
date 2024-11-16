@@ -5,7 +5,6 @@
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
-#include "moc_hiddevice.cpp"
 #include "util/path.h" // for PATH_MAX on Windows
 #include "util/string.h"
 
@@ -125,47 +124,6 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
             << QStringLiteral("{ ")
             << parts.join(QStringLiteral(" | "))
             << QStringLiteral(" }");
-}
-
-QString DeviceCategory::guessFromDeviceInfoImpl(
-        const DeviceInfo& deviceInfo) const {
-    // This should be done somehow else, I know. But at least we get started with
-    // the idea of mapping this information
-    const QString interfaceId = deviceInfo.formatInterface();
-    if (!interfaceId.isEmpty()) {
-        // TODO: Guess linux device types somehow as well
-        // or maybe just fill in the interface number?
-        return tr("HID Interface %1: ").arg(interfaceId) + deviceInfo.formatUsage();
-    }
-    if (deviceInfo.usage_page == kGenericDesktopUsagePage) {
-        switch (deviceInfo.usage) {
-        case kGenericDesktopPointerUsage:
-            return tr("Generic HID Pointer");
-        case kGenericDesktopMouseUsage:
-            return tr("Generic HID Mouse");
-        case kGenericDesktopJoystickUsage:
-            return tr("Generic HID Joystick");
-        case kGenericDesktopGamePadUsage:
-            return tr("Generic HID Game Pad");
-        case kGenericDesktopKeyboardUsage:
-            return tr("Generic HID Keyboard");
-        case kGenericDesktopKeypadUsage:
-            return tr("Generic HID Keypad");
-        case kGenericDesktopMultiaxisControllerUsage:
-            return tr("Generic HID Multi-axis Controller");
-        default:
-            return tr("Unknown HID Desktop Device: ") + deviceInfo.formatUsage();
-        }
-    } else if (deviceInfo.vendor_id == kAppleVendorId) {
-        // Apple laptop special HID devices
-        if (deviceInfo.product_id == kAppleInfraredControlProductId) {
-            return tr("Apple HID Infrared Control");
-        } else {
-            return tr("Unknown Apple HID Device: ") + deviceInfo.formatUsage();
-        }
-    } else {
-        return tr("Unknown HID Device: ") + deviceInfo.formatUsage();
-    }
 }
 
 bool DeviceInfo::matchProductInfo(

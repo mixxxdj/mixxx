@@ -93,12 +93,6 @@ DlgPrefController::DlgPrefController(
     slotShowMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
-    QString category = m_pController->getCategory();
-    if (!category.isEmpty()) {
-        m_ui.labelDeviceCategory->setText(category);
-    } else {
-        m_ui.labelDeviceCategory->hide();
-    }
 
     m_ui.groupBoxWarning->hide();
     m_ui.labelWarning->setText(tr(

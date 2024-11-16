@@ -105,22 +105,6 @@ class DeviceInfo final {
     QString m_serialNumber;
 };
 
-class DeviceCategory final : public QObject {
-    // QObject needed for i18n device category
-    Q_OBJECT
-  public:
-    static QString guessFromDeviceInfo(
-            const DeviceInfo& deviceInfo) {
-        return DeviceCategory().guessFromDeviceInfoImpl(deviceInfo);
-    }
-
-  private:
-    QString guessFromDeviceInfoImpl(
-            const DeviceInfo& deviceInfo) const;
-
-    DeviceCategory() = default;
-};
-
 } // namespace hid
 
 } // namespace mixxx
