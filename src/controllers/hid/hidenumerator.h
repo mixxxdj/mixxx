@@ -8,6 +8,7 @@
 class HidEnumerator : public ControllerEnumerator {
     Q_OBJECT
   public:
+    bool recognizeDevice(const hid_device_info& device_info) const;
     explicit HidEnumerator(UserSettingsPointer pConfig);
     ~HidEnumerator() override;
 
