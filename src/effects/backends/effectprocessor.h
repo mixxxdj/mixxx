@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDebug>
-#include <QDialog>
 #include <QHash>
 #include <QLabel>
 #include <QPair>
@@ -10,6 +9,7 @@
 #include <memory>
 
 #include "effects/defs.h"
+#include "effects/dlgeffect.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
@@ -116,7 +116,7 @@ class EffectProcessor {
     virtual SINT getGroupDelayFrames() = 0;
 
     /// Creates a dialog hosting plugin-specific UI, if supported.
-    virtual std::unique_ptr<QDialog> createUI() = 0;
+    virtual std::unique_ptr<DlgEffect> createUI() = 0;
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
@@ -155,14 +155,14 @@ class EffectProcessorImpl : public EffectProcessor {
         return 0;
     }
 
-    std::unique_ptr<QDialog> createUI() override {
+    std::unique_ptr<DlgEffect> createUI() override {
         QLabel* label = new QLabel();
         label->setText("This effect has no UI");
 
         QVBoxLayout* layout = new QVBoxLayout();
         layout->addWidget(label);
 
-        std::unique_ptr<QDialog> dialog = std::make_unique<QDialog>();
+        std::unique_ptr<DlgEffect> dialog = std::make_unique<DlgEffect>();
         dialog->setWindowTitle("No UI available");
         dialog->setLayout(layout);
 

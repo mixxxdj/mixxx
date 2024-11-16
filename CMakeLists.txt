@@ -814,6 +814,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/chains/pergroupeffectchain.cpp
   src/effects/chains/quickeffectchain.cpp
   src/effects/chains/standardeffectchain.cpp
+  src/effects/dlgeffect.cpp
   src/effects/effectbuttonparameterslot.cpp
   src/effects/effectchain.cpp
   src/effects/effectchainmixmode.cpp

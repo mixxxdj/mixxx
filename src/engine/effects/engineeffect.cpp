@@ -226,6 +226,6 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     return processingOccured;
 }
 
-std::unique_ptr<QDialog> EngineEffect::createUI() {
+std::unique_ptr<DlgEffect> EngineEffect::createUI() {
     return m_pProcessor->createUI();
 }
