@@ -2,6 +2,13 @@
 
 #include "moc_dlgeffect.cpp"
 
-DlgEffect::DlgEffect() {
-    // TODO
+DlgEffect::DlgEffect(QWidget* customUI) {
+    setCustomUI(customUI);
+}
+
+void DlgEffect::setCustomUI(QWidget* customUI) {
+    if (customUI != nullptr) {
+        customUI->setParent(this);
+    }
+    m_customUI = customUI;
 }
