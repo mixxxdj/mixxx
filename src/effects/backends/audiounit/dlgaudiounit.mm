@@ -152,7 +152,7 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
                             CGSize cgSize = audioUnitView.frame.size;
                             QSize qSize(static_cast<int>(cgSize.width),
                                     static_cast<int>(cgSize.height));
-                            setFixedSize(qSize);
+                            resize(qSize);
                         }];
     }
 }
