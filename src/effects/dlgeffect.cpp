@@ -19,3 +19,8 @@ void DlgEffect::setCustomUI(QWidget* customUI) {
     }
     m_customUI = customUI;
 }
+
+void DlgEffect::closeEvent(QCloseEvent* e) {
+    Q_UNUSED(e);
+    emit closed();
+}
