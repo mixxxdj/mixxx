@@ -10,6 +10,9 @@ DlgEffect::DlgEffect(QWidget* customUI) {
     setCustomUI(customUI);
 }
 
+DlgEffect::~DlgEffect() {
+}
+
 void DlgEffect::setCustomUI(QWidget* customUI) {
     if (customUI != nullptr) {
         customUI->setParent(this);
