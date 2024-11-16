@@ -1,5 +1,7 @@
 #include "effects/dlgeffect.h"
 
+#include <QWidget>
+
 #include "moc_dlgeffect.cpp"
 
 DlgEffect::DlgEffect(QWidget* customUI) {
