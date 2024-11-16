@@ -12,6 +12,8 @@
 #include "moc_dlgaudiounit.cpp"
 
 #include <QString>
+#include <QWidget>
+#include <QWindow>
 #include <QtGlobal>
 #include <variant>
 
@@ -112,37 +114,11 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
 
     setWindowTitle(name);
 
-    // See
-    // https://lists.qt-project.org/pipermail/interest/2014-January/010655.html
-    // for why we need this slightly convoluted cast
-    NSView* dialogView = (__bridge NSView*)reinterpret_cast<void*>(winId());
-
-    // Style effect UI as a floating, but non-modal, HUD window
-    NSWindow* dialogWindow = [dialogView window];
-    [dialogWindow setStyleMask:NSWindowStyleMaskTitled |
-            NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow |
-            NSWindowStyleMaskHUDWindow];
-    [dialogWindow setLevel:NSFloatingWindowLevel];
-
     auto result = createNativeUI(pManager, size().toCGSize());
+    NSView* _Nullable audioUnitView = nil;
 
     if (std::holds_alternative<NSView* _Nonnull>(result)) {
-        NSView* _Nonnull audioUnitView = std::get<NSView* _Nonnull>(result);
-        [dialogView addSubview:audioUnitView];
-
-        // Automatically resize the dialog to fit the view after layout
-        [audioUnitView setPostsFrameChangedNotifications:YES];
-        [[NSNotificationCenter defaultCenter]
-                addObserverForName:NSViewFrameDidChangeNotification
-                            object:audioUnitView
-                             queue:[NSOperationQueue mainQueue]
-                        usingBlock:^(NSNotification* notification) {
-                            NSView* audioUnitView =
-                                    (NSView*)notification.object;
-                            NSWindow* dialogWindow = audioUnitView.window;
-                            CGSize size = audioUnitView.frame.size;
-                            [dialogWindow setContentSize:size];
-                        }];
+        audioUnitView = std::get<NSView* _Nonnull>(result);
     } else {
         QString error = std::get<QString>(result);
         qWarning() << error;
@@ -153,7 +129,29 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
             AUGenericView* genericView =
                     [[AUGenericView alloc] initWithAudioUnit:audioUnit];
             genericView.showsExpertParameters = YES;
-            [dialogView addSubview:genericView];
+            audioUnitView = genericView;
         }
+    }
+
+    if (audioUnitView != nil) {
+        // Wrap the audio unit view in QWindow/QWidget
+        QWindow* wrapper =
+                QWindow::fromWinId(reinterpret_cast<WId>(audioUnitView));
+        QWidget* wrapperContainer = QWidget::createWindowContainer(wrapper);
+        setCustomUI(wrapperContainer);
+
+        // Automatically resize the dialog to fit the view after layout
+        [audioUnitView setPostsFrameChangedNotifications:YES];
+        [[NSNotificationCenter defaultCenter]
+                addObserverForName:NSViewFrameDidChangeNotification
+                            object:audioUnitView
+                             queue:[NSOperationQueue mainQueue]
+                        usingBlock:^(NSNotification* notification) {
+                            NSView* audioUnitView =
+                                    (NSView*)notification.object;
+                            CGSize size = audioUnitView.frame.size;
+                            resize(static_cast<int>(size.width),
+                                    static_cast<int>(size.height));
+                        }];
     }
 }
