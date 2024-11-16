@@ -208,16 +208,29 @@ void EffectSlot::updateEffectUI() {
         return;
     }
 
+    bool uiShown = m_pControlUIShown->toBool();
+
     if (m_pEffectUI) {
+        // Prevent close from retriggering updateControlOnEffectUIClose if we
+        // want to keep showing a UI (e.g. because the effect was switched).
+        m_pEffectUI->setClosesWithoutSignal(uiShown);
         m_pEffectUI->close();
     }
 
-    if (m_pControlUIShown->toBool()) {
+    if (uiShown) {
         m_pEffectUI = m_pEngineEffect->createUI();
         m_pEffectUI->show();
+        connect(&*m_pEffectUI,
+                &DlgEffect::closed,
+                this,
+                &EffectSlot::updateControlOnEffectUIClose);
     } else {
         m_pEffectUI = nullptr;
     }
+}
+
+void EffectSlot::updateControlOnEffectUIClose() {
+    m_pControlUIShown->set(false);
 }
 
 void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
