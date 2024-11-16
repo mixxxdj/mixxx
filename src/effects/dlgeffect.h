@@ -8,6 +8,7 @@ class DlgEffect : public QDialog {
 
   public:
     DlgEffect(QWidget* customUI = nullptr);
+    virtual ~DlgEffect();
 
     void setCustomUI(QWidget* customUI);
 
