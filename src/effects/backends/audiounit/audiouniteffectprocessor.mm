@@ -259,6 +259,6 @@ void AudioUnitEffectProcessor::syncStreamFormat(
     }
 }
 
-std::unique_ptr<QDialog> AudioUnitEffectProcessor::createUI() {
+std::unique_ptr<DlgEffect> AudioUnitEffectProcessor::createUI() {
     return std::make_unique<DlgAudioUnit>(m_pManager);
 }

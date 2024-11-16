@@ -1,11 +1,10 @@
 #pragma once
 
-#include <QDialog>
-
 #include "effects/backends/audiounit/audiounitmanagerpointer.h"
+#include "effects/dlgeffect.h"
 
 /// A dialog hosting the UI of an Audio Unit.
-class DlgAudioUnit : public QDialog {
+class DlgAudioUnit : public DlgEffect {
     Q_OBJECT
 
   public:

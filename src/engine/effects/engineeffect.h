@@ -13,7 +13,7 @@
 #include "engine/effects/message.h"
 #include "util/types.h"
 
-class QDialog;
+class DlgEffect;
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
 /// between an EffectSlot and the EffectProcessor. It implements the logic to handle
@@ -61,7 +61,7 @@ class EngineEffect final : public EffectsRequestHandler {
         return m_pProcessor->getGroupDelayFrames();
     }
 
-    std::unique_ptr<QDialog> createUI();
+    std::unique_ptr<DlgEffect> createUI();
 
   private:
     QString debugString() const {

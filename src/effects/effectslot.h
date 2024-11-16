@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QDialog>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
 
 #include "controllers/softtakeover.h"
 #include "effects/backends/effectmanifest.h"
+#include "effects/dlgeffect.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
@@ -192,7 +192,7 @@ class EffectSlot : public QObject {
     std::unique_ptr<ControlObject> m_pControlClear;
     std::unique_ptr<ControlPotmeter> m_pControlMetaParameter;
 
-    std::unique_ptr<QDialog> m_pEffectUI;
+    std::unique_ptr<DlgEffect> m_pEffectUI;
 
     SoftTakeover m_metaknobSoftTakeover;
 
