@@ -4,6 +4,11 @@
 #include <QDialog>
 #include <QWidget>
 
+/// A dialog hosting effect-specific UI. This is mainly intended for audio
+/// plugins (e.g. AU/LV2/VST/...) to display their UI, but may also be useful to
+/// other effect backends. While subclassing is recommended to customize the
+/// dialog as needed, e.g. with a custom window title, this class already
+/// styles the dialog and configures it to float above other windows.
 class DlgEffect : public QDialog {
     Q_OBJECT
 
