@@ -3,6 +3,8 @@
 #include "moc_dlgeffect.cpp"
 
 DlgEffect::DlgEffect(QWidget* customUI) {
+    setWindowTitle("Effect");
+    setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
     setCustomUI(customUI);
 }
 
