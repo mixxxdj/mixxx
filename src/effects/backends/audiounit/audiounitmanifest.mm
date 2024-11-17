@@ -23,7 +23,7 @@ AudioUnitManifest::AudioUnitManifest(
     // Instantiate audio unit (out-of-process) to load parameters
     AudioUnitManagerPointer pManager = AudioUnitManager::create(component);
 
-    const int TIMEOUT_MS = 5000;
+    const int TIMEOUT_MS = 2000;
 
     QElapsedTimer timer;
     timer.start();
