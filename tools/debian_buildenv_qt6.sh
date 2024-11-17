@@ -100,6 +100,8 @@ case "$1" in
             protobuf-compiler \
             qtkeychain-qt6-dev \
             qt6-declarative-dev \
+            qt6-declarative-private-dev \
+            qt6-base-private-dev \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)
