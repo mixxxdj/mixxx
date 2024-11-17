@@ -41,8 +41,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);
-    // Create text color for the cue mode link "?" to the manual
-    createLinkColor();
 
     m_pNumDecks->connectValueChanged(this, [=, this](double value) { slotNumDecksChanged(value); });
     slotNumDecksChanged(m_pNumDecks->get(), true);
@@ -291,21 +289,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
-    // Cue Mode
-    // Add "(?)" with a manual link to the label
-    labelCueMode->setText(labelCueMode->text() + QChar(' ') +
-            coloredLinkString(
-                    m_pLinkColor,
-                    QStringLiteral("(?)"),
-                    MIXXX_MANUAL_CUE_MODES_URL));
-
-    // Sync Mode
-    // Add "(?)" with a manual link to the label
-    labelSyncMode->setText(labelSyncMode->text() + QChar(' ') +
-            coloredLinkString(
-                    m_pLinkColor,
-                    QStringLiteral("(?)"),
-                    MIXXX_MANUAL_SYNC_MODES_URL));
+    // Store translated label texts
+    labelCueMode->setProperty(kOriginalText, labelCueMode->text());
+    labelSyncMode->setProperty(kOriginalText, labelSyncMode->text());
+    // Create text color manual links
+    updateColoredLinkTexts();
 
     // Speed / Pitch reset configuration
     // Update "reset speed" and "reset pitch" check boxes
@@ -504,6 +492,26 @@ void DlgPrefDeck::slotUpdate() {
     spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
     spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
+}
+
+void DlgPrefDeck::updateColoredLinkTexts() {
+    createLinkColor();
+    // Cue Mode
+    // Add "(?)" with a manual link to the label
+    labelCueMode->setText(
+            labelCueMode->property(kOriginalText).toString() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_CUE_MODES_URL));
+    // Sync Mode
+    // Add "(?)" with a manual link to the label
+    labelSyncMode->setText(
+            labelSyncMode->property(kOriginalText).toString() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SYNC_MODES_URL));
 }
 
 void DlgPrefDeck::slotResetToDefaults() {

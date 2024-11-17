@@ -24,6 +24,8 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
     QUrl helpUrl() const override;
 
+    void updateColoredLinkTexts() override;
+
   public slots:
     void slotUpdate() override;
     void slotApply() override;

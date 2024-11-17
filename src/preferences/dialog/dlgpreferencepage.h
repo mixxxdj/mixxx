@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QString>
 #include <QUrl>
 #include <QWidget>
@@ -37,6 +38,8 @@ class DlgPreferencePage : public QWidget {
     bool eventFilter(QObject* pObj, QEvent* pEvent);
 
     QColor m_pLinkColor;
+
+    const char* kOriginalText = "originalText";
 
   public slots:
     /// Called when the preference dialog is shown to the user (not necessarily
@@ -80,6 +83,9 @@ class DlgPreferencePage : public QWidget {
         m_pLinkColor = Color::blendColors(palette().link().color(),
                 palette().text().color())
                                .name();
+    }
+
+    virtual void updateColoredLinkTexts() {
     }
 
   private:

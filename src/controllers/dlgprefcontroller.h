@@ -35,12 +35,8 @@ class DlgPrefController : public DlgPreferencePage {
     QUrl helpUrl() const override;
     void keyPressEvent(QKeyEvent* pEvent) override;
 
-    /// Reload the mappings in the dropdown dialog.
-    /// Convenience method to be called by DlgPrefControllers.
-    /// Used to rebuild the mappings list with dark/light icons
-    /// matching the current color palette.
-    void enumerateMappings();
     void enumerateMappings(const QString& selectedMappingPath);
+    void updateMappingIconsAndColoredLinkTexts();
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.

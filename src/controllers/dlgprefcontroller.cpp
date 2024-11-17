@@ -530,9 +530,18 @@ QString DlgPrefController::mappingFileLinks(
     return linkList.join("<br/>");
 }
 
-void DlgPrefController::enumerateMappings() {
-    enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
-            m_pController->getName()));
+void DlgPrefController::updateMappingIconsAndColoredLinkTexts() {
+    // re-enumerating mappings is the easiest way to update the list icons
+    enumerateMappings(mappingFilePathFromIndex(m_ui.comboBoxMapping->currentIndex()));
+
+    // Update the colored links
+    createLinkColor();
+    // Note: this will show the links of the LOADED mapping, so when applying
+    // a stylesheet while the selected mapping hasn't been loaded, yet, the
+    // links will be wrong.
+    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
+    m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(pMapping));
+    m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
 }
 
 void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
