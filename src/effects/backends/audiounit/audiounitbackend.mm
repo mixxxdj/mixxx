@@ -126,11 +126,11 @@ class AudioUnitBackend : public EffectsBackend {
             });
         }
 
-        int64_t timeoutMs = 10000;
+        const int64_t TIMEOUT_MS = 6000;
 
         qDebug() << "Waiting for audio unit manifests to be loaded...";
         if (dispatch_group_wait(group,
-                    dispatch_time(DISPATCH_TIME_NOW, timeoutMs * 1000000)) ==
+                    dispatch_time(DISPATCH_TIME_NOW, TIMEOUT_MS * 1000000)) ==
                 0) {
             qDebug() << "Successfully loaded audio unit manifests";
         } else {
