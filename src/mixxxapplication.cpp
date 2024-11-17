@@ -140,29 +140,29 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }
 
-bool MixxxApplication::notify(QObject* target, QEvent* event) {
+bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // All touch events are translated into two simultaneous events: one for
     // the target QWidgetWindow and one for the target QWidget.
     // A second touch becomes a mouse move without additional press and release
     // events.
-    switch (event->type()) {
+    switch (pEvent->type()) {
     case QEvent::MouseButtonPress: {
-        QMouseEventEditable* mouseEvent =
-                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
-        if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
-                mouseEvent->button() == Qt::LeftButton &&
+        QMouseEventEditable* pMouseEvent =
+                static_cast<QMouseEventEditable*>(pEvent); // clazy:exclude=wrong-qevent-cast
+        if (pMouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
+                pMouseEvent->button() == Qt::LeftButton &&
                 touchIsRightButton()) {
             // Assert the assumption that QT synthesizes only one click at a time
             // = two events (see above)
             VERIFY_OR_DEBUG_ASSERT(m_rightPressedButtons < 2) {
                 break;
             }
-            mouseEvent->setButton(Qt::RightButton);
+            pMouseEvent->setButton(Qt::RightButton);
             m_rightPressedButtons++;
         }
 #if QT_VERSION <= QT_VERSION_CHECK(5, 12, 4) && defined(__APPLE__)
-        if (mouseEvent->button() == Qt::RightButton && mouseEvent->buttons() == Qt::LeftButton) {
+        if (pMouseEvent->button() == Qt::RightButton && pMouseEvent->buttons() == Qt::LeftButton) {
             // Workaround for a bug in Qt 5.12 qnsview_mouse.mm, where the wrong value is
             // assigned to the event's mouseState for simulated rightbutton press events
             // (using ctrl+leftbotton), which results in a missing release event for that
@@ -170,18 +170,18 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
             //
             // Fixed in Qt 5.12.5. See
             // https://github.com/qt/qtbase/commit/9a47768b46f5e5eed407b70dfa9183fa1d21e242
-            mouseEvent->setButtons(Qt::RightButton);
+            pMouseEvent->setButtons(Qt::RightButton);
         }
 #endif
         break;
     }
     case QEvent::MouseButtonRelease: {
-        QMouseEventEditable* mouseEvent =
-                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
-        if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
-                mouseEvent->button() == Qt::LeftButton &&
+        QMouseEventEditable* pMouseEvent =
+                static_cast<QMouseEventEditable*>(pEvent); // clazy:exclude=wrong-qevent-cast
+        if (pMouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
+                pMouseEvent->button() == Qt::LeftButton &&
                 m_rightPressedButtons > 0) {
-            mouseEvent->setButton(Qt::RightButton);
+            pMouseEvent->setButton(Qt::RightButton);
             m_rightPressedButtons--;
         }
         break;
@@ -197,18 +197,27 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         time.start();
     }
 
-    bool ret = QApplication::notify(target, event);
+    bool ret = QApplication::notify(pTarget, pEvent);
 
-    if (m_isDeveloper && time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
-        qDebug() << "Processing event type"
-                 << event->type()
-                 << "for object"
-                 << target->metaObject()->className()
-                 << target->objectName()
-                 << "running in thread:"
-                 << target->thread()->objectName()
-                 << "took"
-                 << time.elapsed().debugMillisWithUnit();
+    if (m_isDeveloper &&
+            time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+        if (pEvent->type() == QEvent::DeferredDelete) {
+            // pTarget can be already dangling in case of DeferredDelete
+            qDebug() << "Processing QEvent::DeferredDelete"
+                     << "for object"
+                     << static_cast<void*>(pTarget) // will print dangling address
+                     << "took"
+                     << time.elapsed().debugMillisWithUnit();
+        } else {
+            qDebug() << "Processing"
+                     << pEvent->type()
+                     << "for object"
+                     << pTarget // will print address, class and object name
+                     << "running in thread:"
+                     << pTarget->thread()->objectName()
+                     << "took"
+                     << time.elapsed().debugMillisWithUnit();
+        }
     }
 
     return ret;
