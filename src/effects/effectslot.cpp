@@ -1,6 +1,8 @@
 #include "effects/effectslot.h"
 
 #include <QDebug>
+#include <QPoint>
+#include <optional>
 
 #include "control/controlencoder.h"
 #include "control/controlpushbutton.h"
@@ -212,8 +214,13 @@ void EffectSlot::updateEffectUI() {
     }
 
     bool uiShown = m_pControlUIShown->toBool();
+    std::optional<QPoint> oldDlgPosition;
 
     if (m_pEffectUI) {
+        // Carry over the screen position of the dialog to keep the user's
+        // window layout when switching to another effect.
+        oldDlgPosition = m_pEffectUI->pos();
+
         // Prevent close from retriggering updateControlOnEffectUIClose if we
         // want to keep showing a UI (e.g. because the effect was switched).
         m_pEffectUI->setClosesWithoutSignal(uiShown);
@@ -227,6 +234,10 @@ void EffectSlot::updateEffectUI() {
                 &DlgEffect::closed,
                 this,
                 &EffectSlot::updateControlOnEffectUIClose);
+
+        if (oldDlgPosition.has_value()) {
+            m_pEffectUI->move(oldDlgPosition->x(), oldDlgPosition->y());
+        }
     } else {
         m_pEffectUI = nullptr;
     }
