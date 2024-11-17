@@ -115,7 +115,7 @@ class EffectProcessor {
     /// after processing all effects in the effects chain.
     virtual SINT getGroupDelayFrames() = 0;
 
-    /// Creates a dialog hosting plugin-specific UI, if supported.
+    /// Creates a dialog hosting effect-specific UI, if supported.
     virtual std::unique_ptr<DlgEffect> createUI() = 0;
 };
 
