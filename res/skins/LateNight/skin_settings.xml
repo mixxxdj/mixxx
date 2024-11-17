@@ -375,7 +375,7 @@ Description:
                 <Children>
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
-                    <Size>200min,1min</Size>
+                    <Size>180min,1min</Size>
                     <Children>
                       <Template src="skins:LateNight/helpers/skin_settings_labelbutton_2state.xml">
                         <SetVariable name="Text">Effect Units</SetVariable>
