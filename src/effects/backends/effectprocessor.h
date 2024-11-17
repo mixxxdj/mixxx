@@ -163,7 +163,6 @@ class EffectProcessorImpl : public EffectProcessor {
         layout->addWidget(label);
 
         std::unique_ptr<DlgEffect> dialog = std::make_unique<DlgEffect>();
-        dialog->setWindowTitle("No UI available");
         dialog->setLayout(layout);
 
         return dialog;
