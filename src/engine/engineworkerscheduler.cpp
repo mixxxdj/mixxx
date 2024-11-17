@@ -12,13 +12,16 @@ EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
+    // tell run method to terminate
+    const auto lock = lockMutex(&m_mutex);
     m_bQuit = true;
     m_waitCondition.wakeAll();
+    // wait for thread to terminate
     wait();
 }
 
 void EngineWorkerScheduler::workerReady() {
-    m_bWakeScheduler = true;
+    m_bWakeScheduler.store(true);
 }
 
 void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
@@ -29,17 +32,17 @@ void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
 
 void EngineWorkerScheduler::runWorkers() {
     // Wake the scheduler if we have written a worker-ready message to the
-    // scheduler. There is no race condition in accessing this boolean because
-    // both workerReady and runWorkers are called from the callback thread.
-    if (m_bWakeScheduler) {
-        m_bWakeScheduler = false;
+    // scheduler. This is called from the callback thread, so we use an
+    // atomic and not a mutex.
+    if (m_bWakeScheduler.exchange(false)) {
         m_waitCondition.wakeAll();
     }
 }
 
 void EngineWorkerScheduler::run() {
     static const QString tag("EngineWorkerScheduler");
-    while (!m_bQuit) {
+    bool quit = false;
+    while (!quit) {
         Event::start(tag);
         {
             const auto locker = lockMutex(&m_mutex);
@@ -54,6 +57,8 @@ void EngineWorkerScheduler::run() {
                 // Wait for next runWorkers() call
                 m_waitCondition.wait(&m_mutex); // unlock mutex and wait
             }
+            // copy mutex protected var to local
+            quit = m_bQuit;
         }
     }
 }
