@@ -12,10 +12,12 @@ EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
-    // tell run method to terminate
-    const auto lock = lockMutex(&m_mutex);
-    m_bQuit = true;
-    m_waitCondition.wakeAll();
+    {
+        // tell run method to terminate
+        const auto lock = lockMutex(&m_mutex);
+        m_bQuit = true;
+        m_waitCondition.wakeAll();
+    }
     // wait for thread to terminate
     wait();
 }
@@ -26,7 +28,7 @@ void EngineWorkerScheduler::workerReady() {
 
 void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
     DEBUG_ASSERT(pWorker);
-    const auto locker = lockMutex(&m_mutex);
+    const auto lock = lockMutex(&m_mutex);
     m_workers.push_back(pWorker);
 }
 
@@ -45,7 +47,7 @@ void EngineWorkerScheduler::run() {
     while (!quit) {
         Event::start(tag);
         {
-            const auto locker = lockMutex(&m_mutex);
+            const auto lock = lockMutex(&m_mutex);
             for(const auto& pWorker: m_workers) {
                 pWorker->wakeIfReady();
             }
