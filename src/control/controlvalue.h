@@ -120,48 +120,35 @@ class ControlValueAtomicBase {
     QAtomicInt m_writeIndex;
 };
 
-// Specialized template for types that are deemed to be atomic on the target
-// architecture. Instead of using a read/write ring to guarantee atomicity,
-// direct assignment/read of an aligned member variable is used.
+// Specialized template for types that are deemed to be lock free atomic
+// on the target architecture. Instead of using a read/write ring to
+// guarantee atomicity, direct assignment/read of an std::atomic member
+// variable is used.
 template<typename T, int cRingSize>
 class ControlValueAtomicBase<T, cRingSize, true> {
   public:
     inline T getValue() const {
-        return m_value;
-    }
-
-    inline T getValueOnce() {
-        return std::move(m_value);
+        return m_value.load();
     }
 
     inline void setValue(const T& value) {
-        m_value = value;
+        m_value.store(value);
     }
 
   protected:
     ControlValueAtomicBase() = default;
 
   private:
-#if defined(__GNUC__)
-    T m_value __attribute__((aligned(sizeof(void*))));
-#elif defined(_MSC_VER)
-#ifdef _WIN64
-    T __declspec(align(8)) m_value;
-#else
-    T __declspec(align(4)) m_value;
-#endif
-#else
-    T m_value;
-#endif
+    std::atomic<T> m_value;
 };
 
-// ControlValueAtomic is a wrapper around ControlValueAtomicBase which uses the
-// sizeof(T) to determine which underlying implementation of
-// ControlValueAtomicBase to use. For types where sizeof(T) <= sizeof(void*),
-// the specialized implementation of ControlValueAtomicBase for types that are
-// atomic on the architecture is used.
-template <typename T, int cRingSize = kDefaultRingSize>
-class ControlValueAtomic : public ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)> {
+// ControlValueAtomic is a wrapper around ControlValueAtomicBase which uses
+// std::atomic<T>::is_always_lock_free to determine which underlying
+// implementation of ControlValueAtomicBase to use.
+template<typename T, int cRingSize = kDefaultRingSize>
+class ControlValueAtomic : public ControlValueAtomicBase<T,
+                                   cRingSize,
+                                   std::atomic<T>::is_always_lock_free> {
   public:
     ControlValueAtomic() = default;
 };
