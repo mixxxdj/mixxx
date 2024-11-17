@@ -81,6 +81,9 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::updateEffectUI);
 
+    m_pControlUIButtonShown = std::make_unique<ControlObject>(ConfigKey(m_group, "uibutton_shown"));
+    m_pControlUIButtonShown->set(false);
+
     m_pControlNextEffect = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "next_effect"));
     connect(m_pControlNextEffect.get(),
@@ -328,6 +331,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     }
 
     m_pManifest = pManifest;
+    m_pControlUIButtonShown->set(m_pManifest->hasUI());
     addToEngine();
 
     // Create EffectParameters. Every parameter listed in the manifest must have

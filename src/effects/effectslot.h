@@ -186,6 +186,7 @@ class EffectSlot : public QObject {
     QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameterSlots;
     std::unique_ptr<ControlPushButton> m_pControlEnabled;
     std::unique_ptr<ControlPushButton> m_pControlUIShown;
+    std::unique_ptr<ControlObject> m_pControlUIButtonShown;
     std::unique_ptr<ControlObject> m_pControlNextEffect;
     std::unique_ptr<ControlObject> m_pControlPrevEffect;
     std::unique_ptr<ControlObject> m_pControlLoadedEffect;
