@@ -84,4 +84,12 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
+
+    enum class StreamState : int {
+        STOP,
+        STARTING,
+        READY
+    };
+
+    std::atomic<StreamState> m_streamState;
 };
