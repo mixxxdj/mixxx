@@ -96,7 +96,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QList<PreferencesPage> m_allPages;
     void onShow();
     void onHide();
-    void updateTreeIcons();
+    void updateTreeIconsAndColoredLinks();
     void selectIconsPath();
     QRect getDefaultGeometry();
 

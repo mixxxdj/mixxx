@@ -95,6 +95,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
 
+    void updateColoredLinkTexts() override;
+
   private:
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item

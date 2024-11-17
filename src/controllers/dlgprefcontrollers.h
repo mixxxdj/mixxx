@@ -29,8 +29,8 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
     QUrl helpUrl() const override;
 
-    /// Calls slotUpdate() of each controller page to update the mapping icons
-    void updateMappingIconsInControllerPages();
+    void updateMappingIconsAndColoredLinkTexts();
+    void updateColoredLinkTexts() override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.

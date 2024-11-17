@@ -320,7 +320,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     if (e->type() == QEvent::StyleChange) {
         // The stylesheet has been changed or reloaded,
         // update the tree icons to match the new palette.
-        updateTreeIcons();
+        updateTreeIconsAndColoredLinks();
     }
 
     // Standard event processing
@@ -482,13 +482,14 @@ void DlgPreferences::addPageWidget(const PreferencesPage& page) {
             page.pDlg->sizeHint() + QSize(iframe, iframe));
 }
 
-void DlgPreferences::updateTreeIcons() {
+void DlgPreferences::updateTreeIconsAndColoredLinks() {
     selectIconsPath();
     for (const auto& page : std::as_const(m_allPages)) {
         page.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(page.iconFileName)));
+        page.pDlg->updateColoredLinkTexts();
     }
     // Update icons in controller mapping list
-    m_pControllersDlg->updateMappingIconsInControllerPages();
+    m_pControllersDlg->updateMappingIconsAndColoredLinkTexts();
 }
 
 void DlgPreferences::selectIconsPath() {
