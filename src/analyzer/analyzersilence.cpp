@@ -12,24 +12,22 @@ constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 // TODO: Change the above line to:
 // constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
 
-// These are in dBV expressed as Volts RMS (which seems, sensibly,
-// the way Mixxx works).
-// Don't change these to const as they are used only to feed the
-// fade thresholds which are consts below themselves while we work
-// out which one is best, and you'll just be adding to exe size.
-#define N_10DB_FADE_THRESHOLD 0.3162f
-#define N_12DB_FADE_THRESHOLD 0.2511f
-#define N_15DB_FADE_THRESHOLD 0.1778f
-#define N_18DB_FADE_THRESHOLD 0.1259f
-#define N_20DB_FADE_THRESHOLD 0.1f
-#define N_24DB_FADE_THRESHOLD 0.0631f
-#define N_25DB_FADE_THRESHOLD 0.0562f
-#define N_27DB_FADE_THRESHOLD 0.0447f
-#define N_30DB_FADE_THRESHOLD 0.0316f
-#define N_40DB_FADE_THRESHOLD 0.01f
+// This comment can be deleted for full release.
+// Some other values in case. These are in dBV expressed as Volts RMS 
+// (which seems, sensibly, the way Mixxx works).
+// N_10DB_FADE_THRESHOLD 0.3162f
+// N_12DB_FADE_THRESHOLD 0.2511f
+// N_15DB_FADE_THRESHOLD 0.1778f
+// N_18DB_FADE_THRESHOLD 0.1259f
+// N_20DB_FADE_THRESHOLD 0.1f
+// N_24DB_FADE_THRESHOLD 0.0631f
+// N_25DB_FADE_THRESHOLD 0.0562f
+// N_27DB_FADE_THRESHOLD 0.0447f
+// N_30DB_FADE_THRESHOLD 0.0316f
+// N_40DB_FADE_THRESHOLD 0.01f
 
-constexpr CSAMPLE kFadeInThreshold = N_27DB_FADE_THRESHOLD;
-constexpr CSAMPLE kFadeOutThreshold = N_12DB_FADE_THRESHOLD;
+constexpr CSAMPLE kFadeInThreshold = 0.0447f;
+constexpr CSAMPLE kFadeOutThreshold = 0.2511f;
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -103,7 +101,7 @@ SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
     return ret;
 }
 
-// Find the number of first sound sample where the sound is above kFadeInThreshold (-27db)
+// Find the index of first sound sample where the sound is above kFadeInThreshold (-27db)
 SINT AnalyzerSilence::findLastFadeInChunk(std::span<const CSAMPLE> samples) {
     SINT ret = std::distance(samples.begin(),
             find_first_above_threshold(
@@ -111,7 +109,7 @@ SINT AnalyzerSilence::findLastFadeInChunk(std::span<const CSAMPLE> samples) {
     return ret;
 }
 
-// Find the number of last sound sample where the sound is above kFadeOutThreshold (-12db)
+// Find the index of last sound sample where the sound is above kFadeOutThreshold (-12db)
 SINT AnalyzerSilence::findFirstFadeOutChunk(std::span<const CSAMPLE> samples) {
     // Note we are searching backwards from the end here.
     SINT ret = std::distance(find_first_above_threshold(samples.rbegin(),
