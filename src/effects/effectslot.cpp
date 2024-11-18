@@ -242,6 +242,8 @@ void EffectSlot::updateEffectUI() {
     } else {
         m_pEffectUI = nullptr;
     }
+
+    m_pControlUIButtonShown->set(m_pManifest ? m_pManifest->hasUI() : false);
 }
 
 void EffectSlot::updateControlOnEffectUIClose() {
@@ -343,7 +345,6 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     }
 
     m_pManifest = pManifest;
-    m_pControlUIButtonShown->set(m_pManifest->hasUI());
     addToEngine();
 
     // Create EffectParameters. Every parameter listed in the manifest must have
