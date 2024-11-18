@@ -119,6 +119,23 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
 
     if (std::holds_alternative<NSView* _Nonnull>(result)) {
         audioUnitView = std::get<NSView* _Nonnull>(result);
+
+        // Automatically resize the dialog to fit the view when it resizes.
+        // This is needed, because most plugins provide a fixed-size UI that our
+        // window should adapt to.
+        [audioUnitView setPostsFrameChangedNotifications:YES];
+        m_resizeObserver = [[NSNotificationCenter defaultCenter]
+                addObserverForName:NSViewFrameDidChangeNotification
+                            object:audioUnitView
+                             queue:[NSOperationQueue mainQueue]
+                        usingBlock:^(NSNotification* notification) {
+                            NSView* audioUnitView =
+                                    (NSView*)notification.object;
+                            CGSize cgSize = audioUnitView.frame.size;
+                            QSize qSize(static_cast<int>(cgSize.width),
+                                    static_cast<int>(cgSize.height));
+                            resize(qSize);
+                        }];
     } else {
         QString error = std::get<QString>(result);
         qWarning() << error;
@@ -139,21 +156,6 @@ DlgAudioUnit::DlgAudioUnit(AudioUnitManagerPointer pManager) {
                 QWindow::fromWinId(reinterpret_cast<WId>(audioUnitView));
         QWidget* wrapperContainer = QWidget::createWindowContainer(wrapper);
         setCustomUI(wrapperContainer);
-
-        // Automatically resize the dialog to fit the view after layout
-        [audioUnitView setPostsFrameChangedNotifications:YES];
-        m_resizeObserver = [[NSNotificationCenter defaultCenter]
-                addObserverForName:NSViewFrameDidChangeNotification
-                            object:audioUnitView
-                             queue:[NSOperationQueue mainQueue]
-                        usingBlock:^(NSNotification* notification) {
-                            NSView* audioUnitView =
-                                    (NSView*)notification.object;
-                            CGSize cgSize = audioUnitView.frame.size;
-                            QSize qSize(static_cast<int>(cgSize.width),
-                                    static_cast<int>(cgSize.height));
-                            resize(qSize);
-                        }];
     }
 }
 
