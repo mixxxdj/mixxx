@@ -83,6 +83,11 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::updateEffectUI);
 
+    connect(this,
+            &EffectSlot::effectChanged,
+            this,
+            &EffectSlot::updateEffectUI);
+
     m_pControlUIButtonShown = std::make_unique<ControlObject>(ConfigKey(m_group, "uibutton_shown"));
     m_pControlUIButtonShown->set(false);
 
@@ -209,10 +214,6 @@ void EffectSlot::updateEngineState() {
 }
 
 void EffectSlot::updateEffectUI() {
-    if (!m_pEngineEffect) {
-        return;
-    }
-
     bool uiShown = m_pControlUIShown->toBool();
     std::optional<QPoint> oldDlgPosition;
 
@@ -227,7 +228,7 @@ void EffectSlot::updateEffectUI() {
         m_pEffectUI->close();
     }
 
-    if (uiShown) {
+    if (uiShown && m_pEngineEffect) {
         m_pEffectUI = m_pEngineEffect->createUI();
         m_pEffectUI->show();
         connect(&*m_pEffectUI,
@@ -418,7 +419,6 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     emit effectChanged();
     updateEngineState();
-    updateEffectUI();
 }
 
 void EffectSlot::unloadEffect() {
