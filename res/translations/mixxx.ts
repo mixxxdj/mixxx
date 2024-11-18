@@ -3821,6 +3821,11 @@ Shortcut: Shift+F9</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="303"/>
+        <source>Decks not used for Auto DJ must be stopped to enable Auto DJ mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="127"/>
         <source>Auto DJ Fade Modes
 
@@ -3859,11 +3864,6 @@ last sound.</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="297"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="303"/>
-        <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
