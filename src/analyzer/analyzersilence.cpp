@@ -13,7 +13,7 @@ constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 // constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
 
 // This comment can be deleted for full release.
-// Some other values in case. These are in dBV expressed as Volts RMS 
+// Some other values in case. These are in dBV expressed as Volts RMS
 // (which seems, sensibly, the way Mixxx works).
 // N_10DB_FADE_THRESHOLD 0.3162f
 // N_12DB_FADE_THRESHOLD 0.2511f
