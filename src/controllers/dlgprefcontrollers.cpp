@@ -44,6 +44,28 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::rescanControllers);
 
+#ifdef __PORTMIDI__
+    checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
+    connect(checkBox_midithrough,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefControllers::slotMidiThroughChanged);
+    txt_midithrough->setTextFormat(Qt::RichText);
+    //: text enclosed in <b> is bold, <br/> is a linebreak
+    //: %1 is the placehodler for 'MIDI Through Port'
+    txt_midithrough->setText(tr(
+            "%1 is a virtual controller that allows to use e.g. the 'MIDI for light' "
+            "mapping.<br/>"
+            "You need to restart Mixxx in order to enable it.<br/>"
+            "<b>Note:</b> mappings meant for physical controllers can cause issues and "
+            "even render the Mixxx GUI unresponsive when being loaded to %1.")
+                    .arg(kMidiThroughPortPrefix));
+#else
+    line_midithrough->hide();
+    checkBox_midithrough->hide();
+    txt_midithrough->hide();
+#endif
+
     // Setting the description text here instead of in the ui file allows to paste
     // a formatted link (text color is a more readable blend of text color and original link color).
     txtMappingsOverview->setText(tr(
@@ -234,3 +256,9 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
     temp.setBold(enabled);
     pControllerTreeItem->setFont(0, temp);
 }
+
+#ifdef __PORTMIDI__
+void DlgPrefControllers::slotMidiThroughChanged(bool checked) {
+    m_pConfig->setValue(kMidiThroughCfgKey, checked);
+}
+#endif
