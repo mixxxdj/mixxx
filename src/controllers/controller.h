@@ -81,6 +81,10 @@ class Controller : public QObject {
     template<typename SpecificMappingType>
     std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
             std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        // When unsetting a mapping (select 'No mapping') we receive a nullptr
+        if (pMapping == nullptr) {
+            return nullptr;
+        }
         // Controller cannot take ownership if pMapping is referenced elsewhere because
         // the controller polling thread needs exclusive accesses to the non-thread safe
         // LegacyControllerMapping.
