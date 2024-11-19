@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <cstring>
 
 #include "util/denormalsarezero.h"
 #include "util/fpclassify.h"
@@ -91,15 +92,14 @@ TEST_F(MathUtilTest, Denormal) {
 
 TEST_F(MathUtilTest, DoubleValues) {
     // This verifies that the infinity value can be copied into -ffastmath code
-    if (std::numeric_limits<double>::is_iec559) {
-        union {
-            long long int_value;
-            double double_value;
-        } inf_union;
-        inf_union.double_value = util_double_infinity();
-        // IEC 559 (IEEE 754) Infinity
-        EXPECT_EQ(inf_union.int_value, 0x7FF0000000000000);
-    }
+
+    // All supported targets are using IEC559 floats
+    static_assert(std::numeric_limits<double>::is_iec559);
+    long long int_value;
+    double double_value = util_double_infinity();
+    std::memcpy(&int_value, &double_value, sizeof(double_value));
+    // IEC 559 (IEEE 754) Infinity
+    EXPECT_EQ(int_value, 0x7FF0000000000000);
 }
 
 }  // namespace
