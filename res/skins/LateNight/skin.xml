@@ -191,6 +191,10 @@
       <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
       <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
       <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
+      <!-- When dragging a hotcue button in order to swap hotcues, the entire
+           widget rect is used for the dnd cursor but the margin is not considered.
+           '1' cuts off the colored overlap. -->
+      <SetVariable name="DndRectMarginHotcueBtn">1</SetVariable>
 
       <SetVariable name="AxesColor">#999</SetVariable>
       <SetVariable name="BeatColor">#999</SetVariable>
