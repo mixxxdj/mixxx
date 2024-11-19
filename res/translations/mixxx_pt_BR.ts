@@ -174,7 +174,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="113"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar a fila do Auto DJ (substituir)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="258"/>
@@ -227,7 +227,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="427"/>
         <source>Confirm Deletion</source>
-        <translation type="unfinished"/>
+        <translation>Confimar a remoção</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="428"/>
@@ -237,7 +237,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>Lista de reprodução M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
@@ -376,7 +376,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="241"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Taxa de amostragem</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="245"/>
@@ -554,7 +554,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="55"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>Nome do arquivo</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="56"/>
@@ -574,7 +574,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Faixa #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
@@ -634,7 +634,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Autor do album</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
@@ -3819,6 +3819,11 @@ Shortcut: Shift+F9</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="303"/>
+        <source>Decks not used for Auto DJ must be stopped to enable Auto DJ mode.</source>
+        <translation>Os leitores não usados para o Auto DJ devem ser parados para permitir o modo Auto DJ.</translation>
+    </message>
+    <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="127"/>
         <source>Auto DJ Fade Modes
 
@@ -3857,11 +3862,6 @@ last sound.</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="297"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="303"/>
-        <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"/>
     </message>
     <message>
