@@ -14,6 +14,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#include "util/assert.h"
 #include "util/cache.h"
 #include "util/cmdlineargs.h"
 #include "util/color/rgbcolor.h"
@@ -198,6 +199,11 @@ bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
     }
 
     bool ret = QApplication::notify(pTarget, pEvent);
+
+    VERIFY_OR_DEBUG_ASSERT(pTarget != nullptr) {
+        qWarning() << "Processed" << pEvent->type() << "for null pointer, this is probably a bug!";
+        return ret;
+    }
 
     if (m_isDeveloper &&
             time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
