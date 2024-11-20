@@ -1,4 +1,6 @@
 
+type MidiInputHandler = (channel: number, control: number, value:number, status:number, group:string) => void;
+
 /** MidiControllerJSProxy */
 
 declare namespace midi {
@@ -13,7 +15,7 @@ declare namespace midi {
     function sendShortMsg(status: number, byte1: number, byte2: number): void;
 
     /**
-     * Alias for {@link sendSysexMsg}
+     * Alias for {@link midi.sendSysexMsg}
      * Sends a MIDI system-exclusive message of arbitrary number of bytes
      *
      * @param dataList List of bytes to send
