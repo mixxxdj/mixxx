@@ -72,6 +72,7 @@ repos:
         args: [--fix, --report-unused-disable-directives]
         files: \.m?[jt]s$
         types: [file]
+        verbose: true # always show output so we don't swallow warnings
         stages:
           - pre-commit
           - manual
