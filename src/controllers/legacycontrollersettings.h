@@ -8,7 +8,6 @@
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
-#include "util/parented_ptr.h"
 
 namespace {
 template<class T>
@@ -127,9 +126,54 @@ class AbstractLegacyControllerSetting : public QObject {
     QString m_description;
 };
 
+/// @brief Base setting class generic
+/// @tparam T The type of value this setting type is holding
+template<class T>
+class LegacyControllerSettingBase : public AbstractLegacyControllerSetting {
+  public:
+    bool isDefault() const override {
+        return m_savedValue == m_defaultValue;
+    }
+    bool isDirty() const override {
+        return m_savedValue != m_editedValue;
+    }
+
+    void save() override {
+        m_savedValue = m_editedValue;
+    }
+
+    void reset() override {
+        m_editedValue = m_defaultValue;
+        emit valueReset();
+    }
+
+  protected:
+    LegacyControllerSettingBase(const QDomElement& element)
+            : AbstractLegacyControllerSetting(element) {
+    }
+    LegacyControllerSettingBase(const QDomElement& element,
+            T defaultValue)
+            : AbstractLegacyControllerSetting(element),
+              m_defaultValue(defaultValue) {
+        reset();
+        save();
+    }
+    LegacyControllerSettingBase(const QDomElement& element,
+            T currentValue,
+            T defaultValue)
+            : AbstractLegacyControllerSetting(element),
+              m_savedValue(currentValue),
+              m_defaultValue(defaultValue) {
+    }
+
+    T m_savedValue;
+    T m_defaultValue;
+    T m_editedValue;
+};
+
 class LegacyControllerBooleanSetting
         : public LegacyControllerSettingFactory<LegacyControllerBooleanSetting>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingBase<bool> {
   public:
     LegacyControllerBooleanSetting(const QDomElement& element);
 
@@ -148,25 +192,11 @@ class LegacyControllerBooleanSetting
         return m_savedValue ? "true" : "false";
     }
     void parse(const QString& in, bool* ok = nullptr) override {
-        if (ok != nullptr)
+        if (ok != nullptr) {
             *ok = true;
+        }
         m_savedValue = parseValue(in);
         m_editedValue = m_savedValue;
-    }
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
@@ -175,25 +205,13 @@ class LegacyControllerBooleanSetting
     static bool match(const QDomElement& element);
 
   protected:
-    LegacyControllerBooleanSetting(const QDomElement& element,
-            bool currentValue,
-            bool defaultValue)
-            : AbstractLegacyControllerSetting(element),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
-    }
-
     bool parseValue(const QString& in) {
         return QString::compare(in, "true", Qt::CaseInsensitive) == 0 || in == "1";
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
-    bool m_savedValue;
-    bool m_defaultValue;
-    bool m_editedValue;
-
     FRIEND_TEST(LegacyControllerMappingSettingsTest, booleanSettingEditing);
 };
 
@@ -213,10 +231,18 @@ class LegacyControllerNumberSetting
                           ValueSerializer,
                           ValueDeserializer,
                           InputWidget>>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingBase<SettingType> {
   public:
+    using LegacyControllerSettingBase<SettingType>::m_savedValue;
+    using LegacyControllerSettingBase<SettingType>::m_defaultValue;
+    using LegacyControllerSettingBase<SettingType>::m_editedValue;
+    using LegacyControllerSettingBase<SettingType>::save;
+    using LegacyControllerSettingBase<SettingType>::reset;
+    using LegacyControllerSettingBase<SettingType>::connect;
+    using LegacyControllerSettingBase<SettingType>::changed;
+
     LegacyControllerNumberSetting(const QDomElement& element)
-            : AbstractLegacyControllerSetting(element) {
+            : LegacyControllerSettingBase<SettingType>(element) {
         bool isOk = false;
         m_minValue = ValueDeserializer(element.attribute("min"), &isOk);
         if (!isOk) {
@@ -258,22 +284,6 @@ class LegacyControllerNumberSetting
         m_editedValue = m_savedValue;
     }
 
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
-    }
-
     /// @brief Whether of not this setting definition and its current state are
     /// valid. Validity scope includes default/current/dirty value within range
     /// and a strictly positive step, strictly less than max..
@@ -298,24 +308,20 @@ class LegacyControllerNumberSetting
             SettingType minValue,
             SettingType maxValue,
             SettingType stepValue)
-            : AbstractLegacyControllerSetting(element),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue),
+            : LegacyControllerSettingBase<SettingType>(element,
+                      currentValue,
+                      defaultValue),
               m_minValue(minValue),
               m_maxValue(maxValue),
               m_stepValue(stepValue) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
-    SettingType m_savedValue;
-    SettingType m_defaultValue;
     SettingType m_minValue;
     SettingType m_maxValue;
     SettingType m_stepValue;
-
-    SettingType m_editedValue;
 
     FRIEND_TEST(LegacyControllerMappingSettingsTest, integerSettingEditing);
     FRIEND_TEST(LegacyControllerMappingSettingsTest, doubleSettingEditing);
@@ -369,7 +375,7 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
 
 class LegacyControllerEnumSetting
         : public LegacyControllerSettingFactory<LegacyControllerEnumSetting>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingBase<size_t> {
   public:
     struct Item {
         QString value;
@@ -393,21 +399,6 @@ class LegacyControllerEnumSetting
         return m_options.value(static_cast<int>(m_savedValue)).value;
     }
     void parse(const QString& in, bool* ok) override;
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
-    }
 
     /// @brief Whether or not this setting definition and its current state are
     /// valid. Validity scope includes a known default/current/dirty option.
@@ -429,21 +420,15 @@ class LegacyControllerEnumSetting
             const QList<Item>& options,
             size_t currentValue,
             size_t defaultValue)
-            : AbstractLegacyControllerSetting(element),
-              m_options(options),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
+            : LegacyControllerSettingBase(element, currentValue, defaultValue),
+              m_options(options) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     // We use a QList instead of QHash here because we want to keep the natural order
     QList<Item> m_options;
-    size_t m_savedValue;
-    size_t m_defaultValue;
-
-    size_t m_editedValue;
 
     FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
     FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
@@ -451,7 +436,7 @@ class LegacyControllerEnumSetting
 
 class LegacyControllerColorSetting
         : public LegacyControllerSettingFactory<LegacyControllerColorSetting>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingBase<QColor> {
   public:
     LegacyControllerColorSetting(const QDomElement& element);
 
@@ -465,21 +450,6 @@ class LegacyControllerColorSetting
         return m_savedValue.name(QColor::HexRgb);
     }
     void parse(const QString& in, bool* ok) override;
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
-    }
 
     /// @brief Whether or not this setting definition and its current state are
     /// valid. Validity scope includes a known default/current/dirty option.
@@ -504,18 +474,12 @@ class LegacyControllerColorSetting
     LegacyControllerColorSetting(const QDomElement& element,
             QColor currentValue,
             QColor defaultValue)
-            : AbstractLegacyControllerSetting(element),
-              m_defaultValue(defaultValue),
-              m_savedValue(currentValue) {
+            : LegacyControllerSettingBase(element,
+                      defaultValue,
+                      currentValue) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
-
-  private:
-    QColor m_defaultValue;
-    QColor m_savedValue;
-
-    QColor m_editedValue;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
     FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
     FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
@@ -523,7 +487,7 @@ class LegacyControllerColorSetting
 
 class LegacyControllerFileSetting
         : public LegacyControllerSettingFactory<LegacyControllerFileSetting>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingBase<QFileInfo> {
   public:
     LegacyControllerFileSetting(const QDomElement& element);
 
@@ -537,21 +501,6 @@ class LegacyControllerFileSetting
         return m_savedValue.absoluteFilePath();
     }
     void parse(const QString& in, bool* ok) override;
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
-    }
 
     /// @brief Whether or not this setting definition and its current state are
     /// valid. Validity scope includes a known default/current/dirty option.
@@ -575,19 +524,15 @@ class LegacyControllerFileSetting
     LegacyControllerFileSetting(const QDomElement& element,
             const QFileInfo& currentValue,
             const QFileInfo& defaultValue)
-            : AbstractLegacyControllerSetting(element),
-              m_defaultValue(defaultValue),
-              m_savedValue(currentValue) {
+            : LegacyControllerSettingBase(element,
+                      defaultValue,
+                      currentValue) {
     }
 
     QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     QString m_fileFilter;
-    QFileInfo m_defaultValue;
-    QFileInfo m_savedValue;
-
-    QFileInfo m_editedValue;
 
     FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
     FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
