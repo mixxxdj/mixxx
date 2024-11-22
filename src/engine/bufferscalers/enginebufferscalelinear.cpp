@@ -85,9 +85,12 @@ double EngineBufferScaleLinear::scaleBuffer(
         // reset m_floorSampleOld in a way as we were coming from
         // the other direction
         SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
-        if (iNextSample + 1 < m_bufferIntSize) {
+        if (iNextSample >= 0 && iNextSample + 1 < m_bufferIntSize) {
             m_floorSampleOld[0] = m_bufferInt[iNextSample];
             m_floorSampleOld[1] = m_bufferInt[iNextSample + 1];
+        } else {
+            m_floorSampleOld[0] = CSAMPLE_ZERO;
+            m_floorSampleOld[1] = CSAMPLE_ZERO;
         }
 
         // if the buffer has extra samples, do a read so RAMAN ends up back where
