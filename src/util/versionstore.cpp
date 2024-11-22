@@ -26,6 +26,10 @@
 #include "util/gitinfostore.h"
 #include "version.h"
 
+// https://stackoverflow.com/questions/240353/convert-a-preprocessor-token-to-a-string#comment84146590_240370
+#define STRINGIFY(x) #x
+#define STR(x) STRINGIFY(x)
+
 namespace {
 
 const QVersionNumber kMixxxVersionNumber = QVersionNumber(
@@ -168,46 +172,36 @@ QStringList VersionStore::dependencyVersions() {
 
     // WARNING: may be inaccurate since some come from compile-time header
     // definitions instead of the actual dynamically loaded library).
-
-    QStringList result;
-    result
-            // Should be accurate.
-            << QString("Qt: %1").arg(qVersion())
+    return {// Should be accurate.
+            QStringLiteral("Qt: %1").arg(qVersion()),
 #ifdef __BROADCAST__
             // Should be accurate.
-            << QString("libshout: %1")
-                       .arg(shout_version(nullptr, nullptr, nullptr))
+            QStringLiteral("libshout: %1")
+                    .arg(shout_version(nullptr, nullptr, nullptr)),
 #endif
-            << QString("PortAudio: %1 %2")
-                       .arg(Pa_GetVersion())
-                       .arg(Pa_GetVersionText())
+            QStringLiteral("PortAudio: %1 %2")
+                    .arg(Pa_GetVersion())
+                    .arg(Pa_GetVersionInfo()->versionText),
 #ifdef __RUBBERBAND__
             // The version of the RubberBand headers Mixxx was compiled with.
-            << QString("RubberBand: %1").arg(RUBBERBAND_VERSION)
+            QStringLiteral("RubberBand: " RUBBERBAND_VERSION),
 #endif
             // The version of the SoundTouch headers Mixxx was compiled with.
-            << QString("SoundTouch: %1").arg(SOUNDTOUCH_VERSION)
+            QStringLiteral("SoundTouch: " SOUNDTOUCH_VERSION),
             // The version of the TagLib headers Mixxx was compiled with.
-            << QString("TagLib: %1.%2.%3")
-                       .arg(QString::number(TAGLIB_MAJOR_VERSION),
-                               QString::number(TAGLIB_MINOR_VERSION),
-                               QString::number(TAGLIB_PATCH_VERSION))
+            QStringLiteral("TagLib: " STR(TAGLIB_MAJOR_VERSION) "." STR(
+                    TAGLIB_MINOR_VERSION) "." STR(TAGLIB_PATCH_VERSION)),
             // The version of the ChromaPrint headers Mixxx was compiled with.
-            << QString("ChromaPrint: %1.%2.%3")
-                       .arg(QString::number(CHROMAPRINT_VERSION_MAJOR),
-                               QString::number(CHROMAPRINT_VERSION_MINOR),
-                               QString::number(CHROMAPRINT_VERSION_PATCH))
-            << QString("libebur128: %1")
-                       .arg(ebur128Version())
+            QStringLiteral("ChromaPrint: " STR(CHROMAPRINT_VERSION_MAJOR) "." STR(
+                    CHROMAPRINT_VERSION_MINOR) "." STR(CHROMAPRINT_VERSION_PATCH)),
+            QStringLiteral("libebur128: %1").arg(ebur128Version()),
             // Should be accurate.
-            << QString("Vorbis: %1").arg(vorbis_version_string())
+            QStringLiteral("Vorbis: %1").arg(vorbis_version_string()),
             // Should be accurate.
-            << QString("libsndfile: %1").arg(sf_version_string())
+            QStringLiteral("libsndfile: %1").arg(sf_version_string()),
             // The version of the FLAC headers Mixxx was compiled with.
-            << QString("FLAC: %1").arg(FLAC__VERSION_STRING)
-            << QString("libmp3lame: %1").arg(get_lame_version());
-
-    return result;
+            QStringLiteral("FLAC: %1").arg(FLAC__VERSION_STRING),
+            QStringLiteral("libmp3lame: %1").arg(get_lame_version())};
 }
 
 void VersionStore::logBuildDetails() {
