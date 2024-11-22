@@ -394,9 +394,10 @@ function SeekKey(ch, pos) {
 }
 SeekKey.keys = new Array();
 
-//Define the controller
+// Define the controller
+// eslint-disable-next-line no-var
+var NLM = {};
 
-NLM = new Controller();
 NLM.init = function()
 {
         NLM.page = 0;

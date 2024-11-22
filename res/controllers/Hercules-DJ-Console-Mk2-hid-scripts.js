@@ -4,7 +4,8 @@
 /*      Author: zestoi                                          */
 /****************************************************************/
 
-HerculesMk2Hid = new Controller();
+// eslint-disable-next-line no-var
+var HerculesMk2Hid = {};
 HerculesMk2Hid.controls = [];
 HerculesMk2Hid.leds = [];
 HerculesMk2Hid.cache_in = [];
