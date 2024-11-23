@@ -26,8 +26,8 @@ constexpr CSAMPLE kSilenceThreshold = 0.001f; // -60 dB
 // N_30DB_FADE_THRESHOLD 0.0316f
 // N_40DB_FADE_THRESHOLD 0.01f
 
-constexpr CSAMPLE kFadeInThreshold = 0.0447f;
-constexpr CSAMPLE kFadeOutThreshold = 0.2511f;
+constexpr CSAMPLE kFadeInThreshold = 0.0447f;  // -27 dBV
+constexpr CSAMPLE kFadeOutThreshold = 0.2511f; // -12 dBV
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
