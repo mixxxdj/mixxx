@@ -36,13 +36,11 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
           m_totalVSamples(0),
-          m_pRateRatioCO(nullptr),
-          m_pGainControlObject(nullptr),
           m_gain(1.0),
-          m_pTrackSamplesControlObject(nullptr),
-          m_trackSamples(0),
+          m_trackSamples(0.0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
+          m_pContext(nullptr),
           m_passthroughEnabled(false) {
     //qDebug() << "WaveformWidgetRenderer";
     for (int type = ::WaveformRendererAbstract::Play;
@@ -76,10 +74,6 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
         delete m_rendererStack[i];
     }
 
-    delete m_pRateRatioCO;
-    delete m_pGainControlObject;
-    delete m_pTrackSamplesControlObject;
-
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     delete m_timer;
 #endif
@@ -90,11 +84,11 @@ bool WaveformWidgetRenderer::init() {
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateRatioCO = new ControlProxy(
+    m_pRateRatioCO = std::make_unique<ControlProxy>(
             m_group, "rate_ratio");
-    m_pGainControlObject = new ControlProxy(
+    m_pGainControlObject = std::make_unique<ControlProxy>(
             m_group, "total_gain");
-    m_pTrackSamplesControlObject = new ControlProxy(
+    m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
             m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
@@ -419,7 +413,7 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available
-    m_trackSamples = -1;
+    m_trackSamples = -1.0;
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();

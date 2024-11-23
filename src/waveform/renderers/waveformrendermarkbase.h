@@ -17,6 +17,8 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
+    bool init() override;
+
     // Called when a new track is loaded.
     void onSetTrack() override;
 
