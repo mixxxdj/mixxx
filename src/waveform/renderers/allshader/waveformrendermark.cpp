@@ -46,7 +46,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
     void update(float x, float y, float devicePixelRatio) {
         TexturedVertexUpdater vertexUpdater{
                 geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
-        vertexUpdater.addRectangle({x, y},
+        vertexUpdater.addRectangle({std::round(x), std::round(y)},
                 {x + m_textureWidth / devicePixelRatio,
                         y + m_textureHeight / devicePixelRatio},
                 {0.f, 0.f},
