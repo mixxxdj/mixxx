@@ -106,6 +106,15 @@ double ValueTransformer::transformInverse(double argument) const {
             });
 }
 
+template<typename TNode>
+void ValueTransformer::addIfValidDouble(const QString& str) {
+    bool ok = false;
+    double value = str.toDouble(&ok);
+    if (ok) {
+        addTransformer(std::make_unique<TNode>(value));
+    }
+}
+
 // static
 std::unique_ptr<ValueTransformer> ValueTransformer::parseFromXml(
         const QDomElement& transformElement, const SkinContext& context) {
@@ -115,15 +124,6 @@ std::unique_ptr<ValueTransformer> ValueTransformer::parseFromXml(
 
     // constructor is private, so we can't use std::make_unique
     auto pTransformer = std::unique_ptr<ValueTransformer>(new ValueTransformer());
-
-    auto maybeAddFromElement = [&]<typename T>(auto element) {
-        QString valueStr = context.nodeToString(element);
-        bool ok = false;
-        double value = valueStr.toDouble(&ok);
-        if (ok) {
-            pTransformer->addTransformer(std::make_unique<T>(value));
-        }
-    };
 
     QDomNodeList children = transformElement.childNodes();
     for (int i = 0; i < children.count(); ++i) {
@@ -137,11 +137,11 @@ std::unique_ptr<ValueTransformer> ValueTransformer::parseFromXml(
         if (name == "Invert") {
             pTransformer->addTransformer(std::make_unique<TransformInvert>());
         } else if (name == "Add") {
-            maybeAddFromElement.operator()<TransformAdd>(element);
+            pTransformer->addIfValidDouble<TransformAdd>(context.nodeToString(element));
         } else if (name == "Not") {
             pTransformer->addTransformer(std::make_unique<TransformNot>());
         } else if (name == "IsEqual") {
-            maybeAddFromElement.operator()<TransformIsEqual>(element);
+            pTransformer->addIfValidDouble<TransformIsEqual>(context.nodeToString(element));
         }
     }
 

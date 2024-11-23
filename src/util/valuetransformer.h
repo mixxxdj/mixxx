@@ -6,6 +6,7 @@
 class SkinContext;
 class TransformNode;
 class QDomElement;
+class QString;
 
 class ValueTransformer {
   public:
@@ -20,6 +21,8 @@ class ValueTransformer {
   private:
     ValueTransformer(); // only accessible from parseFromXml, not deleted
     void addTransformer(std::unique_ptr<TransformNode> pTransformer);
+    template<typename TNode>
+    void addIfValidDouble(const QString& str);
 
     std::vector<std::unique_ptr<TransformNode>> m_transformers;
 };
