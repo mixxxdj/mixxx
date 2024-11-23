@@ -7,6 +7,7 @@
 #endif
 #include <gsl/pointers>
 
+#include <QtEndian>
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "control/controlpotmeter.h"
@@ -1064,39 +1065,279 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
     switch (targetCharset) {
     case WellKnownCharsets::Latin1:
     case WellKnownCharsets::ISO_8859_1:
-        return convertCharset(QStringLiteral("ISO-8859-1"), value);
+        return convertCharsetInternal(QStringLiteral("ISO-8859-1"), value);
     case WellKnownCharsets::Latin9:
     case WellKnownCharsets::ISO_8859_15:
-        return convertCharset(QStringLiteral("ISO-8859-15"), value);
+        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
     case WellKnownCharsets::UCS2:
     case WellKnownCharsets::ISO_10646_UCS_2:
-        return convertCharset(QStringLiteral("ISO-10646-UCS-2"), value);
+        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
+    case WellKnownCharsets::UTF_8:
+        return convertCharsetInternal(QStringLiteral("UTF-8"), value);
+    case WellKnownCharsets::UTF_16:
+        return convertCharsetInternal(QStringLiteral("UTF-16"), value);
+    case WellKnownCharsets::UTF_16BE:
+        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
+    case WellKnownCharsets::UTF_16LE:
+        return convertCharsetInternal(QStringLiteral("UTF-16LE"), value);
+    case WellKnownCharsets::UTF_32:
+        return convertCharsetInternal(QStringLiteral("UTF-32"), value);
+    case WellKnownCharsets::UTF_32BE:
+        return convertCharsetInternal(QStringLiteral("UTF-32BE"), value);
+    case WellKnownCharsets::UTF_32LE:
+        return convertCharsetInternal(QStringLiteral("UTF-32LE"), value);
+    case WellKnownCharsets::UTF_7:
+        return convertCharsetInternal(QStringLiteral("UTF-7"), value);
+    case WellKnownCharsets::SCSU:
+        return convertCharsetInternal(QStringLiteral("SCSU"), value);
+    case WellKnownCharsets::BOCU_1:
+        return convertCharsetInternal(QStringLiteral("BOCU-1"), value);
+    case WellKnownCharsets::CESU_8:
+        return convertCharsetInternal(QStringLiteral("CESU-8"), value);
+    case WellKnownCharsets::US_ASCII:
+        return convertCharsetInternal(QStringLiteral("US-ASCII"), value);
+    case WellKnownCharsets::GB18030:
+        return convertCharsetInternal(QStringLiteral("GB18030"), value);
+    case WellKnownCharsets::ISO_8859_2:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-2"), value);
+    case WellKnownCharsets::ISO_8859_3:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-3"), value);
+    case WellKnownCharsets::ISO_8859_4:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-4"), value);
+    case WellKnownCharsets::ISO_8859_5:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-5"), value);
+    case WellKnownCharsets::ISO_8859_6:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-6"), value);
+    case WellKnownCharsets::ISO_8859_7:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-7"), value);
+    case WellKnownCharsets::ISO_8859_8:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-8"), value);
+    case WellKnownCharsets::ISO_8859_9:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-9"), value);
+    case WellKnownCharsets::ISO_8859_10:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-10"), value);
+    case WellKnownCharsets::ISO_8859_13:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-13"), value);
+    case WellKnownCharsets::ISO_8859_14:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-14"), value);
+    case WellKnownCharsets::Shift_JIS:
+        return convertCharsetInternal(QStringLiteral("Shift_JIS"), value);
+    case WellKnownCharsets::EUC_JP:
+        return convertCharsetInternal(QStringLiteral("EUC-JP"), value);
+    case WellKnownCharsets::Big5:
+        return convertCharsetInternal(QStringLiteral("Big5"), value);
+    case WellKnownCharsets::Big5_HKSCS:
+        return convertCharsetInternal(QStringLiteral("Big5-HKSCS"), value);
+    case WellKnownCharsets::GBK:
+        return convertCharsetInternal(QStringLiteral("GBK"), value);
+    case WellKnownCharsets::GB2312:
+        return convertCharsetInternal(QStringLiteral("GB2312"), value);
+      case WellKnownCharsets::EUC_KR:
+        return convertCharsetInternal(QStringLiteral("EUC-KR"), value);
+    case WellKnownCharsets::CP1363:
+        return convertCharsetInternal(QStringLiteral("cp1363"), value);
+    case WellKnownCharsets::KSC_5601:
+        return convertCharsetInternal(QStringLiteral("KSC_5601"), value);
+    case WellKnownCharsets::Windows_874_2000:
+        return convertCharsetInternal(QStringLiteral("windows-874-2000"), value);
+    case WellKnownCharsets::TIS_620:
+        return convertCharsetInternal(QStringLiteral("TIS-620"), value);
+    case WellKnownCharsets::IBM437:
+        return convertCharsetInternal(QStringLiteral("IBM437"), value);
+    case WellKnownCharsets::IBM775:
+        return convertCharsetInternal(QStringLiteral("IBM775"), value);
+    case WellKnownCharsets::IBM850:
+        return convertCharsetInternal(QStringLiteral("IBM850"), value);
+    case WellKnownCharsets::CP851:
+        return convertCharsetInternal(QStringLiteral("cp851"), value);
+    case WellKnownCharsets::IBM852:
+        return convertCharsetInternal(QStringLiteral("IBM852"), value);
+    case WellKnownCharsets::IBM855:
+        return convertCharsetInternal(QStringLiteral("IBM855"), value);
+    case WellKnownCharsets::IBM857:
+        return convertCharsetInternal(QStringLiteral("IBM857"), value);
+    case WellKnownCharsets::IBM00858:
+        return convertCharsetInternal(QStringLiteral("IBM00858"), value);
+    case WellKnownCharsets::IBM860:
+        return convertCharsetInternal(QStringLiteral("IBM860"), value);
+    case WellKnownCharsets::IBM861:
+        return convertCharsetInternal(QStringLiteral("IBM861"), value);
+    case WellKnownCharsets::IBM862:
+        return convertCharsetInternal(QStringLiteral("IBM862"), value);
+    case WellKnownCharsets::IBM863:
+        return convertCharsetInternal(QStringLiteral("IBM863"), value);
+    case WellKnownCharsets::IBM864:
+        return convertCharsetInternal(QStringLiteral("IBM864"), value);
+    case WellKnownCharsets::IBM865:
+        return convertCharsetInternal(QStringLiteral("IBM865"), value);
+    case WellKnownCharsets::IBM866:
+        return convertCharsetInternal(QStringLiteral("IBM866"), value);
+    case WellKnownCharsets::IBM868:
+        return convertCharsetInternal(QStringLiteral("IBM868"), value);
+    case WellKnownCharsets::IBM869:
+        return convertCharsetInternal(QStringLiteral("IBM869"), value);
+    case WellKnownCharsets::KOI8_R:
+        return convertCharsetInternal(QStringLiteral("KOI8-R"), value);
+    case WellKnownCharsets::KOI8_U:
+        return convertCharsetInternal(QStringLiteral("KOI8-U"), value);
+    case WellKnownCharsets::Windows_1250:
+        return convertCharsetInternal(QStringLiteral("windows-1250"), value);
+    case WellKnownCharsets::Windows_1251:
+        return convertCharsetInternal(QStringLiteral("windows-1251"), value);
+    case WellKnownCharsets::Windows_1252:
+        return convertCharsetInternal(QStringLiteral("windows-1252"), value);
+    case WellKnownCharsets::Windows_1253:
+        return convertCharsetInternal(QStringLiteral("windows-1253"), value);
+    case WellKnownCharsets::Windows_1254:
+        return convertCharsetInternal(QStringLiteral("windows-1254"), value);
+    case WellKnownCharsets::Windows_1255:
+        return convertCharsetInternal(QStringLiteral("windows-1255"), value);
+    case WellKnownCharsets::Windows_1256:
+        return convertCharsetInternal(QStringLiteral("windows-1256"), value);
+    case WellKnownCharsets::Windows_1257:
+        return convertCharsetInternal(QStringLiteral("windows-1257"), value);
+    case WellKnownCharsets::Windows_1258:
+        return convertCharsetInternal(QStringLiteral("windows-1258"), value);
+    case WellKnownCharsets::Macintosh:
+        return convertCharsetInternal(QStringLiteral("macintosh"), value);
+    case WellKnownCharsets::X_Mac_Greek:
+        return convertCharsetInternal(QStringLiteral("x-mac-greek"), value);
+    case WellKnownCharsets::X_Mac_Cyrillic:
+        return convertCharsetInternal(QStringLiteral("x-mac-cyrillic"), value);
+    case WellKnownCharsets::X_Mac_CentralEuroRoman:
+        return convertCharsetInternal(QStringLiteral("x-mac-centraleurroman"), value);
+    case WellKnownCharsets::X_Mac_Turkish:
+        return convertCharsetInternal(QStringLiteral("x-mac-turkish"), value);
+    case WellKnownCharsets::HP_Roman8:
+        return convertCharsetInternal(QStringLiteral("hp-roman8"), value);
+    case WellKnownCharsets::Adobe_Standard_Encoding:
+        return convertCharsetInternal(QStringLiteral("Adobe-Standard-Encoding"), value);
+    case WellKnownCharsets::ISO_2022_JP:
+        return convertCharsetInternal(QStringLiteral("ISO-2022-JP"), value);
+    case WellKnownCharsets::ISO_2022_JP_1:
+        return convertCharsetInternal(QStringLiteral("ISO-2022-JP-1"), value);
+    case WellKnownCharsets::ISO_2022_JP_2:
+        return convertCharsetInternal(QStringLiteral("ISO-2022-JP-2"), value);
+    case WellKnownCharsets::ISO_2022_KR:
+        return convertCharsetInternal(QStringLiteral("ISO-2022-KR"), value);
+    case WellKnownCharsets::ISO_2022_CN:
+        return convertCharsetInternal(QStringLiteral("ISO-2022-CN"), value);
+    case WellKnownCharsets::ISO_2022_CN_EXT:
+        return convertCharsetInternal(QStringLiteral("ISO-2022-CN-EXT"), value);
+    case WellKnownCharsets::HZ_GB_2312:
+        return convertCharsetInternal(QStringLiteral("HZ-GB-2312"), value);
+    case WellKnownCharsets::IBM037:
+        return convertCharsetInternal(QStringLiteral("IBM037"), value);
+    case WellKnownCharsets::IBM273:
+        return convertCharsetInternal(QStringLiteral("IBM273"), value);
+    case WellKnownCharsets::IBM277:
+        return convertCharsetInternal(QStringLiteral("IBM277"), value);
+    case WellKnownCharsets::IBM278:
+        return convertCharsetInternal(QStringLiteral("IBM278"), value);
+    case WellKnownCharsets::IBM280:
+        return convertCharsetInternal(QStringLiteral("IBM280"), value);
+    case WellKnownCharsets::IBM284:
+        return convertCharsetInternal(QStringLiteral("IBM284"), value);
+    case WellKnownCharsets::IBM285:
+        return convertCharsetInternal(QStringLiteral("IBM285"), value);
+    case WellKnownCharsets::IBM290:
+        return convertCharsetInternal(QStringLiteral("IBM290"), value);
+    case WellKnownCharsets::IBM297:
+        return convertCharsetInternal(QStringLiteral("IBM297"), value);
+    case WellKnownCharsets::IBM420:
+        return convertCharsetInternal(QStringLiteral("IBM420"), value);
+    case WellKnownCharsets::IBM424:
+        return convertCharsetInternal(QStringLiteral("IBM424"), value);
+    case WellKnownCharsets::IBM500:
+        return convertCharsetInternal(QStringLiteral("IBM500"), value);
+    case WellKnownCharsets::IBM_Thai:
+        return convertCharsetInternal(QStringLiteral("IBM-Thai"), value);
+    case WellKnownCharsets::IBM870:
+        return convertCharsetInternal(QStringLiteral("IBM870"), value);
+    case WellKnownCharsets::IBM871:
+        return convertCharsetInternal(QStringLiteral("IBM871"), value);
+    case WellKnownCharsets::IBM918:
+        return convertCharsetInternal(QStringLiteral("IBM918"), value);
+    case WellKnownCharsets::IBM1026:
+        return convertCharsetInternal(QStringLiteral("IBM1026"), value);
+    case WellKnownCharsets::IBM1047:
+        return convertCharsetInternal(QStringLiteral("IBM1047"), value);
+    case WellKnownCharsets::IBM01140:
+        return convertCharsetInternal(QStringLiteral("IBM01140"), value);
+    case WellKnownCharsets::IBM01141:
+        return convertCharsetInternal(QStringLiteral("IBM01141"), value);
+    case WellKnownCharsets::IBM01142:
+        return convertCharsetInternal(QStringLiteral("IBM01142"), value);
+    case WellKnownCharsets::IBM01143:
+        return convertCharsetInternal(QStringLiteral("IBM01143"), value);
+    case WellKnownCharsets::IBM01144:
+        return convertCharsetInternal(QStringLiteral("IBM01144"), value);
+    case WellKnownCharsets::IBM01145:
+        return convertCharsetInternal(QStringLiteral("IBM01145"), value);
+    case WellKnownCharsets::IBM01146:
+        return convertCharsetInternal(QStringLiteral("IBM01146"), value);
+    case WellKnownCharsets::IBM01147:
+        return convertCharsetInternal(QStringLiteral("IBM01147"), value);
+    case WellKnownCharsets::IBM01148:
+        return convertCharsetInternal(QStringLiteral("IBM01148"), value);
+    case WellKnownCharsets::IBM01149:
+        return convertCharsetInternal(QStringLiteral("IBM01149"), value);
     default:
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
         return QByteArray();
     }
 }
 
-QByteArray ControllerScriptInterfaceLegacy::convertCharset(
-        const QString& targetCharset, const QString& value) {
-    QByteArray encoderNameArray = targetCharset.toUtf8();
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+// Add Byte Order Mark (BOM) to the beginning of the data if it is not already present
+static QByteArray addBom(const QByteArray& data) {
+    static const QByteArray bomBE = QByteArray::fromHex("FEFF");
+    static const QByteArray bomLE = QByteArray::fromHex("FFFE");
+
+    // Check system endianness
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        if (!data.startsWith(bomBE)) {
+            return bomBE + data;
+        }
+    } else {
+        if (!data.startsWith(bomLE)) {
+            return bomLE + data;
+        }
+    }
+    return data;
+}
+#endif
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
+        const QString& targetCharset, const QString& value) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+    QByteArray encoderNameArray = targetCharset.toUtf8();
     auto* pCodec = QTextCodec::codecForName(encoderNameArray);
     if (!pCodec) {
-        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unable to get QTextCodec name for charset: %1").arg(targetCharset));
         return QByteArray();
     }
-    return pCodec->makeEncoder(QTextCodec::Flag::ConvertInvalidToNull)->fromUnicode(value);
+    std::unique_ptr<QTextEncoder> encoder(
+            pCodec->makeEncoder(QTextCodec::Flag::ConvertInvalidToNull));
+    if (encoderNameArray == "ISO-10646-UCS-2" || encoderNameArray == "UCS2") {
+        // For these encodings QTextCodec does not set, the BOM which QStringEncoder does
+        return addBom(encoder->fromUnicode(value));
+    }
+    return encoder->fromUnicode(value);
+
 #else
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-    QAnyStringView encoderName = QAnyStringView(encoderNameArray);
+    QAnyStringView encoderName = QAnyStringView(targetCharset);
 #else
+    QByteArray encoderNameArray = targetCharset.toUtf8();
     const char* encoderName = encoderNameArray.constData();
 #endif
     QStringEncoder fromUtf16 = QStringEncoder(
             encoderName, QStringEncoder::Flag::ConvertInvalidToNull);
     if (!fromUtf16.isValid()) {
-        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unable to open encoder for charset: %1").arg(targetCharset));
         return QByteArray();
     }
     return fromUtf16(value);
