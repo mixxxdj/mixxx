@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QtGlobal>
+#include <utility>
 
 #ifdef __BROADCAST__
 #include <shoutidjc/shout.h>
@@ -208,20 +209,21 @@ void VersionStore::logBuildDetails() {
     QString version = VersionStore::version();
     QString buildFlags = VersionStore::buildFlags();
 
-    QStringList buildInfo;
-    buildInfo.append(QString("git %1").arg(VersionStore::gitVersion()));
+    QStringList buildInfo = {
+            QStringLiteral("git %1").arg(VersionStore::gitVersion()),
 #ifndef DISABLE_BUILDTIME // buildtime=1, on by default
-    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
+            QStringLiteral("built on: " __DATE__ " @ " __TIME__),
 #endif
+    };
     if (!buildFlags.isEmpty()) {
-        buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
+        buildInfo.append(QStringLiteral("flags: %1").arg(buildFlags.trimmed()));
     }
-    QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
+    QString buildInfoFormatted = QStringLiteral("(%1)").arg(buildInfo.join("; "));
 
     // This is the first line in mixxx.log
     qDebug().noquote() << applicationName() << version << buildInfoFormatted << "is starting...";
 
-    QStringList depVersions = dependencyVersions();
+    const QStringList depVersions = dependencyVersions();
     qDebug() << "Compile time library versions:";
     for (const QString& depVersion : depVersions) {
         qDebug() << depVersion;
