@@ -4,7 +4,7 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <memory>
-#include <numeric>
+#include <ranges>
 
 #include "skin/legacy/skincontext.h"
 
@@ -89,21 +89,17 @@ void ValueTransformer::addTransformer(std::unique_ptr<TransformNode> pTransforme
 }
 
 double ValueTransformer::transform(double argument) const {
-    return std::accumulate(m_transformers.cbegin(),
-            m_transformers.cend(),
-            argument,
-            [&](double argument, const auto& pNode) {
-                return pNode->transform(argument);
-            });
+    for (const auto& pNode : m_transformers) {
+        argument = pNode->transform(argument);
+    }
+    return argument;
 }
 
 double ValueTransformer::transformInverse(double argument) const {
-    return std::accumulate(m_transformers.crbegin(),
-            m_transformers.crend(),
-            argument,
-            [&](double argument, const auto& pNode) {
-                return pNode->transformInverse(argument);
-            });
+    for (auto it = m_transformers.crbegin(); it != m_transformers.crend(); ++it) {
+        argument = (*it)->transformInverse(argument);
+    }
+    return argument;
 }
 
 template<typename TNode>
