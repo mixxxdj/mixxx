@@ -218,6 +218,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorMenu = make_parented<QMenu>(this);
         m_pColorMenu->setTitle(tr("Select Color"));
+        m_pColorMenu->setObjectName(QStringLiteral("TrackColorMenu"));
     }
 
     m_pHotcueMenu = make_parented<QMenu>(this);
