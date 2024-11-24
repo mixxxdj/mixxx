@@ -131,6 +131,10 @@ repos:
     rev: 0.17.1
     hooks:
       - id: gersemi
+  - repo: https://github.com/cmake-lint/cmake-lint.git
+    rev: 1.4.3
+    hooks:
+      - id: cmakelint
   - repo: local
     hooks:
       - id: qsscheck

@@ -3,6 +3,8 @@
 #
 # MediaFoundation_LIBRARIES   - List of libraries when using MediaFoundation
 # MediaFoundation_FOUND       - True if MediaFoundation found
+#
+# lint_cmake: -package/consistency
 
 if(MSVC)
   set(
