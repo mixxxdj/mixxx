@@ -503,7 +503,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
             // New style skins are just a WidgetGroup at the root.
             QWidget* skin = parseWidgetGroup(node);
             // Set an object name so we can address child dialogs
-            // with the skin's stylesheet.
+            // with the skin's stylesheet "Skin"
             skin->setObjectName(mixxx::widgethelper::skinWidgetName());
             result.append(skin);
         } else {

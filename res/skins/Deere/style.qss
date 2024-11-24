@@ -280,8 +280,8 @@ WLibraryTextBrowser {
 }
 
 /* Table cell in edit mode */
-WLibrary QLineEdit,
-WLibrary QPlainTextEdit,
+WTrackTableView > QLineEdit,
+WTrackTableView > QPlainTextEdit,
 WBeatSpinBox,
 /* Track label inline editor */
 WTrackPropertyEditor,
@@ -291,7 +291,7 @@ WTrackPropertyEditor,
   selection-color: #000;
   selection-background-color: #ccc;
 }
-WLibrary QLineEdit,
+WTrackTableView > QLineEdit,
 WTrackPropertyEditor,
 #LibraryBPMSpinBox {
   border: 1px solid #006596;
@@ -847,7 +847,7 @@ WSearchLineEdit QAbstractScrollArea::corner,
 }
 
 #Mixxx, WWidget,
-QToolTip,
+#Skin QToolTip,
 WLabel, #LibraryFeatureControls QLabel,
 WNumber, WNumberPos,
 WPushButton,

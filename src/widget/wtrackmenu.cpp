@@ -209,6 +209,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorMenu = new QMenu(this);
         m_pColorMenu->setTitle(tr("Select Color"));
+        m_pColorMenu->setObjectName(QStringLiteral("TrackColorMenu"));
     }
 
     if (featureIsEnabled(Feature::Reset)) {
