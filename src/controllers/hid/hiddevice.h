@@ -29,7 +29,7 @@ namespace hid {
 class DeviceInfo final {
   public:
     explicit DeviceInfo(
-            const hid_device_info& device_info, const HidUsageTables& hidUsageTables);
+            const hid_device_info& device_info);
 
     // The VID.
     uint16_t getVendorId() const {
@@ -94,11 +94,11 @@ class DeviceInfo final {
     }
 
     QString getUsagePageDescription() const {
-        return m_hidUsageTables.getUsagePageDescription(usage_page);
+        return mixxx::hid::HidUsageTables::getUsagePageDescription(usage_page);
     }
 
     QString getUsageDescription() const {
-        return m_hidUsageTables.getUsageDescription(usage_page, usage);
+        return mixxx::hid::HidUsageTables::getUsageDescription(usage_page, usage);
     }
 
     bool isValid() const {
@@ -131,8 +131,6 @@ class DeviceInfo final {
     QString m_manufacturerString;
     QString m_productString;
     QString m_serialNumber;
-
-    const HidUsageTables& m_hidUsageTables;
 };
 
 } // namespace hid

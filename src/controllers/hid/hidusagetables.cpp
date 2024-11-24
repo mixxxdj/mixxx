@@ -1,9 +1,6 @@
 #include "controllers/hid/hidusagetables.h"
 
-#include <QFile>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonValue>
+#include "controllers/hid/hidusagetablesdata.h"
 
 namespace {
 // The HID Usage Tables 1.5 PDF specifies that the vendor-defined Usage-Page
@@ -16,47 +13,29 @@ namespace mixxx {
 
 namespace hid {
 
-HidUsageTables::HidUsageTables(const QString& filePath) {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Failed to open HID usage tables file:" << filePath;
-        m_hidUsageTables = QJsonObject();
-        return;
-    }
-    QByteArray fileData = file.readAll();
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-    m_hidUsageTables = jsonDoc.object();
-}
-
-QString HidUsageTables::getUsagePageDescription(unsigned short usagePage) const {
+QString HidUsageTables::getUsagePageDescription(uint16_t usagePage) {
     if (usagePage >= kStartOfVendorDefinedUsagePageRange) {
         return QStringLiteral("Vendor-defined");
     }
 
-    const QJsonArray usagePages = m_hidUsageTables.value("UsagePages").toArray();
-    for (const QJsonValue& pageValue : usagePages) {
-        QJsonObject pageObject = pageValue.toObject();
-        if (pageObject.value("Id").toInt() == usagePage) {
-            return pageObject.value("Name").toString();
+    for (const auto& page : kHidUsagePages) {
+        if (page.id == usagePage) {
+            return page.name;
         }
     }
     return QStringLiteral("Reserved");
 }
 
-QString HidUsageTables::getUsageDescription(unsigned short usagePage, unsigned short usage) const {
+QString HidUsageTables::getUsageDescription(uint16_t usagePage, uint16_t usage) {
     if (usagePage >= kStartOfVendorDefinedUsagePageRange) {
         return QStringLiteral("Vendor-defined");
     }
 
-    const QJsonArray usagePages = m_hidUsageTables.value("UsagePages").toArray();
-    for (const QJsonValue& pageValue : usagePages) {
-        QJsonObject pageObject = pageValue.toObject();
-        if (pageObject.value("Id").toInt() == usagePage) {
-            const QJsonArray usageIds = pageObject.value("UsageIds").toArray();
-            for (const QJsonValue& usageValue : usageIds) {
-                QJsonObject usageObject = usageValue.toObject();
-                if (usageObject.value("Id").toInt() == usage) {
-                    return usageObject.value("Name").toString();
+    for (const auto& page : kHidUsagePages) {
+        if (page.id == usagePage) {
+            for (const auto& usageItem : page.usages) {
+                if (usageItem.id == usage) {
+                    return usageItem.name;
                 }
             }
             break; // No need to continue if the usage page is found

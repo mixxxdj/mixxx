@@ -9,13 +9,11 @@ class HidEnumerator : public ControllerEnumerator {
     Q_OBJECT
   public:
     bool recognizeDevice(const hid_device_info& device_info) const;
-    explicit HidEnumerator(UserSettingsPointer pConfig);
+    HidEnumerator() = default;
     ~HidEnumerator() override;
 
     QList<Controller*> queryDevices() override;
 
   private:
-    UserSettingsPointer m_pConfig;
     QList<Controller*> m_devices;
-    mixxx::hid::HidUsageTables m_hidUsageTable;
 };

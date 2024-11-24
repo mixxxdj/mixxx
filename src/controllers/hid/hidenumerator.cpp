@@ -82,13 +82,6 @@ bool HidEnumerator::recognizeDevice(const hid_device_info& device_info) const {
     return true;
 }
 
-HidEnumerator::HidEnumerator(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
-          // Loading this JSON file is very fast (~8ms) and is only loaded here during startup,
-          // to be shared across all HID devices.
-          m_hidUsageTable(pConfig->getResourcePath() + "deviceinfo/HidUsageTables.json") {
-}
-
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
     while (m_devices.size() > 0) {
@@ -105,7 +98,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
     for (const auto* device_info = device_info_list;
             device_info;
             device_info = device_info->next) {
-        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info, m_hidUsageTable);
+        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
         // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
         // so filter them out.
         // https://github.com/libusb/hidapi/issues/298

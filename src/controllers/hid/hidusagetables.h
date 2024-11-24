@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QJsonObject>
+#include <QString>
 
 namespace mixxx {
 
@@ -8,12 +8,9 @@ namespace hid {
 
 class HidUsageTables {
   public:
-    explicit HidUsageTables(const QString& filePath);
-    QString getUsagePageDescription(unsigned short usagePage) const;
-    QString getUsageDescription(unsigned short usagePage, unsigned short usage) const;
-
-  private:
-    QJsonObject m_hidUsageTables;
+    HidUsageTables() = default;
+    static QString getUsagePageDescription(uint16_t usagePage);
+    static QString getUsageDescription(uint16_t usagePage, uint16_t usage);
 };
 
 } // namespace hid

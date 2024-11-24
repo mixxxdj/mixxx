@@ -18,7 +18,7 @@ namespace mixxx {
 namespace hid {
 
 DeviceInfo::DeviceInfo(
-        const hid_device_info& device_info, const HidUsageTables& hidUsageTables)
+        const hid_device_info& device_info)
         : vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
           release_number(device_info.release_number),
@@ -35,8 +35,7 @@ DeviceInfo::DeviceInfo(
           m_productString(mixxx::convertWCStringToQString(device_info.product_string,
                   kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
-                  m_serialNumberRaw.data(), m_serialNumberRaw.size())),
-          m_hidUsageTables(hidUsageTables) {
+                  m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
     switch (device_info.bus_type) {
     case HID_API_BUS_USB:
         m_physicalTransportProtocol = PhysicalTransportProtocol::USB;
