@@ -113,6 +113,10 @@ DlgPrefController::DlgPrefController(
             }();
     m_ui.labelDataHandlingProtocolValue->setText(dataHandlingProtocol);
 
+    auto formatHex = [](unsigned short value) {
+        return QString::number(value, 16).toUpper().rightJustified(4, '0');
+    };
+
     auto vendorString = m_pController->getVendorString();
     if (!vendorString.isEmpty()) {
         m_ui.labelVendorValue->setText(vendorString);
@@ -127,7 +131,7 @@ DlgPrefController::DlgPrefController(
     m_ui.labelProductValue->setText(m_pController->getProductString());
 
     if (auto vid = m_pController->getVendorId()) {
-        m_ui.labelVidValue->setText(QString::number(*vid, 16).toUpper().rightJustified(4, '0'));
+        m_ui.labelVidValue->setText(formatHex(*vid));
         m_ui.labelVid->setVisible(true);
         m_ui.labelVidValue->setVisible(true);
     } else {
@@ -136,7 +140,7 @@ DlgPrefController::DlgPrefController(
     }
 
     if (auto pid = m_pController->getProductId()) {
-        m_ui.labelPidValue->setText(QString::number(*pid, 16).toUpper().rightJustified(4, '0'));
+        m_ui.labelPidValue->setText(formatHex(*pid));
         m_ui.labelPid->setVisible(true);
         m_ui.labelPidValue->setVisible(true);
     } else {
@@ -169,15 +173,11 @@ DlgPrefController::DlgPrefController(
     // Display HID UsagePage and Usage if the controller is an HidController
     if (auto* hidController = dynamic_cast<HidController*>(m_pController)) {
         m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
-                        .arg(QString::number(hidController->getUsagePage(), 16)
-                                        .toUpper()
-                                        .rightJustified(4, '0'),
+                        .arg(formatHex(hidController->getUsagePage()),
                                 hidController->getUsagePageDescription()));
 
         m_ui.labelHidUsageValue->setText(QStringLiteral("%1 (%2)")
-                        .arg(QString::number(hidController->getUsage(), 16)
-                                        .toUpper()
-                                        .rightJustified(4, '0'),
+                        .arg(formatHex(hidController->getUsage()),
                                 hidController->getUsageDescription()));
         m_ui.labelHidUsagePage->setVisible(true);
         m_ui.labelHidUsagePageValue->setVisible(true);
