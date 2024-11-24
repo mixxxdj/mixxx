@@ -11,48 +11,47 @@ namespace {
 
 constexpr std::size_t kDeviceInfoStringMaxLength = 512;
 
+PhysicalTransportProtocol hidapiBusType2PhysicalTransportProtocol(hid_bus_type busType) {
+    switch (busType) {
+    case HID_API_BUS_USB:
+        return PhysicalTransportProtocol::USB;
+    case HID_API_BUS_BLUETOOTH:
+        return PhysicalTransportProtocol::BlueTooth;
+    case HID_API_BUS_I2C:
+        return PhysicalTransportProtocol::I2C;
+    case HID_API_BUS_SPI:
+        return PhysicalTransportProtocol::SPI;
+    default:
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+}
+
 } // namespace
 
 namespace mixxx {
 
 namespace hid {
 
-DeviceInfo::DeviceInfo(
-        const hid_device_info& device_info)
+DeviceInfo::DeviceInfo(const hid_device_info& device_info)
         : vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
           release_number(device_info.release_number),
           usage_page(device_info.usage_page),
           usage(device_info.usage),
           m_usbInterfaceNumber(device_info.interface_number),
-          m_pathRaw(device_info.path, mixxx::strnlen_s(device_info.path, PATH_MAX)),
+          m_pathRaw(device_info.path,
+                  mixxx::strnlen_s(device_info.path, PATH_MAX)),
           m_serialNumberRaw(device_info.serial_number,
                   mixxx::wcsnlen_s(device_info.serial_number,
                           kDeviceInfoStringMaxLength)),
           m_manufacturerString(mixxx::convertWCStringToQString(
-                  device_info.manufacturer_string,
-                  kDeviceInfoStringMaxLength)),
-          m_productString(mixxx::convertWCStringToQString(device_info.product_string,
-                  kDeviceInfoStringMaxLength)),
+                  device_info.manufacturer_string, kDeviceInfoStringMaxLength)),
+          m_productString(mixxx::convertWCStringToQString(
+                  device_info.product_string, kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
-                  m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
-    switch (device_info.bus_type) {
-    case HID_API_BUS_USB:
-        m_physicalTransportProtocol = PhysicalTransportProtocol::USB;
-        break;
-    case HID_API_BUS_BLUETOOTH:
-        m_physicalTransportProtocol = PhysicalTransportProtocol::BlueTooth;
-        break;
-    case HID_API_BUS_I2C:
-        m_physicalTransportProtocol = PhysicalTransportProtocol::I2C;
-        break;
-    case HID_API_BUS_SPI:
-        m_physicalTransportProtocol = PhysicalTransportProtocol::SPI;
-        break;
-    default:
-        m_physicalTransportProtocol = PhysicalTransportProtocol::UNKNOWN;
-        break;
-    }
+                  m_serialNumberRaw.data(), m_serialNumberRaw.size())),
+          m_physicalTransportProtocol(hidapiBusType2PhysicalTransportProtocol(
+                  device_info.bus_type)) {
 }
 
 QString DeviceInfo::formatName() const {
