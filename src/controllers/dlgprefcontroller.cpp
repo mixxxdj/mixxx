@@ -124,10 +124,8 @@ DlgPrefController::DlgPrefController(
                     return QStringLiteral("HID");
                 case DataRepresentationProtocol::MIDI:
                     return QStringLiteral("MIDI");
-                default:
-                    DEBUG_ASSERT(false);
-                    return QString();
                 }
+                return QString();
             }();
     m_ui.labelDataHandlingProtocolValue->setText(dataHandlingProtocol);
 
