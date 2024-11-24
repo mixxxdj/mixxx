@@ -74,16 +74,15 @@ QString DeviceInfo::formatName() const {
 }
 
 QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
-    QStringList parts;
-    parts.reserve(8);
+    const auto dbgState = QDebugStateSaver(dbg);
+    dbg.nospace().noquote() << "{ ";
 
     auto formatHex = [](unsigned short value) {
         return QString::number(value, 16).toUpper().rightJustified(4, '0');
     };
 
-    parts.append(QStringLiteral("VID:%1 PID:%2")
-                    .arg(formatHex(deviceInfo.getVendorId()),
-                            formatHex(deviceInfo.getProductId())));
+    dbg << "VID:" << formatHex(deviceInfo.getVendorId())
+        << " PID:" << formatHex(deviceInfo.getProductId()) << " | ";
 
     static const QMap<PhysicalTransportProtocol, QString> protocolMap = {
             {PhysicalTransportProtocol::USB, QStringLiteral("USB")},
@@ -93,36 +92,32 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
             {PhysicalTransportProtocol::FireWire, QStringLiteral("Firewire")},
             {PhysicalTransportProtocol::UNKNOWN, QStringLiteral("Unknown")}};
 
-    parts.append(QStringLiteral("Physical: %1")
-                    .arg(protocolMap.value(
-                            deviceInfo.getPhysicalTransportProtocol(),
-                            QStringLiteral("Unknown"))));
+    dbg << "Physical: "
+        << protocolMap.value(deviceInfo.getPhysicalTransportProtocol(),
+                   QStringLiteral("Unknown"))
+        << " | ";
 
-    parts.append(QStringLiteral("Usage-Page: %1 %2")
-                    .arg(formatHex(deviceInfo.getUsagePage()),
-                            deviceInfo.getUsagePageDescription()));
-    parts.append(QStringLiteral("Usage: %1 %2")
-                    .arg(formatHex(deviceInfo.getUsage()), deviceInfo.getUsageDescription()));
+    dbg << "Usage-Page: " << formatHex(deviceInfo.getUsagePage())
+        << ' ' << deviceInfo.getUsagePageDescription() << " | ";
+
+    dbg << "Usage: " << formatHex(deviceInfo.getUsage())
+        << ' ' << deviceInfo.getUsageDescription() << " | ";
 
     if (deviceInfo.getUsbInterfaceNumber()) {
-        parts.append(QStringLiteral("Interface: #%1")
-                        .arg(deviceInfo.getUsbInterfaceNumber().value()));
+        dbg << "Interface: #" << deviceInfo.getUsbInterfaceNumber().value() << " | ";
     }
     if (!deviceInfo.getVendorString().isEmpty()) {
-        parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.getVendorString());
+        dbg << "Manufacturer: " << deviceInfo.getVendorString() << " | ";
     }
     if (!deviceInfo.getProductString().isEmpty()) {
-        parts.append(QStringLiteral("Product: ") + deviceInfo.getProductString());
+        dbg << "Product: " << deviceInfo.getProductString() << " | ";
     }
     if (!deviceInfo.getSerialNumber().isEmpty()) {
-        parts.append(QStringLiteral("S/N: ") + deviceInfo.getSerialNumber());
+        dbg << "S/N: " << deviceInfo.getSerialNumber();
     }
 
-    const auto dbgState = QDebugStateSaver(dbg);
-    return dbg.nospace().noquote()
-            << QStringLiteral("{ ")
-            << parts.join(QStringLiteral(" | "))
-            << QStringLiteral(" }");
+    dbg << " }";
+    return dbg;
 }
 
 bool DeviceInfo::matchProductInfo(
