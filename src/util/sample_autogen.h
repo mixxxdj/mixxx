@@ -28,7 +28,7 @@ template<class... CheckedArgs, class... UncheckedArgs>
     requires(sizeof...(UncheckedArgs) == 0 && sizeof...(CheckedArgs) > 0)
 static constexpr std::size_t copyWithGainVariadic(std::span<CSAMPLE> dest,
         CheckedArgs&&... cSrcs,
-        UncheckedArgs&&... uSrcs) noexcept {
+        UncheckedArgs&&...) noexcept {
     // This code gets called when all the checks have been emitted and we now
     // know all gains are non-zero. because we could potentially be handling
     // different buffers, we quickly find the minimum...
@@ -74,7 +74,7 @@ static constexpr std::size_t copyWithGainVariadic(std::span<CSAMPLE> dest,
 template<class... CheckedArgs, class... UncheckedArgs>
     requires(sizeof...(UncheckedArgs) == 0 && sizeof...(CheckedArgs) > 0)
 static constexpr std::size_t copyWithGainVariadicRamped(
-        std::span<CSAMPLE> dest, CheckedArgs... cSrcs, UncheckedArgs... uSrcs) {
+        std::span<CSAMPLE> dest, CheckedArgs... cSrcs, UncheckedArgs...) {
     std::size_t num = std::min({dest.size(), cSrcs.data.size()...}) / 2;
     std::array<RampingValue<CSAMPLE>, sizeof...(CheckedArgs)> ramps = {
             RampingValue{
