@@ -1289,19 +1289,42 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
-// Add Byte Order Mark (BOM) to the beginning of the data if it is not already present
-static QByteArray addBom(const QByteArray& data) {
-    static const QByteArray bomBE = QByteArray::fromHex("FEFF");
-    static const QByteArray bomLE = QByteArray::fromHex("FFFE");
+// Enum to specify the encoding type
+enum class EncodingType {
+    UTF8,
+    UTF16,
+    UTF32,
+    UCS2
+};
 
-    // Check system endianness
-    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
-        if (!data.startsWith(bomBE)) {
-            return bomBE + data;
+// Add Byte Order Mark (BOM) to the beginning of the data if it is not already present
+static QByteArray addBom(const QByteArray& data, QSysInfo::Endian byteOrder, EncodingType encodingType) {
+    static const QByteArray bomUTF8 = QByteArrayLiteral("\xEF\xBB\xBF");
+    static const QByteArray bomUTF16BE = QByteArrayLiteral("\xFE\xFF");
+    static const QByteArray bomUTF16LE = QByteArrayLiteral("\xFF\xFE");
+    static const QByteArray bomUTF32BE = QByteArrayLiteral("\x00\x00\xFE\xFF");
+    static const QByteArray bomUTF32LE = QByteArrayLiteral("\xFF\xFE\x00\x00");
+
+    if (data.startsWith(bomUTF8) || data.startsWith(bomUTF16BE) || data.startsWith(bomUTF16LE) ||
+            data.startsWith(bomUTF32BE) || data.startsWith(bomUTF32LE)) {
+        return data;
+    }
+
+    switch (encodingType) {
+    case EncodingType::UTF8:
+        return bomUTF8 + data;
+    case EncodingType::UTF16:
+    case EncodingType::UCS2:
+        if (byteOrder == QSysInfo::BigEndian) {
+            return bomUTF16BE + data;
+        } else {
+            return bomUTF16LE + data;
         }
-    } else {
-        if (!data.startsWith(bomLE)) {
-            return bomLE + data;
+    case EncodingType::UTF32:
+        if (byteOrder == QSysInfo::BigEndian) {
+            return bomUTF32BE + data;
+        } else {
+            return bomUTF32LE + data;
         }
     }
     return data;
@@ -1320,9 +1343,23 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
     }
     std::unique_ptr<QTextEncoder> encoder(
             pCodec->makeEncoder(QTextCodec::Flag::ConvertInvalidToNull));
+    // For these encodings, add the BOM if not already present
     if (encoderNameArray == "ISO-10646-UCS-2" || encoderNameArray == "UCS2") {
-        // For these encodings QTextCodec does not set, the BOM which QStringEncoder does
-        return addBom(encoder->fromUnicode(value));
+        return addBom(encoder->fromUnicode(value), QSysInfo::ByteOrder, EncodingType::UCS2);
+    } else if (encoderNameArray == "UTF-16") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::ByteOrder, EncodingType::UTF16);
+    } else if (encoderNameArray == "UTF-16LE") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::LittleEndian, EncodingType::UTF16);
+    } else if (encoderNameArray == "UTF-16BE") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::BigEndian, EncodingType::UTF16);
+    } else if (encoderNameArray == "UTF-32") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::ByteOrder, EncodingType::UTF32);
+    } else if (encoderNameArray == "UTF-32LE") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::LittleEndian, EncodingType::UTF32);
+    } else if (encoderNameArray == "UTF-32BE") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::BigEndian, EncodingType::UTF32);
+    } else if (encoderNameArray == "UTF-8") {
+        return addBom(encoder->fromUnicode(value), QSysInfo::ByteOrder, EncodingType::UTF8);
     }
     return encoder->fromUnicode(value);
 
@@ -1334,7 +1371,7 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
     const char* encoderName = encoderNameArray.constData();
 #endif
     QStringEncoder fromUtf16 = QStringEncoder(
-            encoderName, QStringEncoder::Flag::ConvertInvalidToNull);
+            encoderName, QStringEncoder::Flag::ConvertInvalidToNull | QStringEncoder::Flag::WriteBom);
     if (!fromUtf16.isValid()) {
         m_pScriptEngineLegacy->logOrThrowError(
                 QStringLiteral("Unable to open encoder for charset: %1").arg(targetCharset));

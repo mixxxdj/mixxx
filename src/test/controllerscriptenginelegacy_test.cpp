@@ -675,10 +675,10 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllWellKnownCharsets) {
         var workingCharsetCounter = 0;
         var failedCharsets = [];
         var expectedLengths = {
-            "UCS2": 68, "ISO_10646_UCS_2": 68, "UTF_16": 66, "UTF_16BE": 66, "UTF_16LE": 66,
-            "UTF_32": 128, "UTF_32BE": 128, "UTF_32LE": 128, "ISO_2022_KR": 54, "ISO_2022_Locale_KO_Version_1": 54,
+            "UCS2": 68, "ISO_10646_UCS_2": 68, "UTF_16": 68, "UTF_16BE": 68, "UTF_16LE": 68,
+            "UTF_32": 132, "UTF_32BE": 132, "UTF_32LE": 132, "ISO_2022_KR": 54, "ISO_2022_Locale_KO_Version_1": 54,
             "HZ_GB_2312": 49, "Latin1": 33, "ISO_8859_1": 33, "Latin9": 32, "ISO_8859_15": 32,
-            "UTF_8": 63, "UTF_7": 70, "SCSU": 51, "BOCU_1": 53, "CESU_8": 65, "US_ASCII": 32,
+            "UTF_8": 66, "UTF_7": 70, "SCSU": 51, "BOCU_1": 53, "CESU_8": 65, "US_ASCII": 32,
             "GB18030": 69, "ISO_8859_2": 32, "ISO_8859_3": 32, "ISO_8859_4": 32, "ISO_8859_5": 32,
             "ISO_8859_6": 32, "ISO_8859_7": 32, "ISO_8859_8": 32, "ISO_8859_9": 32, "ISO_8859_10": 32,
             "ISO_8859_13": 32, "ISO_8859_14": 32, "Shift_JIS": 39, "EUC_JP": 39, "Big5": 34,
