@@ -95,25 +95,9 @@ DlgPrefController::DlgPrefController(
 
     m_ui.labelDeviceName->setText(m_pController->getName());
 
-    switch (m_pController->getPhysicalTransportProtocol()) {
-    case PhysicalTransportProtocol::USB:
-        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("USB"));
-        break;
-    case PhysicalTransportProtocol::BlueTooth:
-        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("Bluetooth"));
-        break;
-    case PhysicalTransportProtocol::I2C:
-        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("I2C"));
-        break;
-    case PhysicalTransportProtocol::SPI:
-        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("SPI"));
-        break;
-    case PhysicalTransportProtocol::FireWire:
-        m_ui.labelPhysicalInterfaceValue->setText(QStringLiteral("Firewire - IEEE 1394"));
-        break;
-    default:
-        m_ui.labelPhysicalInterfaceValue->setText(tr("Unknown"));
-    }
+    m_ui.labelPhysicalInterfaceValue->setText(
+            Controller::physicalTransport2String(
+                    m_pController->getPhysicalTransportProtocol()));
 
     const QString dataHandlingProtocol =
             [protocol = m_pController->getDataRepresentationProtocol()] {

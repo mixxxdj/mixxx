@@ -84,17 +84,8 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     dbg << "VID:" << formatHex(deviceInfo.getVendorId())
         << " PID:" << formatHex(deviceInfo.getProductId()) << " | ";
 
-    static const QMap<PhysicalTransportProtocol, QString> protocolMap = {
-            {PhysicalTransportProtocol::USB, QStringLiteral("USB")},
-            {PhysicalTransportProtocol::BlueTooth, QStringLiteral("Bluetooth")},
-            {PhysicalTransportProtocol::I2C, QStringLiteral("I2C")},
-            {PhysicalTransportProtocol::SPI, QStringLiteral("SPI")},
-            {PhysicalTransportProtocol::FireWire, QStringLiteral("Firewire")},
-            {PhysicalTransportProtocol::UNKNOWN, QStringLiteral("Unknown")}};
-
     dbg << "Physical: "
-        << protocolMap.value(deviceInfo.getPhysicalTransportProtocol(),
-                   QStringLiteral("Unknown"))
+        << Controller::physicalTransport2String(deviceInfo.getPhysicalTransportProtocol())
         << " | ";
 
     dbg << "Usage-Page: " << formatHex(deviceInfo.getUsagePage())

@@ -61,6 +61,7 @@ class Controller : public QObject {
         return m_sDeviceName;
     }
     virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
+    static QString physicalTransport2String(PhysicalTransportProtocol protocol);
     virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
 
     virtual QString getVendorString() const = 0;
