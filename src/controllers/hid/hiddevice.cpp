@@ -38,6 +38,8 @@ DeviceInfo::DeviceInfo(const hid_device_info& device_info)
           release_number(device_info.release_number),
           usage_page(device_info.usage_page),
           usage(device_info.usage),
+          m_physicalTransportProtocol(hidapiBusType2PhysicalTransportProtocol(
+                  device_info.bus_type)),
           m_usbInterfaceNumber(device_info.interface_number),
           m_pathRaw(device_info.path,
                   mixxx::strnlen_s(device_info.path, PATH_MAX)),
@@ -49,9 +51,7 @@ DeviceInfo::DeviceInfo(const hid_device_info& device_info)
           m_productString(mixxx::convertWCStringToQString(
                   device_info.product_string, kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
-                  m_serialNumberRaw.data(), m_serialNumberRaw.size())),
-          m_physicalTransportProtocol(hidapiBusType2PhysicalTransportProtocol(
-                  device_info.bus_type)) {
+                  m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
 }
 
 QString DeviceInfo::formatName() const {
