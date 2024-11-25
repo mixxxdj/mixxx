@@ -902,6 +902,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
+  src/library/autodj/track/deckattributes.cpp
+  src/library/autodj/track/fadeabletrackordeckattributes.cpp
+  src/library/autodj/track/trackattributes.cpp
+  src/library/autodj/track/trackordeckattributes.cpp
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp

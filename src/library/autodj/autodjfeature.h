@@ -10,6 +10,7 @@
 #include "library/libraryfeature.h"
 #include "library/trackset/crate/crate.h"
 #include "preferences/usersettings.h"
+#include "util/duration.h"
 #include "util/parented_ptr.h"
 
 class DlgAutoDJ;
@@ -106,4 +107,9 @@ class AutoDJFeature : public LibraryFeature {
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
+
+    // Updates the title of the "Auto DJ" node with the number of tracks
+    // and remaining duration when tracks are added to or removed from
+    // the Auto DJ queue.
+    void slotRemainingQueueDurationChanged(int len, mixxx::Duration duration);
 };
