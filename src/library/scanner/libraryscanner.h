@@ -21,6 +21,7 @@
 class ScannerTask;
 class LibraryScannerDlg;
 class QString;
+struct LibraryScanResultSummary;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
@@ -34,7 +35,10 @@ class LibraryScanner : public QThread {
   public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
-    void scan();
+    // The autoscan flag is used for the summary report. Receivers of scanSummary()
+    // can use this to decide whether to show the summary dialog, for example hide
+    // it for the automatic scan during startup.
+    void scan(bool autoscan = false);
 
     // Call from any thread to cancel the scan.
     void slotCancel();
@@ -42,6 +46,7 @@ class LibraryScanner : public QThread {
   signals:
     void scanStarted();
     void scanFinished();
+    void scanSummary(const LibraryScanResultSummary& result);
     void progressHashing(const QString&);
     void progressLoading(const QString& path);
     void progressCoverArt(const QString& file);
@@ -118,6 +123,12 @@ class LibraryScanner : public QThread {
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
 
+    QSet<QString> m_previouslyMissingTracks;
+    int m_numPreviouslyExistingTracks;
+    int m_numRelocatedTracks;
+
     QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
+
+    bool m_manualScan;
 };
