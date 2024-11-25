@@ -478,6 +478,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
 
     useAccelerationCheckBox->blockSignals(false);
 }
+
 void DlgPrefWaveform::updateWaveformOption(bool useWaveform,
         WaveformWidgetBackend backend,
         allshader::WaveformRendererSignalBase::Options currentOptions) {
@@ -579,10 +580,9 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
     m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
-void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
-    frameRateAverage->setText(
-            QString::number((double)frameRate, 'f', 2) + " : " +
-            tr("dropped frames") + " " + QString::number(droppedFrames));
+void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int numDroppedFrames) {
+    frameRateAverage->setText(locale().toString(frameRate, 'f', 2));
+    droppedFrames->setText(QString::number(numDroppedFrames));
 }
 
 void DlgPrefWaveform::slotClearCachedWaveforms() {
