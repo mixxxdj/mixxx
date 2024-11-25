@@ -39,16 +39,18 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
+    void slotSetSinceMarkShowBeats(bool checked);
+    void slotSetSinceMarkShowTime(bool checked);
     void slotSetUntilMarkShowBeats(bool checked);
     void slotSetUntilMarkShowTime(bool checked);
-    void slotSetUntilMarkAlign(int index);
-    void slotSetUntilMarkTextPointSize(int value);
+    void slotSetDistanceToMarkAlign(int index);
+    void slotSetDistanceToMarkTextPointSize(int value);
 
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
-    void updateEnableUntilMark();
+    void updateEnableDistanceToMark();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
 

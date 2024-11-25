@@ -3,6 +3,7 @@
 #include <QOpenGLTexture>
 #include <QPainterPath>
 
+#include "track/beats.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
@@ -46,6 +47,7 @@ class TextureGraphics : public WaveformMark::Graphics {
 // that updateMarkImages should not be called immediately.
 
 namespace {
+
 QString timeSecToString(double timeSec) {
     int hundredths = std::lround(timeSec * 100.0);
     int seconds = hundredths / 100;
@@ -56,19 +58,50 @@ QString timeSecToString(double timeSec) {
     return QString::asprintf("%d:%02d.%02d", minutes, seconds, hundredths);
 }
 
+mixxx::Beats::ConstIterator nearestBeat(mixxx::BeatsPointer trackBeats, double position) {
+    auto it = trackBeats->iteratorFrom(mixxx::audio::FramePos::fromEngineSamplePos(position));
+
+    // 'it' is the beat at or after position. if after, check if the previous beat is nearer.
+    if (it->toEngineSamplePos() > position &&
+            position - (it - 1)->toEngineSamplePos() <
+                    it->toEngineSamplePos() - position) {
+        return it - 1;
+    }
+
+    return it;
+}
+
+mixxx::Beats::ConstIterator floorBeat(mixxx::BeatsPointer trackBeats, double position) {
+    auto it = trackBeats->iteratorFrom(mixxx::audio::FramePos::fromEngineSamplePos(position));
+
+    // 'it' is the beat at or after position. if within one sample, we consider it on the beat
+    if (it->toEngineSamplePos() < position + 1) {
+        return it;
+    }
+    // otherwise, take the previous beat
+    return it - 1;
+}
+
+mixxx::Beats::ConstIterator ceilBeat(mixxx::BeatsPointer trackBeats, double position) {
+    // 'it' is the beat at or after position
+    auto it = trackBeats->iteratorFrom(mixxx::audio::FramePos::fromEngineSamplePos(position));
+    return it;
+}
+
 } // namespace
 
 allshader::WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRenderMarkBase(waveformWidget, false),
-          m_beatsUntilMark(0),
-          m_timeUntilMark(0.0),
+          m_pTimeElapsedControl(nullptr),
           m_pTimeRemainingControl(nullptr),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 bool allshader::WaveformRenderMark::init() {
+    m_pTimeElapsedControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), "time_elapsed");
     m_pTimeRemainingControl = std::make_unique<ControlProxy>(
             m_waveformRenderer->getGroup(), "time_remaining");
     return true;
@@ -83,9 +116,9 @@ void allshader::WaveformRenderMark::initializeGL() {
     // Will create textures so requires OpenGL context
     updateMarkImages();
     updatePlayPosMarkTexture();
-    const auto untilMarkTextPointSize =
-            WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
-    m_digitsRenderer.updateTexture(untilMarkTextPointSize,
+    const auto distanceToMarkTextPointSize =
+            WaveformWidgetFactory::instance()->getDistanceToMarkTextPointSize();
+    m_digitsRenderer.updateTexture(distanceToMarkTextPointSize,
             getMaxHeightForText(),
             m_waveformRenderer->getDevicePixelRatio());
 }
@@ -208,6 +241,7 @@ void allshader::WaveformRenderMark::paintGL() {
     QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
     const double playPosition = m_waveformRenderer->getTruePosSample();
+    double prevMarkPosition = std::numeric_limits<double>::min();
     double nextMarkPosition = std::numeric_limits<double>::max();
 
     for (const auto& pMark : std::as_const(m_marks)) {
@@ -233,10 +267,15 @@ void allshader::WaveformRenderMark::paintGL() {
                                                 samplePosition)) *
                         devicePixelRatio) /
                 devicePixelRatio;
-        if (pMark->isShowUntilNext() &&
+        if (pMark->isShowUntil() &&
                 samplePosition >= playPosition + 1.0 &&
                 samplePosition < nextMarkPosition) {
             nextMarkPosition = samplePosition;
+        }
+        if (pMark->isShowUntil() &&
+                samplePosition <= playPosition - 1.0 &&
+                samplePosition > prevMarkPosition) {
+            prevMarkPosition = samplePosition;
         }
         const double sampleEndPosition = pMark->getSampleEndPosition();
 
@@ -305,64 +344,98 @@ void allshader::WaveformRenderMark::paintGL() {
         drawTexture(matrix, drawOffset, 0.f, &m_playPosMarkTexture);
     }
 
-    if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
-            WaveformWidgetFactory::instance()->getUntilMarkShowTime()) {
-        updateUntilMark(playPosition, nextMarkPosition);
-        drawUntilMark(matrix, currentMarkPoint + 20);
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+
+    if (!trackInfo) {
+        return;
+    }
+
+    mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
+    if (!trackBeats) {
+        return;
+    }
+    const bool sinceMarkShowBeats = WaveformWidgetFactory::instance()->getSinceMarkShowBeats();
+    const bool sinceMarkShowTime = WaveformWidgetFactory::instance()->getSinceMarkShowTime();
+    const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
+    const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
+
+    if (sinceMarkShowBeats || sinceMarkShowTime) {
+        Distance distance = distanceSinceMark(trackBeats, playPosition, prevMarkPosition);
+        drawDistance(matrix,
+                currentMarkPoint - 20,
+                Qt::AlignLeft,
+                distance,
+                sinceMarkShowBeats,
+                sinceMarkShowTime);
+    }
+    if (untilMarkShowBeats || untilMarkShowTime) {
+        Distance distance = distanceUntilMark(trackBeats, playPosition, nextMarkPosition);
+        drawDistance(matrix,
+                currentMarkPoint + 20,
+                Qt::AlignRight,
+                distance,
+                untilMarkShowBeats,
+                untilMarkShowTime);
     }
 }
 
-void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, float x) {
-    const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
-    const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
-    const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
+void allshader::WaveformRenderMark::drawDistance(const QMatrix4x4& matrix,
+        float x,
+        Qt::Alignment align,
+        const Distance& distance,
+        bool distanceToMarkShowBeats,
+        bool distanceToMarkShowTime) {
+    if (distance.m_time == 0.0) {
+        return;
+    }
 
-    const auto untilMarkTextPointSize =
-            WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
-    m_digitsRenderer.updateTexture(untilMarkTextPointSize,
+    const auto distanceToMarkAlign = WaveformWidgetFactory::instance()->getDistanceToMarkAlign();
+    const auto distanceToMarkTextPointSize =
+            WaveformWidgetFactory::instance()->getDistanceToMarkTextPointSize();
+    m_digitsRenderer.updateTexture(distanceToMarkTextPointSize,
             getMaxHeightForText(),
             m_waveformRenderer->getDevicePixelRatio());
 
-    if (m_timeUntilMark == 0.0) {
-        return;
-    }
     const float ch = m_digitsRenderer.height();
 
-    float y = untilMarkAlign == Qt::AlignTop ? 0.f
-            : untilMarkAlign == Qt::AlignBottom
+    float y = distanceToMarkAlign == Qt::AlignTop ? 0.f
+            : distanceToMarkAlign == Qt::AlignBottom
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    bool multiLine = untilMarkShowBeats && untilMarkShowTime && ch * 2.f < getMaxHeightForText();
+    bool multiLine = distanceToMarkShowBeats && distanceToMarkShowTime &&
+            ch * 2.f < getMaxHeightForText();
 
     if (multiLine) {
-        if (untilMarkAlign != Qt::AlignTop) {
+        if (distanceToMarkAlign != Qt::AlignTop) {
             y -= ch;
         }
     } else {
-        if (untilMarkAlign != Qt::AlignTop && untilMarkAlign != Qt::AlignBottom) {
+        if (distanceToMarkAlign != Qt::AlignTop && distanceToMarkAlign != Qt::AlignBottom) {
             // center
             y -= ch / 2.f;
         }
     }
 
-    if (untilMarkShowBeats) {
+    if (distanceToMarkShowBeats) {
+        const auto s = QString::number(distance.m_beats);
         const auto w = m_digitsRenderer.draw(matrix,
-                x,
+                align == Qt::AlignLeft ? x - m_digitsRenderer.textWidth(s) : x,
                 y,
-                QString::number(m_beatsUntilMark));
+                s);
         if (multiLine) {
             y += ch;
         } else {
-            x += w + ch * 0.75f;
+            x += align == Qt::AlignLeft ? -w - ch * 0.75 : w + ch * 0.75;
         }
     }
 
-    if (untilMarkShowTime) {
+    if (distanceToMarkShowTime) {
+        const auto s = timeSecToString(distance.m_time);
         m_digitsRenderer.draw(matrix,
-                x,
+                align == Qt::AlignLeft ? x - m_digitsRenderer.textWidth(s) : x,
                 y,
-                timeSecToString(m_timeUntilMark));
+                s);
     }
 }
 
@@ -458,59 +531,53 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
             pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
 }
 
-void allshader::WaveformRenderMark::updateUntilMark(
-        double playPosition, double nextMarkPosition) {
-    m_beatsUntilMark = 0;
-    m_timeUntilMark = 0.0;
-    if (nextMarkPosition == std::numeric_limits<double>::max()) {
-        return;
+allshader::WaveformRenderMark::Distance
+allshader::WaveformRenderMark::distanceSinceMark(mixxx::BeatsPointer trackBeats,
+        double playPosition,
+        double markPosition) {
+    Distance result{};
+
+    if (markPosition == std::numeric_limits<double>::min()) {
+        return result;
     }
 
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    auto itCurrentBeat = ceilBeat(trackBeats, playPosition);
+    auto itMarkBeat = nearestBeat(trackBeats, markPosition);
+    const double elapsedTime = m_pTimeElapsedControl->get();
 
-    if (!trackInfo) {
-        return;
+    // As playPosition corresponds with elapsedTime,
+    // we calculate the proportional part of playPosition - markPosition
+    result.m_beats = std::distance(itMarkBeat, itCurrentBeat);
+    result.m_time = std::max(0.0,
+            elapsedTime * (playPosition - markPosition) /
+                    playPosition);
+
+    return result;
+}
+
+allshader::WaveformRenderMark::Distance
+allshader::WaveformRenderMark::distanceUntilMark(mixxx::BeatsPointer trackBeats,
+        double playPosition,
+        double markPosition) {
+    Distance result{};
+
+    if (markPosition == std::numeric_limits<double>::max()) {
+        return result;
     }
 
-    const double endPosition = m_waveformRenderer->getTrackSamples();
+    auto itCurrentBeat = floorBeat(trackBeats, playPosition);
+    auto itMarkBeat = nearestBeat(trackBeats, markPosition);
     const double remainingTime = m_pTimeRemainingControl->get();
+    const double endPosition = m_waveformRenderer->getTrackSamples();
 
-    mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
-    if (!trackBeats) {
-        return;
-    }
-
-    auto itA = trackBeats->iteratorFrom(
-            mixxx::audio::FramePos::fromEngineSamplePos(playPosition));
-    auto itB = trackBeats->iteratorFrom(
-            mixxx::audio::FramePos::fromEngineSamplePos(nextMarkPosition));
-
-    // itB is the beat at or after the nextMarkPosition.
-    if (itB->toEngineSamplePos() > nextMarkPosition) {
-        // if itB is after nextMarkPosition, the previous beat might be closer
-        // and it the one we are interested in
-        if (nextMarkPosition - (itB - 1)->toEngineSamplePos() <
-                itB->toEngineSamplePos() - nextMarkPosition) {
-            itB--;
-        }
-    }
-
-    if (std::abs(itA->toEngineSamplePos() - playPosition) < 1) {
-        m_currentBeatPosition = itA->toEngineSamplePos();
-        m_beatsUntilMark = std::distance(itA, itB);
-        itA++;
-        m_nextBeatPosition = itA->toEngineSamplePos();
-    } else {
-        m_nextBeatPosition = itA->toEngineSamplePos();
-        itA--;
-        m_currentBeatPosition = itA->toEngineSamplePos();
-        m_beatsUntilMark = std::distance(itA, itB);
-    }
+    result.m_beats = std::distance(itCurrentBeat, itMarkBeat);
     // As endPosition - playPosition corresponds with remainingTime,
-    // we calculate the proportional part of nextMarkPosition - playPosition
-    m_timeUntilMark = std::max(0.0,
-            remainingTime * (nextMarkPosition - playPosition) /
+    // we calculate the proportional part of markPosition - playPosition
+    result.m_time = std::max(0.0,
+            remainingTime * (markPosition - playPosition) /
                     (endPosition - playPosition));
+
+    return result;
 }
 
 float allshader::WaveformRenderMark::getMaxHeightForText() const {

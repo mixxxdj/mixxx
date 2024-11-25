@@ -135,10 +135,12 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
           m_overviewNormalized(false),
+          m_sinceMarkShowBeats(false),
+          m_sinceMarkShowTime(false),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
-          m_untilMarkAlign(Qt::AlignVCenter),
-          m_untilMarkTextPointSize(24),
+          m_distanceToMarkAlign(Qt::AlignVCenter),
+          m_distanceToMarkTextPointSize(24),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -431,6 +433,27 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
             WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
     setPlayMarkerPosition(m_playMarkerPosition);
 
+    int sinceMarkShowBeats =
+            m_config->getValueString(
+                            ConfigKey("[Waveform]", "SinceMarkShowBeats"))
+                    .toInt(&ok);
+    if (ok) {
+        setSinceMarkShowBeats(static_cast<bool>(sinceMarkShowBeats));
+    } else {
+        m_config->set(ConfigKey("[Waveform]", "SinceMarkShowBeats"),
+                ConfigValue(m_sinceMarkShowBeats));
+    }
+    int sinceMarkShowTime =
+            m_config->getValueString(
+                            ConfigKey("[Waveform]", "SinceMarkShowTime"))
+                    .toInt(&ok);
+    if (ok) {
+        setSinceMarkShowTime(static_cast<bool>(sinceMarkShowTime));
+    } else {
+        m_config->set(ConfigKey("[Waveform]", "SinceMarkShowTime"),
+                ConfigValue(m_sinceMarkShowTime));
+    }
+
     int untilMarkShowBeats =
             m_config->getValueString(
                             ConfigKey("[Waveform]", "UntilMarkShowBeats"))
@@ -452,12 +475,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
                 ConfigValue(m_untilMarkShowTime));
     }
 
-    setUntilMarkAlign(toUntilMarkAlign(
+    setDistanceToMarkAlign(toDistanceToMarkAlign(
             m_config->getValue(ConfigKey("[Waveform]", "UntilMarkAlign"),
-                    toUntilMarkAlignIndex(m_untilMarkAlign))));
-    setUntilMarkTextPointSize(
+                    toDistanceToMarkAlignIndex(m_distanceToMarkAlign))));
+    setDistanceToMarkTextPointSize(
             m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
-                    m_untilMarkTextPointSize));
+                    m_distanceToMarkTextPointSize));
 
     return true;
 }
@@ -585,7 +608,7 @@ bool WaveformWidgetFactory::setWidgetType(
     return isAcceptable;
 }
 
-bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
+bool WaveformWidgetFactory::widgetTypeSupportsDistanceToMark() const {
     switch (m_configType) {
     case WaveformWidgetType::AllShaderRGBWaveform:
         return true;
@@ -1378,6 +1401,22 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     return format;
 }
 
+void WaveformWidgetFactory::setSinceMarkShowBeats(bool value) {
+    m_sinceMarkShowBeats = value;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]", "SinceMarkShowBeats"),
+                ConfigValue(m_sinceMarkShowBeats));
+    }
+}
+
+void WaveformWidgetFactory::setSinceMarkShowTime(bool value) {
+    m_sinceMarkShowTime = value;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]", "SinceMarkShowTime"),
+                ConfigValue(m_sinceMarkShowTime));
+    }
+}
+
 void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
     m_untilMarkShowBeats = value;
     if (m_config) {
@@ -1394,24 +1433,24 @@ void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
     }
 }
 
-void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
-    m_untilMarkAlign = align;
+void WaveformWidgetFactory::setDistanceToMarkAlign(Qt::Alignment align) {
+    m_distanceToMarkAlign = align;
     if (m_config) {
         m_config->setValue(ConfigKey("[Waveform]", "UntilMarkAlign"),
-                toUntilMarkAlignIndex(m_untilMarkAlign));
+                toDistanceToMarkAlignIndex(m_distanceToMarkAlign));
     }
 }
 
-void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
-    m_untilMarkTextPointSize = value;
+void WaveformWidgetFactory::setDistanceToMarkTextPointSize(int value) {
+    m_distanceToMarkTextPointSize = value;
     if (m_config) {
         m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
-                m_untilMarkTextPointSize);
+                m_distanceToMarkTextPointSize);
     }
 }
 
 // static
-Qt::Alignment WaveformWidgetFactory::toUntilMarkAlign(int index) {
+Qt::Alignment WaveformWidgetFactory::toDistanceToMarkAlign(int index) {
     switch (index) {
     case 0:
         return Qt::AlignTop;
@@ -1424,7 +1463,7 @@ Qt::Alignment WaveformWidgetFactory::toUntilMarkAlign(int index) {
     return Qt::AlignVCenter;
 }
 // static
-int WaveformWidgetFactory::toUntilMarkAlignIndex(Qt::Alignment align) {
+int WaveformWidgetFactory::toDistanceToMarkAlignIndex(Qt::Alignment align) {
     switch (align) {
     case Qt::AlignTop:
         return 0;

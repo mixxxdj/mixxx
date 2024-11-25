@@ -4,6 +4,7 @@
 
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
+#include "track/beats.h"
 #include "util/opengltexture2d.h"
 #include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
@@ -40,6 +41,11 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     void resizeGL(int w, int h) override;
 
   private:
+    struct Distance {
+        int m_beats;
+        double m_time;
+    };
+
     void updateMarkImage(WaveformMarkPointer pMark) override;
 
     void updatePlayPosMarkTexture();
@@ -52,18 +58,25 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
     void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
-    void updateUntilMark(double playPosition, double markerPosition);
-    void drawUntilMark(const QMatrix4x4& matrix, float x);
+    Distance distanceSinceMark(mixxx::BeatsPointer trackBeats,
+            double playPosition,
+            double prevMarkPosition);
+    Distance distanceUntilMark(mixxx::BeatsPointer trackBeats,
+            double playPosition,
+            double prevMarkPosition);
+    void drawDistance(const QMatrix4x4& matrix,
+            float x,
+            Qt::Alignment align,
+            const Distance& distance,
+            bool showDistanceBeats,
+            bool showDistanceTime);
     float getMaxHeightForText() const;
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     OpenGLTexture2D m_playPosMarkTexture;
     DigitsRenderer m_digitsRenderer;
-    int m_beatsUntilMark;
-    double m_timeUntilMark;
-    double m_currentBeatPosition;
-    double m_nextBeatPosition;
+    std::unique_ptr<ControlProxy> m_pTimeElapsedControl;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     bool m_isSlipRenderer;

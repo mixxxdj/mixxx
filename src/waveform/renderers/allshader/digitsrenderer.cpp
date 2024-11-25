@@ -205,6 +205,20 @@ void allshader::DigitsRenderer::updateTexture(
     m_texture.setData(image);
 }
 
+float allshader::DigitsRenderer::textWidth(const QString& s) const {
+    const float space = static_cast<float>(m_penWidth) / 2;
+    float x = 0;
+
+    for (QChar c : s) {
+        if (x != 0) {
+            x -= space;
+        }
+        int index = charToIndex(c);
+        x += m_width[index];
+    }
+    return x;
+}
+
 float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float x,
         float y,
