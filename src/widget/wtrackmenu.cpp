@@ -467,6 +467,23 @@ void WTrackMenu::createActions() {
 
         m_pClearAllMetadataAction = new QAction(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
+
+        m_pSortHotcuesByPositionCompressAction = new QAction(
+                tr("Sort hotcues by position (compress)"), m_pClearMetadataMenu);
+        connect(m_pSortHotcuesByPositionCompressAction,
+                &QAction::triggered,
+                this,
+                [this]() {
+                    slotSortHotcuesByPosition();
+                });
+        m_pSortHotcuesByPositionAction = new QAction(
+                tr("Sort hotcues by position (keep offsets)"), m_pClearMetadataMenu);
+        connect(m_pSortHotcuesByPositionAction,
+                &QAction::triggered,
+                this,
+                [this]() {
+                    slotSortHotcuesByPosition(false);
+                });
     }
 
     if (featureIsEnabled(Feature::BPM)) {
@@ -567,6 +584,9 @@ void WTrackMenu::createActions() {
 }
 
 void WTrackMenu::setupActions() {
+    addAction(m_pSortHotcuesByPositionCompressAction);
+    addAction(m_pSortHotcuesByPositionAction);
+    addSeparator();
     if (featureIsEnabled(Feature::SearchRelated)) {
         addMenu(m_pSearchRelatedMenu);
     }
@@ -697,6 +717,7 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
+        m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
@@ -2054,6 +2075,19 @@ class ResetOutroTrackPointerOperation : public mixxx::TrackPointerOperation {
     }
 };
 
+class SortHotcuesByPositionTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit SortHotcuesByPositionTrackPointerOperation(bool keepGaps = true)
+            : m_keepGaps(keepGaps) {
+    }
+
+  private:
+    void doApply(const TrackPointer& pTrack) const override {
+        pTrack->setHotcueIndicesSortedByPosition(m_keepGaps);
+    }
+    bool m_keepGaps;
+};
+
 } // anonymous namespace
 
 void WTrackMenu::slotResetMainCue() {
@@ -2101,6 +2135,22 @@ void WTrackMenu::slotClearHotCues() {
             tr("Removing hot cues from %n track(s)", "", getTrackCount());
     const auto trackOperator =
             RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::HotCue);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+void WTrackMenu::slotSortHotcuesByPosition(bool keepGaps) {
+    QString progressLabelText;
+    if (keepGaps) {
+        progressLabelText =
+                tr("Sorting hotcues of %n track(s) by position", "", getTrackCount());
+    } else {
+        progressLabelText =
+                tr("Sorting hotcues of %n track(s) by position (compress)", "", getTrackCount());
+    }
+    const auto trackOperator =
+            SortHotcuesByPositionTrackPointerOperation(keepGaps);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
