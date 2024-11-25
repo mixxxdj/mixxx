@@ -11,12 +11,18 @@ class QTableView;
 
 class StarEditor : public QWidget {
     Q_OBJECT
+
+    // The isKeyboardEditMode property is used by the skin stylesheets
+    // to distinguish StarEditor widgets with keyboard edit focus
+    // from those without.
+    Q_PROPERTY(bool isKeyboardEditMode MEMBER m_isKeyboardEditMode)
+
   public:
     StarEditor(QWidget* parent,
             QTableView* pTableView,
             const QModelIndex& index,
             const QStyleOptionViewItem& option,
-            const QColor& focusBorderColor);
+            bool isKeyboardEditMode);
 
     QSize sizeHint() const override;
     void setStarRating(const StarRating& starRating) {
@@ -28,6 +34,10 @@ class StarEditor : public QWidget {
         m_starCount = stars;
     }
     StarRating starRating() { return m_starRating; }
+
+    QModelIndex getModelIndex() {
+        return m_index;
+    }
 
   signals:
     void editingFinished();
@@ -46,7 +56,8 @@ class StarEditor : public QWidget {
     QTableView* m_pTableView;
     QModelIndex m_index;
     QStyleOptionViewItem m_styleOption;
-    QColor m_focusBorderColor;
     StarRating m_starRating;
     int m_starCount;
+    int m_starCountToSave;
+    bool m_isKeyboardEditMode;
 };
