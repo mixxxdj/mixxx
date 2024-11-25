@@ -385,6 +385,8 @@ class WTrackMenu : public QMenu {
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;
+
+    static bool s_showPurgeSuccessPopup;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

@@ -1,5 +1,8 @@
 #include "libraryhashdao.h"
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QString>
 #include <QThread>
 #include <QVariant>

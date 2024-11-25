@@ -10,6 +10,7 @@
 #include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/sample.h"
 
 #ifdef __STEM__
@@ -82,8 +83,10 @@ EngineDeck::EngineDeck(
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
-        m_stemMute.emplace_back(std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("mute"))));
+        auto pMuteButton = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("mute")));
+        pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+        m_stemMute.push_back(std::move(pMuteButton));
     }
 #endif
 }
@@ -126,17 +129,17 @@ void EngineDeck::addStemHandle(const ChannelHandleAndGroup& stemHandleGroup) {
     }
 }
 
-void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
+void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     mixxx::audio::ChannelCount chCount = m_pBuffer->getChannelCount();
     VERIFY_OR_DEBUG_ASSERT(m_stems.size() <= chCount &&
             m_stemMute.size() <= chCount && m_stemGain.size() <= chCount) {
         return;
     };
     mixxx::audio::SampleRate sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
-    int stemCount = chCount / mixxx::kEngineChannelOutputCount;
-    int numFrames = iBufferSize / mixxx::kEngineChannelOutputCount;
-    auto allChannelBufferSize = iBufferSize * stemCount;
-    if (m_stemBuffer.size() < allChannelBufferSize) {
+    unsigned int stemCount = chCount / mixxx::kEngineChannelOutputCount;
+    SINT numFrames = bufferSize / mixxx::kEngineChannelOutputCount;
+    std::size_t allChannelBufferSize = bufferSize * stemCount;
+    if (m_stemBuffer.size() < static_cast<SINT>(allChannelBufferSize)) {
         m_stemBuffer = mixxx::SampleBuffer(allChannelBufferSize);
     }
     m_pBuffer->process(m_stemBuffer.data(), allChannelBufferSize);
@@ -159,7 +162,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
-    for (int stemIdx = 0; stemIdx < stemCount;
+    for (std::size_t stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()
@@ -176,7 +179,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
         pEngineEffectsManager->processPostFaderInPlace(m_stems[stemIdx].handle(),
                 m_pEffectsManager->getMainHandle(),
                 pOut,
-                iBufferSize,
+                bufferSize,
                 sampleRate,
                 featureState,
                 m_stemsGainCache[stemIdx],
@@ -204,6 +207,16 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     VERIFY_OR_DEBUG_ASSERT(deckToClone) {
         return;
     }
+    // Sampler and preview decks don't have stem controls
+    if (!isPrimaryDeck() || !deckToClone->isPrimaryDeck()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_stemGain.size() == mixxx::kMaxSupportedStems &&
+            m_stemMute.size() == mixxx::kMaxSupportedStems &&
+            deckToClone->m_stemGain.size() == mixxx::kMaxSupportedStems &&
+            deckToClone->m_stemMute.size() == mixxx::kMaxSupportedStems) {
+        return;
+    }
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
@@ -211,18 +224,18 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
 }
 #endif
 
-void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
+void EngineDeck::process(CSAMPLE* pOut, const std::size_t bufferSize) {
     // Feed the incoming audio through if passthrough is active
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     if (isPassthroughActive() && sampleBuffer) {
-        SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
+        SampleUtil::copy(pOut, sampleBuffer, bufferSize);
         m_bPassthroughWasActive = true;
         m_sampleBuffer = nullptr;
         m_pPregain->setSpeedAndScratching(1, false);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
-            SampleUtil::clear(pOut, iBufferSize);
+            SampleUtil::clear(pOut, bufferSize);
             m_bPassthroughWasActive = false;
             return;
         }
@@ -232,11 +245,11 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         if (m_pBuffer->getChannelCount() <= mixxx::kEngineChannelOutputCount) {
             // Process a single mono or stereo channel
 #endif
-            m_pBuffer->process(pOut, iBufferSize);
+            m_pBuffer->process(pOut, bufferSize);
 #ifdef __STEM__
         } else {
             // Process multiple stereo channels (stems) and mix them together
-            processStem(pOut, iBufferSize);
+            processStem(pOut, bufferSize);
         }
 #endif
         m_pPregain->setSpeedAndScratching(m_pBuffer->getSpeed(), m_pBuffer->getScratching());
@@ -244,19 +257,19 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     }
 
     // Apply pregain
-    m_pPregain->process(pOut, iBufferSize);
+    m_pPregain->process(pOut, bufferSize);
 
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
         pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
                 m_pEffectsManager->getMainHandle(),
                 pOut,
-                iBufferSize,
+                bufferSize,
                 mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
     }
 
     // Update VU meter
-    m_vuMeter.process(pOut, iBufferSize);
+    m_vuMeter.process(pOut, bufferSize);
 }
 
 void EngineDeck::collectFeatures(GroupFeatureState* pGroupFeatures) const {
@@ -269,8 +282,8 @@ void EngineDeck::postProcessLocalBpm() {
     m_pBuffer->postProcessLocalBpm();
 }
 
-void EngineDeck::postProcess(const int iBufferSize) {
-    m_pBuffer->postProcess(iBufferSize);
+void EngineDeck::postProcess(const std::size_t bufferSize) {
+    m_pBuffer->postProcess(bufferSize);
 }
 
 EngineBuffer* EngineDeck::getEngineBuffer() {

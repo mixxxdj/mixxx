@@ -58,9 +58,9 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
     m_compression = static_cast<double>(settings.getCompression()) / 8.0;
 }
 
-void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
+void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     if (m_pClampBuffer) {
-        SINT numSamplesLeft = iBufferSize;
+        SINT numSamplesLeft = bufferSize;
         while (numSamplesLeft > 0) {
             const SINT numSamplesToWrite = math_min(numSamplesLeft, kEncBufferSize);
             convertFloat32ToIntFormat(m_pClampBuffer.get(),
@@ -72,7 +72,7 @@ void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const int iBufferS
             numSamplesLeft -= numSamplesToWrite;
         }
     } else {
-        sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+        sf_write_float(m_pSndfile, pBuffer, bufferSize);
     }
 }
 

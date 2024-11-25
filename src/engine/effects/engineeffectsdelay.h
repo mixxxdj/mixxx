@@ -71,7 +71,7 @@ class EngineEffectsDelay final : public EngineObject {
     /// as actual and the output buffer is filled using cross-fading
     /// of the presumed output buffer for the previous delay value
     /// and of the output buffer created using the new delay value.
-    void process(CSAMPLE* pInOut, const int iBufferSize) override;
+    void process(CSAMPLE* pInOut, const std::size_t bufferSize) override;
 
   private:
     SINT m_currentDelaySamples;
