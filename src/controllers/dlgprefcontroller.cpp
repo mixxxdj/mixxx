@@ -448,12 +448,14 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     // qDebug() << "Enumerating mappings for controller" << m_pController->getName();
 
     // Check the text color of the palette for whether to use dark or light icons
+    // TODO Update icons when stylesheet is set
     QDir iconsPath;
-    if (!Color::isDimColor(palette().text().color())) {
-        iconsPath.setPath(":/images/preferences/light/");
-    } else {
-        iconsPath.setPath(":/images/preferences/dark/");
-    }
+    // if (!Color::isDimColor(palette().text().color())) {
+    //     iconsPath.setPath(":/images/preferences/light/");
+    // } else {
+    //     iconsPath.setPath(":/images/preferences/dark/");
+    // }
+    iconsPath.setPath(":/images/preferences/light/");
 
     // Insert a dummy item at the top to try to make it less confusing.
     // (We don't want the first found file showing up as the default item when a
