@@ -3,6 +3,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QByteArrayView>
+#include <QMetaEnum>
 #include <QScopedPointer>
 #include <QTemporaryFile>
 #include <QThread>
@@ -12,6 +14,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #ifdef MIXXX_USE_QML
 #include <QQuickItem>
 
@@ -661,12 +664,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUndefinedOnUnknownCharset) {
     const auto result = evaluate("engine.convertCharset('NULL', 'Hello!')");
 
-    EXPECT_EQ(qjsvalue_cast<QByteArray>(result), QByteArrayLiteral(""));
-}
-
-template<int N>
-QByteArray intByteArray(const char (&array)[N]) {
-    return QByteArray(array, N);
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result), QByteArrayView(""));
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
@@ -675,7 +673,7 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
 
     // ISO-8859-15 ecoded 'Hello!'
     EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
-            intByteArray({0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21}));
+            QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
@@ -683,7 +681,7 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset
 
     // ISO-8859-15 ecoded 'Hello!'
     EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
-            intByteArray({0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21}));
+            QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
@@ -691,8 +689,48 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
             evaluate("engine.convertCharset('ISO-8859-15', 'مايأ نامز')"));
 
     EXPECT_EQ(result,
-            intByteArray(
-                    {0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00}));
+            QByteArrayView::fromArray(
+                    {'\x00', '\x00', '\x00', '\x00', '\x20', '\x00', '\x00', '\x00', '\x00'}));
+}
+
+#define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! 😊"
+
+static int convertedCharsetForString(ControllerScriptInterfaceLegacy::WellKnownCharsets charset) {
+    // the expected length after conversion of COMPLICATEDSTRINGLITERAL
+    using enum ControllerScriptInterfaceLegacy::WellKnownCharsets;
+    switch (charset) {
+    case Latin9:
+    case ISO_8859_15:
+        return 32;
+    case Latin1:
+    case ISO_8859_1:
+        return 33;
+    case UCS2:
+    case ISO_10646_UCS_2:
+        return 68;
+    }
+    // unreachable (TODO assert false?)
+    return 0;
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllWellKnownCharsets) {
+    QMetaEnum charsetEnumEntry = QMetaEnum::fromType<
+            ControllerScriptInterfaceLegacy::WellKnownCharsets>();
+
+    for (int i = 0; i < charsetEnumEntry.keyCount(); ++i) {
+        QString key = charsetEnumEntry.key(i);
+        auto enumValue =
+                static_cast<ControllerScriptInterfaceLegacy::WellKnownCharsets>(
+                        charsetEnumEntry.value(i));
+        QString source = QStringLiteral(
+                "engine.convertCharset(engine.WellKnownCharsets.%1, "
+                "'" COMPLICATEDSTRINGLITERAL "')")
+                                 .arg(key);
+        auto result = qjsvalue_cast<QByteArray>(evaluate(source));
+        EXPECT_EQ(result.size(), convertedCharsetForString(enumValue))
+                << "Unexpected length of converted string for encoding: '"
+                << key.toStdString() << "'";
+    }
 }
 
 #ifdef MIXXX_USE_QML

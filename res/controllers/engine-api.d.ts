@@ -319,15 +319,13 @@ declare namespace engine {
      * Characters that are unsupported by target charset will be transformed to null character (0x00).
      * @param targetCharset The charset to encode the string into.
      * @param value The string to encode
-     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error.
+     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
     function convertCharset(targetCharset: string, value: string): ArrayBuffer
 
     /**
-     * Version of {@link engine.convertCharset} to use with {@link engine.WellKnownCharsets}.
-     * @param targetCharset The charset to encode the string into.
      * @param value The string to encode
-     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error.
+     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
     function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer
 }
