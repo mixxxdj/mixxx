@@ -48,6 +48,7 @@ class AudioUnitManager {
   private:
     QString m_name;
     std::atomic<bool> m_isInstantiated;
+    dispatch_group_t _Nonnull m_instantiationGroup;
     AudioUnit _Nullable m_audioUnit;
 
     AudioUnitManager(AVAudioUnitComponent* _Nullable component);
