@@ -38,6 +38,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
     QUrl helpUrl() const override;
 
+    void updateColoredLinkTexts() override;
+
   public slots:
     // Common preference page slots.
     void slotUpdate() override;

@@ -7,5 +7,5 @@
 class DlgAbout : public QDialog, public Ui::DlgAboutDlg {
     Q_OBJECT
   public:
-    DlgAbout();
+    DlgAbout(QWidget* pParent);
 };

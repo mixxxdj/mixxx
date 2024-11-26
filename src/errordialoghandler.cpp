@@ -152,7 +152,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         return;
     }
 
-    QMessageBox* pMsgBox = new QMessageBox();
+    QMessageBox* pMsgBox = new QMessageBox(mixxx::widgethelper::getSkinWidget());
     pMsgBox->setIcon(props->m_icon);
     pMsgBox->setWindowTitle(props->m_title);
     pMsgBox->setText(props->m_text);

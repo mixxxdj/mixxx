@@ -35,11 +35,10 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
 } // namespace
 
 DlgTrackInfo::DlgTrackInfo(
+        QWidget* pParent,
         UserSettingsPointer pUserSettings,
         const TrackModel* trackModel)
-        // No parent because otherwise it inherits the style parent's
-        // style which can make it unreadable. Bug #673411
-        : QDialog(nullptr),
+        : QDialog(pParent),
           m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
@@ -813,7 +812,9 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     if (!m_pDlgTagFetcher) {
         m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-                m_pUserSettings, m_pTrackModel);
+                this,
+                m_pUserSettings,
+                m_pTrackModel);
         connect(m_pDlgTagFetcher.get(),
                 &QDialog::finished,
                 this,
