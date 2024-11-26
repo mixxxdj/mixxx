@@ -24,6 +24,11 @@ class AudioUnitManager {
     AudioUnitManager(const AudioUnitManager&) = delete;
     AudioUnitManager& operator=(const AudioUnitManager&) = delete;
 
+    /// Creates a new `AudioUnitManager`, wrapped in a shared pointer. This
+    /// form of instantiation is enforced, since asynchronously instantiated
+    /// audio units may capture a pointer to the manager instance (that would be
+    /// unsafe if the manager is deinitialized to early, since the callback
+    /// would be left with a dangling pointer).
     static AudioUnitManagerPointer create(
             AVAudioUnitComponent* _Nullable component = nil,
             AudioUnitInstantiationType instantiationType =
