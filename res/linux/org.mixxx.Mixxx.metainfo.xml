@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.2" type="development" date="2024-10-30" timestamp="1730312112">
+    <release version="2.4.2" type="development" date="2024-11-10" timestamp="1731279472">
       <description>
  <p>
   Controller Mappings
@@ -105,6 +105,10 @@
   <li>
    Denon MC7000: Fix star up/down logic by only handling button down events
    #13588
+  </li>
+  <li>
+   Intech TEK2: Add initial mapping
+   #13521
   </li>
   <li>
    Korg Kaoss DJ: Update script
@@ -134,9 +138,10 @@
    #13375
   </li>
   <li>
-   Pioneer DDJ-400 and DDJ-FLX4: Remove tap beat mapping to resolve conflict with toggle quantize
+   Pioneer DDJ-400 and DDJ-FLX4: Remove tap beat mapping to resolve conflict with toggle quantize and fix shift + play
    #13815
    #13813
+   #13857
   </li>
   <li>
    Reloop Beatmix 2/4: Fix eject button and jog LED being lit on track unload
@@ -341,6 +346,21 @@
   <li>
    Fix unnecessary painting with covers in library
    #13715
+  </li>
+  <li>
+   Fix check for unrelated decks playing when starting Auto DJ
+   #13762
+   #13734
+  </li>
+  <li>
+   Fix read before m_bufferInt during scratching
+   #13917
+   #13916
+  </li>
+  <li>
+   Fix waveform EQ High&amp;Mid visualization
+   #13923
+   #13922
   </li>
  </ul>
 </description>
