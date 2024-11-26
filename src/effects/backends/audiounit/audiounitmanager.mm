@@ -1,17 +1,17 @@
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
-#include "util/assert.h"
+#import <dispatch/dispatch.h>
 
-#include <QElapsedTimer>
 #include <QString>
-#include <QThread>
 
 #include "effects/backends/audiounit/audiounitmanager.h"
+#include "util/assert.h"
 
 AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component)
         : m_name(component != nil ? QString::fromNSString([component name])
                                   : "Unknown"),
-          m_isInstantiated(false) {
+          m_isInstantiated(false),
+          m_instantiationGroup(dispatch_group_create()) {
 }
 
 AudioUnitManagerPointer AudioUnitManager::create(
@@ -59,22 +59,11 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() const {
 }
 
 bool AudioUnitManager::waitForAudioUnit(int timeoutMs) const {
-    // NOTE: We use a sleep loop here since both a QWaitCondition and GCD
-    // DispatchGroup-based implementation seem to result in spurious crashes.
-    // See https://github.com/mixxxdj/mixxx/pull/13887#issuecomment-2486459443
-    // TODO: Debug the precise issue
-
-    QElapsedTimer timer;
-    timer.start();
-
-    while (!m_isInstantiated.load()) {
-        if (timer.elapsed() > timeoutMs) {
-            return false;
-        }
-        QThread::msleep(10);
-    }
-
-    return true;
+    bool success =
+            dispatch_group_wait(m_instantiationGroup,
+                    dispatch_time(DISPATCH_TIME_NOW, timeoutMs * 1000000)) == 0;
+    DEBUG_ASSERT(!success || m_isInstantiated.load());
+    return success;
 }
 
 void AudioUnitManager::instantiateAudioUnitAsync(
@@ -96,6 +85,8 @@ void AudioUnitManager::instantiateAudioUnitAsync(
     qDebug() << "Instantiating Audio Unit" << pManager->m_name
              << "asynchronously";
 
+    dispatch_group_enter(pManager->m_instantiationGroup);
+
     // TODO: Fix the weird formatting of blocks
     // clang-format off
     AudioComponentInstantiate(component.audioComponent, options, ^(AudioUnit _Nullable audioUnit, OSStatus error) {
@@ -107,6 +98,7 @@ void AudioUnitManager::instantiateAudioUnitAsync(
         }
 
         pManager->initializeWith(audioUnit);
+        dispatch_group_leave(pManager->m_instantiationGroup);
     });
     // clang-format on
 }
