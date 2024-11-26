@@ -4,6 +4,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QSharedPointer>
 #include <QString>
 
 enum AudioUnitInstantiationType {
@@ -12,16 +13,21 @@ enum AudioUnitInstantiationType {
     AsyncOutOfProcess,
 };
 
+class AudioUnitManager;
+typedef QSharedPointer<AudioUnitManager> AudioUnitManagerPointer;
+
 /// A RAII wrapper around an `AudioUnit`.
 class AudioUnitManager {
   public:
-    AudioUnitManager(AVAudioUnitComponent* _Nullable component = nil,
-            AudioUnitInstantiationType instantiationType =
-                    AudioUnitInstantiationType::AsyncOutOfProcess);
     ~AudioUnitManager();
 
     AudioUnitManager(const AudioUnitManager&) = delete;
     AudioUnitManager& operator=(const AudioUnitManager&) = delete;
+
+    static AudioUnitManagerPointer create(
+            AVAudioUnitComponent* _Nullable component = nil,
+            AudioUnitInstantiationType instantiationType =
+                    AudioUnitInstantiationType::AsyncOutOfProcess);
 
     /// Fetches the audio unit if already instantiated.
     ///
@@ -35,8 +41,13 @@ class AudioUnitManager {
     std::atomic<bool> m_isInstantiated;
     AudioUnit _Nullable m_audioUnit;
 
-    void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nonnull component, bool inProcess);
-    void instantiateAudioUnitSync(AVAudioUnitComponent* _Nonnull component);
+    AudioUnitManager(AVAudioUnitComponent* _Nullable component);
+
+    static void instantiateAudioUnitAsync(AudioUnitManagerPointer manager,
+            AVAudioUnitComponent* _Nonnull component,
+            bool inProcess);
+    static void instantiateAudioUnitSync(AudioUnitManagerPointer manager,
+            AVAudioUnitComponent* _Nonnull component);
 
     void initializeWith(AudioUnit _Nullable audioUnit);
 };

@@ -18,10 +18,11 @@ AudioUnitManifest::AudioUnitManifest(
     setDescription(QString::fromNSString([component typeName]));
     setAuthor(QString::fromNSString([component manufacturerName]));
 
-    // Try instantiating the unit in-process to fetch its properties quickly
+    // Instantiate audio unit (in-process) to load parameters
+    AudioUnitManagerPointer manager = AudioUnitManager::create(
+            component, AudioUnitInstantiationType::Sync);
 
-    AudioUnitManager manager{component, AudioUnitInstantiationType::Sync};
-    AudioUnit audioUnit = manager.getAudioUnit();
+    AudioUnit audioUnit = manager->getAudioUnit();
 
     if (audioUnit) {
         // Fetch number of parameters
