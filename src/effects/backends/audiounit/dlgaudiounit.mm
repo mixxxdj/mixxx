@@ -25,6 +25,13 @@ std::variant<NSView* _Nonnull, QString> createNativeUI(
     qDebug() << "Loading UI of Audio Unit" << name << "with width" << size.width
              << "and height" << size.height;
 
+    const int TIMEOUT_MS = 2000;
+    if (!pManager->waitForAudioUnit(TIMEOUT_MS)) {
+        return "Instantiating the UI took more than " +
+                QString::number(TIMEOUT_MS) +
+                "ms, try closing and reopening the UI!";
+    }
+
     AudioUnit _Nullable audioUnit = pManager->getAudioUnit();
 
     if (audioUnit == nil) {
