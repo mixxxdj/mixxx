@@ -72,11 +72,6 @@ void AudioUnitManager::instantiateAudioUnitAsync(
             return;
         }
 
-        VERIFY_OR_DEBUG_ASSERT(audioUnit != nil) {
-            qWarning() << "Could not instantiate Audio Unit" << m_name << "...but the error is noErr, what's going on?";
-            return;
-        }
-
         initializeWith(audioUnit);
     });
     // clang-format on
@@ -96,7 +91,14 @@ void AudioUnitManager::instantiateAudioUnitSync(
     initializeWith(audioUnit);
 }
 
-void AudioUnitManager::initializeWith(AudioUnit _Nonnull audioUnit) {
+void AudioUnitManager::initializeWith(AudioUnit _Nullable audioUnit) {
+    VERIFY_OR_DEBUG_ASSERT(audioUnit != nil) {
+        qWarning() << "Instantiated Audio Unit" << m_name
+                   << " is null, despite not erroring on initialization, "
+                      "something's wrong";
+        return;
+    }
+
     VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
         qWarning() << "Audio Unit" << m_name
                    << "cannot be initialized after already having been "

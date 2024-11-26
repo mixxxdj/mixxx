@@ -38,5 +38,5 @@ class AudioUnitManager {
     void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nonnull component, bool inProcess);
     void instantiateAudioUnitSync(AVAudioUnitComponent* _Nonnull component);
 
-    void initializeWith(AudioUnit _Nonnull audioUnit);
+    void initializeWith(AudioUnit _Nullable audioUnit);
 };
