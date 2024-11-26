@@ -3480,6 +3480,7 @@ if (STEM)
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/widget/wtrackstemmenu.cpp
     src/widget/wstemlabel.cpp
   )
   if(QOPENGL)
