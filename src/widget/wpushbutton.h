@@ -5,7 +5,7 @@
 #include <QVector>
 #include <memory>
 
-#include "control/controlpushbutton.h"
+#include "control/controlbuttonmode.h"
 #include "util/fpclassify.h"
 #include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
