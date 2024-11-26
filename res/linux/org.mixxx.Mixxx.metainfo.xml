@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.2" type="development" date="2024-11-19" timestamp="1732051068">
+    <release version="2.4.2" type="development" date="2024-11-10" timestamp="1731279472">
       <description>
  <p>
   Controller Mappings
@@ -351,6 +351,16 @@
    Fix check for unrelated decks playing when starting Auto DJ
    #13762
    #13734
+  </li>
+  <li>
+   Fix read before m_bufferInt during scratching
+   #13917
+   #13916
+  </li>
+  <li>
+   Fix waveform EQ High&amp;Mid visualization
+   #13923
+   #13922
   </li>
  </ul>
 </description>

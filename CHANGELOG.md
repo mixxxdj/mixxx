@@ -124,6 +124,12 @@
 * Fix check for unrelated decks playing when starting Auto DJ
   [#13762](https://github.com/mixxxdj/mixxx/pull/13762)
   [#13734](https://github.com/mixxxdj/mixxx/issues/13734)
+* Fix read before m_bufferInt during scratching
+  [#13917](https://github.com/mixxxdj/mixxx/pull/13917)
+  [#13916](https://github.com/mixxxdj/mixxx/issues/13916)
+* Fix waveform EQ High&Mid visualization
+  [#13923](https://github.com/mixxxdj/mixxx/pull/13923)
+  [#13922](https://github.com/mixxxdj/mixxx/issues/13922)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
