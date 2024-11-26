@@ -58,7 +58,7 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() const {
     return m_audioUnit;
 }
 
-bool AudioUnitManager::waitForAudioUnit(int timeoutMs) {
+bool AudioUnitManager::waitForAudioUnit(int timeoutMs) const {
     // NOTE: We use a sleep loop here since both a QWaitCondition and GCD
     // DispatchGroup-based implementation seem to result in spurious crashes.
     // See https://github.com/mixxxdj/mixxx/pull/13887#issuecomment-2486459443
