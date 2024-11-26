@@ -43,7 +43,7 @@ class AudioUnitManager {
     ///
     /// Returns true if the audio unit was instantiated successfully and false if
     /// the timeout was reached instead.
-    bool waitForAudioUnit(int timeoutMs);
+    bool waitForAudioUnit(int timeoutMs) const;
 
   private:
     QString m_name;
