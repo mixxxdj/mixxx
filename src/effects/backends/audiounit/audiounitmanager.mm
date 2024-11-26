@@ -2,7 +2,9 @@
 #import <AudioToolbox/AudioToolbox.h>
 #include "util/assert.h"
 
+#include <QElapsedTimer>
 #include <QString>
+#include <QThread>
 
 #include "effects/backends/audiounit/audiounitmanager.h"
 
@@ -54,6 +56,25 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() const {
         return nil;
     }
     return m_audioUnit;
+}
+
+bool AudioUnitManager::waitForAudioUnit(int timeoutMs) {
+    // NOTE: We use a sleep loop here since both a QWaitCondition and GCD
+    // DispatchGroup-based implementation seem to result in spurious crashes.
+    // See https://github.com/mixxxdj/mixxx/pull/13887#issuecomment-2486459443
+    // TODO: Debug the precise issue
+
+    QElapsedTimer timer;
+    timer.start();
+
+    while (!m_isInstantiated.load()) {
+        if (timer.elapsed() > timeoutMs) {
+            return false;
+        }
+        QThread::msleep(10);
+    }
+
+    return true;
 }
 
 void AudioUnitManager::instantiateAudioUnitAsync(
