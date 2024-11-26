@@ -365,8 +365,13 @@ bool WTrackPropertyEditor::eventFilter(QObject* pObj, QEvent* pEvent) {
     } else if (pEvent->type() == QEvent::FocusOut) {
         // Close and commit if any other widget gets focus
         if (isVisible()) {
-            hide();
-            emit commitEditorData(text());
+            QFocusEvent* fe = static_cast<QFocusEvent*>(pEvent);
+            // For any FocusOut, except when showing the QLineEdit's menu,
+            // we hide() and commit the current text.
+            if (fe->reason() != Qt::PopupFocusReason) {
+                hide();
+                emit commitEditorData(text());
+            }
         }
     }
     return QLineEdit::eventFilter(pObj, pEvent);
