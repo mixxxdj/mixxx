@@ -38,7 +38,7 @@ AudioUnitManager::~AudioUnitManager() {
     }
 }
 
-AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
+AudioUnit _Nullable AudioUnitManager::getAudioUnit() const {
     // We need to load this atomic flag to ensure that we don't get a partial
     // read of the audio unit pointer (probably extremely uncommon, but not
     // impossible: https://belkadan.com/blog/2023/10/Implicity-Atomic)
