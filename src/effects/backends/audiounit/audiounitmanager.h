@@ -39,6 +39,12 @@ class AudioUnitManager {
     /// want to e.g. block on a mutex.
     AudioUnit _Nullable getAudioUnit() const;
 
+    /// Blocks until the audio unit has been instantiated.
+    ///
+    /// Returns true if the audio unit was instantiated successfully and false if
+    /// the timeout was reached instead.
+    bool waitForAudioUnit(int timeoutMs);
+
   private:
     QString m_name;
     std::atomic<bool> m_isInstantiated;
