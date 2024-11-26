@@ -4,17 +4,15 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
-#include <QSharedPointer>
 #include <QString>
+
+#include "effects/backends/audiounit/audiounitmanagerpointer.h"
 
 enum AudioUnitInstantiationType {
     Sync,
     AsyncInProcess,
     AsyncOutOfProcess,
 };
-
-class AudioUnitManager;
-typedef QSharedPointer<AudioUnitManager> AudioUnitManagerPointer;
 
 /// A RAII wrapper around an `AudioUnit`.
 class AudioUnitManager {
