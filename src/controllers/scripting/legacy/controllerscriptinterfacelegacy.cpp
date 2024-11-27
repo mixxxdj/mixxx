@@ -1063,38 +1063,29 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         const QString& value) {
     switch (targetCharset) {
     case WellKnownCharsets::US_ASCII:
-        return convertCharset(QStringLiteral("US-ASCII"), value);
+        return convertCharsetInternal(QStringLiteral("US-ASCII"), value);
     case WellKnownCharsets::Latin1:
     case WellKnownCharsets::ISO_8859_1:
-        return convertCharset(QStringLiteral("ISO-8859-1"), value);
+        return convertCharsetInternal(QStringLiteral("ISO-8859-1"), value);
     case WellKnownCharsets::Latin9:
     case WellKnownCharsets::ISO_8859_15:
-        return convertCharset(QStringLiteral("ISO-8859-15"), value);
+        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
     case WellKnownCharsets::UCS2:
     case WellKnownCharsets::ISO_10646_UCS_2:
-        return convertCharset(QStringLiteral("ISO-10646-UCS-2"), value);
+        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
     case WellKnownCharsets::UTF_8:
-        return convertCharset(QStringLiteral("UTF-8"), value);
+        return convertCharsetInternal(QStringLiteral("UTF-8"), value);
     case WellKnownCharsets::UTF_16BE:
-        return convertCharset(QStringLiteral("UTF-16BE"), value);
+        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
     case WellKnownCharsets::UTF_16LE:
-        return convertCharset(QStringLiteral("UTF-16LE"), value);
+        return convertCharsetInternal(QStringLiteral("UTF-16LE"), value);
     }
     m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
     return QByteArray();
 }
 
-QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
         const QString& targetCharset, const QString& value) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
-    QByteArray encoderNameArray = targetCharset.toUtf8();
-    auto* pCodec = QTextCodec::codecForName(encoderNameArray);
-    if (!pCodec) {
-        qCWarning(m_logger) << "Unable to open encoder";
-        return QByteArray();
-    }
-    return std::unique_ptr(pCodec->makeEncoder())->fromUnicode(value);
-#else
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     QAnyStringView encoderName = QAnyStringView(targetCharset);
 #else
@@ -1103,9 +1094,8 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
 #endif
     QStringEncoder fromUtf16 = QStringEncoder(encoderName);
     if (!fromUtf16.isValid()) {
-        qCWarning(m_logger) << "Unable to open encoder";
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
         return QByteArray();
     }
     return fromUtf16(value);
-#endif
 }
