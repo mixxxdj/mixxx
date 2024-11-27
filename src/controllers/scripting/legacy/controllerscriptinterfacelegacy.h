@@ -18,12 +18,16 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
     enum class WellKnownCharsets {
+        US_ASCII,
         Latin1,
         ISO_8859_1,
         Latin9,
         ISO_8859_15,
         UCS2,
-        ISO_10646_UCS_2
+        ISO_10646_UCS_2,
+        UTF_8,
+        UTF_16BE,
+        UTF_16LE,
     };
     Q_ENUM(WellKnownCharsets)
 

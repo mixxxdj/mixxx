@@ -303,12 +303,16 @@ declare namespace engine {
     function softStart(deck: number, activate: boolean, factor?: number): void;
 
     enum WellKnownCharsets {
+        US_ASCII,
         Latin1,
         ISO_8859_1,
         Latin9,
         ISO_8859_15,
-        UCS2,
-        ISO_10646_UCS_2
+        UCS2, // with prepended Byte-Order-Mark
+        ISO_10646_UCS_2, // with prepended Byte-Order-Mark
+        UTF_8,
+        UTF_16BE,
+        UTF_16LE,
     }
 
     /**

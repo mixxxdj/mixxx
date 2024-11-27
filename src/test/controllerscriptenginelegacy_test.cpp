@@ -699,12 +699,18 @@ static int convertedCharsetForString(ControllerScriptInterfaceLegacy::WellKnownC
     // the expected length after conversion of COMPLICATEDSTRINGLITERAL
     using enum ControllerScriptInterfaceLegacy::WellKnownCharsets;
     switch (charset) {
+    case US_ASCII:
     case Latin9:
     case ISO_8859_15:
         return 32;
     case Latin1:
     case ISO_8859_1:
         return 33;
+    case UTF_8:
+        return 63;
+    case UTF_16BE:
+    case UTF_16LE:
+        return 66;
     case UCS2:
     case ISO_10646_UCS_2:
         return 68;
