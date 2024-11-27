@@ -115,13 +115,6 @@ DJCi300.init = function() {
         "[Channel2]": DJCi300.padModeNone
     };
 
-    // Toneplay variables
-    // Toneplay offset (shifts the toneplay keyboard up or down)
-    DJCi300.toneplayOffset = {
-        "[Channel1]": 0,
-        "[Channel2]": 0
-    };
-
     // Slicer variables
     // Slicer storage (stores slicer button positions)
     DJCi300.slicerPoints = {
@@ -370,8 +363,8 @@ DJCi300.jogWheel = function(_channel, _control, value, _status, group) {
 DJCi300._samplesPerBeat = function(group) {
     const sampleRate = engine.getValue(group, "track_samplerate");
     const bpm = engine.getValue(group, "local_bpm");
-    // For some reason, multiplying by 60 makes the size 1/2 as large as it's supposed to be
-    // Hence, we multiply by 120 instead
+    // The sample rate includes both channels (i.e. it is double the framerate)
+    // Hence, we multiply by 2*60 (120) instead of 60 to get the correct sample rate
     const secondsPerBeat = 120/bpm;
     const samplesPerBeat = secondsPerBeat * sampleRate;
     return samplesPerBeat;
@@ -389,7 +382,7 @@ DJCi300._currentPosition = function(group) {
 };
 
 // Mode buttons
-DJCi300.changeMode = function(channel, control, value, _status, group) {
+DJCi300.changeMode = function(_channel, control, value, _status, group) {
     const oldPadMode = DJCi300.padMode[group];
     DJCi300.padMode[group] = control;
 
@@ -430,7 +423,7 @@ DJCi300.changeMode = function(channel, control, value, _status, group) {
 };
 
 // Toneplay
-DJCi300.toneplay = function(channel, control, value, _status, group) {
+DJCi300.toneplay = function(_channel, control, value, _status, group) {
     let button = control - 0x40 + 1;
 
     if (value) {
@@ -451,28 +444,12 @@ DJCi300.toneplay = function(channel, control, value, _status, group) {
         }
 
         // Adjust pitch
-        engine.setValue(group, "reset_key", 1); // Reset to original key
-        button = (button > 8) ? (button - 8) : button;
-        // Adjust key accordingly
-        if (DJCi300.toneplayOffset[group] >= 0) {
-            for (let i = 0; i < DJCi300.toneplayOffset[group]; i++) {
-                engine.setValue(group, "pitch_up", 1);
-            }
-        } else {
-            for (let i = 0; i > DJCi300.toneplayOffset[group]; i--) {
-                engine.setValue(group, "pitch_down", 1);
-            }
-        }
         if (button <= 4) {
             // Buttons 1-4 are +0 to +3 semitones
-            for (let i = 1; i < button; i++) {
-                engine.setValue(group, "pitch_up", 1);
-            }
+            engine.setValue(group, "pitch", button - 1);
             // Buttons 5-8 are -4 to -1 semitones
         } else {
-            for (let i = 8; i >= button; i--) {
-                engine.setValue(group, "pitch_down", 1);
-            }
+            engine.setValue(group, "pitch", button - 9);
         }
     }
 };
@@ -481,9 +458,6 @@ DJCi300.toneplay = function(channel, control, value, _status, group) {
 DJCi300.updateToneplayLED = function(value, group, _control) {
     const status = (group === "[Channel1]") ? 0x96 : 0x97;
     let control = 0x40;
-
-    // Apply offset
-    value -= DJCi300.toneplayOffset[group];
 
     // Cut off the value at -4 and 3 semitones, then round
     value = Math.min(value, 3);
