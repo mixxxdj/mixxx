@@ -72,14 +72,15 @@ repos:
         args: [--fix, --report-unused-disable-directives]
         files: \.m?[jt]s$
         types: [file]
+        verbose: true # always show output so we don't swallow warnings
         stages:
           - pre-commit
           - manual
         additional_dependencies:
           - eslint@^9.14.0
+          - "@eslint/js"
+          - typescript-eslint
           - eslint-plugin-jsdoc@^v50.4.3
-          - "@typescript-eslint/eslint-plugin"
-          - "@typescript-eslint/parser"
           - eslint-plugin-diff@^2.0.3
   - repo: local
     hooks:

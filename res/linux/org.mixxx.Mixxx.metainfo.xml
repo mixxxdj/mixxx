@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-08-13" timestamp="1723570900">
+    <release version="2.5.0" type="development" date="2024-11-26" timestamp="1732661128">
       <description>
  <p>
   Waveforms
@@ -1097,20 +1097,37 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.2" type="development" date="2024-08-13" timestamp="1723570900">
+    <release version="2.4.2" type="stable" date="2024-11-26" timestamp="1732579200">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
+   Denon MC7000: Fix star up/down logic by only handling button down events
+   #13588
+  </li>
+  <li>
+   Intech TEK2: Add initial mapping
+   #13521
+  </li>
+  <li>
    Korg Kaoss DJ: Update script
    #12683
+  </li>
+  <li>
+   MIDI for light: Fix unsound timer handling
+   #13117
   </li>
   <li>
    Novation Dicer: Remove flanger mapping with quickeffect toggle
    #13196
    #13134
+  </li>
+  <li>
+   Novation Launchpad X: Fix detection on macOS
+   #13691
+   #13633
   </li>
   <li>
    Numark PartyMix: Fix EQ (script binding) display name
@@ -1120,6 +1137,21 @@
    Numark Scratch: Add initial mapping
    #4834
    #13375
+  </li>
+  <li>
+   Pioneer DDJ-400 and DDJ-FLX4: Remove tap beat mapping to resolve conflict with toggle quantize and fix shift + play
+   #13815
+   #13813
+   #13857
+  </li>
+  <li>
+   Reloop Beatmix 2/4: Fix eject button and jog LED being lit on track unload
+   #13601
+   #13605
+  </li>
+  <li>
+   Reloop Mixage MK1, MK2, Controller Edition: Add initial mapping
+   #12296
   </li>
   <li>
    Sony SIXAXIS: Fix mapping
@@ -1198,6 +1230,138 @@
    components.Pot
    #11814
    #13463
+  </li>
+  <li>
+   Engine Prime: Fix build-failure
+   #13397
+  </li>
+  <li>
+   Engine Prime: Friendlier error message if export fails
+   #13524
+  </li>
+  <li>
+   macOs: Fix Keyboard shortcuts by not catching num key modifier
+   #13481
+   #13305
+  </li>
+  <li>
+   Skins: fix time display to allow AM/PM
+   #13430
+   #13421
+  </li>
+  <li>
+   Fix detection last sound if track does not end with silence.
+   #13545
+   #13449
+  </li>
+  <li>
+   Remove false positive critical warning related to library columns
+   #13165
+   #13164
+  </li>
+  <li>
+   Fix reading metadata for files with wrong extensions
+   #13218
+   #13205
+  </li>
+  <li>
+   History: remove purged tracks, auto-remove empty playlists
+   #13579
+   #13578
+  </li>
+  <li>
+   Synchronize AutoDJ next deck with top track in queue
+   #12909
+   #8956
+  </li>
+  <li>
+   Playlists: Update play duration and bold state in sidebar when dragging tracks into the playlist table
+   #13591
+   #13590
+   #13575
+  </li>
+  <li>
+   Playlists: Keep correct track selection (# position) when sorting
+   #13103
+  </li>
+  <li>
+   Track file export: Various fixes
+   #13610
+  </li>
+  <li>
+   Controller engine: Unify/improve logging, expand error dialog's Details box
+   #13626
+  </li>
+  <li>
+   Fix quantization in the effect engine (metronome effect)
+   #13636
+   #13733
+  </li>
+  <li>
+   Musicbrainz: Improved messages
+   #13672
+   #13673
+  </li>
+  <li>
+   Fix ReplayGain detection in case of short tracks
+   #13680
+   #13676
+   #13702
+   #13703
+  </li>
+  <li>
+   Track menu: Avoid crash and UX issues with track nullptr
+   #13685
+  </li>
+  <li>
+   Disable Properties shortcut in Computer feature views
+   #13698
+  </li>
+  <li>
+   Overview waveform: Add tooltip info about left-click dragging
+   #13739
+  </li>
+  <li>
+   Make
+   hotcue_focus_color_next
+   /
+   _prev
+   COs
+   ControlPushButton
+   s to allow direct mappings
+   #13764
+  </li>
+  <li>
+   Scaled svg cache to speed up drawing in hidpi mode
+   #13679
+  </li>
+  <li>
+   Update to libdjinterop 0.22.1 for Enigine Prime 4.0.1 support
+   #13790
+  </li>
+  <li>
+   HID: Avoid repeated error messages from hid_write()/hid_read() in case of errors
+   #13692
+   #13660
+  </li>
+  <li>
+   Fix unnecessary painting with covers in library
+   #13715
+  </li>
+  <li>
+   Fix check for unrelated decks playing when starting Auto DJ
+   #13762
+   #13734
+  </li>
+  <li>
+   Fix read before m_bufferInt during scratching
+   #13917
+   #13916
+  </li>
+  <li>
+   Fix waveform EQ High&amp;Mid visualization
+   #13923
+   #13922
   </li>
  </ul>
 </description>

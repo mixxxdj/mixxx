@@ -159,7 +159,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
      * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
-     * @deprecated Use {@link makeConnection} instead
+     * @deprecated Use {@link engine.makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
 
@@ -173,7 +173,10 @@ declare namespace engine {
      */
     function trigger(group: string, name: string): void;
 
-    /** @deprecated Use {@link console.log} instead */
+    /**
+     * @param message string to be logged
+     * @deprecated Use {@link console.log} instead
+     */
     function log(message: string): void;
 
     type TimerID = number;
