@@ -23,6 +23,8 @@ class SmartiesTableModel final : public TrackSetTableModel {
 
     void loadSmartiesList();
 
+    void selectPlaylistsCrates2QVL(QVariantList& playlistsCratesData);
+
     void selectSmarties2QVL(SmartiesId smartiesId, QVariantList& smartiesData);
     //    void selectSmarties2QVL(SmartiesId smartiesId, const QVariantList& smartiesData);
     void saveQVL2Smarties(SmartiesId smartiesId, const QVariantList& smartiesData);

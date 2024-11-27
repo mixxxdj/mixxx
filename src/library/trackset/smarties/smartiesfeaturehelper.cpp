@@ -2,11 +2,16 @@
 
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QRegularExpression>
+#include <QString>
+#include <QStringList>
 
 #include "library/trackcollection.h"
 #include "library/trackset/smarties/smarties.h"
 #include "library/trackset/smarties/smartiessummary.h"
 #include "moc_smartiesfeaturehelper.cpp"
+
+const bool sDebug = false;
 
 SmartiesFeatureHelper::SmartiesFeatureHelper(
         TrackCollection* pTrackCollection,
@@ -30,13 +35,37 @@ QString SmartiesFeatureHelper::proposeNameForNewSmarties(
         }
     } while (m_pTrackCollection->smarties().readSmartiesByName(proposedName));
     // Found an unused smarties name
-    qDebug() << "[SMARTIES] [PROPOSE NEW NAME] -> proposedName" << proposedName;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [PROPOSE NEW NAME] -> proposedName" << proposedName;
+    }
+    proposedName.replace("artist:", "")
+            .replace("title:", "")
+            .replace("album_artist:", "")
+            .replace("album:", "");
+    proposedName.replace("genre:", "")
+            .replace("composer:", "")
+            .replace("grouping:", "")
+            .replace("comment:", "");
+    proposedName.replace("type:", "")
+            .replace("played:", "")
+            .replace("rating:", "")
+            .replace("year:", "");
+    proposedName.replace("key:", "")
+            .replace("bpm:", "")
+            .replace("duration:", "")
+            .replace("datetime_added:", "");
+    proposedName.replace("\"", "");
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [PROPOSE NEW NAME] -> cleaned proposedName" << proposedName;
+    }
     return proposedName;
 }
 
 // EVE
 SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& text) {
-    qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH]";
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH]";
+    }
     Smarties newSmarties;
     const QString proposedSmartiesName =
             proposeNameForNewSmarties(tr("Search for ") + text);
@@ -68,94 +97,323 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     tr("A smarties by that name already exists."));
             continue;
         }
+
+        // here a given text will be converted to parts: terms (fields) and
+        // values QStringList terms = {"artist:", "album_artist:", "album:",
+        // "title:", "genre:", "composer:", "grouping:", "comment:",
+        // "location:", "type:", "played:", "rating:", "year:", "key:", "bpm:",
+        // "duration:", "datetime_added:"}; clean the name
+        newName.replace("artist:", "")
+                .replace("title:", "")
+                .replace("album_artist:", "")
+                .replace("album:", "");
+        newName.replace("genre:", "")
+                .replace("composer:", "")
+                .replace("grouping:", "")
+                .replace("comment:", "");
+        newName.replace("type:", "")
+                .replace("played:", "")
+                .replace("rating:", "")
+                .replace("year:", "");
+        newName.replace("key:", "")
+                .replace("bpm:", "")
+                .replace("duration:", "")
+                .replace("datetime_added:", "");
+        newName.replace("\"", "").replace("   ", " ").replace("  ", " ");
+
+        // clean the input text
+        QStringList stringTerms = {"artist",
+                "title",
+                "album",
+                "album_artist",
+                "genre",
+                "comment",
+                "composer",
+                "filetype",
+                "key"};
+        QStringList dateTerms = {"year", "datetime_added", "last_played_at"};
+        QStringList numberTerms = {"duration", "bpm", "played", "timesplayed", "rating"};
+
+        QString cleanedText = text;
+        // possible typing errors: replace ; / 2x  & 3x colons with a single colon
+        // replace , ?
+        cleanedText.replace("?", "");
+        cleanedText.replace(",", "");
+        cleanedText.replace(";", ":");
+        cleanedText.replace("::", ":");
+        cleanedText.replace(":::", ":");
+        // if the or-symbol | is in the text the combiners will be OR, else AND (default)
+        bool orCombiner = cleanedText.indexOf("|", 0) > 1;
+        cleanedText.replace("|", "");
+
+        if (sDebug) {
+            qDebug() << "Cleaned Text:" << cleanedText;
+        }
+
+        //        QString pattern =
+        //        "\\b(?:artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:)\\s*(?:\"([^\"]*)\"|(\\S+))";
+        //        QRegularExpression termRegex(pattern,
+        //        QRegularExpression::CaseInsensitiveOption);
+
+        QString pattern =
+                R"(\b(artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:)\s*([^:]+?)(?=\s*\b(?:artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:|$)))";
+        QRegularExpression termRegex(pattern, QRegularExpression::CaseInsensitiveOption);
+
+        QRegularExpressionMatchIterator X = termRegex.globalMatch(cleanedText);
+        int conditionIndex = 1;
+        bool foundTerms = false;
+
+        while (X.hasNext() && conditionIndex <= 12) {
+            QRegularExpressionMatch match = X.next();
+            QString term = match.captured(1).split(":")[0].trimmed();
+            QString value = match.captured(2).trimmed();
+
+            if (!term.isEmpty() && !value.isEmpty()) {
+                foundTerms = true;
+
+                // Determine operator type based on term type
+                QString operatorType;
+                if (stringTerms.contains(term)) {
+                    operatorType = "contains";
+                } else if (numberTerms.contains(term) || dateTerms.contains(term)) {
+                    operatorType = "is";
+                }
+
+                // Assign to the appropriate condition field
+                switch (conditionIndex) {
+                case 1:
+                    newSmarties.setCondition1Field(term);
+                    newSmarties.setCondition1Operator(operatorType);
+                    newSmarties.setCondition1Value(value);
+                    newSmarties.setCondition1Combiner(") END");
+                    break;
+                case 2:
+                    newSmarties.setCondition2Field(term);
+                    newSmarties.setCondition2Operator(operatorType);
+                    newSmarties.setCondition2Value(value);
+                    newSmarties.setCondition2Combiner(") END");
+                    newSmarties.setCondition1Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition2Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 3:
+                    newSmarties.setCondition3Field(term);
+                    newSmarties.setCondition3Operator(operatorType);
+                    newSmarties.setCondition3Value(value);
+                    newSmarties.setCondition3Combiner(") END");
+                    newSmarties.setCondition2Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition3Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 4:
+                    newSmarties.setCondition4Field(term);
+                    newSmarties.setCondition4Operator(operatorType);
+                    newSmarties.setCondition4Value(value);
+                    newSmarties.setCondition4Combiner(") END");
+                    newSmarties.setCondition3Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition4Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 5:
+                    newSmarties.setCondition5Field(term);
+                    newSmarties.setCondition5Operator(operatorType);
+                    newSmarties.setCondition5Value(value);
+                    newSmarties.setCondition5Combiner(") END");
+                    newSmarties.setCondition4Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition5Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 6:
+                    newSmarties.setCondition6Field(term);
+                    newSmarties.setCondition6Operator(operatorType);
+                    newSmarties.setCondition6Value(value);
+                    newSmarties.setCondition6Combiner(") END");
+                    newSmarties.setCondition5Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition6Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 7:
+                    newSmarties.setCondition7Field(term);
+                    newSmarties.setCondition7Operator(operatorType);
+                    newSmarties.setCondition7Value(value);
+                    newSmarties.setCondition7Combiner(") END");
+                    newSmarties.setCondition6Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition7Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 8:
+                    newSmarties.setCondition8Field(term);
+                    newSmarties.setCondition8Operator(operatorType);
+                    newSmarties.setCondition8Value(value);
+                    newSmarties.setCondition8Combiner(") END");
+                    newSmarties.setCondition7Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition8Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 9:
+                    newSmarties.setCondition9Field(term);
+                    newSmarties.setCondition9Operator(operatorType);
+                    newSmarties.setCondition9Value(value);
+                    newSmarties.setCondition9Combiner(") END");
+                    newSmarties.setCondition8Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition9Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 10:
+                    newSmarties.setCondition10Field(term);
+                    newSmarties.setCondition10Operator(operatorType);
+                    newSmarties.setCondition10Value(value);
+                    newSmarties.setCondition10Combiner(") END");
+                    newSmarties.setCondition9Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition10Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 11:
+                    newSmarties.setCondition11Field(term);
+                    newSmarties.setCondition11Operator(operatorType);
+                    newSmarties.setCondition11Value(value);
+                    newSmarties.setCondition11Combiner(") END");
+                    newSmarties.setCondition10Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition11Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                case 12:
+                    newSmarties.setCondition12Field(term);
+                    newSmarties.setCondition12Operator(operatorType);
+                    newSmarties.setCondition12Value(value);
+                    newSmarties.setCondition12Combiner(") END");
+                    newSmarties.setCondition11Combiner(orCombiner ? ") OR (" : ") AND (");
+                    // newSmarties.setCondition12Combiner(orCombiner &&
+                    // conditionIndex > 1 ? ") OR (" : ") AND (");
+                    break;
+                }
+
+                if (sDebug) {
+                    qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> "
+                                "Detected Term:"
+                             << term << ", Value:" << value;
+                }
+                ++conditionIndex;
+            }
+        }
+
+        // what if no terms (field) were in the input ....
+        if (!foundTerms) {
+            if (sDebug) {
+                qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> No term "
+                            "detected, setting noTermValue:"
+                         << text.trimmed();
+            }
+            cleanedText.replace("\"", "");
+            newSmarties.setSearchSql(newName);
+            newSmarties.setCondition1Field("artist");
+            newSmarties.setCondition1Operator("contains");
+            newSmarties.setCondition1Value(cleanedText);
+            newSmarties.setCondition1Combiner(") OR (");
+            newSmarties.setCondition2Field("album_artist");
+            newSmarties.setCondition2Operator("contains");
+            newSmarties.setCondition2Value(cleanedText);
+            newSmarties.setCondition2Combiner(") OR (");
+            newSmarties.setCondition3Field("title");
+            newSmarties.setCondition3Operator("contains");
+            newSmarties.setCondition3Value(cleanedText);
+            newSmarties.setCondition3Combiner(") OR (");
+            newSmarties.setCondition4Field("album");
+            newSmarties.setCondition4Operator("contains");
+            newSmarties.setCondition4Value(cleanedText);
+            newSmarties.setCondition4Combiner(") OR (");
+            newSmarties.setCondition5Field("genre");
+            newSmarties.setCondition5Operator("contains");
+            newSmarties.setCondition5Value(cleanedText);
+            newSmarties.setCondition5Combiner(") OR (");
+            newSmarties.setCondition6Field("composer");
+            newSmarties.setCondition6Operator("contains");
+            newSmarties.setCondition6Value(cleanedText);
+            newSmarties.setCondition6Combiner(") OR (");
+            newSmarties.setCondition7Field("comment");
+            newSmarties.setCondition7Operator("contains");
+            newSmarties.setCondition7Value(cleanedText);
+            newSmarties.setCondition7Combiner(") END");
+            //  newSmarties.setSearchSql(std::move(text));
+        }
+
         newSmarties.setName(std::move(newName));
         DEBUG_ASSERT(newSmarties.hasName());
+        newSmarties.setSearchInput(std::move(newName));
+        newSmarties.setSearchSql(std::move(text));
         break;
     }
-    newSmarties.setSearchInput(std::move(text));
-    newSmarties.setSearchSql(std::move(text));
+
+    // newSmarties.setSearchInput(std::move(text));
 
     SmartiesId newSmartiesId;
 
     if (m_pTrackCollection->insertSmarties(newSmarties, &newSmartiesId)) {
         DEBUG_ASSERT(newSmartiesId.isValid());
         newSmarties.setId(newSmartiesId);
-        qDebug() << "Created new smarties" << newSmarties;
-        qDebug() << "Created new smarties ID: " << newSmartiesId;
+        if (sDebug) {
+            qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> Created new "
+                        "smarties"
+                     << newSmarties;
+            qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> Created new "
+                        "smarties ID: "
+                     << newSmartiesId;
+        }
     } else {
         DEBUG_ASSERT(!newSmartiesId.isValid());
-        qWarning() << "Failed to create new smarties"
+        qWarning() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> Failed to create new smarties"
                    << "->" << newSmarties.getName();
         QMessageBox::warning(
                 nullptr,
                 tr("Creating Smarties Failed"),
                 tr("An unknown error occurred while creating smarties: ") + newSmarties.getName());
     }
-    qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> newSmartiesId " << newSmartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH] -> newSmartiesId " << newSmartiesId;
+    }
     return newSmartiesId;
 }
 // EVE
 
 SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromUI() {
-    qDebug() << "[SMARTIES] [NEW SMARTIES FROM UI] ";
-    //    const QString proposedSmartiesName =
-    //            proposeNameForNewSmarties(tr("New Smarties From Edit"));
-    Smarties newSmarties;
-    for (;;) {
-        //        bool ok = false;
-        // auto newName = proposedSmartiesName;
-        //        auto newName =
-        //                        QInputDialog::getText(
-        //                        nullptr,
-        //                        tr("Create New Smarties"),
-        //                        tr("Enter name for new smarties:"),
-        //                        QLineEdit::Normal,
-        //                        proposedSmartiesName,
-        //                        &ok)
-        //                        .trimmed();
-        //        if (!ok) {
-        return SmartiesId();
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [NEW SMARTIES FROM UI] ";
     }
-    //        if (newName.isEmpty()) {
-    //            QMessageBox::warning(
-    //                    nullptr,
-    //                    tr("Creating Smarties Failed"),
-    //                    tr("A smarties cannot have a blank name."));
-    //            continue;
-    //        }
-    //        if (m_pTrackCollection->smarties().readSmartiesByName(newName)) {
-    //            QMessageBox::warning(
-    //                    nullptr,
-    //                    tr("Creating Smarties Failed"),
-    //                    tr("A smarties by that name already exists."));
-    //            continue;
-    //        }
-    //        newSmarties.setName(std::move(newName));
-    //        DEBUG_ASSERT(newSmarties.hasName());
-    //        break;
-    //    }
-
+    Smarties newSmarties;
+    const QString proposedSmartiesName =
+            proposeNameForNewSmarties("New Smarties From Edit");
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [PROPOSE NEW NAME] -> proposedName" << proposedSmartiesName;
+    }
+    for (;;) {
+        auto newName = proposedSmartiesName;
+        SmartiesId();
+        newSmarties.setName(std::move(newName));
+        DEBUG_ASSERT(newSmarties.hasName());
+        break;
+    }
     SmartiesId newSmartiesId;
     if (m_pTrackCollection->insertSmarties(newSmarties, &newSmartiesId)) {
         DEBUG_ASSERT(newSmartiesId.isValid());
         newSmarties.setId(newSmartiesId);
-        qDebug() << "Created new smarties" << newSmarties;
+        if (sDebug) {
+            qDebug() << "[SMARTIES] [NEW SMARTIES FROM UI] Created new smarties" << newSmarties;
+        }
     } else {
         DEBUG_ASSERT(!newSmartiesId.isValid());
         qWarning() << "Failed to create new smarties"
                    << "->" << newSmarties.getName();
-        //        QMessageBox::warning(
-        //                nullptr,
-        //                tr("Creating Smarties Failed"),
-        //                tr("An unknown error occurred while creating smarties:
-        //                ") + newSmarties.getName());
     }
-    qDebug() << "[SMARTIES] [NEW SMARTIES FROM UI] -> newSmartiesId " << newSmartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [NEW SMARTIES FROM UI] -> newSmartiesId " << newSmartiesId;
+    }
     return newSmartiesId;
 }
 
 SmartiesId SmartiesFeatureHelper::createEmptySmarties() {
-    qDebug() << "[SMARTIES] [NEW EMPTY SMARTIES] ";
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [NEW EMPTY SMARTIES] ";
+    }
     const QString proposedSmartiesName =
             proposeNameForNewSmarties(tr("New Smarties"));
     Smarties newSmarties;
@@ -196,7 +454,9 @@ SmartiesId SmartiesFeatureHelper::createEmptySmarties() {
     if (m_pTrackCollection->insertSmarties(newSmarties, &newSmartiesId)) {
         DEBUG_ASSERT(newSmartiesId.isValid());
         newSmarties.setId(newSmartiesId);
-        qDebug() << "Created new smarties" << newSmarties;
+        if (sDebug) {
+            qDebug() << "Created new smarties" << newSmarties;
+        }
     } else {
         DEBUG_ASSERT(!newSmartiesId.isValid());
         qWarning() << "Failed to create new smarties"
@@ -206,27 +466,41 @@ SmartiesId SmartiesFeatureHelper::createEmptySmarties() {
                 tr("Creating Smarties Failed"),
                 tr("An unknown error occurred while creating smarties: ") + newSmarties.getName());
     }
-    qDebug() << "[SMARTIES] [NEW EMPTY SMARTIES] -> newSmartiesId " << newSmartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [NEW EMPTY SMARTIES] -> newSmartiesId " << newSmartiesId;
+    }
     return newSmartiesId;
 }
 
 SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties) {
-    qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> START";
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> START";
+    }
     const QString proposedSmartiesName =
             proposeNameForNewSmarties(
                     QStringLiteral("%1 %2")
                             .arg(oldSmarties.getName(), tr("copy", "//:")));
 
     QString newSearchInput = oldSmarties.getSearchInput();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old searchInput" << newSearchInput;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old searchInput" << newSearchInput;
+    }
     QString newSearchSql = oldSmarties.getSearchSql();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old searchSql" << newSearchSql;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old searchSql" << newSearchSql;
+    }
     QString newCondition1Field = oldSmarties.getCondition1Field();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Field" << newCondition1Field;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Field" << newCondition1Field;
+    }
     QString newCondition2Field = oldSmarties.getCondition2Field();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Field" << newCondition2Field;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Field" << newCondition2Field;
+    }
     QString newCondition3Field = oldSmarties.getCondition3Field();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Field" << newCondition3Field;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Field" << newCondition3Field;
+    }
     QString newCondition4Field = oldSmarties.getCondition4Field();
     QString newCondition5Field = oldSmarties.getCondition5Field();
     QString newCondition6Field = oldSmarties.getCondition6Field();
@@ -238,11 +512,17 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
     QString newCondition12Field = oldSmarties.getCondition12Field();
 
     QString newCondition1Operator = oldSmarties.getCondition1Operator();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Operator" << newCondition1Operator;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Operator" << newCondition1Operator;
+    }
     QString newCondition2Operator = oldSmarties.getCondition2Operator();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Operator" << newCondition2Operator;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Operator" << newCondition2Operator;
+    }
     QString newCondition3Operator = oldSmarties.getCondition3Operator();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Operator" << newCondition3Operator;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Operator" << newCondition3Operator;
+    }
     QString newCondition4Operator = oldSmarties.getCondition4Operator();
     QString newCondition5Operator = oldSmarties.getCondition5Operator();
     QString newCondition6Operator = oldSmarties.getCondition6Operator();
@@ -254,11 +534,17 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
     QString newCondition12Operator = oldSmarties.getCondition12Operator();
 
     QString newCondition1Value = oldSmarties.getCondition1Value();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Value" << newCondition1Value;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Value" << newCondition1Value;
+    }
     QString newCondition2Value = oldSmarties.getCondition2Value();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Value" << newCondition2Value;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Value" << newCondition2Value;
+    }
     QString newCondition3Value = oldSmarties.getCondition3Value();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Value" << newCondition2Value;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Value" << newCondition2Value;
+    }
     QString newCondition4Value = oldSmarties.getCondition4Value();
     QString newCondition5Value = oldSmarties.getCondition5Value();
     QString newCondition6Value = oldSmarties.getCondition6Value();
@@ -270,11 +556,17 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
     QString newCondition12Value = oldSmarties.getCondition12Value();
 
     QString newCondition1Combiner = oldSmarties.getCondition1Combiner();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Combiner" << newCondition1Combiner;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Combiner" << newCondition1Combiner;
+    }
     QString newCondition2Combiner = oldSmarties.getCondition2Combiner();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Combiner" << newCondition2Combiner;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Combiner" << newCondition2Combiner;
+    }
     QString newCondition3Combiner = oldSmarties.getCondition3Combiner();
-    qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Combiner" << newCondition3Combiner;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Combiner" << newCondition3Combiner;
+    }
     QString newCondition4Combiner = oldSmarties.getCondition4Combiner();
     QString newCondition5Combiner = oldSmarties.getCondition5Combiner();
     QString newCondition6Combiner = oldSmarties.getCondition6Combiner();
@@ -375,7 +667,9 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
         DEBUG_ASSERT(newSmartiesId.isValid());
         newSmarties.setId(newSmartiesId);
 
-        qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> Created new smarties" << newSmarties;
+        if (sDebug) {
+            qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> Created new smarties" << newSmarties;
+        }
         QList<TrackId> trackIds;
         trackIds.reserve(
                 m_pTrackCollection->smarties().countSmartiesTracks(oldSmarties.getId()));
@@ -387,8 +681,10 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
             }
         }
         if (m_pTrackCollection->addSmartiesTracks(newSmartiesId, trackIds)) {
-            qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] Duplicated smarties -> "
-                     << oldSmarties << "->" << newSmarties;
+            if (sDebug) {
+                qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] Duplicated smarties -> "
+                         << oldSmarties << "->" << newSmarties;
+            }
         } else {
             qWarning() << "Failed to copy tracks from "
                        << oldSmarties << "into" << newSmarties;
@@ -401,6 +697,8 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
                 tr("Duplicating Smarties Failed"),
                 tr("An unknown error occurred while creating smarties: ") + newSmarties.getName());
     }
-    qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> END -> newSmartiesId " << newSmartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> END -> newSmartiesId " << newSmartiesId;
+    }
     return newSmartiesId;
 }

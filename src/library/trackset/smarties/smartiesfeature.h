@@ -48,6 +48,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
   signals:
     void updateSmartiesData(const QVariantList& smartiesData);
+    void setBlockerOff(QString signal);
 
   public slots:
     void activate() override;

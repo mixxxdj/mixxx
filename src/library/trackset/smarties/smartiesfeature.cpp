@@ -30,6 +30,8 @@
 
 namespace {
 
+const bool sDebug = false;
+
 QString formatLabel(
         const SmartiesSummary& smartiesSummary) {
     return QStringLiteral("%1 [%2] (%3) %4")
@@ -315,7 +317,9 @@ void SmartiesFeature::activate() {
 }
 
 void SmartiesFeature::activateChild(const QModelIndex& index) {
-    qDebug() << "   SmartiesFeature::activateChild()" << index;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [ACTIVATE CHILD] -> index " << index;
+    }
     SmartiesId smartiesId(smartiesIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(smartiesId.isValid()) {
         return;
@@ -330,7 +334,9 @@ void SmartiesFeature::activateChild(const QModelIndex& index) {
 }
 
 bool SmartiesFeature::activateSmarties(SmartiesId smartiesId) {
-    qDebug() << "SmartiesFeature::activateSmarties()" << smartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [ACTIVATE SMARTIES] -> smartiesId " << smartiesId;
+    }
     VERIFY_OR_DEBUG_ASSERT(smartiesId.isValid()) {
         return false;
     }
@@ -474,7 +480,10 @@ void SmartiesFeature::slotDeleteSmarties() {
     Smarties smarties;
     if (readLastRightClickedSmarties(&smarties)) {
         if (smarties.isLocked()) {
-            qWarning() << "Refusing to delete locked smarties" << smarties;
+            // qWarning() << "Refusing to delete locked smarties" << smarties;
+            QMessageBox msgBox;
+            msgBox.setText("Locked Smarties can't be deleted");
+            msgBox.exec();
             return;
         }
         SmartiesId smartiesId = smarties.getId();
@@ -493,7 +502,11 @@ void SmartiesFeature::slotDeleteSmarties() {
                 QMessageBox::No);
         if (btn == QMessageBox::Yes) {
             if (m_pTrackCollection->deleteSmarties(smartiesId)) {
-                qDebug() << "Deleted smarties" << smarties;
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT DELETE SMARTIES] -> "
+                                "Deleted smarties"
+                             << smarties;
+                }
                 return;
             }
         } else {
@@ -506,29 +519,29 @@ void SmartiesFeature::slotDeleteSmarties() {
 void SmartiesFeature::slotFindPreviousSmarties() {
     Smarties smarties;
     if (readLastRightClickedSmarties(&smarties)) {
-        //        if (smarties.isLocked()) {
-        //            qWarning() << "Refusing to delete locked smarties" << smarties;
-        //            return;
-        //        }
         SmartiesId smartiesId = smarties.getId();
         m_prevSiblingSmarties = SmartiesId();
         storePrevSiblingSmartiesId(smartiesId);
     }
-    qDebug() << "Previous smarties ID" << m_prevSiblingSmarties;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT FIND PREVIOUS SMARTIES] -> "
+                    "Previous smarties ID "
+                 << m_prevSiblingSmarties;
+    }
 }
 
 void SmartiesFeature::slotFindNextSmarties() {
     Smarties smarties;
     if (readLastRightClickedSmarties(&smarties)) {
-        //        if (smarties.isLocked()) {
-        //            qWarning() << "Refusing to delete locked smarties" << smarties;
-        //            return;
-        //        }
         SmartiesId smartiesId = smarties.getId();
         m_nextSiblingSmarties = SmartiesId();
         storeNextSiblingSmartiesId(smartiesId);
     }
-    qDebug() << "Next smarties ID" << m_nextSiblingSmarties;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT FIND NEXT SMARTIES] -> Next "
+                    "smarties ID "
+                 << m_nextSiblingSmarties;
+    }
 }
 
 void SmartiesFeature::renameItem(const QModelIndex& index) {
@@ -572,10 +585,17 @@ void SmartiesFeature::slotRenameSmarties() {
         }
 
         if (!m_pTrackCollection->updateSmarties(smarties)) {
-            qDebug() << "Failed to rename smarties" << smarties;
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT RENAME SMARTIES] -> "
+                            "Failed to rename smarties"
+                         << smarties;
+            }
         }
     } else {
-        qDebug() << "Failed to rename selected smarties";
+        if (sDebug) {
+            qDebug() << "[SMARTIESFEATURE] [SLOT RENAME MARTIES] -> Failed to "
+                        "rename selected smarties";
+        }
     }
 }
 
@@ -587,11 +607,18 @@ void SmartiesFeature::slotDuplicateSmarties() {
                         .duplicateSmarties(smarties);
         //        m_pUpdateDuplicateSmarties
         if (newSmartiesId.isValid()) {
-            qDebug() << "Duplicate smarties" << smarties << ", new smarties:" << newSmartiesId;
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT DUPLICATE SMARTIES] -> "
+                            "Duplicate smarties"
+                         << smarties << ", new smarties:" << newSmartiesId;
+            }
             return;
         }
     }
-    qDebug() << "Failed to duplicate selected smarties";
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT DUPLICATE SMARTIES] -> Failed to "
+                    "duplicate selected smarties";
+    }
 }
 
 void SmartiesFeature::SetActiveSmartiesToLastRightClicked(const QModelIndex& index) {
@@ -610,220 +637,282 @@ void SmartiesFeature::SetActiveSmartiesToLastRightClicked(const QModelIndex& ind
 //     }
 
 void SmartiesFeature::selectSmartiesForEdit(SmartiesId selectedSmartiesId) {
-    qDebug() << "SmartiesFeature::rebuildChildModel()" << selectedSmartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [REBUILD CHILD MODEL] -> "
+                    "selectedSmartiesId "
+                 << selectedSmartiesId;
+    }
     //    return selectedSmartiesId;
 }
 
 void SmartiesFeature::slotEditSmarties() {
-    qDebug() << "[SMARTIES] [EDIT] - START ------------------ slotEditSmarties";
+    QMutex mutex;
+    //    mutex.lock();
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [START] -> slotEditSmarties";
+    }
     Smarties smarties;
-    //    SmartiesId = smartiesSummary.getId();
-
     readLastRightClickedSmarties(&smarties);
-    qDebug() << "[SMARTIES] [EDIT] - START ----- slotEditSmarties -> "
-                "m_lastRightClickedIndex  = "
-             << m_lastRightClickedIndex;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [START] -> "
+                    "m_lastRightClickedIndex  = "
+                 << m_lastRightClickedIndex;
+    }
     // Load data into QVariant
     smartiesData.clear();
     m_smartiesTableModel.selectSmarties2QVL(
             smartiesIdFromIndex(m_lastRightClickedIndex), smartiesData);
-    //        m_smartiesTableModel.selectSmarties2QVL(smartiesId, smartiesData);
-    qDebug() << "[SMARTIES] [EDIT] - START ----- Smarties data loaded into "
-                "QVariantList:"
-             << smartiesData;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [START] -> "
+                    "Smarties data loaded into QVariantList:"
+                 << smartiesData;
+    }
 
-    //    SmartiesId smartiesId = smarties.getId();
-
-    //    if (smartiesId.isValid()) {
-    // if (smartiesId.getId().isValid()) {
-    //    dlgSmartiesInfo infoDialog(this); // Pass 'this' to provide the SmartiesFeature instance
-    //    infoDialog.init(smartiesData);
-    //    qDebug() << "[SMARTIES] [EDIT] - START ----- INIT DIALOG ";
+    QVariantList playlistsCratesData;
+    m_smartiesTableModel.selectPlaylistsCrates2QVL(playlistsCratesData);
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [START] -> "
+                    "Playlists & Crates data loaded into QVariantList:"
+                 << playlistsCratesData;
+    }
 
     if (readLastRightClickedSmarties(&smarties)) {
-        //      SmartiesId smartiesId = smarties.getId();
         SmartiesId smartiesId = smartiesIdFromIndex(m_lastRightClickedIndex);
-        qDebug() << "[SMARTIES] [EDIT] - CONTINUE ---- SlotEditSmarties -> "
-                    "smartiesID = "
-                 << smartiesId;
-        //        slotFindNextSmarties();
-        //        slotFindPreviousSmarties();
-
-        // qDebug() << "SlotEditSmarties -> 2nd smartiesID" << smartiesId;
-        //         SmartiesId smartiesId = readLastRightClickedSmarties(smarties);
-
-
-        // Initialize dlgSmartiesInfo & populate UI dialog
-        // dlgSmartiesInfo infoDialog;
+        if (sDebug) {
+            qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [START] -> "
+                        "SlotEditSmarties -> smartiesID = "
+                     << smartiesId;
+        }
         dlgSmartiesInfo infoDialog(this); // Pass this to provide the SmartiesFeature instance
-        infoDialog.init(smartiesData);
-        qDebug() << "[SMARTIES] [EDIT] - START ----- INIT DIALOG ";
-        //        emit updateSmartiesData(smartiesData);
-        //        qDebug() << "[SMARTIES] [EDIT] - SIGNAL -> SmartiesData updated";
+        if (sDebug) {
+            qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [START] -> "
+                        "[INIT DIALOG] -> INIT DIALOG ";
+        }
+        infoDialog.init(smartiesData, playlistsCratesData);
 
         // Connect the dataUpdated signal to update smartiesData when Apply is clicked
         connect(&infoDialog,
                 &dlgSmartiesInfo::dataUpdated,
                 this,
-                [this](const QVariantList& updatedData) {
-                    
+                [this, &smartiesId](const QVariantList& updatedData) {
+                    //            emit setBlockerOff("update");
+                    if (sDebug) {
+                        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                    "[UPDATE] -> START Request UPDATE Smarties "
+                                    "smartiesId "
+                                 << smartiesId;
+                    }
                     smartiesData =
                             updatedData; // Capture the updated data from the UI
-                    qDebug() << "[SMARTIES] [EDIT] - Updated data received from dlgSmartiesInfo:"
-                             << smartiesData;
-
+                    smartiesId = smartiesIdFromIndex(m_lastRightClickedIndex);
+                    // m_lastRightClickedIndex =
+                    // indexFromSmartiesId(smartiesId);
+                    activateSmarties(smartiesId);
+                    m_smartiesTableModel.saveQVL2Smarties(
+                            smartiesId, smartiesData);
+                    m_smartiesTableModel.selectSmarties2QVL(
+                            smartiesIdFromIndex(m_lastRightClickedIndex),
+                            smartiesData);
+                    slotSmartiesTableChanged(smartiesId);
+                    //            emit setBlockerOff("update");
+                    if (sDebug) {
+                        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                    "[UPDATE] -> END UPDATE smartiesId "
+                                 << smartiesId;
+                    }
+                    emit updateSmartiesData(smartiesData);
                 });
 
-        connect(&infoDialog, &dlgSmartiesInfo::requestNewSmarties, this, [this]() {
-            qDebug() << "[SMARTIES] [EDIT] - NEW 01 -> START";
-            SmartiesId smartiesId = SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
-                                            .createEmptySmartiesFromUI();
-            activateSmarties(smartiesId);
-            qDebug() << "[SMARTIES] [EDIT] - NEW 02 -> Activate";
-
+        connect(&infoDialog, &dlgSmartiesInfo::requestDeleteSmarties, this, [this, &smartiesId]() {
+            //            emit setBlockerOff("delete");
+            if (sDebug) {
+                qDebug()
+                        << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [DELETE] "
+                           "-> START Request DELETE Smarties smartiesId "
+                        << smartiesId;
+            }
             m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
-            qDebug() << "[SMARTIES] [EDIT] - NEW 03 -> m_lastRightClickedIndex";
-            smartiesData.clear();
-            m_smartiesTableModel.selectSmarties2QVL(
-                    smartiesIdFromIndex(m_lastRightClickedIndex),
-                    smartiesData);
-            qDebug() << "[SMARTIES] [EDIT] - NEW 04 -> smartiesData";
-            qDebug() << "[SMARTIES] [EDIT] - NEW 05 -> before signal";
-            slotSmartiesTableChanged(smartiesId);
-            emit updateSmartiesData(smartiesData);
-            qDebug() << "[SMARTIES] [EDIT] - NEW 06 -> SIGNAL -> SmartiesData updated";
-        });
-
-        connect(&infoDialog, &dlgSmartiesInfo::requestPreviousSmarties, this, [this]() {
-            slotFindPreviousSmarties();
-            qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 01 ";
-            if (m_prevSiblingSmarties.isValid()) {
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 02 ";
-                //                        smartiesData.clear();
-                //                        m_smartiesTableModel.selectSmarties2QVL(m_prevSiblingSmarties,
-                //                        smartiesData); qDebug() << "PREVIOUS
-                //                        Loaded previous smarties data into
-                //                        QVariantList:" << smartiesData;
-                SmartiesId smartiesId(m_prevSiblingSmarties);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 03 ";
-                // readLastRightClickedSmarties(m_prevSiblingSmarties) = true;
-                storePrevSiblingSmartiesId(smartiesId);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 04 ";
-                activateSmarties(smartiesId);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 05 ";
-                //
-                //                        indexFromSmartiesId(SmartiesId smartiesId)
-                //
-                // std::vector<std::unique_ptr<TreeItem>> modelRows;
-                // modelRows.reserve(m_pTrackCollection->smarties().countSmarties());
-                // int selectedRow = -1;
-                // SmartiesSummarySelectResult smartiesSummaries(
-                //        m_pTrackCollection->smarties().selectSmartiesSummaries());
-                // SmartiesSummary smartiesSummary;
-                // modelRows.push_back(newTreeItemForSmartiesSummary(smartiesSummary));
-                // selectedRow = static_cast<int>(modelRows.size());
-                //                        selectedRow = static_cast<int>(modelRows.size()) - 1;
-                // qDebug() << "PREVIOUS -> selectedRow  = " << selectedRow;
-
-                //                        if (selectedSmartiesId == smartiesSummary.getId()) {
-                //                            // save index for selection
-                //                            selectedRow = static_cast<int>(modelRows.size()) - 1;
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 06 ";
-                m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 07 ";
-
-                // m_lastRightClickedIndex = m_pSidebarModel->index(selectedRow, 0);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 08 -> "
-                            "m_lastRightClickedIndex  = "
-                         << m_lastRightClickedIndex;
-                // activate();
-                //                        slotFindNextSmarties();
+            if (!smartiesId.isValid()) {
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[DELETE] -> Invalid SmartiesId. : "
+                             << smartiesId;
+                }
+                return;
+            } else {
                 slotFindPreviousSmarties();
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 09 ";
+                auto smartiesJustAbove = m_prevSiblingSmarties;
+                slotDeleteSmarties();
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[DELETE] -> smarties is deleted -> new active "
+                                "smarties.";
+                }
+                activateSmarties(smartiesJustAbove);
+                smartiesId = smartiesJustAbove;
                 smartiesData.clear();
-                m_smartiesTableModel.selectSmarties2QVL(
-                        smartiesIdFromIndex(m_lastRightClickedIndex),
-                        smartiesData);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 10 SmartiesId "
-                            "smartiesId = m_prevSiblingSmarties = "
-                         << m_prevSiblingSmarties;
-                slotSmartiesTableChanged(smartiesId);
+                m_smartiesTableModel.selectSmarties2QVL(smartiesId, smartiesData);
+                m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+                activateSmarties(smartiesId);
+                //                emit setBlockerOff("delete");
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[DELETE] -> END DELETE Smarties smartiesId "
+                             << smartiesId;
+                }
                 emit updateSmartiesData(smartiesData);
-                qDebug() << "[SMARTIES] [EDIT] - PREVIOUS 11 SIGNAL -> SmartiesData updated";
             }
         });
-        connect(&infoDialog, &dlgSmartiesInfo::requestNextSmarties, this, [this]() {
-            slotFindNextSmarties();
-            qDebug() << "[SMARTIES] [EDIT] - NEXT 01 ";
-            if (m_nextSiblingSmarties.isValid()) {
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 02 ";
-                //                        smartiesData.clear();
-                //                        m_smartiesTableModel.selectSmarties2QVL(m_prevSiblingSmarties,
-                //                        smartiesData); qDebug() << "PREVIOUS
-                //                        Loaded previous smarties data into
-                //                        QVariantList:" << smartiesData;
-                SmartiesId smartiesId(m_nextSiblingSmarties);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 03 ";
-                // readLastRightClickedSmarties(m_prevSiblingSmarties) = true;
-                storeNextSiblingSmartiesId(smartiesId);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 04 ";
-                activateSmarties(smartiesId);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 05 ";
-                //
-                //                        indexFromSmartiesId(SmartiesId smartiesId)
-                //
-                // std::vector<std::unique_ptr<TreeItem>> modelRows;
-                // modelRows.reserve(m_pTrackCollection->smarties().countSmarties());
-                // int selectedRow = -1;
-                // SmartiesSummarySelectResult smartiesSummaries(
-                //        m_pTrackCollection->smarties().selectSmartiesSummaries());
-                // SmartiesSummary smartiesSummary;
-                // modelRows.push_back(newTreeItemForSmartiesSummary(smartiesSummary));
-                // selectedRow = static_cast<int>(modelRows.size());
-                //                        selectedRow = static_cast<int>(modelRows.size()) - 1;
-                // qDebug() << "PREVIOUS -> selectedRow  = " << selectedRow;
 
-                //                        if (selectedSmartiesId == smartiesSummary.getId()) {
-                //                            // save index for selection
-                //                            selectedRow = static_cast<int>(modelRows.size()) - 1;
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 06 ";
-                m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 07 ";
+        connect(&infoDialog, &dlgSmartiesInfo::requestNewSmarties, this, [this, &smartiesId]() {
+            //            emit setBlockerOff("new");
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [NEW] "
+                            "-> START Request NEW Smarties smartiesId "
+                         << smartiesId;
+            }
+            SmartiesId smartiesId =
+                    SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
+                            .createEmptySmartiesFromUI();
+            if (!smartiesId.isValid()) {
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[NEW] -> Creation failed.";
+                }
+                return;
+            } else {
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[NEW] -> New smarties created. smartiesId "
+                             << smartiesId;
+                }
+            }
+            activateSmarties(smartiesId);
+            smartiesData.clear();
+            m_smartiesTableModel.selectSmarties2QVL(smartiesId, smartiesData);
+            slotSmartiesTableChanged(smartiesId);
+            m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [NEW] "
+                            "-> END Smarties created smartiesId "
+                         << smartiesId;
+            }
+            emit updateSmartiesData(smartiesData);
+            //            emit setBlockerOff("new");
+        });
 
-                // m_lastRightClickedIndex = m_pSidebarModel->index(selectedRow, 0);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT -> "
-                            "m_lastRightClickedIndex  = "
-                         << m_lastRightClickedIndex;
-                // activate();
+        connect(&infoDialog,
+                &dlgSmartiesInfo::requestPreviousSmarties,
+                this,
+                [this, &smartiesId]() {
+                    //            emit setBlockerOff("previous");
+                    if (sDebug) {
+                        qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                    "[PREVIOUS] -> START Request PREVIOUS "
+                                    "Smarties smartiesId "
+                                 << smartiesId;
+                    }
+                    m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+                    if (!smartiesId.isValid()) {
+                        if (sDebug) {
+                            qDebug()
+                                    << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] "
+                                       "-> [PREVIOUS] -> Invalid SmartiesId. : "
+                                    << smartiesId;
+                        }
+                        return;
+                    } else {
+                        slotFindPreviousSmarties();
+                        auto smartiesJustAbove = m_prevSiblingSmarties;
+                        activateSmarties(smartiesJustAbove);
+                        smartiesId = smartiesJustAbove;
+                        if (sDebug) {
+                            qDebug()
+                                    << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] "
+                                       "-> [PREVIOUS] -> Previous smarties ID"
+                                    << m_prevSiblingSmarties;
+                        }
+                        smartiesData.clear();
+                        m_smartiesTableModel.selectSmarties2QVL(
+                                smartiesId, smartiesData);
+                        m_lastRightClickedIndex =
+                                indexFromSmartiesId(smartiesId);
+                        if (sDebug) {
+                            qDebug() << "[SMARTIESFEATURE] [SLOT EDIT "
+                                        "SMARTIES] -> [PREVIOUS] -> Sibling "
+                                        "Smarties loaded smartiesId."
+                                     << smartiesId;
+                            //                emit setBlockerOff("previous");
+                            qDebug()
+                                    << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] "
+                                       "-> [PREVIOUS] -> END Sibling Smarties "
+                                       "loaded m_lastRightClickedIndex."
+                                    << m_lastRightClickedIndex;
+                        }
+                        emit updateSmartiesData(smartiesData);
+                    }
+                });
+        connect(&infoDialog, &dlgSmartiesInfo::requestNextSmarties, this, [this, &smartiesId]() {
+            //            emit setBlockerOff("next");
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [NEXT] "
+                            "-> START Request NEXT Smarties smartiesId "
+                         << smartiesId;
+            }
+            m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+            if (!smartiesId.isValid()) {
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[NEXT] -> Invalid SmartiesId. : "
+                             << smartiesId;
+                }
+                return;
+            } else {
                 slotFindNextSmarties();
-                //                        slotFindPreviousSmarties();
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 09 ";
+                auto smartiesJustBelow = m_nextSiblingSmarties;
+                activateSmarties(smartiesJustBelow);
+                smartiesId = smartiesJustBelow;
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[NEXT] -> Next smarties ID"
+                             << m_nextSiblingSmarties;
+                }
                 smartiesData.clear();
-                m_smartiesTableModel.selectSmarties2QVL(
-                        smartiesIdFromIndex(m_lastRightClickedIndex),
-                        smartiesData);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 10 SmartiesId smartiesId "
-                            "= m_prevSiblingSmarties = "
-                         << m_nextSiblingSmarties;
-                slotSmartiesTableChanged(smartiesId);
+                m_smartiesTableModel.selectSmarties2QVL(smartiesId, smartiesData);
+                m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+                if (sDebug) {
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[NEXT] -> Sibling Smarties loaded smartiesId."
+                             << smartiesId;
+                    //                emit setBlockerOff("next");
+                    qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> "
+                                "[NEXT] -> END Sibling Smarties loaded "
+                                "m_lastRightClickedIndex."
+                             << m_lastRightClickedIndex;
+                }
                 emit updateSmartiesData(smartiesData);
-                qDebug() << "[SMARTIES] [EDIT] - NEXT 11 SIGNAL -> SmartiesData updated";
             }
         });
 
         // Execute & close the dialog
         if (infoDialog.exec() == QDialog::Accepted) {
             m_smartiesTableModel.saveQVL2Smarties(smartiesId, smartiesData);
-            qDebug() << "[SMARTIES] [EDIT] - Smarties data saved from QVariantList to database for "
-                        "SmartiesId:"
-                     << smartiesId;
-
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [CLOSE "
+                            "DIALOG] -> Smarties data saved from QVariantList "
+                            "to database for "
+                            "SmartiesId:"
+                         << smartiesId;
+            }
             activateSmarties(smartiesId);
             slotSmartiesTableChanged(smartiesId);
-            // QModelIndex constructChildModel(indexFromSmartiesId(smartiesId));
-            qDebug() << "[SMARTIES] [EDIT] - Smarties sidebar update for SmartiesId";
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [CLOSE "
+                            "DIALOG] -> Smarties sidebar update for SmartiesId";
+            }
         }
     }
+    //    mutex.unlock();
 }
 
 void SmartiesFeature::slotToggleSmartiesLock() {
@@ -831,10 +920,17 @@ void SmartiesFeature::slotToggleSmartiesLock() {
     if (readLastRightClickedSmarties(&smarties)) {
         smarties.setLocked(!smarties.isLocked());
         if (!m_pTrackCollection->updateSmarties(smarties)) {
-            qDebug() << "Failed to toggle lock of smarties" << smarties;
+            if (sDebug) {
+                qDebug() << "[SMARTIESFEATURE] [SLOT TOGGLE LOCK] -> Failed to "
+                            "toggle lock of smarties"
+                         << smarties;
+            }
         }
     } else {
-        qDebug() << "Failed to toggle lock of selected smarties";
+        if (sDebug) {
+            qDebug() << "[SMARTIESFEATURE] [SLOT TOGGLE LOCK] -> Failed to "
+                        "toggle lock of selected smarties";
+        }
     }
 }
 
@@ -849,7 +945,11 @@ void SmartiesFeature::slotToggleSmartiesLock() {
 // }
 
 QModelIndex SmartiesFeature::rebuildChildModel(SmartiesId selectedSmartiesId) {
-    qDebug() << "SmartiesFeature::rebuildChildModel()" << selectedSmartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [REBUILD CHILD MODEL] -> "
+                    "selectedSmartiesId "
+                 << selectedSmartiesId;
+    }
 
     m_lastRightClickedIndex = QModelIndex();
 
@@ -935,7 +1035,11 @@ QModelIndex SmartiesFeature::indexFromSmartiesId(SmartiesId smartiesId) const {
             return index;
         }
     }
-    qDebug() << "Tree item for smarties not found:" << smartiesId;
+    if (sDebug) {
+        qDebug() << "[SMARTIESFEATURE] [INDEX FROM SMARTIESID] -> Tree item "
+                    "for smarties not found:"
+                 << smartiesId;
+    }
     return QModelIndex();
 }
 
@@ -1229,7 +1333,11 @@ void SmartiesFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreateSmarties();
     } else {
-        qDebug() << "Unknown smarties link clicked" << link;
+        if (sDebug) {
+            qDebug() << "[SMARTIESFEATURE] [HTML LINK CLICKED ] -> Unknown "
+                        "smarties link clicked"
+                     << link;
+        }
     }
 }
 

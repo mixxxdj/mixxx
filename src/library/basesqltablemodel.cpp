@@ -224,10 +224,11 @@ void BaseSqlTableModel::select() {
     time.start();
     if (m_tableName.startsWith("smarties")) {
         // EVE drop view and rebuild it for Smarties
-        qDebug() << "[BaseSqlTableModel] [SELECT] -> [SMARTIES] Drop temp table " << m_tableName;
+        //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] Drop
+        //        temp table " << m_tableName;
         QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
         FwdSqlQuery(m_database, queryStringDropView).execPrepared();
-        qDebug() << "[BaseSqlTableModel] [SELECT] -> [SMARTIES] REBUILD TEMP";
+        //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] REBUILD TEMP";
         QStringList columns;
         QString smartiesId = m_tableName;
         smartiesId = smartiesId.replace("smarties_", "");
@@ -249,9 +250,18 @@ void BaseSqlTableModel::select() {
                                 SMARTIESTRACKSTABLE_SMARTIESID, // 7
                                 smartiesId,                     // 8
                                 LIBRARYTABLE_MIXXXDELETED);     // 9
-        qDebug() << "[BaseSqlTableModel] [SELECT] -> [SMARTIES] Rebuild temp "
-                    "view -> queryStringTempView "
-                 << queryStringTempView;
+                                                                //        qDebug()
+                                                                //        <<
+                                                                //        "[BASESQLTABLEMODEL]
+                                                                //        [SELECT]
+                                                                //        ->
+                                                                //        [SMARTIES]
+                                                                //        Rebuild
+                                                                //        temp view
+                                                                //        ->
+                                                                //        queryStringTempView
+                                                                //        " <<
+                                                                //        queryStringTempView;
         FwdSqlQuery(m_database, queryStringTempView).execPrepared();
     }
 
@@ -259,15 +269,14 @@ void BaseSqlTableModel::select() {
     QString queryString = QString("SELECT %1 FROM %2 %3")
                                   .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
 
-    qDebug() << "[BaseSqlTableModel] [SELECT] -------------BaseSqlTableModel - "
-                "select() ---- queryString -------- "
-             << queryString;
+    //    qDebug() << "[BASESQLTABLEMODEL] [SELECT]
+    //    -------------BaseSqlTableModel - select() ---- queryString -------- "
+    //    << queryString;
 
     if (sDebug) {
-        qDebug() << "[BaseSqlTableModel] [SELECT] " << this
+        qDebug() << "[BASESQLTABLEMODEL] [SELECT] " << this
                  << " select() executing : " << queryString;
     }
-
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
@@ -462,8 +471,8 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
-    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> searchText " << searchText;
-    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> extraFilter " << extraFilter;
+    //    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> searchText " << searchText;
+    //    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> extraFilter " << extraFilter;
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;

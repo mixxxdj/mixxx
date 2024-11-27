@@ -700,17 +700,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCondition1Value">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QComboBox" name="comboBoxCondition1Combiner">
            <property name="maximumSize">
             <size>
@@ -914,17 +903,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxCondition2Value">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -1142,17 +1120,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCondition3Value">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QComboBox" name="comboBoxCondition3Combiner">
            <property name="font">
             <font>
@@ -1350,17 +1317,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxCondition4Value">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -1578,17 +1534,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCondition5Value">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QComboBox" name="comboBoxCondition5Combiner">
            <property name="font">
             <font>
@@ -1786,17 +1731,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxCondition6Value">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -2014,17 +1948,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCondition7Value">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QComboBox" name="comboBoxCondition7Combiner">
            <property name="font">
             <font>
@@ -2222,17 +2145,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxCondition8Value">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -2453,17 +2365,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCondition9Value">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QComboBox" name="comboBoxCondition9Combiner">
            <property name="font">
             <font>
@@ -2661,17 +2562,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxCondition10Value">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -2889,17 +2779,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCondition11Value">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QComboBox" name="comboBoxCondition11Combiner">
            <property name="font">
             <font>
@@ -3097,17 +2976,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxCondition12Value">
            <property name="font">
             <font>
              <pointsize>10</pointsize>

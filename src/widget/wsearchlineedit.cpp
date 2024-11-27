@@ -24,6 +24,7 @@
 #include "library/trackset/smarties/smartiesfeature.h"
 #include "library/trackset/smarties/smartiesfeaturehelper.h"
 #include "library/trackset/smarties/smartiesstorage.h"
+#include "library/treeitem.h"
 // EVE
 
 #define ENABLE_TRACE_LOG false
@@ -141,6 +142,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
     // m_2SmartiesButton->setCursor(Qt::ArrowCursor);
     m_2SmartiesButton->setCursor(Qt::PointingHandCursor);
     m_2SmartiesButton->setObjectName(QStringLiteral("2SmartiesButton"));
+
+    //    m_2SmartiesButton->findChildren(QAction)[0].setIcon(":/images/library/ic_library_locked_tracklist.svg");
+    //    m_2SmartiesButton->addAction(":/images/library/ic_library_locked_tracklist.svg",
+    //    QLineEdit::LeadingPosition);
 
     m_2SmartiesButton->hide();
     connect(m_2SmartiesButton,

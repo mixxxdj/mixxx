@@ -741,25 +741,25 @@ bool SmartiesStorage::readSmartiesByName(const QString& name, Smarties* pSmartie
             QStringLiteral("SELECT * FROM %1 WHERE %2=:name")
                     .arg(SMARTIES_TABLE, SMARTIESTABLE_NAME));
     query.bindValue(":name", name);
-    qDebug() << "[SMARTIES] [POPULATING] 0";
+    //    qDebug() << "[SMARTIES] [POPULATING] 0";
     if (query.execPrepared()) {
         SmartiesSelectResult smarties(std::move(query));
         if ((pSmarties != nullptr) ? smarties.populateNext(pSmarties) : smarties.next()) {
-            qDebug() << "[SMARTIES] [POPULATING] 1";
+            //            qDebug() << "[SMARTIES] [POPULATING] 1";
             VERIFY_OR_DEBUG_ASSERT(!smarties.next()) {
                 kLogger.warning() << "Ambiguous smarties name:" << name;
-                qDebug() << "[SMARTIES] [POPULATING] 2";
+                //                qDebug() << "[SMARTIES] [POPULATING] 2";
             }
             return true;
         } else {
-            qDebug() << "[SMARTIES] [POPULATING] 3";
+            //            qDebug() << "[SMARTIES] [POPULATING] 3";
             if (kLogger.debugEnabled()) {
                 kLogger.debug() << "Smarties not found by name:" << name;
-                qDebug() << "[SMARTIES] [POPULATING] 4";
+                //                qDebug() << "[SMARTIES] [POPULATING] 4";
             }
         }
     }
-    qDebug() << "[SMARTIES] [POPULATING] 5";
+    //    qDebug() << "[SMARTIES] [POPULATING] 5";
     return false;
 }
 

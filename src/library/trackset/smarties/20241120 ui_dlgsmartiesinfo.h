@@ -27,175 +27,164 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_dlgSmartiesInfo {
-  public:
-    QVBoxLayout* verticalLayout;
-    QGroupBox* groupBox;
-    QLineEdit* lineEditID;
-    QLabel* labelID;
-    QLabel* labelName;
-    QLineEdit* lineEditName;
-    QLabel* labelCount;
-    QSpinBox* spinBoxCount;
-    QLabel* labelShow;
-    QCheckBox* checkBoxShow;
-    QLabel* labelLocked;
-    QPushButton* buttonLock;
-    QLabel* labelAutoDJ;
-    QCheckBox* checkBoxAutoDJ;
-    QLabel* labelSearchInput;
-    QLineEdit* lineEditSearchInput;
-    QLabel* labelSearchSQL;
-    QLineEdit* lineEditSearchSQL;
-    QTextEdit* textEditSearchSQL;
-    QTextEdit* textEditValidation;
-    QLabel* labelValidation;
-    QLabel* labelConditions;
-    QScrollArea* scrollAreaConditions;
-    QWidget* scrollAreaWidgetContents;
-    QVBoxLayout* verticalLayoutConditions;
-    QHBoxLayout* horizontalLayoutCondition1;
-    QLabel* label;
-    QComboBox* comboBoxCondition1Field;
-    QComboBox* comboBoxCondition1Operator;
-    QLineEdit* lineEditCondition1Value;
-    QComboBox* comboBoxCondition1Value;
-    QComboBox* comboBoxCondition1Combiner;
-    QPushButton* buttoncondition1_insert;
-    QPushButton* buttoncondition1_up;
-    QPushButton* buttoncondition1_down;
-    QPushButton* buttoncondition1_delete;
-    QHBoxLayout* horizontalLayoutCondition2;
-    QLabel* label_13;
-    QComboBox* comboBoxCondition2Field;
-    QComboBox* comboBoxCondition2Operator;
-    QLineEdit* lineEditCondition2Value;
-    QComboBox* comboBoxCondition2Value;
-    QComboBox* comboBoxCondition2Combiner;
-    QPushButton* buttoncondition2_insert;
-    QPushButton* buttoncondition2_up;
-    QPushButton* buttoncondition2_down;
-    QPushButton* buttoncondition2_delete;
-    QHBoxLayout* horizontalLayoutCondition3;
-    QLabel* label_12;
-    QComboBox* comboBoxCondition3Field;
-    QComboBox* comboBoxCondition3Operator;
-    QLineEdit* lineEditCondition3Value;
-    QComboBox* comboBoxCondition3Value;
-    QComboBox* comboBoxCondition3Combiner;
-    QPushButton* buttoncondition3_insert;
-    QPushButton* buttoncondition3_up;
-    QPushButton* buttoncondition3_down;
-    QPushButton* buttoncondition3_delete;
-    QHBoxLayout* horizontalLayoutCondition4;
-    QLabel* label_11;
-    QComboBox* comboBoxCondition4Field;
-    QComboBox* comboBoxCondition4Operator;
-    QLineEdit* lineEditCondition4Value;
-    QComboBox* comboBoxCondition4Value;
-    QComboBox* comboBoxCondition4Combiner;
-    QPushButton* buttoncondition4_insert;
-    QPushButton* buttoncondition4_up;
-    QPushButton* buttoncondition4_down;
-    QPushButton* buttoncondition4_delete;
-    QHBoxLayout* horizontalLayoutCondition5;
-    QLabel* label_10;
-    QComboBox* comboBoxCondition5Field;
-    QComboBox* comboBoxCondition5Operator;
-    QLineEdit* lineEditCondition5Value;
-    QComboBox* comboBoxCondition5Value;
-    QComboBox* comboBoxCondition5Combiner;
-    QPushButton* buttoncondition5_insert;
-    QPushButton* buttoncondition5_up;
-    QPushButton* buttoncondition5_down;
-    QPushButton* buttoncondition5_delete;
-    QHBoxLayout* horizontalLayoutCondition6;
-    QLabel* label_9;
-    QComboBox* comboBoxCondition6Field;
-    QComboBox* comboBoxCondition6Operator;
-    QLineEdit* lineEditCondition6Value;
-    QComboBox* comboBoxCondition6Value;
-    QComboBox* comboBoxCondition6Combiner;
-    QPushButton* buttoncondition6_insert;
-    QPushButton* buttoncondition6_up;
-    QPushButton* buttoncondition6_down;
-    QPushButton* buttoncondition6_delete;
-    QHBoxLayout* horizontalLayoutCondition7;
-    QLabel* label_8;
-    QComboBox* comboBoxCondition7Field;
-    QComboBox* comboBoxCondition7Operator;
-    QLineEdit* lineEditCondition7Value;
-    QComboBox* comboBoxCondition7Value;
-    QComboBox* comboBoxCondition7Combiner;
-    QPushButton* buttoncondition7_insert;
-    QPushButton* buttoncondition7_up;
-    QPushButton* buttoncondition7_down;
-    QPushButton* buttoncondition7_delete;
-    QHBoxLayout* horizontalLayoutCondition8;
-    QLabel* label_7;
-    QComboBox* comboBoxCondition8Field;
-    QComboBox* comboBoxCondition8Operator;
-    QLineEdit* lineEditCondition8Value;
-    QComboBox* comboBoxCondition8Value;
-    QComboBox* comboBoxCondition8Combiner;
-    QPushButton* buttoncondition8_insert;
-    QPushButton* buttoncondition8_up;
-    QPushButton* buttoncondition8_down;
-    QPushButton* buttoncondition8_delete;
-    QHBoxLayout* horizontalLayoutCondition9;
-    QLabel* label_6;
-    QComboBox* comboBoxCondition9Field;
-    QComboBox* comboBoxCondition9Operator;
-    QLineEdit* lineEditCondition9Value;
-    QComboBox* comboBoxCondition9Value;
-    QComboBox* comboBoxCondition9Combiner;
-    QPushButton* buttoncondition9_insert;
-    QPushButton* buttoncondition9_up;
-    QPushButton* buttoncondition9_down;
-    QPushButton* buttoncondition9_delete;
-    QHBoxLayout* horizontalLayoutCondition10;
-    QLabel* label_5;
-    QComboBox* comboBoxCondition10Field;
-    QComboBox* comboBoxCondition10Operator;
-    QLineEdit* lineEditCondition10Value;
-    QComboBox* comboBoxCondition10Value;
-    QComboBox* comboBoxCondition10Combiner;
-    QPushButton* buttoncondition10_insert;
-    QPushButton* buttoncondition10_up;
-    QPushButton* buttoncondition10_down;
-    QPushButton* buttoncondition10_delete;
-    QHBoxLayout* horizontalLayoutCondition11;
-    QLabel* label_4;
-    QComboBox* comboBoxCondition11Field;
-    QComboBox* comboBoxCondition11Operator;
-    QLineEdit* lineEditCondition11Value;
-    QComboBox* comboBoxCondition11Value;
-    QComboBox* comboBoxCondition11Combiner;
-    QPushButton* buttoncondition11_insert;
-    QPushButton* buttoncondition11_up;
-    QPushButton* buttoncondition11_down;
-    QPushButton* buttoncondition11_delete;
-    QHBoxLayout* horizontalLayoutCondition12;
-    QLabel* label_3;
-    QComboBox* comboBoxCondition12Field;
-    QComboBox* comboBoxCondition12Operator;
-    QLineEdit* lineEditCondition12Value;
-    QComboBox* comboBoxCondition12Value;
-    QComboBox* comboBoxCondition12Combiner;
-    QPushButton* buttoncondition12_insert;
-    QPushButton* buttoncondition12_up;
-    QPushButton* buttoncondition12_down;
-    QPushButton* buttoncondition12_delete;
-    QHBoxLayout* horizontalLayoutButtons;
-    QPushButton* newButton;
-    QPushButton* deleteButton;
-    QPushButton* previousButton;
-    QPushButton* nextButton;
-    QPushButton* applyButton;
-    QPushButton* okButton;
-    QPushButton* cancelButton;
+class Ui_dlgSmartiesInfo
+{
+public:
+    QVBoxLayout *verticalLayout;
+    QGroupBox *groupBox;
+    QLineEdit *lineEditID;
+    QLabel *labelID;
+    QLabel *labelName;
+    QLineEdit *lineEditName;
+    QLabel *labelCount;
+    QSpinBox *spinBoxCount;
+    QLabel *labelShow;
+    QCheckBox *checkBoxShow;
+    QLabel *labelLocked;
+    QPushButton *buttonLock;
+    QLabel *labelAutoDJ;
+    QCheckBox *checkBoxAutoDJ;
+    QLabel *labelSearchInput;
+    QLineEdit *lineEditSearchInput;
+    QLabel *labelSearchSQL;
+    QLineEdit *lineEditSearchSQL;
+    QTextEdit *textEditSearchSQL;
+    QTextEdit *textEditValidation;
+    QLabel *labelValidation;
+    QLabel *labelConditions;
+    QScrollArea *scrollAreaConditions;
+    QWidget *scrollAreaWidgetContents;
+    QVBoxLayout *verticalLayoutConditions;
+    QHBoxLayout *horizontalLayoutCondition1;
+    QLabel *label;
+    QComboBox *comboBoxCondition1Field;
+    QComboBox *comboBoxCondition1Operator;
+    QLineEdit *lineEditCondition1Value;
+    QComboBox *comboBoxCondition1Combiner;
+    QPushButton *buttoncondition1_insert;
+    QPushButton *buttoncondition1_up;
+    QPushButton *buttoncondition1_down;
+    QPushButton *buttoncondition1_delete;
+    QHBoxLayout *horizontalLayoutCondition2;
+    QLabel *label_13;
+    QComboBox *comboBoxCondition2Field;
+    QComboBox *comboBoxCondition2Operator;
+    QLineEdit *lineEditCondition2Value;
+    QComboBox *comboBoxCondition2Combiner;
+    QPushButton *buttoncondition2_insert;
+    QPushButton *buttoncondition2_up;
+    QPushButton *buttoncondition2_down;
+    QPushButton *buttoncondition2_delete;
+    QHBoxLayout *horizontalLayoutCondition3;
+    QLabel *label_12;
+    QComboBox *comboBoxCondition3Field;
+    QComboBox *comboBoxCondition3Operator;
+    QLineEdit *lineEditCondition3Value;
+    QComboBox *comboBoxCondition3Combiner;
+    QPushButton *buttoncondition3_insert;
+    QPushButton *buttoncondition3_up;
+    QPushButton *buttoncondition3_down;
+    QPushButton *buttoncondition3_delete;
+    QHBoxLayout *horizontalLayoutCondition4;
+    QLabel *label_11;
+    QComboBox *comboBoxCondition4Field;
+    QComboBox *comboBoxCondition4Operator;
+    QLineEdit *lineEditCondition4Value;
+    QComboBox *comboBoxCondition4Combiner;
+    QPushButton *buttoncondition4_insert;
+    QPushButton *buttoncondition4_up;
+    QPushButton *buttoncondition4_down;
+    QPushButton *buttoncondition4_delete;
+    QHBoxLayout *horizontalLayoutCondition5;
+    QLabel *label_10;
+    QComboBox *comboBoxCondition5Field;
+    QComboBox *comboBoxCondition5Operator;
+    QLineEdit *lineEditCondition5Value;
+    QComboBox *comboBoxCondition5Combiner;
+    QPushButton *buttoncondition5_insert;
+    QPushButton *buttoncondition5_up;
+    QPushButton *buttoncondition5_down;
+    QPushButton *buttoncondition5_delete;
+    QHBoxLayout *horizontalLayoutCondition6;
+    QLabel *label_9;
+    QComboBox *comboBoxCondition6Field;
+    QComboBox *comboBoxCondition6Operator;
+    QLineEdit *lineEditCondition6Value;
+    QComboBox *comboBoxCondition6Combiner;
+    QPushButton *buttoncondition6_insert;
+    QPushButton *buttoncondition6_up;
+    QPushButton *buttoncondition6_down;
+    QPushButton *buttoncondition6_delete;
+    QHBoxLayout *horizontalLayoutCondition7;
+    QLabel *label_8;
+    QComboBox *comboBoxCondition7Field;
+    QComboBox *comboBoxCondition7Operator;
+    QLineEdit *lineEditCondition7Value;
+    QComboBox *comboBoxCondition7Combiner;
+    QPushButton *buttoncondition7_insert;
+    QPushButton *buttoncondition7_up;
+    QPushButton *buttoncondition7_down;
+    QPushButton *buttoncondition7_delete;
+    QHBoxLayout *horizontalLayoutCondition8;
+    QLabel *label_7;
+    QComboBox *comboBoxCondition8Field;
+    QComboBox *comboBoxCondition8Operator;
+    QLineEdit *lineEditCondition8Value;
+    QComboBox *comboBoxCondition8Combiner;
+    QPushButton *buttoncondition8_insert;
+    QPushButton *buttoncondition8_up;
+    QPushButton *buttoncondition8_down;
+    QPushButton *buttoncondition8_delete;
+    QHBoxLayout *horizontalLayoutCondition9;
+    QLabel *label_6;
+    QComboBox *comboBoxCondition9Field;
+    QComboBox *comboBoxCondition9Operator;
+    QLineEdit *lineEditCondition9Value;
+    QComboBox *comboBoxCondition9Combiner;
+    QPushButton *buttoncondition9_insert;
+    QPushButton *buttoncondition9_up;
+    QPushButton *buttoncondition9_down;
+    QPushButton *buttoncondition9_delete;
+    QHBoxLayout *horizontalLayoutCondition10;
+    QLabel *label_5;
+    QComboBox *comboBoxCondition10Field;
+    QComboBox *comboBoxCondition10Operator;
+    QLineEdit *lineEditCondition10Value;
+    QComboBox *comboBoxCondition10Combiner;
+    QPushButton *buttoncondition10_insert;
+    QPushButton *buttoncondition10_up;
+    QPushButton *buttoncondition10_down;
+    QPushButton *buttoncondition10_delete;
+    QHBoxLayout *horizontalLayoutCondition11;
+    QLabel *label_4;
+    QComboBox *comboBoxCondition11Field;
+    QComboBox *comboBoxCondition11Operator;
+    QLineEdit *lineEditCondition11Value;
+    QComboBox *comboBoxCondition11Combiner;
+    QPushButton *buttoncondition11_insert;
+    QPushButton *buttoncondition11_up;
+    QPushButton *buttoncondition11_down;
+    QPushButton *buttoncondition11_delete;
+    QHBoxLayout *horizontalLayoutCondition12;
+    QLabel *label_3;
+    QComboBox *comboBoxCondition12Field;
+    QComboBox *comboBoxCondition12Operator;
+    QLineEdit *lineEditCondition12Value;
+    QComboBox *comboBoxCondition12Combiner;
+    QPushButton *buttoncondition12_insert;
+    QPushButton *buttoncondition12_up;
+    QPushButton *buttoncondition12_down;
+    QPushButton *buttoncondition12_delete;
+    QHBoxLayout *horizontalLayoutButtons;
+    QPushButton *newButton;
+    QPushButton *previousButton;
+    QPushButton *nextButton;
+    QPushButton *applyButton;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
 
-    void setupUi(QDialog* dlgSmartiesInfo) {
+    void setupUi(QDialog *dlgSmartiesInfo)
+    {
         if (dlgSmartiesInfo->objectName().isEmpty())
             dlgSmartiesInfo->setObjectName("dlgSmartiesInfo");
         dlgSmartiesInfo->resize(885, 800);
@@ -355,7 +344,7 @@ class Ui_dlgSmartiesInfo {
         label->setMaximumSize(QSize(20, 20));
         label->setBaseSize(QSize(20, 20));
         label->setFont(font);
-        label->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition1->addWidget(label);
 
@@ -379,12 +368,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition1Value->setFont(font3);
 
         horizontalLayoutCondition1->addWidget(lineEditCondition1Value);
-
-        comboBoxCondition1Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition1Value->setObjectName("comboBoxCondition1Value");
-        comboBoxCondition1Value->setFont(font3);
-
-        horizontalLayoutCondition1->addWidget(comboBoxCondition1Value);
 
         comboBoxCondition1Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition1Combiner->setObjectName("comboBoxCondition1Combiner");
@@ -429,6 +412,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition1->addWidget(buttoncondition1_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition1);
 
         horizontalLayoutCondition2 = new QHBoxLayout();
@@ -439,7 +423,7 @@ class Ui_dlgSmartiesInfo {
         label_13->setMaximumSize(QSize(20, 20));
         label_13->setBaseSize(QSize(20, 20));
         label_13->setFont(font);
-        label_13->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_13->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition2->addWidget(label_13);
 
@@ -462,12 +446,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition2Value->setFont(font3);
 
         horizontalLayoutCondition2->addWidget(lineEditCondition2Value);
-
-        comboBoxCondition2Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition2Value->setObjectName("comboBoxCondition2Value");
-        comboBoxCondition2Value->setFont(font3);
-
-        horizontalLayoutCondition2->addWidget(comboBoxCondition2Value);
 
         comboBoxCondition2Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition2Combiner->setObjectName("comboBoxCondition2Combiner");
@@ -509,6 +487,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition2->addWidget(buttoncondition2_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition2);
 
         horizontalLayoutCondition3 = new QHBoxLayout();
@@ -519,7 +498,7 @@ class Ui_dlgSmartiesInfo {
         label_12->setMaximumSize(QSize(20, 20));
         label_12->setBaseSize(QSize(20, 20));
         label_12->setFont(font);
-        label_12->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_12->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition3->addWidget(label_12);
 
@@ -542,12 +521,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition3Value->setFont(font3);
 
         horizontalLayoutCondition3->addWidget(lineEditCondition3Value);
-
-        comboBoxCondition3Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition3Value->setObjectName("comboBoxCondition3Value");
-        comboBoxCondition3Value->setFont(font3);
-
-        horizontalLayoutCondition3->addWidget(comboBoxCondition3Value);
 
         comboBoxCondition3Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition3Combiner->setObjectName("comboBoxCondition3Combiner");
@@ -589,6 +562,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition3->addWidget(buttoncondition3_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition3);
 
         horizontalLayoutCondition4 = new QHBoxLayout();
@@ -599,7 +573,7 @@ class Ui_dlgSmartiesInfo {
         label_11->setMaximumSize(QSize(20, 20));
         label_11->setBaseSize(QSize(20, 20));
         label_11->setFont(font);
-        label_11->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_11->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition4->addWidget(label_11);
 
@@ -622,12 +596,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition4Value->setFont(font3);
 
         horizontalLayoutCondition4->addWidget(lineEditCondition4Value);
-
-        comboBoxCondition4Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition4Value->setObjectName("comboBoxCondition4Value");
-        comboBoxCondition4Value->setFont(font3);
-
-        horizontalLayoutCondition4->addWidget(comboBoxCondition4Value);
 
         comboBoxCondition4Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition4Combiner->setObjectName("comboBoxCondition4Combiner");
@@ -669,6 +637,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition4->addWidget(buttoncondition4_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition4);
 
         horizontalLayoutCondition5 = new QHBoxLayout();
@@ -679,7 +648,7 @@ class Ui_dlgSmartiesInfo {
         label_10->setMaximumSize(QSize(20, 20));
         label_10->setBaseSize(QSize(20, 20));
         label_10->setFont(font);
-        label_10->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_10->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition5->addWidget(label_10);
 
@@ -702,12 +671,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition5Value->setFont(font3);
 
         horizontalLayoutCondition5->addWidget(lineEditCondition5Value);
-
-        comboBoxCondition5Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition5Value->setObjectName("comboBoxCondition5Value");
-        comboBoxCondition5Value->setFont(font3);
-
-        horizontalLayoutCondition5->addWidget(comboBoxCondition5Value);
 
         comboBoxCondition5Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition5Combiner->setObjectName("comboBoxCondition5Combiner");
@@ -749,6 +712,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition5->addWidget(buttoncondition5_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition5);
 
         horizontalLayoutCondition6 = new QHBoxLayout();
@@ -759,7 +723,7 @@ class Ui_dlgSmartiesInfo {
         label_9->setMaximumSize(QSize(20, 20));
         label_9->setBaseSize(QSize(20, 20));
         label_9->setFont(font);
-        label_9->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_9->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition6->addWidget(label_9);
 
@@ -782,12 +746,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition6Value->setFont(font3);
 
         horizontalLayoutCondition6->addWidget(lineEditCondition6Value);
-
-        comboBoxCondition6Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition6Value->setObjectName("comboBoxCondition6Value");
-        comboBoxCondition6Value->setFont(font3);
-
-        horizontalLayoutCondition6->addWidget(comboBoxCondition6Value);
 
         comboBoxCondition6Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition6Combiner->setObjectName("comboBoxCondition6Combiner");
@@ -829,6 +787,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition6->addWidget(buttoncondition6_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition6);
 
         horizontalLayoutCondition7 = new QHBoxLayout();
@@ -839,7 +798,7 @@ class Ui_dlgSmartiesInfo {
         label_8->setMaximumSize(QSize(20, 20));
         label_8->setBaseSize(QSize(20, 20));
         label_8->setFont(font);
-        label_8->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_8->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition7->addWidget(label_8);
 
@@ -862,12 +821,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition7Value->setFont(font3);
 
         horizontalLayoutCondition7->addWidget(lineEditCondition7Value);
-
-        comboBoxCondition7Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition7Value->setObjectName("comboBoxCondition7Value");
-        comboBoxCondition7Value->setFont(font3);
-
-        horizontalLayoutCondition7->addWidget(comboBoxCondition7Value);
 
         comboBoxCondition7Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition7Combiner->setObjectName("comboBoxCondition7Combiner");
@@ -909,6 +862,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition7->addWidget(buttoncondition7_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition7);
 
         horizontalLayoutCondition8 = new QHBoxLayout();
@@ -919,7 +873,7 @@ class Ui_dlgSmartiesInfo {
         label_7->setMaximumSize(QSize(20, 20));
         label_7->setBaseSize(QSize(20, 20));
         label_7->setFont(font);
-        label_7->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_7->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition8->addWidget(label_7);
 
@@ -942,12 +896,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition8Value->setFont(font3);
 
         horizontalLayoutCondition8->addWidget(lineEditCondition8Value);
-
-        comboBoxCondition8Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition8Value->setObjectName("comboBoxCondition8Value");
-        comboBoxCondition8Value->setFont(font3);
-
-        horizontalLayoutCondition8->addWidget(comboBoxCondition8Value);
 
         comboBoxCondition8Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition8Combiner->setObjectName("comboBoxCondition8Combiner");
@@ -989,6 +937,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition8->addWidget(buttoncondition8_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition8);
 
         horizontalLayoutCondition9 = new QHBoxLayout();
@@ -1000,7 +949,7 @@ class Ui_dlgSmartiesInfo {
         label_6->setBaseSize(QSize(20, 20));
         label_6->setFont(font);
         label_6->setLayoutDirection(Qt::LeftToRight);
-        label_6->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_6->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition9->addWidget(label_6);
 
@@ -1023,12 +972,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition9Value->setFont(font3);
 
         horizontalLayoutCondition9->addWidget(lineEditCondition9Value);
-
-        comboBoxCondition9Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition9Value->setObjectName("comboBoxCondition9Value");
-        comboBoxCondition9Value->setFont(font3);
-
-        horizontalLayoutCondition9->addWidget(comboBoxCondition9Value);
 
         comboBoxCondition9Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition9Combiner->setObjectName("comboBoxCondition9Combiner");
@@ -1070,6 +1013,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition9->addWidget(buttoncondition9_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition9);
 
         horizontalLayoutCondition10 = new QHBoxLayout();
@@ -1080,7 +1024,7 @@ class Ui_dlgSmartiesInfo {
         label_5->setMaximumSize(QSize(20, 20));
         label_5->setBaseSize(QSize(20, 20));
         label_5->setFont(font);
-        label_5->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition10->addWidget(label_5);
 
@@ -1103,12 +1047,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition10Value->setFont(font3);
 
         horizontalLayoutCondition10->addWidget(lineEditCondition10Value);
-
-        comboBoxCondition10Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition10Value->setObjectName("comboBoxCondition10Value");
-        comboBoxCondition10Value->setFont(font3);
-
-        horizontalLayoutCondition10->addWidget(comboBoxCondition10Value);
 
         comboBoxCondition10Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition10Combiner->setObjectName("comboBoxCondition10Combiner");
@@ -1150,6 +1088,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition10->addWidget(buttoncondition10_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition10);
 
         horizontalLayoutCondition11 = new QHBoxLayout();
@@ -1160,7 +1099,7 @@ class Ui_dlgSmartiesInfo {
         label_4->setMaximumSize(QSize(20, 20));
         label_4->setBaseSize(QSize(20, 20));
         label_4->setFont(font);
-        label_4->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition11->addWidget(label_4);
 
@@ -1183,12 +1122,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition11Value->setFont(font3);
 
         horizontalLayoutCondition11->addWidget(lineEditCondition11Value);
-
-        comboBoxCondition11Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition11Value->setObjectName("comboBoxCondition11Value");
-        comboBoxCondition11Value->setFont(font3);
-
-        horizontalLayoutCondition11->addWidget(comboBoxCondition11Value);
 
         comboBoxCondition11Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition11Combiner->setObjectName("comboBoxCondition11Combiner");
@@ -1230,6 +1163,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition11->addWidget(buttoncondition11_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition11);
 
         horizontalLayoutCondition12 = new QHBoxLayout();
@@ -1240,7 +1174,7 @@ class Ui_dlgSmartiesInfo {
         label_3->setMaximumSize(QSize(20, 20));
         label_3->setBaseSize(QSize(20, 20));
         label_3->setFont(font);
-        label_3->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
+        label_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayoutCondition12->addWidget(label_3);
 
@@ -1263,12 +1197,6 @@ class Ui_dlgSmartiesInfo {
         lineEditCondition12Value->setFont(font3);
 
         horizontalLayoutCondition12->addWidget(lineEditCondition12Value);
-
-        comboBoxCondition12Value = new QComboBox(scrollAreaWidgetContents);
-        comboBoxCondition12Value->setObjectName("comboBoxCondition12Value");
-        comboBoxCondition12Value->setFont(font3);
-
-        horizontalLayoutCondition12->addWidget(comboBoxCondition12Value);
 
         comboBoxCondition12Combiner = new QComboBox(scrollAreaWidgetContents);
         comboBoxCondition12Combiner->setObjectName("comboBoxCondition12Combiner");
@@ -1310,6 +1238,7 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutCondition12->addWidget(buttoncondition12_delete);
 
+
         verticalLayoutConditions->addLayout(horizontalLayoutCondition12);
 
         scrollAreaConditions->setWidget(scrollAreaWidgetContents);
@@ -1322,11 +1251,6 @@ class Ui_dlgSmartiesInfo {
         newButton->setObjectName("newButton");
 
         horizontalLayoutButtons->addWidget(newButton);
-
-        deleteButton = new QPushButton(dlgSmartiesInfo);
-        deleteButton->setObjectName("deleteButton");
-
-        horizontalLayoutButtons->addWidget(deleteButton);
 
         previousButton = new QPushButton(dlgSmartiesInfo);
         previousButton->setObjectName("previousButton");
@@ -1353,154 +1277,102 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutButtons->addWidget(cancelButton);
 
+
         verticalLayout->addLayout(horizontalLayoutButtons);
+
 
         retranslateUi(dlgSmartiesInfo);
 
         QMetaObject::connectSlotsByName(dlgSmartiesInfo);
     } // setupUi
 
-    void retranslateUi(QDialog* dlgSmartiesInfo) {
-        dlgSmartiesInfo->setWindowTitle(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties Info / Editor", nullptr));
-        groupBox->setTitle(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties INFO / Editor", nullptr));
+    void retranslateUi(QDialog *dlgSmartiesInfo)
+    {
+        dlgSmartiesInfo->setWindowTitle(QCoreApplication::translate("dlgSmartiesInfo", "Smarties Info / Editor", nullptr));
+        groupBox->setTitle(QCoreApplication::translate("dlgSmartiesInfo", "Smarties INFO / Editor", nullptr));
         labelID->setText(QCoreApplication::translate("dlgSmartiesInfo", "ID:", nullptr));
         labelName->setText(QCoreApplication::translate("dlgSmartiesInfo", "Name:", nullptr));
         labelCount->setText(QCoreApplication::translate("dlgSmartiesInfo", "Count:", nullptr));
         labelShow->setText(QCoreApplication::translate("dlgSmartiesInfo", "Show", nullptr));
         labelLocked->setText(QCoreApplication::translate("dlgSmartiesInfo", "Locked:", nullptr));
         buttonLock->setText(QCoreApplication::translate("dlgSmartiesInfo", "Lock", nullptr));
-        labelAutoDJ->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "AutoDJ Source", nullptr));
-        labelSearchInput->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Search Input:", nullptr));
-        labelSearchSQL->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Search SQL:", nullptr));
-        labelValidation->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Validation:", nullptr));
-        labelConditions->setText(QCoreApplication::translate("dlgSmartiesInfo",
-                "Search for tracks in the library that meet the following "
-                "conditions:",
-                nullptr));
+        labelAutoDJ->setText(QCoreApplication::translate("dlgSmartiesInfo", "AutoDJ Source", nullptr));
+        labelSearchInput->setText(QCoreApplication::translate("dlgSmartiesInfo", "Search Input:", nullptr));
+        labelSearchSQL->setText(QCoreApplication::translate("dlgSmartiesInfo", "Search SQL:", nullptr));
+        labelValidation->setText(QCoreApplication::translate("dlgSmartiesInfo", "Validation:", nullptr));
+        labelConditions->setText(QCoreApplication::translate("dlgSmartiesInfo", "Search for tracks in the library that meet the following conditions:", nullptr));
         label->setText(QCoreApplication::translate("dlgSmartiesInfo", "1", nullptr));
-        buttoncondition1_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition1_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
         buttoncondition1_up->setText(QString());
-        buttoncondition1_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition1_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition1_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition1_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_13->setText(QCoreApplication::translate("dlgSmartiesInfo", "2", nullptr));
-        buttoncondition2_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition2_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition2_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition2_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition2_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition2_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition2_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition2_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_12->setText(QCoreApplication::translate("dlgSmartiesInfo", "3", nullptr));
-        buttoncondition3_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition3_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition3_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition3_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition3_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition3_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition3_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition3_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_11->setText(QCoreApplication::translate("dlgSmartiesInfo", "4", nullptr));
-        buttoncondition4_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition4_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition4_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition4_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition4_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition4_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition4_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition4_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_10->setText(QCoreApplication::translate("dlgSmartiesInfo", "5", nullptr));
-        buttoncondition5_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition5_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition5_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition5_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition5_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition5_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition5_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition5_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_9->setText(QCoreApplication::translate("dlgSmartiesInfo", "6", nullptr));
-        buttoncondition6_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition6_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition6_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition6_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition6_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition6_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition6_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition6_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_8->setText(QCoreApplication::translate("dlgSmartiesInfo", "7", nullptr));
-        buttoncondition7_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition7_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition7_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition7_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition7_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition7_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition7_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition7_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_7->setText(QCoreApplication::translate("dlgSmartiesInfo", "8", nullptr));
-        buttoncondition8_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition8_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition8_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition8_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition8_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition8_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition8_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition8_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_6->setText(QCoreApplication::translate("dlgSmartiesInfo", "9", nullptr));
-        buttoncondition9_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition9_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition9_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition9_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition9_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition9_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition9_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition9_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_5->setText(QCoreApplication::translate("dlgSmartiesInfo", "10", nullptr));
-        buttoncondition10_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition10_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition10_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition10_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition10_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition10_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition10_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition10_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_4->setText(QCoreApplication::translate("dlgSmartiesInfo", "11", nullptr));
-        buttoncondition11_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
-        buttoncondition11_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
-        buttoncondition11_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
-        buttoncondition11_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition11_insert->setText(QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+        buttoncondition11_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition11_down->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\274", nullptr));
+        buttoncondition11_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         label_3->setText(QCoreApplication::translate("dlgSmartiesInfo", "12", nullptr));
         buttoncondition12_insert->setText(QString());
-        buttoncondition12_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+        buttoncondition12_up->setText(QCoreApplication::translate("dlgSmartiesInfo", "\342\226\262", nullptr));
         buttoncondition12_down->setText(QString());
-        buttoncondition12_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
+        buttoncondition12_delete->setText(QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
         newButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "New", nullptr));
-        deleteButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Delete", nullptr));
-        previousButton->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Previous", nullptr));
+        previousButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Previous", nullptr));
         nextButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Next", nullptr));
         applyButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Apply", nullptr));
         okButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "OK", nullptr));
         cancelButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Cancel", nullptr));
     } // retranslateUi
+
 };
 
 namespace Ui {
-class dlgSmartiesInfo : public Ui_dlgSmartiesInfo {};
+    class dlgSmartiesInfo: public Ui_dlgSmartiesInfo {};
 } // namespace Ui
 
 QT_END_NAMESPACE
