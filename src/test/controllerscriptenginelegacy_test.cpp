@@ -687,10 +687,10 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
     auto result = qjsvalue_cast<QByteArray>(
             evaluate("engine.convertCharset('ISO-8859-15', 'مايأ نامز')"));
-
+    char sub = '\x1A'; // ASCII/Latin9 SUB character
     EXPECT_EQ(result,
             QByteArrayView::fromArray(
-                    {'\x00', '\x00', '\x00', '\x00', '\x20', '\x00', '\x00', '\x00', '\x00'}));
+                    {sub, sub, sub, sub, '\x20', sub, sub, sub, sub}));
 }
 
 #define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! 😊"

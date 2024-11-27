@@ -91,8 +91,6 @@ class ControllerScriptInterfaceLegacy : public QObject {
                     targetCharset,
             const QString& value);
 
-    Q_INVOKABLE QByteArray convertCharset(const QString& targetCharset, const QString& value);
-
     bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback
     void triggerScriptConnection(const ScriptConnection& conn);
@@ -105,6 +103,9 @@ class ControllerScriptInterfaceLegacy : public QObject {
             const QString& name,
             const QJSValue& callback,
             bool skipSuperseded = false);
+
+    QByteArray convertCharsetInternal(const QString& targetCharset, const QString& value);
+
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 
