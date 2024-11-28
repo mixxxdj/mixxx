@@ -1504,26 +1504,21 @@ bool dlgSmartiesInfo::validationCheck() {
                         }
                         if ((conditionsTable[i][3].indexOf("|", 0) == 10) &&
                                 (conditionsTable[i][3].length() == 21)) {
-                            QDate From = std::chrono::year_month_day(
-                                    std::chrono::year(conditionsTable[i][3]
-                                                              .mid(0, 4)
-                                                              .toInt()),
-                                    std::chrono::month(conditionsTable[i][3]
-                                                               .mid(5, 2)
-                                                               .toInt()),
-                                    std::chrono::day(conditionsTable[i][3]
-                                                             .mid(8, 2)
-                                                             .toInt()));
-                            QDate To = std::chrono::year_month_day(
-                                    std::chrono::year(conditionsTable[i][3]
-                                                              .mid(11, 4)
-                                                              .toInt()),
-                                    std::chrono::month(conditionsTable[i][3]
-                                                               .mid(16, 2)
-                                                               .toInt()),
-                                    std::chrono::day(conditionsTable[i][3]
-                                                             .mid(19, 2)
-                                                             .toInt()));
+                            std::chrono::year_month_day fromDate(
+                                    std::chrono::year(conditionsTable[i][3].mid(0, 4).toInt()),
+                                    std::chrono::month(conditionsTable[i][3].mid(5, 2).toInt()),
+                                    std::chrono::day(conditionsTable[i][3].mid(8, 2).toInt()));
+                            QDate From(fromDate.year().operator int(),
+                                    unsigned(fromDate.month()),
+                                    unsigned(fromDate.day()));
+                            std::chrono::year_month_day toDate(
+                                    std::chrono::year(conditionsTable[i][3].mid(11, 4).toInt()),
+                                    std::chrono::month(conditionsTable[i][3].mid(16, 2).toInt()),
+                                    std::chrono::day(conditionsTable[i][3].mid(19, 2).toInt()));
+                            QDate To(toDate.year().operator int(),
+                                    unsigned(toDate.month()),
+                                    unsigned(toDate.day()));
+
                             bool FromValid = From.isValid();
                             bool ToValid = To.isValid();
                             if (sDebug) {
@@ -2190,9 +2185,9 @@ QString dlgSmartiesInfo::buildWhereClause() {
         //        int baseIndex = 8 + (i - 1) * 4; // Adjusting for the correct
         //        index in smartiesData
 
-        QString field = conditionsTable[i][1];
-        QString op = conditionsTable[i][2];
-        QString value = conditionsTable[i][3];
+        const QString& field = conditionsTable[i][1];
+        const QString& op = conditionsTable[i][2];
+        const QString& value = conditionsTable[i][3];
         QString combiner = conditionsTable[i][4];
 
         //  begin build condition

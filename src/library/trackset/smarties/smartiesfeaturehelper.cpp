@@ -157,9 +157,9 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
 
         QString pattern =
                 R"(\b(artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:)\s*([^:]+?)(?=\s*\b(?:artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:|$)))";
-        QRegularExpression termRegex(pattern, QRegularExpression::CaseInsensitiveOption);
+        static QRegularExpression termRegex(pattern, QRegularExpression::CaseInsensitiveOption);
 
-        static QRegularExpressionMatchIterator X = termRegex.globalMatch(cleanedText);
+        QRegularExpressionMatchIterator X = termRegex.globalMatch(cleanedText);
         int conditionIndex = 1;
         bool foundTerms = false;
 

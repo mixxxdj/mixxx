@@ -781,9 +781,9 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
     for (int i = 1; i <= 12; ++i) {
         int baseIndex = 8 + (i - 1) * 4; // Adjusting for the correct index in smartiesData
 
-        QString field = smartiesData[baseIndex].toString();
-        QString op = smartiesData[baseIndex + 1].toString();
-        QString value = smartiesData[baseIndex + 2].toString();
+        const QString& field = smartiesData[baseIndex].toString();
+        const QString& op = smartiesData[baseIndex + 1].toString();
+        const QString& value = smartiesData[baseIndex + 2].toString();
         QString combiner = smartiesData[baseIndex + 3].toString();
 
         //  begin build condition

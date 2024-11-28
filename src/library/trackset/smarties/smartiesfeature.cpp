@@ -448,6 +448,8 @@ void SmartiesFeature::slotCreateSmartiesFromSearch(const QString& text) {
     if (smartiesId.isValid()) {
         // expand Smarties and scroll to new smarties
         m_pSidebarWidget->selectChildIndex(indexFromSmartiesId(smartiesId), false);
+        m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
+        activateSmarties(smartiesId);
     }
 }
 

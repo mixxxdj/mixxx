@@ -5,7 +5,7 @@
 
 const bool sDebug = false;
 
-inline QString buildCondition(QString field, QString op, QString value) {
+inline QString buildCondition(const QString& field, const QString& op, const QString& value) {
     // Check if field, operator, and value are not null
     // if (!field.isEmpty() && !op.isEmpty() && !value.isEmpty()) {
     //
@@ -21,7 +21,7 @@ inline QString buildCondition(QString field, QString op, QString value) {
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
 
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
-    QStringList playlistCrateOperatorOptions = {"is", "is not"};
+    //    QStringList playlistCrateOperatorOptions = {"is", "is not"};
 
     QString condition = "";
 
