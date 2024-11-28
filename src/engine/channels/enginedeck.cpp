@@ -15,8 +15,6 @@
 
 #ifdef __STEM__
 namespace {
-constexpr int kMaxSupportedStems = 4;
-
 QString getGroupForStem(const QString& deckGroup, int stemIdx) {
     DEBUG_ASSERT(deckGroup.endsWith("]"));
     return QStringLiteral("%1Stem%2]")
@@ -75,18 +73,18 @@ EngineDeck::EngineDeck(
     m_pStemCount = std::make_unique<ControlObject>(ConfigKey(getGroup(), "stem_count"));
     m_pStemCount->setReadOnly();
 
-    m_stemGain.reserve(kMaxSupportedStems);
-    m_stemMute.reserve(kMaxSupportedStems);
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+    m_stemGain.reserve(mixxx::kMaxSupportedStems);
+    m_stemMute.reserve(mixxx::kMaxSupportedStems);
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("volume"))));
         // The default value is ignored and override with the medium value by
         // ControlPotmeter. This is likely a bug but fixing might have a
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
         auto pMuteButton = std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("mute")));
         pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
         m_stemMute.push_back(std::move(pMuteButton));
     }
@@ -101,7 +99,7 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
     }
     if (m_pConfig->getValue(
                 ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
-        for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
+        for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
             ;
@@ -213,13 +211,13 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     if (!isPrimaryDeck() || !deckToClone->isPrimaryDeck()) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_stemGain.size() == kMaxSupportedStems &&
-            m_stemMute.size() == kMaxSupportedStems &&
-            deckToClone->m_stemGain.size() == kMaxSupportedStems &&
-            deckToClone->m_stemMute.size() == kMaxSupportedStems) {
+    VERIFY_OR_DEBUG_ASSERT(m_stemGain.size() == mixxx::kMaxSupportedStems &&
+            m_stemMute.size() == mixxx::kMaxSupportedStems &&
+            deckToClone->m_stemGain.size() == mixxx::kMaxSupportedStems &&
+            deckToClone->m_stemMute.size() == mixxx::kMaxSupportedStems) {
         return;
     }
-    for (int stemIdx = 0; stemIdx < kMaxSupportedStems; stemIdx++) {
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }

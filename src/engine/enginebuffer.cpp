@@ -1546,12 +1546,25 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::loadTrack(TrackPointer pTrack, bool play, EngineChannel* pChannelToCloneFrom) {
+#ifdef __STEM__
+void EngineBuffer::loadTrack(TrackPointer pTrack,
+        mixxx::StemChannelSelection stemMask,
+        bool play,
+        EngineChannel* pChannelToCloneFrom) {
+#else
+void EngineBuffer::loadTrack(TrackPointer pTrack,
+        bool play,
+        EngineChannel* pChannelToCloneFrom) {
+#endif
     if (pTrack) {
         // Signal to the reader to load the track. The reader will respond with
         // trackLoading and then either with trackLoaded or trackLoadFailed signals.
         m_bPlayAfterLoading = play;
+#ifdef __STEM__
+        m_pReader->newTrack(pTrack, stemMask);
+#else
         m_pReader->newTrack(pTrack);
+#endif
         atomicStoreRelaxed(m_pChannelToCloneFrom, pChannelToCloneFrom);
     } else {
         // Loading a null track means "eject"

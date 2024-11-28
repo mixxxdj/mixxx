@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 22.04
-            os: ubuntu-22.04
+          - name: Ubuntu 24.04
+            os: ubuntu-24.04
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -34,7 +34,7 @@ jobs:
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 22.04 Qt6 DEB
+            artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
@@ -133,7 +133,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -151,7 +151,7 @@ jobs:
 
       - name: "[macOS] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
-        # Ubuntu 22.04 should use the CMake version from the repos.
+        # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
           # This should always match the minimum required version in
@@ -160,7 +160,7 @@ jobs:
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
-        # Ubuntu 22.04 should use the CMake version from the repos.
+        # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'Windows'
         with:
           # This is a workaround for a SSL false positive in cmake 3.26.4
@@ -346,7 +346,7 @@ jobs:
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.name == 'Ubuntu 22.04'
+        if: matrix.name == 'Ubuntu 24.04'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
@@ -491,7 +491,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
