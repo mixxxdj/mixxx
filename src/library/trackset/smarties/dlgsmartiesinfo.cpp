@@ -711,32 +711,12 @@ void dlgSmartiesInfo::onFieldComboBoxChanged() {
         textEditValidation->setText(QString("Select a field to start creating a condition':"));
     }
 
-    // Find the operator combo box and update its items
-    //    QComboBox* operatorComboBox = findChild<QComboBox*>(
-    //            QString("comboBoxCondition%1Operator")
-    //                    .arg(fieldComboBox->objectName()
-    //                                    .mid(QString("comboBoxCondition").length(),
-    //                                            1)
-    //                                    .toInt()));
-
     QStringView objectNameView(fieldComboBox->objectName());
     QStringView prefixView(u"comboBoxCondition"); // Unicode string literal
-
     int index = objectNameView.mid(prefixView.length(), 1).toInt();
-
     QComboBox* operatorComboBox = findChild<QComboBox*>(
             QString("comboBoxCondition%1Operator").arg(index));
 
-    //    QComboBox* operatorComboBox = findChild<QComboBox*>(
-    //            QString("comboBoxCondition%1Operator")
-    //                    .arg(QStringView(fieldComboBox->objectName())
-    //                                    .mid(QStringView("comboBoxCondition").length(), 1)
-    //                                    .toInt()));
-    //    QComboBox* operatorComboBox = findChild<QComboBox*>(
-    //            QString("comboBoxCondition%1Operator")
-    //                    .arg(fieldComboBox->objectName()
-    //                                    .midRef(QString("comboBoxCondition").length(), 1)
-    //                                    .toInt()));
     if (operatorComboBox) {
         QString tempOperator = operatorComboBox->currentText();
         if (fieldComboBox->currentText() == "") {
