@@ -93,7 +93,7 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     QHash<QString, QString> historyIdHash;
 
   private slots:
-    void onSetBlockerOff(QString blocker);
+    void onSetBlockerOff(const QString& blocker);
     void onUpdateSmartiesData(const QVariantList& smartiesData);
     void toggleLockStatus();
     void storeUIIn2Table();

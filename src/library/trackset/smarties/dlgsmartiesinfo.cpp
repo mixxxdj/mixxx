@@ -249,7 +249,7 @@ void dlgSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCrates
     }
 }
 
-void dlgSmartiesInfo::onSetBlockerOff(QString blocker) {
+void dlgSmartiesInfo::onSetBlockerOff(const QString& blocker) {
     if (blocker == "previous") {
         //        m_sendPrevious = !m_sendPrevious; // set the onPrevious signal
         //        back to false after previousprocedure
@@ -580,9 +580,7 @@ void dlgSmartiesInfo::populateUI() {
     connect(applyButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onApplyButtonClicked);
     connect(newButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onNewButtonClicked);
     connect(deleteButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onDeleteButtonClicked);
-    //    connect(previousButton, &QPushButton::clicked, this,
-    //    &dlgSmartiesInfo::onPreviousButtonClicked);
-    connect(previousButton, SIGNAL(clicked()), this, SLOT(onPreviousButtonClicked()));
+    connect(previousButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onPreviousButtonClicked);
     connect(nextButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onNextButtonClicked);
     connect(okButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onOKButtonClicked);
     connect(cancelButton, &QPushButton::clicked, this, &dlgSmartiesInfo::onCancelButtonClicked);
@@ -595,23 +593,10 @@ void dlgSmartiesInfo::populateUI() {
 
 // narrow possible operator selections based on field selection
 void dlgSmartiesInfo::onFieldComboBoxChanged() {
-    QStringList fieldOptions = {"artist",
-            "title",
-            "album",
-            "album_artist",
-            "genre",
-            "comment",
-            "composer",
-            "filetype",
-            "key",
-            "year",
-            "datetime_added",
-            "last_played_at",
-            "duration",
-            "bpm",
-            "played",
-            "timesplayed",
-            "rating"};
+    // QStringList fieldOptions = {"artist", "title", "album", "album_artist",
+    // "genre", "comment", "composer", "filetype", "key", "year",
+    // "datetime_added", "last_played_at", "duration", "bpm", "played",
+    // "timesplayed", "rating"};
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",
@@ -660,7 +645,7 @@ void dlgSmartiesInfo::onFieldComboBoxChanged() {
             "not equal to",
             "is",
             "is not"};
-    QStringList combinerOptions = {"", ") END", "AND", "OR", ") AND (", ") OR ("};
+    // QStringList combinerOptions = {"", ") END", "AND", "OR", ") AND (", ") OR ("};
 
     // Find the field combo box
     QComboBox* fieldComboBox = qobject_cast<QComboBox*>(sender());
@@ -758,7 +743,7 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
             "composer",
             "filetype",
             "key"};
-    QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
+    //    QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
 
@@ -1359,6 +1344,7 @@ bool dlgSmartiesInfo::validationCheck() {
     //                 << ", Combiner = " << conditionsTable[i][4];
     //    }
 
+    bool conditionsAreValid = false;
     int endCounter = 0;
     bool endPlacedCorrect = false;
     bool latestCombinerChecked = false;
@@ -1669,7 +1655,8 @@ bool dlgSmartiesInfo::validationCheck() {
             textEditValidation->setText(QString(
                     "Your conditions contain errors: You didn't place an ') "
                     "END' in the last combiner. Smarties is NOT saved."));
-            return false;
+            // return false;
+            conditionsAreValid = false;
         } else if (endCounter == 1) {
             checkMatchBetweenFieldAndOperator = true;
         } else if (endCounter > 1) {
@@ -1679,14 +1666,16 @@ bool dlgSmartiesInfo::validationCheck() {
                             "be used at the end of your conditions, you have "
                             "%1 occurrences. Smarties is NOT saved.")
                             .arg(endCounter));
-            return false;
+            // return false;
+            conditionsAreValid = false;
         }
     } else {
         textEditValidation->setStyleSheet("color: rgb(255,0,0)");
         textEditValidation->setText(QString(
                 "Your conditions contain errors: You didn't place an ') END' "
                 "in the last combiner. Smarties is NOT saved."));
-        return false;
+        // return false;
+        conditionsAreValid = false;
     }
     //
     if (sDebug) {
@@ -1711,7 +1700,8 @@ bool dlgSmartiesInfo::validationCheck() {
             if (sDebug) {
                 qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> ERROR -> NO SAVE ";
             }
-            return false;
+            // return false;
+            conditionsAreValid = false;
         } else {
             if (sDebug) {
                 qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> OK -> SAVE ";
@@ -1721,9 +1711,11 @@ bool dlgSmartiesInfo::validationCheck() {
             textEditValidation->setStyleSheet("background-color: rgb(0,155,0)");
             textEditValidation->setText(QString(
                     "Your conditions are valid, the smarties will be saved"));
-            return true;
+            // return true;
+            conditionsAreValid = true;
         }
     }
+    return conditionsAreValid;
 }
 
 // Changes the lock-button states in the UI

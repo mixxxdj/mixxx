@@ -20,8 +20,8 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             "key"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
 
-    QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
-    //    QStringList playlistCrateOperatorOptions = {"is", "is not"};
+    // QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
+    // QStringList playlistCrateOperatorOptions = {"is", "is not"};
 
     QString condition = "";
 
