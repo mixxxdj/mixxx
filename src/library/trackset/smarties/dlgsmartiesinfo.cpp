@@ -1,6 +1,7 @@
 
 #include "library/trackset/smarties/dlgsmartiesinfo.h"
 // #include "library/trackset/smarties/ui_dlgsmartiesinfo.h"
+#include <QDate>
 #include <QDebug>
 #include <QRegExp>
 
@@ -1364,9 +1365,9 @@ bool dlgSmartiesInfo::validationCheck() {
     bool foundMatchError = false;
     bool checkFieldMatchesOperator = true;
     bool checkMatchBetweenFieldAndOperator = false;
-    bool operatorValueChecked = false;
-    bool checkOperatorMatchesValue = true;
-    bool checkMatchBetweenOperatorAndValue = false;
+    //    bool operatorValueChecked = false;
+    //    bool checkOperatorMatchesValue = true;
+    //    bool checkMatchBetweenOperatorAndValue = false;
     labelValidation->setText(QString("Validation:"));
 
     for (int i = 12; i >= 1; --i) {
@@ -1503,19 +1504,7 @@ bool dlgSmartiesInfo::validationCheck() {
                         }
                         if ((conditionsTable[i][3].indexOf("|", 0) == 10) &&
                                 (conditionsTable[i][3].length() == 21)) {
-                            // std::string From = conditionsTable[i][3].mid(0,
-                            // 10).toStdString(); std::string To =
-                            // conditionsTable[i][3].mid(11, 10).toStdString();
-                            // bool FromValid = checkDateValid(From);
-                            // bool ToValid = checkDateValid(To);
-                            // if (sDebug) {
-                            //     qDebug() << "[SMARTIES] [EDIT DLG]
-                            //     [VALIDATION] --> From: " << From << " Valid =
-                            //     " << FromValid; qDebug() << "[SMARTIES] [EDIT
-                            //     DLG] [VALIDATION] --> To: " << To << " Valid
-                            //     = " << ToValid;
-                            // }
-                            QDate From1 = std::chrono::year_month_day(
+                            QDate From = std::chrono::year_month_day(
                                     std::chrono::year(conditionsTable[i][3]
                                                               .mid(0, 4)
                                                               .toInt()),
@@ -1525,7 +1514,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                     std::chrono::day(conditionsTable[i][3]
                                                              .mid(8, 2)
                                                              .toInt()));
-                            QDate To1 = std::chrono::year_month_day(
+                            QDate To = std::chrono::year_month_day(
                                     std::chrono::year(conditionsTable[i][3]
                                                               .mid(11, 4)
                                                               .toInt()),
@@ -1535,17 +1524,17 @@ bool dlgSmartiesInfo::validationCheck() {
                                     std::chrono::day(conditionsTable[i][3]
                                                              .mid(19, 2)
                                                              .toInt()));
-                            bool From1Valid = From1.isValid();
-                            bool To1Valid = To1.isValid();
+                            bool FromValid = From.isValid();
+                            bool ToValid = To.isValid();
                             if (sDebug) {
                                 qDebug() << "[SMARTIES] [EDIT DLG] "
-                                            "[VALIDATION] --> From1: "
-                                         << From1 << " Valid = " << From1Valid;
+                                            "[VALIDATION] --> From: "
+                                         << From << " Valid = " << FromValid;
                                 qDebug() << "[SMARTIES] [EDIT DLG] "
-                                            "[VALIDATION] --> To1: "
-                                         << To1 << " Valid = " << To1Valid;
+                                            "[VALIDATION] --> To: "
+                                         << To << " Valid = " << ToValid;
                             }
-                            if ((!From1Valid) || (!To1Valid)) {
+                            if ((!FromValid) || (!ToValid)) {
                                 // one / both of the dates are INvalid
                                 if (sDebug) {
                                     qDebug() << "[SMARTIES] [EDIT DLG] "
@@ -1603,7 +1592,7 @@ bool dlgSmartiesInfo::validationCheck() {
                         QString From = conditionsTable[i][3].mid(0, posBar);
                         QString To = conditionsTable[i][3].mid(posBar + 1,
                                 conditionsTable[i][3].length() - posBar + 1);
-                        if ((From.toInt() > 36500) || (To.toInt() > To.toInt() > 36500)) {
+                        if ((From.toInt() > 36500) || (To.toInt() > 36500)) {
                             if (sDebug) {
                                 qDebug() << "[SMARTIES] [EDIT DLG] "
                                             "[VALIDATION] --> "

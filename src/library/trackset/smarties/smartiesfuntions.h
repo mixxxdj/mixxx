@@ -5,13 +5,6 @@
 
 const bool sDebug = false;
 
-inline bool checkDateValid(std::string date) {
-    std::istringstream in{std::move(date)};
-    std::chrono::year_month_day ymd;
-    in >> std::chrono::parse("%Y-%m-%d", ymd);
-    return !in.fail();
-}
-
 inline QString buildCondition(QString field, QString op, QString value) {
     // Check if field, operator, and value are not null
     // if (!field.isEmpty() && !op.isEmpty() && !value.isEmpty()) {
