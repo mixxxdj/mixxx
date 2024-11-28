@@ -398,14 +398,7 @@ DJCi300.changeMode = function(_channel, control, value, _status, group) {
         (oldPadMode === DJCi300.padModeSlicerloop)) {
 
         // In loop mode, only clear slicer points (preserve the loop)
-        if (DJCi300.loopMode[group] === true) {
-            for (let i = 0; i <= 8; i++) {
-                DJCi300.slicerPoints[group][i] = -1;
-            }
-        // Otherwise call slicerClear
-        } else {
-            DJCi300.slicerClear(group);
-        }
+        DJCi300.slicerClear(group);
         DJCi300.disconnectSlicerFunctions(group);
         DJCi300.updateSlicerLED(group);
     }
