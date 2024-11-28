@@ -48,9 +48,9 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     // validation
     bool validationCheck();
     // narriw operator combobox
-    void onFieldComboBoxChanged(int index);
-    void onOperatorComboBoxChanged(int index);
-    void onValueComboBoxChanged(int index);
+    void onFieldComboBoxChanged();
+    void onOperatorComboBoxChanged();
+    void onValueComboBoxChanged();
     // functions to move conditions up/down/insert/delete
     void insertCondition(int index);
     void removeCondition(int index);
@@ -83,11 +83,14 @@ class dlgSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     QString headerTable[8];
     QString conditionsTable[13][5];
     QList<QPair<QString, QString>> playlistTable;
-    QList<QPair<QString, QString>> crateTable;
     QHash<QString, QString> playlistNameHash;
     QHash<QString, QString> playlistIdHash;
+    QList<QPair<QString, QString>> crateTable;
     QHash<QString, QString> crateNameHash;
     QHash<QString, QString> crateIdHash;
+    QList<QPair<QString, QString>> historyTable;
+    QHash<QString, QString> historyNameHash;
+    QHash<QString, QString> historyIdHash;
 
   private slots:
     void onSetBlockerOff(QString blocker);

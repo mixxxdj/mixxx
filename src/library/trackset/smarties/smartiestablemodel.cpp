@@ -375,7 +375,9 @@ void SmartiesTableModel::selectPlaylistsCrates2QVL(QVariantList& playlistsCrates
 
     // Playlists
     QSqlQuery playlistQuery(m_database);
-    playlistQuery.prepare("SELECT id, name FROM Playlists WHERE hidden=0");
+    playlistQuery.prepare(
+            "SELECT id, name FROM Playlists WHERE hidden=0 ORDER BY name ASC, "
+            "id ASC");
     if (playlistQuery.exec()) {
         while (playlistQuery.next()) {
             QVariantMap playlistEntry;
@@ -386,13 +388,32 @@ void SmartiesTableModel::selectPlaylistsCrates2QVL(QVariantList& playlistsCrates
         }
     } else {
         qWarning() << "[SMARTIESTABLEMODEL] [SELECT PLAYLISTS CRATES 2 QVL] -> "
-                      "Failed:"
+                      "Playlists Failed:"
                    << playlistQuery.lastError();
+    }
+
+    // Playlists - history
+    QSqlQuery historyQuery(m_database);
+    historyQuery.prepare(
+            "SELECT id, name FROM Playlists WHERE hidden=2 ORDER BY name DESC, "
+            "id ASC");
+    if (historyQuery.exec()) {
+        while (historyQuery.next()) {
+            QVariantMap historyEntry;
+            historyEntry["type"] = "history";
+            historyEntry["id"] = historyQuery.value("id");
+            historyEntry["name"] = historyQuery.value("name");
+            playlistsCratesData.append(historyEntry);
+        }
+    } else {
+        qWarning() << "[SMARTIESTABLEMODEL] [SELECT PLAYLISTS CRATES 2 QVL] -> "
+                      "History Failed:"
+                   << historyQuery.lastError();
     }
 
     // Crates
     QSqlQuery crateQuery(m_database);
-    crateQuery.prepare("SELECT id, name FROM crates WHERE show=1");
+    crateQuery.prepare("SELECT id, name FROM crates WHERE show=1 ORDER BY name ASC, id ASC");
     if (crateQuery.exec()) {
         while (crateQuery.next()) {
             QVariantMap crateEntry;
@@ -403,7 +424,7 @@ void SmartiesTableModel::selectPlaylistsCrates2QVL(QVariantList& playlistsCrates
         }
     } else {
         qWarning() << "[SMARTIESTABLEMODEL] [SELECT PLAYLISTS CRATES 2 QVL] -> "
-                      "Failed:"
+                      "Crates Failed:"
                    << crateQuery.lastError();
     }
 

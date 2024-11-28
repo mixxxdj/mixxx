@@ -196,11 +196,14 @@ void dlgSmartiesInfo::initConditionsTable(const QVariantList& smartiesData) {
 void dlgSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCratesData) {
     if (sDebug) {
         qDebug() << "[SMARTIES] [EDIT DLG] --> Initialize playlistTable & "
-                    "crateTable with playlistsCratesData ";
+                    "historyTable & crateTable with playlistsCratesData ";
     }
     playlistTable.clear();
     playlistNameHash.clear();
     playlistIdHash.clear();
+    historyTable.clear();
+    historyNameHash.clear();
+    historyIdHash.clear();
     crateTable.clear();
     crateNameHash.clear();
     crateIdHash.clear();
@@ -219,6 +222,15 @@ void dlgSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCrates
                             "append id "
                          << id << " name " << name;
             }
+        } else if (type == "history") {
+            historyTable.append(qMakePair(id, name));
+            historyNameHash.insert(name, id);
+            historyIdHash.insert(id, name);
+            if (sDebug) {
+                qDebug() << "[SMARTIES] [EDIT DLG] --> Init historyTable "
+                            "append id "
+                         << id << " name " << name;
+            }
         } else if (type == "crate") {
             crateTable.append(qMakePair(id, name));
             crateNameHash.insert(name, id);
@@ -232,7 +244,7 @@ void dlgSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCrates
     }
     if (sDebug) {
         qDebug() << "[SMARTIES] [EDIT DLG] --> Finished playlistTable & "
-                    "crateTable with playlistsCratesData ";
+                    "crateTable & historyTable with playlistsCratesData ";
     }
 }
 
@@ -335,7 +347,8 @@ void dlgSmartiesInfo::populateUI() {
             "timesplayed",
             "rating",
             "playlist",
-            "crate"};
+            "crate",
+            "history"};
     //    QStringList stringFieldOptions = {"", "artist", "title", "album",
     //    "album_artist", "genre", "comment", "composer", "filetype", "key"};
     //    QStringList dateFieldOptions = {"", "year", "datetime_added",
@@ -344,7 +357,7 @@ void dlgSmartiesInfo::populateUI() {
     //    playlistCrateFieldOptions = {"", "playlist", "crate"}; QStringList
     //    stringOperatorOptions = {"", "contains", "does not contain", "equal
     //    to", "not equal to", "starts with", "ends with", "is not empty", "is
-    //    empty"}; QStringList dateOperatorOptions = {"", "before", "after",
+    //    empty"}; QStringList dateOperatorOptions = {"", "before", "after", "last",
     //    "equal to"}; QStringList numberOperatorOptions = {"", "smaller than",
     //    "greater than", "equal to", "not equal to"}; QStringList
     //    playlistCrateOperatorOptions = {"", "is", "is not"};
@@ -359,6 +372,8 @@ void dlgSmartiesInfo::populateUI() {
             "is empty",
             "before",
             "after",
+            "last",
+            "last",
             "equal to",
             "less than",
             "greater than",
@@ -420,22 +435,69 @@ void dlgSmartiesInfo::populateUI() {
                     // playlist could be renamed, id stays -> get name
                     if (playlistIdHash.contains(playlistId)) {
                         playlistName = playlistIdHash.value(playlistId);
-                        // if (sDebug) {
-                        qDebug() << "name for playlist ID -> " << playlistId
-                                 << " is " << playlistName;
-                        //}
+                        if (sDebug) {
+                            qDebug() << "name for playlist ID -> " << playlistId
+                                     << " is " << playlistName;
+                        }
                         // conditionsTable[i][3] = playlistName;
                         valueComboBox->setCurrentText(playlistName);
                     } else {
-                        // if (sDebug) {
-                        qDebug() << "Id not in playlistIdHash: " << playlistId;
-                        //}
+                        if (sDebug) {
+                            qDebug() << "Id not in playlistIdHash: " << playlistId;
+                        }
                     }
                     // conditionsTable[i][3] = playlistName;
                     if (sDebug) {
                         qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> playlistName "
                                  << playlistName;
+                    }
+                }
+                if (sDebug) {
+                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                                "comboBoxValue -> conditionsTable[i][3] "
+                             << conditionsTable[i][3];
+                }
+
+            } else if (conditionsTable[i][1] == "history") {
+                //                qDebug() << "[SMARTIES] [EDIT DLG] -->
+                //                POPULATE comboBoxValue ->
+                //                conditionsTable[i][1] " <<
+                //                conditionsTable[i][1];
+                valueLineEdit->setVisible(false);
+                valueComboBox->setVisible(true);
+                valueComboBox->clear();
+                for (const auto& historylist : historyTable) {
+                    valueComboBox->addItem(historylist.second);
+                    // valueComboBox->addItem(cratelist.second, cratelist.first);
+                }
+                // valueLineEdit->setText(conditionsTable[i][3]);
+                // valueComboBox->setCurrentText(conditionsTable[i][3]);
+                //  crate could be renamed, id stays -> get name
+                if (conditionsTable[i][3].indexOf("|||", 0) > 0) {
+                    int posBar = conditionsTable[i][3].indexOf("|||", 0);
+                    QString historyId = conditionsTable[i][3].mid(0, posBar);
+                    // QString crateName = conditionsTable[i][3].mid(posBar + 3,
+                    // conditionsTable[i][3].length() - posBar + 3);
+                    QString historyName;
+                    if (historyIdHash.contains(historyId)) {
+                        historyName = historyIdHash.value(historyId);
+                        if (sDebug) {
+                            qDebug() << "name for history ID -> " << historyId
+                                     << " is " << historyName;
+                        }
+                        // conditionsTable[i][3] = crateName;
+                        valueComboBox->setCurrentText(historyName);
+                    } else {
+                        if (sDebug) {
+                            qDebug() << "Id not in historyIdHash: " << historyId;
+                        }
+                    }
+                    // conditionsTable[i][3] = crateName;
+                    if (sDebug) {
+                        qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                                    "comboBoxValue -> historyName "
+                                 << historyName;
                     }
                 }
                 if (sDebug) {
@@ -467,15 +529,15 @@ void dlgSmartiesInfo::populateUI() {
                     QString crateName;
                     if (crateIdHash.contains(crateId)) {
                         crateName = crateIdHash.value(crateId);
-                        // if (sDebug) {
-                        qDebug() << "name for crate ID -> " << crateId << " is " << crateName;
-                        //}
+                        if (sDebug) {
+                            qDebug() << "name for crate ID -> " << crateId << " is " << crateName;
+                        }
                         // conditionsTable[i][3] = crateName;
                         valueComboBox->setCurrentText(crateName);
                     } else {
-                        // if (sDebug) {
-                        qDebug() << "Id not in crateIdHash: " << crateId;
-                        //}
+                        if (sDebug) {
+                            qDebug() << "Id not in crateIdHash: " << crateId;
+                        }
                     }
                     // conditionsTable[i][3] = crateName;
                     if (sDebug) {
@@ -531,7 +593,7 @@ void dlgSmartiesInfo::populateUI() {
 }
 
 // narrow possible operator selections based on field selection
-void dlgSmartiesInfo::onFieldComboBoxChanged(int index) {
+void dlgSmartiesInfo::onFieldComboBoxChanged() {
     QStringList fieldOptions = {"artist",
             "title",
             "album",
@@ -560,7 +622,7 @@ void dlgSmartiesInfo::onFieldComboBoxChanged(int index) {
             "key"};
     QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
-    QStringList playlistCrateFieldOptions = {"playlist", "crate"};
+    QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     QStringList stringOperatorOptions = {"",
             "contains",
             "does not contain",
@@ -570,7 +632,7 @@ void dlgSmartiesInfo::onFieldComboBoxChanged(int index) {
             "ends with",
             "is empty",
             "is not empty"};
-    QStringList dateOperatorOptions = {"", "before", "after", "equal to", "between"};
+    QStringList dateOperatorOptions = {"", "before", "after", "last", "equal to", "between"};
     QStringList numberOperatorOptions = {"",
             "less than",
             "greater than",
@@ -589,6 +651,7 @@ void dlgSmartiesInfo::onFieldComboBoxChanged(int index) {
             "is not empty",
             "before",
             "after",
+            "last",
             "equal to",
             "less than",
             "greater than",
@@ -650,11 +713,11 @@ void dlgSmartiesInfo::onFieldComboBoxChanged(int index) {
         labelValidation->setText(QString("Information:"));
         textEditValidation->setStyleSheet("font: 10pt");
         textEditValidation->setText(
-                QString("You have different search options for 'playlist and "
-                        "crates':"));
+                QString("You have different search options for 'playlist, crate and "
+                        "history':"));
         operatorOptions = playlistCrateOperatorOptions;
     } else if (conditionsTable[conditionCounter][1] == "") {
-        operatorOptions = operatorOptions; // default to all operators
+        // operatorOptions = operatorOptions; // default to all operators
         valueLineEdit->setVisible(true);
         valueComboBox->setVisible(false);
         labelValidation->setText(QString("Information:"));
@@ -684,7 +747,7 @@ void dlgSmartiesInfo::onFieldComboBoxChanged(int index) {
 }
 
 // narrow possible operator selections based on field selection
-void dlgSmartiesInfo::onOperatorComboBoxChanged(int index) {
+void dlgSmartiesInfo::onOperatorComboBoxChanged() {
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",
@@ -696,7 +759,7 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged(int index) {
             "key"};
     QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
-    QStringList playlistCrateFieldOptions = {"playlist", "crate"};
+    QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
 
     // Find the field combo box
     QComboBox* operatorComboBox = qobject_cast<QComboBox*>(sender());
@@ -969,6 +1032,22 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged(int index) {
                             "not be included in the results.\n"
                             "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
+        } else if (conditionsTable[conditionCounter][2] == "last") {
+            valueLineEdit->setPlaceholderText("e.g. number X");
+            //            valueLineEdit->setInputMask("9999-99-99"); // Date: YYYY-MM-DD format
+            textEditValidation->setText(
+                    QString("'last' -> value format: (number) [X] \n"
+                            "-> With 'last' you can search for tracks with "
+                            "'%1' in the last X days you enter in the inputbox or \n"
+                            "-> you can enter a number representing a number "
+                            "of days.\n"
+                            "-> That number will be subtracted from todays' "
+                            "date to define the date to compare with.\n"
+                            "-> The entered 'number' must be like 1 or 4785.\n"
+                            "-> The calculated date (number of days subtracted "
+                            "from todays date) will be included in the results.\n"
+                            "-> Only enter the 'searchtext' (no wildcards)")
+                            .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "between") {
             valueLineEdit->setPlaceholderText("e.g. 2016-02-21|2022-02-22 or number X|Y : 200|50");
             //            valueLineEdit->setValidator(new
@@ -1088,6 +1167,23 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged(int index) {
                 }
             }
             valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
+        } else if (conditionsTable[conditionCounter][1] == "history") {
+            valueLineEdit->setVisible(false);
+            valueComboBox->setVisible(true);
+            //            valueComboBox->setEnabled(true);
+            valueComboBox->clear();
+            for (const auto& historylist : historyTable) {
+                valueComboBox->addItem(historylist.second);
+                // valueComboBox->addItem(historylist.second, historylist.first);
+                if (sDebug) {
+                    qDebug()
+                            << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                               "comboBoxValue -> historylist -> historylist.second "
+                            << historylist.second << " historylist.first "
+                            << historylist.first;
+                }
+            }
+            valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
         } else if (conditionsTable[conditionCounter][1] == "crate") {
             valueLineEdit->setVisible(false);
             valueComboBox->setVisible(true);
@@ -1112,7 +1208,7 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged(int index) {
     }
 }
 
-void dlgSmartiesInfo::onValueComboBoxChanged(int index) {
+void dlgSmartiesInfo::onValueComboBoxChanged() {
     // Find the value combo box
     QComboBox* valueComboBox = qobject_cast<QComboBox*>(sender());
     if (!valueComboBox) {
@@ -1180,6 +1276,20 @@ void dlgSmartiesInfo::storeUIIn2Table() {
                                  << valueComboBox->currentText();
                     }
                 }
+            } else if (conditionsTable[i][1] == "history") {
+                if (historyNameHash.contains(valueComboBox->currentText())) {
+                    QString id = historyNameHash.value(valueComboBox->currentText());
+                    if (sDebug) {
+                        qDebug() << "ID for history name -> "
+                                 << valueComboBox->currentText() << "is:" << id;
+                    }
+                    conditionsTable[i][3] = QString("%1|||%2").arg(
+                            id, valueComboBox->currentText());
+                } else {
+                    if (sDebug) {
+                        qDebug() << "Name not in historyNameHash: " << valueComboBox->currentText();
+                    }
+                }
             } else if (conditionsTable[i][1] == "crate") {
                 if (crateNameHash.contains(valueComboBox->currentText())) {
                     QString id = crateNameHash.value(valueComboBox->currentText());
@@ -1219,7 +1329,7 @@ bool dlgSmartiesInfo::validationCheck() {
             "key"};
     QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
-    QStringList playlistCrateFieldOptions = {"", "playlist", "crate"};
+    QStringList playlistCrateFieldOptions = {"", "playlist", "crate", "history"};
     QStringList stringOperatorOptions = {"contains",
             "does not contain",
             "equal to",
@@ -1228,7 +1338,7 @@ bool dlgSmartiesInfo::validationCheck() {
             "ends with",
             "is not empty",
             "is empty"};
-    QStringList dateOperatorOptions = {"before", "after", "equal to", "between"};
+    QStringList dateOperatorOptions = {"before", "after", "last", "equal to", "between"};
     QStringList numberOperatorOptions = {
             "less than", "greater than", "equal to", "not equal to", "between"};
     QStringList playlistCrateOperatorOptions = {"", "is", "is not"};
@@ -1254,18 +1364,25 @@ bool dlgSmartiesInfo::validationCheck() {
     bool foundMatchError = false;
     bool checkFieldMatchesOperator = true;
     bool checkMatchBetweenFieldAndOperator = false;
+    bool operatorValueChecked = false;
+    bool checkOperatorMatchesValue = true;
+    bool checkMatchBetweenOperatorAndValue = false;
     labelValidation->setText(QString("Validation:"));
 
     for (int i = 12; i >= 1; --i) {
         // check if condition is valid
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
-        auto* operatorComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Operator").arg(i));
-        auto* valueLineEdit = findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
-        auto* valueComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
-        auto* combinerComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Combiner").arg(i));
-        // qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> Condition: " << i << "----";
+        // auto* fieldComboBox =
+        // findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        // auto* operatorComboBox =
+        // findChild<QComboBox*>(QString("comboBoxCondition%1Operator").arg(i));
+        // auto* valueLineEdit =
+        // findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
+        // auto* valueComboBox =
+        // findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
+        // auto* combinerComboBox =
+        // findChild<QComboBox*>(QString("comboBoxCondition%1Combiner").arg(i));
+        // qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> Condition: " << i
+        // << "----";
 
         // check if field and operator are matching
         if (!foundMatchError) {
@@ -1334,19 +1451,229 @@ bool dlgSmartiesInfo::validationCheck() {
                                     .arg(i));
                 }
             }
+            // checks if operators match input values
+            if (conditionsTable[i][2] == "between") {
+                if (!conditionsTable[i][3].contains("|")) {
+                    if (sDebug) {
+                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                                    "Matcherror between Operator and input value in condition "
+                                 << i << "no '|' in 'between'-condition.";
+                    }
+                    textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                    textEditValidation->setText(
+                            QString("Your conditions contain errors: the "
+                                    "chosen operator and input don't match in "
+                                    "condition %1 \n."
+                                    "When you use the 'between'-operator, "
+                                    "the input values need to be separated by a '|'. \n"
+                                    "e.g. 2|107 \n"
+                                    "Smarties is NOT saved.")
+                                    .arg(i));
+                    checkFieldMatchesOperator = false;
+                    // checkOperatorMatchesValue = false;
+                    foundMatchError = true;
+                } else if ((conditionsTable[i][3].length() < 3) ||
+                        (conditionsTable[i][3].indexOf("|", 0) < 1) ||
+                        (conditionsTable[i][3].indexOf("|", 0) ==
+                                conditionsTable[i][3].length() - 1)) {
+                    if (sDebug) {
+                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                                    "Matcherror between Operator and input value in condition "
+                                 << i << "missing value in 'between'-condition.";
+                    }
+                    textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                    textEditValidation->setText(
+                            QString("Your conditions contain errors: the "
+                                    "chosen operator and input don't match in "
+                                    "condition %1.\n"
+                                    "When you use the 'between'-operator, "
+                                    "the input values need to be numbers or "
+                                    "dates separated by a '|'. \n"
+                                    "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
+                                    "Smarties is NOT saved.")
+                                    .arg(i));
+                    checkFieldMatchesOperator = false;
+                    // checkOperatorMatchesValue = false;
+                    foundMatchError = true;
+                } else if (conditionsTable[i][3].indexOf("|", 0) > 0) {
+                    if (conditionsTable[i][3].contains("-")) {
+                        if (sDebug) {
+                            qDebug() << "pos | " << conditionsTable[i][3].indexOf("|", 0);
+                            qDebug() << "length " << conditionsTable[i][3].length();
+                        }
+                        if ((conditionsTable[i][3].indexOf("|", 0) == 10) &&
+                                (conditionsTable[i][3].length() == 21)) {
+                            // std::string From = conditionsTable[i][3].mid(0,
+                            // 10).toStdString(); std::string To =
+                            // conditionsTable[i][3].mid(11, 10).toStdString();
+                            // bool FromValid = checkDateValid(From);
+                            // bool ToValid = checkDateValid(To);
+                            // if (sDebug) {
+                            //     qDebug() << "[SMARTIES] [EDIT DLG]
+                            //     [VALIDATION] --> From: " << From << " Valid =
+                            //     " << FromValid; qDebug() << "[SMARTIES] [EDIT
+                            //     DLG] [VALIDATION] --> To: " << To << " Valid
+                            //     = " << ToValid;
+                            // }
+                            QDate From1 = std::chrono::year_month_day(
+                                    std::chrono::year(conditionsTable[i][3]
+                                                              .mid(0, 4)
+                                                              .toInt()),
+                                    std::chrono::month(conditionsTable[i][3]
+                                                               .mid(5, 2)
+                                                               .toInt()),
+                                    std::chrono::day(conditionsTable[i][3]
+                                                             .mid(8, 2)
+                                                             .toInt()));
+                            QDate To1 = std::chrono::year_month_day(
+                                    std::chrono::year(conditionsTable[i][3]
+                                                              .mid(11, 4)
+                                                              .toInt()),
+                                    std::chrono::month(conditionsTable[i][3]
+                                                               .mid(16, 2)
+                                                               .toInt()),
+                                    std::chrono::day(conditionsTable[i][3]
+                                                             .mid(19, 2)
+                                                             .toInt()));
+                            bool From1Valid = From1.isValid();
+                            bool To1Valid = To1.isValid();
+                            if (sDebug) {
+                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                            "[VALIDATION] --> From1: "
+                                         << From1 << " Valid = " << From1Valid;
+                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                            "[VALIDATION] --> To1: "
+                                         << To1 << " Valid = " << To1Valid;
+                            }
+                            if ((!From1Valid) || (!To1Valid)) {
+                                // one / both of the dates are INvalid
+                                if (sDebug) {
+                                    qDebug() << "[SMARTIES] [EDIT DLG] "
+                                                "[VALIDATION] --> "
+                                             << "Matcherror between Operator "
+                                                "and input value in condition "
+                                             << i << "dates are not valid.";
+                                }
+                                textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                                textEditValidation->setText(QString(
+                                        "Your conditions contain errors: the "
+                                        "chosen operator and input don't match "
+                                        "in condition %1.\n"
+                                        "At least one of the dates you entered "
+                                        "is invalid.\n"
+                                        "When you use the 'between'-operator, "
+                                        "the input values need to be numbers "
+                                        "or dates separated by a '|'. \n"
+                                        "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
+                                        "Smarties is NOT saved.")
+                                                                    .arg(i));
+                                checkFieldMatchesOperator = false;
+                                // checkOperatorMatchesValue = false;
+                                foundMatchError = true;
+                            }
+                        } else {
+                            // one of the dates is not correct mask YYYY-MM-DD
+                            if (sDebug) {
+                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                            "[VALIDATION] --> "
+                                         << "Matcherror between Operator and "
+                                            "input value in condition "
+                                         << i
+                                         << "dates are not entered in correct "
+                                            "format.";
+                            }
+                            textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                            textEditValidation->setText(QString(
+                                    "Your conditions contain errors: the "
+                                    "chosen operator and input don't match in "
+                                    "condition %1.\n"
+                                    "When you use the 'between'-operator, "
+                                    "the input values need to be numbers or "
+                                    "dates separated by a '|'. \n"
+                                    "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
+                                    "Smarties is NOT saved.")
+                                                                .arg(i));
+                            checkFieldMatchesOperator = false;
+                            // checkOperatorMatchesValue = false;
+                            foundMatchError = true;
+                        }
+
+                    } else {
+                        int posBar = conditionsTable[i][3].indexOf("|", 0);
+                        QString From = conditionsTable[i][3].mid(0, posBar);
+                        QString To = conditionsTable[i][3].mid(posBar + 1,
+                                conditionsTable[i][3].length() - posBar + 1);
+                        if ((From.toInt() > 36500) || (To.toInt() > To.toInt() > 36500)) {
+                            if (sDebug) {
+                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                            "[VALIDATION] --> "
+                                            "Matcherror between Operator and "
+                                            "input value in condition "
+                                         << i
+                                         << "values are > 100 years in "
+                                            "'between'-condition.";
+                            }
+                            textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                            textEditValidation->setText(QString(
+                                    "Your conditions contain errors: the "
+                                    "chosen operator and input don't match in "
+                                    "condition %1.\n  "
+                                    "The value in the input represents more "
+                                    "than 100 years. \n"
+                                    "When you use the 'between'-operator, the "
+                                    "input values need to be numbers or dates "
+                                    "separated by a '|'. \n"
+                                    "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
+                                    "Smarties is NOT saved.")
+                                                                .arg(i));
+                            checkFieldMatchesOperator = false;
+                            // checkOperatorMatchesValue = false;
+                            foundMatchError = true;
+                        } else if ((From.toInt() / From.toInt() != 1) ||
+                                (To.toInt() / To.toInt() != 1)) {
+                            if (sDebug) {
+                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                            "[VALIDATION] --> "
+                                            "Matcherror between Operator and "
+                                            "input value in condition "
+                                         << i
+                                         << "values are not numbers in "
+                                            "'between'-condition.";
+                            }
+                            textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                            textEditValidation->setText(QString(
+                                    "Your conditions contain errors: the "
+                                    "chosen operator and input don't match in "
+                                    "condition %1. \n"
+                                    "When you use the 'between'-operator, "
+                                    "the input values need to be numbers or "
+                                    "dates separated by a '|'. \n"
+                                    "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
+                                    "Smarties is NOT saved.")
+                                                                .arg(i));
+                            checkFieldMatchesOperator = false;
+                            // checkOperatorMatchesValue = false;
+                            foundMatchError = true;
+                        }
+                    }
+                }
+            }
         }
 
         // check if latest condition has end-combiner
         if (latestCombinerChecked == false) {
-            if (fieldComboBox->currentText() != "") {
-                if (combinerComboBox->currentText() == ") END") {
+            // if (fieldComboBox->currentText() != "") {
+            if (conditionsTable[i][1] != "") {
+                // if (combinerComboBox->currentText() == ") END") {
+                if (conditionsTable[i][4] == ") END") {
                     endPlacedCorrect = true;
                 }
                 latestCombinerChecked = true;
             }
         }
         // count end-combiners
-        if (combinerComboBox->currentText() == ") END") {
+        // if (combinerComboBox->currentText() == ") END") {
+        if (conditionsTable[i][4] == ") END") {
             endCounter = endCounter + 1;
         }
     }
@@ -1377,15 +1704,22 @@ bool dlgSmartiesInfo::validationCheck() {
                 "in the last combiner. Smarties is NOT saved."));
         return false;
     }
+    //
     if (sDebug) {
         qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
                     "checkMatchBetweenFieldAndOperator "
                  << checkMatchBetweenFieldAndOperator;
     }
+    // if (checkMatchBetweenFieldAndOperator && checkOperatorMatchesValue) {
     if (checkMatchBetweenFieldAndOperator) {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> checkMatchBetweenFieldAndOperator "
-                     << checkMatchBetweenFieldAndOperator << " checkFieldMatchesOperator "
+            qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        "checkMatchBetweenFieldAndOperator "
+                     << checkMatchBetweenFieldAndOperator
+                     << " checkFieldMatchesOperator "
+                     //                     << checkMatchBetweenOperatorAndValue
+                     //                     << "
+                     //                     checkMatchBetweenOperatorAndValue"
                      << checkFieldMatchesOperator << " foundMatchError ";
         }
         // if (!checkFieldMatchesOperator) {
@@ -1640,7 +1974,8 @@ void dlgSmartiesInfo::updateConditionState() {
             // special cases: is empty / is not empty -> no valuelineedit or valuecombobox
             if (operatorSelected) {
                 if ((fieldComboBox->currentText() == "playlist") ||
-                        (fieldComboBox->currentText() == "crate")) {
+                        (fieldComboBox->currentText() == "crate") ||
+                        (fieldComboBox->currentText() == "history")) {
                     valueComboBox->setEnabled(operatorSelected || valueSelected);
                     combinerComboBox->setEnabled(operatorSelected || combinerSelected);
                 } else if ((operatorComboBox->currentText() == "is empty") ||

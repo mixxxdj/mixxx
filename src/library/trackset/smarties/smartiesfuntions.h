@@ -5,6 +5,13 @@
 
 const bool sDebug = false;
 
+inline bool checkDateValid(std::string date) {
+    std::istringstream in{std::move(date)};
+    std::chrono::year_month_day ymd;
+    in >> std::chrono::parse("%Y-%m-%d", ymd);
+    return !in.fail();
+}
+
 inline QString buildCondition(QString field, QString op, QString value) {
     // Check if field, operator, and value are not null
     // if (!field.isEmpty() && !op.isEmpty() && !value.isEmpty()) {
@@ -20,7 +27,7 @@ inline QString buildCondition(QString field, QString op, QString value) {
             "key"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
 
-    QStringList playlistCrateFieldOptions = {"playlist", "crate"};
+    QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     QStringList playlistCrateOperatorOptions = {"is", "is not"};
 
     QString condition = "";
@@ -175,6 +182,16 @@ inline QString buildCondition(QString field, QString op, QString value) {
                                                             -1)
                                                     .toString(
                                                             "yyyy-MM-dd"));
+                } else if (op == "last") {
+                    condition =
+                            QString("strftime('%Y-%m-%d',library.%1) > "
+                                    "strftime('%Y-%m-%d','%2')")
+                                    .arg(field,
+                                            nowDateStamp
+                                                    .addDays(((value.toInt()) + 1) *
+                                                            -1)
+                                                    .toString(
+                                                            "yyyy-MM-dd"));
                 } else if (op == "equal to") {
                     condition =
                             QString("strftime('%Y-%m-%d',library.%1) = "
@@ -299,44 +316,14 @@ inline QString buildCondition(QString field, QString op, QString value) {
             }
         }
         // if (playlistCrateFieldOptions.contains(field)) {
-        if (field == "crate") {
-            //                value = "5";
-            if (value.indexOf("|||", 0) > 0) {
-                int posBar = value.indexOf("|||", 0);
-                QString crateId = value.mid(0, posBar);
-                QString crateName = value.mid(posBar + 3, value.length() - posBar + 3);
-                if (sDebug) {
-                    qDebug() << "CRATE "
-                                "----------------------------------------- "
-                                "crateId "
-                             << crateId;
-                }
-                if (op == "is") {
-                    condition = QString(
-                            "library.id IN (SELECT crate_tracks.track_id from "
-                            "crate_tracks WHERE crate_tracks.crate_id=%1)")
-                                        .arg(crateId);
-                } else if (op == "is not") {
-                    condition = QString(
-                            "library.id NOT IN (SELECT crate_tracks.track_id "
-                            "from crate_tracks WHERE crate_tracks.crate_id=%1)")
-                                        .arg(crateId);
-                } else {
-                    // continue; // Skip unrecognized operators
-                }
-            }
-        }
         if (field == "playlist") {
             //                value = "459";
             if (value.indexOf("|||", 0) > 0) {
                 int posBar = value.indexOf("|||", 0);
                 QString playlistId = value.mid(0, posBar);
-                QString playlistName = value.mid(posBar + 3, value.length() - posBar + 3);
+                // QString playlistName = value.mid(posBar + 3, value.length() - posBar + 3);
                 if (sDebug) {
-                    qDebug() << "PLAYLIST "
-                                "----------------------------------------- "
-                                "playlistId "
-                             << playlistId;
+                    qDebug() << "PLAYLIST -> playlistId: " << playlistId;
                 }
                 if (op == "is") {
                     condition = QString(
@@ -350,6 +337,56 @@ inline QString buildCondition(QString field, QString op, QString value) {
                             "from PlaylistTracks WHERE "
                             "PlaylistTracks.playlist_id=%1)")
                                         .arg(playlistId);
+                } else {
+                    // continue; // Skip unrecognized operators
+                }
+            }
+        }
+        if (field == "history") {
+            //                value = "5";
+            if (value.indexOf("|||", 0) > 0) {
+                int posBar = value.indexOf("|||", 0);
+                QString historyId = value.mid(0, posBar);
+                // QString historyName = value.mid(posBar + 3, value.length() - posBar + 3);
+                if (sDebug) {
+                    qDebug() << "HISTORY -> historyId: " << historyId;
+                }
+                if (op == "is") {
+                    condition = QString(
+                            "library.id IN (SELECT PlaylistTracks.track_id "
+                            "from PlaylistTracks WHERE "
+                            "PlaylistTracks.playlist_id=%1)")
+                                        .arg(historyId);
+                } else if (op == "is not") {
+                    condition = QString(
+                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
+                            "from PlaylistTracks WHERE "
+                            "PlaylistTracks.playlist_id=%1)")
+                                        .arg(historyId);
+                } else {
+                    // continue; // Skip unrecognized operators
+                }
+            }
+        }
+        if (field == "crate") {
+            //                value = "5";
+            if (value.indexOf("|||", 0) > 0) {
+                int posBar = value.indexOf("|||", 0);
+                QString crateId = value.mid(0, posBar);
+                // QString crateName = value.mid(posBar + 3, value.length() - posBar + 3);
+                if (sDebug) {
+                    qDebug() << "CRATE -> crateId: " << crateId;
+                }
+                if (op == "is") {
+                    condition = QString(
+                            "library.id IN (SELECT crate_tracks.track_id from "
+                            "crate_tracks WHERE crate_tracks.crate_id=%1)")
+                                        .arg(crateId);
+                } else if (op == "is not") {
+                    condition = QString(
+                            "library.id NOT IN (SELECT crate_tracks.track_id "
+                            "from crate_tracks WHERE crate_tracks.crate_id=%1)")
+                                        .arg(crateId);
                 } else {
                     // continue; // Skip unrecognized operators
                 }
