@@ -370,17 +370,6 @@ DJCi300._samplesPerBeat = function(group) {
     return samplesPerBeat;
 };
 
-// Helper function that calculates current position of play indicator in samples
-DJCi300._currentPosition = function(group) {
-    const beatClosest = engine.getValue(group, "beat_closest");
-    let beatDistance = engine.getValue(group, "beat_distance");
-
-    // Map beatDistance so that it scales from 0 to .5, then -.5 to 0
-    beatDistance = (beatDistance > .5) ? (beatDistance - 1) : beatDistance;
-    // Adjust beatClosest and return
-    return (DJCi300._samplesPerBeat(group) * beatDistance) + beatClosest;
-};
-
 // Mode buttons
 DJCi300.changeMode = function(_channel, control, value, _status, group) {
     const oldPadMode = DJCi300.padMode[group];
@@ -556,7 +545,7 @@ DJCi300.slicerChangeSize = function(_value, group, _control) {
 // This is useful for moving the loop forward or lighting the LEDs
 DJCi300.slicerCountBeat = function(_value, group, _control) {
     // Calculate current position in samples
-    const currentPos = DJCi300._currentPosition(group);
+    const currentPos = engine.getValue(group, "track_samples") * engine.getValue(group, "playposition");
 
     // Calculate beat
     DJCi300.slicerBeat[group] = -1;
