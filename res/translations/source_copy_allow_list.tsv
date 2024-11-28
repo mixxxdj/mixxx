@@ -383,7 +383,7 @@ de,fr	Phase
 de,it,nl,es*	Drive
 de,fr,it,pl	Passthrough
 de,it,nl	Glitch
-de	Beatgrids
+de,it	Beatgrids
 de,nl,pt_BR,pt_PT,ro,vi	Sampler
 de,es*,it,nl,pt_BR,ro,vi	Hotcue
 de	Loop-In Marker
@@ -407,7 +407,7 @@ de,hu,it,nl,sk	Stop
 de,fr,ru,sn	Dry/Wet
 de,el,it,nl,pt_BR,pt_PT	Skin
 de,it,nl	Controller
-de,nl,pl	BPM / Beatgrid
+de,nl,pl,it	BPM / Beatgrid
 de,nl	Loop Beats
 de,fr	Navigation
 de,et,it,nl,pl,pt_BR,tr	Host
@@ -429,3 +429,6 @@ de,nl	Track
 de,nl	Tracks
 it	legacy
 nl	Waveform type
+es*	Knee (dBFS)
+es*	Knee
+es*	Release
