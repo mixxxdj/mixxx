@@ -339,8 +339,10 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
 
         newSmarties.setName(std::move(newName));
         DEBUG_ASSERT(newSmarties.hasName());
-        newSmarties.setSearchInput(std::move(newName));
-        newSmarties.setSearchSql(std::move(text));
+        // newSmarties.setSearchInput(std::move(newName));
+        newSmarties.setSearchInput(text);
+        // newSmarties.setSearchSql(std::move(text));
+        newSmarties.setSearchSql(text);
         break;
     }
 
