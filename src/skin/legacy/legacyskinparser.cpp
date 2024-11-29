@@ -2471,10 +2471,10 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             case Qt::NoButton:
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
                     pWidget->addAndSetDisplayConnection(std::move(pConnection),
-                            WBaseWidget::ConnectionSide::Right);
+                            WBaseWidget::ConnectionSide::None);
                 } else {
                     pWidget->addConnection(std::move(pConnection),
-                            WBaseWidget::ConnectionSide::Right);
+                            WBaseWidget::ConnectionSide::None);
                 }
                 break;
             case Qt::LeftButton:
