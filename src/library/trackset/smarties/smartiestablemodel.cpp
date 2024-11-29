@@ -784,7 +784,7 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
         const QString& field = smartiesData[baseIndex].toString();
         const QString& op = smartiesData[baseIndex + 1].toString();
         const QString& value = smartiesData[baseIndex + 2].toString();
-        QString combiner = smartiesData[baseIndex + 3].toString();
+        // QString combiner = smartiesData[baseIndex + 3].toString();
 
         //  begin build condition
         //  function moved to smartiesfunctions.h to share it with dlgsmartiesinfo to create preview
@@ -795,8 +795,8 @@ QString SmartiesTableModel::buildWhereClause(const QVariantList& smartiesData) {
             hasConditions = true;
             whereClause += condition;
             // Add combiner if not the last condition
-            if (i < 12 && combinerOptions.contains(combiner)) {
-                whereClause += " " + combiner.replace(") END", "") +
+            if (i < 12 && combinerOptions.contains(smartiesData[baseIndex + 3].toString())) {
+                whereClause += " " + smartiesData[baseIndex + 3].toString().replace(") END", "") +
                         " "; // Adding spaces around the combiner
             }
         }
