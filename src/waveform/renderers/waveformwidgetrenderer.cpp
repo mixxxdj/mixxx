@@ -265,8 +265,8 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
-    const int lineX = static_cast<int>(m_width * m_playMarkerPosition);
-    const int lineY = static_cast<int>(m_height * m_playMarkerPosition);
+    const int lineX = std::lround(m_width * m_playMarkerPosition);
+    const int lineY = std::lround(m_height * m_playMarkerPosition);
 
     // draw dim outlines to increase playpos/waveform contrast
     painter->setOpacity(0.5);
