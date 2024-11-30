@@ -37,6 +37,10 @@ class WaveformMark {
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
+    float getOffset() const {
+        return m_offset;
+    }
+
     int getHotCue() const {
         return m_iHotCue;
     };
@@ -158,6 +162,7 @@ class WaveformMark {
     QString m_iconPath;
 
     float m_linePosition;
+    float m_offset;
     float m_breadth;
 
     // When there are overlapping marks, level is increased for each overlapping mark,
