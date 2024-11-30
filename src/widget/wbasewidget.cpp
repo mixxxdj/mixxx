@@ -139,16 +139,20 @@ void WBaseWidget::setControlParameterRightUp(double v) {
 }
 
 void WBaseWidget::updateTooltip() {
-    // If we are in developer mode, update the tooltip.
+    // Remove leading and trailing whitespace/line breaks from the tooltip.
+    QString base = baseTooltip().trimmed();
+
+    // If we are in developer mode, expand the tooltip.
     if (CmdlineArgs::Instance().getDeveloper()) {
         QStringList debug;
         fillDebugTooltip(&debug);
 
-        QString base = baseTooltip();
         if (!base.isEmpty()) {
             debug.append(QStringLiteral("Tooltip: \"%1\"").arg(base));
         }
         m_pWidget->setToolTip(debug.join(QStringLiteral("\n")));
+    } else {
+        m_pWidget->setToolTip(base);
     }
 }
 
