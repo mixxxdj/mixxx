@@ -178,5 +178,5 @@ repos:
         require_serial: true
         language: python
         additional_dependencies:
-          - lxml==4.9.3
+          - lxml==5.3.0
         files: ^(res/translations/.*\.ts)$
