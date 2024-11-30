@@ -46,10 +46,10 @@ class AudioUnitManager {
 
     AudioUnitManager(AVAudioUnitComponent* _Nullable component);
 
-    static void instantiateAudioUnitAsync(AudioUnitManagerPointer manager,
+    static void instantiateAudioUnitAsync(AudioUnitManagerPointer pManager,
             AVAudioUnitComponent* _Nonnull component,
             bool inProcess);
-    static void instantiateAudioUnitSync(AudioUnitManagerPointer manager,
+    static void instantiateAudioUnitSync(AudioUnitManagerPointer pManager,
             AVAudioUnitComponent* _Nonnull component);
 
     void initializeWith(AudioUnit _Nullable audioUnit);
