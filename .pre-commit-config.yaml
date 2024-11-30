@@ -43,7 +43,7 @@ repos:
       - id: check-yaml
         exclude: ^\.clang-format$
       - id: end-of-file-fixer
-        exclude: ^.*(UTF-8-BOM\.txt|\.ts)$
+        exclude: ^(res/translations/.*\.ts|.*UTF-8-BOM\.txt)$
       - id: mixed-line-ending
       - id: trailing-whitespace
         exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|tsv|vert)$
@@ -64,7 +64,7 @@ repos:
             "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))",
             --write-changes,
           ]
-        exclude: ^(packaging\/wix\/LICENSE.rtf.in|src\/dialog\/dlgabout\.cpp|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg))$
+        exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v9.14.0
     hooks:
@@ -82,7 +82,7 @@ repos:
           - typescript-eslint
           - eslint-plugin-jsdoc@^v50.4.3
           - eslint-plugin-diff@^2.0.3
-        exclude: ^.*\.(?<!\.d\.)ts$
+        exclude: ^res/translations/.*\.ts$
   - repo: local
     hooks:
       - id: clang-format
@@ -174,13 +174,10 @@ repos:
         files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$
       - id: ts-source-copy
         name: ts-source-copy
-        description: "Find translations literaly copied form the source language"
+        description: "Find translations literally copied from the source language"
         entry: python tools/ts_source_copy_check.py
-        stages:
-          - commit
-          - manual
         require_serial: true
         language: python
         additional_dependencies:
-          - lxml==4.9.3
+          - lxml==5.3.0
         files: ^(res/translations/.*\.ts)$
