@@ -2134,7 +2134,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1419"/>
         <source>Mixer Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/Ocultar Mezclador</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1420"/>
@@ -2149,7 +2149,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1425"/>
         <source>Show/hide cover art in the library</source>
-        <translation type="unfinished"/>
+        <translation>Muestra/oculta las carátulas en la biblioteca</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1429"/>
@@ -2320,12 +2320,12 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Main Output gain</source>
-        <translation type="unfinished"/>
+        <translation>Ganancia de la Salida principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Main Output balance</source>
-        <translation type="unfinished"/>
+        <translation>Balance de la Salida Principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="93"/>
@@ -2593,7 +2593,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>Cambiar puntos cue 10 milisegundos antes</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
@@ -2613,17 +2613,17 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="542"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>Cambiar puntos cue 10 milisegundos después</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
         <source>Shift cue points later (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Cambiar puntos cue después (fino)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="546"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation>Cambiar puntos cue 1 milisegundo después</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
@@ -5715,7 +5715,11 @@ it will place it at the main cue point if the main cue point has been set previo
 This may be helpful for upgrading to Mixxx 2.3 from earlier versions.
 
 If this option is disabled, the intro start point is automatically placed at the first sound.</source>
-        <translation type="unfinished"/>
+        <translation>Cuando el analizador coloca el punto de inicio de la entrada automáticamente,
+lo colocará en el punto de marca principal si el punto de marca principal ha sido configurado previamente.
+Esto puede ser útil al actualizar a Mixxx 2.3 desde versiones anteriores.
+
+Si esta opción está deshabilitada, El punto de inicio de la entrada es colocada automáticamente en el primer sonido.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="62"/>
@@ -8102,7 +8106,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="20"/>
         <source>Replace Hotcue Color</source>
-        <translation type="unfinished"/>
+        <translation>Reemplazar Color de Acceso Directo</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
@@ -8134,7 +8138,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="149"/>
         <source>If you don&apos;t specify any conditions, the colors of all cues in the library will be replaced.</source>
-        <translation type="unfinished"/>
+        <translation>Si no especifica alguna condición, los colores de todos los cues en la librería será reemplazados.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="171"/>
@@ -8594,7 +8598,9 @@ Carpeta: %2
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation type="unfinished"/>
+        <translation>Convierte los beats detectados por el analizador en una cuadrícula de tempo fijo.
+Usa esta configuración si tus pistas tienen un tempo constante (p. ej., la mayoría de la música electrónica).
+Generalmente produce cuadrículas de mayor calidad, pero no funciona bien en pistas con cambios de tempo.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="743"/>
@@ -12800,7 +12806,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="545"/>
         <source>Is latching the playing state.</source>
-        <translation type="unfinished"/>
+        <translation>Está reteniendo el estado de reproducción.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="568"/>
@@ -12820,7 +12826,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="580"/>
         <source>Sends the selected channel&apos;s audio to the headphone output, selected in Preferences -&gt; Sound Hardware.</source>
-        <translation type="unfinished"/>
+        <translation>Envía el audio del canal seleccionado a la salida de auriculares, seleccionada en Preferencias -&gt; Hardware de Sonido</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="605"/>
@@ -12850,7 +12856,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="632"/>
         <source>This is relevant when a dynamic tempo track is loaded to a sync leader deck.In that case, other synced devices will adopt the changing tempo.</source>
-        <translation type="unfinished"/>
+        <translation>Es relevante cuando una pista con tempo dinámico es cargada a un deck líder de sincronización. En ese caso, otros dispositivos sincronizados adoptarán el tempo cambiante.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="637"/>
@@ -12860,12 +12866,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="667"/>
         <source>Tempo Range Display</source>
-        <translation type="unfinished"/>
+        <translation>Visualizador del rango de tempo</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="668"/>
         <source>Displays the current range of the tempo slider.</source>
-        <translation type="unfinished"/>
+        <translation>Muestra el rango actual del deslizador de tempo.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="675"/>
@@ -12875,7 +12881,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="699"/>
         <source>Delete selected hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Elimina la hotcue seleccionada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="917"/>
@@ -12885,12 +12891,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="918"/>
         <source>Displays the comment tag of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Muestra la etiqueta de comentario de la pista cargada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="953"/>
         <source>Opens separate artwork viewer.</source>
-        <translation type="unfinished"/>
+        <translation>Abre el visualizador separado de carátulas.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1028"/>
@@ -12905,7 +12911,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1181"/>
         <source>Select and configure a hardware device for this input</source>
-        <translation type="unfinished"/>
+        <translation>Selecciona y configura un dispositivo de hardware para esta entrada</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="712"/>
@@ -12915,7 +12921,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="38"/>
         <source>Select and click: Show inline value editor</source>
-        <translation type="unfinished"/>
+        <translation>Seleccionar y hacer clic: mostrar editor de valores en línea</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="51"/>
@@ -12925,42 +12931,42 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="85"/>
         <source>Big Spinny/Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Carátula giratoria grande</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="86"/>
         <source>Show a big version of the Spinny or track cover art if enabled.</source>
-        <translation type="unfinished"/>
+        <translation>Muestra una versión agrandada del plato o la carátula de la pista, si se activa.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="110"/>
         <source>Main Output Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pico de la salida principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="111"/>
         <source>Indicates when the signal on the main output is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indica cuando la señal en la salida principal hace clipping,</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="115"/>
         <source>Main Output L Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pico del canal izquierdo de la salida principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="116"/>
         <source>Indicates when the left signal on the main output is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indica cuando la señal izquierda de la salida principal hace clipping.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="120"/>
         <source>Main Output R Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pico del canal derecho de la salida principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="121"/>
         <source>Indicates when the right signal on the main output is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indica cuando la señal derecha de la salida principal hace clipping.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="173"/>
@@ -13012,12 +13018,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="262"/>
         <source>Show/hide Cover Art of the selected track in the library.</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/Ocultar Cubierta de las pistas seleccionadas en la biblioteca.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="269"/>
         <source>Show/hide the scrolling waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/ocultar las formas de onda deslizantes</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="272"/>
@@ -13048,7 +13054,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="319"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="323"/>
         <source>Adjust the amount the music volume is reduced with the Strength knob.</source>
-        <translation type="unfinished"/>
+        <translation>Ajusta la cantidad de volumen de la música que es reducida con la Perilla de Intensidad.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="326"/>
@@ -13255,7 +13261,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="766"/>
         <source>Hot Cue - Track will seek to nearest previous hotcue point.</source>
-        <translation type="unfinished"/>
+        <translation>Acceso Directo - La pista buscará el punto anterior más cercano del acceso directo.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="771"/>

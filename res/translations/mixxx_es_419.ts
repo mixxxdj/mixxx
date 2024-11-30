@@ -288,7 +288,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation type="unfinished"/>
+        <translation>Lista de reproducción M3U (*.m3u);;Lista de reproducción M3U8 (*.m3u8);;Lista de reproducción PLS (*.pls);;Texto CSV (*.csv);;Texto legible (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -844,7 +844,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="344"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
-        <translation>Carga los archivos de música especificados al inicio. Cada archivo que especifiques se cargará en el siguiente deck virtual.</translation>
+        <translation>Carga los archivos de música especificados al iniciar. Cada archivo que especifiques será cargado en el siguiente deck virtual.</translation>
     </message>
 </context>
 <context>
@@ -990,7 +990,7 @@ trace    - Arriba + Perfilar mensajes</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="56"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="57"/>
         <source>Crossfader</source>
-        <translation type="unfinished"/>
+        <translation>Crossfader</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="107"/>
@@ -1715,7 +1715,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>Main Output Gain</source>
-        <translation>Ganancia de la Salida principal</translation>
+        <translation>Ganancia Salida Principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="127"/>
@@ -1961,12 +1961,12 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="962"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation>Super rueda de efecto rápido del plato %1</translation>
+        <translation>Súper perilla de efecto rápido del plato %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="963"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
-        <translation>Super rueda de efecto rápido (parámetros de efecto asociado al control)</translation>
+        <translation>Súper perilla de efecto rápido (parámetros de efecto asociado al control)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="967"/>
@@ -2002,7 +2002,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1012"/>
         <source>Super Knob</source>
-        <translation>Rueda Súper</translation>
+        <translation>Súper Perilla</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1026"/>
@@ -2149,7 +2149,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1425"/>
         <source>Show/hide cover art in the library</source>
-        <translation>Muestra/oculta las portadas en la biblioteca</translation>
+        <translation>Mostrar/ocultar carátula en la biblioteca</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1429"/>
@@ -2320,12 +2320,12 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Main Output gain</source>
-        <translation>Ganancia Salida Principal</translation>
+        <translation>Ganancia de la Salida principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Main Output balance</source>
-        <translation>Balance Salida Principal</translation>
+        <translation>Balance de la Salida Principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="93"/>
@@ -2593,7 +2593,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation>Cambiar puntos marcado 10 milisegundos antes</translation>
+        <translation>Cambiar puntos cue 10 milisegundos antes</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
@@ -2613,17 +2613,17 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="542"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation>Cambiar puntos marcado 10 milisegundos después</translation>
+        <translation>Cambiar puntos cue 10 milisegundos después</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
         <source>Shift cue points later (fine)</source>
-        <translation>Cambiar puntos marcado después (fino)</translation>
+        <translation>Cambiar puntos cue después (fino)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="546"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation>Cambiar puntos marcado 1 milisegundo después</translation>
+        <translation>Cambiar puntos cue 1 milisegundo después</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
@@ -2814,7 +2814,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="741"/>
         <source>Beat Jump / Loop Move</source>
-        <translation>Salto de pulsaciones / Movimiento del bucle</translation>
+        <translation>Salto de pulso / Movimiento del bucle</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="742"/>
@@ -2839,7 +2839,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="753"/>
         <source>Beat Jump / Loop Move Forward Selected Beats</source>
-        <translation>Saltar en pulsaciones /  Mover el bucle adelante en la cantidad seleccionada</translation>
+        <translation>Salto de pulso / Mover el bucle adelante en la cantidad seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="754"/>
@@ -2849,7 +2849,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="759"/>
         <source>Beat Jump / Loop Move Backward Selected Beats</source>
-        <translation>Saltar en pulsaciones / Mover el bucle atrás en la cantidad seleccionada</translation>
+        <translation>Salto de pulso / Mover el bucle atrás en la cantidad seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="760"/>
@@ -2869,7 +2869,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
         <source>Beat Jump / Loop Move Forward</source>
-        <translation>Salto de pulso / Bucle hacia adelante</translation>
+        <translation>Salto de pulso / Movimiento del bucle</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
@@ -2884,7 +2884,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="806"/>
         <source>Loop Move Backward</source>
-        <translation>Bucle en reversa</translation>
+        <translation>Movimiento del Bucle Atrás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="816"/>
@@ -3136,7 +3136,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1013"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
-        <translation>Rueda Super (controla las ruedas Meta del efecto)</translation>
+        <translation>Súper Perilla (controla las ruedas Meta del efecto)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1019"/>
@@ -3218,7 +3218,7 @@ trace    - Arriba + Perfilar mensajes</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1262"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1263"/>
         <source>Button Parameter Value</source>
-        <translation>Valor del parámetro del botón</translation>
+        <translation>Valor del Parámetro del Botón</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1272"/>
@@ -4201,9 +4201,9 @@ Esto puede agilizar la detección de pulsaciones en computadoras lentas, pero po
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation>Convierte las pulsaciones detectadas por el analizador en una grilla de tiempo fija.
-Usa este ajuste si tus pistas poseen tempo constante (ej. la mayoría de canciones de electrónica).
-A menudo resulta en grillas de mejor calidad, pero no resulta bien en pistas que presentan variaciones de tempo.</translation>
+        <translation>Convierte los pulsos detectados por el analizador en una cuadrícula de tempo fijo.
+Usa esta configuración si tus pistas tienen un tempo constante (p. ej., la mayoría de la música electrónica).
+Generalmente produce cuadrículas de mayor calidad, pero no funciona bien en pistas con cambios de tempo.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="85"/>
@@ -5715,7 +5715,11 @@ it will place it at the main cue point if the main cue point has been set previo
 This may be helpful for upgrading to Mixxx 2.3 from earlier versions.
 
 If this option is disabled, the intro start point is automatically placed at the first sound.</source>
-        <translation type="unfinished"/>
+        <translation>Cuando el analizador coloca el punto de inicio de la entrada automáticamente,
+lo colocará en el punto de marca principal si el punto de marca principal ha sido configurado previamente.
+Esto puede ser útil al actualizar a Mixxx 2.3 desde versiones anteriores.
+
+Si esta opción está deshabilitada, El punto de inicio de la entrada es colocada automáticamente en el primer sonido.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="62"/>
@@ -6605,7 +6609,7 @@ y te permite ajustar su pitch para lograr mezclas armónicas.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="139"/>
         <source>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</source>
-        <translation>Mantiene el color de la pista, la cuadrícula del ritmo, bloqueo de bpm, puntos de marcado, y bucles sincronizados con las etiquetas de archivo SERATO_MARKERS/MARKERS2.&lt;br/&gt;&lt;br/&gt;ADVERTENCIA: Habilitando esta opción también habilita la reimportación de metadatos de Serato después de que los archivos han sido modificados afuera de Mixxx. Al reimportar metadatos existentes en Mixxx se remplaza con los metadatos encontrados en las etiquetas de archivos. Los Metadatos personalizados no incluidos en las etiquetas de archivos como los colores de los bucles se perderán.</translation>
+        <translation>Mantiene el color de la pista, la cuadrícula del ritmo, bloqueo de bpm, puntos de marcado, y bucles sincronizados con las etiquetas de archivo SERATO_MARKERS/MARKERS2.&lt;br/&gt;&lt;br/&gt;ADVERTENCIA: Habilitando esta opción también habilita la reimportación de metadatos de Serato después de que los archivos han sido modificados afuera de Mixxx. Al reimportar metadatos existentes en Mixxx se reemplaza con los metadatos encontrados en las etiquetas de archivos. Los Metadatos personalizados no incluidos en las etiquetas de archivos como los colores de los bucles se perderán.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="168"/>
@@ -6748,12 +6752,12 @@ y te permite ajustar su pitch para lograr mezclas armónicas.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="202"/>
         <source>Only allow EQ knobs to control EQ-specific effects</source>
-        <translation>Solo permitir efectos específicos de EQ en las ruedas de EQ</translation>
+        <translation>Solo permitir efectos específicos de EQ en las perillas de EQ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="208"/>
         <source>Uncheck to allow any effect to be loaded into the EQ knobs.</source>
-        <translation>Desmarcar para permitir asociar cualquier efecto a las ruedas de EQ.</translation>
+        <translation>Desmarcar para permitir asociar cualquier efecto a las perillas de EQ.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="215"/>
@@ -8103,7 +8107,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="20"/>
         <source>Replace Hotcue Color</source>
-        <translation>Remplazar Color de Acceso Directo</translation>
+        <translation>Reemplazar Color de Acceso Directo</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
@@ -8135,7 +8139,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="149"/>
         <source>If you don&apos;t specify any conditions, the colors of all cues in the library will be replaced.</source>
-        <translation>Si no especifica alguna condición, los colores de todos los cues en la librería será remplazados.</translation>
+        <translation>Si no especifica alguna condición, los colores de todos los cues en la librería será reemplazados.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="171"/>
@@ -8595,9 +8599,9 @@ Carpeta: %2
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation>Convierte beats detectados por el analizador en una cuadrículoa de tempo fijo.
-Utiliza este ajuste si tus pistas tienen un tempo constante (ej. la mayoría de la música electrónica).
-A menudo resulta en una cuadrícula de mayor calidad, pero no lo hacemos bien en pistas que tienen cambios de tempo.</translation>
+        <translation>Convierte los pulsos detectados por el analizador en una cuadrícula de tempo fijo.
+Usa esta configuración si tus pistas tienen un tempo constante (p. ej., la mayoría de la música electrónica).
+Generalmente produce cuadrículas de mayor calidad, pero no funciona bien en pistas con cambios de tempo.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="743"/>
@@ -12404,12 +12408,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="202"/>
         <source>Crossfader</source>
-        <translation type="unfinished"/>
+        <translation>Crossfader</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="208"/>
         <source>Balance</source>
-        <translation type="unfinished"/>
+        <translation>Balance</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="214"/>
@@ -12807,7 +12811,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="545"/>
         <source>Is latching the playing state.</source>
-        <translation type="unfinished"/>
+        <translation>Está reteniendo el estado de reproducción.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="568"/>
@@ -12827,7 +12831,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="580"/>
         <source>Sends the selected channel&apos;s audio to the headphone output, selected in Preferences -&gt; Sound Hardware.</source>
-        <translation type="unfinished"/>
+        <translation>Envía el audio del canal seleccionado a la salida de auriculares, seleccionada en Preferencias -&gt; Hardware de Sonido</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="605"/>
@@ -12857,7 +12861,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="632"/>
         <source>This is relevant when a dynamic tempo track is loaded to a sync leader deck.In that case, other synced devices will adopt the changing tempo.</source>
-        <translation type="unfinished"/>
+        <translation>Es relevante cuando una pista con tempo dinámico es cargada a un deck líder de sincronización. En ese caso, otros dispositivos sincronizados adoptarán el tempo cambiante.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="637"/>
@@ -12867,12 +12871,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="667"/>
         <source>Tempo Range Display</source>
-        <translation type="unfinished"/>
+        <translation>Visualizador del rango de tempo</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="668"/>
         <source>Displays the current range of the tempo slider.</source>
-        <translation type="unfinished"/>
+        <translation>Muestra el rango actual del deslizador de tempo.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="675"/>
@@ -12882,7 +12886,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="699"/>
         <source>Delete selected hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Elimina la hotcue seleccionada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="917"/>
@@ -12892,12 +12896,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="918"/>
         <source>Displays the comment tag of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Muestra la etiqueta de comentario de la pista cargada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="953"/>
         <source>Opens separate artwork viewer.</source>
-        <translation type="unfinished"/>
+        <translation>Abre el visualizador separado de carátulas.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1028"/>
@@ -12912,7 +12916,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1181"/>
         <source>Select and configure a hardware device for this input</source>
-        <translation type="unfinished"/>
+        <translation>Selecciona y configura un dispositivo de hardware para esta entrada</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="712"/>
@@ -12922,7 +12926,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="38"/>
         <source>Select and click: Show inline value editor</source>
-        <translation type="unfinished"/>
+        <translation>Seleccionar y hacer clic: mostrar editor de valores en línea</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="51"/>
@@ -12932,42 +12936,42 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="85"/>
         <source>Big Spinny/Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Carátula giratoria grande</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="86"/>
         <source>Show a big version of the Spinny or track cover art if enabled.</source>
-        <translation type="unfinished"/>
+        <translation>Muestra una versión agrandada del plato o la carátula de la pista, si se activa.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="110"/>
         <source>Main Output Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pico de la salida principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="111"/>
         <source>Indicates when the signal on the main output is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indica cuando la señal en la salida principal hace clipping,</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="115"/>
         <source>Main Output L Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pico del canal izquierdo de la salida principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="116"/>
         <source>Indicates when the left signal on the main output is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indica cuando la señal izquierda de la salida principal hace clipping.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="120"/>
         <source>Main Output R Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicador de pico del canal derecho de la salida principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="121"/>
         <source>Indicates when the right signal on the main output is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indica cuando la señal derecha de la salida principal hace clipping.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="173"/>
@@ -13019,12 +13023,12 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="262"/>
         <source>Show/hide Cover Art of the selected track in the library.</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/Ocultar Cubierta de las pistas seleccionadas en la biblioteca.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="269"/>
         <source>Show/hide the scrolling waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar/ocultar las formas de onda deslizantes</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="272"/>
@@ -13613,7 +13617,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1023"/>
         <source>Super Knob</source>
-        <translation>Rueda Súper</translation>
+        <translation>Súper Perilla</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1032"/>
@@ -13848,12 +13852,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1145"/>
         <source>Quick Effect Super Knob</source>
-        <translation>Rueda Súper de efecto rápido</translation>
+        <translation>Súper Perilla de Efecto Rápido</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1146"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
-        <translation>Rueda Súper de efecto rápido (controla los parámetros de efecto asociados).</translation>
+        <translation>Súper perilla de efecto rápido (controla los parámetros de efecto asociados).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1148"/>
@@ -16304,7 +16308,7 @@ Carpeta: %2
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2670"/>
         <source>Setting cover art of %n track(s)</source>
-        <translation><numerusform>Setting cover art of %n track(s)</numerusform><numerusform>Setting cover art of %n track(s)</numerusform><numerusform>Poniendo portadas de %n pista(s)</numerusform></translation>
+        <translation><numerusform>Setting cover art of %n track(s)</numerusform><numerusform>Setting cover art of %n track(s)</numerusform><numerusform>Poniendo carátulas de %n pista(s)</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2694"/>

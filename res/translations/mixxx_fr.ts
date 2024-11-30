@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="99"/>
         <source>Clear Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Effacer la file d&apos;attente Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="112"/>
@@ -41,17 +41,17 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="181"/>
         <source>Confirmation Clear</source>
-        <translation type="unfinished"/>
+        <translation>Confirmation effacement</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="182"/>
         <source>Do you really want to remove all tracks from the Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Êtes-vous sûr de vouloir supprimer toutes les pistes de la file d&apos;attente Auto DJ ?</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="183"/>
         <source>This can not be undone.</source>
-        <translation type="unfinished"/>
+        <translation>Ça ne peut pas être annulé.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="352"/>
@@ -12218,22 +12218,22 @@ du signal d&apos;entrée, des temps de relâchement courts peuvent introduire un
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="120"/>
         <source>Reading track for fingerprinting failed.</source>
-        <translation type="unfinished"/>
+        <translation>La lecture de la piste pour l&apos;empreintes a échoué.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="124"/>
         <source>Identifying track through AcoustID</source>
-        <translation type="unfinished"/>
+        <translation>Identification de la piste via AcoustID</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="170"/>
         <source>Could not identify track through AcoustID.</source>
-        <translation type="unfinished"/>
+        <translation>Impossible d&apos;identifier la piste via AcoustID.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="308"/>
         <source>Could not find this track in the MusicBrainz database.</source>
-        <translation type="unfinished"/>
+        <translation>Impossible de trouver cette piste dans la base de données MusicBrainz.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="174"/>
@@ -12955,7 +12955,7 @@ du signal d&apos;entrée, des temps de relâchement courts peuvent introduire un
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="51"/>
         <source>Left click and hold allows to preview the position where the play head will jump to on release. Dragging can be aborted with right click.</source>
-        <translation type="unfinished"/>
+        <translation>Clic-gauche et maintien pour prévisualiser la position vers laquelle la tête de lecture sautera lors du relâchement. Le glissement peut être interrompu avec un clic-droit.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="85"/>
@@ -13215,7 +13215,7 @@ du signal d&apos;entrée, des temps de relâchement courts peuvent introduire un
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="480"/>
         <source>Left click: shift 10 milliseconds earlier</source>
-        <translation>Clic gauche : décale 10 ms plus tôt</translation>
+        <translation>Clic-gauche : décale 10 ms plus tôt</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="481"/>
@@ -16622,7 +16622,8 @@ Cliquez sur OK pour sortir.</translation>
         <source>Failed to export track %1 - %2:
 %3</source>
         <extracomment>%1 is the artist %2 is the title and %3 is the original error message</extracomment>
-        <translation type="unfinished"/>
+        <translation>Échec d&apos;exportation de la piste %1 - %2:
+%3</translation>
     </message>
 </context>
 <context>
