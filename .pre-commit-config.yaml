@@ -173,11 +173,8 @@ repos:
         files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$
       - id: ts-source-copy
         name: ts-source-copy
-        description: "Find translations literaly copied form the source language"
+        description: "Find translations literally copied from the source language"
         entry: python tools/ts_source_copy_check.py
-        stages:
-          - commit
-          - manual
         require_serial: true
         language: python
         additional_dependencies:
