@@ -1,6 +1,7 @@
 #include "backend/basegeometrynode.h"
 
 #include <QOpenGLTexture>
+#include <stdexcept>
 
 #include "backend/shadercache.h"
 #include "rendergraph/engine.h"
@@ -16,6 +17,8 @@ GLenum toGlDrawingMode(DrawingMode mode) {
         return GL_TRIANGLES;
     case DrawingMode::TriangleStrip:
         return GL_TRIANGLE_STRIP;
+    default:
+        throw std::runtime_error("not implemented");
     }
 }
 } // namespace

@@ -1,5 +1,7 @@
 #include "rendergraph/geometry.h"
 
+#include <stdexcept>
+
 #include "rendergraph/assert.h"
 
 using namespace rendergraph;
@@ -11,6 +13,8 @@ QSGGeometry::DrawingMode toSgDrawingMode(DrawingMode mode) {
         return QSGGeometry::DrawTriangles;
     case DrawingMode::TriangleStrip:
         return QSGGeometry::DrawTriangleStrip;
+    default:
+        throw std::runtime_error("not implemented");
     }
 }
 
@@ -21,7 +25,7 @@ DrawingMode fromSgDrawingMode(unsigned int mode) {
     case QSGGeometry::DrawTriangleStrip:
         return DrawingMode::TriangleStrip;
     default:
-        throw "not implemented";
+        throw std::runtime_error("not implemented");
     }
 }
 } // namespace

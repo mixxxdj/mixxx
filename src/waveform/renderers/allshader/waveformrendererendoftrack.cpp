@@ -81,7 +81,7 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
     const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
             remainingTimeTriggerSeconds;
 
-    const double alpha = std::min(1.0, std::max(0.0, criticalIntensity * blinkIntensity));
+    const double alpha = std::clamp(criticalIntensity * blinkIntensity, 0.0, 1.0);
 
     QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     float r, g, b, a;

@@ -12,7 +12,7 @@ class AttributeSet : public BaseAttributeSet {
 
 template<typename... Ts, int N>
 AttributeSet makeAttributeSet(const QString (&names)[N]) {
-    static_assert(sizeof...(Ts) == N);
+    static_assert(sizeof...(Ts) == N, "Mismatch between number of attribute types and names");
     return AttributeSet({(AttributeInit::create<Ts>())...},
             std::vector<QString>(std::cbegin(names), std::cend(names)));
 }

@@ -4,3 +4,7 @@ $ cd ../../../
 $ mkdir build-rendergraph_examples
 $ cd build-rendergraph_examples
 $ cmake -DCMAKE_PREFIX_PATH=~/Qt/6.7.2/macos/ ../src/rendergraph/examples
+
+or if you want to use the mixxx vcpkg:
+$ export MIXXX_VCPKG_ROOT=~/git/vcpkg/
+$ cmake -DVCPKG_INSTALLED_DIR:PATH=$MIXXX_VCPKG_ROOT/installed -DVCPKG_TARGET_TRIPLET:STRING=arm64-osx-release -DCMAKE_TOOLCHAIN_FILE=$MIXXX_VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake ../src/rendergraph/examples

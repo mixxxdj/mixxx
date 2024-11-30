@@ -62,17 +62,15 @@ target_link_libraries(rendergraph_gl PUBLIC
     Qt6::Gui
     Qt6::OpenGL
 )
-if(WIN32)
-  find_package(Microsoft.GSL CONFIG)
-  if(Microsoft.GSL_FOUND)
-    target_link_libraries(rendergraph_gl PRIVATE Microsoft.GSL::GSL)
-  else()
-    # check if the headers have been installed without cmake config (< 3.1.0)
-    check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
-    if(NOT HAVE_GSL_GSL)
-      unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
-      message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
-    endif()
+find_package(Microsoft.GSL CONFIG)
+if(Microsoft.GSL_FOUND)
+  target_link_libraries(rendergraph_gl PUBLIC Microsoft.GSL::GSL)
+else()
+  # check if the headers have been installed without cmake config (< 3.1.0)
+  check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
+  if(NOT HAVE_GSL_GSL)
+    unset(HAVE_GSL_GSL CACHE) # unset cache to re-evaluate this until it succeeds. check_include_file_cxx() has no REQUIRED flag.
+    message(FATAL_ERROR "ms-gsl development headers (libmsgsl-dev) not found")
   endif()
 endif()
 target_compile_definitions(rendergraph_gl PRIVATE rendergraph=rendergraph_gl)
