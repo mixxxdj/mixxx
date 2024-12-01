@@ -15,11 +15,9 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type,
-        QColor color)
+        ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRendererAbstract(waveformWidget),
-          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
-          m_color(color) {
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
     initForRectangles<UniColorMaterial>(0);
     setUsePreprocess(true);
 }

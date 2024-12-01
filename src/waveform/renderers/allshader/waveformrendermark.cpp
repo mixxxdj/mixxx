@@ -145,27 +145,11 @@ QString timeSecToString(double timeSec) {
 
 allshader::WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidget,
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-        QColor fgPlayColor,
-        QColor bgPlayColor,
-        bool untilMarkShowBeats,
-        bool untilMarkShowTime,
-        Qt::Alignment untilMarkAlign,
-        int untilMarkTextSize,
-#endif
         ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRenderMarkBase(waveformWidget, false),
           m_beatsUntilMark(0),
           m_timeUntilMark(0.0),
           m_pTimeRemainingControl(nullptr),
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-          m_fgPlayColor(fgPlayColor),
-          m_bgPlayColor(bgPlayColor),
-          m_untilMarkShowBeats(untilMarkShowBeats),
-          m_untilMarkShowTime(untilMarkShowTime),
-          m_untilMarkAlign(untilMarkAlign),
-          m_untilMarkTextSize(untilMarkTextSize),
-#endif
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_playPosHeight(0.f),
           m_playPosDevicePixelRatio(0.f) {
@@ -195,6 +179,19 @@ allshader::WaveformRenderMark::WaveformRenderMark(
     }
 }
 
+void allshader::WaveformRenderMark::setup(const QColor& fgPlayColor,
+        const QColor& bgPlayColor,
+        bool untilMarkShowBeats,
+        bool untilMarkShowTime,
+        Qt::Alignment untilMarkAlign,
+        int untilMarkTextSize) {
+    m_fgPlayColor = fgPlayColor;
+    m_bgPlayColor = bgPlayColor;
+    m_untilMarkShowBeats = untilMarkShowBeats;
+    m_untilMarkShowTime = untilMarkShowTime;
+    m_untilMarkAlign = untilMarkAlign;
+    m_untilMarkTextSize = untilMarkTextSize;
+}
 void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(painter);
     Q_UNUSED(event);

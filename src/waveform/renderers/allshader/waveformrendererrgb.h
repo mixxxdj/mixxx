@@ -14,18 +14,17 @@ class allshader::WaveformRendererRGB final
           public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-            QColor axesColor,
-            QColor lowColor,
-            QColor midColor,
-            QColor highColor,
-#endif
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
             WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
+
+    void setup(const QColor& axesColor,
+            const QColor& lowColor,
+            const QColor& midColor,
+            const QColor& highColor);
 
     bool supportsSlip() const override {
         return true;

@@ -21,14 +21,17 @@ class allshader::WaveformRendererPreroll final
     explicit WaveformRendererPreroll(
             WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play,
-            QColor color = QColor(200, 25, 20));
+                    ::WaveformRendererAbstract::Play);
     ~WaveformRendererPreroll() override;
 
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
+
+    void setup(const QColor& color) {
+        m_color = color;
+    }
 
     // Virtual for rendergraph::Node
     void preprocess() override;

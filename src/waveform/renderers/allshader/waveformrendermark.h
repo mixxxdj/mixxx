@@ -22,19 +22,18 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
                                       public rendergraph::Node {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-            QColor fgPlayColor,
-            QColor bgPlayColor,
-            bool untilMarkShowBeats,
-            bool untilMarkShowTime,
-            Qt::Alignment untilMarkAlign,
-            int untilMarkTextSize,
-#endif
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
+
+    void setup(const QColor& fgPlayColor,
+            const QColor& bgPlayColor,
+            bool untilMarkShowBeats,
+            bool untilMarkShowTime,
+            Qt::Alignment untilMarkAlign,
+            int untilMarkTextSize);
 
     bool init() override;
 

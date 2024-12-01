@@ -22,12 +22,16 @@ class allshader::WaveformRendererEndOfTrack final
           public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererEndOfTrack(
-            WaveformWidgetRenderer* waveformWidget, QColor color = QColor());
+            WaveformWidgetRenderer* waveformWidge);
 
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
+
+    void setup(const QColor& color) {
+        m_color = color;
+    }
 
     bool init() override;
 

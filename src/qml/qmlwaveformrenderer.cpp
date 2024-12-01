@@ -44,32 +44,36 @@ QmlWaveformRendererMark::QmlWaveformRendererMark()
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererEndOfTrack::create(
         WaveformWidgetRenderer* waveformWidget) const {
-    auto* renderer = new WaveformRendererEndOfTrack(waveformWidget, m_color);
+    auto* renderer = new WaveformRendererEndOfTrack(waveformWidget);
+    renderer->setup(m_color);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererPreroll::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRendererPreroll(
-            waveformWidget, WaveformRendererAbstract::Play, m_color);
+            waveformWidget, WaveformRendererAbstract::Play);
+    renderer->setup(m_color);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRendererRGB(waveformWidget,
+            ::WaveformRendererAbstract::Play);
+    renderer->setup(
             m_axesColor,
             m_lowColor,
             m_midColor,
-            m_highColor,
-            ::WaveformRendererAbstract::Play);
+            m_highColor);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRenderBeat(
-            waveformWidget, ::WaveformRendererAbstract::Play, m_color);
+            waveformWidget, ::WaveformRendererAbstract::Play);
+    renderer->setup(m_color);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
@@ -110,13 +114,14 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
         return QmlWaveformRendererFactory::Renderer{};
     }
     auto* renderer = new WaveformRenderMark(waveformWidget,
+            ::WaveformRendererAbstract::Play);
+    renderer->setup(
             m_playMarkerColor,
             m_playMarkerBackground,
             m_untilMark->showTime(),
             m_untilMark->showBeats(),
             static_cast<Qt::Alignment>(m_untilMark->align()),
-            m_untilMark->textSize(),
-            ::WaveformRendererAbstract::Play);
+            m_untilMark->textSize());
     int priority = 0;
     for (auto* pMark : m_marks) {
         renderer->addMark(WaveformMarkPointer(new WaveformMark(

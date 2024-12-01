@@ -20,13 +20,16 @@ class allshader::WaveformRenderBeat final
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play,
-            QColor color = QColor());
+                    ::WaveformRendererAbstract::Play);
 
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
+
+    void setup(const QColor& color) {
+        m_color = color;
+    }
 
     // Virtuals for rendergraph::Node
     void preprocess() override;
