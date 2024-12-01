@@ -18,7 +18,6 @@
 
 using namespace rendergraph;
 
-namespace {
 // On the use of QPainter:
 //
 // The renderers in this folder are optimized to use GLSL shaders and refrain
@@ -27,6 +26,19 @@ namespace {
 // This renderer does use QPainter (indirectly, in WaveformMark::generateImage), but
 // only to draw on a QImage. This is only done once when needed and the images are
 // then used as textures to be drawn with a GLSL shader.
+
+namespace {
+
+struct RoundToPixel {
+    const float m_devicePixelRatio;
+    RoundToPixel(float devicePixelRatio)
+            : m_devicePixelRatio{devicePixelRatio} {
+    }
+    // round to nearest pixel, taking into account the devicePixelRatio
+    float operator()(float pos) const {
+        return std::round(pos * m_devicePixelRatio) / m_devicePixelRatio;
+    }
+};
 
 class WaveformMarkNode : public rendergraph::GeometryNode {
   public:
@@ -44,6 +56,9 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
         m_textureHeight = image.height();
     }
     void update(float x, float y, float devicePixelRatio) {
+        [[maybe_unused]] const float epsilon = 1e-6f;
+        DEBUG_ASSERT(std::abs(x - RoundToPixel(devicePixelRatio)(x)) < epsilon);
+        DEBUG_ASSERT(std::abs(y - RoundToPixel(devicePixelRatio)(y)) < epsilon);
         TexturedVertexUpdater vertexUpdater{
                 geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
         vertexUpdater.addRectangle({x, y},
@@ -113,17 +128,6 @@ QString timeSecToString(double timeSec) {
 
     return QString::asprintf("%d:%02d.%02d", minutes, seconds, hundredths);
 }
-
-struct RoundToPixel {
-    const float m_devicePixelRatio;
-    RoundToPixel(float devicePixelRatio)
-            : m_devicePixelRatio(devicePixelRatio) {
-    }
-    // round to nearest pixel, taking into account the devicePixelRatio
-    float operator()(float pos) const {
-        return std::round(pos * m_devicePixelRatio) / m_devicePixelRatio;
-    }
-};
 
 } // namespace
 

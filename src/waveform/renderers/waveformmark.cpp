@@ -380,7 +380,6 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     case Qt::AlignHCenter:
         m_linePosition = markerGeometry.m_imageSize.width() / 2.f;
         m_offset = -(markerGeometry.m_imageSize.width() - 1.f) / 2.f;
-        DEBUG_ASSERT(linePos - std::roundf(linePos) < 0.000001f);
         break;
     case Qt::AlignLeft:
         m_linePosition = markerGeometry.m_imageSize.width() - 1.5f;
@@ -395,6 +394,8 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
     // Note: linePos has to be at integer + 0.5 to draw correctly
     const float linePos = m_linePosition;
+    [[maybe_unused]] const float epsilon = 1e-6f;
+    DEBUG_ASSERT(std::abs(linePos - std::floor(linePos) - 0.5) < epsilon);
 
     // Draw the center line
     painter.setPen(fillColor());
