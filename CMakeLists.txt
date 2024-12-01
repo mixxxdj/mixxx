@@ -4572,6 +4572,9 @@ if(VINYLCONTROL)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
 
+# rendergraph
+add_subdirectory(src/rendergraph/opengl)
+
 # WavPack audio file support
 find_package(wavpack)
 default_option(WAVPACK "WavPack audio file support" "wavpack_FOUND")
