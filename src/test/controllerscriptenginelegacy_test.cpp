@@ -661,30 +661,46 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
     const auto result = evaluate(
             "engine.convertCharset(engine.WellKnownCharsets.Latin9, 'Hello!')");
 
-    // ISO-8859-15 ecoded 'Hello!'
-    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
-            QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
-}
-
-TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
-    const auto result = evaluate("engine.convertCharset('ISO-8859-15', 'Hello!')");
-
-    // ISO-8859-15 ecoded 'Hello!'
     EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
             QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
     auto result = qjsvalue_cast<QByteArray>(
-            evaluate("engine.convertCharset('ISO-8859-15', 'مايأ نامز')"));
+            evaluate("engine.convertCharset(engine.WellKnownCharsets.Latin9, 'مايأ نامز')"));
     char sub = '\x1A'; // ASCII/Latin9 SUB character
     EXPECT_EQ(result,
             QByteArrayView::fromArray(
                     {sub, sub, sub, sub, '\x20', sub, sub, sub, sub}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.WellKnownCharsets.UTF_16LE, 'مايأ نامز')"));
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray({'\x45',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x4A',
+                    '\x06',
+                    '\x23',
+                    '\x06',
+                    '\x20',
+                    '\x00',
+                    '\x46',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x45',
+                    '\x06',
+                    '\x32',
+                    '\x06'}));
 }
 
 #define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! 😊"
