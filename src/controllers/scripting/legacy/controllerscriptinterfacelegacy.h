@@ -17,17 +17,35 @@ class ConfigKey;
 class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
+    // NOTE: these enumerator names are exposed to the JS engine! Removal/Changing of
+    // any name is likely breaking. Only add more and only remove enumerators if
+    // they're broken to begin with.
     enum class WellKnownCharsets {
-        US_ASCII,
-        Latin1,
-        ISO_8859_1,
-        Latin9,
-        ISO_8859_15,
-        UCS2,
-        ISO_10646_UCS_2,
+        ASCII,
         UTF_8,
-        UTF_16BE,
         UTF_16LE,
+        UTF_16BE,
+        UTF_32LE,
+        UTF_32BE,
+        CentralEurope,
+        Cyrillic,
+        Latin1,
+        Greek,
+        Turkish,
+        Hebrew,
+        Arabic,
+        Baltic,
+        Vietnamese,
+        Latin9,
+        Shift_JIS,
+        EUC_JP,
+        EUC_KR,
+        Big5_HKSCS,
+        KOI8_U,
+        UCS2,
+        SCSU,
+        BOCU_1,
+        CESU_8
     };
     Q_ENUM(WellKnownCharsets)
 

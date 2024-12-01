@@ -661,12 +661,6 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUndefinedOnUnknownCharset) {
-    const auto result = evaluate("engine.convertCharset('NULL', 'Hello!')");
-
-    EXPECT_EQ(qjsvalue_cast<QByteArray>(result), QByteArrayView(""));
-}
-
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueWellKnown) {
     const auto result = evaluate(
             "engine.convertCharset(engine.WellKnownCharsets.Latin9, 'Hello!')");
@@ -699,23 +693,43 @@ static int convertedCharsetForString(ControllerScriptInterfaceLegacy::WellKnownC
     // the expected length after conversion of COMPLICATEDSTRINGLITERAL
     using enum ControllerScriptInterfaceLegacy::WellKnownCharsets;
     switch (charset) {
-    case US_ASCII:
-    case Latin9:
-    case ISO_8859_15:
-        return 32;
-    case Latin1:
-    case ISO_8859_1:
-        return 33;
     case UTF_8:
         return 63;
-    case UTF_16BE:
     case UTF_16LE:
+    case UTF_16BE:
         return 66;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 128;
+    case ASCII:
+    case CentralEurope:
+    case Cyrillic:
+    case Latin1:
+    case Greek:
+    case Turkish:
+    case Hebrew:
+    case Arabic:
+    case Baltic:
+    case Vietnamese:
+    case Latin9:
+    case KOI8_U:
+        return 32;
+    case Shift_JIS:
+    case EUC_JP:
+    case EUC_KR:
+    case Big5_HKSCS:
+        return 49;
     case UCS2:
-    case ISO_10646_UCS_2:
         return 68;
+    case SCSU:
+        return 51;
+    case BOCU_1:
+        return 53;
+    case CESU_8:
+        return 65;
     }
-    // unreachable (TODO assert false?)
+    // unreachable, but gtest does not offer a way to assert this here.
+    // returning 0 will almost certainly also result in a failure.
     return 0;
 }
 

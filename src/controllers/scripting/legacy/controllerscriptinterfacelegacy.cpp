@@ -1061,24 +1061,58 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
         const QString& value) {
+    using enum WellKnownCharsets;
     switch (targetCharset) {
-    case WellKnownCharsets::US_ASCII:
+    case ASCII:
         return convertCharsetInternal(QStringLiteral("US-ASCII"), value);
-    case WellKnownCharsets::Latin1:
-    case WellKnownCharsets::ISO_8859_1:
-        return convertCharsetInternal(QStringLiteral("ISO-8859-1"), value);
-    case WellKnownCharsets::Latin9:
-    case WellKnownCharsets::ISO_8859_15:
-        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
-    case WellKnownCharsets::UCS2:
-    case WellKnownCharsets::ISO_10646_UCS_2:
-        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
-    case WellKnownCharsets::UTF_8:
+    case UTF_8:
         return convertCharsetInternal(QStringLiteral("UTF-8"), value);
-    case WellKnownCharsets::UTF_16BE:
-        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
-    case WellKnownCharsets::UTF_16LE:
+    case UTF_16LE:
         return convertCharsetInternal(QStringLiteral("UTF-16LE"), value);
+    case UTF_16BE:
+        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
+    case UTF_32LE:
+        return convertCharsetInternal(QStringLiteral("UTF-32LE"), value);
+    case UTF_32BE:
+        return convertCharsetInternal(QStringLiteral("UTF-32BE"), value);
+    case CentralEurope:
+        return convertCharsetInternal(QStringLiteral("windows-1250"), value);
+    case Cyrillic:
+        return convertCharsetInternal(QStringLiteral("windows-1251"), value);
+    case Latin1:
+        return convertCharsetInternal(QStringLiteral("windows-1252"), value);
+    case Greek:
+        return convertCharsetInternal(QStringLiteral("windows-1253"), value);
+    case Turkish:
+        return convertCharsetInternal(QStringLiteral("windows-1254"), value);
+    case Hebrew:
+        return convertCharsetInternal(QStringLiteral("windows-1255"), value);
+    case Arabic:
+        return convertCharsetInternal(QStringLiteral("windows-1256"), value);
+    case Baltic:
+        return convertCharsetInternal(QStringLiteral("windows-1257"), value);
+    case Vietnamese:
+        return convertCharsetInternal(QStringLiteral("windows-1258"), value);
+    case Latin9:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
+    case Shift_JIS:
+        return convertCharsetInternal(QStringLiteral("Shift_JIS"), value);
+    case EUC_JP:
+        return convertCharsetInternal(QStringLiteral("EUC-JP"), value);
+    case EUC_KR:
+        return convertCharsetInternal(QStringLiteral("EUC-KR"), value);
+    case Big5_HKSCS:
+        return convertCharsetInternal(QStringLiteral("Big5-HKSCS"), value);
+    case KOI8_U:
+        return convertCharsetInternal(QStringLiteral("KOI8-U"), value);
+    case UCS2:
+        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
+    case SCSU:
+        return convertCharsetInternal(QStringLiteral("SCSU"), value);
+    case BOCU_1:
+        return convertCharsetInternal(QStringLiteral("BOCU-1"), value);
+    case CESU_8:
+        return convertCharsetInternal(QStringLiteral("CESU-8"), value);
     }
     m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
     return QByteArray();

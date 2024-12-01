@@ -303,16 +303,31 @@ declare namespace engine {
     function softStart(deck: number, activate: boolean, factor?: number): void;
 
     enum WellKnownCharsets {
-        US_ASCII,
-        Latin1,
-        ISO_8859_1,
-        Latin9,
-        ISO_8859_15,
-        UCS2, // with prepended Byte-Order-Mark
-        ISO_10646_UCS_2, // with prepended Byte-Order-Mark
-        UTF_8,
-        UTF_16BE,
-        UTF_16LE,
+        ASCII,          // American Standard Code for Information Interchange (7-Bit)
+        UTF_8,          // Unicode Transformation Format (8-Bit)
+        UTF_16LE,       // UTF-16 for Little-Endian devices (ARM, x86)
+        UTF_16BE,       // UTF-16 for Big-Endian devices (MIPS, PPC)
+        UTF_32LE,       // UTF-32 for Little-Endian devices (ARM, x86)
+        UTF_32BE,       // UTF-32 for Big-Endian devices (MIPS, PPC)
+        CentralEurope,  // Windows_1250 which includes all characters of ISO_8859_2
+        Cyrillic,       // Windows_1251 which includes all characters of ISO_8859_5
+        Latin1,         // Windows_1252 which includes all characters of ISO_8859_1
+        Greek,          // Windows_1253 which includes all characters of ISO_8859_7
+        Turkish,        // Windows_1254 which includes all characters of ISO_8859_9
+        Hebrew,         // Windows_1255 which includes all characters of ISO_8859_8
+        Arabic,         // Windows_1256 which includes all characters of ISO_8859_6
+        Baltic,         // Windows_1257 which includes all characters of ISO_8859_13
+        Vietnamese,     // Windows_1258 which includes all characters of ISO_8859_14
+        Latin9,         // ISO_8859_15
+        Shift_JIS,      // Japanese Industrial Standard (JIS X 0208)
+        EUC_JP,         // Extended Unix Code for Japanese
+        EUC_KR,         // Extended Unix Code for Korean
+        Big5_HKSCS,     // Includes all characters of Big5 and the Hong Kong Supplementary Character Set (HKSCS)
+        KOI8_U,         // Includes all characters of KOI8_R for Russian language and adds Ukrainian language characters
+        UCS2,           // Universal Character Set (2-Byte) ISO_10646
+        SCSU,           // Standard Compression Scheme for Unicode
+        BOCU_1,         // Binary Ordered Compression for Unicode
+        CESU_8          // Compatibility Encoding Scheme for UTF-16 (8-Bit)
     }
 
     /**
