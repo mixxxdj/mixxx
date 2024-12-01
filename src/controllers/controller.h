@@ -9,7 +9,7 @@
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
 
-enum class PhysicalTransportProtocol : uint8_t {
+enum class PhysicalTransportProtocol {
     UNKNOWN,
     USB,
     BlueTooth,
@@ -18,7 +18,7 @@ enum class PhysicalTransportProtocol : uint8_t {
     FireWire // IEEE 1394
 };
 
-enum class DataRepresentationProtocol : uint8_t {
+enum class DataRepresentationProtocol {
     MIDI,
     HID,
     USB_BULK_TRANSFER // Bulk is only one of the 4 USB transfer modes
