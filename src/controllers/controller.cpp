@@ -38,15 +38,21 @@ ControllerJSProxy* Controller::jsProxy() {
 }
 
 QString Controller::physicalTransport2String(PhysicalTransportProtocol protocol) {
-    static const QMap<PhysicalTransportProtocol, QString> protocolMap = {
-            {PhysicalTransportProtocol::USB, QStringLiteral("USB")},
-            {PhysicalTransportProtocol::BlueTooth, QStringLiteral("Bluetooth")},
-            {PhysicalTransportProtocol::I2C, QStringLiteral("I2C")},
-            {PhysicalTransportProtocol::SPI, QStringLiteral("SPI")},
-            {PhysicalTransportProtocol::FireWire, QStringLiteral("Firewire - IEEE 1394")},
-            {PhysicalTransportProtocol::UNKNOWN, tr("Unknown")}};
-
-    return protocolMap.value(protocol, tr("Unknown"));
+    switch (protocol) {
+    case PhysicalTransportProtocol::USB:
+        return QStringLiteral("USB");
+    case PhysicalTransportProtocol::BlueTooth:
+        return QStringLiteral("Bluetooth");
+    case PhysicalTransportProtocol::I2C:
+        return QStringLiteral("I2C");
+    case PhysicalTransportProtocol::SPI:
+        return QStringLiteral("SPI");
+    case PhysicalTransportProtocol::FireWire:
+        return QStringLiteral("Firewire - IEEE 1394");
+    case PhysicalTransportProtocol::UNKNOWN:
+        break; // Effectively fallthrough
+    }
+    return tr("Unknown");
 }
 
 void Controller::startEngine() {
