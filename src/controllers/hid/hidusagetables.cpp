@@ -13,7 +13,9 @@ namespace mixxx {
 
 namespace hid {
 
-QString HidUsageTables::getUsagePageDescription(uint16_t usagePage) {
+namespace HidUsageTables {
+
+QString getUsagePageDescription(uint16_t usagePage) {
     if (usagePage >= kStartOfVendorDefinedUsagePageRange) {
         return QStringLiteral("Vendor-defined");
     }
@@ -26,7 +28,7 @@ QString HidUsageTables::getUsagePageDescription(uint16_t usagePage) {
     return QStringLiteral("Reserved");
 }
 
-QString HidUsageTables::getUsageDescription(uint16_t usagePage, uint16_t usage) {
+QString getUsageDescription(uint16_t usagePage, uint16_t usage) {
     if (usagePage >= kStartOfVendorDefinedUsagePageRange) {
         return QStringLiteral("Vendor-defined");
     }
@@ -43,6 +45,8 @@ QString HidUsageTables::getUsageDescription(uint16_t usagePage, uint16_t usage) 
     }
     return QStringLiteral("Reserved");
 }
+
+} // namespace HidUsageTables
 
 } // namespace hid
 
