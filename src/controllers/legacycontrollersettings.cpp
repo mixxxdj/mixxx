@@ -1,7 +1,5 @@
 #include "controllers/legacycontrollersettings.h"
 
-#include <util/assert.h>
-
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QColorDialog>
@@ -17,6 +15,8 @@
 #include <QStringLiteral>
 
 #include "moc_legacycontrollersettings.cpp"
+#include "util/assert.h"
+#include "util/parented_ptr.h"
 
 namespace {
 
@@ -122,7 +122,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element) {
+        : LegacyControllerSettingBase(element) {
     m_defaultValue = parseValue(element.attribute("default"));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
@@ -228,7 +228,8 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element), m_options(), m_defaultValue(0) {
+        : LegacyControllerSettingBase(element, 0),
+          m_options() {
     size_t pos = 0;
     for (QDomElement value = element.firstChildElement("value");
             !value.isNull();
@@ -305,12 +306,7 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerColorSetting::LegacyControllerColorSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element),
-          m_defaultValue(QColor(element.attribute("default"))),
-          m_savedValue(m_defaultValue),
-          m_editedValue(m_defaultValue) {
-    reset();
-    save();
+        : LegacyControllerSettingBase(element, QColor(element.attribute("default"))) {
 }
 
 LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
@@ -371,13 +367,8 @@ QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerFileSetting::LegacyControllerFileSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element),
-          m_fileFilter(element.attribute("pattern")),
-          m_defaultValue(QFileInfo(element.attribute("default"))),
-          m_savedValue(m_defaultValue),
-          m_editedValue(m_defaultValue) {
-    reset();
-    save();
+        : LegacyControllerSettingBase(element, QFileInfo(element.attribute("default"))),
+          m_fileFilter(element.attribute("pattern")) {
 }
 LegacyControllerFileSetting::~LegacyControllerFileSetting() = default;
 
