@@ -541,7 +541,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     m_visualPlayPos->setInvalid();
     m_playPos = kInitialPlayPosition; // for execute seeks to 0.0
-    m_pCurrentTrack = pTrack;
 
     m_channelCount = trackChannelCount;
     if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
@@ -587,6 +586,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         m_iSeekPhaseQueued = 0;
     }
 
+    m_pCurrentTrack = pTrack;
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
