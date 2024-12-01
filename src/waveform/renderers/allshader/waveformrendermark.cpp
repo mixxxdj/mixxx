@@ -79,8 +79,13 @@ bool allshader::WaveformRenderMark::init() {
     return true;
 }
 
+void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
+}
+
 void allshader::WaveformRenderMark::initializeGL() {
-    allshader::WaveformRendererAbstract::initializeGL();
     m_digitsRenderer.init();
     m_rgbaShader.init();
     m_textureShader.init();

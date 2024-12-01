@@ -27,7 +27,6 @@ void WaveformRendererRGB::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererRGB::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 

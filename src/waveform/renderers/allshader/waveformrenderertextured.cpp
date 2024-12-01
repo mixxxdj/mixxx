@@ -219,8 +219,6 @@ void WaveformRendererTextured::createFrameBuffers() {
 }
 
 void WaveformRendererTextured::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
-
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
