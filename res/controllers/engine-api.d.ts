@@ -332,18 +332,9 @@ declare namespace engine {
 
     /**
      * Converts a string into another charset.
-     *
-     * This function is useful to display text on a device that does not make use of UTF-8.
-     * Available charset names are listed here: http://www.iana.org/assignments/character-sets/character-sets.xhtml.
-     * Characters that are unsupported by target charset will be transformed to null character (0x00).
+     * 
+     * @param value The string to encode
      * @param targetCharset The charset to encode the string into.
-     * @param value The string to encode
-     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
-     */
-    function convertCharset(targetCharset: string, value: string): ArrayBuffer
-
-    /**
-     * @param value The string to encode
      * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
     function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer
