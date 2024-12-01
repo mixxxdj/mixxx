@@ -57,7 +57,7 @@ constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
-    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+    auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 
     int exitCode;
 #ifdef MIXXX_USE_QML
@@ -66,7 +66,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         auto pVisuals = std::make_unique<VisualsManager>();
         WaveformWidgetFactory::createInstance(); // takes a long time
         WaveformWidgetFactory::instance()->setConfig(pCoreServices->getSettings());
-        WaveformWidgetFactory::instance()->startVSync(pTick.get(), pVisuals.get());
+        WaveformWidgetFactory::instance()->startVSync(pTick.get(), pVisuals.get(), true);
         {
             mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
             const QStringList visualGroups =
@@ -85,6 +85,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                     });
             exitCode = pApp->exec();
         }
+        pCoreServices.reset();
         WaveformWidgetFactory::destroy();
     } else
 #endif

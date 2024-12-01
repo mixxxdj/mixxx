@@ -206,7 +206,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void addVuMeter(WVuMeterLegacy* pWidget);
     void addVuMeter(WVuMeterBase* pWidget);
 
-    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML);
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }

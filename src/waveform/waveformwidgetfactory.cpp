@@ -1168,9 +1168,12 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
-    const auto vSyncMode = static_cast<VSyncThread::VSyncMode>(
-            m_config->getValue(ConfigKey("[Waveform]", "VSync"), 0));
+void WaveformWidgetFactory::startVSync(
+        GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML) {
+    const auto vSyncMode = useQML
+            ? VSyncThread::ST_TIMER
+            : static_cast<VSyncThread::VSyncMode>(
+                      m_config->getValue(ConfigKey("[Waveform]", "VSync"), 0));
 
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;

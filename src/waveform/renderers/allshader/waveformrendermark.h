@@ -28,12 +28,14 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
     void setup(const QColor& fgPlayColor,
             const QColor& bgPlayColor,
             bool untilMarkShowBeats,
             bool untilMarkShowTime,
             Qt::Alignment untilMarkAlign,
             int untilMarkTextSize);
+#endif
 
     bool init() override;
 

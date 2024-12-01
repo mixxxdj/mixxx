@@ -38,6 +38,7 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
             this,
             &QmlWaveformDisplay::slotWindowChanged,
             Qt::DirectConnection);
+    slotWindowChanged(window());
 }
 
 QmlWaveformDisplay::~QmlWaveformDisplay() {
@@ -150,8 +151,12 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 boundingRect().height());
     }
 
-    m_waveformRenderMark->update();
-    m_waveformRenderMarkRange->update();
+    if (m_waveformRenderMark != nullptr) {
+        m_waveformRenderMark->update();
+    }
+    if (m_waveformRenderMarkRange != nullptr) {
+        m_waveformRenderMarkRange->update();
+    }
 
     onPreRender(this);
     bgNode->markDirty(QSGNode::DirtyForceUpdate);

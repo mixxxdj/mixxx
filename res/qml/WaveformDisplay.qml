@@ -110,6 +110,7 @@ Item {
             }
             Mixxx.WaveformMark {
                 control: "intro_start_position"
+                text: '◢'
                 align: 'top|right'
                 color: 'blue'
                 textColor: '#FFFFFF'
@@ -130,6 +131,7 @@ Item {
             }
             Mixxx.WaveformMark {
                 control: "outro_end_position"
+                text: '◣'
                 align: 'top|left'
                 color: 'blue'
                 textColor: '#FFFFFF'
@@ -171,7 +173,6 @@ Item {
         group: root.group
         key: "waveform_zoom"
     }
-    readonly property real effectiveZoomFactor: (1 / rateRatioControl.value) * (100 / zoomControl.value)
 
     MouseArea {
         property int mouseStatus: WaveformDisplay.MouseStatus.Normal

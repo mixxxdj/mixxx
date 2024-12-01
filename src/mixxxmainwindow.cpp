@@ -273,7 +273,7 @@ void MixxxMainWindow::initialize() {
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,

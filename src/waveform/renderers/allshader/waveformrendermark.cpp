@@ -179,6 +179,7 @@ allshader::WaveformRenderMark::WaveformRenderMark(
     }
 }
 
+#ifdef __RENDERGRAPH_IS_SCENEGRAPH
 void allshader::WaveformRenderMark::setup(const QColor& fgPlayColor,
         const QColor& bgPlayColor,
         bool untilMarkShowBeats,
@@ -192,6 +193,8 @@ void allshader::WaveformRenderMark::setup(const QColor& fgPlayColor,
     m_untilMarkAlign = untilMarkAlign;
     m_untilMarkTextSize = untilMarkTextSize;
 }
+#endif
+
 void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(painter);
     Q_UNUSED(event);
