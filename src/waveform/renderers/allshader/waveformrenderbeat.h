@@ -2,6 +2,7 @@
 
 #include <QColor>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/unicolorshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -14,13 +15,15 @@ namespace allshader {
 class WaveformRenderBeat;
 }
 
-class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
+class allshader::WaveformRenderBeat final
+        : public allshader::WaveformRenderer,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
     void paintGL() override;
     void initializeGL() override;
 
