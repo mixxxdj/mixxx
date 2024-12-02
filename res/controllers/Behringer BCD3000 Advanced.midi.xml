@@ -641,7 +641,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x1f</midino>
-        <group>[Channel1]</group>
+                <group>[Channel1]</group>
                 <key>BehringerBCD3000.On</key>
                 <options>
                     <script-binding/>
@@ -649,7 +649,7 @@
             </control>
             <control>
                 <status>0x90</status>
-        <group>[Channel2]</group>
+                <group>[Channel2]</group>
                 <midino>0x22</midino>
                 <key>BehringerBCD3000.Action</key>
                 <options>
