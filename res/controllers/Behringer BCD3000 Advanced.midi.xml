@@ -658,16 +658,6 @@
             </control>
 
             <control>
-                <status>0xb0</status>
-                <midino>0xd</midino>
-                <group>[Flanger]</group>
-                <key>lfoPeriod</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <status>0x90</status>
                 <midino>0x20</midino>
                 <group>[Channel1]</group>
@@ -678,30 +668,10 @@
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xe</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <status>0x90</status>
                 <midino>0x21</midino>
                 <group>[Channel2]</group>
                 <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0xf</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
                 <description></description>
                 <options>
                     <normal/>
