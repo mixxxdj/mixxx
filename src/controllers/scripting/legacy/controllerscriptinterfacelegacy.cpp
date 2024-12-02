@@ -1,10 +1,6 @@
 #include "controllerscriptinterfacelegacy.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
-#include <QTextCodec>
-#else
 #include <QStringEncoder>
-#endif
 #include <gsl/pointers>
 
 #include "control/controlobject.h"
