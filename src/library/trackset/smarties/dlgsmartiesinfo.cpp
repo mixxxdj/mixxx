@@ -73,13 +73,16 @@ void dlgSmartiesInfo::init(const QVariantList& smartiesData,
 
 void dlgSmartiesInfo::connectConditions() {
     for (int i = 1; i <= 12; ++i) {
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        auto* fieldComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Field").arg(i));
         auto* operatorComboBox = findChild<QComboBox*>(
                 QString("comboBoxCondition%1Operator").arg(i));
-        auto* valueLineEdit = findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
-        auto* valueComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
+        auto* valueLineEdit = findChild<QLineEdit*>(
+                QStringLiteral("lineEditCondition%1Value").arg(i));
+        auto* valueComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Value").arg(i));
         auto* combinerComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Combiner").arg(i));
+                QStringLiteral("comboBoxCondition%1Combiner").arg(i));
 
         if (fieldComboBox && operatorComboBox && valueLineEdit &&
                 valueComboBox && combinerComboBox) {
@@ -109,18 +112,20 @@ void dlgSmartiesInfo::connectConditions() {
 
 void dlgSmartiesInfo::setupConditionUI() {
     for (int i = 1; i <= 12; ++i) {
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        auto* fieldComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Field").arg(i));
         auto* operatorComboBox = findChild<QComboBox*>(
                 QString("comboBoxCondition%1Operator").arg(i));
-        auto* valueComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
+        auto* valueComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Value").arg(i));
         auto* insertConditionButton = findChild<QPushButton*>(
-                QString("buttoncondition%1_insert").arg(i));
+                QStringLiteral("buttoncondition%1_insert").arg(i));
         auto* deleteConditionButton = findChild<QPushButton*>(
-                QString("buttoncondition%1_delete").arg(i));
+                QStringLiteral("buttoncondition%1_delete").arg(i));
         auto* moveUpConditionButton =
-                findChild<QPushButton*>(QString("buttoncondition%1_up").arg(i));
+                findChild<QPushButton*>(QStringLiteral("buttoncondition%1_up").arg(i));
         auto* moveDownConditionButton = findChild<QPushButton*>(
-                QString("buttoncondition%1_down").arg(i));
+                QStringLiteral("buttoncondition%1_down").arg(i));
 
         if (fieldComboBox) {
             connect(fieldComboBox,
@@ -387,13 +392,16 @@ void dlgSmartiesInfo::populateUI() {
 
     for (int i = 1; i <= 12; ++i) {
         // Populate fieldComboBox
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        auto* fieldComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Field").arg(i));
         auto* operatorComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Operator").arg(i));
-        auto* valueLineEdit = findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
-        auto* valueComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
+                QStringLiteral("comboBoxCondition%1Operator").arg(i));
+        auto* valueLineEdit = findChild<QLineEdit*>(
+                QStringLiteral("lineEditCondition%1Value").arg(i));
+        auto* valueComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Value").arg(i));
         auto* combinerComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Combiner").arg(i));
+                QStringLiteral("comboBoxCondition%1Combiner").arg(i));
 
         if (fieldComboBox) {
             QSignalBlocker blocker(fieldComboBox);
@@ -664,9 +672,9 @@ void dlgSmartiesInfo::onFieldComboBoxChanged() {
         qDebug() << "conditionCounter field: " << conditionCounter;
     }
     auto* valueLineEdit = findChild<QLineEdit*>(
-            QString("lineEditCondition%1Value").arg(conditionCounter));
+            QStringLiteral("lineEditCondition%1Value").arg(conditionCounter));
     auto* valueComboBox = findChild<QComboBox*>(
-            QString("comboBoxCondition%1Value").arg(conditionCounter));
+            QStringLiteral("comboBoxCondition%1Value").arg(conditionCounter));
     valueLineEdit->clearMask();
     valueLineEdit->setInputMask("");
     if (sDebug) {
@@ -684,31 +692,32 @@ void dlgSmartiesInfo::onFieldComboBoxChanged() {
                         "contains, does not contain, starts with, ends with "
                         "... only enter the searchstring (no wildcards)"));
     } else if (dateFieldOptions.contains(conditionsTable[conditionCounter][1])) {
-        labelValidation->setText(QString("Information:"));
+        labelValidation->setText(QStringLiteral("Information:"));
         textEditValidation->setStyleSheet("font: 10pt");
-        textEditValidation->setText(QString(
+        textEditValidation->setText(QStringLiteral(
                 "You have different search options for 'date'-like fields:"));
         operatorOptions = dateOperatorOptions;
     } else if (numberFieldOptions.contains(conditionsTable[conditionCounter][1])) {
-        labelValidation->setText(QString("Information:"));
+        labelValidation->setText(QStringLiteral("Information:"));
         textEditValidation->setStyleSheet("font: 10pt");
-        textEditValidation->setText(QString(
+        textEditValidation->setText(QStringLiteral(
                 "You have different search options for 'number'-like fields:"));
         operatorOptions = numberOperatorOptions;
     } else if (playlistCrateFieldOptions.contains(conditionsTable[conditionCounter][1])) {
-        labelValidation->setText(QString("Information:"));
+        labelValidation->setText(QStringLiteral("Information:"));
         textEditValidation->setStyleSheet("font: 10pt");
         textEditValidation->setText(
-                QString("You have different search options for 'playlist, crate and "
-                        "history':"));
+                QStringLiteral("You have different search options for 'playlist, crate and "
+                               "history':"));
         operatorOptions = playlistCrateOperatorOptions;
     } else if (conditionsTable[conditionCounter][1] == "") {
         // operatorOptions = operatorOptions; // default to all operators
         valueLineEdit->setVisible(true);
         valueComboBox->setVisible(false);
-        labelValidation->setText(QString("Information:"));
+        labelValidation->setText(QStringLiteral("Information:"));
         textEditValidation->setStyleSheet("font: 10pt");
-        textEditValidation->setText(QString("Select a field to start creating a condition':"));
+        textEditValidation->setText(QStringLiteral(
+                "Select a field to start creating a condition':"));
     }
 
     QStringView objectNameView(fieldComboBox->objectName());
@@ -761,17 +770,17 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
     conditionsTable[conditionCounter][2] = operatorComboBox->currentText();
     //    qDebug() << "conditionCounter operator: " << conditionCounter;
     auto* valueLineEdit = findChild<QLineEdit*>(
-            QString("lineEditCondition%1Value").arg(conditionCounter));
+            QStringLiteral("lineEditCondition%1Value").arg(conditionCounter));
     auto* valueComboBox = findChild<QComboBox*>(
-            QString("comboBoxCondition%1Value").arg(conditionCounter));
+            QStringLiteral("comboBoxCondition%1Value").arg(conditionCounter));
 
     // date or number regex for 'datetime_added' and 'last_played_at'
     QRegularExpression dateOrNum(
             "0000|(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|[1][0-2])-(0[1-9]|[12][0-"
             "9]|3[01])");
     //    QValidator *checkDateOrNum = new QRegExpValidator(dateOrNum, this);
-    // QRegExp rx("0000|(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|[1][0-2])-(0[1-9]|[12][0-9]|3[01])");
-    //     QValidator* checkDateOrNum = new QRegularExpressionValidator(dateOrNum, this);
+    //    QRegExp rx("0000|(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|[1][0-2])-(0[1-9]|[12][0-9]|3[01])");
+    //    QValidator* checkDateOrNum = new QRegularExpressionValidator(dateOrNum, this);
 
     // Determine which operator options to display based on the selected field
     if (sDebug) {
@@ -791,32 +800,32 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
         textEditValidation->setStyleSheet("font: 10pt");
         if (conditionsTable[conditionCounter][2] == "contains") {
             textEditValidation->setText(
-                    QString("'contains' -> value format: (*abc*) [abc] \n"
-                            "-> With 'contains' you can search for tracks with "
-                            "'%1' containing the 'searchtext' you enter in the "
-                            "inputbox.\n"
-                            "-> The 'searchtext' can consist of multiple "
-                            "words, but the engine will check the exact "
-                            "similarity. \n"
-                            "-> If you want to search for multiple words in "
-                            "different order you need to create multiple "
-                            "conditions. \n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'contains' -> value format: (*abc*) [abc] \n"
+                                   "-> With 'contains' you can search for tracks with "
+                                   "'%1' containing the 'searchtext' you enter in the "
+                                   "inputbox.\n"
+                                   "-> The 'searchtext' can consist of multiple "
+                                   "words, but the engine will check the exact "
+                                   "similarity. \n"
+                                   "-> If you want to search for multiple words in "
+                                   "different order you need to create multiple "
+                                   "conditions. \n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "does not contain") {
             textEditValidation->setText(
-                    QString("'does not contain' -> value format: (*abc*) [abc] "
-                            "\n"
-                            "-> With 'does not contain' you can search for "
-                            "tracks with '%1' NOT containing the 'searchtext' "
-                            "you enter in the inputbox.\n"
-                            "-> The 'searchtext' can consist of multiple "
-                            "words, but the engine will check the exact "
-                            "similarity. \n"
-                            "-> If you want to search for multiple words in "
-                            "different order you need to create multiple "
-                            "conditions. \n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'does not contain' -> value format: (*abc*) [abc] "
+                                   "\n"
+                                   "-> With 'does not contain' you can search for "
+                                   "tracks with '%1' NOT containing the 'searchtext' "
+                                   "you enter in the inputbox.\n"
+                                   "-> The 'searchtext' can consist of multiple "
+                                   "words, but the engine will check the exact "
+                                   "similarity. \n"
+                                   "-> If you want to search for multiple words in "
+                                   "different order you need to create multiple "
+                                   "conditions. \n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "equal to") {
             textEditValidation->setText(
@@ -831,63 +840,63 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "not equal to") {
             textEditValidation->setText(
-                    QString("'not equal to' -> value format: (*abc*) [abc] \n"
-                            "-> With 'not equal to' you can search for tracks "
-                            "with '%1' is different from the exact'searchtext' "
-                            "you enter in the inputbox.\n"
-                            "-> The 'searchtext' can consist of multiple "
-                            "words, but the engine will check the exact "
-                            "similarity, no more or less.\n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'not equal to' -> value format: (*abc*) [abc] \n"
+                                   "-> With 'not equal to' you can search for tracks "
+                                   "with '%1' is different from the exact'searchtext' "
+                                   "you enter in the inputbox.\n"
+                                   "-> The 'searchtext' can consist of multiple "
+                                   "words, but the engine will check the exact "
+                                   "similarity, no more or less.\n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "starts with") {
             textEditValidation->setText(
-                    QString("'starts with' -> value format: (abc*) [abc] \n"
-                            "-> With 'starts with' you can search for tracks "
-                            "with '%1' starting with the 'searchtext' you "
-                            "enter in the inputbox.\n"
-                            "-> The 'searchtext' can consist of multiple "
-                            "words, but the engine will check the exact "
-                            "similarity.\n"
-                            "-> If you want to search for multiple words in "
-                            "different order you need to create multiple "
-                            "conditions. \n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'starts with' -> value format: (abc*) [abc] \n"
+                                   "-> With 'starts with' you can search for tracks "
+                                   "with '%1' starting with the 'searchtext' you "
+                                   "enter in the inputbox.\n"
+                                   "-> The 'searchtext' can consist of multiple "
+                                   "words, but the engine will check the exact "
+                                   "similarity.\n"
+                                   "-> If you want to search for multiple words in "
+                                   "different order you need to create multiple "
+                                   "conditions. \n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "ends with") {
             textEditValidation->setText(
-                    QString("'ends with' -> value format: (*abc) [abc] \n"
-                            "-> With 'ends with' you can search for tracks "
-                            "with '%1' ending with the 'searchtext' you enter "
-                            "in the inputbox.\n"
-                            "-> The 'searchtext' can consist of multiple "
-                            "words, but the engine will check the exact "
-                            "similarity.\n"
-                            "-> If you want to search for multiple words in "
-                            "different order you need to create multiple "
-                            "conditions. \n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'ends with' -> value format: (*abc) [abc] \n"
+                                   "-> With 'ends with' you can search for tracks "
+                                   "with '%1' ending with the 'searchtext' you enter "
+                                   "in the inputbox.\n"
+                                   "-> The 'searchtext' can consist of multiple "
+                                   "words, but the engine will check the exact "
+                                   "similarity.\n"
+                                   "-> If you want to search for multiple words in "
+                                   "different order you need to create multiple "
+                                   "conditions. \n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "is empty") {
             valueLineEdit->setVisible(false);
             valueLineEdit->setText("is empty");
             textEditValidation->setText(
-                    QString("'is empty' -> value format: "
-                            " [] \n"
-                            "-> With 'is empty' you can search for tracks that "
-                            "have an 'Null' value in '%1' in the database.\n"
-                            "-> You must not enter a 'searchtext', leave the "
-                            "inputbox empty.\n"));
+                    QStringLiteral("'is empty' -> value format: "
+                                   " [] \n"
+                                   "-> With 'is empty' you can search for tracks that "
+                                   "have an 'Null' value in '%1' in the database.\n"
+                                   "-> You must not enter a 'searchtext', leave the "
+                                   "inputbox empty.\n"));
         } else if (conditionsTable[conditionCounter][2] == "is not empty") {
             valueLineEdit->setVisible(false);
             valueLineEdit->setText("is not empty");
-            textEditValidation->setText(QString(
-                    "'is not empty' -> value format: "
-                    " [] \n"
-                    "-> With 'is not empty' you can search for tracks that "
-                    "don't have an 'Null' value in '%1' in the database.\n"
-                    "-> You must not enter a 'searchtext', leave the inputbox "
-                    "empty.\n"));
+            textEditValidation->setText(
+                    QStringLiteral("'is not empty' -> value format: "
+                                   " [] \n"
+                                   "-> With 'is not empty' you can search for tracks that "
+                                   "don't have an 'Null' value in '%1' in the database.\n"
+                                   "-> You must not enter a 'searchtext', leave the inputbox "
+                                   "empty.\n"));
         }
     } else if (conditionsTable[conditionCounter][1] == "year") {
         valueLineEdit->setVisible(true);
@@ -897,51 +906,51 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
         if (conditionsTable[conditionCounter][2] == "equal to") {
             valueLineEdit->setInputMask("9999"); // Year: 4-digit format
             textEditValidation->setText(
-                    QString("'equal to' -> value format: (Year) [YYYY] \n"
-                            "-> With 'equal to' you can search for tracks with "
-                            "'%1' exactly equal to the 'searchyear' you enter "
-                            "in the inputbox.\n"
-                            "-> The entered year will not be included in the "
-                            "results.\n"
-                            "-> Only enter the searchyear in the YYYY format "
-                            "(no wildcards)")
+                    QStringLiteral("'equal to' -> value format: (Year) [YYYY] \n"
+                                   "-> With 'equal to' you can search for tracks with "
+                                   "'%1' exactly equal to the 'searchyear' you enter "
+                                   "in the inputbox.\n"
+                                   "-> The entered year will not be included in the "
+                                   "results.\n"
+                                   "-> Only enter the searchyear in the YYYY format "
+                                   "(no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "before") {
             valueLineEdit->setInputMask("9999"); // Year: 4-digit format
             textEditValidation->setText(
-                    QString("'before' -> value format: (Year) [YYYY] \n"
-                            "-> With 'before' you can search for tracks with "
-                            "'%1' is before the 'searchyear' you enter in the "
-                            "inputbox.\n"
-                            "-> The entered year will not be included in the "
-                            "results.\n"
-                            "-> Only enter the searchyear in the YYYY format "
-                            "(no wildcards)")
+                    QStringLiteral("'before' -> value format: (Year) [YYYY] \n"
+                                   "-> With 'before' you can search for tracks with "
+                                   "'%1' is before the 'searchyear' you enter in the "
+                                   "inputbox.\n"
+                                   "-> The entered year will not be included in the "
+                                   "results.\n"
+                                   "-> Only enter the searchyear in the YYYY format "
+                                   "(no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "after") {
             valueLineEdit->setInputMask("9999"); // Year: 4-digit format
             textEditValidation->setText(
-                    QString("'after' -> value format: (Year) [YYYY] \n"
-                            "-> With 'after' you can search for tracks with "
-                            "'%1' is after the 'searchyear' you enter in the "
-                            "inputbox.\n"
-                            "-> The entered year will not be included in the "
-                            "results.\n"
-                            "-> Only enter the 'searchyear' in the YYYY format "
-                            "(no wildcards)")
+                    QStringLiteral("'after' -> value format: (Year) [YYYY] \n"
+                                   "-> With 'after' you can search for tracks with "
+                                   "'%1' is after the 'searchyear' you enter in the "
+                                   "inputbox.\n"
+                                   "-> The entered year will not be included in the "
+                                   "results.\n"
+                                   "-> Only enter the 'searchyear' in the YYYY format "
+                                   "(no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "between") {
             valueLineEdit->setInputMask("9999|9999"); // Year: 4-digit format
             valueLineEdit->setPlaceholderText("e.g. 2016|2022");
             textEditValidation->setText(
-                    QString("'between' -> value format: (Year) [YYYY|YYYY] \n"
-                            "-> With 'between' you can search for tracks with "
-                            "'%1' is between the both 'searchyears' you enter "
-                            "in the inputbox.\n"
-                            "-> The entered years will not be included in the "
-                            "results.\n"
-                            "-> Only enter the 'searchyears' in the YYYY "
-                            "format (no wildcards) divided by the | symbol")
+                    QStringLiteral("'between' -> value format: (Year) [YYYY|YYYY] \n"
+                                   "-> With 'between' you can search for tracks with "
+                                   "'%1' is between the both 'searchyears' you enter "
+                                   "in the inputbox.\n"
+                                   "-> The entered years will not be included in the "
+                                   "results.\n"
+                                   "-> Only enter the 'searchyears' in the YYYY "
+                                   "format (no wildcards) divided by the | symbol")
                             .arg(conditionsTable[conditionCounter][1]));
         }
     } else if (conditionsTable[conditionCounter][1] == "datetime_added" ||
@@ -956,82 +965,82 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
             //            valueLineEdit->setInputMask("9999-99-99"); // Date: YYYY-MM-DD format
             valueLineEdit->setValidator(new QRegularExpressionValidator(dateOrNum, this));
             textEditValidation->setText(
-                    QString("'equal to' -> value format: (date) [YYYY-MM-DD] "
-                            "or (number) [X] \n"
-                            "-> With 'equal to' you can search for tracks with "
-                            "'%1' equal to the exact date you enter in the "
-                            "inputbox or \n"
-                            "-> you can enter a number representing a number "
-                            "of days.\n"
-                            "-> That number will be subtracted from todays' "
-                            "date to define the date to compare with.\n"
-                            "-> The entered 'date' must be in the exact "
-                            "format: 'year: 4 digits - month: 2 digits - day: "
-                            "2 digits 'YYYY-MM-DD'\n"
-                            "-> or a number like 1 or 4785.\n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'equal to' -> value format: (date) [YYYY-MM-DD] "
+                                   "or (number) [X] \n"
+                                   "-> With 'equal to' you can search for tracks with "
+                                   "'%1' equal to the exact date you enter in the "
+                                   "inputbox or \n"
+                                   "-> you can enter a number representing a number "
+                                   "of days.\n"
+                                   "-> That number will be subtracted from todays' "
+                                   "date to define the date to compare with.\n"
+                                   "-> The entered 'date' must be in the exact "
+                                   "format: 'year: 4 digits - month: 2 digits - day: "
+                                   "2 digits 'YYYY-MM-DD'\n"
+                                   "-> or a number like 1 or 4785.\n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "before") {
             valueLineEdit->setPlaceholderText("e.g. 2016-02-21 or number X");
             //            valueLineEdit->setInputMask("9999-99-99"); // Date: YYYY-MM-DD format
             valueLineEdit->setValidator(new QRegularExpressionValidator(dateOrNum, this));
             textEditValidation->setText(
-                    QString("'before' -> value format: (date) [YYYY-MM-DD] or "
-                            "(number) [X] \n"
-                            "-> With 'before' you can search for tracks with "
-                            "'%1' before the exact date you enter in the "
-                            "inputbox or \n"
-                            "-> you can enter a number representing a number "
-                            "of days.\n"
-                            "-> That number will be subtracted from todays' "
-                            "date to define the date to compare with.\n"
-                            "-> The entered 'date' must be in the exact "
-                            "format: 'year: 4 digits - month: 2 digits - day: "
-                            "2 digits 'YYYY-MM-DD'\n"
-                            "-> or a number like 1 or 4785.\n"
-                            "-> The entered date or the calculated date "
-                            "(number of days subtracted from todays date) will "
-                            "not be included in the results.\n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'before' -> value format: (date) [YYYY-MM-DD] or "
+                                   "(number) [X] \n"
+                                   "-> With 'before' you can search for tracks with "
+                                   "'%1' before the exact date you enter in the "
+                                   "inputbox or \n"
+                                   "-> you can enter a number representing a number "
+                                   "of days.\n"
+                                   "-> That number will be subtracted from todays' "
+                                   "date to define the date to compare with.\n"
+                                   "-> The entered 'date' must be in the exact "
+                                   "format: 'year: 4 digits - month: 2 digits - day: "
+                                   "2 digits 'YYYY-MM-DD'\n"
+                                   "-> or a number like 1 or 4785.\n"
+                                   "-> The entered date or the calculated date "
+                                   "(number of days subtracted from todays date) will "
+                                   "not be included in the results.\n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "after") {
             valueLineEdit->setPlaceholderText("e.g. 2016-02-21 or number X");
             //            valueLineEdit->setInputMask("9999-99-99"); // Date: YYYY-MM-DD format
             valueLineEdit->setValidator(new QRegularExpressionValidator(dateOrNum, this));
             textEditValidation->setText(
-                    QString("'after' -> value format: (date) [YYYY-MM-DD] or "
-                            "(number) [X] \n"
-                            "-> With 'after' you can search for tracks with "
-                            "'%1' after the exact date you enter in the "
-                            "inputbox or \n"
-                            "-> you can enter a number representing a number "
-                            "of days.\n"
-                            "-> That number will be subtracted from todays' "
-                            "date to define the date to compare with.\n"
-                            "-> The entered 'date' must be in the exact "
-                            "format: 'year: 4 digits - month: 2 digits - day: "
-                            "2 digits 'YYYY-MM-DD'\n"
-                            "-> or a number like 1 or 4785.\n"
-                            "-> The entered date or the calculated date "
-                            "(number of days subtracted from todays date) will "
-                            "not be included in the results.\n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'after' -> value format: (date) [YYYY-MM-DD] or "
+                                   "(number) [X] \n"
+                                   "-> With 'after' you can search for tracks with "
+                                   "'%1' after the exact date you enter in the "
+                                   "inputbox or \n"
+                                   "-> you can enter a number representing a number "
+                                   "of days.\n"
+                                   "-> That number will be subtracted from todays' "
+                                   "date to define the date to compare with.\n"
+                                   "-> The entered 'date' must be in the exact "
+                                   "format: 'year: 4 digits - month: 2 digits - day: "
+                                   "2 digits 'YYYY-MM-DD'\n"
+                                   "-> or a number like 1 or 4785.\n"
+                                   "-> The entered date or the calculated date "
+                                   "(number of days subtracted from todays date) will "
+                                   "not be included in the results.\n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "last") {
             valueLineEdit->setPlaceholderText("e.g. number X");
             //            valueLineEdit->setInputMask("9999-99-99"); // Date: YYYY-MM-DD format
             textEditValidation->setText(
-                    QString("'last' -> value format: (number) [X] \n"
-                            "-> With 'last' you can search for tracks with "
-                            "'%1' in the last X days you enter in the inputbox or \n"
-                            "-> you can enter a number representing a number "
-                            "of days.\n"
-                            "-> That number will be subtracted from todays' "
-                            "date to define the date to compare with.\n"
-                            "-> The entered 'number' must be like 1 or 4785.\n"
-                            "-> The calculated date (number of days subtracted "
-                            "from todays date) will be included in the results.\n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'last' -> value format: (number) [X] \n"
+                                   "-> With 'last' you can search for tracks with "
+                                   "'%1' in the last X days you enter in the inputbox or \n"
+                                   "-> you can enter a number representing a number "
+                                   "of days.\n"
+                                   "-> That number will be subtracted from todays' "
+                                   "date to define the date to compare with.\n"
+                                   "-> The entered 'number' must be like 1 or 4785.\n"
+                                   "-> The calculated date (number of days subtracted "
+                                   "from todays date) will be included in the results.\n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         } else if (conditionsTable[conditionCounter][2] == "between") {
             valueLineEdit->setPlaceholderText("e.g. 2016-02-21|2022-02-22 or number X|Y : 200|50");
@@ -1040,24 +1049,24 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
             //            valueLineEdit->setInputMask("9999-99-99|9999-99-99");
             //            // Date: YYYY-MM-DD format
             textEditValidation->setText(
-                    QString("'between' -> value format: (date) "
-                            "[YYYY-MM-DD|YYYY-MM-DD] or (Number) [X|Y] \n"
-                            "-> With 'between' you can search for tracks with "
-                            "'%1' between both searchdates you enter in the "
-                            "inputbox or \n"
-                            "-> you can enter numbers representing numbers of "
-                            "days.\n"
-                            "-> Those numbers will be subtracted from todays' "
-                            "date to define the dates to compare with.\n"
-                            "-> The entered 'dates' must be in the exact "
-                            "format: 'year: 4 digits - month: 2 digits - day: "
-                            "2 digits 'YYYY-MM-DD'\n"
-                            "-> or numbers like 1 or 4785 divided by the | "
-                            "symbol.\n"
-                            "-> The entered date or the calculated date "
-                            "(number of days subtracted from todays date) will "
-                            "not be included in the results.\n"
-                            "-> Only enter the 'searchtext' (no wildcards)")
+                    QStringLiteral("'between' -> value format: (date) "
+                                   "[YYYY-MM-DD|YYYY-MM-DD] or (Number) [X|Y] \n"
+                                   "-> With 'between' you can search for tracks with "
+                                   "'%1' between both searchdates you enter in the "
+                                   "inputbox or \n"
+                                   "-> you can enter numbers representing numbers of "
+                                   "days.\n"
+                                   "-> Those numbers will be subtracted from todays' "
+                                   "date to define the dates to compare with.\n"
+                                   "-> The entered 'dates' must be in the exact "
+                                   "format: 'year: 4 digits - month: 2 digits - day: "
+                                   "2 digits 'YYYY-MM-DD'\n"
+                                   "-> or numbers like 1 or 4785 divided by the | "
+                                   "symbol.\n"
+                                   "-> The entered date or the calculated date "
+                                   "(number of days subtracted from todays date) will "
+                                   "not be included in the results.\n"
+                                   "-> Only enter the 'searchtext' (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
         }
     } else if (numberFieldOptions.contains(
@@ -1067,49 +1076,49 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
         valueLineEdit->clearMask();
         if (conditionsTable[conditionCounter][2] == "equal to") {
             textEditValidation->setText(
-                    QString("'equal to' -> value format: (Number) [X] \n"
-                            "-> With 'equal to' you can search for tracks with "
-                            "'%1' equal to the exact number you enter in the "
-                            "inputbox.\n"
-                            "-> Only enter the number (no wildcards)")
+                    QStringLiteral("'equal to' -> value format: (Number) [X] \n"
+                                   "-> With 'equal to' you can search for tracks with "
+                                   "'%1' equal to the exact number you enter in the "
+                                   "inputbox.\n"
+                                   "-> Only enter the number (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
             valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
         } else if (conditionsTable[conditionCounter][2] == "less than") {
             textEditValidation->setText(
-                    QString("'less than' -> value format: (Number) [X] \n"
-                            "-> With 'less than' you can search for tracks "
-                            "with '%1' less than the exact number you enter in "
-                            "the inputbox.\n"
-                            "-> The entered number will not be included in the "
-                            "results.\n"
-                            "-> Only enter the number (no wildcards)")
+                    QStringLiteral("'less than' -> value format: (Number) [X] \n"
+                                   "-> With 'less than' you can search for tracks "
+                                   "with '%1' less than the exact number you enter in "
+                                   "the inputbox.\n"
+                                   "-> The entered number will not be included in the "
+                                   "results.\n"
+                                   "-> Only enter the number (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
             valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
         } else if (conditionsTable[conditionCounter][2] == "greater than") {
             textEditValidation->setText(
-                    QString("'greater than' -> value format: (Number) [X] \n"
-                            "-> With 'greater than' you can search for tracks "
-                            "with '%1' greater than the exact number you enter "
-                            "in the inputbox.\n"
-                            "-> The entered number will not be included in the "
-                            "results.\n"
-                            "-> Only enter the number (no wildcards)")
+                    QStringLiteral("'greater than' -> value format: (Number) [X] \n"
+                                   "-> With 'greater than' you can search for tracks "
+                                   "with '%1' greater than the exact number you enter "
+                                   "in the inputbox.\n"
+                                   "-> The entered number will not be included in the "
+                                   "results.\n"
+                                   "-> Only enter the number (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
             valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
         } else if (conditionsTable[conditionCounter][2] == "between") {
             textEditValidation->setText(
-                    QString("'between' -> value format: (Number) [X|Y] \n"
-                            "-> With 'between' you can search for tracks with "
-                            "'%1' between both searchnumbers you enter in the "
-                            "inputbox.\n"
-                            "-> The numbers can be entered like 1 or 4785 "
-                            "divided by the | symbol.\n"
-                            "-> The entered numbers will not be included in "
-                            "the results.\n"
-                            "-> Only enter the numbers (no wildcards)")
+                    QStringLiteral("'between' -> value format: (Number) [X|Y] \n"
+                                   "-> With 'between' you can search for tracks with "
+                                   "'%1' between both searchnumbers you enter in the "
+                                   "inputbox.\n"
+                                   "-> The numbers can be entered like 1 or 4785 "
+                                   "divided by the | symbol.\n"
+                                   "-> The entered numbers will not be included in "
+                                   "the results.\n"
+                                   "-> Only enter the numbers (no wildcards)")
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200|50 (X|Y = integer)");
         }
@@ -1119,19 +1128,19 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
         valueComboBox->setVisible(true);
         if (conditionsTable[conditionCounter][2] == "is") {
             textEditValidation->setText(
-                    QString("'is' -> select the %1 in the dropdown. \n"
-                            "-> With 'is' you can search for tracks that are "
-                            "member of the selected %1 you select in the "
-                            "dropdown.\n")
+                    QStringLiteral("'is' -> select the %1 in the dropdown. \n"
+                                   "-> With 'is' you can search for tracks that are "
+                                   "member of the selected %1 you select in the "
+                                   "dropdown.\n")
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
             valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
         } else if (conditionsTable[conditionCounter][2] == "is not") {
             textEditValidation->setText(
-                    QString("'is not' -> select the %1 in the dropdown. \n"
-                            "-> With 'is not' you can search for tracks that "
-                            "are NO member of the selected %1 you select in "
-                            "the dropdown.\n")
+                    QStringLiteral("'is not' -> select the %1 in the dropdown. \n"
+                                   "-> With 'is not' you can search for tracks that "
+                                   "are NO member of the selected %1 you select in "
+                                   "the dropdown.\n")
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
             valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
@@ -1207,7 +1216,7 @@ void dlgSmartiesInfo::onValueComboBoxChanged() {
                                    .replace("Value", "")
                                    .toInt();
     auto* valueLineEdit = findChild<QLineEdit*>(
-            QString("lineEditCondition%1Value").arg(conditionCounter));
+            QStringLiteral("lineEditCondition%1Value").arg(conditionCounter));
     conditionsTable[conditionCounter][3] = valueComboBox->currentText();
     if (sDebug) {
         qDebug() << "[onValueComboBoxChanged] valueComboBox " << valueComboBox->currentText();
@@ -1219,22 +1228,25 @@ void dlgSmartiesInfo::onValueComboBoxChanged() {
 void dlgSmartiesInfo::storeUIIn2Table() {
     headerTable[0] = lineEditID->text();
     headerTable[1] = lineEditName->text();
-    headerTable[2] = QString("%1").arg(spinBoxCount->value());
-    headerTable[3] = QString("%1").arg(checkBoxShow->isChecked());
-    headerTable[4] = QString("%1").arg(buttonLock->text() == "Unlock");
-    headerTable[5] = QString("%1").arg(checkBoxAutoDJ->isChecked());
+    headerTable[2] = QStringLiteral("%1").arg(spinBoxCount->value());
+    headerTable[3] = QStringLiteral("%1").arg(checkBoxShow->isChecked());
+    headerTable[4] = QStringLiteral("%1").arg(buttonLock->text() == "Unlock");
+    headerTable[5] = QStringLiteral("%1").arg(checkBoxAutoDJ->isChecked());
     headerTable[6] = lineEditSearchInput->text();
     headerTable[7] = lineEditSearchSQL->text();
 
     for (int i = 1; i <= 12; ++i) {
         // check if condition is valid
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        auto* fieldComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Field").arg(i));
         auto* operatorComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Operator").arg(i));
-        auto* valueLineEdit = findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
-        auto* valueComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
+                QStringLiteral("comboBoxCondition%1Operator").arg(i));
+        auto* valueLineEdit = findChild<QLineEdit*>(
+                QStringLiteral("lineEditCondition%1Value").arg(i));
+        auto* valueComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Value").arg(i));
         auto* combinerComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Combiner").arg(i));
+                QStringLiteral("comboBoxCondition%1Combiner").arg(i));
         //        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> Condition: " << i << "----";
         if (fieldComboBox) {
             conditionsTable[i][1] = fieldComboBox->currentText();
@@ -1302,7 +1314,7 @@ void dlgSmartiesInfo::storeUIIn2Table() {
 // validatity check
 bool dlgSmartiesInfo::validationCheck() {
     storeUIIn2Table();
-    textEditValidation->setText(QString(""));
+    textEditValidation->setText(QStringLiteral(""));
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",
@@ -1353,7 +1365,7 @@ bool dlgSmartiesInfo::validationCheck() {
     //    bool operatorValueChecked = false;
     //    bool checkOperatorMatchesValue = true;
     //    bool checkMatchBetweenOperatorAndValue = false;
-    labelValidation->setText(QString("Validation:"));
+    labelValidation->setText(QStringLiteral("Validation:"));
 
     for (int i = 12; i >= 1; --i) {
         // check if condition is valid
@@ -1383,9 +1395,9 @@ bool dlgSmartiesInfo::validationCheck() {
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                     textEditValidation->setText(
-                            QString("Your conditions contain errors: the "
-                                    "chosen field and operator don't match in "
-                                    "condition %1 \n. Smarties is NOT saved.")
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen field and operator don't match in "
+                                           "condition %1 \n. Smarties is NOT saved.")
                                     .arg(i));
                 }
             } else if (dateFieldOptions.contains(conditionsTable[i][1])) {
@@ -1399,9 +1411,9 @@ bool dlgSmartiesInfo::validationCheck() {
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                     textEditValidation->setText(
-                            QString("Your conditions contain errors: the "
-                                    "chosen field and operator don't match in "
-                                    "condition %1 \n. Smarties is NOT saved.")
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen field and operator don't match in "
+                                           "condition %1 \n. Smarties is NOT saved.")
                                     .arg(i));
                 }
             } else if (numberFieldOptions.contains(conditionsTable[i][1])) {
@@ -1415,9 +1427,9 @@ bool dlgSmartiesInfo::validationCheck() {
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                     textEditValidation->setText(
-                            QString("Your conditions contain errors: the "
-                                    "chosen field and operator don't match in "
-                                    "condition %1 \n. Smarties is NOT saved.")
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen field and operator don't match in "
+                                           "condition %1 \n. Smarties is NOT saved.")
                                     .arg(i));
                 }
             } else if (playlistCrateFieldOptions.contains(conditionsTable[i][1])) {
@@ -1431,9 +1443,9 @@ bool dlgSmartiesInfo::validationCheck() {
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                     textEditValidation->setText(
-                            QString("Your conditions contain errors: the "
-                                    "chosen field and operator don't match in "
-                                    "condition %1 \n. Smarties is NOT saved.")
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen field and operator don't match in "
+                                           "condition %1 \n. Smarties is NOT saved.")
                                     .arg(i));
                 }
             }
@@ -1447,13 +1459,13 @@ bool dlgSmartiesInfo::validationCheck() {
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                     textEditValidation->setText(
-                            QString("Your conditions contain errors: the "
-                                    "chosen operator and input don't match in "
-                                    "condition %1 \n."
-                                    "When you use the 'between'-operator, "
-                                    "the input values need to be separated by a '|'. \n"
-                                    "e.g. 2|107 \n"
-                                    "Smarties is NOT saved.")
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen operator and input don't match in "
+                                           "condition %1 \n."
+                                           "When you use the 'between'-operator, "
+                                           "the input values need to be separated by a '|'. \n"
+                                           "e.g. 2|107 \n"
+                                           "Smarties is NOT saved.")
                                     .arg(i));
                     checkFieldMatchesOperator = false;
                     // checkOperatorMatchesValue = false;
@@ -1469,14 +1481,14 @@ bool dlgSmartiesInfo::validationCheck() {
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                     textEditValidation->setText(
-                            QString("Your conditions contain errors: the "
-                                    "chosen operator and input don't match in "
-                                    "condition %1.\n"
-                                    "When you use the 'between'-operator, "
-                                    "the input values need to be numbers or "
-                                    "dates separated by a '|'. \n"
-                                    "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
-                                    "Smarties is NOT saved.")
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen operator and input don't match in "
+                                           "condition %1.\n"
+                                           "When you use the 'between'-operator, "
+                                           "the input values need to be numbers or "
+                                           "dates separated by a '|'. \n"
+                                           "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
+                                           "Smarties is NOT saved.")
                                     .arg(i));
                     checkFieldMatchesOperator = false;
                     // checkOperatorMatchesValue = false;
@@ -1524,7 +1536,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                              << i << "dates are not valid.";
                                 }
                                 textEditValidation->setStyleSheet("color: rgb(255,0,0)");
-                                textEditValidation->setText(QString(
+                                textEditValidation->setText(QStringLiteral(
                                         "Your conditions contain errors: the "
                                         "chosen operator and input don't match "
                                         "in condition %1.\n"
@@ -1552,7 +1564,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                             "format.";
                             }
                             textEditValidation->setStyleSheet("color: rgb(255,0,0)");
-                            textEditValidation->setText(QString(
+                            textEditValidation->setText(QStringLiteral(
                                     "Your conditions contain errors: the "
                                     "chosen operator and input don't match in "
                                     "condition %1.\n"
@@ -1583,7 +1595,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                             "'between'-condition.";
                             }
                             textEditValidation->setStyleSheet("color: rgb(255,0,0)");
-                            textEditValidation->setText(QString(
+                            textEditValidation->setText(QStringLiteral(
                                     "Your conditions contain errors: the "
                                     "chosen operator and input don't match in "
                                     "condition %1.\n  "
@@ -1610,7 +1622,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                             "'between'-condition.";
                             }
                             textEditValidation->setStyleSheet("color: rgb(255,0,0)");
-                            textEditValidation->setText(QString(
+                            textEditValidation->setText(QStringLiteral(
                                     "Your conditions contain errors: the "
                                     "chosen operator and input don't match in "
                                     "condition %1. \n"
@@ -1646,31 +1658,42 @@ bool dlgSmartiesInfo::validationCheck() {
             endCounter = endCounter + 1;
         }
     }
+
+    // no conditions created -> std conditions
+    if (conditionsTable[1][1] == "") {
+        endPlacedCorrect = true;
+    }
+
     // if end-combiner is in last condition
     if (endPlacedCorrect) {
         // check end-combiner occurrences
         if (endCounter < 1) {
-            textEditValidation->setStyleSheet("color: rgb(255,0,0)");
-            textEditValidation->setText(QString(
-                    "Your conditions contain errors: You didn't place an ') "
-                    "END' in the last combiner. Smarties is NOT saved."));
-            // return false;
-            conditionsAreValid = false;
+            if ((conditionsTable[1][1] != "")) {
+                textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                textEditValidation->setText(QStringLiteral(
+                        "Your conditions contain errors: You didn't place an ') "
+                        "END' in the last combiner. Smarties is NOT saved."));
+                // return false;
+                conditionsAreValid = false;
+            } else {
+                // no conditions created -> std conditions
+                checkMatchBetweenFieldAndOperator = true;
+            }
         } else if (endCounter == 1) {
             checkMatchBetweenFieldAndOperator = true;
         } else if (endCounter > 1) {
             textEditValidation->setStyleSheet("color: rgb(255,0,0)");
             textEditValidation->setText(
-                    QString("Your conditions contain errors: ') END' can only "
-                            "be used at the end of your conditions, you have "
-                            "%1 occurrences. Smarties is NOT saved.")
+                    QStringLiteral("Your conditions contain errors: ') END' can only "
+                                   "be used at the end of your conditions, you have "
+                                   "%1 occurrences. Smarties is NOT saved.")
                             .arg(endCounter));
             // return false;
             conditionsAreValid = false;
         }
     } else {
         textEditValidation->setStyleSheet("color: rgb(255,0,0)");
-        textEditValidation->setText(QString(
+        textEditValidation->setText(QStringLiteral(
                 "Your conditions contain errors: You didn't place an ') END' "
                 "in the last combiner. Smarties is NOT saved."));
         // return false;
@@ -1708,7 +1731,7 @@ bool dlgSmartiesInfo::validationCheck() {
             textEditValidation->setStyleSheet("color: rgb(155,0,0)");
             //            textEditValidation->setStyleSheet("textcolor: rgb(255,255,255)");
             textEditValidation->setStyleSheet("background-color: rgb(0,155,0)");
-            textEditValidation->setText(QString(
+            textEditValidation->setText(QStringLiteral(
                     "Your conditions are valid, the smarties will be saved"));
             // return true;
             conditionsAreValid = true;
@@ -1761,7 +1784,7 @@ QVariantList dlgSmartiesInfo::collectUIChanges() const {
 }
 
 void dlgSmartiesInfo::onApplyButtonClicked() {
-    textEditValidation->setText(QString(" "));
+    textEditValidation->setText(QStringLiteral(" "));
     if (sDebug) {
         qDebug() << "[SMARTIES] [EDIT DLG] --> Apply button clicked!";
     }
@@ -1781,7 +1804,7 @@ void dlgSmartiesInfo::onApplyButtonClicked() {
         textEditValidation->setStyleSheet("color: rgb(155,0,0)");
         //            textEditValidation->setStyleSheet("textcolor: rgb(255,255,255)");
         textEditValidation->setStyleSheet("background-color: rgb(0,155,0)");
-        textEditValidation->setText(QString("Validation check OK, The smarties is saved"));
+        textEditValidation->setText(QStringLiteral("Validation check OK, The smarties is saved"));
         headerTable[7] = buildWhereClause();
         populateUI();
         //    accept();
@@ -1914,17 +1937,23 @@ void dlgSmartiesInfo::updateConditionState() {
     bool enableNextField = true;
 
     for (int i = 1; i <= 12; ++i) {
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        auto* fieldComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Field").arg(i));
         auto* operatorComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Operator").arg(i));
-        auto* valueLineEdit = findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
-        auto* valueComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
+                QStringLiteral("comboBoxCondition%1Operator").arg(i));
+        auto* valueLineEdit = findChild<QLineEdit*>(
+                QStringLiteral("lineEditCondition%1Value").arg(i));
+        auto* valueComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Value").arg(i));
         auto* combinerComboBox = findChild<QComboBox*>(
-                QString("comboBoxCondition%1Combiner").arg(i));
-        auto* insertButton = findChild<QPushButton*>(QString("buttoncondition%1_insert").arg(i));
-        auto* moveUpButton = findChild<QPushButton*>(QString("buttoncondition%1_up").arg(i));
-        auto* moveDownButton = findChild<QPushButton*>(QString("buttoncondition%1_down").arg(i));
-        auto* deleteButton = findChild<QPushButton*>(QString("buttoncondition%1_delete").arg(i));
+                QStringLiteral("comboBoxCondition%1Combiner").arg(i));
+        auto* insertButton = findChild<QPushButton*>(
+                QStringLiteral("buttoncondition%1_insert").arg(i));
+        auto* moveUpButton = findChild<QPushButton*>(QStringLiteral("buttoncondition%1_up").arg(i));
+        auto* moveDownButton = findChild<QPushButton*>(
+                QStringLiteral("buttoncondition%1_down").arg(i));
+        auto* deleteButton = findChild<QPushButton*>(
+                QStringLiteral("buttoncondition%1_delete").arg(i));
 
         // enable next field only if previous is selected -> narrowing operator
         // + check to have everything filled in
@@ -1968,7 +1997,7 @@ void dlgSmartiesInfo::updateConditionState() {
             // enable condition insert / delete / move up / move down
             // if no conditions (field 1 empty), no condition can be deleted,
             // check if #1 has selected field
-            auto* fieldComboBox1 = findChild<QComboBox*>(QString("comboBoxCondition1Field"));
+            auto* fieldComboBox1 = findChild<QComboBox*>(QStringLiteral("comboBoxCondition1Field"));
             if (fieldComboBox1->currentText().isEmpty()) {
                 deleteButton->setEnabled(false);
             } else {
@@ -1976,7 +2005,8 @@ void dlgSmartiesInfo::updateConditionState() {
             }
             // if already 12 conditions, no extra condition can be inserted,
             // check if #12 has selected field
-            auto* fieldComboBox12 = findChild<QComboBox*>(QString("comboBoxCondition12Field"));
+            auto* fieldComboBox12 = findChild<QComboBox*>(
+                    QStringLiteral("comboBoxCondition12Field"));
             if (fieldComboBox12->currentText().isEmpty()) {
                 insertButton->setEnabled(fieldSelected && operatorSelected && combinerSelected);
             } else {
@@ -1994,16 +2024,18 @@ void dlgSmartiesInfo::updateConditionState() {
             qDebug() << "[SMARTIES] [EDIT DLG] --> updateConditionState "
                         "enable/disable insert/delete/move up/move down";
         }
-        auto* fieldComboBox = findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
+        auto* fieldComboBox = findChild<QComboBox*>(
+                QStringLiteral("comboBoxCondition%1Field").arg(i));
 
         if (fieldComboBox->currentText().isEmpty()) {
             auto* insertButton = findChild<QPushButton*>(
-                    QString("buttoncondition%1_insert").arg(i));
-            auto* moveUpButton = findChild<QPushButton*>(QString("buttoncondition%1_up").arg(i));
+                    QStringLiteral("buttoncondition%1_insert").arg(i));
+            auto* moveUpButton = findChild<QPushButton*>(
+                    QStringLiteral("buttoncondition%1_up").arg(i));
             auto* moveDownButton = findChild<QPushButton*>(
-                    QString("buttoncondition%1_down").arg(i));
+                    QStringLiteral("buttoncondition%1_down").arg(i));
             auto* deleteButton = findChild<QPushButton*>(
-                    QString("buttoncondition%1_delete").arg(i));
+                    QStringLiteral("buttoncondition%1_delete").arg(i));
 
             insertButton->setEnabled(false);
             moveUpButton->setEnabled(false);
@@ -2179,37 +2211,46 @@ QString dlgSmartiesInfo::buildWhereClause() {
         const QString& field = conditionsTable[i][1];
         const QString& op = conditionsTable[i][2];
         const QString& value = conditionsTable[i][3];
-        QString combiner = conditionsTable[i][4];
+        //        QString combiner = conditionsTable[i][4];
 
         //  begin build condition
         //  function moved to smartiesfunctions.h to share it with dlgsmartiesinfo to create preview
-        QString condition = buildCondition(field, op, value);
+        const QString& condition = buildCondition(field, op, value);
 
         //  end build condition
         if (condition != "") {
             hasConditions = true;
             whereClause += condition;
             // Add combiner if not the last condition
-            if (i < 12 && combinerOptions.contains(combiner)) {
-                whereClause += " " + combiner.replace(") END", "") +
-                        " "; // Adding spaces around the combiner
+            //            if (i < 12 && combinerOptions.contains(combiner)) {
+            //                whereClause += " " + combiner.replace(") END", "") +
+            //                        " "; // Adding spaces around the combiner
+            //            }
+            // Adding combiner + spaces around the combiner
+            if (i < 12 && combinerOptions.contains(conditionsTable[i][4])) {
+                if (conditionsTable[i][4] == ") END") {
+                    whereClause += ")";
+                } else if ((conditionsTable[i][4] == "AND") || (conditionsTable[i][4] == "OR")) {
+                    whereClause += " " + conditionsTable[i][4] + " ";
+                } else {
+                    whereClause += conditionsTable[i][4] + " ";
+                }
             }
         }
     }
 
     if (!hasConditions) {
-        whereClause += QString(
+        whereClause += QStringLiteral(
                 "library.artist LIKE '%%1%' OR "
                 "library.title LIKE '%%1%' OR "
                 "library.album LIKE '%%1%' OR "
                 "library.album_artist LIKE '%%1%' OR "
                 "library.composer LIKE '%%1%' OR "
                 "library.genre LIKE '%%1%' OR "
-                "library.comment LIKE '%%1%'")
+                "library.comment LIKE '%%1%')")
                                .arg(headerTable[6]);
     }
 
-    whereClause += ")";
     if (sDebug) {
         qDebug() << "[SMARTIES] [EDIT DLG] [GETWHERECLAUSEFORSMARTIES] "
                     "[CONSTRUCT SQL] -> Constructed WHERE clause:"

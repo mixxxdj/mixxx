@@ -38,23 +38,24 @@ QString SmartiesFeatureHelper::proposeNameForNewSmarties(
     if (sDebug) {
         qDebug() << "[SMARTIES] [PROPOSE NEW NAME] -> proposedName" << proposedName;
     }
+    // would be better with regex but ... :-)
     proposedName.replace("artist:", "")
             .replace("title:", "")
             .replace("album_artist:", "")
-            .replace("album:", "");
-    proposedName.replace("genre:", "")
+            .replace("album:", "")
+            .replace("genre:", "")
             .replace("composer:", "")
             .replace("grouping:", "")
-            .replace("comment:", "");
-    proposedName.replace("type:", "")
+            .replace("comment:", "")
+            .replace("type:", "")
             .replace("played:", "")
             .replace("rating:", "")
-            .replace("year:", "");
-    proposedName.replace("key:", "")
+            .replace("year:", "")
+            .replace("key:", "")
             .replace("bpm:", "")
             .replace("duration:", "")
-            .replace("datetime_added:", "");
-    proposedName.replace("\"", "");
+            .replace("datetime_added:", "")
+            .replace("\"", "");
     if (sDebug) {
         qDebug() << "[SMARTIES] [PROPOSE NEW NAME] -> cleaned proposedName" << proposedName;
     }
@@ -103,23 +104,26 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
         // "title:", "genre:", "composer:", "grouping:", "comment:",
         // "location:", "type:", "played:", "rating:", "year:", "key:", "bpm:",
         // "duration:", "datetime_added:"}; clean the name
+        // would be better with regex but ... :-)
         newName.replace("artist:", "")
                 .replace("title:", "")
                 .replace("album_artist:", "")
-                .replace("album:", "");
-        newName.replace("genre:", "")
+                .replace("album:", "")
+                .replace("genre:", "")
                 .replace("composer:", "")
                 .replace("grouping:", "")
-                .replace("comment:", "");
-        newName.replace("type:", "")
+                .replace("comment:", "")
+                .replace("type:", "")
                 .replace("played:", "")
                 .replace("rating:", "")
-                .replace("year:", "");
-        newName.replace("key:", "")
+                .replace("year:", "")
+                .replace("key:", "")
                 .replace("bpm:", "")
                 .replace("duration:", "")
-                .replace("datetime_added:", "");
-        newName.replace("\"", "").replace("   ", " ").replace("  ", " ");
+                .replace("datetime_added:", "")
+                .replace("\"", "")
+                .replace("   ", " ")
+                .replace("  ", " ");
 
         // clean the input text
         QStringList stringTerms = {"artist",
@@ -155,7 +159,7 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
         //        QRegularExpression termRegex(pattern,
         //        QRegularExpression::CaseInsensitiveOption);
 
-        QString pattern =
+        const QString& pattern =
                 R"(\b(artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:)\s*([^:]+?)(?=\s*\b(?:artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:|$)))";
         static QRegularExpression termRegex(pattern, QRegularExpression::CaseInsensitiveOption);
 
@@ -478,106 +482,106 @@ SmartiesId SmartiesFeatureHelper::duplicateSmarties(const Smarties& oldSmarties)
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE SMARTIES] -> START";
     }
-    const QString proposedSmartiesName =
+    const QString& proposedSmartiesName =
             proposeNameForNewSmarties(
                     QStringLiteral("%1 %2")
                             .arg(oldSmarties.getName(), tr("copy", "//:")));
 
-    QString newSearchInput = oldSmarties.getSearchInput();
+    const QString& newSearchInput = oldSmarties.getSearchInput();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old searchInput" << newSearchInput;
     }
-    QString newSearchSql = oldSmarties.getSearchSql();
+    const QString& newSearchSql = oldSmarties.getSearchSql();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old searchSql" << newSearchSql;
     }
-    QString newCondition1Field = oldSmarties.getCondition1Field();
+    const QString& newCondition1Field = oldSmarties.getCondition1Field();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Field" << newCondition1Field;
     }
-    QString newCondition2Field = oldSmarties.getCondition2Field();
+    const QString& newCondition2Field = oldSmarties.getCondition2Field();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Field" << newCondition2Field;
     }
-    QString newCondition3Field = oldSmarties.getCondition3Field();
+    const QString& newCondition3Field = oldSmarties.getCondition3Field();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Field" << newCondition3Field;
     }
-    QString newCondition4Field = oldSmarties.getCondition4Field();
-    QString newCondition5Field = oldSmarties.getCondition5Field();
-    QString newCondition6Field = oldSmarties.getCondition6Field();
-    QString newCondition7Field = oldSmarties.getCondition7Field();
-    QString newCondition8Field = oldSmarties.getCondition8Field();
-    QString newCondition9Field = oldSmarties.getCondition9Field();
-    QString newCondition10Field = oldSmarties.getCondition10Field();
-    QString newCondition11Field = oldSmarties.getCondition11Field();
-    QString newCondition12Field = oldSmarties.getCondition12Field();
+    const QString& newCondition4Field = oldSmarties.getCondition4Field();
+    const QString& newCondition5Field = oldSmarties.getCondition5Field();
+    const QString& newCondition6Field = oldSmarties.getCondition6Field();
+    const QString& newCondition7Field = oldSmarties.getCondition7Field();
+    const QString& newCondition8Field = oldSmarties.getCondition8Field();
+    const QString& newCondition9Field = oldSmarties.getCondition9Field();
+    const QString& newCondition10Field = oldSmarties.getCondition10Field();
+    const QString& newCondition11Field = oldSmarties.getCondition11Field();
+    const QString& newCondition12Field = oldSmarties.getCondition12Field();
 
-    QString newCondition1Operator = oldSmarties.getCondition1Operator();
+    const QString& newCondition1Operator = oldSmarties.getCondition1Operator();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Operator" << newCondition1Operator;
     }
-    QString newCondition2Operator = oldSmarties.getCondition2Operator();
+    const QString& newCondition2Operator = oldSmarties.getCondition2Operator();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Operator" << newCondition2Operator;
     }
-    QString newCondition3Operator = oldSmarties.getCondition3Operator();
+    const QString& newCondition3Operator = oldSmarties.getCondition3Operator();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Operator" << newCondition3Operator;
     }
-    QString newCondition4Operator = oldSmarties.getCondition4Operator();
-    QString newCondition5Operator = oldSmarties.getCondition5Operator();
-    QString newCondition6Operator = oldSmarties.getCondition6Operator();
-    QString newCondition7Operator = oldSmarties.getCondition7Operator();
-    QString newCondition8Operator = oldSmarties.getCondition8Operator();
-    QString newCondition9Operator = oldSmarties.getCondition9Operator();
-    QString newCondition10Operator = oldSmarties.getCondition10Operator();
-    QString newCondition11Operator = oldSmarties.getCondition11Operator();
-    QString newCondition12Operator = oldSmarties.getCondition12Operator();
+    const QString& newCondition4Operator = oldSmarties.getCondition4Operator();
+    const QString& newCondition5Operator = oldSmarties.getCondition5Operator();
+    const QString& newCondition6Operator = oldSmarties.getCondition6Operator();
+    const QString& newCondition7Operator = oldSmarties.getCondition7Operator();
+    const QString& newCondition8Operator = oldSmarties.getCondition8Operator();
+    const QString& newCondition9Operator = oldSmarties.getCondition9Operator();
+    const QString& newCondition10Operator = oldSmarties.getCondition10Operator();
+    const QString& newCondition11Operator = oldSmarties.getCondition11Operator();
+    const QString& newCondition12Operator = oldSmarties.getCondition12Operator();
 
-    QString newCondition1Value = oldSmarties.getCondition1Value();
+    const QString& newCondition1Value = oldSmarties.getCondition1Value();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Value" << newCondition1Value;
     }
-    QString newCondition2Value = oldSmarties.getCondition2Value();
+    const QString& newCondition2Value = oldSmarties.getCondition2Value();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Value" << newCondition2Value;
     }
-    QString newCondition3Value = oldSmarties.getCondition3Value();
+    const QString& newCondition3Value = oldSmarties.getCondition3Value();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Value" << newCondition2Value;
     }
-    QString newCondition4Value = oldSmarties.getCondition4Value();
-    QString newCondition5Value = oldSmarties.getCondition5Value();
-    QString newCondition6Value = oldSmarties.getCondition6Value();
-    QString newCondition7Value = oldSmarties.getCondition7Value();
-    QString newCondition8Value = oldSmarties.getCondition8Value();
-    QString newCondition9Value = oldSmarties.getCondition9Value();
-    QString newCondition10Value = oldSmarties.getCondition10Value();
-    QString newCondition11Value = oldSmarties.getCondition11Value();
-    QString newCondition12Value = oldSmarties.getCondition12Value();
+    const QString& newCondition4Value = oldSmarties.getCondition4Value();
+    const QString& newCondition5Value = oldSmarties.getCondition5Value();
+    const QString& newCondition6Value = oldSmarties.getCondition6Value();
+    const QString& newCondition7Value = oldSmarties.getCondition7Value();
+    const QString& newCondition8Value = oldSmarties.getCondition8Value();
+    const QString& newCondition9Value = oldSmarties.getCondition9Value();
+    const QString& newCondition10Value = oldSmarties.getCondition10Value();
+    const QString& newCondition11Value = oldSmarties.getCondition11Value();
+    const QString& newCondition12Value = oldSmarties.getCondition12Value();
 
-    QString newCondition1Combiner = oldSmarties.getCondition1Combiner();
+    const QString& newCondition1Combiner = oldSmarties.getCondition1Combiner();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition1Combiner" << newCondition1Combiner;
     }
-    QString newCondition2Combiner = oldSmarties.getCondition2Combiner();
+    const QString& newCondition2Combiner = oldSmarties.getCondition2Combiner();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition2Combiner" << newCondition2Combiner;
     }
-    QString newCondition3Combiner = oldSmarties.getCondition3Combiner();
+    const QString& newCondition3Combiner = oldSmarties.getCondition3Combiner();
     if (sDebug) {
         qDebug() << "[SMARTIES] [DUPLICATE] -> old Condition3Combiner" << newCondition3Combiner;
     }
-    QString newCondition4Combiner = oldSmarties.getCondition4Combiner();
-    QString newCondition5Combiner = oldSmarties.getCondition5Combiner();
-    QString newCondition6Combiner = oldSmarties.getCondition6Combiner();
-    QString newCondition7Combiner = oldSmarties.getCondition7Combiner();
-    QString newCondition8Combiner = oldSmarties.getCondition8Combiner();
-    QString newCondition9Combiner = oldSmarties.getCondition9Combiner();
-    QString newCondition10Combiner = oldSmarties.getCondition10Combiner();
-    QString newCondition11Combiner = oldSmarties.getCondition11Combiner();
-    QString newCondition12Combiner = oldSmarties.getCondition12Combiner();
+    const QString& newCondition4Combiner = oldSmarties.getCondition4Combiner();
+    const QString& newCondition5Combiner = oldSmarties.getCondition5Combiner();
+    const QString& newCondition6Combiner = oldSmarties.getCondition6Combiner();
+    const QString& newCondition7Combiner = oldSmarties.getCondition7Combiner();
+    const QString& newCondition8Combiner = oldSmarties.getCondition8Combiner();
+    const QString& newCondition9Combiner = oldSmarties.getCondition9Combiner();
+    const QString& newCondition10Combiner = oldSmarties.getCondition10Combiner();
+    const QString& newCondition11Combiner = oldSmarties.getCondition11Combiner();
+    const QString& newCondition12Combiner = oldSmarties.getCondition12Combiner();
 
     Smarties newSmarties;
     for (;;) {
