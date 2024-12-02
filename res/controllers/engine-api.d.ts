@@ -302,7 +302,7 @@ declare namespace engine {
      */
     function softStart(deck: number, activate: boolean, factor?: number): void;
 
-    enum WellKnownCharsets {
+    enum Charset {
         ASCII,          // American Standard Code for Information Interchange (7-Bit)
         UTF_8,          // Unicode Transformation Format (8-Bit)
         UTF_16LE,       // UTF-16 for Little-Endian devices (ARM, x86)
@@ -337,5 +337,5 @@ declare namespace engine {
      * @param targetCharset The charset to encode the string into.
      * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
-    function convertCharset(targetCharset: WellKnownCharsets, value: string): ArrayBuffer
+    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer
 }

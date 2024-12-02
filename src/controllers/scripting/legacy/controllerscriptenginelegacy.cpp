@@ -340,7 +340,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 
     auto engine = m_pJSEngine->newQObject(legacyScriptInterface);
     auto meta = m_pJSEngine->newQMetaObject(&ControllerScriptInterfaceLegacy::staticMetaObject);
-    engine.setProperty("WellKnownCharsets", meta);
+    engine.setProperty("Charset", meta);
     engineGlobalObject.setProperty("engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
 #ifdef MIXXX_USE_QML

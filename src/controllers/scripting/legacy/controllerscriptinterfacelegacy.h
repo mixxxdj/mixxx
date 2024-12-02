@@ -20,7 +20,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
     // NOTE: these enumerator names are exposed to the JS engine! Removal/Changing of
     // any name is likely breaking. Only add more and only remove enumerators if
     // they're broken to begin with.
-    enum class WellKnownCharsets {
+    enum class Charset {
         ASCII,
         UTF_8,
         UTF_16LE,
@@ -47,7 +47,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
         BOCU_1,
         CESU_8
     };
-    Q_ENUM(WellKnownCharsets)
+    Q_ENUM(Charset)
 
     ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine,
             const RuntimeLoggingCategory& logger);
@@ -105,7 +105,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE void softStart(const int deck, bool activate, double factor = 1.0);
 
     Q_INVOKABLE QByteArray convertCharset(
-            const ControllerScriptInterfaceLegacy::WellKnownCharsets
+            const ControllerScriptInterfaceLegacy::Charset
                     targetCharset,
             const QString& value);
 

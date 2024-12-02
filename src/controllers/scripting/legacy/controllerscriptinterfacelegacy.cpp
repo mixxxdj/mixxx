@@ -1055,9 +1055,9 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 }
 
 QByteArray ControllerScriptInterfaceLegacy::convertCharset(
-        const ControllerScriptInterfaceLegacy::WellKnownCharsets targetCharset,
+        const ControllerScriptInterfaceLegacy::Charset targetCharset,
         const QString& value) {
-    using enum WellKnownCharsets;
+    using enum Charset;
     switch (targetCharset) {
     case ASCII:
         return convertCharsetInternal(QStringLiteral("US-ASCII"), value);

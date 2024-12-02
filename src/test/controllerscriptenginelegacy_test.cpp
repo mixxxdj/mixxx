@@ -664,7 +664,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
     const auto result = evaluate(
-            "engine.convertCharset(engine.WellKnownCharsets.Latin9, 'Hello!')");
+            "engine.convertCharset(engine.Charset.Latin9, 'Hello!')");
 
     EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
             QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
@@ -672,7 +672,7 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
     auto result = qjsvalue_cast<QByteArray>(
-            evaluate("engine.convertCharset(engine.WellKnownCharsets.Latin9, 'مايأ نامز')"));
+            evaluate("engine.convertCharset(engine.Charset.Latin9, 'مايأ نامز')"));
     char sub = '\x1A'; // ASCII/Latin9 SUB character
     EXPECT_EQ(result,
             QByteArrayView::fromArray(
@@ -681,7 +681,7 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
     auto result = qjsvalue_cast<QByteArray>(
-            evaluate("engine.convertCharset(engine.WellKnownCharsets.UTF_16LE, 'مايأ نامز')"));
+            evaluate("engine.convertCharset(engine.Charset.UTF_16LE, 'مايأ نامز')"));
     EXPECT_EQ(result,
             QByteArrayView::fromArray({'\x45',
                     '\x06',
@@ -705,9 +705,9 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
 
 #define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! 😊"
 
-static int convertedCharsetForString(ControllerScriptInterfaceLegacy::WellKnownCharsets charset) {
+static int convertedCharsetForString(ControllerScriptInterfaceLegacy::Charset charset) {
     // the expected length after conversion of COMPLICATEDSTRINGLITERAL
-    using enum ControllerScriptInterfaceLegacy::WellKnownCharsets;
+    using enum ControllerScriptInterfaceLegacy::Charset;
     switch (charset) {
     case UTF_8:
         return 63;
@@ -749,17 +749,17 @@ static int convertedCharsetForString(ControllerScriptInterfaceLegacy::WellKnownC
     return 0;
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllWellKnownCharsets) {
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
     QMetaEnum charsetEnumEntry = QMetaEnum::fromType<
-            ControllerScriptInterfaceLegacy::WellKnownCharsets>();
+            ControllerScriptInterfaceLegacy::Charset>();
 
     for (int i = 0; i < charsetEnumEntry.keyCount(); ++i) {
         QString key = charsetEnumEntry.key(i);
         auto enumValue =
-                static_cast<ControllerScriptInterfaceLegacy::WellKnownCharsets>(
+                static_cast<ControllerScriptInterfaceLegacy::Charset>(
                         charsetEnumEntry.value(i));
         QString source = QStringLiteral(
-                "engine.convertCharset(engine.WellKnownCharsets.%1, "
+                "engine.convertCharset(engine.Charset.%1, "
                 "'" COMPLICATEDSTRINGLITERAL "')")
                                  .arg(key);
         auto result = qjsvalue_cast<QByteArray>(evaluate(source));
