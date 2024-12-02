@@ -106,7 +106,7 @@ class StemControlTest : public BaseSignalPathTest {
         TrackPointer pLoadedTrack;
         QMetaObject::Connection connection = QObject::connect(pDeck,
                 &BaseTrackPlayerImpl::newTrackLoaded,
-                [&pLoadedTrack](
+                [&pLoadedTrack]( // clazy:exclude=lambda-in-connect
                         TrackPointer pNewTrack) { pLoadedTrack = pNewTrack; });
         BaseSignalPathTest::loadTrack(pDeck, pTrack);
 
