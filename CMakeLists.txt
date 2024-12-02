@@ -1175,6 +1175,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/font.cpp
   src/util/imagefiledata.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp
@@ -1201,7 +1202,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/tapfilter.cpp
   src/util/task.cpp
   src/util/taskmonitor.cpp
-  src/util/threadcputimer.cpp
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp
@@ -1471,7 +1471,6 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/util/taskmonitor.h
   src/util/thread_affinity.h
   src/util/thread_annotations.h
-  src/util/threadcputimer.h
   src/util/time.h
   src/util/timer.h
   src/util/trace.h
@@ -2244,12 +2243,6 @@ add_custom_target(mixxx-gitinfo
   BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-
-add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
-    src/util/gitinfostore.cpp
-)
-target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
-add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
 
 # Windows-only resource file
 if(WIN32)
@@ -3165,6 +3158,14 @@ if(APPLE OR WIN32)
       "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
   )
 endif()
+
+add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
+    src/util/gitinfostore.cpp
+)
+# QtCore for QString
+target_link_libraries(mixxx-gitinfostore PUBLIC Qt${QT_VERSION_MAJOR}::Core)
+target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
+add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
 
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL

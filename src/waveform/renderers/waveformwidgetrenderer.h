@@ -190,7 +190,7 @@ class WaveformWidgetRenderer {
 
     void setPlayMarkerPosition(double newPos) {
         VERIFY_OR_DEBUG_ASSERT(newPos >= 0.0 && newPos <= 1.0) {
-            newPos = math_clamp(newPos, 0.0, 1.0);
+            newPos = std::clamp(newPos, 0.0, 1.0);
         }
         m_playMarkerPosition = newPos;
     }
