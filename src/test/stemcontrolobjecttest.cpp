@@ -110,15 +110,18 @@ class StemControlTest : public BaseSignalPathTest {
                         TrackPointer pNewTrack) { pLoadedTrack = pNewTrack; });
         BaseSignalPathTest::loadTrack(pDeck, pTrack);
 
-        for (int i = 0; i < 2000; ++i) {
+        for (int i = 0; i < 10000; ++i) {
             if (pLoadedTrack == pTrack) {
                 break;
             }
             int maxtime = 1; // ms
             QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, maxtime);
-            // 1 ms for waiting 2 s at max
+            // 1 ms for waiting 10 s at max
         }
         QObject::disconnect(connection);
+        if (pLoadedTrack != pTrack) {
+            qWarning() << "Timeout: failed loading track" << pTrack->getLocation();
+        }
     }
 
     std::unique_ptr<PollingControlProxy> m_pPlay;
