@@ -2131,6 +2131,7 @@ add_executable(mixxx-test
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
   src/test/rgbcolor_test.cpp
+  src/test/rotary_test.cpp
   src/test/ringdelaybuffer_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
