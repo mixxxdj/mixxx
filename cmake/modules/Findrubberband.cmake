@@ -87,10 +87,10 @@ if(rubberband_FOUND)
     )
     is_static_library(rubberband_IS_STATIC Chromaprint::Chromaprint)
     if(rubberband_IS_STATIC)
-      find_package(FFTW REQUIRED)
+      find_package(FFTW3 REQUIRED)
       find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
       set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        FFTW::FFTW
+        FFTW3::fftw3
         ${SAMPLERATE_LIBRARY}
       )
     endif()
