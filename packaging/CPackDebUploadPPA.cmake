@@ -181,7 +181,7 @@ foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
       WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}
     )
   endif()
-endforeach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
+endforeach()
 
 if(DEB_SOURCEPKG OR DEB_BUILD)
   file(
