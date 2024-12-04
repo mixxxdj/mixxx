@@ -45,11 +45,36 @@ class BulkController : public Controller {
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::USB_BULK_TRANSFER;
+    }
+
+    QString getVendorString() const override {
+        return m_manufacturer;
+    }
+    QString getProductString() const override {
+        return m_product;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return m_vendorId;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return m_productId;
+    }
+    QString getSerialNumber() const override {
+        return m_sUID;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_interfaceNumber;
+    }
+
     bool isMappable() const override {
-        if (!m_pMapping) {
-            return false;
-        }
-        return m_pMapping->isMappable();
+        // On raw USB transfer level, there isn't any information about mappable controls
+        return false;
     }
 
     bool matchMapping(const MappingInfo& mapping) override;

@@ -3718,40 +3718,10 @@ find_package(LibUSB)
 # USB HID controller support
 option(HID "USB HID controller support" ON)
 if(HID)
-  # hidapi 0.11.2 is the first release, that implements hid_get_input_report
-  # for the Linux hidraw backend.
-  find_package(hidapi 0.11.2)
+  # hidapi 0.14.0 is the first release, that contains bus type information
+  find_package(hidapi 0.14.0)
   if(NOT hidapi_FOUND)
-    message(STATUS "Linking internal libhidapi statically")
-    add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
-    target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
-    if(WIN32)
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
-        find_library(Setupapi_LIBRARY Setupapi REQUIRED)
-        target_link_libraries(mixxx-hidapi PUBLIC ${Setupapi_LIBRARY})
-    elseif(APPLE)
-        if(IOS)
-          message(FATAL_ERROR "USB HID controllers are not supported on iOS")
-        endif()
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
-        find_library(AppKit_LIBRARY AppKit REQUIRED)
-        target_link_libraries(mixxx-hidapi PUBLIC ${AppKit_LIBRARY})
-    elseif(UNIX)
-      if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-        find_library(libudev_LIBRARY udev REQUIRED)
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/linux/hid.c)
-        target_link_libraries(mixxx-hidapi PRIVATE ${libudev_LIBRARY})
-      else()
-        if(NOT LibUSB_FOUND)
-          message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
-        endif()
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
-        target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
-      endif()
-    else()
-      message(FATAL_ERROR "USB HID controller support only possible on Windows/Mac OS/Linux/BSD.")
-    endif()
-    target_link_libraries(mixxx-lib PRIVATE mixxx-hidapi)
+      message(FATAL_ERROR "hidapi >= 0.14.0 not found!")
   else()
     # hidapi has two backends on Linux, one using the kernel's hidraw API and one using libusb.
     # libusb obviously does not support Bluetooth HID devices, so use the hidraw backend. The
@@ -3769,6 +3739,7 @@ if(HID)
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/hidusagetables.cpp
     src/controllers/hid/legacyhidcontrollermapping.cpp
     src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
   )

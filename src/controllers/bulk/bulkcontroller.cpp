@@ -82,8 +82,6 @@ BulkController::BulkController(libusb_context* context,
     m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
 
-    setDeviceCategory(tr("USB Controller"));
-
     setInputDevice(true);
     setOutputDevice(true);
     m_pReader = nullptr;

@@ -156,10 +156,10 @@ void ControllerManager::slotInitialize() {
     m_enumerators.append(new PortMidiEnumerator());
 #endif
 #ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator(m_pConfig));
+    m_enumerators.append(new Hss1394Enumerator());
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator(m_pConfig));
+    m_enumerators.append(new BulkEnumerator());
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
