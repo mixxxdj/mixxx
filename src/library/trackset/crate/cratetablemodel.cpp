@@ -101,38 +101,39 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
                        << query.lastError();
             return groupedCrates;
         }
+        int posDelimit;
+        const QString& searchDelimit = m_pConfig->getValue(
+                ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
 
         while (query.next()) {
             QVariantMap crateData;
-            int posDelimit;
-            const QString& searchDelimit = m_pConfig->getValue(
-                    ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
             if ((searchDelimit != "") && (searchDelimit.length() > 0)) {
-                if (query.value("crate_name").toString().indexOf(searchDelimit, 0) > 0)
+                if (query.value("crate_name").toString().indexOf(searchDelimit, 0) > 0) {
                     // int searchDelimitLength = searchDelimit.length();
                     // if (query.value("crate_name").toString().indexOf(searchDelimit, 0) > 0) {
                     posDelimit = query.value("crate_name").toString().indexOf(searchDelimit, 0);
-                const QString& groupString =
-                        query.value("crate_name").toString().mid(0, posDelimit);
+                    const QString& groupString =
+                            query.value("crate_name").toString().mid(0, posDelimit);
 
-                crateData["group_name"] = groupString;
-                crateData["crate_id"] = query.value("crate_id");
-                crateData["crate_name"] = query.value("crate_name");
-                groupedCrates.append(crateData);
-                if (sDebug) {
-                    qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
-                                "crate added: "
-                             << crateData;
-                }
-            } else {
-                crateData["group_name"] = query.value("crate_name");
-                crateData["crate_id"] = query.value("crate_id");
-                crateData["crate_name"] = query.value("crate_name");
-                groupedCrates.append(crateData);
-                if (sDebug) {
-                    qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
-                                "crate added: "
-                             << crateData;
+                    crateData["group_name"] = groupString;
+                    crateData["crate_id"] = query.value("crate_id");
+                    crateData["crate_name"] = query.value("crate_name");
+                    groupedCrates.append(crateData);
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
+                                    "crate added: "
+                                 << crateData;
+                    }
+                } else {
+                    crateData["group_name"] = query.value("crate_name");
+                    crateData["crate_id"] = query.value("crate_id");
+                    crateData["crate_name"] = query.value("crate_name");
+                    groupedCrates.append(crateData);
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
+                                    "crate added: "
+                                 << crateData;
+                    }
                 }
             }
         }
