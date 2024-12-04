@@ -14,6 +14,7 @@
 #include "library/parsercsv.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
 #include "library/treeitem.h"
