@@ -73,61 +73,61 @@ endif()
 # Checks for the given component by invoking pkgconfig and then looking up the libraries and
 # include directories.
 #
-macro(find_component _component _pkgconfig _library _header)
+macro(find_component component pkgconfig library header)
   # use pkg-config to get the directories and then use these values
   # in the FIND_PATH() and FIND_LIBRARY() calls
   find_package(PkgConfig QUIET)
   if(PkgConfig_FOUND)
-    pkg_check_modules(PC_FFMPEG_${_component} QUIET ${_pkgconfig})
+    pkg_check_modules(PC_FFMPEG_${component} QUIET ${pkgconfig})
   endif()
 
   find_path(
-    FFMPEG_${_component}_INCLUDE_DIRS
-    ${_header}
+    FFMPEG_${component}_INCLUDE_DIRS
+    ${header}
     HINTS
-      ${PC_FFMPEG_${_component}_INCLUDEDIR}
-      ${PC_FFMPEG_${_component}_INCLUDE_DIRS}
+      ${PC_FFMPEG_${component}_INCLUDEDIR}
+      ${PC_FFMPEG_${component}_INCLUDE_DIRS}
       ${PC_FFMPEG_INCLUDE_DIRS}
     PATH_SUFFIXES ffmpeg
   )
 
   find_library(
-    FFMPEG_${_component}_LIBRARIES
-    NAMES ${PC_FFMPEG_${_component}_LIBRARIES} ${_library}
+    FFMPEG_${component}_LIBRARIES
+    NAMES ${PC_FFMPEG_${component}_LIBRARIES} ${library}
     HINTS
-      ${PC_FFMPEG_${_component}_LIBDIR}
-      ${PC_FFMPEG_${_component}_LIBRARY_DIRS}
+      ${PC_FFMPEG_${component}_LIBDIR}
+      ${PC_FFMPEG_${component}_LIBRARY_DIRS}
       ${PC_FFMPEG_LIBRARY_DIRS}
   )
 
-  #message(STATUS ${FFMPEG_${_component}_LIBRARIES})
-  #message(STATUS ${PC_FFMPEG_${_component}_LIBRARIES})
+  #message(STATUS ${FFMPEG_${component}_LIBRARIES})
+  #message(STATUS ${PC_FFMPEG_${component}_LIBRARIES})
 
   set(
-    FFMPEG_${_component}_DEFINITIONS
-    ${PC_FFMPEG_${_component}_CFLAGS_OTHER}
+    FFMPEG_${component}_DEFINITIONS
+    ${PC_FFMPEG_${component}_CFLAGS_OTHER}
     CACHE STRING
-    "The ${_component} CFLAGS."
+    "The ${component} CFLAGS."
   )
   set(
-    FFMPEG_${_component}_VERSION
-    ${PC_FFMPEG_${_component}_VERSION}
+    FFMPEG_${component}_VERSION
+    ${PC_FFMPEG_${component}_VERSION}
     CACHE STRING
-    "The ${_component} version number."
+    "The ${component} version number."
   )
 
-  if(FFMPEG_${_component}_LIBRARIES AND FFMPEG_${_component}_INCLUDE_DIRS)
-    message(STATUS "  - ${_component} ${FFMPEG_${_component}_VERSION} found.")
-    set(FFMPEG_${_component}_FOUND TRUE)
+  if(FFMPEG_${component}_LIBRARIES AND FFMPEG_${component}_INCLUDE_DIRS)
+    message(STATUS "  - ${component} ${FFMPEG_${component}_VERSION} found.")
+    set(FFMPEG_${component}_FOUND TRUE)
   else()
-    message(STATUS "  - ${_component} not found.")
+    message(STATUS "  - ${component} not found.")
   endif()
 
   mark_as_advanced(
-    FFMPEG_${_component}_INCLUDE_DIRS
-    FFMPEG_${_component}_LIBRARIES
-    FFMPEG_${_component}_DEFINITIONS
-    FFMPEG_${_component}_VERSION
+    FFMPEG_${component}_INCLUDE_DIRS
+    FFMPEG_${component}_LIBRARIES
+    FFMPEG_${component}_DEFINITIONS
+    FFMPEG_${component}_VERSION
   )
 endmacro()
 
@@ -144,16 +144,16 @@ find_component(libswresample libswresample swresample libswresample/swresample.h
 set(FFMPEG_LIBRARIES "")
 set(FFMPEG_DEFINITIONS "")
 # Check if the required components were found and add their stuff to the FFMPEG_* vars.
-foreach(_component ${FFMPEG_FIND_COMPONENTS})
-  if(FFMPEG_${_component}_FOUND)
-    #message(STATUS "Required component ${_component} present.")
-    set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${FFMPEG_${_component}_LIBRARIES})
+foreach(component ${FFMPEG_FIND_COMPONENTS})
+  if(FFMPEG_${component}_FOUND)
+    #message(STATUS "Required component ${component} present.")
+    set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${FFMPEG_${component}_LIBRARIES})
     set(
       FFMPEG_DEFINITIONS
       ${FFMPEG_DEFINITIONS}
-      ${FFMPEG_${_component}_DEFINITIONS}
+      ${FFMPEG_${component}_DEFINITIONS}
     )
-    list(APPEND FFMPEG_INCLUDE_DIRS ${FFMPEG_${_component}_INCLUDE_DIRS})
+    list(APPEND FFMPEG_INCLUDE_DIRS ${FFMPEG_${component}_INCLUDE_DIRS})
   endif()
 endforeach()
 
@@ -188,15 +188,15 @@ set(
 mark_as_advanced(FFMPEG_INCLUDE_DIRS FFMPEG_LIBRARIES FFMPEG_DEFINITIONS)
 
 # Compile the list of required vars
-set(_FFMPEG_REQUIRED_VARS FFMPEG_LIBRARIES FFMPEG_INCLUDE_DIRS)
-foreach(_component ${FFMPEG_FIND_COMPONENTS})
+set(FFMPEG_REQUIRED_VARS FFMPEG_LIBRARIES FFMPEG_INCLUDE_DIRS)
+foreach(component ${FFMPEG_FIND_COMPONENTS})
   list(
     APPEND
-    _FFMPEG_REQUIRED_VARS
-    FFMPEG_${_component}_LIBRARIES
-    FFMPEG_${_component}_INCLUDE_DIRS
+    FFMPEG_REQUIRED_VARS
+    FFMPEG_${component}_LIBRARIES
+    FFMPEG_${component}_INCLUDE_DIRS
   )
 endforeach()
 
 # Give a nice error message if some of the required vars are missing.
-find_package_handle_standard_args(FFMPEG DEFAULT_MSG ${_FFMPEG_REQUIRED_VARS})
+find_package_handle_standard_args(FFMPEG DEFAULT_MSG ${FFMPEG_REQUIRED_VARS})

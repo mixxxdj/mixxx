@@ -84,16 +84,16 @@ execute_process(
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
 )
 
-function(run_dh DH_COMMAND)
+function(run_dh dh_command)
   execute_process(
-    COMMAND ${DH_COMMAND} ${ARGV1} ${ARGV2} -P.
+    COMMAND ${dh_command} ${ARGV1} ${ARGV2} -P.
     WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
     RESULT_VARIABLE CPACK_DEBIAN_DH_RET
   )
   if(NOT CPACK_DEBIAN_DH_RET EQUAL "0")
     message(
       FATAL_ERROR
-      "${DH_COMMAND} returned exit code ${CPACK_DEBIAN_DH_RET}"
+      "${dh_command} returned exit code ${CPACK_DEBIAN_DH_RET}"
     )
   endif()
 endfunction()

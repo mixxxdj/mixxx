@@ -3186,17 +3186,17 @@ if(QML)
 
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   qt_add_library(mixxx-qml-lib STATIC)
-  foreach(COMPONENT ${QT_COMPONENTS})
+  foreach(component ${QT_COMPONENTS})
     target_link_libraries(
       mixxx-qml-lib
-      PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT}
+      PUBLIC Qt${QT_VERSION_MAJOR}::${component}
     )
   endforeach()
   if(QT_EXTRA_COMPONENTS)
-    foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
+    foreach(component ${QT_EXTRA_COMPONENTS})
       target_link_libraries(
         mixxx-qml-lib
-        PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT}
+        PUBLIC Qt${QT_VERSION_MAJOR}::${component}
       )
     endforeach()
   endif()

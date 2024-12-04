@@ -109,11 +109,11 @@ endif()
 # Additional Glib components.  We only look for libraries, as not all of them
 # have corresponding headers and all headers are installed alongside the main
 # glib ones.
-foreach(_component ${GLIB_FIND_COMPONENTS})
-  if(${_component} STREQUAL "gio")
+foreach(component ${GLIB_FIND_COMPONENTS})
+  if(${component} STREQUAL "gio")
     find_library(GLIB_GIO_LIBRARIES NAMES gio-2.0 HINTS ${_GLIB_LIBRARY_DIR})
     set(ADDITIONAL_REQUIRED_VARS ${ADDITIONAL_REQUIRED_VARS} GLIB_GIO_LIBRARIES)
-  elseif(${_component} STREQUAL "gobject")
+  elseif(${component} STREQUAL "gobject")
     find_library(
       GLIB_GOBJECT_LIBRARIES
       NAMES gobject-2.0
@@ -124,7 +124,7 @@ foreach(_component ${GLIB_FIND_COMPONENTS})
       ${ADDITIONAL_REQUIRED_VARS}
       GLIB_GOBJECT_LIBRARIES
     )
-  elseif(${_component} STREQUAL "gmodule")
+  elseif(${component} STREQUAL "gmodule")
     find_library(
       GLIB_GMODULE_LIBRARIES
       NAMES gmodule-2.0
@@ -135,7 +135,7 @@ foreach(_component ${GLIB_FIND_COMPONENTS})
       ${ADDITIONAL_REQUIRED_VARS}
       GLIB_GMODULE_LIBRARIES
     )
-  elseif(${_component} STREQUAL "gthread")
+  elseif(${component} STREQUAL "gthread")
     find_library(
       GLIB_GTHREAD_LIBRARIES
       NAMES gthread-2.0
@@ -146,7 +146,7 @@ foreach(_component ${GLIB_FIND_COMPONENTS})
       ${ADDITIONAL_REQUIRED_VARS}
       GLIB_GTHREAD_LIBRARIES
     )
-  elseif(${_component} STREQUAL "gio-unix")
+  elseif(${component} STREQUAL "gio-unix")
     # gio-unix is compiled as part of the gio library, but the include paths
     # are separate from the shared glib ones. Since this is currently only used
     # by WebKitGTK we don't go to extraordinary measures beyond pkg-config.
