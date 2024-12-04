@@ -2,6 +2,7 @@
 
 #include <QJSValue>
 #include <algorithm>
+#include <atomic>
 
 #include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
@@ -37,7 +38,7 @@ MidiController::MidiController(const QString& deviceName)
 
 void MidiController::slotBeforeEngineShutdown() {
     Controller::slotBeforeEngineShutdown();
-    m_pMapping->removeInputHandlerMappings();
+    getSharedMapping()->removeInputHandlerMappings();
 }
 
 MidiController::~MidiController() {
@@ -55,12 +56,21 @@ QString MidiController::mappingExtension() {
 }
 
 void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyMidiControllerMapping>(std::move(pMapping));
+    std::shared_ptr<LegacyMidiControllerMapping> pMidiMapping =
+            downcastAndTakeOwnership<LegacyMidiControllerMapping>(
+                    std::move(pMapping));
+#ifdef __cpp_lib_atomic_shared_ptr
+    // Used Spinlock
+    m_pMapping.store(pMidiMapping, std::memory_order_relaxed);
+#else
+    // Uses Mutex
+    std::atomic_store_explicit(&m_pMapping, pMidiMapping, std::memory_order_relaxed);
+#endif
 }
 
 std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
     // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     if (!pMapping) {
         return nullptr;
     }
@@ -95,7 +105,7 @@ bool MidiController::applyMapping() {
 
 void MidiController::createOutputHandlers() {
     // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     if (!pMapping) {
         return;
     }
@@ -228,7 +238,7 @@ void MidiController::clearTemporaryInputMappings() {
 
 void MidiController::commitTemporaryInputMappings() {
     // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     if (!pMapping) {
         return;
     }
@@ -293,7 +303,7 @@ void MidiController::receivedShortMessage(unsigned char status,
     }
 
     // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     auto it = pMapping->getInputMappings().constFind(mappingKey.key);
     for (; it != pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
@@ -593,7 +603,7 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
     }
 
     // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     const auto [inputMappingsBegin, inputMappingsEnd] =
             pMapping->getInputMappings().equal_range(mappingKey.key);
     std::for_each(inputMappingsBegin, inputMappingsEnd, [&](const auto& inputMapping) {
@@ -646,7 +656,7 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
     const auto midiKey = MidiKey(status, midino);
 
     // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     auto it = pMapping->getInputMappings().constFind(midiKey.key);
     if (it != pMapping->getInputMappings().constEnd() &&
             it.value().options.testFlag(MidiOption::Script) &&
@@ -666,4 +676,14 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
 
     pMapping->addInputMapping(inputMapping.key.key, inputMapping);
     return pJsEngine->newQObject(new MidiInputHandleJSProxy(pMapping, inputMapping));
+}
+
+std::shared_ptr<LegacyMidiControllerMapping> MidiController::getSharedMapping() const {
+#ifdef __cpp_lib_atomic_shared_ptr
+    // Used Spinlock
+    return m_pMapping.load(std::memory_order_relaxed);
+#else
+    // Uses Mutex
+    return std::atomic_load_explicit(&m_pMapping, std::memory_order_relaxed);
+#endif
 }

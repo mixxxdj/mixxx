@@ -43,7 +43,7 @@ class MidiController : public Controller {
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
 
     bool isMappable() const override {
-        std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+        std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
         if (!pMapping) {
             return false;
         }
@@ -104,10 +104,17 @@ class MidiController : public Controller {
     void createOutputHandlers();
     void updateAllOutputs();
     void destroyOutputHandlers();
+    std::shared_ptr<LegacyMidiControllerMapping> getSharedMapping() const;
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
+
+#ifdef __cpp_lib_atomic_shared_ptr
+    std::atomic<std::shared_ptr<LegacyMidiControllerMapping>> m_pMapping;
+#else
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
+#endif
+
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
 
