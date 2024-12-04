@@ -136,6 +136,8 @@ class LegacyControllerBooleanSetting
                     LegacyControllerSettingsLayoutContainer::HORIZONTAL)
             override;
 
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+
     QJSValue value() const override {
         return QJSValue(m_savedValue);
     }
