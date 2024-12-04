@@ -3168,12 +3168,12 @@ find_package(
   REQUIRED
 )
 # PUBLIC is required below to find included headers
-foreach(COMPONENT ${QT_COMPONENTS})
-  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
+foreach(component ${QT_COMPONENTS})
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${component})
 endforeach()
 if(QT_EXTRA_COMPONENTS)
-  foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
-    target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
+  foreach(component ${QT_EXTRA_COMPONENTS})
+    target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${component})
   endforeach()
 endif()
 
