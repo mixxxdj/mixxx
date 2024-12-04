@@ -47,7 +47,9 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-function(FATAL_ERROR_MISSING_ENV)
+# Use this function to throw an error because the build environment is not set
+# up correctly.
+function(fatal_error_missing_env)
   if(WIN32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
