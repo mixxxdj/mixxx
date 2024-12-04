@@ -2924,7 +2924,6 @@ if(KEYFINDER)
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
-      LIST_SEPARATOR |
     )
 
     # This is a bit of a hack to make sure that the include directory actually
