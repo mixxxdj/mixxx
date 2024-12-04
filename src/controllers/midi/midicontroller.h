@@ -43,10 +43,11 @@ class MidiController : public Controller {
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
 
     bool isMappable() const override {
-        if (!m_pMapping) {
+        std::shared_ptr<LegacyMidiControllerMapping> pMapping = m_pMapping;
+        if (!pMapping) {
             return false;
         }
-        return m_pMapping->isMappable();
+        return pMapping->isMappable();
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
