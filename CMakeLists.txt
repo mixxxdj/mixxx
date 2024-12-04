@@ -2799,6 +2799,8 @@ if(ENGINEPRIME)
         OUTPUT "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
         DEPENDS libdjinterop
         COMMAND echo libdjinterop installed
+        COMMENT
+          "Tell 'make' that libdjinterop is required for the djinterop target"
       )
     endif()
 
@@ -2944,6 +2946,8 @@ if(KEYFINDER)
         OUTPUT "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}"
         DEPENDS libkeyfinder
         COMMAND echo libkeyfinder installed
+        COMMENT
+          "Tell 'make' that libkeyfinder is required for the mixxx-keyfinder target"
       )
     endif()
 
@@ -4746,6 +4750,8 @@ if(APPLOCAL_COMPONENT_DEFINED)
       "${CMAKE_COMMAND}" -DCOMPONENT=applocal
       -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P
       cmake_install.cmake
+    COMMENT
+      "Install applocal components to allow Mixxx to be run from the build directory."
   )
 endif()
 
