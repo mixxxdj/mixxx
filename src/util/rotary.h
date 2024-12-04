@@ -18,7 +18,7 @@ class Rotary {
     double filter(double value);
 
   private:
-    index_type nextIndex(index_type);
+    index_type nextIndex(index_type) const;
     void append(double v);
     double calculate() const;
     Buffer m_filterHistory;

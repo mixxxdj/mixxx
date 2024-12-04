@@ -2,7 +2,7 @@
 
 #include <numeric>
 
-Rotary::index_type Rotary::nextIndex(Rotary::index_type i) {
+Rotary::index_type Rotary::nextIndex(Rotary::index_type i) const {
     if (++i >= m_filterHistory.size()) {
         return 0;
     }
@@ -10,7 +10,8 @@ Rotary::index_type Rotary::nextIndex(Rotary::index_type i) {
 }
 
 void Rotary::append(double v) {
-    m_filterHistory[nextIndex(m_headIndex)] = v;
+    m_headIndex = nextIndex(m_headIndex);
+    m_filterHistory[m_headIndex] = v;
 }
 
 double Rotary::calculate() const {
