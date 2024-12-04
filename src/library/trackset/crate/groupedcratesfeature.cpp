@@ -1096,10 +1096,17 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
         QModelIndex newIndex = m_pSidebarModel->index(selectedRow, 0);
         if (newIndex.isValid()) {
             m_lastRightClickedIndex = newIndex;
+            return newIndex;
         }
-    } else {
-        m_lastRightClickedIndex = previouslySelectedIndex; // Restore previous selection if valid
     }
+
+    // If no selected row was found, return the previously selected index
+    if (previouslySelectedIndex.isValid()) {
+        return previouslySelectedIndex;
+    }
+
+    // Default return value if nothing else applies
+    return QModelIndex();
 }
 
 void GroupedCratesFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
