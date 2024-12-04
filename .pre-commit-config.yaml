@@ -127,6 +127,10 @@ repos:
     rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
     hooks:
       - id: qml_formatter
+  - repo: https://github.com/BlankSpruce/gersemi
+    rev: 0.17.1
+    hooks:
+      - id: gersemi
   - repo: local
     hooks:
       - id: qsscheck
