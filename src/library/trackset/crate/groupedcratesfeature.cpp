@@ -26,8 +26,10 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
-namespace {
 const bool sDebug = false;
+
+namespace {
+
 // constexpr int kInvalidCrateId = -1;
 
 QString formatLabel(
@@ -299,7 +301,7 @@ void GroupedCratesFeature::activate() {
     BaseTrackSetFeature::activate();
 }
 
-void GroupedCratesFeature::activateChild(const QModelIndex& index) {
+void GroupedCratesFeature::oldactivateChild(const QModelIndex& index) {
     qDebug() << "   GroupedCratesFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
@@ -317,6 +319,7 @@ void GroupedCratesFeature::activateChild(const QModelIndex& index) {
 
 bool GroupedCratesFeature::activateCrate(CrateId crateId) {
     qDebug() << "GroupedCratesFeature::activateCrate()" << crateId;
+    qDebug() << "EVE EVE EVE EVE EVE GroupedCratesFeature::activateCrate()" << crateId;
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
@@ -1156,5 +1159,41 @@ void GroupedCratesFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds
     }
     if (previouslySelectedIndex.isValid()) {
         m_lastRightClickedIndex = previouslySelectedIndex;
+    }
+}
+
+void GroupedCratesFeature::activateChild(const QModelIndex& index) {
+    if (sDebug) {
+        qDebug() << "[GroupedCratesFeature] -> activateChild()" << index;
+        qDebug() << "[GroupedCratesFeature] -> activateChild() -> index" << index;
+    }
+    CrateId crateId(crateIdFromIndex(index));
+    if (crateId.toString() == "-1") {
+        if (sDebug) {
+            qDebug() << "[GroupedCratesFeature] -> activateChild() -> crateId = " << crateId;
+            qDebug() << "[GroupedCratesFeature] -> Group activated";
+        }
+        m_lastClickedIndex = index;
+        m_lastRightClickedIndex = QModelIndex();
+        m_prevSiblingCrate = CrateId();
+        emit disableSearch();
+        emit enableCoverArtDisplay(false);
+        emit featureSelect(this, m_lastClickedIndex);
+
+    } else {
+        if (sDebug) {
+            qDebug() << "[GroupedCratesFeature] -> activateChild() ->  crateId = " << crateId;
+            qDebug() << "[GroupedCratesFeature] -> Child crate activated";
+        }
+        VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+            return;
+        }
+        m_lastClickedIndex = index;
+        m_lastRightClickedIndex = QModelIndex();
+        m_prevSiblingCrate = CrateId();
+        emit saveModelState();
+        m_crateTableModel.selectCrate(crateId);
+        emit showTrackModel(&m_crateTableModel);
+        emit enableCoverArtDisplay(true);
     }
 }

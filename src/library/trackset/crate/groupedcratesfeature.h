@@ -44,6 +44,8 @@ class GroupedCratesFeature : public BaseTrackSetFeature {
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+    void oldactivateChild(const QModelIndex& index);
+    // void oldactivateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
