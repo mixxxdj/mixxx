@@ -2,10 +2,13 @@
 
 #include <QFlags>
 #include <algorithm>
+#include <cstddef>
 #include <cstring> // memset
+#include <span>
 
 #include "audio/types.h"
 #include "util/platform.h"
+#include "util/rampingvalue.h"
 #include "util/types.h"
 
 // A group of utilities for working with samples.
