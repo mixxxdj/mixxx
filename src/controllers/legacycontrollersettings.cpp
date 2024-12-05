@@ -5,6 +5,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QEvent>
 #include <QLabel>
 #include <QLayout>
 #include <QSpinBox>
@@ -150,9 +151,15 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         emit changed();
     });
 
+    // We want to format the checkbox label with html styles. This is not possible
+    // so we attach a separate QLabel and, in order to get a clickable label like
+    // with QCheckBox, we associate the label with the checkbox (buddy).
+    // When the label is clicked we toggle the checkbox in eventFilter().
     auto pLabelWidget = make_parented<QLabel>(pWidget);
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
+    pLabelWidget->setBuddy(pCheckBox);
+    pLabelWidget->installEventFilter(this);
 
     QBoxLayout* pLayout = new QHBoxLayout();
 
@@ -172,6 +179,17 @@ bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
             QString::compare(element.attribute("type"),
                     "boolean",
                     Qt::CaseInsensitive) == 0;
+}
+
+bool LegacyControllerBooleanSetting::eventFilter(QObject* pObj, QEvent* pEvent) {
+    QLabel* pLabel = qobject_cast<QLabel*>(pObj);
+    if (pLabel && pEvent->type() == QEvent::MouseButtonPress) {
+        QCheckBox* pCheckBox = qobject_cast<QCheckBox*>(pLabel->buddy());
+        if (pCheckBox) {
+            pCheckBox->toggle();
+        }
+    }
+    return QObject::eventFilter(pObj, pEvent);
 }
 
 template<class SettingType,
