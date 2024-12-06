@@ -202,7 +202,14 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+#endif
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void autoDJError(AutoDJProcessor::AutoDJError error);
     void transitionTimeChanged(int time);
@@ -231,7 +238,11 @@ class AutoDJProcessor : public QObject {
   protected:
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
-        emit loadTrackToPlayer(pTrack, group, play);
+        emit loadTrackToPlayer(pTrack, group,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         emit autoDJStateChanged(state);

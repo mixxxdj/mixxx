@@ -5,8 +5,11 @@
 #include "engine/controls/cuecontrol.h"
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
+#include "widget/wbasewidget.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
@@ -72,23 +75,21 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
             createConfigKey(QStringLiteral("status")),
             this,
             ControlFlag::NoAssertIfMissing);
+    addConnection(std::make_unique<ControlParameterWidgetConnection>(
+                          this,
+                          getLeftClickConfigKey(), // "activate"
+                          nullptr,
+                          ControlParameterWidgetConnection::DIR_FROM_WIDGET,
+                          ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+            WBaseWidget::ConnectionSide::Left);
 
-    auto* pLeftConnection = new ControlParameterWidgetConnection(
-            this,
-            getLeftClickConfigKey(), // "activate"
-            nullptr,
-            ControlParameterWidgetConnection::DIR_FROM_WIDGET,
-            ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
-    addLeftConnection(pLeftConnection);
-
-    auto* pDisplayConnection = new ControlParameterWidgetConnection(
-            this,
-            createConfigKey(QStringLiteral("status")),
-            nullptr,
-            ControlParameterWidgetConnection::DIR_TO_WIDGET,
-            ControlParameterWidgetConnection::EMIT_NEVER);
-    addConnection(pDisplayConnection);
-    setDisplayConnection(pDisplayConnection);
+    addAndSetDisplayConnection(std::make_unique<ControlParameterWidgetConnection>(
+                                       this,
+                                       createConfigKey(QStringLiteral("status")),
+                                       nullptr,
+                                       ControlParameterWidgetConnection::DIR_TO_WIDGET,
+                                       ControlParameterWidgetConnection::EMIT_NEVER),
+            WBaseWidget::ConnectionSide::None);
 
     QDomNode con = context.selectNode(node, QStringLiteral("Connection"));
     if (!con.isNull()) {
@@ -119,7 +120,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
             }
 
             CuePointer pHotCue;
-            QList<CuePointer> cueList = pTrack->getCuePoints();
+            const QList<CuePointer> cueList = pTrack->getCuePoints();
             for (const auto& pCue : cueList) {
                 if (pCue->getHotCue() == m_hotcue) {
                     pHotCue = pCue;

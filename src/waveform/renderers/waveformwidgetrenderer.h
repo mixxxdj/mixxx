@@ -46,6 +46,12 @@ class WaveformWidgetRenderer {
         return m_pTrack;
     }
 
+#ifdef __STEM__
+    uint getSelectedStems() const {
+        return m_selectedStems;
+    }
+#endif
+
     bool isSlipActive() const {
         return m_pos[::WaveformRendererAbstract::Play] != m_pos[::WaveformRendererAbstract::Slip];
     }
@@ -170,6 +176,9 @@ class WaveformWidgetRenderer {
         return renderer;
     }
 
+#ifdef __STEM__
+    void selectStem(mixxx::StemChannelSelection stemMask);
+#endif
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
@@ -181,7 +190,7 @@ class WaveformWidgetRenderer {
 
     void setPlayMarkerPosition(double newPos) {
         VERIFY_OR_DEBUG_ASSERT(newPos >= 0.0 && newPos <= 1.0) {
-            newPos = math_clamp(newPos, 0.0, 1.0);
+            newPos = std::clamp(newPos, 0.0, 1.0);
         }
         m_playMarkerPosition = newPos;
     }
@@ -195,6 +204,9 @@ class WaveformWidgetRenderer {
   protected:
     const QString m_group;
     TrackPointer m_pTrack;
+#ifdef __STEM__
+    uint m_selectedStems;
+#endif
     QList<WaveformRendererAbstract*> m_rendererStack;
     Qt::Orientation m_orientation;
     int m_dimBrightThreshold;

@@ -16,6 +16,7 @@ constexpr size_t kMaxHidErrorMessageSize = 512;
 HidIoOutputReport::HidIoOutputReport(
         const quint8& reportId, const unsigned int& reportDataSize)
         : m_reportId(reportId),
+          m_hidWriteErrorLogged(false),
           m_possiblyUnsentDataCached(false),
           m_lastCachedDataSize(0) {
     // First byte must always contain the ReportID - also after swapping, therefore initialize both arrays
@@ -128,10 +129,20 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
             reinterpret_cast<const unsigned char*>(m_lastSentData.constData()),
             m_lastSentData.size());
     if (result == -1) {
-        qCWarning(logOutput) << "Unable to send data to device :"
-                             << mixxx::convertWCStringToQString(
-                                        hid_error(pHidDevice),
-                                        kMaxHidErrorMessageSize);
+        if (!m_hidWriteErrorLogged) {
+            qCWarning(logOutput)
+                    << "Unable to send data to device :"
+                    << mixxx::convertWCStringToQString(
+                               hid_error(pHidDevice), kMaxHidErrorMessageSize)
+                    << "Note that, this message is only logged once and may "
+                       "not appear again until all hid_writee errors have "
+                       "disappeared.";
+
+            // Stop logging error messages if every hid_write() fails to avoid large log files
+            m_hidWriteErrorLogged = true;
+        }
+    } else {
+        m_hidWriteErrorLogged = false;
     }
 
     hidDeviceLock.unlock();

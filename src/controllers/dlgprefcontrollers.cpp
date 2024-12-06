@@ -145,7 +145,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
     // to keep this dialog and the controllermanager consistent.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    for (auto* pController : controllerList) {
+    for (auto* pController : std::as_const(controllerList)) {
         pController->disconnect(this);
     }
     while (!m_controllerPages.isEmpty()) {
@@ -175,7 +175,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    for (auto* pController : controllerList) {
+    for (auto* pController : std::as_const(controllerList)) {
         DlgPrefController* pControllerDlg = new DlgPrefController(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
@@ -203,10 +203,24 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
+
+        const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
+            switch (protocol) {
+            case DataRepresentationProtocol::USB_BULK_TRANSFER:
+                return QStringLiteral("ic_preferences_bulk.svg");
+            case DataRepresentationProtocol::HID:
+                return QStringLiteral("ic_preferences_hid.svg");
+            case DataRepresentationProtocol::MIDI:
+                return QStringLiteral("ic_preferences_midi.svg");
+            default:
+                return QStringLiteral("ic_preferences_controllers.svg");
+            }
+        }();
+
         m_pDlgPreferences->addPageWidget(
                 DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
                 pController->getName(),
-                "ic_preferences_controllers.svg");
+                treeImage);
 
         m_pControllersRootItem->addChild(pControllerTreeItem);
         m_controllerTreeItems.append(pControllerTreeItem);

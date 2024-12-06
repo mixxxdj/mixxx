@@ -288,7 +288,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
     // Detect and handle unexpected discontinuities: Overlap
     if (inputRange.start() < outputRange.start()) {
         const auto overlapRange = IndexRange::between(
-                math_max(inputRange.start(), minOutputIndex),
+                std::max(inputRange.start(), minOutputIndex),
                 outputRange.start());
         DEBUG_ASSERT(
                 overlapRange.orientation() !=
@@ -313,7 +313,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
     }
     if (!isEmpty() && inputRange.start() < writeIndex()) {
         const auto overlapRange = IndexRange::between(
-                math_max(inputRange.start(), readIndex()),
+                std::max(inputRange.start(), readIndex()),
                 writeIndex());
         DEBUG_ASSERT(
                 overlapRange.orientation() !=
@@ -340,7 +340,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
         const auto precedingRange =
                 IndexRange::between(
                         inputRange.start(),
-                        math_min(outputRange.start(), inputRange.end()));
+                        std::min(outputRange.start(), inputRange.end()));
 #if VERBOSE_DEBUG_LOG
         kLogger.debug()
                 << "Discarding input data"
@@ -363,7 +363,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
             const auto gapRange =
                     IndexRange::between(
                             outputRange.start(),
-                            math_min(inputRange.start(), outputRange.end()));
+                            std::min(inputRange.start(), outputRange.end()));
             DEBUG_ASSERT(
                     gapRange.orientation() !=
                     IndexRange::Orientation::Backward);
@@ -390,7 +390,7 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
         const auto copyableFrameRange =
                 IndexRange::between(
                         outputRange.start(),
-                        math_min(inputRange.end(), outputRange.end()));
+                        std::min(inputRange.end(), outputRange.end()));
         DEBUG_ASSERT(copyableFrameRange.orientation() != IndexRange::Orientation::Backward);
         if (copyableFrameRange.orientation() == IndexRange::Orientation::Forward) {
 #if VERBOSE_DEBUG_LOG

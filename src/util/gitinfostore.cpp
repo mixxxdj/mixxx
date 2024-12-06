@@ -3,22 +3,18 @@
 #define GIT_INFO
 #include "gitinfo.h"
 
-//static
-const char* GitInfoStore::branch() {
-    return GIT_BRANCH;
+QString GitInfoStore::branch() {
+    return QStringLiteral(GIT_BRANCH);
 };
 
-//static
-const char* GitInfoStore::describe() {
-    return GIT_DESCRIBE;
+QString GitInfoStore::describe() {
+    return QStringLiteral(GIT_DESCRIBE);
 };
 
-//static
-const char* GitInfoStore::date() {
-    return GIT_COMMIT_DATE;
+QString GitInfoStore::date() {
+    return QStringLiteral(GIT_COMMIT_DATE);
 };
 
-//static
 int GitInfoStore::commitCount() {
 #ifdef GIT_COMMIT_COUNT
     return GIT_COMMIT_COUNT;
@@ -27,7 +23,6 @@ int GitInfoStore::commitCount() {
 #endif
 };
 
-//static
 bool GitInfoStore::dirty() {
 #ifdef GIT_DIRTY
     return true;

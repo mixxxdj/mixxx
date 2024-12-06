@@ -368,12 +368,12 @@ void EncoderOpus::pushTagsPacket() {
     }
 }
 
-void EncoderOpus::encodeBuffer(const CSAMPLE *samples, const int size) {
+void EncoderOpus::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
     if (!m_pOpus) {
         return;
     }
 
-    int writeRequired = size;
+    int writeRequired = static_cast<int>(bufferSize);
     int writeAvailable = m_fifoBuffer.writeAvailable();
     if (writeRequired > writeAvailable) {
         kLogger.warning() << "FIFO buffer too small, losing samples!"

@@ -795,7 +795,7 @@ QModelIndexList WTrackTableView::getSelectedRows() const {
 }
 
 QList<int> WTrackTableView::getSelectedRowNumbers() const {
-    QModelIndexList indices = getSelectedRows();
+    const QModelIndexList indices = getSelectedRows();
     QList<int> selectedRows;
     for (const QModelIndex& idx : indices) {
         selectedRows.append(idx.row());
@@ -1275,7 +1275,14 @@ void WTrackTableView::activateSelectedTrack() {
     slotMouseDoubleClicked(indices.at(0));
 }
 
-void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
+#ifdef __STEM__
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
+#else
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+        bool play) {
+#endif
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
@@ -1309,7 +1316,12 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     auto* pTrackModel = getTrackModel();
     TrackPointer pTrack;
     if (pTrackModel && (pTrack = pTrackModel->getTrack(index))) {
+#ifdef __STEM__
+        DEBUG_ASSERT(!stemMask || pTrack->hasStem());
+        emit loadTrackToPlayer(pTrack, group, stemMask, play);
+#else
         emit loadTrackToPlayer(pTrack, group, play);
+#endif
     }
 }
 

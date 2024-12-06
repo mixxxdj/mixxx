@@ -398,7 +398,7 @@ bool TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    const QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
     QList<TrackId> trackIds;
     trackIds.reserve(trackRefs.size());
     for (const auto& trackRef : trackRefs) {

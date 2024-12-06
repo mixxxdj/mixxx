@@ -1,6 +1,6 @@
 #pragma once
 #include <QAbstractListModel>
-#include <QtQml>
+#include <QQmlEngine>
 
 #include "effects/defs.h"
 

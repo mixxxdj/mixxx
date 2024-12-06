@@ -1175,6 +1175,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/font.cpp
   src/util/imagefiledata.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp
@@ -1201,7 +1202,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/tapfilter.cpp
   src/util/task.cpp
   src/util/taskmonitor.cpp
-  src/util/threadcputimer.cpp
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp
@@ -1471,7 +1471,6 @@ set(MIXXX_LIB_PRECOMPILED_HEADER
   src/util/taskmonitor.h
   src/util/thread_affinity.h
   src/util/thread_annotations.h
-  src/util/threadcputimer.h
   src/util/time.h
   src/util/timer.h
   src/util/trace.h
@@ -2132,6 +2131,7 @@ add_executable(mixxx-test
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
   src/test/rgbcolor_test.cpp
+  src/test/rotary_test.cpp
   src/test/ringdelaybuffer_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
@@ -2245,12 +2245,6 @@ add_custom_target(mixxx-gitinfo
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
-    src/util/gitinfostore.cpp
-)
-target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
-add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
-
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
@@ -2325,7 +2319,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.21.0)
+  set(LIBDJINTEROP_VERSION 0.22.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2357,11 +2351,18 @@ if(ENGINEPRIME)
     # For offline builds download the archive file from the URL and
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
+    #
+    # If you want to test (locally) an experimental fork/branch of libdjinterop,
+    # you can comment out URL and URL_HASH and use GIT_REPOSITORY instead:
+    #
+    # GIT_REPOSITORY "https://github.com/abcd/your-fork-of-libdjinterop"
+    # GIT_TAG "origin/name-of-your-branch"
+    #
     ExternalProject_Add(libdjinterop
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=160d4e09b25e859816a6b664058e7c6bc5cd889adeb188a9721c2b65d2133641
+      URL_HASH SHA256=e811158d42c3864f5b682bcf76e0af78278050439d82d14d592dd0a391da6b20
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2789,14 +2790,18 @@ if(QML)
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlchainpresetmodel.cpp
     src/qml/qmlwaveformoverview.cpp
+    src/qml/qmlmixxxcontrollerscreen.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
+    # needed for qml/qmlautoreload.cpp
+    src/util/autofilereloader.cpp
   )
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+
 
   install(
     DIRECTORY
@@ -3155,6 +3160,14 @@ if(APPLE OR WIN32)
   )
 endif()
 
+add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
+    src/util/gitinfostore.cpp
+)
+# QtCore for QString
+target_link_libraries(mixxx-gitinfostore PUBLIC Qt${QT_VERSION_MAJOR}::Core)
+target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
+add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
+
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/base/KaiserWindow.cpp
@@ -3469,6 +3482,7 @@ if (STEM)
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/widget/wtrackstemmenu.cpp
     src/widget/wstemlabel.cpp
   )
   if(QOPENGL)
@@ -3705,40 +3719,10 @@ find_package(LibUSB)
 # USB HID controller support
 option(HID "USB HID controller support" ON)
 if(HID)
-  # hidapi 0.11.2 is the first release, that implements hid_get_input_report
-  # for the Linux hidraw backend.
-  find_package(hidapi 0.11.2)
+  # hidapi 0.14.0 is the first release, that contains bus type information
+  find_package(hidapi 0.14.0)
   if(NOT hidapi_FOUND)
-    message(STATUS "Linking internal libhidapi statically")
-    add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
-    target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
-    if(WIN32)
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
-        find_library(Setupapi_LIBRARY Setupapi REQUIRED)
-        target_link_libraries(mixxx-hidapi PUBLIC ${Setupapi_LIBRARY})
-    elseif(APPLE)
-        if(IOS)
-          message(FATAL_ERROR "USB HID controllers are not supported on iOS")
-        endif()
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
-        find_library(AppKit_LIBRARY AppKit REQUIRED)
-        target_link_libraries(mixxx-hidapi PUBLIC ${AppKit_LIBRARY})
-    elseif(UNIX)
-      if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-        find_library(libudev_LIBRARY udev REQUIRED)
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/linux/hid.c)
-        target_link_libraries(mixxx-hidapi PRIVATE ${libudev_LIBRARY})
-      else()
-        if(NOT LibUSB_FOUND)
-          message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
-        endif()
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
-        target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
-      endif()
-    else()
-      message(FATAL_ERROR "USB HID controller support only possible on Windows/Mac OS/Linux/BSD.")
-    endif()
-    target_link_libraries(mixxx-lib PRIVATE mixxx-hidapi)
+      message(FATAL_ERROR "hidapi >= 0.14.0 not found!")
   else()
     # hidapi has two backends on Linux, one using the kernel's hidraw API and one using libusb.
     # libusb obviously does not support Bluetooth HID devices, so use the hidraw backend. The
@@ -3756,6 +3740,7 @@ if(HID)
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/hidusagetables.cpp
     src/controllers/hid/legacyhidcontrollermapping.cpp
     src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
   )
