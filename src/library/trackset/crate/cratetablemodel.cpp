@@ -32,7 +32,9 @@ CrateTableModel::CrateTableModel(
 }
 
 QList<QVariantMap> CrateTableModel::getGroupedCrates() {
-    qDebug() << "[GROUPEDCRATESTABLEMODEL] Generating grouped crates list.";
+    if (sDebug) {
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] Generating grouped crates list.";
+    }
 
     QList<QVariantMap> groupedCrates;
 
@@ -48,6 +50,7 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
                  << m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
     }
 
+    // fixed prefix length
     if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedCratesLength")) == 0) {
         QString queryString =
                 QStringLiteral(
@@ -74,7 +77,9 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
 
         while (query.next()) {
             QVariantMap crateData;
-            crateData["group_name"] = query.value("group_name");
+            // QString groupName = query.value("group_name").toString().trimmed();
+            QString groupName = query.value("group_name").toString();
+            crateData["group_name"] = groupName;
             crateData["crate_id"] = query.value("crate_id");
             crateData["crate_name"] = query.value("crate_name");
             groupedCrates.append(crateData);
@@ -85,6 +90,7 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
             }
         }
     } else {
+        // Variable prefix length with mask, multiple occurrences -> multilevel subgroups
         QString queryString = QStringLiteral(
                 "SELECT DISTINCT "
                 "  id AS crate_id, "
@@ -101,39 +107,48 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
                        << query.lastError();
             return groupedCrates;
         }
-        int posDelimit;
         const QString& searchDelimit = m_pConfig->getValue(
                 ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
 
         while (query.next()) {
-            QVariantMap crateData;
-            if ((searchDelimit != "") && (searchDelimit.length() > 0)) {
-                if (query.value("crate_name").toString().indexOf(searchDelimit, 0) > 0) {
-                    // int searchDelimitLength = searchDelimit.length();
-                    // if (query.value("crate_name").toString().indexOf(searchDelimit, 0) > 0) {
-                    posDelimit = query.value("crate_name").toString().indexOf(searchDelimit, 0);
-                    const QString& groupString =
-                            query.value("crate_name").toString().mid(0, posDelimit);
+            QString crateName = query.value("crate_name").toString();
+            if (crateName.contains(searchDelimit)) {
+                // QStringList groupHierarchy = crateName.split(searchDelimit, Qt::SkipEmptyParts);
+                QStringList groupHierarchy = crateName.split(searchDelimit);
+                QString currentGroup;
 
-                    crateData["group_name"] = groupString;
+                for (int i = 0; i < groupHierarchy.size(); ++i) {
+                    // currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i].trimmed();
+                    currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i];
+
+                    QVariantMap crateData;
+                    crateData["group_name"] = currentGroup;
                     crateData["crate_id"] = query.value("crate_id");
-                    crateData["crate_name"] = query.value("crate_name");
-                    groupedCrates.append(crateData);
+                    crateData["crate_name"] = crateName;
+
+                    // Add only the full crate record for the last level
+                    if (i == groupHierarchy.size() - 1) {
+                        groupedCrates.append(crateData);
+                    }
+
                     if (sDebug) {
-                        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
-                                    "crate added: "
+                        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> crate added: "
                                  << crateData;
                     }
-                } else {
-                    crateData["group_name"] = query.value("crate_name");
-                    crateData["crate_id"] = query.value("crate_id");
-                    crateData["crate_name"] = query.value("crate_name");
-                    groupedCrates.append(crateData);
-                    if (sDebug) {
-                        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
-                                    "crate added: "
-                                 << crateData;
-                    }
+                }
+            } else {
+                // No delimiter in crate name -> root-level
+                QVariantMap crateData;
+                // crateData["group_name"] = crateName.trimmed();
+                crateData["group_name"] = crateName;
+                crateData["crate_id"] = query.value("crate_id");
+                crateData["crate_name"] = crateName;
+                groupedCrates.append(crateData);
+
+                if (sDebug) {
+                    qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
+                                "crate added at root level: "
+                             << crateData;
                 }
             }
         }
