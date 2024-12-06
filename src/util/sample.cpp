@@ -940,3 +940,180 @@ void SampleUtil::copyReverse(CSAMPLE* M_RESTRICT pDest,
         }
     }
 }
+// static
+void SampleUtil::copy1WithGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc0,
+        CSAMPLE_GAIN gain0,
+        int iNumSamples) {
+    if (gain0 == CSAMPLE_GAIN_ZERO) {
+        clear(pDest, iNumSamples);
+        return;
+    }
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc0[i] * gain0;
+    }
+}
+// static
+void SampleUtil::copy1WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc0,
+        CSAMPLE_GAIN gain0in,
+        CSAMPLE_GAIN gain0out,
+        int iNumSamples) {
+    if (gain0in == CSAMPLE_GAIN_ZERO && gain0out == CSAMPLE_GAIN_ZERO) {
+        clear(pDest, iNumSamples);
+        return;
+    }
+    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0;
+    }
+}
+// static
+void SampleUtil::copy2WithGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc0,
+        CSAMPLE_GAIN gain0,
+        const CSAMPLE* M_RESTRICT pSrc1,
+        CSAMPLE_GAIN gain1,
+        int iNumSamples) {
+    if (gain0 == CSAMPLE_GAIN_ZERO) {
+        copy1WithGain(pDest, pSrc1, gain1, iNumSamples);
+        return;
+    }
+    if (gain1 == CSAMPLE_GAIN_ZERO) {
+        copy1WithGain(pDest, pSrc0, gain0, iNumSamples);
+        return;
+    }
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc0[i] * gain0 +
+                pSrc1[i] * gain1;
+    }
+}
+// static
+void SampleUtil::copy2WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc0,
+        CSAMPLE_GAIN gain0in,
+        CSAMPLE_GAIN gain0out,
+        const CSAMPLE* M_RESTRICT pSrc1,
+        CSAMPLE_GAIN gain1in,
+        CSAMPLE_GAIN gain1out,
+        int iNumSamples) {
+    if (gain0in == CSAMPLE_GAIN_ZERO && gain0out == CSAMPLE_GAIN_ZERO) {
+        copy1WithRampingGain(pDest, pSrc1, gain1in, gain1out, iNumSamples);
+        return;
+    }
+    if (gain1in == CSAMPLE_GAIN_ZERO && gain1out == CSAMPLE_GAIN_ZERO) {
+        copy1WithRampingGain(pDest, pSrc0, gain0in, gain0out, iNumSamples);
+        return;
+    }
+    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
+    const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                pSrc1[i * 2] * gain1;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                pSrc1[i * 2 + 1] * gain1;
+    }
+}
+// static
+void SampleUtil::copy3WithGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc0,
+        CSAMPLE_GAIN gain0,
+        const CSAMPLE* M_RESTRICT pSrc1,
+        CSAMPLE_GAIN gain1,
+        const CSAMPLE* M_RESTRICT pSrc2,
+        CSAMPLE_GAIN gain2,
+        int iNumSamples) {
+    if (gain0 == CSAMPLE_GAIN_ZERO) {
+        copy2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
+        return;
+    }
+    if (gain1 == CSAMPLE_GAIN_ZERO) {
+        copy2WithGain(pDest, pSrc0, gain0, pSrc2, gain2, iNumSamples);
+        return;
+    }
+    if (gain2 == CSAMPLE_GAIN_ZERO) {
+        copy2WithGain(pDest, pSrc0, gain0, pSrc1, gain1, iNumSamples);
+        return;
+    }
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc0[i] * gain0 +
+                pSrc1[i] * gain1 +
+                pSrc2[i] * gain2;
+    }
+}
+// static
+void SampleUtil::copy3WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc0,
+        CSAMPLE_GAIN gain0in,
+        CSAMPLE_GAIN gain0out,
+        const CSAMPLE* M_RESTRICT pSrc1,
+        CSAMPLE_GAIN gain1in,
+        CSAMPLE_GAIN gain1out,
+        const CSAMPLE* M_RESTRICT pSrc2,
+        CSAMPLE_GAIN gain2in,
+        CSAMPLE_GAIN gain2out,
+        int iNumSamples) {
+    if (gain0in == CSAMPLE_GAIN_ZERO && gain0out == CSAMPLE_GAIN_ZERO) {
+        copy2WithRampingGain(pDest,
+                pSrc1,
+                gain1in,
+                gain1out,
+                pSrc2,
+                gain2in,
+                gain2out,
+                iNumSamples);
+        return;
+    }
+    if (gain1in == CSAMPLE_GAIN_ZERO && gain1out == CSAMPLE_GAIN_ZERO) {
+        copy2WithRampingGain(pDest,
+                pSrc0,
+                gain0in,
+                gain0out,
+                pSrc2,
+                gain2in,
+                gain2out,
+                iNumSamples);
+        return;
+    }
+    if (gain2in == CSAMPLE_GAIN_ZERO && gain2out == CSAMPLE_GAIN_ZERO) {
+        copy2WithRampingGain(pDest,
+                pSrc0,
+                gain0in,
+                gain0out,
+                pSrc1,
+                gain1in,
+                gain1out,
+                iNumSamples);
+        return;
+    }
+    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
+    const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
+    const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                pSrc1[i * 2] * gain1 +
+                pSrc2[i * 2] * gain2;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                pSrc1[i * 2 + 1] * gain1 +
+                pSrc2[i * 2 + 1] * gain2;
+    }
+}
