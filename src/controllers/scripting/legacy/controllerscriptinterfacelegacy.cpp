@@ -1,5 +1,6 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <QStringEncoder>
 #include <gsl/pointers>
 
 #include "control/controlobject.h"
@@ -1051,4 +1052,80 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
     // activate the ramping in scratchProcess()
     m_ramp[deck] = true;
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const ControllerScriptInterfaceLegacy::Charset targetCharset,
+        const QString& value) {
+    using enum Charset;
+    switch (targetCharset) {
+    case ASCII:
+        return convertCharsetInternal(QStringLiteral("US-ASCII"), value);
+    case UTF_8:
+        return convertCharsetInternal(QStringLiteral("UTF-8"), value);
+    case UTF_16LE:
+        return convertCharsetInternal(QStringLiteral("UTF-16LE"), value);
+    case UTF_16BE:
+        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
+    case UTF_32LE:
+        return convertCharsetInternal(QStringLiteral("UTF-32LE"), value);
+    case UTF_32BE:
+        return convertCharsetInternal(QStringLiteral("UTF-32BE"), value);
+    case CentralEurope:
+        return convertCharsetInternal(QStringLiteral("windows-1250"), value);
+    case Cyrillic:
+        return convertCharsetInternal(QStringLiteral("windows-1251"), value);
+    case Latin1:
+        return convertCharsetInternal(QStringLiteral("windows-1252"), value);
+    case Greek:
+        return convertCharsetInternal(QStringLiteral("windows-1253"), value);
+    case Turkish:
+        return convertCharsetInternal(QStringLiteral("windows-1254"), value);
+    case Hebrew:
+        return convertCharsetInternal(QStringLiteral("windows-1255"), value);
+    case Arabic:
+        return convertCharsetInternal(QStringLiteral("windows-1256"), value);
+    case Baltic:
+        return convertCharsetInternal(QStringLiteral("windows-1257"), value);
+    case Vietnamese:
+        return convertCharsetInternal(QStringLiteral("windows-1258"), value);
+    case Latin9:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
+    case Shift_JIS:
+        return convertCharsetInternal(QStringLiteral("Shift_JIS"), value);
+    case EUC_JP:
+        return convertCharsetInternal(QStringLiteral("EUC-JP"), value);
+    case EUC_KR:
+        return convertCharsetInternal(QStringLiteral("EUC-KR"), value);
+    case Big5_HKSCS:
+        return convertCharsetInternal(QStringLiteral("Big5-HKSCS"), value);
+    case KOI8_U:
+        return convertCharsetInternal(QStringLiteral("KOI8-U"), value);
+    case UCS2:
+        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
+    case SCSU:
+        return convertCharsetInternal(QStringLiteral("SCSU"), value);
+    case BOCU_1:
+        return convertCharsetInternal(QStringLiteral("BOCU-1"), value);
+    case CESU_8:
+        return convertCharsetInternal(QStringLiteral("CESU-8"), value);
+    }
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
+    return QByteArray();
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
+        const QString& targetCharset, const QString& value) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QAnyStringView encoderName = QAnyStringView(targetCharset);
+#else
+    QByteArray encoderNameArray = targetCharset.toUtf8();
+    const char* encoderName = encoderNameArray.constData();
+#endif
+    QStringEncoder fromUtf16 = QStringEncoder(encoderName);
+    if (!fromUtf16.isValid()) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
+    }
+    return fromUtf16(value);
 }
