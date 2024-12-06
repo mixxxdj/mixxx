@@ -1,6 +1,8 @@
 #import <AudioToolbox/AudioToolbox.h>
 #include "effects/backends/effectmanifestparameter.h"
 
+#include <QElapsedTimer>
+#include <QThread>
 #include <memory>
 
 #include "effects/backends/audiounit/audiounitmanager.h"
@@ -18,10 +20,24 @@ AudioUnitManifest::AudioUnitManifest(
     setDescription(QString::fromNSString([component typeName]));
     setAuthor(QString::fromNSString([component manufacturerName]));
 
-    // Try instantiating the unit in-process to fetch its properties quickly
+    // All audio units provide a UI (not just if [component hasCustomView] is
+    // set) since they provide a generic fallback UI, which may be useful for
+    // effects with many different parameters.
+    setHasUI(true);
 
-    AudioUnitManager manager{component, AudioUnitInstantiationType::Sync};
-    AudioUnit audioUnit = manager.getAudioUnit();
+    // Instantiate audio unit (out-of-process) to load parameters
+    AudioUnitManagerPointer pManager = AudioUnitManager::create(component);
+
+    const int TIMEOUT_MS = 2000;
+    if (!pManager->waitForAudioUnit(TIMEOUT_MS)) {
+        qWarning() << name() << "took more than" << TIMEOUT_MS
+                   << "ms to initialize, skipping manifest initialization "
+                      "for this effect. This means this effect will not "
+                      "display any parameters and likely not be useful!";
+        return;
+    }
+
+    AudioUnit audioUnit = pManager->getAudioUnit();
 
     if (audioUnit) {
         // Fetch number of parameters

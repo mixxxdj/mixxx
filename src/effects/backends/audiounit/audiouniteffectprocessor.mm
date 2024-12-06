@@ -1,13 +1,20 @@
 #import <AVFAudio/AVFAudio.h>
+#import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <CoreAudioKit/CoreAudioKit.h>
 #import <CoreAudioTypes/CoreAudioBaseTypes.h>
-#include <CoreAudioTypes/CoreAudioTypes.h>
+#import <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QLabel>
 #include <QMutex>
+#include <QVBoxLayout>
 #include <QtGlobal>
 #include <algorithm>
+#include <memory>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
+#include "effects/backends/audiounit/audiounitmanager.h"
+#include "effects/backends/audiounit/dlgaudiounit.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/assert.h"
@@ -142,7 +149,7 @@ void AudioUnitEffectGroupState::render(AudioUnit _Nonnull audioUnit,
 
 AudioUnitEffectProcessor::AudioUnitEffectProcessor(
         AVAudioUnitComponent* _Nullable component)
-        : m_manager(component) {
+        : m_pManager(AudioUnitManager::create(component)) {
 }
 
 void AudioUnitEffectProcessor::loadEngineEffectParameters(
@@ -157,7 +164,7 @@ void AudioUnitEffectProcessor::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState,
         const GroupFeatureState&) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     if (!audioUnit) {
         qWarning()
                 << "Cannot process channel before Audio Unit is instantiated";
@@ -175,7 +182,7 @@ void AudioUnitEffectProcessor::processChannel(
 }
 
 void AudioUnitEffectProcessor::syncParameters() {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     DEBUG_ASSERT(audioUnit != nil);
 
     m_lastValues.reserve(m_parameters.size());
@@ -210,7 +217,7 @@ void AudioUnitEffectProcessor::syncParameters() {
 
 void AudioUnitEffectProcessor::syncStreamFormat(
         const mixxx::EngineParameters& parameters) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     DEBUG_ASSERT(audioUnit != nil);
 
     if (parameters.sampleRate() != m_lastSampleRate ||
@@ -250,4 +257,8 @@ void AudioUnitEffectProcessor::syncStreamFormat(
             }
         }
     }
+}
+
+std::unique_ptr<DlgEffect> AudioUnitEffectProcessor::createUI() {
+    return std::make_unique<DlgAudioUnit>(m_pManager);
 }

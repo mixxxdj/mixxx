@@ -814,6 +814,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/chains/pergroupeffectchain.cpp
   src/effects/chains/quickeffectchain.cpp
   src/effects/chains/standardeffectchain.cpp
+  src/effects/dlgeffect.cpp
   src/effects/effectbuttonparameterslot.cpp
   src/effects/effectchain.cpp
   src/effects/effectchainmixmode.cpp
@@ -1598,10 +1599,12 @@ if(APPLE)
       src/effects/backends/audiounit/audiounitmanager.mm
       src/effects/backends/audiounit/audiouniteffectprocessor.mm
       src/effects/backends/audiounit/audiounitmanifest.mm
+      src/effects/backends/audiounit/dlgaudiounit.mm
     )
     target_link_libraries(mixxx-lib PRIVATE
       "-weak_framework AudioToolbox"
       "-weak_framework AVFAudio"
+      "-weak_framework CoreAudioKit"
     )
     target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
   endif()

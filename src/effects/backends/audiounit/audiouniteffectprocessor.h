@@ -1,15 +1,18 @@
 #pragma once
 
 #import <AVFAudio/AVFAudio.h>
+#import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
 #include <QList>
 #include <atomic>
+#include <memory>
 
 #include "audio/types.h"
 #include "effects/backends/audiounit/audiounitmanager.h"
 #include "effects/backends/effectprocessor.h"
+#include "effects/dlgeffect.h"
 #include "engine/engine.h"
 
 class AudioUnitEffectGroupState final : public EffectState {
@@ -54,8 +57,10 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
+    std::unique_ptr<DlgEffect> createUI() override;
+
   private:
-    AudioUnitManager m_manager;
+    AudioUnitManagerPointer m_pManager;
 
     QList<EngineEffectParameterPointer> m_parameters;
     QList<AudioUnitParameterValue> m_lastValues;

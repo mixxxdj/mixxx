@@ -209,14 +209,21 @@ bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
                      << "took"
                      << time.elapsed().debugMillisWithUnit();
         } else {
-            qDebug() << "Processing"
-                     << pEvent->type()
-                     << "for object"
-                     << pTarget // will print address, class and object name
-                     << "running in thread:"
-                     << pTarget->thread()->objectName()
-                     << "took"
-                     << time.elapsed().debugMillisWithUnit();
+            if (pTarget) {
+                qDebug() << "Processing"
+                         << pEvent->type()
+                         << "for object"
+                         << pTarget // will print address, class and object name
+                         << "running in thread:"
+                         << pTarget->thread()->objectName()
+                         << "took"
+                         << time.elapsed().debugMillisWithUnit();
+            } else {
+                qCritical() << "Processing"
+                            << pEvent->type()
+                            << "for null pointer, this is probably a bug! This took"
+                            << time.elapsed().debugMillisWithUnit();
+            }
         }
     }
 
