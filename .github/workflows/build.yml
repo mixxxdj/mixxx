@@ -359,7 +359,9 @@ jobs:
           timeout_minutes: 30
           max_attempts: 12
           retry_wait_seconds: 1
-          command: cd build && cpack -G ${{ matrix.cpack_generator }} -V
+          command: |
+            cd build
+            cpack -G ${{ matrix.cpack_generator }} -V
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
