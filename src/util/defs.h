@@ -41,3 +41,4 @@ constexpr Qt::Key kHideRemoveShortcutKey = Qt::Key_Delete;
 #endif
 
 constexpr Qt::Key kRenameSidebarItemShortcutKey = Qt::Key_F2;
+constexpr Qt::Key kRenameSidebarItemAlternativeShortcutKey = Qt::Key_R;

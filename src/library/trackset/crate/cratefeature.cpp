@@ -23,6 +23,7 @@
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/file.h"
+#include "widget/actionutils.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -69,7 +70,10 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
-    m_pRenameCrateAction->setShortcut(kRenameSidebarItemShortcutKey);
+    m_pRenameCrateAction->setShortcuts(QList<QKeySequence>{
+            QKeySequence(kRenameSidebarItemShortcutKey),
+            QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
+    ActionUtils::updateMultiShortcutActionText(m_pRenameCrateAction);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,
