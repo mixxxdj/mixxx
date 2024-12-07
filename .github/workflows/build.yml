@@ -38,8 +38,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 12 x64
-            os: macos-12
+          - name: macOS 13 x64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -63,8 +63,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 12 arm64
-            os: macos-12
+          - name: macOS 13 arm64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -335,8 +335,17 @@ jobs:
 
       - name: "Package"
         if: matrix.cpack_generator != null
-        run: cpack -G ${{ matrix.cpack_generator }} -V
-        working-directory: build
+        # Use retry loop to work around a race condition on macOS causing
+        # 'Resource busy' errors with 'hdiutil'. See
+        # https://github.com/actions/runner-images/issues/7522
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 30
+          max_attempts: 12
+          retry_wait_seconds: 1
+          command: |
+            cd build
+            cpack -G ${{ matrix.cpack_generator }} -V
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null

@@ -1020,7 +1020,12 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
             }
         }
 
-        m_ui.groupBoxSettings->setVisible(!settings.isEmpty());
+        if (settings.isEmpty()) {
+            m_ui.groupBoxSettings->setVisible(false);
+        } else {
+            m_ui.groupBoxSettings->setVisible(true);
+            setScrollSafeGuardForAllInputWidgets(m_ui.groupBoxSettings);
+        }
     }
 
     // If there is still settings that may be saved and no new mapping selected

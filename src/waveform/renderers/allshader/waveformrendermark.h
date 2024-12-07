@@ -54,7 +54,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
     void updateUntilMark(double playPosition, double markerPosition);
     void drawUntilMark(const QMatrix4x4& matrix, float x);
-    float getMaxHeightForText() const;
+    float getMaxHeightForText(float proportion) const;
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
