@@ -22,7 +22,7 @@ Description:
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
-        <Size>240f,1me</Size>
+        <Size>263f,1me</Size>
         <Children>
 
           <!-- Decks -->
@@ -50,6 +50,23 @@ Description:
                 <SetVariable name="Width">25f</SetVariable>
               </Template>
               <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- 4 deck in horizontal layout -->
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- translucent cover when 2 decks are shown -->
+              <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+                <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                <SetVariable name="Text">4 Decks in a Row</SetVariable>
+                <SetVariable name="Setting">[Skin],show_4decks_row</SetVariable>
+                <SetVariable name="Width">190me</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
