@@ -3,6 +3,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
+#include <QKeyEvent>
 #include <QList>
 #include <QListWidget>
 #include <QModelIndex>
@@ -152,6 +153,25 @@ void WTrackMenu::closeEvent(QCloseEvent* event) {
     emit trackMenuVisible(false);
 }
 
+bool WTrackMenu::eventFilter(QObject* pObj, QEvent* e) {
+    // If a checkbox in a QWidgetAction is focused, Left/Right keys are translated
+    // to Up/Down which prevents closing the submenus with Left key like in other
+    // submenus. We simply call hide() of the submenu if Left is pressed.
+    if (e->type() == QEvent::KeyPress) {
+        QCheckBox* cbx = qobject_cast<QCheckBox*>(pObj);
+        if (cbx) {
+            // Note: if we ever add checkboxes to the top level we need to
+            // assert that cbx->parentWidget() != this.
+            QKeyEvent* pKe = static_cast<QKeyEvent*>(e);
+            if (pKe && pKe->key() == Qt::Key_Left) {
+                cbx->parentWidget()->hide();
+                return true;
+            }
+        }
+    }
+    return QObject::eventFilter(pObj, e);
+}
+
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
     if (isEmpty()) {
         return;
@@ -240,6 +260,16 @@ void WTrackMenu::createMenus() {
                     }
                     m_pSearchRelatedMenu->setEnabled(
                             !m_pSearchRelatedMenu->isEmpty());
+                    if (!m_pSearchRelatedMenu->isEmpty()) {
+                        // We're interested in keypress Qt::Key_Left, so use our
+                        // event filter like we do for the crate checkboxes.
+                        for (const auto ch : m_pSearchRelatedMenu->children()) {
+                            QCheckBox* cb = qobject_cast<QCheckBox*>(ch);
+                            if (cb) {
+                                cb->installEventFilter(this);
+                            }
+                        }
+                    }
                 });
         connect(m_pSearchRelatedMenu,
                 &WSearchRelatedTracksMenu::triggerSearch,
@@ -1522,6 +1552,8 @@ void WTrackMenu::slotPopulateCrateMenu() {
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
+        // We're interested in keypress Qt::Key_Left
+        pCheckBox->installEventFilter(this);
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately
         // does not work with QWidgetAction. :hover works for selecting items
