@@ -376,14 +376,15 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     painter.setWorldMatrixEnabled(false);
 
     const Qt::Alignment alignH = m_align & Qt::AlignHorizontal_Mask;
+    const float imgw = static_cast<float>(markerGeometry.m_imageSize.width());
     switch (alignH) {
     case Qt::AlignHCenter:
-        m_linePosition = markerGeometry.m_imageSize.width() / 2.f;
-        m_offset = -(markerGeometry.m_imageSize.width() - 1.f) / 2.f;
+        m_linePosition = imgw / 2.f;
+        m_offset = -(imgw - 1.f) / 2.f;
         break;
     case Qt::AlignLeft:
-        m_linePosition = markerGeometry.m_imageSize.width() - 1.5f;
-        m_offset = -markerGeometry.m_imageSize.width() + 2.f;
+        m_linePosition = imgw - 1.5f;
+        m_offset = -imgw + 2.f;
         break;
     case Qt::AlignRight:
     default:

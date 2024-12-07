@@ -22,16 +22,11 @@
 
 namespace {
 
-struct RoundToPixel {
-    const float m_devicePixelRatio;
-    RoundToPixel(float devicePixelRatio)
-            : m_devicePixelRatio{devicePixelRatio} {
-    }
-    // round to nearest pixel, taking into account the devicePixelRatio
-    float operator()(float pos) const {
-        return std::round(pos * m_devicePixelRatio) / m_devicePixelRatio;
-    }
-};
+auto makeRoundToPixel(float devicePixelRatio) {
+    return [devicePixelRatio](float pos) {
+        return std::round(pos * devicePixelRatio) / devicePixelRatio;
+    };
+}
 
 class TextureGraphics : public WaveformMark::Graphics {
   public:
@@ -213,7 +208,7 @@ void allshader::WaveformRenderMark::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    RoundToPixel roundToPixel{devicePixelRatio};
+    auto roundToPixel = makeRoundToPixel(devicePixelRatio);
 
     for (const auto& pMark : std::as_const(m_marks)) {
         pMark->setBreadth(slipActive ? m_waveformRenderer->getBreadth() / 2
