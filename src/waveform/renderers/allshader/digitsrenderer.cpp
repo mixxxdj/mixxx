@@ -136,7 +136,8 @@ void allshader::DigitsRenderer::updateTexture(
         const QString text(indexToChar(i));
         xs[i] = totalTextWidth;
         qreal w = std::round(metrics.horizontalAdvance(text) *
-                          devicePixelRatio / devicePixelRatio) +
+                          devicePixelRatio) /
+                        devicePixelRatio +
                 space + space + 1.0;
         totalTextWidth += w;
         m_width[i] = static_cast<float>(w);
