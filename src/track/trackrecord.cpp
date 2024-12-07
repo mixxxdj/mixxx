@@ -151,6 +151,12 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
         // 37 don't have a synchronization time stamp.
         return SourceSyncStatus::Unknown;
     }
+    if (!fileInfo.exists()) {
+        kLogger.warning()
+                << "Failed to obtain synchronization time stamp for not existing file"
+                << mixxx::FileInfo(fileInfo);
+        return SourceSyncStatus::Undefined;
+    }
     const QDateTime fileSourceSynchronizedAt =
             MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());
     if (!fileSourceSynchronizedAt.isValid()) {
