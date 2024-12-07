@@ -81,6 +81,9 @@ DlgPrefWaveform::DlgPrefWaveform(
     untilMarkAlignComboBox->addItem(tr("Center"));
     untilMarkAlignComboBox->addItem(tr("Bottom"));
 
+    untilMarkTextHeightLimitComboBox->addItem(tr("1/3rd of waveform viewer"));
+    untilMarkTextHeightLimitComboBox->addItem(tr("Full waveform viewer height"));
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
@@ -209,6 +212,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefWaveform::slotSetUntilMarkTextPointSize);
+    connect(untilMarkTextHeightLimitComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkTextHeightLimit);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -293,6 +300,9 @@ void DlgPrefWaveform::slotUpdate() {
             WaveformWidgetFactory::toUntilMarkAlignIndex(
                     factory->getUntilMarkAlign()));
     untilMarkTextPointSizeSpinBox->setValue(factory->getUntilMarkTextPointSize());
+    untilMarkTextHeightLimitComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(
+                    factory->getUntilMarkTextHeightLimit()));
 
     WOverview::Type cfgOverviewType =
             m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
@@ -534,6 +544,7 @@ void DlgPrefWaveform::updateEnableUntilMark() {
     untilMarkAlignComboBox->setEnabled(enabled);
     untilMarkTextPointSizeLabel->setEnabled(enabled);
     untilMarkTextPointSizeSpinBox->setEnabled(enabled);
+    untilMarkTextHeightLimitComboBox->setEnabled(enabled);
     requiresGLSLLabel->setVisible(!enabled);
 }
 
@@ -621,6 +632,11 @@ void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
 
 void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
     WaveformWidgetFactory::instance()->setUntilMarkTextPointSize(value);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
+    WaveformWidgetFactory::instance()->setUntilMarkTextHeightLimit(
+            WaveformWidgetFactory::toUntilMarkTextHeightLimit(index));
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

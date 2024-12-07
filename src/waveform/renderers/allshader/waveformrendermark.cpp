@@ -85,8 +85,14 @@ void allshader::WaveformRenderMark::initializeGL() {
     updatePlayPosMarkTexture();
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
+    const auto untilMarkTextHeightLimit =
+            WaveformWidgetFactory::instance()
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
+    const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
+
     m_digitsRenderer.updateTexture(untilMarkTextPointSize,
-            getMaxHeightForText(),
+            untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 }
 
@@ -323,8 +329,14 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
 
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
+    const auto untilMarkTextHeightLimit =
+            WaveformWidgetFactory::instance()
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
+    const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
+
     m_digitsRenderer.updateTexture(untilMarkTextPointSize,
-            getMaxHeightForText(),
+            untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 
     if (m_timeUntilMark == 0.0) {
@@ -337,7 +349,8 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    bool multiLine = untilMarkShowBeats && untilMarkShowTime && ch * 2.f < getMaxHeightForText();
+    bool multiLine = untilMarkShowBeats && untilMarkShowTime &&
+            ch * 2.f < untilMarkMaxHeightForText;
 
     if (multiLine) {
         if (untilMarkAlign != Qt::AlignTop) {
@@ -517,6 +530,6 @@ void allshader::WaveformRenderMark::updateUntilMark(
                     (endPosition - playPosition));
 }
 
-float allshader::WaveformRenderMark::getMaxHeightForText() const {
-    return m_waveformRenderer->getBreadth() / 3;
+float allshader::WaveformRenderMark::getMaxHeightForText(float proportion) const {
+    return std::roundf(m_waveformRenderer->getBreadth() * proportion);
 }
