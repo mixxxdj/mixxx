@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-11-26" timestamp="1732661128">
+    <release version="2.5.0" type="development" date="2024-11-27" timestamp="1732740226">
       <description>
  <p>
   Waveforms
@@ -126,6 +126,14 @@
    Allow changing the waveform overview type without reloading the skin
    #13273
   </li>
+  <li>
+   Maintain GL ES support
+   #13485
+  </li>
+  <li>
+   Update overview immediately, when the normalize option or global gain changed
+   #13634
+  </li>
  </ul>
  <p>
   Skins / Interface
@@ -143,6 +151,7 @@
   <li>
    Allow to edit track title and artist directly within the decks via a delayed double-click
    #11755
+   #13930
   </li>
   <li>
    Require a minimum movement before initiating the drag&amp;drop of tracks
@@ -153,7 +162,7 @@
    #13215
   </li>
   <li>
-   add WEffectMetaKnob, draws arc from default meta position
+   Effect Meta Knob: draws arc from default meta position
    #12638
    #12634
   </li>
@@ -193,7 +202,40 @@
    #9819
   </li>
   <li>
-   Add command line option
+   AutoDJ: Force-show decks 3/4 if we are going to use them
+   #13455
+  </li>
+  <li>
+   Show wait cursor when re/loading a skin (not during startup)
+   #13747
+  </li>
+  <li>
+   Allow to set LaunchImage style per color scheme
+   #13731
+  </li>
+  <li>
+   LateNight, Deere, Tango: Deactivate beatgrid edit controls if BPM is locked
+   #13320
+   #13323
+   #13325
+  </li>
+  <li>
+   LateNight: Add/tweak CueDelete icons
+   #13495
+   #13492
+  </li>
+  <li>
+   LateNight: Use Classic launch image style also for 64 samplers version
+   #13796
+  </li>
+  <li>
+   Command line interface: Determine whether to color output based on
+   TERM
+   variable
+   #13486
+  </li>
+  <li>
+   Command line interface: Add option
    --start-autodj
    to start Auto DJ immediately after Mixxx start.
    #13017
@@ -202,12 +244,6 @@
   <li>
    Logging: Include timestamps in messages by default
    #11861
-  </li>
-  <li>
-   LateNight, Deere, Tango: Deactivate beatgrid edit controls if BPM is locked
-   #13320
-   #13323
-   #13325
   </li>
  </ul>
  <p>
@@ -219,6 +255,7 @@
    #12954
    #12774
    #10138
+   #13339
   </li>
   <li>
    Add beatloop anchor to set and adjust loop from either start or end
@@ -277,6 +314,7 @@
   <li>
    Add backend for Audio Unit (AU) plugins on macOS
    #12112
+   #13938
   </li>
   <li>
    Effect Meta knob: Draw arc from default meta position
@@ -296,6 +334,8 @@
   <li>
    Shortkeys Cut, Copy, Paste for track list management
    #12020
+   #13361
+   #13364
   </li>
   <li>
    Track menu: Rephrase "Reset" to "Clear"
@@ -318,8 +358,12 @@
    #8881
   </li>
   <li>
-   Search: add 'type' filter
+   Search: Add 'type' filter
    #13338
+  </li>
+  <li>
+   Search: Add 'id' filter
+   #13694
   </li>
   <li>
    Search related Tracks menu: Allow to use multiple filters at once
@@ -331,14 +375,12 @@
    #12548
    #9023
    #13299
+   #13609
+   #13597
   </li>
   <li>
    Computer feature: add sidebar action "Refresh directory tree"
    #12908
-  </li>
-  <li>
-   Library: Custom color for missing tracks
-   #12895
   </li>
   <li>
    Library: Add feedback to directory operations (add, remove, relink)
@@ -365,10 +407,15 @@
    #12761
   </li>
   <li>
+   Library: Custom color for missing tracks
+   #12895
+  </li>
+  <li>
    Tracks: Custom text color for played tracks (qss)
    #12744
    #5911
    #12912
+   #13538
   </li>
   <li>
    History: Show track count and duration in sidebar
@@ -393,16 +440,33 @@
    #13426
   </li>
   <li>
-   Library control: make use of WLibrary::getCurrentTrackTableView()
-   #13335
-  </li>
-  <li>
    Optimize Library scrolling in BPMDelegate::paintItem
    #13358
   </li>
   <li>
-   Library: fix font reset in multiline comment editor
+   Fix font reset in multiline comment editor
    #13448
+  </li>
+  <li>
+   Keep the metadata key text unchanged, use it as the origin of information
+   #11096
+   #11095
+   #13650
+  </li>
+  <li>
+   Center date values, right-align Track #
+   #13674
+  </li>
+  <li>
+   Add a debug message, which appears when event loop processing in Mixxx application takes very long
+   #12094
+   #13900
+   #13889
+   #13903
+  </li>
+  <li>
+   Analysis: Fix stop button when analyzing crate/playlist
+   #13902
   </li>
  </ul>
  <p>
@@ -410,7 +474,7 @@
  </p>
  <ul>
   <li>
-   Add missing spacer in Interface preferences
+   Add missing spacer in interface preferences
    #13094
   </li>
   <li>
@@ -428,10 +492,6 @@
    #12348
   </li>
   <li>
-   Fix incorrect reboot required notification on preference updates
-   #13058
-  </li>
-  <li>
    Apply changes only after pressing Apply in color preferences
    #13302
   </li>
@@ -441,6 +501,18 @@
  </p>
  <ul>
   <li>
+   Denon MC7000: Add optional jog wheel acceleration to the controller mapping
+   #4684
+  </li>
+  <li>
+   Denon MC7000: Unify parameter button logic and add customizable modes
+   #13589
+  </li>
+  <li>
+   MIDI for light: Implement new Active deck heuristic
+   #13513
+  </li>
+  <li>
    Numark Scratch: Add controller settings
    #13404
   </li>
@@ -449,12 +521,16 @@
    #12842
   </li>
   <li>
-   Traktor S4 MK3: Add setting definition for
+   Traktor Kontrol S4 MK3: Add setting definition for
    #12995
   </li>
   <li>
-   Traktor S4 MK3: Software mixer support and default pad layout customisation
+   Traktor Kontrol S4 MK3: Software mixer support and default pad layout customisation
    #13059
+  </li>
+  <li>
+   Traktor Kontrol S4 Mk3: Rework jogwheel speed compute and motorized platter
+   #13393
   </li>
  </ul>
  <p>
@@ -488,6 +564,8 @@
    #13046
    #13057
    #13045
+   #13656
+   #13738
   </li>
   <li>
    Registering MIDI Input Handlers From Javascript
@@ -580,6 +658,10 @@
    Initialize CmdlineArgs::m_qml
    #13152
   </li>
+  <li>
+   Fix: Remove target compile defs for non-existing QML CMake target
+   #13506
+  </li>
  </ul>
  <p>
   Update to Qt6
@@ -656,6 +738,7 @@
   <li>
    Introduce wrapper for non const iterators for erase and insert
    #12201
+   #13856
   </li>
   <li>
    Fix Qt6/QML build
@@ -696,6 +779,18 @@
   <li>
    Fix menu icon position
    #12216
+  </li>
+  <li>
+   Fix/Skins: hide reserved space for invisible table header sort indicators
+   #13535
+  </li>
+  <li>
+   Qt 6.8 deprecated declaration fixes
+   #13845
+  </li>
+  <li>
+   Add missing qt6-declarative-private-dev and qt6-base-private-dev package
+   #13904
   </li>
  </ul>
  <p>
@@ -845,6 +940,11 @@
   </li>
   <li>
    Require a C++20 compiler
+  </li>
+  <li>
+   Support GCC 14.1.1
+   #13504
+   #13467
   </li>
  </ul>
  <p>
@@ -1047,12 +1147,107 @@
    #13370
   </li>
   <li>
+   LegacySkinParser: Short-circuit if template fails to open
+   #13488
+  </li>
+  <li>
+   Update waveforms_container.xml
+   #13501
+  </li>
+  <li>
+   Disable WSwitch for generated source
+   #13514
+  </li>
+  <li>
+   Disable warning in lib/apple code
+   #13522
+  </li>
+  <li>
+   (fix) pre-commit/qsscheck: add c++ ObjectNames set via variable in
+   #13538
+   #13549
+  </li>
+  <li>
+   chore: fix codespell complaints
+   #13567
+  </li>
+  <li>
+   chore: update pre-commit hook
+   #13530
+  </li>
+  <li>
+   chore: fix shellcheck SC2319 warning
+   #13569
+  </li>
+  <li>
+   Improve Taglib/SoundSource logging
+   #13541
+  </li>
+  <li>
+   (fix) WTrackTableView: assert track model, p prefix
+   #13623
+  </li>
+  <li>
+   Library control: make use of WLibrary::getCurrentTrackTableView()
+   #13335
+  </li>
+  <li>
+   fix: prevent crash when no app windows have the focus
+   #13657
+  </li>
+  <li>
+   Fix Clazy v1.12 errors in 2.5
+   #13769
+  </li>
+  <li>
+   Replace module wide Qt includes to make 2.5 compliant with Clazy 1.12
+   #13788
+  </li>
+  <li>
+   add missing header, fixes compilation of 2.5 on macOS
+   #13825
+  </li>
+  <li>
+   Fix pre-commit on F41 and update remaining dependencies
+   #13843
+  </li>
+  <li>
+   (fix) skin reload: store new color scheme
+   #13847
+  </li>
+  <li>
+   fix: eslint v9 pre-commit hook
+   #13886
+  </li>
+  <li>
+   clang-format: Indent Objective-C blocks with 4 spaces
+   #13890
+  </li>
+  <li>
+   Fix undefined behaviour of infinity()
+   #13884
+  </li>
+  <li>
+   Cleanup ESLint config
+   #13913
+  </li>
+  <li>
+   fix tsan issues
+   #13876
+   #13869
+   #13873
+   #13875
+   #13898
+   #13899
+  </li>
+  <li>
    Update to latest vcpkg dependencies
    #11649
    #12512
    #12067
    #12898
    #13155
+   #13830
   </li>
   <li>
    GitHub actions updates
@@ -1093,6 +1288,8 @@
    #13217
    #13246
    #13232
+   #13528
+   #13595
   </li>
  </ul>
 </description>
