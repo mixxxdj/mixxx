@@ -78,7 +78,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_curve(kXfaderCurveKey),
           m_calibration(kXfaderCalibrationKey),
           m_reverse(kXfaderReverseKey),
-          m_crossfader("[Master]", "crossfader"),
+          m_crossfader({"[Master]", "crossfader"}),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),
