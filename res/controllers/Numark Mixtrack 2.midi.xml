@@ -481,7 +481,7 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>NumarkMixTrackII.toggleDirectoryMode</key>
+                <key>NumarkMixTrackII.toggleSelectedSidebarItem</key>
                 <status>0x90</status>
                 <midino>0x76</midino>
                 <options>
