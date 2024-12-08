@@ -10,6 +10,24 @@
         </devices>
     </info>
     <settings>
+        <group label="TEST scratch modes">
+            <row orientation="vertical">
+                <option
+                    variable="scratchModeScratchTick"
+                    type="boolean"
+                    default="false"
+                    label="Use 'engine.scratch..' functions">
+                    <description>Use 'engine.scratchEnable()/disable()' and 'engine.scratchTick()' instead of engine.setValue(group, "scratch2..")</description>
+                </option>
+                <option
+                    variable="scratchSyncToWheelLED"
+                    type="boolean"
+                    default="false"
+                    label="Sync scratch speed with wheel LED speed">
+                </option>
+            </row>
+        </group>
+
         <group label="Deck Lighting">
             <row orientation="vertical">
                 <option
