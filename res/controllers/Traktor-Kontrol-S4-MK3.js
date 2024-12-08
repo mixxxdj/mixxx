@@ -48,6 +48,9 @@ const DefaultPadLayoutKeyboard = "keyboard";
  * Change settings in the preferences
  */
 
+// For testing: switch between engine.scratch.. functions and engine.setValue(.., "scratch2..")
+const useEngineScratch = !!engine.getSetting("scratchModeScratchTick");
+
 const DeckColors = [
     LedColors[engine.getSetting("deckA")] || LedColors.red,
     LedColors[engine.getSetting("deckB")] || LedColors.blue,
@@ -117,6 +120,13 @@ const BeatLoopRolls = [
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
 const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;
+// alpha and beta are the recommended start values from
+// https://github.com/mixxxdj/mixxx/wiki/midi%20scripting#scratching-and-jog-wheels
+const ScratchSyncToWheelLED = !!engine.getSetting("scratchSyncToWheelLED");
+const ScratchAlpha = 1.0/8;
+const ScratchBeta = ScratchAlpha/32;
+const ScratchIntervalsPerRev = ScratchSyncToWheelLED ? 2150 : 6750;
+const ScratchSpeedFactor = ScratchSyncToWheelLED ? 2.14 : 1;
 
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
@@ -2413,8 +2423,16 @@ class S4Mk3Deck extends Deck {
                 this.touched = touched;
                 if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
                     if (touched) {
-                        engine.setValue(this.group, "scratch2_enable", true);
-                    } else {
+                        if (useEngineScratch) {
+                            engine.scratchEnable(this.deck.currentDeckNumber,
+                                ScratchIntervalsPerRev,
+                                BaseRevolutionsPerMinute,
+                                ScratchAlpha,
+                                ScratchBeta); // ramoing true by default
+                        } else {
+                            engine.setValue(this.group, "scratch2_enable", true);
+                        }
+                    } else { // release
                         this.stopScratchWhenOver();
                     }
                 }
@@ -2427,9 +2445,17 @@ class S4Mk3Deck extends Deck {
                 if (engine.getValue(this.group, "play") &&
                     engine.getValue(this.group, "scratch2") < 1.5 * baseRevolutionsPerSecond &&
                     engine.getValue(this.group, "scratch2") > 0) {
-                    engine.setValue(this.group, "scratch2_enable", false);
+                    if (useEngineScratch) {
+                        engine.scratchDisable(this.deck.currentDeckNumber);
+                    } else {
+                        engine.setValue(this.group, "scratch2_enable", false);
+                    }
                 } else if (engine.getValue(this.group, "scratch2") === 0) {
-                    engine.setValue(this.group, "scratch2_enable", false);
+                    if (useEngineScratch) {
+                        engine.scratchDisable(this.deck.currentDeckNumber);
+                    } else {
+                        engine.setValue(this.group, "scratch2_enable", false);
+                    }
                 } else {
                     engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
                 }
@@ -2471,7 +2497,7 @@ class S4Mk3Deck extends Deck {
                     speed = currentSpeed;
                 }
                 this.oldValue = [value, timestamp, speed];
-                this.speed = wheelAbsoluteMax*speed*10;
+                this.speed = wheelAbsoluteMax*speed*10*ScratchSpeedFactor;
 
                 if (this.speed === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
@@ -2509,7 +2535,11 @@ class S4Mk3Deck extends Deck {
                     break;
                 case wheelModes.vinyl:
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
-                        engine.setValue(this.group, "scratch2", this.speed);
+                        if (useEngineScratch) {
+                            engine.scratchTick(this.deck.currentDeckNumber, diff);
+                        } else {
+                            engine.setValue(this.group, "scratch2", this.speed);
+                        }
                     } else {
                         engine.setValue(this.group, "jog", this.speed);
                     }
