@@ -2,6 +2,7 @@
 /* speex.c: Ogg Speex data handlers for libshout
  *
  *  Copyright (C) 2005 the Icecast team <team@icecast.org>
+ *  Copyright (C) 2015-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -49,6 +50,20 @@ int _shout_open_speex(ogg_codec_t *codec, ogg_page *page)
         return SHOUTERR_MALLOC;
 
     ogg_stream_packetout(&codec->os, &packet);
+
+    /* Check for te first packet to be at least of the minimal size for a Speex header.
+     * The header size is 80 bytes as per specs. You can find the specs here:
+     * https://speex.org/docs/manual/speex-manual/node8.html#SECTION00830000000000000000
+     *
+     * speex_packet_to_header() will also check the header size for us. However
+     * that function generates noise on stderr in case the header is too short.
+     * This is dangerous as we may have closed stderr already and the handle may be use
+     * again for something else.
+     */
+    if (packet.bytes < 80) {
+        free_speex_data(speex_data);
+        return SHOUTERR_UNSUPPORTED;
+    }
 
     if ( !(speex_data->sh = speex_packet_to_header((char*)packet.packet, packet.bytes)) ) {
         free_speex_data(speex_data);
