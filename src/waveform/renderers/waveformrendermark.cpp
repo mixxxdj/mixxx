@@ -82,7 +82,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             } else {
                 const int markHeight = std::lroundf(image.height() /
                         m_waveformRenderer->getDevicePixelRatio());
-                const int drawOffset = std::lroundf(currentMarkPoint + pMark->getOffset());
+                const int drawOffset =
+                        std::lround(static_cast<float>(currentMarkPoint) +
+                                pMark->getOffset());
 
                 bool visible = false;
                 // Check if the current point needs to be displayed.
