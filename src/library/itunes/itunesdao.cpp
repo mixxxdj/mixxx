@@ -49,12 +49,16 @@ void ITunesDAO::initialize(const QSqlDatabase& database) {
     m_insertTrackQuery.prepare(
             "INSERT INTO itunes_library (id, artist, title, album, "
             "album_artist, genre, grouping, year, duration, "
-            "location, rating, comment, tracknumber, bpm, bitrate) "
+            "location, rating, comment, tracknumber, bpm, bitrate, composer, "
+            "timesplayed, last_played_at, datetime_added) "
             "VALUES (:id, :artist, :title, :album, :album_artist, "
             ":genre, :grouping, :year, :duration, :location, "
-            ":rating, :comment, :tracknumber, :bpm, :bitrate)");
+            ":rating, :comment, :tracknumber, :bpm, :bitrate, :composer, "
+            ":timesplayed, :last_played_at, :datetime_added)");
 
-    m_insertPlaylistQuery.prepare("INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
+    m_insertPlaylistQuery.prepare(
+            "INSERT INTO itunes_playlists (id, name, display_name) VALUES "
+            "(:id, :name, :display_name)");
 
     m_insertPlaylistTrackQuery.prepare(
             "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, "
@@ -87,6 +91,10 @@ bool ITunesDAO::importTrack(const ITunesTrack& track) {
                 track.trackNumber > 0 ? QVariant(track.trackNumber) : QVariant());
         query.bindValue(":bpm", track.bpm);
         query.bindValue(":bitrate", track.bitrate);
+        query.bindValue(":composer", track.composer);
+        query.bindValue(":timesplayed", track.playCount);
+        query.bindValue(":last_played_at", track.lastPlayedAt);
+        query.bindValue(":datetime_added", track.dateAdded);
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
@@ -105,6 +113,7 @@ bool ITunesDAO::importPlaylist(const ITunesPlaylist& playlist) {
 
         query.bindValue(":id", playlist.id);
         query.bindValue(":name", uniqueName);
+        query.bindValue(":display_name", playlist.name);
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
