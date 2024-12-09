@@ -403,9 +403,14 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     imgwidth = 11.f;
     imgheight = height;
 
-    QImage image(static_cast<int>(imgwidth * devicePixelRatio),
-            static_cast<int>(imgheight * devicePixelRatio),
-            QImage::Format_ARGB32_Premultiplied);
+    const QSize size{static_cast<int>(std::lround(imgwidth * devicePixelRatio)),
+            static_cast<int>(std::lround(imgheight * devicePixelRatio))};
+
+    if (size.width() <= 0 || size.height() <= 0) {
+        return;
+    }
+
+    QImage image(size, QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(QColor(0, 0, 0, 0).rgba());
 
