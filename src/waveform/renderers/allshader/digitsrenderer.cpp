@@ -70,6 +70,10 @@ float allshader::DigitsRenderer::height() const {
 
 void allshader::DigitsRenderer::updateTexture(
         float fontPointSize, float maxHeight, float devicePixelRatio) {
+    if (std::lround(maxHeight * devicePixelRatio) <= 0) {
+        return;
+    }
+
     if (fontPointSize == m_fontPointSize && maxHeight == m_maxHeight) {
         return;
     }
