@@ -295,8 +295,8 @@ void allshader::WaveformRenderMark::paintGL() {
     }
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
-    const float playMarkerPos = m_waveformRenderer->getPlayMarkerPosition() *
-            m_waveformRenderer->getLength();
+    const float playMarkerPos = static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
+            m_waveformRenderer->getLength());
     if (m_playPosMarkTexture.isStorageAllocated()) {
         const float drawOffset = roundToPixel(playMarkerPos + kPlayPosOffset);
 
