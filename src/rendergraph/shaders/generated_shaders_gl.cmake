@@ -1,0 +1,13 @@
+set(
+  generated_shaders_gl
+  pattern.vert.gl
+  rgb.vert.gl
+  rgba.vert.gl
+  texture.vert.gl
+  unicolor.vert.gl
+  pattern.frag.gl
+  rgb.frag.gl
+  rgba.frag.gl
+  texture.frag.gl
+  unicolor.frag.gl
+)
