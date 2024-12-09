@@ -146,6 +146,8 @@ void WaveformWidget::paintGL() {
     // opacity of 0.f effectively skips the subtree rendering
     m_pOpacityNode->setOpacity(shouldOnlyDrawBackground() ? 0.f : 1.f);
 
+    m_pWaveformRenderMark->update();
+
     m_pEngine->preprocess();
     m_pEngine->render();
 }
