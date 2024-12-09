@@ -4573,7 +4573,7 @@ if(VINYLCONTROL)
 endif()
 
 # rendergraph
-add_subdirectory(src/rendergraph/opengl)
+add_subdirectory(src/rendergraph)
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 target_compile_definitions(mixxx-lib PRIVATE rendergraph=rendergraph_gl)
 
