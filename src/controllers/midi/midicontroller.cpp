@@ -38,7 +38,11 @@ MidiController::MidiController(const QString& deviceName)
 
 void MidiController::slotBeforeEngineShutdown() {
     Controller::slotBeforeEngineShutdown();
-    getSharedMapping()->removeInputHandlerMappings();
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
+    if (!pMapping) {
+        return;
+    }
+    pMapping->removeInputHandlerMappings();
 }
 
 MidiController::~MidiController() {
@@ -106,11 +110,7 @@ bool MidiController::applyMapping() {
 void MidiController::createOutputHandlers() {
     // Function becomes temporary shared owner
     std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
-    if (!pMapping) {
-        return;
-    }
-
-    if (pMapping->getOutputMappings().isEmpty()) {
+    if (!pMapping || pMapping->getOutputMappings().isEmpty()) {
         return;
     }
 
@@ -304,6 +304,9 @@ void MidiController::receivedShortMessage(unsigned char status,
 
     // Function becomes temporary shared owner
     std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
+    if (!pMapping) {
+        return;
+    }
     auto it = pMapping->getInputMappings().constFind(mappingKey.key);
     for (; it != pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
@@ -604,6 +607,9 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
 
     // Function becomes temporary shared owner
     std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
+    if (!pMapping) {
+        return;
+    }
     const auto [inputMappingsBegin, inputMappingsEnd] =
             pMapping->getInputMappings().equal_range(mappingKey.key);
     std::for_each(inputMappingsBegin, inputMappingsEnd, [&](const auto& inputMapping) {
@@ -632,6 +638,11 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }
+    // Function becomes temporary shared owner
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
+    if (!pMapping) {
+        return QJSValue();
+    }
 
     if (!scriptCode.isCallable()) {
         auto error = kMakeInputHandlerError;
@@ -655,8 +666,6 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
 
     const auto midiKey = MidiKey(status, midino);
 
-    // Function becomes temporary shared owner
-    std::shared_ptr<LegacyMidiControllerMapping> pMapping = getSharedMapping();
     auto it = pMapping->getInputMappings().constFind(midiKey.key);
     if (it != pMapping->getInputMappings().constEnd() &&
             it.value().options.testFlag(MidiOption::Script) &&
