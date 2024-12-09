@@ -1710,7 +1710,6 @@ set(
   src/util/runtimeloggingcategory.h
   src/util/safelywritablefile.h
   src/util/sample.h
-  src/util/sample_autogen.h
   src/util/samplebuffer.h
   src/util/sandbox.h
   src/util/scopedoverridecursor.h
