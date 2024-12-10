@@ -520,13 +520,17 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
 // static
 ChromaticKey KeyUtils::keyFromNumericValue(double value) {
-    int value_floored = int(value);
+    int value_floored = static_cast<int>(value);
+    return keyFromNumericValue(value_floored);
+}
 
-    if (!ChromaticKey_IsValid(value_floored)) {
+// static
+ChromaticKey KeyUtils::keyFromNumericValue(int value) {
+    if (!ChromaticKey_IsValid(value)) {
         return mixxx::track::io::key::INVALID;
     }
 
-    return static_cast<ChromaticKey>(value_floored);
+    return static_cast<ChromaticKey>(value);
 }
 
 KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
@@ -762,4 +766,35 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
     } else {
         return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
     }
+}
+
+// static
+QVariant KeyUtils::keyFromColumns(QVariant&& rawValue, QVariant&& keyCodeValue) {
+    // Helper function used by basetrackcache.cpp and basetracktablemodel.cpp
+    // to determine the Key string from either the LIBRARYTABLE_KEY or the
+    // LIBRARYTABLE_KEY_ID field.
+    //
+    // If we know the semantic key via the LIBRARYTABLE_KEY_ID
+    // column (as opposed to the string representation of the key
+    // currently stored in the DB) then lookup the key and render it
+    // using the user's selected notation.
+    if (keyCodeValue.isNull()) {
+        // Otherwise, just use the column value as is
+        return std::move(rawValue);
+    }
+    // Convert or clear invalid values
+    VERIFY_OR_DEBUG_ASSERT(keyCodeValue.canConvert<int>()) {
+        return QVariant();
+    }
+    bool ok;
+    const auto keyCode = keyCodeValue.toInt(&ok);
+    VERIFY_OR_DEBUG_ASSERT(ok) {
+        return QVariant();
+    }
+    const auto key = KeyUtils::keyFromNumericValue(keyCode);
+    if (key == mixxx::track::io::key::INVALID) {
+        return QVariant();
+    }
+    // Render the key with the user-provided notation
+    return KeyUtils::keyToString(key);
 }
