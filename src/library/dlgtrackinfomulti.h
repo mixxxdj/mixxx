@@ -34,6 +34,9 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     /// issues with long lines / multi-line content. See init() for details.
     void resizeEvent(QResizeEvent* event) override;
 
+  protected:
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+
   private slots:
     void slotOk();
     void slotApply();
@@ -41,12 +44,14 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     void slotImportMetadataFromFiles();
 
-    /// If only one track is changed while the dialog is open, re-populate
-    /// the dialog from all tracks. This discards pending changes.
+    /// If any of the loaded track has been changed while the dialog is open we
+    /// re-populate the dialog from all tracks. This discards pending changes.
     void slotTrackChanged(TrackId trackId);
 
     void slotTagBoxIndexChanged();
     void slotCommentBoxIndexChanged();
+    void commentTextChanged();
+    void slotEditingFinished(QComboBox* pBox, QLineEdit* pLine);
     void slotKeyTextChanged();
 
     void slotColorButtonClicked();
@@ -81,6 +86,9 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
             QSet<T>& values,
             bool sort = false);
     void addValuesToCommentBox(QSet<QString>& comments);
+    void updateTagPlaceholder(QComboBox* pBox, bool dirty);
+    void updateCommentPlaceholder(bool dirty);
+
     void updateCoverArtFromTracks();
     void trackColorDialogSetColorStyleButton(const mixxx::RgbColor::optional_t& color,
             bool variousColors = false);
