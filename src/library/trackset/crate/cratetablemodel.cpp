@@ -9,20 +9,156 @@
 #include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
+// eve
+// #include "library/queryutil.h"
+// eve
 
 namespace {
 
+const bool sDebug = false;
 const QString kModelName = QStringLiteral("crate");
 
 } // anonymous namespace
 
 CrateTableModel::CrateTableModel(
         QObject* pParent,
-        TrackCollectionManager* pTrackCollectionManager)
+        TrackCollectionManager* pTrackCollectionManager,
+        UserSettingsPointer pConfig)
         : TrackSetTableModel(
                   pParent,
                   pTrackCollectionManager,
-                  "mixxx.db.model.crate") {
+                  "mixxx.db.model.crate"),
+          m_pConfig(pConfig) {
+}
+
+QList<QVariantMap> CrateTableModel::getGroupedCrates() {
+    if (sDebug) {
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] Generating grouped crates list.";
+    }
+
+    QList<QVariantMap> groupedCrates;
+
+    QSqlQuery query(m_database);
+    QString queryString;
+
+    if (sDebug) {
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] configvalue GroupedCratesLength = "
+                 << m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedCratesLength"));
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] configvalue GroupedCratesFixedLength = "
+                 << m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedCratesFixedLength"), 0);
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] configvalue GroupedCratesVarLengthMask = "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
+    }
+
+    // fixed prefix length
+    if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedCratesLength")) == 0) {
+        QString queryString =
+                QStringLiteral(
+                        "SELECT DISTINCT "
+                        "  SUBSTR(name, 1, %1) AS group_name, "
+                        "  id AS crate_id, "
+                        "  name AS crate_name "
+                        "FROM crates "
+                        "WHERE show = 1 "
+                        "ORDER BY LOWER(name)")
+                        .arg(m_pConfig->getValue(
+                                ConfigKey("[Library]",
+                                        "GroupedCratesFixedLength"),
+                                0));
+        if (sDebug) {
+            qDebug() << "[GROUPEDCRATESTABLEMODEL] queryString: " << queryString;
+        }
+        if (!query.exec(queryString)) {
+            qWarning() << "[GROUPEDCRATESTABLEMODEL] Failed to execute grouped "
+                          "crates query:"
+                       << query.lastError();
+            return groupedCrates;
+        }
+
+        while (query.next()) {
+            QVariantMap crateData;
+            // QString groupName = query.value("group_name").toString().trimmed();
+            QString groupName = query.value("group_name").toString();
+            crateData["group_name"] = groupName;
+            crateData["crate_id"] = query.value("crate_id");
+            crateData["crate_name"] = query.value("crate_name");
+            groupedCrates.append(crateData);
+            if (sDebug) {
+                qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> crate "
+                            "added: "
+                         << crateData;
+            }
+        }
+    } else {
+        // Variable prefix length with mask, multiple occurrences -> multilevel subgroups
+        QString queryString = QStringLiteral(
+                "SELECT DISTINCT "
+                "  id AS crate_id, "
+                "  name AS crate_name "
+                "FROM crates "
+                "WHERE show = 1 "
+                "ORDER BY LOWER(name)");
+        if (sDebug) {
+            qDebug() << "[GROUPEDCRATESTABLEMODEL] queryString: " << queryString;
+        }
+        if (!query.exec(queryString)) {
+            qWarning() << "[GROUPEDCRATESTABLEMODEL] Failed to execute grouped "
+                          "crates query:"
+                       << query.lastError();
+            return groupedCrates;
+        }
+        const QString& searchDelimit = m_pConfig->getValue(
+                ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
+
+        while (query.next()) {
+            QString crateName = query.value("crate_name").toString();
+            if (crateName.contains(searchDelimit)) {
+                // QStringList groupHierarchy = crateName.split(searchDelimit, Qt::SkipEmptyParts);
+                QStringList groupHierarchy = crateName.split(searchDelimit);
+                QString currentGroup;
+
+                for (int i = 0; i < groupHierarchy.size(); ++i) {
+                    // currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i].trimmed();
+                    currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i];
+
+                    QVariantMap crateData;
+                    crateData["group_name"] = currentGroup;
+                    crateData["crate_id"] = query.value("crate_id");
+                    crateData["crate_name"] = crateName;
+
+                    // Add only the full crate record for the last level
+                    if (i == groupHierarchy.size() - 1) {
+                        groupedCrates.append(crateData);
+                    }
+
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> crate added: "
+                                 << crateData;
+                    }
+                }
+            } else {
+                // No delimiter in crate name -> root-level
+                QVariantMap crateData;
+                // crateData["group_name"] = crateName.trimmed();
+                crateData["group_name"] = crateName;
+                crateData["crate_id"] = query.value("crate_id");
+                crateData["crate_name"] = crateName;
+                groupedCrates.append(crateData);
+
+                if (sDebug) {
+                    qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates -> "
+                                "crate added at root level: "
+                             << crateData;
+                }
+            }
+        }
+    }
+    if (sDebug) {
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] Grouped crates list generated "
+                    "with"
+                 << groupedCrates.size() << "entries.";
+    }
+    return groupedCrates;
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {

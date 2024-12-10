@@ -68,6 +68,10 @@ class TreeItem final {
     // or kInvalidRow if this is a root item without a parent.
     int parentRow() const;
 
+    // Eve
+    int getRow() const;
+    int childCount() const;
+    // EVE
 
     /////////////////////////////////////////////////////////////////////////
     // Children
