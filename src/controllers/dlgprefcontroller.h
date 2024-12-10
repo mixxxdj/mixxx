@@ -137,6 +137,6 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
-    int m_inputMappingsTabIndex;  // Index of the input mappings tab
-    int m_outputMappingsTabIndex; // Index of the output mappings tab
+    int m_inputMappingsTabIndex;  // Index of the input mappings tab in m_ui.controllerTabs
+    int m_outputMappingsTabIndex; // Index of the output mappings tab in m_ui.controllerTabs
 };
