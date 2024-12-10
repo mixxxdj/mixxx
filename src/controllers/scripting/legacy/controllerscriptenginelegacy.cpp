@@ -338,8 +338,10 @@ bool ControllerScriptEngineLegacy::initialize() {
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
             new ControllerScriptInterfaceLegacy(this, m_logger);
 
-    engineGlobalObject.setProperty(
-            "engine", m_pJSEngine->newQObject(legacyScriptInterface));
+    auto engine = m_pJSEngine->newQObject(legacyScriptInterface);
+    auto meta = m_pJSEngine->newQMetaObject(&ControllerScriptInterfaceLegacy::staticMetaObject);
+    engine.setProperty("Charset", meta);
+    engineGlobalObject.setProperty("engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
 #ifdef MIXXX_USE_QML
     if (m_bQmlMode) {
