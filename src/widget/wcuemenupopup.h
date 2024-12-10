@@ -64,6 +64,9 @@ class WCueMenuPopup : public QWidget {
     void slotEditLabel();
     void slotDeleteCue();
     void slotUpdate();
+    void slotStandardCue();
+    void slotSavedJumpCueManual();
+    void slotSavedJumpCueAuto();
     /// This slot is called when the saved loop button is being left pressed,
     /// which effectively toggle the cue loop between standard cue and saved
     /// loop. If the cue was never a saved loop, it will use the current
@@ -77,8 +80,12 @@ class WCueMenuPopup : public QWidget {
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
+    void updateTypeAndColorIfDefault(mixxx::CueType newType);
+
+    UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     PollingControlProxy m_pBeatLoopSize;
+    PollingControlProxy m_pBeatJumpSize;
     PollingControlProxy m_pPlayPos;
     PollingControlProxy m_pTrackSample;
     PollingControlProxy m_pQuantizeEnabled;
@@ -90,7 +97,9 @@ class WCueMenuPopup : public QWidget {
     std::unique_ptr<QLineEdit> m_pEditLabel;
     std::unique_ptr<WColorPicker> m_pColorPicker;
     std::unique_ptr<QPushButton> m_pDeleteCue;
+    std::unique_ptr<QPushButton> m_pStandardCue;
     std::unique_ptr<CueTypePushButton> m_pSavedLoopCue;
+    std::unique_ptr<CueTypePushButton> m_pSavedJumpCue;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
