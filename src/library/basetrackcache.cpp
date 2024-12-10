@@ -381,6 +381,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         trackValue.setValue(pTrack->getKeyText());
+        QVariant keyCodeValue(static_cast<int>(pTrack->getKey()));
+        trackValue = KeyUtils::keyFromColumns(std::move(trackValue), std::move(keyCodeValue));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
@@ -432,6 +434,13 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
         if (it != m_trackInfo.constEnd()) {
             const QVector<QVariant>& fields = it.value();
             result = fields.value(column, result);
+            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+                QVariant keyCodeValue;
+                keyCodeValue = fields.value(
+                        fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID),
+                        keyCodeValue);
+                result = KeyUtils::keyFromColumns(std::move(result), std::move(keyCodeValue));
+            }
         }
     }
     return result;

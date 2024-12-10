@@ -872,34 +872,10 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
         }
-        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
-            // If we know the semantic key via the LIBRARYTABLE_KEY_ID
-            // column (as opposed to the string representation of the key
-            // currently stored in the DB) then lookup the key and render it
-            // using the user's selected notation.
-            const QVariant keyCodeValue = rawSiblingValue(
-                    index,
-                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-            if (keyCodeValue.isNull()) {
-                // Otherwise, just use the column value as is
-                return std::move(rawValue);
-            }
-            // Convert or clear invalid values
-            VERIFY_OR_DEBUG_ASSERT(keyCodeValue.canConvert<int>()) {
-                return QVariant();
-            }
-            bool ok;
-            const auto keyCode = keyCodeValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok) {
-                return QVariant();
-            }
-            const auto key = KeyUtils::keyFromNumericValue(keyCode);
-            if (key == mixxx::track::io::key::INVALID) {
-                return QVariant();
-            }
-            // Render the key with the user-provided notation
-            return KeyUtils::keyToString(key);
-        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
+            return KeyUtils::keyFromColumns(std::move(rawValue),
+                    rawSiblingValue(
+                            index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID));
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
                 return QVariant();
