@@ -274,9 +274,10 @@ void DlgPrefWaveform::slotUpdate() {
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
             factory->preferredBackend());
     updateWaveformAcceleration(factory->getType(), backend);
-    updateWaveformOption(useWaveform, backend, currentOptions);
+    updateWaveformTypeOptions(useWaveform, backend, currentOptions);
     waveformTypeComboBox->setEnabled(useWaveform);
     updateEnableUntilMark();
+    updateWaveformGeneralOptionsEnabled();
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -344,7 +345,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
     useWaveformCheckBox->setChecked(true);
     waveformTypeComboBox->setEnabled(true);
     updateWaveformAcceleration(WaveformWidgetFactory::defaultType(), defaultBackend);
-    updateWaveformOption(true, defaultBackend, allshader::WaveformRendererSignalBase::Option::None);
+    updateWaveformTypeOptions(true,
+            defaultBackend,
+            allshader::WaveformRendererSignalBase::Option::None);
 
     // Restore waveform backend and option setting instantly
     m_pConfig->setValue(ConfigKey("[Waveform]", "waveform_options"),
@@ -420,7 +423,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
             ConfigKey("[Waveform]", "waveform_options"),
             allshader::WaveformRendererSignalBase::Option::None);
     updateWaveformAcceleration(type, backend);
-    updateWaveformOption(true, backend, currentOptions);
+    updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
 }
 
@@ -458,7 +461,7 @@ void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
             ConfigKey("[Waveform]", "waveform_options"),
             allshader::WaveformRendererSignalBase::Option::None);
-    updateWaveformOption(true, backend, currentOptions);
+    updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
 }
 
@@ -488,7 +491,8 @@ void DlgPrefWaveform::updateWaveformAcceleration(
 
     useAccelerationCheckBox->blockSignals(false);
 }
-void DlgPrefWaveform::updateWaveformOption(bool useWaveform,
+
+void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
         WaveformWidgetBackend backend,
         allshader::WaveformRendererSignalBase::Options currentOptions) {
     splitLeftRightCheckBox->blockSignals(true);
@@ -544,8 +548,32 @@ void DlgPrefWaveform::updateEnableUntilMark() {
     untilMarkAlignComboBox->setEnabled(enabled);
     untilMarkTextPointSizeLabel->setEnabled(enabled);
     untilMarkTextPointSizeSpinBox->setEnabled(enabled);
+    untilMarkTextHeightLimitLabel->setEnabled(enabled);
     untilMarkTextHeightLimitComboBox->setEnabled(enabled);
-    requiresGLSLLabel->setVisible(!enabled);
+    requiresGLSLLabel->setVisible(!enabled && useWaveformCheckBox->isChecked());
+}
+
+void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
+    bool enabled = useWaveformCheckBox->isChecked();
+    frameRateSlider->setEnabled(enabled);
+    frameRateSpinBox->setEnabled(enabled);
+    endOfTrackWarningTimeSlider->setEnabled(enabled);
+    endOfTrackWarningTimeSpinBox->setEnabled(enabled);
+    beatGridAlphaSlider->setEnabled(enabled);
+    beatGridAlphaSpinBox->setEnabled(enabled);
+    playMarkerPositionSlider->setEnabled(enabled);
+    defaultZoomComboBox->setEnabled(enabled);
+    synchronizeZoomCheckBox->setEnabled(enabled);
+    updateWaveformGainEnabled();
+}
+
+void DlgPrefWaveform::updateWaveformGainEnabled() {
+    bool enabled = useWaveformCheckBox->isChecked() ||
+            !normalizeOverviewCheckBox->isChecked();
+    allVisualGain->setEnabled(enabled);
+    lowVisualGain->setEnabled(enabled);
+    midVisualGain->setEnabled(enabled);
+    highVisualGain->setEnabled(enabled);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType() {
@@ -583,6 +611,7 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+    updateWaveformGainEnabled();
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
