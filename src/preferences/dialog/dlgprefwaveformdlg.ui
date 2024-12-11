@@ -15,7 +15,9 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
+
     <layout class="QGridLayout" name="gridLayout_2">
+
      <item row="0" column="0">
       <widget class="QLabel" name="waveformTypeLabel">
        <property name="sizePolicy">
@@ -45,7 +47,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="3">
+
+     <item row="1" column="1" colspan="3">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QComboBox" name="waveformTypeComboBox">
@@ -86,21 +89,23 @@ Select from different types of displays for the waveform, which differ primarily
        </item>
       </layout>
      </item>
-     <item row="3" column="2">
-      <widget class="QCheckBox" name="highDetailCheckBox">
-       <property name="text">
-        <string>High details</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
+
+     <item row="2" column="1">
       <widget class="QCheckBox" name="splitLeftRightCheckBox">
        <property name="text">
         <string>Stereo coloration</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="2" column="2">
+      <widget class="QCheckBox" name="highDetailCheckBox">
+       <property name="text">
+        <string>High details</string>
+       </property>
+      </widget>
+     </item>
+
+     <item row="3" column="0">
       <widget class="QLabel" name="waveformOverviewLabel">
        <property name="toolTip">
         <string extracomment="The smaller, zoomed-out version of the waveform shows the various markers within the track as well as the waveform envelope of the entire track."/>
@@ -110,7 +115,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="3">
+     <item row="3" column="1" colspan="3">
       <widget class="QComboBox" name="waveformOverviewComboBox">
        <property name="toolTip">
         <string>The waveform overview shows the waveform envelope of the entire track.
@@ -118,7 +123,8 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+
+     <item row="4" column="0">
       <widget class="QLabel" name="frameRateLabel">
        <property name="text">
         <string>Frame rate</string>
@@ -131,7 +137,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="4" column="1" colspan="2">
       <widget class="QSlider" name="frameRateSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -159,7 +165,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="6" column="3">
+     <item row="4" column="3">
       <widget class="QSpinBox" name="frameRateSpinBox">
        <property name="toolTip">
         <string/>
@@ -178,7 +184,8 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+
+     <item row="5" column="0">
       <widget class="QLabel" name="endOfTrackWarningTimeLabel">
        <property name="text">
         <string>End of track warning</string>
@@ -191,7 +198,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2">
+     <item row="5" column="1" colspan="2">
       <widget class="QSlider" name="endOfTrackWarningTimeSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -219,7 +226,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="7" column="3">
+     <item row="5" column="3">
       <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
        <property name="toolTip">
         <string>Highlight the waveforms when the last seconds of a track remains.</string>
@@ -238,7 +245,8 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+
+     <item row="6" column="0">
       <widget class="QLabel" name="BeatgridWaveform">
        <property name="toolTip">
         <string/>
@@ -254,7 +262,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QSlider" name="beatGridAlphaSlider">
        <property name="maximum">
         <number>100</number>
@@ -267,7 +275,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="8" column="3">
+     <item row="6" column="3">
       <widget class="QSpinBox" name="beatGridAlphaSpinBox">
        <property name="toolTip">
         <string>Set amount of opacity on beat grid lines.</string>
@@ -283,14 +291,15 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+
+     <item row="7" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Play marker position</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1" colspan="3">
+     <item row="7" column="1" colspan="3">
       <widget class="QSlider" name="playMarkerPositionSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -321,7 +330,8 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+
+     <item row="8" column="0">
       <widget class="QLabel" name="defaultZoomLabel">
        <property name="text">
         <string extracomment="Waveform zoom">Default zoom level</string>
@@ -334,10 +344,11 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="3">
+     <item row="8" column="1" colspan="3">
       <widget class="QComboBox" name="defaultZoomComboBox"/>
      </item>
-     <item row="11" column="1" colspan="3">
+
+     <item row="9" column="1" colspan="3">
       <widget class="QCheckBox" name="synchronizeZoomCheckBox">
        <property name="toolTip">
         <string>Synchronize zoom level across all waveform displays.</string>
@@ -347,21 +358,24 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="3">
+
+     <item row="10" column="1" colspan="3">
       <widget class="QCheckBox" name="normalizeOverviewCheckBox">
        <property name="text">
         <string>Normalize waveform overview</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1" colspan="3">
+
+     <item row="11" column="1" colspan="3">
       <widget class="QCheckBox" name="overviewMinuteMarkersCheckBox">
        <property name="text">
         <string>Show minute markers on waveform overview</string>
        </property>
       </widget>
      </item>
-     <item row="15" column="0">
+
+     <item row="12" column="0">
       <widget class="QLabel" name="visualGainLabel">
        <property name="text">
         <string>Visual gain</string>
@@ -374,7 +388,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="15" column="1" colspan="3">
+     <item row="12" column="1" colspan="3">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="2">
         <widget class="QDoubleSpinBox" name="midVisualGain">
@@ -506,17 +520,18 @@ Select from different types of displays for the waveform overview, which differ 
        </item>
       </layout>
      </item>
-     <item row="16" column="0">
+
+     <item row="13" column="0">
       <widget class="QLabel" name="untilMarkLabel">
        <property name="text">
         <string>Play marker hints</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
       </widget>
      </item>
-     <item row="16" column="1" colspan="3">
+     <item row="13" column="1" colspan="3">
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
         <widget class="QCheckBox" name="untilMarkShowBeatsCheckBox">
@@ -564,7 +579,7 @@ Select from different types of displays for the waveform overview, which differ 
          </property>
         </widget>
        </item>
-        <item row="1" column="0">
+       <item row="1" column="0">
         <widget class="QCheckBox" name="untilMarkShowTimeCheckBox">
          <property name="text">
           <string>Time until next marker</string>
@@ -598,7 +613,8 @@ Select from different types of displays for the waveform overview, which differ 
        </item>
       </layout>
      </item>
-     <item row="19" column="1" colspan="2">
+
+     <item row="14" column="1" colspan="2">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires waveform acceleration.</string>
@@ -608,7 +624,8 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="20" column="0">
+
+     <item row="15" column="0">
       <widget class="QLabel" name="cachedWaveforms">
        <property name="text">
         <string>Caching</string>
@@ -618,7 +635,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="20" column="1" colspan="3">
+     <item row="15" column="1" colspan="3">
       <layout class="QGridLayout" name="cachingGridLayout">
        <item row="4" column="0">
         <widget class="QPushButton" name="clearCachedWaveforms">
@@ -669,7 +686,8 @@ Select from different types of displays for the waveform overview, which differ 
        </item>
       </layout>
      </item>
-     <item row="21" column="1">
+
+     <item row="16" column="1">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -682,7 +700,8 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </spacer>
      </item>
-     <item row="22" column="0" colspan="4">
+
+     <item row="17" column="0" colspan="4">
       <widget class="QGroupBox" name="openGLStatus">
        <property name="title">
         <string>OpenGL status</string>
