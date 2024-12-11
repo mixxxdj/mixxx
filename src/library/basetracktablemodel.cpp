@@ -873,7 +873,9 @@ QVariant BaseTrackTableModel::roleValue(
             }
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
-            return KeyUtils::keyFromColumns(std::move(rawValue),
+            // The Key value is determined by either the KEY_ID or KEY column
+            return KeyUtils::keyFromColumns(
+                    rawValue,
                     rawSiblingValue(
                             index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID));
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {

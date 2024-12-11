@@ -380,9 +380,9 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
-        trackValue.setValue(pTrack->getKeyText());
-        QVariant keyCodeValue(static_cast<int>(pTrack->getKey()));
-        trackValue = KeyUtils::keyFromColumns(trackValue, keyCodeValue);
+        // The Key value is determined by either the KEY_ID or KEY column
+        trackValue = KeyUtils::keyFromColumns(
+                QVariant{pTrack->getKeyText()}, QVariant{pTrack->getKey()});
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
@@ -433,13 +433,14 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
         auto it = m_trackInfo.constFind(trackId);
         if (it != m_trackInfo.constEnd()) {
             const QVector<QVariant>& fields = it.value();
-            result = fields.value(column, result);
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
-                QVariant keyCodeValue;
-                keyCodeValue = fields.value(
-                        fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID),
-                        keyCodeValue);
-                result = KeyUtils::keyFromColumns(std::move(result), std::move(keyCodeValue));
+                // The Key value is determined by either the KEY_ID or KEY column
+                const auto columnForKeyId = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+                result = KeyUtils::keyFromColumns(
+                        fields.value(column, result),
+                        fields.value(columnForKeyId, result));
+            } else {
+                result = fields.value(column, result);
             }
         }
     }
