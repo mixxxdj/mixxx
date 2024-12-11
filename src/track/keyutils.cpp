@@ -769,7 +769,7 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
 }
 
 // static
-QVariant KeyUtils::keyFromColumns(QVariant&& rawValue, QVariant&& keyCodeValue) {
+QVariant KeyUtils::keyFromColumns(const QVariant& rawValue, const QVariant& keyCodeValue) {
     // Helper function used by basetrackcache.cpp and basetracktablemodel.cpp
     // to determine the Key string from either the LIBRARYTABLE_KEY or the
     // LIBRARYTABLE_KEY_ID field.
@@ -780,7 +780,7 @@ QVariant KeyUtils::keyFromColumns(QVariant&& rawValue, QVariant&& keyCodeValue) 
     // using the user's selected notation.
     if (keyCodeValue.isNull()) {
         // Otherwise, just use the column value as is
-        return std::move(rawValue);
+        return rawValue;
     }
     // Convert or clear invalid values
     VERIFY_OR_DEBUG_ASSERT(keyCodeValue.canConvert<int>()) {
