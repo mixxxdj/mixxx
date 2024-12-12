@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QtDebug>
 
+#include "preferences/keydetectionsettings.h"
 #include "util/compatibility/qmutex.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -536,6 +537,24 @@ KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
         return KeyNotation::Invalid;
     }
     return static_cast<KeyNotation>(value_floored);
+}
+
+KeyUtils::KeyNotation KeyUtils::keyNotationFromString(const QString& notationName) {
+    if (notationName == KEY_NOTATION_CUSTOM) {
+        return KeyUtils::KeyNotation::Custom;
+    } else if (notationName == KEY_NOTATION_OPEN_KEY) {
+        return KeyUtils::KeyNotation::OpenKey;
+    } else if (notationName == KEY_NOTATION_LANCELOT) {
+        return KeyUtils::KeyNotation::Lancelot;
+    } else if (notationName == KEY_NOTATION_TRADITIONAL) {
+        return KeyUtils::KeyNotation::Traditional;
+    } else if (notationName == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+        return KeyUtils::KeyNotation::OpenKeyAndTraditional;
+    } else if (notationName == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+        return KeyUtils::KeyNotation::LancelotAndTraditional;
+    } else {
+        return KeyUtils::KeyNotation::Invalid;
+    }
 }
 
 // static

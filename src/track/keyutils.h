@@ -66,6 +66,7 @@ class KeyUtils {
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
     static KeyNotation keyNotationFromNumericValue(double value);
+    static KeyNotation keyNotationFromString(const QString& notationName);
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 
