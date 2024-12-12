@@ -81,8 +81,9 @@ DlgPrefWaveform::DlgPrefWaveform(
     untilMarkAlignComboBox->addItem(tr("Center"));
     untilMarkAlignComboBox->addItem(tr("Bottom"));
 
-    untilMarkTextHeightLimitComboBox->addItem(tr("1/3rd of waveform viewer"));
-    untilMarkTextHeightLimitComboBox->addItem(tr("Full waveform viewer height"));
+    //: options for "Text height limit"
+    untilMarkTextHeightLimitComboBox->addItem(tr("1/3 of waveform viewer"));
+    untilMarkTextHeightLimitComboBox->addItem(tr("Entire waveform viewer"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
