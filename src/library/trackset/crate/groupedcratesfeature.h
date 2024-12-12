@@ -40,6 +40,8 @@ class GroupedCratesFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+    QString fullPathFromIndex(const QModelIndex& index) const;
+    void reviewGroupCrateIds(const QString& fullPath, const QList<CrateId>& crateIds);
 
   public slots:
     void activate() override;
@@ -79,6 +81,7 @@ class GroupedCratesFeature : public BaseTrackSetFeature {
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
   private:
+    QMap<QString, QList<CrateId>> groupCrateIds;
     void initActions();
     void connectLibrary(Library* pLibrary);
     void connectTrackCollection();
@@ -136,4 +139,6 @@ class GroupedCratesFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    QString groupNameFromIndex(const QModelIndex& index) const;
+    void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
 };

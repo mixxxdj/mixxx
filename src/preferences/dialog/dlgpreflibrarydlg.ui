@@ -429,12 +429,18 @@
        <rect>
         <x>50</x>
         <y>40</y>
-        <width>250</width>
+        <width>400</width>
         <height>20</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
-       <string>Fixed length: Group = #Characters</string>
+       <string>Fixed length: 1 level of grouping: Group = #Characters</string>
       </property>
      </widget>
      <widget class="QRadioButton" name="radioButton_grouped_crates_var_mask">
@@ -442,18 +448,24 @@
        <rect>
         <x>50</x>
         <y>70</y>
-        <width>250</width>
+        <width>400</width>
         <height>20</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
-       <string>Variable length: Group = delimited with a mask:</string>
+       <string>Variable length, multilevel: grouping: Groups are delimited with a mask: </string>
       </property>
      </widget>
      <widget class="QSpinBox" name="spinBox_grouped_crates_fixed_length">
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>460</x>
         <y>40</y>
         <width>42</width>
         <height>22</height>
@@ -466,7 +478,7 @@
      <widget class="QLineEdit" name="lineEdit_grouped_crates_var_mask">
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>460</x>
         <y>70</y>
         <width>113</width>
         <height>20</height>

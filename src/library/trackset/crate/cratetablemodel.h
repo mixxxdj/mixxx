@@ -20,6 +20,7 @@ class CrateTableModel final : public TrackSetTableModel {
         return m_selectedCrate;
     }
 
+    void selectCrateGroup(const QString& groupName);
     QList<QVariantMap> getGroupedCrates();
     bool addTrack(const QModelIndex& index, const QString& location);
 

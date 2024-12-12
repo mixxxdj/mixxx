@@ -38,6 +38,19 @@ class TreeItem final {
 
     ~TreeItem();
 
+    /////////////////////////////////////////////////////////////////////////
+    // Full Path Accessors
+    /////////////////////////////////////////////////////////////////////////
+
+    // Set the full path
+    void setFullPath(const QString& fullPath) {
+        m_fullPath = fullPath;
+    }
+
+    // Get the full path
+    QString fullPath() const {
+        return m_fullPath;
+    }
 
     /////////////////////////////////////////////////////////////////////////
     // Feature
@@ -151,4 +164,5 @@ class TreeItem final {
     QVariant m_data;
     QIcon m_icon;
     bool m_bold;
+    QString m_fullPath;
 };

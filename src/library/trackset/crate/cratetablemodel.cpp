@@ -9,9 +9,6 @@
 #include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
-// eve
-// #include "library/queryutil.h"
-// eve
 
 namespace {
 
@@ -162,7 +159,6 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {
-    //qDebug() << "CrateTableModel::setCrate()" << crateId;
     if (crateId == m_selectedCrate) {
         qDebug() << "Already focused on crate " << crateId;
         return;
@@ -215,6 +211,58 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     // Restore search text
     setSearch(m_searchTexts.value(m_selectedCrate));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+}
+
+void CrateTableModel::selectCrateGroup(const QString& groupName) {
+    if (sDebug) {
+        qDebug() << "[CrateTableModel] -> selectCrateGroup() -> Searching for "
+                    "tracks in groups starting with:"
+                 << groupName;
+    }
+    const QString& checkStamp = QDateTime::currentDateTime().toString("hhmmss");
+
+    const QString& tableName = QStringLiteral("crate_%1").arg(checkStamp);
+
+    QStringList columns;
+    columns << LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+    QString queryString =
+            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 "
+                    "WHERE library.id IN(SELECT crate_tracks.track_id from "
+                    "crate_tracks "
+                    "WHERE crate_tracks.crate_id IN(SELECT crates.id from "
+                    "crates WHERE crates.name LIKE '%4%')) "
+                    "AND %5=0")
+                    .arg(tableName,
+                            columns.join(","),
+                            LIBRARY_TABLE,
+                            groupName,
+                            LIBRARYTABLE_MIXXXDELETED);
+
+    if (sDebug) {
+        qDebug() << "[CrateTableModel] -> Generated SQL Query:" << queryString;
+    }
+
+    // Execute the query
+    FwdSqlQuery(m_database, queryString).execPrepared();
+    columns[0] = LIBRARYTABLE_ID;
+    columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_COVERART;
+
+    // Update the table and view
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            columns,
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    if (sDebug) {
+        qDebug() << "[CrateTableModel] -> Group table successfully created "
+                    "with provided Crate IDs.";
+    }
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location) {

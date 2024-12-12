@@ -354,9 +354,17 @@ void DlgPrefLibrary::slotUpdate() {
     }
     spinBox_grouped_crates_fixed_length->setValue(m_pConfig->getValue<int>(
             ConfigKey("[Library]", "GroupedCratesFixedLength")));
+    spinBox_grouped_crates_fixed_length->setToolTip(
+            tr("Select the number of characters at the beginning of your "
+               "cratenames representing the group"));
     lineEdit_grouped_crates_var_mask->setText(m_pConfig->getValue(
             ConfigKey("[Library]", "GroupedCratesVarLengthMask")));
-
+    lineEdit_grouped_crates_var_mask->setToolTip(
+            tr("Enter the mask you want to use between the groupname(s) and "
+               "the cratename.") +
+            "\n" +
+            tr("Don't use spaces around the delimiter (or around the mask), "
+               "these can break the detection process."));
     bool editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);

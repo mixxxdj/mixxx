@@ -26,8 +26,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
-// const bool sDebug = false;
-const bool sDebug = true;
+const bool sDebug = false;
 
 namespace {
 
@@ -942,17 +941,39 @@ void GroupedCratesFeature::slotTrackSelected(TrackId trackId) {
         }
     }
 
-    // Set all crates the track is in bold (or if there is no track selected,
-    // clear all the bolding).
+    // Recursive lambda to set bold for crates and groups
+    auto setBoldForItemsRecursive =
+            [&](TreeItem* pItem,
+                    const auto& setBoldForItemsRecursiveRef) -> bool {
+        if (!pItem) {
+            return false;
+        }
+
+        bool isBold = false;
+
+        // Check if the current item is a crate and contains the selected track
+        if (!pItem->children().isEmpty()) {
+            // Recursively check child items
+            for (TreeItem* pChild : pItem->children()) {
+                isBold |= setBoldForItemsRecursiveRef(pChild, setBoldForItemsRecursiveRef);
+            }
+        } else {
+            // Check crates directly
+            isBold = m_selectedTrackId.isValid() &&
+                    std::binary_search(
+                            sortedTrackCrates.begin(),
+                            sortedTrackCrates.end(),
+                            CrateId(pItem->getData()));
+        }
+
+        // Set bold status for the current item
+        pItem->setBold(isBold);
+        return isBold;
+    };
+
+    // Start the recursion from the root
     for (TreeItem* pTreeItem : pRootItem->children()) {
-        DEBUG_ASSERT(pTreeItem != nullptr);
-        bool crateContainsSelectedTrack =
-                m_selectedTrackId.isValid() &&
-                std::binary_search(
-                        sortedTrackCrates.begin(),
-                        sortedTrackCrates.end(),
-                        CrateId(pTreeItem->getData()));
-        pTreeItem->setBold(crateContainsSelectedTrack);
+        setBoldForItemsRecursive(pTreeItem, setBoldForItemsRecursive);
     }
 
     m_pSidebarModel->triggerRepaint();
@@ -962,10 +983,9 @@ void GroupedCratesFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
 }
 
-// pParentItem->insertChild(pParentItem->childCount(), std::move(pNewSubgroup));
 QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
     if (sDebug) {
-        qDebug() << "[GroupedCratesFeature] -> rebuildChildModel()" << selectedCrateId;
+        qDebug() << "[GROUPEDCRATESFEATURE] -> rebuildChildModel()" << selectedCrateId;
     }
 
     QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
@@ -980,7 +1000,7 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
                 const QString& groupName = pGroupItem->getLabel();
                 groupExpandedStates[groupName] = m_pSidebarWidget->isExpanded(groupIndex);
                 if (sDebug) {
-                    qDebug() << "[GroupedCratesFeature] Saved expanded state "
+                    qDebug() << "[GroupedCratesFeature] Saved open/close state "
                                 "for group:"
                              << groupName << "->"
                              << groupExpandedStates[groupName];
@@ -997,16 +1017,17 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
     m_pSidebarModel->removeRows(0, pRootItem->childRows());
 
     QList<QVariantMap> groupedCrates = m_crateTableModel.getGroupedCrates();
+    const QString& delimiter = m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
 
     if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedCratesLength")) == 0) {
-        // has group > 1 member crates?
+        // Fixed prefix length
         QMap<QString, int> groupCounts;
         for (const QVariantMap& crateData : groupedCrates) {
             const QString& groupName = crateData["group_name"].toString();
             groupCounts[groupName]++;
         }
 
-        // construct the tree model
         QMap<QString, TreeItem*> groupItems;
         std::vector<std::unique_ptr<TreeItem>> modelRows;
         int selectedRow = -1;
@@ -1016,7 +1037,6 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
             CrateId crateId(crateData["crate_id"]);
             const QString& crateName = crateData["crate_name"].toString();
 
-            // get CrateSummary
             CrateSummary crateSummary;
             if (!m_pTrackCollection->crates().readCrateSummaryById(crateId, &crateSummary)) {
                 qWarning() << "[GROUPEDCRATESFEATURE] -> Failed to fetch summary "
@@ -1027,40 +1047,38 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
 
             const QString& crateSummaryName = formatLabel(crateSummary);
 
-            // add CrateSummary to name
             if (groupCounts[groupName] > 1) {
-                // > 1 crate in the group -> Group under a parent
                 TreeItem* pGroupItem = groupItems.value(groupName, nullptr);
                 if (!pGroupItem) {
-                    // create the group parent item
                     auto newGroup = std::make_unique<TreeItem>(groupName, kInvalidCrateId);
                     pGroupItem = newGroup.get();
                     groupItems.insert(groupName, pGroupItem);
                     modelRows.push_back(std::move(newGroup));
                 }
 
-                QString displayCrateName = "";
-                // When crate is in group, display the cratename without the group name prefix
-                // If prefix is variable and delimited with a mask, remove the mask to
-                displayCrateName = crateSummaryName.mid(groupName.length()).trimmed();
+                const QString& displayCrateName =
+                        crateSummaryName.mid(groupName.length()).trimmed();
                 if (sDebug) {
                     qDebug() << "[GROUPEDCRATESFEATURE] -> crateSummaryName - "
                                 "displayCrateName = "
                              << crateSummaryName << " - " << displayCrateName;
                 }
 
-                // crate -> child of the group
                 TreeItem* pChildItem = pGroupItem->appendChild(
                         displayCrateName, crateId.toVariant().toInt());
+                pChildItem->setFullPath(groupName + delimiter + displayCrateName);
                 updateTreeItemForCrateSummary(pChildItem, crateSummary);
-
+                if (sDebug) {
+                    qDebug() << "[GROUPEDCRATESFEATURE] Added CrateId to group:"
+                             << crateId << "Group:" << groupName;
+                }
                 if (selectedCrateId == crateId) {
                     selectedRow = static_cast<int>(modelRows.size()) - 1;
                 }
             } else {
-                // 1 crate in the group -> crate in root
                 auto newCrate = std::make_unique<TreeItem>(
                         crateSummaryName, crateId.toVariant().toInt());
+                newCrate->setFullPath(crateSummaryName);
                 updateTreeItemForCrateSummary(newCrate.get(), crateSummary);
 
                 if (selectedCrateId == crateId) {
@@ -1070,33 +1088,25 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
             }
         }
 
-        // Append all TreeItems to the sidebar model
         m_pSidebarModel->insertTreeItemRows(std::move(modelRows), 0);
-
-        // Update rendering of crates depending on the currently selected track
         slotTrackSelected(m_selectedTrackId);
 
     } else {
-        // Top-level grouping
+        // variable group prefix length with mask
         QMap<QString, QList<QVariantMap>> topLevelGroups;
         for (const QVariantMap& crateData : groupedCrates) {
-            QString groupName = crateData["group_name"].toString();
-            QString topGroup =
-                    groupName.section(m_pConfig->getValue(ConfigKey("[Library]",
-                                              "GroupedCratesVarLengthMask")),
-                            0,
-                            0);
+            const QString& groupName = crateData["group_name"].toString();
+            const QString& topGroup = groupName.section(delimiter, 0, 0);
             topLevelGroups[topGroup].append(crateData);
         }
 
         if (sDebug) {
-            qDebug() << "[GroupedCratesFeature] Top-level groups:";
+            qDebug() << "[GROUPEDCRATESFEATURE] Top-level groups:";
             for (auto it = topLevelGroups.constBegin(); it != topLevelGroups.constEnd(); ++it) {
                 qDebug() << "Group:" << it.key() << "-> Crates:" << it.value().size();
             }
         }
-
-        // looping lambda to build tree
+        // lambda function to build tree
         std::function<void(
                 const QString&, const QList<QVariantMap>&, TreeItem*)>
                 buildTreeStructure;
@@ -1106,58 +1116,55 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
             QMap<QString, QList<QVariantMap>> subgroupedCrates;
 
             for (const QVariantMap& crateData : crates) {
-                QString groupName = crateData["group_name"].toString();
+                const QString& groupName = crateData["group_name"].toString();
 
                 if (sDebug) {
-                    qDebug() << "[GroupedCratesFeature] Processing crate with "
+                    qDebug() << "[GROUPEDCRATESFEATURE] Processing crate with "
                                 "groupName:"
                              << groupName << "currentPath:" << currentPath;
                 }
 
                 if (!groupName.startsWith(currentPath)) {
                     if (sDebug) {
-                        qDebug() << "[GroupedCratesFeature] Skipping crate. "
+                        qDebug() << "[GROUPEDCRATESFEATURE] Skipping crate. "
                                     "Group name does not match path:"
                                  << groupName << "Current path:" << currentPath;
                     }
                     continue;
                 }
 
-                QString remainingPath = groupName.mid(currentPath.length());
-                int delimiterPos = remainingPath.indexOf(m_pConfig->getValue(
-                        ConfigKey("[Library]", "GroupedCratesVarLengthMask")));
+                const QString& remainingPath = groupName.mid(currentPath.length());
+                int delimiterPos = remainingPath.indexOf(delimiter);
 
                 if (delimiterPos >= 0) {
-                    // group = subgroup
-                    // QString subgroupName = remainingPath.left(delimiterPos).trimmed();
-                    QString subgroupName = remainingPath.left(delimiterPos);
+                    const QString& subgroupName = remainingPath.left(delimiterPos);
                     subgroupedCrates[subgroupName].append(crateData);
                     if (sDebug) {
-                        qDebug() << "[GroupedCratesFeature] Added crate to "
+                        qDebug() << "[GROUPEDCRATESFEATURE] Added crate to "
                                     "subgroup:"
                                  << subgroupName
                                  << "Remaining path:" << remainingPath;
                     }
                 } else {
-                    // 1 crate -> add to the parent
                     CrateId crateId(crateData["crate_id"]);
                     CrateSummary crateSummary;
                     if (!m_pTrackCollection->crates().readCrateSummaryById(
                                 crateId, &crateSummary)) {
-                        qWarning() << "[GroupedCratesFeature] Failed to fetch "
+                        qWarning() << "[GROUPEDCRATESFEATURE] Failed to fetch "
                                       "summary for crate ID:"
                                    << crateId;
                         continue;
                     }
 
-                    QString displayCrateName = formatLabel(crateSummary);
-                    displayCrateName = displayCrateName.mid(currentPath.length());
+                    const QString& displayCrateName =
+                            formatLabel(crateSummary).mid(currentPath.length());
 
                     TreeItem* pChildItem = pParentItem->appendChild(
                             displayCrateName.trimmed(), crateId.toVariant());
+                    pChildItem->setFullPath(currentPath + delimiter + displayCrateName);
                     updateTreeItemForCrateSummary(pChildItem, crateSummary);
                     if (sDebug) {
-                        qDebug() << "[GroupedCratesFeature] Added crate to "
+                        qDebug() << "[GROUPEDCRATESFEATURE] Added crate to "
                                     "parent:"
                                  << displayCrateName
                                  << "Parent:" << pParentItem->getLabel();
@@ -1165,76 +1172,94 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
                 }
             }
 
-            // Add subgroups loop
             for (auto it = subgroupedCrates.constBegin(); it != subgroupedCrates.constEnd(); ++it) {
                 const QString& subgroupName = it.key();
                 const QList<QVariantMap>& subgroupCrates = it.value();
-
-                // subgroup is created only if it has crates
                 if (!subgroupCrates.isEmpty()) {
-                    auto pNewSubgroup = std::make_unique<TreeItem>(subgroupName, kInvalidCrateId);
-                    TreeItem* pSubgroupItem = pNewSubgroup.get();
-                    pParentItem->insertChild(pParentItem->childCount(), std::move(pNewSubgroup));
-                    if (sDebug) {
-                        qDebug() << "[GroupedCratesFeature] Created subgroup:" << subgroupName
-                                 << "Parent:" << pParentItem->getLabel();
-                    }
+                    if (subgroupCrates.size() > 1) {
+                        // subgroup has > 1 crate -> create subgroup
+                        auto pNewSubgroup = std::make_unique<TreeItem>(
+                                subgroupName, kInvalidCrateId);
+                        TreeItem* pSubgroupItem = pNewSubgroup.get();
+                        pParentItem->insertChild(pParentItem->childCount(),
+                                std::move(pNewSubgroup));
+                        if (sDebug) {
+                            qDebug() << "[GROUPEDCRATESFEATURE] Created subgroup:" << subgroupName
+                                     << "Parent:" << pParentItem->getLabel();
+                        }
 
-                    // loop in subgroup
-                    buildTreeStructure(currentPath + subgroupName +
-                                    m_pConfig->getValue(ConfigKey("[Library]",
-                                            "GroupedCratesVarLengthMask")),
-                            subgroupCrates,
-                            pSubgroupItem);
+                        // loop into the subgroup
+                        buildTreeStructure(
+                                currentPath + subgroupName + delimiter,
+                                subgroupCrates,
+                                pSubgroupItem);
+                    } else {
+                        // only one crate -> directly under the parent, NO subgroup
+                        const QVariantMap& crateData = subgroupCrates.first();
+                        CrateId crateId(crateData["crate_id"]);
+                        CrateSummary crateSummary;
+                        if (!m_pTrackCollection->crates().readCrateSummaryById(
+                                    crateId, &crateSummary)) {
+                            qWarning() << "[GROUPEDCRATESFEATURE] Failed to "
+                                          "fetch summary for crate ID:"
+                                       << crateId;
+                            continue;
+                        }
+
+                        const QString& displayCrateName =
+                                formatLabel(crateSummary)
+                                        .mid(currentPath.length());
+
+                        TreeItem* pChildItem = pParentItem->appendChild(
+                                displayCrateName.trimmed(), crateId.toVariant());
+                        pChildItem->setFullPath(currentPath + delimiter + displayCrateName);
+                        updateTreeItemForCrateSummary(pChildItem, crateSummary);
+                        if (sDebug) {
+                            qDebug() << "[GROUPEDCRATESFEATURE] Added single crate to parent:"
+                                     << displayCrateName
+                                     << "Parent:" << pParentItem->getLabel();
+                        }
+                    }
                 }
             }
         };
-
-        // building tree -> start
+        // building rootlevel groups
         for (auto it = topLevelGroups.constBegin(); it != topLevelGroups.constEnd(); ++it) {
             const QString& groupName = it.key();
             const QList<QVariantMap>& crates = it.value();
 
             if (crates.size() > 1) {
-                // Top-level group
                 auto pNewGroup = std::make_unique<TreeItem>(groupName, kInvalidCrateId);
                 TreeItem* pGroupItem = pNewGroup.get();
                 pRootItem->insertChild(pRootItem->childCount(), std::move(pNewGroup));
                 if (sDebug) {
-                    qDebug() << "[GroupedCratesFeature] Created top-level group:" << groupName;
+                    qDebug() << "[GROUPEDCRATESFEATURE] Created top-level group:" << groupName;
                 }
 
-                // build subgroups
-                buildTreeStructure(groupName +
-                                m_pConfig->getValue(ConfigKey("[Library]",
-                                        "GroupedCratesVarLengthMask")),
-                        crates,
-                        pGroupItem);
+                buildTreeStructure(groupName + delimiter, crates, pGroupItem);
             } else {
-                // single crate at root
                 const QVariantMap& crateData = crates.first();
                 CrateId crateId(crateData["crate_id"]);
                 CrateSummary crateSummary;
 
                 if (!m_pTrackCollection->crates().readCrateSummaryById(crateId, &crateSummary)) {
-                    qWarning() << "[GroupedCratesFeature] Failed to fetch "
+                    qWarning() << "[GROUPEDCRATESFEATURE] Failed to fetch "
                                   "summary for crate ID:"
                                << crateId;
                     continue;
                 }
 
-                QString displayCrateName = formatLabel(crateSummary);
+                const QString& displayCrateName = formatLabel(crateSummary);
                 TreeItem* pChildItem = pRootItem->appendChild(
                         displayCrateName.trimmed(), crateId.toVariant());
                 updateTreeItemForCrateSummary(pChildItem, crateSummary);
                 if (sDebug) {
-                    qDebug() << "[GroupedCratesFeature] Added crate to root:" << displayCrateName;
+                    qDebug() << "[GROUPEDCRATESFEATURE] Added crate to root:" << displayCrateName;
                 }
             }
         }
     }
-
-    // remember open/close state of group
+    // store open/close state of groups
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         QModelIndex groupIndex = m_pSidebarModel->index(row, 0);
         if (groupIndex.isValid()) {
@@ -1244,7 +1269,7 @@ QModelIndex GroupedCratesFeature::rebuildChildModel(CrateId selectedCrateId) {
                 if (groupExpandedStates.contains(groupName)) {
                     m_pSidebarWidget->setExpanded(groupIndex, groupExpandedStates[groupName]);
                     if (sDebug) {
-                        qDebug() << "[GroupedCratesFeature] Restored expanded "
+                        qDebug() << "[GROUPEDCRATESFEATURE] Restored expanded "
                                     "state for group:"
                                  << groupName << "->"
                                  << groupExpandedStates[groupName];
@@ -1278,6 +1303,12 @@ void GroupedCratesFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds
         groupedCratesMap[crateData["group_name"].toString()].append(crateData);
     }
 
+    //    const QString& delimiter = m_pConfig->getValue(ConfigKey("[Library]",
+    //    "GroupedCratesVarLengthMask"));
+
+    // Update full paths recursively for all items starting from the root
+    updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+
     // Update or rebuild items
     for (const CrateId& crateId : updatedCrateIds) {
         // Find the updated crate in groupedCrates
@@ -1299,6 +1330,10 @@ void GroupedCratesFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds
                 }
                 pItem->setData((*updatedGroup)["crate_name"].toString());
                 updateTreeItemForCrateSummary(pItem, CrateSummary(crateId));
+
+                // Update fullPath for the entire tree under this item
+                updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+
                 m_pSidebarModel->triggerRepaint(index);
             } else {
                 // Rebuild the group if the crate is missing
@@ -1313,26 +1348,45 @@ void GroupedCratesFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds
 
 void GroupedCratesFeature::activateChild(const QModelIndex& index) {
     if (sDebug) {
-        qDebug() << "[GroupedCratesFeature] -> activateChild()" << index;
-        qDebug() << "[GroupedCratesFeature] -> activateChild() -> index" << index;
+        qDebug() << "[GROUPEDCRATESFEATURE] -> activateChild() -> index" << index;
     }
+
     CrateId crateId(crateIdFromIndex(index));
+
     if (crateId.toString() == "-1") {
+        // Group activated
         if (sDebug) {
-            qDebug() << "[GroupedCratesFeature] -> activateChild() -> crateId = " << crateId;
-            qDebug() << "[GroupedCratesFeature] -> Group activated";
+            qDebug() << "[GroupedCratesFeature] -> activateChild() -> Group activated";
         }
+        const QString& fullPath = fullPathFromIndex(index);
+        if (fullPath.isEmpty()) {
+            qWarning() << "[GROUPEDCRATESFEATURE] -> activateChild() -> Group "
+                          "activated: No valid full path for index: "
+                       << index;
+            return;
+        }
+        if (sDebug) {
+            qDebug() << "[GroupedCratesFeature] -> activateChild() -> Group "
+                        "activated -> fullPath:"
+                     << fullPath;
+        }
+
         m_lastClickedIndex = index;
         m_lastRightClickedIndex = QModelIndex();
         m_prevSiblingCrate = CrateId();
+        emit saveModelState();
         emit disableSearch();
         emit enableCoverArtDisplay(false);
-        emit featureSelect(this, m_lastClickedIndex);
 
+        m_crateTableModel.selectCrateGroup(fullPath);
+        emit featureSelect(this, m_lastClickedIndex);
+        emit showTrackModel(&m_crateTableModel);
     } else {
+        // Crate activated
         if (sDebug) {
-            qDebug() << "[GroupedCratesFeature] -> activateChild() ->  crateId = " << crateId;
-            qDebug() << "[GroupedCratesFeature] -> Child crate activated";
+            qDebug() << "[GROUPEDCRATESFEATURE] -> activateChild() -> Child "
+                        "crate activated -> crateId: "
+                     << crateId;
         }
         VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
             return;
@@ -1344,5 +1398,75 @@ void GroupedCratesFeature::activateChild(const QModelIndex& index) {
         m_crateTableModel.selectCrate(crateId);
         emit showTrackModel(&m_crateTableModel);
         emit enableCoverArtDisplay(true);
+    }
+}
+
+QString GroupedCratesFeature::fullPathFromIndex(const QModelIndex& index) const {
+    const QString& delimiter = m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
+    if (!index.isValid()) {
+        return QString();
+    }
+
+    TreeItem* pItem = m_pSidebarModel->getItem(index);
+    if (!pItem) {
+        return QString();
+    }
+
+    QString fullPath;
+    TreeItem* currentItem = pItem;
+    while (currentItem) {
+        if (!fullPath.isEmpty()) {
+            // Prepend delimiter
+            fullPath.prepend(delimiter);
+        }
+        // Prepend current item's label
+        fullPath.prepend(currentItem->getLabel());
+        currentItem = currentItem->parent();
+    }
+
+    // remove the last prepended delimiter (we don't know the depth of the tree)
+    // if another root level crate exists that is not in the group
+    // (beginning of the name equal to root level groop name),
+    // the member tracks would be added to the group,
+    // with added delimiter only tracks in group member crates are added
+    fullPath = fullPath.mid(delimiter.length()).append(delimiter);
+    return fullPath;
+}
+
+QString GroupedCratesFeature::groupNameFromIndex(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        // If index Invalid -> return an empty string
+        return QString();
+    }
+
+    TreeItem* pItem = m_pSidebarModel->getItem(index);
+    if (!pItem) {
+        // ig no item found for this index -> return an empty string
+        return QString();
+    }
+    // if index & label found -> return label
+    return pItem->getLabel();
+}
+
+void GroupedCratesFeature::updateFullPathRecursive(TreeItem* pItem, const QString& parentPath) {
+    const QString& delimiter = m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedCratesVarLengthMask"));
+    if (!pItem) {
+        return;
+    }
+
+    QString currentFullPath = parentPath.isEmpty()
+            ? pItem->getLabel()
+            : parentPath + delimiter + pItem->getLabel();
+    pItem->setFullPath(currentFullPath);
+
+    if (sDebug) {
+        qDebug() << "[GROUPEDCRATESFEATURE] -> Updated full path for item: " << pItem->getLabel()
+                 << " FullPath: " << currentFullPath;
+    }
+
+    for (TreeItem* pChild : pItem->children()) {
+        updateFullPathRecursive(pChild, currentFullPath);
     }
 }
