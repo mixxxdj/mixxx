@@ -186,6 +186,9 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
+    static bool already_called = false; 
+    DEBUG_ASSERT(!already_called); 
+    already_called = true; 
     // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
     // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
     // and possible crashes.
