@@ -6,7 +6,7 @@ namespace rendergraph {
 struct AttributeInit;
 }
 
-// helper to create an AttributeSet using an initializer_list
+/// Helper to create an AttributeSet using an initializer_list.
 struct rendergraph::AttributeInit {
     int m_tupleSize;
     PrimitiveType m_primitiveType;

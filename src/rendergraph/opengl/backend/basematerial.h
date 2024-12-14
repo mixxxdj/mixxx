@@ -14,7 +14,7 @@ class rendergraph::BaseMaterial {
   public:
     virtual MaterialType* type() const = 0;
 
-    // For parity with QSGMaterial, not used yet
+    // For parity with QSGMaterial, not used yet.
     int compare(const BaseMaterial* other) const;
 
     void setShader(std::shared_ptr<MaterialShader> pShader);

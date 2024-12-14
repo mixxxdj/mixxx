@@ -18,8 +18,8 @@ int BaseMaterial::compare(const QSGMaterial* other) const {
 }
 
 QSGMaterialShader* BaseMaterial::createShader(QSGRendererInterface::RenderMode) const {
-    // This looks like a leak but it isn't: we pass ownership to Qt. Qt will
-    // cache and reuse the shader for all Material of the same type.
+    // Note: this looks like a leak but it isn't: we pass ownership to Qt.
+    // Qt will cache and reuse the shader for all Material of the same type.
     // TODO make sure that RenderMode is always the same.
     auto pThis = static_cast<const Material*>(this);
     auto pShader = pThis->createShader().release();

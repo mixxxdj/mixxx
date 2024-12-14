@@ -35,7 +35,8 @@ Geometry::Geometry(const rendergraph::AttributeSet& attributeSet, int vertexCoun
 }
 
 void Geometry::setAttributeValues(int attributePosition, const float* from, int numTuples) {
-    // TODO this code assumes all vertices are floats
+    // Note: this code assumes all vertices are floats, which is sufficient for our
+    // purpose.
     const auto attributeArray = QSGGeometry::attributes();
     int vertexOffset = 0;
     for (int i = 0; i < attributePosition; i++) {

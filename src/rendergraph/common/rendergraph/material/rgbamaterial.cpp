@@ -18,7 +18,8 @@ const AttributeSet& RGBAMaterial::attributes() {
     return set;
 }
 
-/* static */ const UniformSet& RGBAMaterial::uniforms() {
+// static
+const UniformSet& RGBAMaterial::uniforms() {
     static UniformSet set = makeUniformSet<QMatrix4x4>({"ubuf.matrix"});
     return set;
 }

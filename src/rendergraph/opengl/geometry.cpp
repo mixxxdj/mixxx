@@ -10,7 +10,8 @@ Geometry::Geometry(const AttributeSet& attributeSet, int vertexCount)
 }
 
 void Geometry::setAttributeValues(int attributePosition, const float* from, int numTuples) {
-    // TODO this code assumes all vertices are floats
+    // Note: this code assumes all vertices are floats, which is sufficient for
+    // our purpose.
     VERIFY_OR_DEBUG_ASSERT(attributePosition < attributeCount()) {
         return;
     }

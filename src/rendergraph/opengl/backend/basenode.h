@@ -36,9 +36,11 @@ class rendergraph::BaseNode {
         return m_pEngine;
     }
 
-    // Prefer using NodeInterface<T>::appendChildNode(std::unique_ptr<BaseNode> pNode);
+    /// Mimicking scenegraph node API.
+    /// Prefer using NodeInterface<T>::appendChildNode(std::unique_ptr<BaseNode> pNode);
     void appendChildNode(BaseNode* pChild);
-    // Prefer using std::unique_ptr<BaseNode> NodeInterface<T>::detachChildNode(BaseNode* pNode);
+    /// Mimicking scenegraph node API.
+    /// Prefer using std::unique_ptr<BaseNode> NodeInterface<T>::detachChildNode(BaseNode* pNode);
     void removeChildNode(BaseNode* pChild);
 
     BaseNode* parent() const {
@@ -61,7 +63,7 @@ class rendergraph::BaseNode {
     Engine* m_pEngine{};
     bool m_usePreprocess{};
 
-    // Mimicking scenegraph node hierarchy. A parent owns its children.
+    /// Mimicking scenegraph node hierarchy. A parent owns its children.
     BaseNode* m_pParent{};
     BaseNode* m_pFirstChild{};
     BaseNode* m_pLastChild{};

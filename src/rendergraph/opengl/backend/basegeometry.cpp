@@ -6,7 +6,7 @@
 using namespace rendergraph;
 
 namespace {
-// to mimic sg default
+// This mimics the scenegraph default.
 constexpr auto defaultDrawingMode = DrawingMode::TriangleStrip;
 } // namespace
 

@@ -21,8 +21,8 @@ bool BaseMaterialShader::updateUniformData(RenderState& state,
     return result;
 }
 
-// override for QSGMaterialShader; this function is called by the Qt scene graph to prepare use of
-// sampled images in the shader, typically in the form of combined image samplers.
+/// Override for QSGMaterialShader; this function is called by the Qt scene graph to prepare use of
+/// sampled images in the shader, typically in the form of combined image samplers.
 void BaseMaterialShader::updateSampledImage(RenderState& state,
         int binding,
         QSGTexture** texture,

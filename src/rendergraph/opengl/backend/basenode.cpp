@@ -16,10 +16,10 @@ BaseNode::~BaseNode() {
     }
 }
 
-// This mimics QSGNode::appendChildNode.
-// Use NodeInterface<T>::appendChildNode(std::unique_ptr<BaseNode> pNode)
-// for a more clear transfer of ownership. pChild is considered owned by
-// this at this point.
+/// This mimics QSGNode::appendChildNode.
+/// Use NodeInterface<T>::appendChildNode(std::unique_ptr<BaseNode> pNode)
+/// for a more clear transfer of ownership. pChild is considered owned by
+/// this at this point.
 void BaseNode::appendChildNode(BaseNode* pChild) {
     if (m_pLastChild) {
         pChild->m_pPreviousSibling = m_pLastChild;
@@ -37,10 +37,10 @@ void BaseNode::appendChildNode(BaseNode* pChild) {
     }
 }
 
-// This mimics QSGNode::removeChildNode.
-// Use NodeInterface<T>::detachChildNode(BaseNode* pNode)
-// for a more clear transfer of ownership. Otherwise,
-// deleting pChild is responsibility of the caller.
+/// This mimics QSGNode::removeChildNode.
+/// Use NodeInterface<T>::detachChildNode(BaseNode* pNode)
+/// for a more clear transfer of ownership. Otherwise,
+/// deleting pChild is responsibility of the caller.
 void BaseNode::removeChildNode(BaseNode* pChild) {
     if (pChild == m_pFirstChild) {
         m_pFirstChild = pChild->m_pNextSibling;

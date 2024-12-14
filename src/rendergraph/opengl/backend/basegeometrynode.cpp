@@ -40,8 +40,8 @@ void BaseGeometryNode::render() {
     }
 
     glEnable(GL_BLEND);
-    // qt scene graph uses premultiplied alpha color in the shader,
-    // so we need to do the same
+    // Note: Qt scenegraph uses premultiplied alpha color in the shader,
+    // so we need to do the same.
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     QOpenGLShaderProgram& shader = material.shader();

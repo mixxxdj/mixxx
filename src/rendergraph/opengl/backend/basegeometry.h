@@ -10,7 +10,7 @@ class BaseAttributeSet; // fwd decl to avoid circular dependency
 class BaseGeometry;
 } // namespace rendergraph
 
-// TODO this assumes all vertices consist of floats
+// Note: this assumes all vertices consist of floats, which is sufficient for our purposes
 class rendergraph::BaseGeometry {
   protected:
     BaseGeometry(const BaseAttributeSet& attributeSet, int vertexCount);

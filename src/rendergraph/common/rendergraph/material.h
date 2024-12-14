@@ -19,11 +19,11 @@ class rendergraph::Material : public rendergraph::BaseMaterial {
     Material(const UniformSet& uniformSet);
     virtual ~Material();
 
-    // see QSGMaterial::compare.
-    // TODO decide if this should be virtual. QSGMaterial::compare is virtual
-    // to concrete Material can implement a compare function, but in rendergraph
-    // we can compare the uniforms cache and texture already here, which seems
-    // sufficient.
+    /// See QSGMaterial::compare.
+    // Note: QSGMaterial::compare is virtual, so that a concrete Material can
+    // implement a custom compare function. But in rendergraph we can always
+    // compare the uniforms cache and texture already, and this is sufficient
+    // for our purpose.
     int compare(const Material* pOther) const {
         DEBUG_ASSERT(type() == pOther->type());
         int cacheCompareResult = std::memcmp(m_uniformsCache.data(),
@@ -32,7 +32,7 @@ class rendergraph::Material : public rendergraph::BaseMaterial {
         if (cacheCompareResult != 0) {
             return cacheCompareResult < 0 ? -1 : 1;
         }
-        // TODO multiple textures
+        // Note: we currently support only a single texture per material
         if (!texture(0) || !pOther->texture(0)) {
             return texture(0) ? 1 : -1;
         }
