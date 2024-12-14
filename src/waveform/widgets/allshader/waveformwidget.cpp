@@ -152,11 +152,11 @@ void WaveformWidget::resizeRenderer(int, int, float) {
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
-    w = static_cast<int>(std::lroundf(static_cast<float>(w) / devicePixelRatio()));
-    h = static_cast<int>(std::lroundf(static_cast<float>(h) / devicePixelRatio()));
+    w = static_cast<int>(std::lround(static_cast<qreal>(w) / devicePixelRatioF()));
+    h = static_cast<int>(std::lround(static_cast<qreal>(h) / devicePixelRatioF()));
 
     m_pEngine->resize(w, h);
-    WaveformWidgetRenderer::resizeRenderer(w, h, devicePixelRatio());
+    WaveformWidgetRenderer::resizeRenderer(w, h, static_cast<float>(devicePixelRatio()));
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {
