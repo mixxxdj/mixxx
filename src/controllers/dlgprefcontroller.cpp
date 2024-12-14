@@ -89,8 +89,8 @@ DlgPrefController::DlgPrefController(
 
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
-    initTableView(m_ui.m_pInputMappingTableView);
-    initTableView(m_ui.m_pOutputMappingTableView);
+    initTableView(m_ui.midiInputMappingTableView);
+    initTableView(m_ui.midiOutputMappingTableView);
 
     std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
     slotShowMapping(pMapping);
@@ -1085,19 +1085,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this,
                     m_pControlPickerMenu,
-                    m_ui.m_pInputMappingTableView);
+                    m_ui.midiInputMappingTableView);
     pInputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pInputProxyModel =
             new ControllerMappingTableProxyModel(pInputModel);
-    m_ui.m_pInputMappingTableView->setModel(pInputProxyModel);
+    m_ui.midiInputMappingTableView->setModel(pInputProxyModel);
 
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
-                i, m_ui.m_pInputMappingTableView);
+                i, m_ui.midiInputMappingTableView);
         if (pDelegate) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
-            m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+            m_ui.midiInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
     }
 
@@ -1113,19 +1113,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this,
                     m_pControlPickerMenu,
-                    m_ui.m_pOutputMappingTableView);
+                    m_ui.midiOutputMappingTableView);
     pOutputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pOutputProxyModel =
             new ControllerMappingTableProxyModel(pOutputModel);
-    m_ui.m_pOutputMappingTableView->setModel(pOutputProxyModel);
+    m_ui.midiOutputMappingTableView->setModel(pOutputProxyModel);
 
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
-                i, m_ui.m_pOutputMappingTableView);
+                i, m_ui.midiOutputMappingTableView);
         if (pDelegate) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
-            m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+            m_ui.midiOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
     }
 
@@ -1170,16 +1170,17 @@ void DlgPrefController::addInputMapping() {
         QModelIndex right = m_pInputProxyModel->mapFromSource(
             m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1,
                                        m_pInputTableModel->columnCount() - 1));
-        m_ui.m_pInputMappingTableView->selectionModel()->select(
-            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-        m_ui.m_pInputMappingTableView->scrollTo(left);
+        m_ui.midiInputMappingTableView->selectionModel()->select(
+                QItemSelection(left, right),
+                QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.midiInputMappingTableView->scrollTo(left);
     }
 }
 
 void DlgPrefController::removeInputMappings() {
     if (m_pInputProxyModel) {
         QItemSelection selection = m_pInputProxyModel->mapSelectionToSource(
-            m_ui.m_pInputMappingTableView->selectionModel()->selection());
+                m_ui.midiInputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pInputTableModel) {
             m_pInputTableModel->removeMappings(selectedIndices);
@@ -1208,16 +1209,17 @@ void DlgPrefController::addOutputMapping() {
         QModelIndex right = m_pOutputProxyModel->mapFromSource(
             m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1,
                                        m_pOutputTableModel->columnCount() - 1));
-        m_ui.m_pOutputMappingTableView->selectionModel()->select(
-            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-        m_ui.m_pOutputMappingTableView->scrollTo(left);
+        m_ui.midiOutputMappingTableView->selectionModel()->select(
+                QItemSelection(left, right),
+                QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.midiOutputMappingTableView->scrollTo(left);
     }
 }
 
 void DlgPrefController::removeOutputMappings() {
     if (m_pOutputProxyModel) {
         QItemSelection selection = m_pOutputProxyModel->mapSelectionToSource(
-            m_ui.m_pOutputMappingTableView->selectionModel()->selection());
+                m_ui.midiOutputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pOutputTableModel) {
             m_pOutputTableModel->removeMappings(selectedIndices);
