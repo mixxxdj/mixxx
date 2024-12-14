@@ -4,8 +4,13 @@
 
 #include "controllers/defs_controllers.h"
 #include "moc_hidcontroller.cpp"
+#include "util/string.h"
 
 class LegacyControllerMapping;
+
+namespace {
+constexpr size_t kMaxHidErrorMessageSize = 512;
+}
 
 HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
@@ -67,9 +72,12 @@ int HidController::open() {
 
     // If that fails, try to open device with vendor/product/serial #
     if (!pHidDevice) {
-        qCWarning(m_logBase) << "Failed. Trying to open with make, model & serial no:"
-                             << m_deviceInfo.getVendorId() << m_deviceInfo.getProductId()
-                             << m_deviceInfo.getSerialNumber();
+        qCWarning(m_logBase)
+                << "Failed. Trying to open with make, model & serial no:"
+                << m_deviceInfo.getVendorId() << m_deviceInfo.getProductId()
+                << m_deviceInfo.getSerialNumber() << ":"
+                << mixxx::convertWCStringToQString(
+                           hid_error(nullptr), kMaxHidErrorMessageSize);
         pHidDevice = hid_open(
                 m_deviceInfo.getVendorId(),
                 m_deviceInfo.getProductId(),
@@ -79,9 +87,13 @@ int HidController::open() {
     // If it does fail, try without serial number WARNING: This will only open
     // one of multiple identical devices
     if (!pHidDevice) {
-        qCWarning(m_logBase) << "Unable to open specific HID device" << getName()
-                             << "Trying now with just make and model."
-                             << "(This may only open the first of multiple identical devices.)";
+        qCWarning(m_logBase)
+                << "Unable to open specific HID device" << getName()
+                << "Trying now with just make and model."
+                << "(This may only open the first of multiple identical "
+                   "devices.): "
+                << mixxx::convertWCStringToQString(
+                           hid_error(nullptr), kMaxHidErrorMessageSize);
         pHidDevice = hid_open(m_deviceInfo.getVendorId(),
                 m_deviceInfo.getProductId(),
                 nullptr);
