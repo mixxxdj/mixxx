@@ -744,7 +744,7 @@ mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
 }
 
 void DlgTrackInfo::displayKeyText() {
-    const QString keyText = m_trackRecord.getMetadata().getTrackInfo().getKeyText();
+    const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
 }
 

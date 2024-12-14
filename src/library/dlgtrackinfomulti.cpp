@@ -386,7 +386,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         composers.insert(rec.getMetadata().getTrackInfo().getComposer());
         grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
         years.insert(rec.getMetadata().getTrackInfo().getYear());
-        keys.insert(rec.getMetadata().getTrackInfo().getKeyText());
+        keys.insert(KeyUtils::keyToString(rec.getKeys().getGlobalKey()));
         nums.insert(rec.getMetadata().getTrackInfo().getTrackNumber());
         comments.insert(rec.getMetadata().getTrackInfo().getComment());
 

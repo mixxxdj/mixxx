@@ -356,8 +356,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
                               KeyNotation notation) {
     if (!ChromaticKey_IsValid(key) ||
         key == mixxx::track::io::key::INVALID) {
-        // TODO(rryan): Maybe just the empty string?
-        return "INVALID";
+        return {};
     }
 
     if (notation == KeyNotation::Custom) {
