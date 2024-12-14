@@ -58,6 +58,29 @@ To build Mixxx, run
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
 
+### Using Dev Container
+
+> [!NOTE]
+> Dev container has recently been introduced and it is likely incomplete! Currently, it's been tested with `devpod` on Zed and Codium exclusively
+
+We provide a DevContainer definition for Mixxx. The container base uses Ubuntu 24.04 to ensure a close similarity with the CI.
+Similar to Fedora Toolbox's, the default configuration provide a comprehensive definition of mounts which will allow use to use Mixxx seamlessly in the container. (UI, audio, ...)
+If you are not comfortable with this, you may want to remove some or all of the binding before starting the container.
+
+You can build and run Mixxx using the following command:
+
+```bash
+mkdir build
+cd build
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON # Needed for clangd
+cmake --build . -j $(nproc)
+./mixxx
+```
+
+#### Using your device in DevContainer
+
+Devices be supported by default, thanks to the provided binds. Note that if you are encountering permission issue, check that you are not using SELinux, as this is currently not well supported in DevContainer
+
 ## Documentation
 
 For help using Mixxx, there are a variety of options:
