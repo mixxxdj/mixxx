@@ -207,7 +207,7 @@ bool BaseTrackCache::updateTrackInIndex(
         // preallocate memory for all columns at once
         record.resize(numColumns);
         for (int i = 0; i < numColumns; ++i) {
-            getTrackValueForColumn(pTrack, i, record[i]);
+            record[i] = getTrackValueForColumn(pTrack, i);
         }
         if (m_bIsCaching) {
             replaceRecentTrack(std::move(trackId), pTrack);
@@ -324,11 +324,10 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
     emit tracksChanged(trackIds);
 }
 
-void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
-                                            int column,
-                                            QVariant& trackValue) const {
+QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
+        int column) const {
     if (!pTrack || column < 0) {
-        return;
+        return QVariant{};
     }
 
     if (m_bIsCaching) {
@@ -338,73 +337,103 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     // TODO(XXX) Qt properties could really help here.
     // TODO(rryan) this is all TrackDAO specific. What about iTunes/RB/etc.?
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) == column) {
-        trackValue.setValue(pTrack->getArtist());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) == column) {
-        trackValue.setValue(pTrack->getTitle());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) == column) {
-        trackValue.setValue(pTrack->getAlbum());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) == column) {
-        trackValue.setValue(pTrack->getAlbumArtist());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
-        trackValue.setValue(pTrack->getYear());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
-        trackValue.setValue(pTrack->getDateAdded());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) == column) {
-        trackValue.setValue(pTrack->getLastPlayedAt());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        trackValue.setValue(pTrack->getGenre());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
-        trackValue.setValue(pTrack->getComposer());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
-        trackValue.setValue(pTrack->getGrouping());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) == column) {
-        trackValue.setValue(pTrack->getType());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
-        trackValue.setValue(pTrack->getTrackNumber());
-    } else if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == column) {
-        trackValue.setValue(QDir::toNativeSeparators(pTrack->getLocation()));
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
-        trackValue.setValue(pTrack->getComment());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) == column) {
-        trackValue.setValue(pTrack->getDuration());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) == column) {
-        trackValue.setValue(pTrack->getBitrate());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
-        trackValue.setValue(pTrack->getBpm());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
-        trackValue.setValue(pTrack->getReplayGain().getRatio());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        trackValue.setValue(pTrack->getPlayCounter().isPlayed());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        trackValue.setValue(pTrack->getPlayCounter().getTimesPlayed());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
-        trackValue.setValue(pTrack->getRating());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
+        return QVariant{pTrack->getArtist()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) == column) {
+        return QVariant{pTrack->getTitle()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) == column) {
+        return QVariant{pTrack->getAlbum()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) == column) {
+        return QVariant{pTrack->getAlbumArtist()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
+        return QVariant{pTrack->getYear()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
+        return QVariant{pTrack->getDateAdded()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) == column) {
+        return QVariant{pTrack->getLastPlayedAt()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
+        return QVariant{pTrack->getGenre()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
+        return QVariant{pTrack->getComposer()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
+        return QVariant{pTrack->getGrouping()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) == column) {
+        return QVariant{pTrack->getType()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
+        return QVariant{pTrack->getTrackNumber()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == column) {
+        return QVariant{QDir::toNativeSeparators(pTrack->getLocation())};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
+        return QVariant{pTrack->getComment()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) == column) {
+        return QVariant{pTrack->getDuration()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) == column) {
+        return QVariant{pTrack->getBitrate()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
+        return QVariant{pTrack->getBpm()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
+        return QVariant{pTrack->getReplayGain().getRatio()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
+        return QVariant{pTrack->getPlayCounter().isPlayed()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
+        return QVariant{pTrack->getPlayCounter().getTimesPlayed()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
+        return QVariant{pTrack->getRating()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         // The Key value is determined by either the KEY_ID or KEY column
-        trackValue = KeyUtils::keyFromColumns(
-                QVariant{pTrack->getKeyText()}, QVariant{pTrack->getKey()});
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
-        trackValue.setValue(static_cast<int>(pTrack->getKey()));
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        trackValue.setValue(pTrack->isBpmLocked());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
-        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
-        trackValue.setValue(pTrack->getCoverInfo().coverLocation);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
+        return KeyUtils::keyFromColumns(QVariant{pTrack->getKeyText()}, QVariant{pTrack->getKey()});
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
+        return QVariant{static_cast<int>(pTrack->getKey())};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
+        return QVariant{pTrack->isBpmLocked()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        return mixxx::RgbColor::toQVariant(pTrack->getColor());
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
+        return QVariant{pTrack->getCoverInfo().coverLocation};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
         // the cover digest.
-        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
-        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color));
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
-        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
-        trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
-        trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().type));
+        return QVariant{pTrack->getCoverInfo().imageDigest()};
     }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
+        return mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color);
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
+        return QVariant{pTrack->getCoverInfo().imageDigest()};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
+        return QVariant{static_cast<int>(pTrack->getCoverInfo().source)};
+    }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
+        return QVariant{static_cast<int>(pTrack->getCoverInfo().type)};
+    }
+    return QVariant{};
 }
 
 QVariant BaseTrackCache::data(TrackId trackId, int column) const {
@@ -418,7 +447,7 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     if (m_bIsCaching) {
         TrackPointer pTrack = getRecentTrack(trackId);
         if (pTrack) {
-            getTrackValueForColumn(pTrack, column, result);
+            result = getTrackValueForColumn(pTrack, column);
         }
     }
 
@@ -614,9 +643,7 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
         return 0;
     }
     for (const auto& sc: sortColumns) {
-        QVariant trackValue;
-        getTrackValueForColumn(pTrack, sc.m_column - columnOffset, trackValue);
-        trackValues.append(trackValue);
+        trackValues.append(getTrackValueForColumn(pTrack, sc.m_column - columnOffset));
     }
 
     int min = 0;
