@@ -26,6 +26,7 @@ case "$1" in
         # builddep mixxx`).
         sudo dnf install -y \
             appstream \
+            boost-devel \
             ccache \
             chrpath \
             cmake \
@@ -53,6 +54,7 @@ case "$1" in
             lilv-devel \
             mesa-libGL-devel \
             mesa-libGLU-devel \
+            mold \
             ninja-build \
             opus-devel \
             opusfile-devel \
