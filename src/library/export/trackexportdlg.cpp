@@ -77,7 +77,7 @@ void TrackExportDlg::slotAskOverwriteMode(
             tr("&Replace"), QMessageBox::YesRole);
     question_box.setDefaultButton(pSkip);
 
-    QCheckBox* pApplyToAll = new QCheckBox("Apply to all files");
+    QCheckBox* pApplyToAll = new QCheckBox(tr("Apply to all files"));
     pApplyToAll->setChecked(false);
     question_box.setCheckBox(pApplyToAll);
 
