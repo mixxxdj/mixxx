@@ -401,7 +401,8 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         // The Key value is determined by either the KEY_ID or KEY column
-        return KeyUtils::keyFromColumns(QVariant{pTrack->getKeyText()}, QVariant{pTrack->getKey()});
+        return QVariant{KeyUtils::keyFromKeyTextAndIdValues(
+                pTrack->getKeyText(), pTrack->getKey())};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         return QVariant{static_cast<int>(pTrack->getKey())};
@@ -437,17 +438,18 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
 }
 
 QVariant BaseTrackCache::data(TrackId trackId, int column) const {
-    QVariant result;
-
     if (!m_bIndexBuilt) {
         qDebug() << this << "ERROR index is not built for" << m_tableName;
-        return result;
+        return QVariant{};
     }
 
     if (m_bIsCaching) {
         TrackPointer pTrack = getRecentTrack(trackId);
         if (pTrack) {
-            result = getTrackValueForColumn(pTrack, column);
+            QVariant result = getTrackValueForColumn(pTrack, column);
+            if (result.isValid()) {
+                return result;
+            }
         }
     }
 
@@ -458,22 +460,20 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     // TODO(rryan) this code is flawed for columns that contains row-specific
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
-    if (!result.isValid()) {
-        auto it = m_trackInfo.constFind(trackId);
-        if (it != m_trackInfo.constEnd()) {
-            const QVector<QVariant>& fields = it.value();
-            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
-                // The Key value is determined by either the KEY_ID or KEY column
-                const auto columnForKeyId = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-                result = KeyUtils::keyFromColumns(
-                        fields.value(column, result),
-                        fields.value(columnForKeyId, result));
-            } else {
-                result = fields.value(column, result);
-            }
-        }
+    auto it = m_trackInfo.constFind(trackId);
+    if (it == m_trackInfo.constEnd()) {
+        return QVariant{};
     }
-    return result;
+
+    const QVector<QVariant>& fields = it.value();
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+        // The Key value is determined by either the KEY_ID or KEY column
+        const auto columnForKeyId = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+        return KeyUtils::keyFromKeyTextAndIdFields(
+                fields.value(column, QVariant{}),
+                fields.value(columnForKeyId, QVariant{}));
+    }
+    return fields.value(column, QVariant{});
 }
 
 void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,

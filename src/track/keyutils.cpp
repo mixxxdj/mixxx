@@ -769,7 +769,8 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
 }
 
 // static
-QVariant KeyUtils::keyFromColumns(const QVariant& keyValue, const QVariant& keyIdValue) {
+QVariant KeyUtils::keyFromKeyTextAndIdFields(
+        const QVariant& keyTextField, const QVariant& keyIdField) {
     // Helper function used by basetrackcache.cpp and basetracktablemodel.cpp
     // to determine the Key string from either the LIBRARYTABLE_KEY or the
     // LIBRARYTABLE_KEY_ID field.
@@ -778,23 +779,28 @@ QVariant KeyUtils::keyFromColumns(const QVariant& keyValue, const QVariant& keyI
     // column (as opposed to the string representation of the key
     // currently stored in the DB) then lookup the key and render it
     // using the user's selected notation.
-    if (keyIdValue.isNull()) {
+    if (keyIdField.isNull()) {
         // Otherwise, just use the KEY column value as is
-        return keyValue;
+        return keyTextField;
     }
     // Convert or clear invalid values
-    VERIFY_OR_DEBUG_ASSERT(keyIdValue.canConvert<int>()) {
-        return QVariant();
+    VERIFY_OR_DEBUG_ASSERT(keyIdField.canConvert<int>()) {
+        return keyTextField;
     }
     bool ok;
-    const auto keyId = keyIdValue.toInt(&ok);
+    const auto keyId = keyIdField.toInt(&ok);
     VERIFY_OR_DEBUG_ASSERT(ok) {
-        return QVariant();
+        return keyTextField;
     }
     const auto key = KeyUtils::keyFromNumericValue(keyId);
     if (key == mixxx::track::io::key::INVALID) {
-        return QVariant();
+        return keyTextField;
     }
     // Render the key with the user-provided notation
-    return KeyUtils::keyToString(key);
+    return QVariant{KeyUtils::keyToString(key)};
+}
+
+// static
+QString KeyUtils::keyFromKeyTextAndIdValues(const QString& keyText, const ChromaticKey& keyId) {
+    return keyId == mixxx::track::io::key::INVALID ? keyText : KeyUtils::keyToString(keyId);
 }

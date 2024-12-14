@@ -874,7 +874,7 @@ QVariant BaseTrackTableModel::roleValue(
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
             // The Key value is determined by either the KEY_ID or KEY column
-            return KeyUtils::keyFromColumns(
+            return KeyUtils::keyFromKeyTextAndIdFields(
                     rawValue,
                     rawSiblingValue(
                             index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID));

@@ -132,7 +132,10 @@ class KeyUtils {
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
 
-    static QVariant keyFromColumns(const QVariant& rawValue, const QVariant& keyCodeValue);
+    static QVariant keyFromKeyTextAndIdFields(
+            const QVariant& keyTextField, const QVariant& keyIdField);
+    static QString keyFromKeyTextAndIdValues(const QString& keyText,
+            const mixxx::track::io::key::ChromaticKey& key);
 
   private:
     static QMutex s_notationMutex;
