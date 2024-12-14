@@ -5,6 +5,7 @@
 
 #include "track/track.h"
 #include "util/colorcomponents.h"
+#include "util/roundtopixel.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -21,12 +22,6 @@
 // then used as textures to be drawn with a GLSL shader.
 
 namespace {
-
-auto makeRoundToPixel(float devicePixelRatio) {
-    return [devicePixelRatio](float pos) {
-        return std::round(pos * devicePixelRatio) / devicePixelRatio;
-    };
-}
 
 class TextureGraphics : public WaveformMark::Graphics {
   public:
