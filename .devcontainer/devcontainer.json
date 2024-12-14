@@ -1,0 +1,65 @@
+{
+  "name": "mixxx",
+  "build": {
+    "cacheFrom": "ghcr.io/mixxxdj/mixxx/devcontainer:latest",
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "runArgs": [
+    "--network=host" // This is needed for native X.org support
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "false",
+      "username": "developer",
+      "userUid": "1000",
+      "userGid": "1000",
+      "upgradePackages": "false"
+    }
+  },
+  "initializeCommand": "touch ${localEnv:HOME}${localEnv:USERPROFILE}/.gitignore",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "twxs.cmake",
+        "ms-vscode.cmake-tools",
+        "streetsidesoftware.code-spell-checker",
+        "vadimcn.vscode-lldb",
+        "GitHub.vscode-pull-request-github",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
+    "PATH": "/usr/lib/qt6/bin/:${containerEnv:PATH}",
+    "DISPLAY": "${localEnv:DISPLAY::0}",
+    "XDG_SESSION_DESKTOP": "${localEnv:XDG_SESSION_DESKTOP:gnome}",
+    "XDG_SESSION_TYPE": "${localEnv:XDG_SESSION_TYPE:wayland}",
+    "XAUTHORITY": "${localEnv:XAUTHORITY}",
+    "WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY:wayland-0}",
+    "XDG_SESSION_CLASS": "${localEnv:XDG_SESSION_CLASS:user}",
+    "XDG_RUNTIME_DIR": "${localEnv:XDG_RUNTIME_DIR:/run/user/1000}",
+    "QT_QPA_PLATFORM": "${localEnv:QT_QPA_PLATFORM:wayland}", // Default to Wayland session, can also use 'xcb' to use X.org instead
+    "CLAZY_CHECKS": "level2,container-inside-loop,heap-allocated-small-trivial-type,isempty-vs-count,qhash-with-char-pointer-key,qproperty-type-mismatch,tr-non-literal,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression",
+    "CLAZY_IGNORE_DIRS": "lib/.*"
+  },
+  "remoteUser": "developer",
+  "postCreateCommand": "git config --global core.excludesFile '/home/developer/.gitignore' && git config --global --add safe.directory ${containerWorkspaceFolder} && pre-commit install --overwrite --install-hooks",
+  "mounts": [
+    "type=bind,source=${localEnv:HOME},target=${localEnv:HOME},rslave",
+    "type=bind,source=${localEnv:XDG_RUNTIME_DIR},target=${localEnv:XDG_RUNTIME_DIR}",
+    "type=bind,source=/var/run/dbus/system_bus_socket,target=/var/run/dbus/system_bus_socket",
+    "type=bind,source=/dev,target=/dev,rslave",
+    "type=bind,source=/media,target=/media,rslave",
+    "type=bind,source=/mnt,target=/mnt,rslave",
+    "type=bind,source=/run/media,target=/run/media,rslave",
+    // Dev volumes used for persistence between containers
+    "type=volume,source=mixxx-bashistory,target=/home/developer/.devcontainer",
+    "type=volume,source=mixxx-precommit,target=/home/developer/.cache/pre-commit",
+    "type=volume,source=mixxx-config,target=/home/developer/.mixxx",
+    "type=volume,source=mixxx-ccache,target=/tmp/ccache",
+    "type=volume,source=mixxx-build,target=/workspaces/mixxx/build"
+  ]
+}

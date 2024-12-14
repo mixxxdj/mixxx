@@ -60,6 +60,33 @@ run. Alternatively, can generate a package using `cpack`.
 
 Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
 
+### Using Dev Container
+
+> [!NOTE]
+> Dev container has recently been introduced and it is likely incomplete! Currently, it's been tested with `devpod` on Zed and Codium exclusively
+
+We provide a Dev Container definition for Mixxx, based on Ubuntu 24.04 to ensure a close similarity with the CI.
+
+> [!TIP]
+> New to [Development Containers](https://containers.dev/)? If you use VS Code, the IDE should offer you to use Dev Container when you open the Mixxx working copy folder. Otherwise,
+you may consider using [devpod](https://devpod.sh/docs/developing-in-workspaces/create-a-workspace#create-a-workspace)
+
+You can build and run Mixxx using the following command:
+
+```bash
+cd build
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON # Needed for clangd
+cmake --build . -j $(nproc)
+./mixxx
+```
+
+#### Using your device in Dev Container
+
+Similar to [Fedora Toolbox's](https://github.com/containers/toolbox/blob/4f4c3c9d19d1027537f69920de46b9cf09c799b9/src/cmd/create.go#L460), the default configuration provide a comprehensive definition of mounts which will allow you to use Mixxx seamlessly in the container. (UI, audio, ...)
+If you are not comfortable with this for security concern, you may want to remove some or all of the binding before starting the container.
+
+Devices should be supported by default, thanks to the provided binds. Note that if you are encountering permission issue, check that you are not using SELinux, as this is currently not well supported in Dev Container
+
 ## Documentation
 
 For help using Mixxx, there are a variety of options:
