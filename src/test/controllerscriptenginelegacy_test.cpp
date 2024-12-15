@@ -841,3 +841,40 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunct
 
     EXPECT_DOUBLE_EQ(20, coTimerId->get());
 }
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerThisFunctionCallInClass) {
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               stopTimer() {
+                  engine.stopTimer(this.timerId);
+                  this.timerId = 0;
+                  engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, this.stopTimer, false);              
+                  engine.setValue('[Test]', 'co', this.globVar);
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass();
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+}
