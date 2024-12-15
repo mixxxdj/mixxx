@@ -13,6 +13,8 @@
 
 namespace {
 
+constexpr double kLibraryRoundRange = 0.05;
+
 const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)?s?$"));
 
 // The ordering of operator alternatives separated by '|' is crucial to avoid incomplete
@@ -23,6 +25,8 @@ const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)
 // > the entire expression matches, is the one that is chosen. This means that alternatives
 // > are not necessarily greedy.
 const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(<=|>=|=|<|>)(.*)$"));
+
+const QRegularExpression kNullRegex(QStringLiteral("^([0.,]+)$"));
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -73,6 +77,8 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
         return static_cast<int>(pTrack->getKey());
     } else if (column == LIBRARYTABLE_BPM_LOCK) {
         return pTrack->isBpmLocked();
+    } else if (column == LIBRARYTABLE_ID) {
+        return pTrack->getId().toVariant();
     }
 
     return QVariant();
@@ -122,14 +128,6 @@ QString AndNode::toSql() const {
 }
 
 bool OrNode::match(const TrackPointer& pTrack) const {
-    // An empty OR node would always evaluate to false
-    // which is inconsistent with the generated SQL query!
-    VERIFY_OR_DEBUG_ASSERT(!m_nodes.empty()) {
-        // Evaluate to true even if the correct choice would
-        // be false to keep the evaluation consistent with
-        // the generated SQL query.
-        return true;
-    }
     for (const auto& pNode : m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
@@ -139,6 +137,9 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 }
 
 QString OrNode::toSql() const {
+    if (m_nodes.empty()) {
+        return "FALSE";
+    }
     QStringList queryFragments;
     queryFragments.reserve(static_cast<int>(m_nodes.size()));
     for (const auto& pNode : m_nodes) {
@@ -474,6 +475,292 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
 
     *ok = true;
     return 60 * m + s;
+}
+
+// static
+constexpr double BpmFilterNode::kRelativeRangeDefault;
+
+// static
+double BpmFilterNode::s_relativeRange = kRelativeRangeDefault;
+
+// static
+void BpmFilterNode::setBpmRelativeRange(double range) {
+    // range < 0 would yield zero results because m_dRangeLow > m_dRangeHigh
+    VERIFY_OR_DEBUG_ASSERT(range >= 0) {
+        return;
+    }
+    s_relativeRange = range;
+}
+
+namespace {
+
+inline QString rangeSqlString(double lower, double upper) {
+    // 'BETWEEN' is inclusive, i.e. returns true if lower <= value <= upper
+    return QStringLiteral("bpm BETWEEN %1 AND %2")
+            .arg(QString::number(lower),
+                    QString::number(upper));
+}
+
+inline QString rangeUpperExclusiveSqlString(double lower, double upper) {
+    return QStringLiteral("bpm >= %1 AND bpm < %2")
+            .arg(QString::number(lower),
+                    QString::number(upper));
+}
+
+inline std::pair<double, double> rangeFromTrailingDecimal(double bpm) {
+    // Set up a range if we have decimals. This will include matches
+    // for which we show rounded values in the library. For example
+    // 124.0  finds 123.95 - 124.05
+    // 124.1  finds 124.05 - 124.15
+    // 124.92 finds 124.915 - 124.925
+    if (bpm == 0.0) {
+        return std::pair<double, double>(bpm, bpm);
+    }
+    int numDecimals = 1;
+    double intPart;
+    double fractPart = std::modf(bpm, &intPart);
+    if (fractPart != 0.0) {
+        QString decimals = QString::number(fractPart);
+        numDecimals = decimals.split('.').at(1).length();
+    }
+    double roundRange = 5 / pow(10, numDecimals + 1);
+    // Don't search for negative BPM
+    double lower = std::max(0.0, bpm - roundRange);
+    double upper = bpm + roundRange;
+    return std::pair<double, double>(lower, upper);
+}
+
+} // namespace
+
+BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
+        : m_matchMode(MatchMode::Invalid),
+          m_operator("="),
+          m_bpm(0.0),
+          m_rangeLower(0.0),
+          m_rangeUpper(0.0),
+          m_bpmHalfLower(0.0),
+          m_bpmHalfUpper(0.0),
+          m_bpmDoubleLower(0.0),
+          m_bpmDoubleUpper(0.0) {
+    QRegularExpressionMatch nullMatch = kNullRegex.match(argument);
+    if (argument == kMissingFieldSearchTerm || // explicit empty
+            argument == "-" ||                 // displayed in the BPM column
+            nullMatch.hasMatch()) {            // displayed in the BPM widgets
+        m_matchMode = MatchMode::Null;
+        return;
+    }
+
+    QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
+    if (opMatch.hasMatch()) {
+        if (fuzzy) {
+            // fuzzy can't be combined with operators
+            // m_matchMode is already Invalid.
+            return;
+        }
+        m_operator = opMatch.captured(1);
+        argument = opMatch.captured(2);
+    }
+
+    // Replace the locale's decimal separator with .
+    // This is handy if numbers are typed with the numpad.
+    argument.replace(',', '.');
+    bool isDouble = false;
+    double bpm = argument.toDouble(&isDouble);
+    if (isDouble) {
+        // Check if the arg has a decimal separator (even if no digits after that)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        bool strictMatch = argument.split('.', Qt::SkipEmptyParts).length() > 1;
+#else
+        bool strictMatch = argument.split('.', QString::SkipEmptyParts).length() > 1;
+#endif
+        if (fuzzy) {
+            // fuzzy search +- n%
+            m_matchMode = MatchMode::Fuzzy;
+        } else if (!opMatch.hasMatch() && !negate) {
+            // Simple 'bpm:NNN' search.
+            // Also searches for half/double matches (rounded up/down)
+            // Center value is turned into range in order to ...
+            if (strictMatch) {
+                // find rounded values (hiddendecimals in tracks table / BPM widgets)
+                m_matchMode = MatchMode::HalveDoubleStrict;
+            } else {
+                // find all values with same int base
+                m_matchMode = MatchMode::HalveDouble;
+            }
+        } else {
+            // Operator or basic query, optional negate
+            if (m_operator == '=') {
+                // Explicit search.
+                // Same center range as HalveDouble/~Strict
+                // TODO What about -bpm: ? ExplicitNot
+                if (strictMatch) {
+                    m_matchMode = MatchMode::ExplicitStrict;
+                } else {
+                    m_matchMode = MatchMode::Explicit;
+                }
+            } else {
+                m_matchMode = MatchMode::Operator;
+            }
+        }
+    } else {
+        if (fuzzy) {
+            // fuzzy can't be combined with range
+            return;
+        }
+        // Test if this is a valid range query
+        QStringList rangeArgs = argument.split("-");
+        if (rangeArgs.length() == 2) {
+            bool lowOk = false;
+            bool highOk = false;
+            double rangeLower = rangeArgs[0].toDouble(&lowOk);
+            double rangeUpper = rangeArgs[1].toDouble(&highOk);
+
+            if (lowOk && highOk && rangeLower <= rangeUpper) {
+                // Assign values now to avoid moving bounds out of scope
+                m_matchMode = MatchMode::Range;
+                m_rangeLower = rangeLower;
+                m_rangeUpper = rangeUpper;
+                return;
+            }
+        }
+        // m_matchMode is already Invalid.
+        return;
+    }
+
+    // Build/prepare match functions
+    switch (m_matchMode) {
+    case MatchMode::Explicit: {
+        // No decimals: 114 finds   113.95 - 114.99999
+        m_rangeLower = rangeFromTrailingDecimal(bpm).first;
+        m_rangeUpper = floor(bpm + 1);
+        break;
+    }
+    case MatchMode::ExplicitStrict: {
+        // Decimals: 114.0 finds 113.95 - 114.05
+        std::tie(m_rangeLower, m_rangeUpper) = rangeFromTrailingDecimal(bpm);
+        break;
+    }
+    case MatchMode::Fuzzy: {
+        m_rangeLower = floor((1 - s_relativeRange) * bpm);
+        m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
+        break;
+    }
+    case MatchMode::HalveDouble: {
+        DEBUG_ASSERT(bpm == floor(bpm));
+        // For instance bpm = 127
+        // We find everything that is displayed as 127.** in the library
+        m_rangeLower = bpm - kLibraryRoundRange; // [126.95
+        m_rangeUpper = bpm + 1;                  // ]128
+
+        double halfBpm = bpm / 2;
+        if (floor(halfBpm) != halfBpm) {
+            // In case bpm / 2 is a fractional, we include the *.0 value neighbours
+            // since fractional bpm values are less common in some genres.
+            m_bpmHalfLower = floor(halfBpm) - kLibraryRoundRange; // [62.95
+        } else {
+            // Here we are for instance with 126
+            // We find everything that is displayed as 63.** in the library
+            m_bpmHalfLower = halfBpm - kLibraryRoundRange; //        [62.95
+        }
+        m_bpmHalfUpper = halfBpm + 1; //                                ]64
+
+        // We find everything which would be found when editing the beat grid via / 2
+        m_bpmDoubleLower = (bpm * 2) - kLibraryRoundRange; // [253.95
+        m_bpmDoubleUpper = m_rangeUpper * 2;               // ]256
+        break;
+    }
+    case MatchMode::HalveDoubleStrict: { //            57.0
+        std::tie(m_rangeLower, m_rangeUpper) =
+                rangeFromTrailingDecimal(bpm); //      56.95 - 57.05
+        std::tie(m_bpmHalfLower, m_bpmHalfUpper) =
+                rangeFromTrailingDecimal(bpm / 2); //  28.45 - 28.55
+        std::tie(m_bpmDoubleLower, m_bpmDoubleUpper) =
+                rangeFromTrailingDecimal(bpm * 2); // 113.95 - 114.05
+        break;
+    }
+    case MatchMode::Operator: {
+        m_bpm = bpm;
+        break;
+    }
+    default:
+        return;
+    }
+}
+
+bool BpmFilterNode::match(const TrackPointer& pTrack) const {
+    double value = pTrack->getBpm();
+
+    switch (m_matchMode) {
+    case MatchMode::Null: {
+        return value == 0.0;
+    }
+    case MatchMode::Explicit: {
+        return value >= m_rangeLower && value < m_rangeUpper;
+    }
+    case MatchMode::ExplicitStrict:
+    case MatchMode::Fuzzy:
+    case MatchMode::Range: {
+        return value >= m_rangeLower && value <= m_rangeUpper;
+    }
+    case MatchMode::HalveDouble: {
+        return (value >= m_rangeLower && value <= m_rangeUpper) ||
+                (value >= m_bpmHalfLower && value <= m_bpmHalfUpper) ||
+                (value >= m_bpmDoubleLower && value <= m_bpmDoubleUpper);
+    }
+    case MatchMode::HalveDoubleStrict: {
+        return (value >= m_rangeLower && value < m_rangeUpper) ||
+                (value >= m_bpmHalfLower && value <= m_bpmHalfUpper) ||
+                (value >= m_bpmDoubleLower && value <= m_bpmDoubleUpper);
+    }
+    case MatchMode::Operator: {
+        return (m_operator == "=" && value == m_bpm) ||
+                (m_operator == "<" && value < m_bpm) ||
+                (m_operator == ">" && value > m_bpm) ||
+                (m_operator == "<=" && value <= m_bpm) ||
+                (m_operator == ">=" && value >= m_bpm);
+    }
+    default: // e.g. MatchMode::Invalid
+        // Show no results to indicate the query is invalid.
+        // Is this good UX?
+        return false;
+    }
+}
+
+QString BpmFilterNode::toSql() const {
+    switch (m_matchMode) {
+    case MatchMode::Null: {
+        return QString("bpm IS 0");
+    }
+    case MatchMode::Explicit: {
+        return QStringLiteral("bpm >= %1 AND bpm < %2")
+                .arg(QString::number(m_rangeLower),
+                        QString::number(m_rangeUpper));
+    }
+    case MatchMode::ExplicitStrict:
+    case MatchMode::Fuzzy:
+    case MatchMode::Range: {
+        return rangeSqlString(m_rangeLower, m_rangeUpper);
+    }
+    case MatchMode::HalveDouble: {
+        QStringList searchClauses;
+        searchClauses << rangeUpperExclusiveSqlString(m_rangeLower, m_rangeUpper);
+        searchClauses << rangeUpperExclusiveSqlString(m_bpmHalfLower, m_bpmHalfUpper);
+        searchClauses << rangeUpperExclusiveSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
+        return concatSqlClauses(searchClauses, "OR");
+    }
+    case MatchMode::HalveDoubleStrict: {
+        QStringList searchClauses;
+        searchClauses << rangeSqlString(m_rangeLower, m_rangeUpper);
+        searchClauses << rangeSqlString(m_bpmHalfLower, m_bpmHalfUpper);
+        searchClauses << rangeSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
+        return concatSqlClauses(searchClauses, "OR");
+    }
+    case MatchMode::Operator: {
+        return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
+    }
+    default: // MatchMode::Invalid
+        return QString("bpm IS NULL");
+    }
 }
 
 KeyFilterNode::KeyFilterNode(mixxx::track::io::key::ChromaticKey key,

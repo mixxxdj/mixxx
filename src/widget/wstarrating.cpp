@@ -9,22 +9,10 @@
 class QEvent;
 class QWidgets;
 
-WStarRating::WStarRating(const QString& group, QWidget* pParent)
+WStarRating::WStarRating(QWidget* pParent)
         : WWidget(pParent),
           m_starCount(0),
-          m_visualStarRating(m_starCount, 5) {
-    // Controls to change the star rating with controllers.
-    // Note that 'group' maybe NULLPTR, e.g. when called from DlgTrackInfo,
-    // so only create rate change COs if there's a group passed when creating deck widgets.
-    if (!group.isEmpty()) {
-        m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
-        m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
-        connect(m_pStarsUp.get(), &ControlObject::valueChanged, this, &WStarRating::slotStarsUp);
-        connect(m_pStarsDown.get(),
-                &ControlObject::valueChanged,
-                this,
-                &WStarRating::slotStarsDown);
-    }
+          m_visualStarRating(m_starCount) {
 }
 
 void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
@@ -51,7 +39,6 @@ void WStarRating::slotSetRating(int starCount) {
     }
     m_starCount = starCount;
     updateVisualRating(starCount);
-    emit ratingChanged(m_starCount);
 }
 
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
@@ -80,18 +67,6 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void WStarRating::slotStarsUp(double v) {
-    if (v > 0 && m_starCount < m_visualStarRating.maxStarCount()) {
-        slotSetRating(m_starCount + 1);
-    }
-}
-
-void WStarRating::slotStarsDown(double v) {
-    if (v > 0 && m_starCount > StarRating::kMinStarCount) {
-        slotSetRating(m_starCount - 1);
-    }
-}
-
 void WStarRating::leaveEvent(QEvent* /*unused*/) {
     resetVisualRating();
 }
@@ -106,7 +81,7 @@ void WStarRating::updateVisualRating(int starCount) {
 
 void WStarRating::mouseReleaseEvent(QMouseEvent* /*unused*/) {
     int starCount = m_visualStarRating.starCount();
-    emit ratingChanged(starCount);
+    emit ratingChangeRequest(starCount);
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {

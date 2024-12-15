@@ -10,7 +10,6 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "track/bpm.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 #define BEAT_GRID_1_VERSION "BeatGrid-1.0"

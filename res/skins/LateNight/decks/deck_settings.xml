@@ -45,11 +45,13 @@
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skins:LateNight/controls/button_1state_right.xml">
+              <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">CurposButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="CoverName">BeatEditCoverDecks</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
+                <SetVariable name="CoverConfigKey"><Variable name="Group"/>,bpmlock</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 

@@ -36,13 +36,14 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
-                          <Text>
+                          <TrackProperty>
                             <ObjectName>PreviewTitle</ObjectName>
                             <TooltipId>text</TooltipId>
                             <Size>0me,20f</Size>
-                            <Group><Variable name="Group"/></Group>
                             <Elide>right</Elide>
-                          </Text>
+                            <Group><Variable name="Group"/></Group>
+                            <Property>info</Property>
+                          </TrackProperty>
                           <Number>
                             <ObjectName>PreviewBPM</ObjectName>
                             <TooltipId>visual_bpm</TooltipId>

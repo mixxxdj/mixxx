@@ -18,12 +18,33 @@ declare interface ScriptConnection {
      * Note: To execute all callback functions connected to a ControlObject at once, use {@link engine.trigger} instead
      */
     trigger(): void;
+
+    /**
+     * String representation of the unique UUID of this connection instance
+     */
+    readonly id: string;
+
+    /**
+     * whether the connection instance is actually responds to changes to the ControlObject it was created for.
+     * This is always true for a newly created instance and usually false after calling {@link disconnect}
+     */
+    readonly isConnected: boolean;
 }
 
 
 /** ControllerScriptInterfaceLegacy */
 
 declare namespace engine {
+    type SettingValue = string | number | boolean;
+    /**
+     * Gets the value of a controller setting
+     * The value is either set in the preferences dialog,
+     * or got restored from file.
+     * @param name Name of the setting (as specified in the XML file of the mapping)
+     * @returns Value of the setting, or undefined in failure case
+     */
+    function getSetting(name: string): SettingValue | undefined;
+
     /**
      * Gets the control value
      *
@@ -138,7 +159,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
      * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
-     * @deprecated Use {@link makeConnection} instead
+     * @deprecated Use {@link engine.makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
 
@@ -152,7 +173,10 @@ declare namespace engine {
      */
     function trigger(group: string, name: string): void;
 
-    /** @deprecated Use {@link console.log} instead */
+    /**
+     * @param message string to be logged
+     * @deprecated Use {@link console.log} instead
+     */
     function log(message: string): void;
 
     type TimerID = number;

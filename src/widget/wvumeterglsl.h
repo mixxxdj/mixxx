@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "shaders/textureshader.h"
+#include "util/opengltexture2d.h"
 #include "widget/wvumeterbase.h"
 
 class QOpenGLTexture;
@@ -15,8 +16,8 @@ class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
     ~WVuMeterGLSL() override;
 
   private:
-    std::unique_ptr<QOpenGLTexture> m_pTextureBack;
-    std::unique_ptr<QOpenGLTexture> m_pTextureVu;
+    OpenGLTexture2D m_textureBack;
+    OpenGLTexture2D m_textureVu;
     mixxx::TextureShader m_textureShader;
 
     void draw() override;

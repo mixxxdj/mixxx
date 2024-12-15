@@ -20,9 +20,17 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     // Update initial gain increment
     void slotUpdateReplayGainBoost();
     void slotUpdateDefaultBoost();
-    void slotSetRGEnabled();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotSetRGEnabled(Qt::CheckState);
+#else
+    void slotSetRGEnabled(int);
+#endif
     void slotSetRGAnalyzerChanged();
-    void slotSetReanalyze();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotSetReanalyze(Qt::CheckState);
+#else
+    void slotSetReanalyze(int);
+#endif
 
     void slotApply() override;
     void slotUpdate() override;
@@ -42,6 +50,4 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     PollingControlProxy m_replayGainBoost;
     PollingControlProxy m_defaultBoost;
     PollingControlProxy m_enabled;
-
-    QButtonGroup m_analysisButtonGroup;
 };

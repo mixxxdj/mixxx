@@ -131,8 +131,10 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::RemoveCrate |
             Capability::ResetPlayed |
+            Capability::Hide |
             Capability::RemoveFromDisk |
-            Capability::Analyze;
+            Capability::Analyze |
+            Capability::Properties;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -150,22 +152,38 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
     return caps;
 }
 
-int CrateTableModel::addTracks(
-        const QModelIndex& index, const QList<QString>& locations) {
+int CrateTableModel::addTracksWithTrackIds(
+        const QModelIndex& index, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
     Q_UNUSED(index);
+
+    if (pOutInsertionPos != nullptr) {
+        // crate insertion is not done by position, and no duplicates will be added,.
+        // 0 indicates this to the caller.
+        *pOutInsertionPos = 0;
+    }
+
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<TrackId> trackIds =
-            m_pTrackCollectionManager->resolveTrackIdsFromLocations(locations);
     if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(
                 m_selectedCrate, trackIds)) {
         qWarning() << "CrateTableModel::addTracks could not add"
-                   << locations.size() << "tracks to crate" << m_selectedCrate;
+                   << trackIds.size() << "tracks to crate" << m_selectedCrate;
         return 0;
     }
 
     select();
     return trackIds.size();
+}
+
+bool CrateTableModel::isLocked() {
+    Crate crate;
+    if (!m_pTrackCollectionManager->internalCollection()
+                    ->crates()
+                    .readCrateById(m_selectedCrate, &crate)) {
+        qWarning() << "Failed to read create" << m_selectedCrate;
+        return false;
+    }
+    return crate.isLocked();
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {

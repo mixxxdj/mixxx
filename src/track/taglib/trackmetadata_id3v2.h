@@ -1,6 +1,6 @@
 #pragma once
 
-#include <taglib/id3v2tag.h>
+#include <id3v2tag.h>
 
 class QImage;
 

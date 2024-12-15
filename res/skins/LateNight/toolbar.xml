@@ -144,7 +144,6 @@
         <Children>
           <Time>
             <TooltipId>time</TooltipId>
-            <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
       </WidgetGroup>
@@ -270,35 +269,17 @@
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
-      <PushButton>
-        <Size>72f,20f</Size>
-        <TooltipId>broadcast_enabled</TooltipId>
-        <ObjectName>BroadcastButton</ObjectName>
-        <NumberStates>4</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>      ON AIR</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>       ...</Text>
-        </State>
-        <State>
-          <Number>2</Number>
-          <Text>      ON AIR</Text>
-        </State>
-        <State>
-          <Number>3</Number>
-          <Text>       ---</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Shoutcast],enabled</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Shoutcast],status</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skins:LateNight/controls/button_4state_display.xml">
+        <SetVariable name="ObjectName">BroadcastButton</SetVariable>
+        <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
+        <SetVariable name="Size">72f,20f</SetVariable>
+        <SetVariable name="state_0_text">      ON AIR</SetVariable>
+        <SetVariable name="state_1_text">       ...</SetVariable>
+        <SetVariable name="state_2_text">      ON AIR</SetVariable>
+        <SetVariable name="state_3_text">       ---</SetVariable>
+        <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+        <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <ObjectName>ToolbarSeparator</ObjectName>

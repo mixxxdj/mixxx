@@ -19,6 +19,7 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
 #include "util/versionstore.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
 Upgrade::Upgrade()
@@ -43,28 +44,61 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
     case WWT::AllShaderRGBWaveform:
     case WWT::AllShaderLRRGBWaveform:
     case WWT::AllShaderFilteredWaveform:
+    case WWT::AllShaderRGBStackedWaveform:
     case WWT::AllShaderSimpleWaveform:
     case WWT::AllShaderHSVWaveform:
+    case WWT::AllShaderTexturedFiltered:
+    case WWT::AllShaderTexturedRGB:
+    case WWT::AllShaderTexturedStacked:
     case WWT::Count_WaveformwidgetType:
         return waveformType;
     case WWT::QtSimpleWaveform:
     case WWT::GLSimpleWaveform:
         return WaveformWidgetType::AllShaderSimpleWaveform;
     case WWT::GLFilteredWaveform:
-    case WWT::GLSLFilteredWaveform:
         return WaveformWidgetType::AllShaderFilteredWaveform;
+    case WWT::GLSLFilteredWaveform:
+        return WaveformWidgetType::AllShaderTexturedFiltered;
     case WWT::QtWaveform:
     case WWT::RGBWaveform:
     case WWT::GLRGBWaveform:
-    case WWT::GLSLRGBWaveform:
     case WWT::QtRGBWaveform:
-    case WWT::GLSLRGBStackedWaveform:
         return WWT::AllShaderRGBWaveform;
+    case WWT::GLSLRGBWaveform:
+        return WWT::AllShaderTexturedRGB;
+    case WWT::GLSLRGBStackedWaveform:
+        return WWT::AllShaderTexturedStacked;
     case WWT::HSVWaveform:
     case WWT::QtHSVWaveform:
         return WWT::AllShaderHSVWaveform;
     }
     return WWT::AllShaderRGBWaveform;
+}
+
+VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
+    using VT = VSyncThread;
+    if (configVSyncMode >= 0 || configVSyncMode <= static_cast<int>(VT::ST_COUNT)) {
+        switch (static_cast<VSyncThread::VSyncMode>(configVSyncMode)) {
+        case VT::ST_DEFAULT:
+            return VT::ST_DEFAULT;
+        case VT::ST_MESA_VBLANK_MODE_1_DEPRECATED:
+            return VT::ST_DEFAULT;
+        case VT::ST_SGI_VIDEO_SYNC_DEPRECATED:
+            return VT::ST_DEFAULT;
+        case VT::ST_OML_SYNC_CONTROL_DEPRECATED:
+            return VT::ST_DEFAULT;
+        case VT::ST_FREE:
+            return VT::ST_FREE;
+        case VT::ST_TIMER:
+            return VT::ST_TIMER;
+        case VT::ST_PLL:
+            return VT::ST_PLL;
+        case VT::ST_COUNT:
+            return VT::ST_DEFAULT;
+        }
+    }
+
+    return VT::ST_DEFAULT;
 }
 } // namespace
 
@@ -273,6 +307,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 #endif
     }
 
+    config->set(ConfigKey("[Waveform]", "VSync"),
+            ConfigValue(upgradeDeprecatedVSyncModes(
+                    config->getValue(ConfigKey("[Waveform]", "VSync"), 0))));
+
     // If it's already current, stop here
     if (configVersion == VersionStore::version()) {
         qDebug() << "Configuration file is at the current version" << VersionStore::version();
@@ -440,8 +478,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     // Sandbox isn't setup yet at this point in startup because it relies on
                     // the config settings path and this function is what loads the config
                     // so it's not ready yet.
-                    successful = tc.addDirectory(mixxx::FileInfo(currentFolder));
-
+                    successful =
+                            tc.addDirectory(mixxx::FileInfo(currentFolder)) ==
+                            DirectoryDAO::AddResult::Ok;
+                    ;
                     tc.disconnectDatabase();
                 }
             }

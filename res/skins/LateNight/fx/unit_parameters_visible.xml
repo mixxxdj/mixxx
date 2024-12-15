@@ -144,7 +144,7 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,1f</Size></WidgetGroup>
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>

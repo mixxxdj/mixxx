@@ -274,10 +274,23 @@ void exportTrackMetadataIntoTag(
         WriteTagMask writeMask) {
     DEBUG_ASSERT(pTag); // already validated before
 
-    pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
     pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
     pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
-    pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
+
+    // The mapping of multi-valued fields in TagLib is not bijective.
+    // We don't want to overwrite existing values if the corresponding
+    // field has not been modified in Mixxx. This workaround only covers
+    // the most common multi-valued fields.
+    //
+    // See also: <https://github.com/mixxxdj/mixxx/issues/12587>
+    const auto artist = toTString(trackMetadata.getTrackInfo().getArtist());
+    if (artist != pTag->artist()) {
+        pTag->setArtist(artist);
+    }
+    const auto genre = toTString(trackMetadata.getTrackInfo().getGenre());
+    if (genre != pTag->genre()) {
+        pTag->setGenre(genre);
+    }
 
     // Using setComment() from TagLib::Tag might have undesirable
     // effects if the tag type supports multiple comment fields for

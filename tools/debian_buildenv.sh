@@ -67,6 +67,7 @@ case "$1" in
             libflac-dev \
             libgmock-dev \
             libgtest-dev \
+            libgl1-mesa-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \
@@ -78,10 +79,12 @@ case "$1" in
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt5opengl5-dev \
-            libqt5sql5-sqlite \
-            libqt5svg5-dev \
-            libqt5x11extras5-dev \
+            libqt6core5compat6-dev\
+            libqt6shadertools6-dev \
+            libqt6opengl6-dev \
+            libqt6shadertools6-dev \
+            libqt6sql6-sqlite \
+            libqt6svg6-dev \
             librubberband-dev \
             libshout-idjc-dev \
             libsndfile1-dev \
@@ -97,13 +100,19 @@ case "$1" in
             markdown \
             portaudio19-dev \
             protobuf-compiler \
-            qt5keychain-dev \
-            qtdeclarative5-dev \
-            qtscript5-dev \
-            qml-module-qtquick-controls \
-            qml-module-qtquick-controls2 \
-            qml-module-qt-labs-qmlmodels \
-            qml-module-qtquick-shapes \
+            qtkeychain-qt6-dev \
+            qt6-declarative-private-dev \
+            qt6-base-private-dev \
+            qt6-qpa-plugins \
+            qml6-module-qt5compat-graphicaleffects \
+            qml6-module-qtqml-workerscript \
+            qml6-module-qtquick-controls \
+            qml6-module-qtquick-layouts \
+            qml6-module-qtquick-nativestyle \
+            qml6-module-qtquick-shapes \
+            qml6-module-qtquick-templates \
+            qml6-module-qtquick-window \
+            qml6-module-qt-labs-qmlmodels \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)

@@ -32,6 +32,10 @@ class DJCMixClass {
     }
 
     init() {
+        if (engine.getValue("[App]", "num_samplers") < 8) {
+            engine.setValue("[App]", "num_samplers", 8);
+        }
+
         this.scratchButtonState = true;
         this.scratchAction = {
             1: this.kScratchActionNone,

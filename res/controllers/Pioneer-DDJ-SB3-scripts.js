@@ -254,6 +254,10 @@ PioneerDDJSB3.init = function() {
         "[Channel4]_enabled": 1,
     };
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     PioneerDDJSB3.deck = [];
     PioneerDDJSB3.deck[1] = new PioneerDDJSB3.Deck(1);
     PioneerDDJSB3.deck[2] = new PioneerDDJSB3.Deck(2);
@@ -1534,8 +1538,10 @@ PioneerDDJSB3.Slicer.prototype.generateBeatPositions = function() {
         if (sample < this.trackSamples) {
             var bp = {
                 sample: sample,
-                positionIn: (this.PLAY_POSITION_RANGE * sample - 1) / this.trackSamples,
-                positionOut: (this.PLAY_POSITION_RANGE * nextSample - 1) / this.trackSamples,
+                position: {
+                    in: (this.PLAY_POSITION_RANGE * sample - 1) / this.trackSamples,
+                    out: (this.PLAY_POSITION_RANGE * nextSample - 1) / this.trackSamples,
+                }
             };
 
             this.beatPositions.push(bp);
@@ -1591,7 +1597,7 @@ PioneerDDJSB3.Slicer.prototype.playPositionChange = function(value) {
         for (var i = 0; i < this.beatPositions.length; i++) {
             var beatPosition = this.beatPositions[i];
 
-            if (value >= beatPosition.positionIn && value < beatPosition.positionOut) {
+            if (value >= beatPosition.position.in && value < beatPosition.position.out) {
                 this.currentBeat = i;
                 found = true;
             }

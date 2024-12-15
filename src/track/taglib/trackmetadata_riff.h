@@ -1,6 +1,6 @@
 #pragma once
 
-#include <taglib/infotag.h>
+#include <infotag.h>
 
 class TrackMetadata;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <taglib/apetag.h>
+#include <apetag.h>
 
 class QImage;
 

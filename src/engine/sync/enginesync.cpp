@@ -274,9 +274,9 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
         }
     }
 
-    const SyncLockAlgorithm picker = static_cast<SyncLockAlgorithm>(
-            m_pConfig->getValue<int>(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
-                    PREFER_SOFT_LEADER));
+    const SyncLockAlgorithm picker = m_pConfig->getValue(
+            ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+            PREFER_SOFT_LEADER);
     switch (picker) {
     case PREFER_SOFT_LEADER:
         // Always pick a deck for a new leader.
@@ -710,6 +710,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         }
     }
     const mixxx::Bpm baseBpm = pSource->getBaseBpm();
+    // bpm is the average of four beats, updated in postProcess()
     mixxx::Bpm bpm = pSource->getBpm();
     if (!bpm.isValid()) {
         bpm = baseBpm;

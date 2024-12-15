@@ -97,6 +97,32 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsUntilMark() const;
+    void setUntilMarkShowBeats(bool value);
+    void setUntilMarkShowTime(bool value);
+    void setUntilMarkAlign(Qt::Alignment align);
+    void setUntilMarkTextPointSize(int value);
+    void setUntilMarkTextHeightLimit(float value);
+
+    bool getUntilMarkShowBeats() const {
+        return m_untilMarkShowBeats;
+    }
+    bool getUntilMarkShowTime() const {
+        return m_untilMarkShowTime;
+    }
+    Qt::Alignment getUntilMarkAlign() const {
+        return m_untilMarkAlign;
+    }
+    int getUntilMarkTextPointSize() const {
+        return m_untilMarkTextPointSize;
+    }
+    float getUntilMarkTextHeightLimit() const {
+        return m_untilMarkTextHeightLimit;
+    }
+    static Qt::Alignment toUntilMarkAlign(int index);
+    static int toUntilMarkAlignIndex(Qt::Alignment align);
+    static float toUntilMarkTextHeightLimit(int index);
+    static int toUntilMarkTextHeightLimitIndex(float value);
 
     /// Returns the desired surface format for the OpenGLWindow
     static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
@@ -122,7 +148,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
-    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
+    const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
+        return m_waveformWidgetHandles;
+    }
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void destroyWidgets();
 
@@ -145,6 +173,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swapSpinnies();
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
+
+    void overviewNormalizeChanged();
+    void overallVisualGainChanged();
 
   public slots:
     void slotSkinLoaded();
@@ -193,6 +224,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
+
+    bool m_untilMarkShowBeats;
+    bool m_untilMarkShowTime;
+    Qt::Alignment m_untilMarkAlign;
+    int m_untilMarkTextPointSize;
+    float m_untilMarkTextHeightLimit;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

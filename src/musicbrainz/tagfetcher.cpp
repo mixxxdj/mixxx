@@ -116,11 +116,12 @@ void TagFetcher::slotFingerprintReady() {
     if (fingerprint.isEmpty()) {
         emit resultAvailable(
                 m_pTrack,
-                QList<mixxx::musicbrainz::TrackRelease>());
+                {},
+                tr("Reading track for fingerprinting failed."));
         return;
     }
 
-    emit fetchProgress(tr("Identifying track through Acoustid"));
+    emit fetchProgress(tr("Identifying track through AcoustID"));
     DEBUG_ASSERT(!m_pAcoustIdTask);
     m_pAcoustIdTask = make_parented<mixxx::AcoustIdLookupTask>(
             &m_network,
@@ -165,7 +166,8 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
 
         emit resultAvailable(
                 std::move(pTrack),
-                QList<mixxx::musicbrainz::TrackRelease>());
+                {},
+                tr("Could not identify track through AcoustID."));
         return;
     }
 
@@ -299,9 +301,17 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
     auto pTrack = m_pTrack;
     terminate();
 
-    emit resultAvailable(
-            std::move(pTrack),
-            std::move(guessedTrackReleases));
+    if (guessedTrackReleases.empty()) {
+        emit resultAvailable(
+                std::move(pTrack),
+                {},
+                tr("Could not find this track in the MusicBrainz database."));
+    } else {
+        emit resultAvailable(
+                std::move(pTrack),
+                std::move(guessedTrackReleases),
+                {});
+    }
 }
 
 void TagFetcher::startFetchCoverArtLinks(
@@ -382,7 +392,7 @@ void TagFetcher::slotCoverArtArchiveLinksTaskFailed(
             -1);
 }
 
-void TagFetcher::slotCoverArtArchiveLinksTaskSucceeded(
+void TagFetcher::slotCoverArtArchiveLinksTaskSucceeded(const QUuid& albumReleaseId,
         const QList<QString>& allUrls) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
@@ -393,14 +403,16 @@ void TagFetcher::slotCoverArtArchiveLinksTaskSucceeded(
     auto pTrack = std::move(m_pTrack);
     terminate();
 
-    emit coverArtArchiveLinksAvailable(std::move(allUrls));
+    emit coverArtArchiveLinksAvailable(std::move(albumReleaseId),
+            std::move(allUrls));
 }
 
-void TagFetcher::startFetchCoverArtImage(
+void TagFetcher::startFetchCoverArtImage(const QUuid& albumReleaseId,
         const QString& coverArtUrl) {
     m_pCoverArtArchiveImageTask = make_parented<mixxx::CoverArtArchiveImageTask>(
             &m_network,
             coverArtUrl,
+            albumReleaseId,
             this);
 
     connect(m_pCoverArtArchiveImageTask,
@@ -424,7 +436,8 @@ void TagFetcher::startFetchCoverArtImage(
             kCoverArtArchiveImageTimeoutMilis);
 }
 
-void TagFetcher::slotCoverArtArchiveImageTaskSucceeded(const QByteArray& coverArtBytes) {
+void TagFetcher::slotCoverArtArchiveImageTaskSucceeded(const QUuid& albumReleaseId,
+        const QByteArray& coverArtBytes) {
     if (m_pCoverArtArchiveImageTask.get() != sender()) {
         // stray call from an already aborted try
         return;
@@ -433,7 +446,8 @@ void TagFetcher::slotCoverArtArchiveImageTaskSucceeded(const QByteArray& coverAr
     auto pTrack = std::move(m_pTrack);
     terminate();
 
-    emit coverArtImageFetchAvailable(coverArtBytes);
+    emit coverArtImageFetchAvailable(std::move(albumReleaseId),
+            coverArtBytes);
 }
 
 void TagFetcher::slotCoverArtArchiveImageTaskAborted() {

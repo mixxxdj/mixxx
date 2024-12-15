@@ -81,6 +81,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.fieldIndex(fieldName);
     }
 
+    void cutTracks(const QModelIndexList& indices) override;
+    void copyTracks(const QModelIndexList& indices) const override;
+    QList<int> pasteTracks(const QModelIndex& index) override;
+
     bool isColumnHiddenByDefault(
             int column) override;
 
@@ -100,6 +104,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int kBpmColumnPrecisionMinimum = 0;
     static constexpr int kBpmColumnPrecisionMaximum = 10;
     static void setBpmColumnPrecision(int precision);
+
+    static constexpr bool kApplyPlayedTrackColorDefault = true;
+    static void setApplyPlayedTrackColor(bool apply);
 
   protected:
     static constexpr int defaultColumnWidth() {
@@ -162,10 +169,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(
             const QModelIndex& index) const;
 
-    /// At least one of the following functions must be overridden,
-    /// because each default implementation will call the other
-    /// function!!
-    ///
     /// Return the raw data value at the given index.
     ///
     /// Expected types by ColumnCache field (pass-through = not validated):
@@ -211,10 +214,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
-            const QModelIndex& index) const;
-    virtual QVariant rawSiblingValue(
-            const QModelIndex& index,
-            ColumnCache::Column siblingField) const;
+            const QModelIndex& index) const = 0;
 
     QVariant roleValue(
             const QModelIndex& index,
@@ -250,6 +250,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QPixmap& pixmap);
 
   private:
+    QVariant rawSiblingValue(
+            const QModelIndex& index,
+            ColumnCache::Column siblingField) const;
+
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
     // the internal database.
@@ -268,6 +272,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
+    QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
 
     ColumnCache m_columnCache;
 
@@ -284,4 +290,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
+
+    static bool s_bApplyPlayedTrackColor;
 };

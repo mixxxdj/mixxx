@@ -21,15 +21,16 @@ IF NOT DEFINED INSTALL_ROOT (
 )
 
 IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.4-rel
-    set VCPKG_TARGET_TRIPLET=x64-windows-release
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-release-5940548
-    SET BUILDENV_SHA256=cb44696a981f23dfcb3abce810bd3354cec3c25b8d7eea62f3176bc9b64d6bf9
+    SET BUILDENV_BRANCH=2.5-rel
+    SET VCPKG_TARGET_TRIPLET=x64-windows-release
+    vcpkg_update_main
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-c616147
+    SET BUILDENV_SHA256=357b38184392ec74783f50f2b055376ae2579eff9e20d822cb82a23f1af57412
 ) ELSE (
-    SET BUILDENV_BRANCH=2.4
-    set VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-24ad21f
-    SET BUILDENV_SHA256=27d104d6d5ad56bf52e750643b924f0bf1c40672b370c05569a622f372ccc527
+    SET BUILDENV_BRANCH=2.5
+    SET VCPKG_TARGET_TRIPLET=x64-windows
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-74ff6c7
+    SET BUILDENV_SHA256=d84f03c2465e7719684950d37bf957cc6563d8e18164138d33c306b18440895a
 )
 
 IF "%~1"=="" (
@@ -212,7 +213,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "True"
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
     REM CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
@@ -228,6 +229,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING"  "!VCPKG_TARGET_TRIPLET!"

@@ -4,6 +4,8 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QSqlTableModel>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -39,12 +41,16 @@ BasePlaylistFeature::BasePlaylistFeature(
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName,
-        const QString& iconName)
+        const QString& iconName,
+        const QString& countsDurationTableName,
+        bool keepHiddenTracks)
         : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),
-          m_pPlaylistTableModel(pModel) {
+          m_pPlaylistTableModel(pModel),
+          m_countsDurationTableName(countsDurationTableName),
+          m_keepHiddenTracks(keepHiddenTracks) {
     pModel->setParent(this);
 
     initActions();
@@ -154,18 +160,18 @@ void BasePlaylistFeature::connectPlaylistDAO() {
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
     connect(&m_playlistDao,
-            &PlaylistDAO::tracksChanged,
+            &PlaylistDAO::playlistContentChanged,
             this,
             &BasePlaylistFeature::slotPlaylistContentOrLockChanged);
     connect(&m_playlistDao,
             &PlaylistDAO::renamed,
             this,
-            // In "History") just the item is renamed, while in "Playlists" the
-            // entire sidebar model is rebuilt to resort items by name
+            // In "History" just the item is renamed, while in "Playlists" the
+            // entire sidebar model is rebuilt to re-sort items by name
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
         return kInvalidPlaylistId;
@@ -466,10 +472,10 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
     // This is used as a proxy object to write to the database.
     // We cannot use m_pPlaylistTableModel since it might have another playlist selected which
     // is not the playlist that received the right-click.
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
@@ -565,10 +571,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export",
+                    m_keepHiddenTracks);
 
     emit saveModelState();
     pPlaylistTableModel->selectPlaylist(playlistId);
@@ -583,13 +590,13 @@ void BasePlaylistFeature::slotExportPlaylist() {
             kUseRelativePathOnExportConfigKey);
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.get(), useRelativePath);
     } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
         if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) ==
                 PlaylistDAO::PLHT_SET_LOG) {
-            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), true);
+            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.get(), true);
         } else {
-            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), false);
+            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.get(), false);
         }
     } else {
         // Create and populate a list of files of the playlist
@@ -611,10 +618,10 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
 
     emit saveModelState();
     pPlaylistTableModel->selectPlaylist(playlistId);
@@ -627,7 +634,15 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     TrackPointerList tracks;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistTableModel->index(i, 0);
-        tracks.push_back(pPlaylistTableModel->getTrack(index));
+        auto pTrack = pPlaylistTableModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
+        tracks.push_back(pTrack);
+    }
+
+    if (tracks.isEmpty()) {
+        return;
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, tracks);
@@ -664,7 +679,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
+            const QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             QList<AnalyzerScheduledTrack> tracks;
             for (auto id : ids) {
                 tracks.append(id);
@@ -678,17 +693,18 @@ TreeItemModel* BasePlaylistFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
 
-void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
-        KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit,
+void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
+        KeyboardEventFilter* pKeyboard) {
+    Q_UNUSED(pKeyboard);
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryWidget);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit,
             &WLibraryTextBrowser::anchorClicked,
             this,
             &BasePlaylistFeature::htmlLinkClicked);
-    libraryWidget->registerView(m_rootViewName, edit);
+    m_pLibraryWidget = QPointer(pLibraryWidget);
+    m_pLibraryWidget->registerView(m_rootViewName, pEdit);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -703,6 +719,46 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     } else {
         qDebug() << "Unknown playlist link clicked" << link.path();
     }
+}
+
+QString BasePlaylistFeature::fetchPlaylistLabel(int playlistId) {
+    // This queries the temporary id/count/duration table that was has been created
+    // by the features' createPlaylistLabels() (updated each time playlists are added/removed)
+    QSqlDatabase database =
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
+    VERIFY_OR_DEBUG_ASSERT(database.tables(QSql::Views).contains(m_countsDurationTableName)) {
+        qWarning() << "BasePlaylistFeature: view" << m_countsDurationTableName
+                   << "does not exist! Can't fetch label for playlist" << playlistId;
+        return QString();
+    }
+    QSqlTableModel playlistTableModel(this, database);
+    playlistTableModel.setTable(m_countsDurationTableName);
+    const QString filter = "id=" + QString::number(playlistId);
+    playlistTableModel.setFilter(filter);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
+    if (playlistTableModel.rowCount() > 0) {
+        QString name =
+                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
+                        .toString();
+        int count = playlistTableModel
+                            .data(playlistTableModel.index(0, countColumn))
+                            .toInt();
+        int duration =
+                playlistTableModel
+                        .data(playlistTableModel.index(0, durationColumn))
+                        .toInt();
+        return createPlaylistLabel(name, count, duration);
+    }
+    return QString();
 }
 
 void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
@@ -727,6 +783,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                     label = fetchPlaylistLabel(id);
                     pChild->setLabel(label);
                     decorateChild(pChild, id);
+                    markTreeItem(pChild);
                 }
             }
         } else {
@@ -735,9 +792,11 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                 label = fetchPlaylistLabel(id);
                 pTreeItem->setLabel(label);
                 decorateChild(pTreeItem, id);
+                markTreeItem(pTreeItem);
             }
         }
     }
+    m_pSidebarModel->triggerRepaint();
 }
 
 /// Clears the child model dynamically, but the invisible root item remains
@@ -799,6 +858,22 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
         for (int i = 0; i < children.size(); i++) {
             markTreeItem(children.at(i));
         }
+    }
+}
+
+QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
+        int count,
+        int duration) const {
+    // Show duration only if playlist has tracks
+    if (count > 0) {
+        return QStringLiteral("%1 (%2) %3")
+                .arg(name,
+                        QString::number(count),
+                        mixxx::Duration::formatTime(
+                                duration, mixxx::Duration::Precision::SECONDS));
+    } else {
+        return QStringLiteral("%1 (%2)").arg(name,
+                QString::number(count));
     }
 }
 

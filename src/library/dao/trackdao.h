@@ -4,13 +4,13 @@
 #include <QObject>
 #include <QSet>
 #include <QString>
+#include <memory>
 
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
-#include "util/memory.h"
 
 class SqlTransaction;
 class PlaylistDAO;
@@ -47,6 +47,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     void finish();
 
+    QList<TrackId> resolveTrackIds(
+            const QList<QUrl>& urls,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
     QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
@@ -128,6 +131,10 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class LibraryScanner;
     friend class TrackCollection;
     friend class TrackAnalysisScheduler;
+
+    QList<TrackId> resolveTrackIds(
+            const QStringList& pathList,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
     TrackId getTrackIdByLocation(
             const QString& location) const;

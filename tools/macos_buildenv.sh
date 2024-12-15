@@ -20,28 +20,21 @@ THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
 if [ -n "${BUILDENV_ARM64}" ]; then
-    if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-        BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-5940548"
-        BUILDENV_SHA256="ffd756acac4a9c83789b4f0babff0fb3609ca2344a9420ff12f30ffa96cf34d3"
-    else
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
-        BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-24ad21f"
-        BUILDENV_SHA256="cefbb728f42367e722a4001502bfd5a5fed6fbdbdde85c7f08b90c21bafa4915"
-    fi
+    VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
+    BUILDENV_BRANCH="2.5-rel"
+    BUILDENV_NAME="mixxx-deps-2.5-arm64-osx-min1100-release-c616147"
+    BUILDENV_SHA256="0ebac7023f89220f63b9b42f91ca6fd84bccf7cf961796cc2165a982a53934f2"
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="x64-osx-min1012-release"
-        BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-5940548"
-        BUILDENV_SHA256="cafc88109d55363e6681b949bf3943396ab6f1a44da211f575bdb52db7933477"
+        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+        BUILDENV_BRANCH="2.5-rel"
+        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-release-c616147"
+        BUILDENV_SHA256="ca83e724f253e8538ad92613ea4d1ac0a827a43a3bf378788870e9c994438a2d"
     else
-        VCPKG_TARGET_TRIPLET="x64-osx-min1012"
-        BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-24ad21f"
-        BUILDENV_SHA256="6f05f3094a142c92e0f1fa76631c046dd2f4e70bafb9e7f0380c2bb8d115a342"
+        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
+        BUILDENV_BRANCH="2.5"
+        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-74ff6c7"
+        BUILDENV_SHA256="2d27b3d07ac63f6540b4b8ec57315c2984332cbb4188717ca906dceeb1a23421"
     fi
 fi
 

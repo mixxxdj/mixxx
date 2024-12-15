@@ -87,13 +87,14 @@
         <file>images/preferences/light/ic_custom.svg</file>
         <file>images/preferences/light/ic_mixxx_symbolic.svg</file>
         <file>images/preferences/light/ic_none.svg</file>
-        <!-- skin oversize warning -->
+      <!-- magnifier for the Search button in Search related tracks menu -->
+        <file>images/ic_magnifier.svg</file>
+      <!-- skin oversize warning -->
         <file>images/preferences/ic_preferences_warning.svg</file>
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
         <file>shaders/stackedsignal.frag</file>
-        <file>skins/default.qss</file>
     </qresource>
 </RCC>

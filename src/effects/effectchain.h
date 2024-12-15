@@ -2,12 +2,12 @@
 
 #include <QList>
 #include <QObject>
+#include <memory>
 
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "util/memory.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -72,6 +72,12 @@ class EffectChain : public QObject {
 
     virtual void loadChainPreset(EffectChainPresetPointer pPreset);
 
+    bool isEmpty();
+
+    bool isEmptyPlaceholderPresetLoaded();
+
+    void loadEmptyNamelessPreset();
+
   public slots:
     void slotControlClear(double value);
 
@@ -135,7 +141,7 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlNextChainPreset;
     std::unique_ptr<ControlPushButton> m_pControlPrevChainPreset;
 
-    void setControlLoadedPresetIndex(uint index);
+    void setControlLoadedPresetIndex(int index);
 
     // These COs do not affect how the effects are processed;
     // they are defined here for skins and controller mappings to communicate

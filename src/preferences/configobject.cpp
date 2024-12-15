@@ -22,6 +22,12 @@ QString computeResourcePathImpl() {
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isEmpty()) {
+#ifdef __EMSCRIPTEN__
+        // When targeting Emscripten/WebAssembly, we have a virtual file system
+        // that is populated by our preloaded resources located at /res. See
+        // also https://emscripten.org/docs/porting/files/packaging_files.html
+        qResourcePath = "/res";
+#else
         QDir mixxxDir = QCoreApplication::applicationDirPath();
 
         // We used to support using the mixxx.cfg's [Config],Path setting but
@@ -51,7 +57,13 @@ QString computeResourcePathImpl() {
                 }
                 line = in.readLine();
             }
-            DEBUG_ASSERT(QDir(qResourcePath).exists());
+            if (!QDir(qResourcePath).exists()) {
+                reportCriticalErrorAndQuit(
+                        "Resource path listed in " + kCMakeCacheFile +
+                        " does not exist. Did you move the build directory? "
+                        "Hint: Set an alternative resource path with "
+                        "'--resource-path <path>'.");
+            }
         }
 #if defined(__UNIX__)
         else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
@@ -63,7 +75,12 @@ QString computeResourcePathImpl() {
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#elif defined(__APPLE__)
+#elif defined(Q_OS_IOS)
+        // On iOS the bundle contains the resources directly.
+        else {
+            qResourcePath = QCoreApplication::applicationDirPath();
+        }
+#elif defined(Q_OS_MACOS)
         else if (mixxxDir.cd("../Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
@@ -71,12 +88,16 @@ QString computeResourcePathImpl() {
             // TODO(rryan): What should we do here?
         }
 #endif
+#endif // !defined(__EMSCRIPTEN__)
     } else {
         //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.isEmpty()) {
-        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+        reportCriticalErrorAndQuit(
+                "qResourcePath is empty, this should not happen -- did our "
+                "developers forget to define __UNIX__, __WINDOWS__ or "
+                "__APPLE__??");
     }
 
     // If the directory does not end with a "/", add one

@@ -506,15 +506,15 @@ Description:
           <WidgetGroup><!-- EQ knobs, EQ Kill buttons, Crossfader -->
             <ObjectName>SkinSettingsSubMenu</ObjectName>
             <Layout>stacked</Layout>
-            <MinimumSize>182,39</MinimumSize>
-            <MaximumSize>182,60</MaximumSize>
+            <MinimumSize>182,26</MinimumSize>
+            <MaximumSize>182,40</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
               <!-- translucent cover when Channel Mixer is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
-                <MinimumSize>182,39</MinimumSize>
-                <MaximumSize>182,60</MaximumSize>
+                <MinimumSize>182,26</MinimumSize>
+                <MaximumSize>182,40</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
@@ -558,11 +558,6 @@ Description:
                     </Children>
                   </WidgetGroup><!-- /EQ Kill buttons -->
 
-                  <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
-                    <SetVariable name="text">Crossfader</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
-                  </Template>
-
                 </Children>
               </WidgetGroup>
 
@@ -593,6 +588,11 @@ Description:
               </Template>
             </Children>
           </WidgetGroup><!-- /Permanent Level Meters -->
+
+          <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
+            <SetVariable name="text">Crossfader</SetVariable>
+            <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
+          </Template>
           <!-- /Mixer -->
 
           <WidgetGroup>
@@ -724,7 +724,7 @@ Description:
                 <MaximumSize>112,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <!-- translucent cover when Samlers are hidden -->
+                  <!-- translucent cover when Samplers are hidden -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <MinimumSize>112,13</MinimumSize>
@@ -785,6 +785,9 @@ Description:
             </Children>
           </WidgetGroup><!-- /Load/Save Sampler Bank -->
           <!-- /Misc -->
+
+          <!-- push the settings up, required with Qt6 -->
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
