@@ -68,6 +68,22 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
     ControllerScriptEngineLegacy* cEngine;
 };
 
+class ControllerScriptEngineLegacyTimerTest : public ControllerScriptEngineLegacyTest {
+  protected:
+    std::unique_ptr<ControlPotmeter> co;
+    std::unique_ptr<ControlPotmeter> coTimerId;
+
+    void SetUp() override {
+        ControllerScriptEngineLegacyTest::SetUp();
+        co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"), -10.0, 10.0);
+        co->setParameter(0.0);
+        coTimerId = std::make_unique<ControlPotmeter>(
+                ConfigKey("[Test]", "coTimerId"), -10.0, 50.0);
+        coTimerId->setParameter(0.0);
+        EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', 0.0);"));
+        EXPECT_DOUBLE_EQ(0.0, co->get());
+    }
+};
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
     QFileInfo commonScript(config()->getResourcePath() +
             QStringLiteral("/controllers/common-controller-scripts.js"));
@@ -621,11 +637,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_repeatedTimer) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimer) {
     EXPECT_TRUE(evaluateAndAssert(
             "engine.setValue('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(0.0, co->get());
@@ -650,11 +662,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_repeatedTimer) {
     EXPECT_DOUBLE_EQ(2.0, co->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimer) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimer) {
     EXPECT_TRUE(evaluateAndAssert(
             "engine.setValue('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(0.0, co->get());
@@ -673,19 +681,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimer) {
     EXPECT_DOUBLE_EQ(1.0, co->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunction) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
-    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
-            -10.0,
-            50.0);
-    coTimerId->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert(
-            "engine.setValue('[Test]', 'co', 0.0);"));
-    EXPECT_DOUBLE_EQ(0.0, co->get());
-
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerBindFunction) {
     // Single shot timer with minimum allowed interval of 20ms
     EXPECT_TRUE(evaluateAndAssert(
             R"(var globVar = 7;
@@ -711,19 +707,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunction)
     EXPECT_DOUBLE_EQ(8.0, co->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunction) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
-    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
-            -10.0,
-            50.0);
-    coTimerId->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert(
-            "engine.setValue('[Test]', 'co', 0.0);"));
-    EXPECT_DOUBLE_EQ(0.0, co->get());
-
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFunction) {
     // Single shot timer with minimum allowed interval of 20ms
     EXPECT_TRUE(evaluateAndAssert(
             R"(var globVar = 7;
@@ -749,19 +733,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunction
     EXPECT_DOUBLE_EQ(8.0, co->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunctionInClass) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
-    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
-            -10.0,
-            50.0);
-    coTimerId->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert(
-            "engine.setValue('[Test]', 'co', 0.0);"));
-    EXPECT_DOUBLE_EQ(0.0, co->get());
-
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerBindFunctionInClass) {
     // Single shot timer with minimum allowed interval of 20ms
     EXPECT_TRUE(evaluateAndAssert(
             R"(
@@ -797,20 +769,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunctionI
     EXPECT_DOUBLE_EQ(8.0, co->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunctionInClass) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
-    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
-            -10.0,
-            50.0);
-    coTimerId->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert(
-            "engine.setValue('[Test]', 'co', 0.0);"));
-    EXPECT_DOUBLE_EQ(0.0, co->get());
-
-    // Single shot timer with minimum allowed interval of 20ms
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFunctionInClass) {
     EXPECT_TRUE(evaluateAndAssert(
             R"(
             class MyClass {
@@ -845,19 +804,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunction
     EXPECT_DOUBLE_EQ(8.0, co->get());
 }
 
-TEST_F(ControllerScriptEngineLegacyTest, beginTimer_repeatedTimerArrowFunctionCallInClass) {
-    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-            -10.0,
-            10.0);
-    co->setParameter(0.0);
-    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
-            -10.0,
-            50.0);
-    coTimerId->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert(
-            "engine.setValue('[Test]', 'co', 0.0);"));
-    EXPECT_DOUBLE_EQ(0.0, co->get());
-
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunctionCallInClass) {
     // Single shot timer with minimum allowed interval of 20ms
     EXPECT_TRUE(evaluateAndAssert(
             R"(
