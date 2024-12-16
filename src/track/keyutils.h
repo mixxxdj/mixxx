@@ -65,6 +65,7 @@ class KeyUtils {
             KeyNotation notation = KeyNotation::Custom);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
+    static mixxx::track::io::key::ChromaticKey keyFromNumericValue(int value);
     static KeyNotation keyNotationFromNumericValue(double value);
     static KeyNotation keyNotationFromString(const QString& notationName);
 
@@ -131,6 +132,11 @@ class KeyUtils {
 
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
+
+    static QVariant keyFromKeyTextAndIdFields(
+            const QVariant& keyTextField, const QVariant& keyIdField);
+    static QString keyFromKeyTextAndIdValues(const QString& keyText,
+            const mixxx::track::io::key::ChromaticKey& key);
 
   private:
     static QMutex s_notationMutex;
