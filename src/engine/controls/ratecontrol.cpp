@@ -628,3 +628,7 @@ void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
     m_jumpPos = triggerPos;
     m_targetPos = targetPos;
 }
+
+void RateControl::notifySeek(mixxx::audio::FramePos position) {
+    m_pScratchController->notifySeek(position);
+}
