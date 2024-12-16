@@ -283,8 +283,8 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
 
 void BulkController::sendBytes(const QByteArray& data) {
     VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
-            m_pMapping->getDeviceDirection() &
-                    LegacyControllerMapping::DeviceDirection::Outgoing) {
+            (m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Outgoing)) {
         qDebug() << "The mapping for the bulk device" << getName()
                  << "doesn't require sending data. Ignoring sending request.";
         return;
