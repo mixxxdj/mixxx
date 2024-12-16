@@ -2454,7 +2454,7 @@ class S4Mk3Deck extends Deck {
                 let [oldValue, oldTimestamp, speed] = this.oldValue;
 
                 if (timestamp < oldTimestamp) {
-                    oldTimestamp -= wheelRelativeMax;
+                    oldTimestamp -= wheelTimerMax;
                 }
 
                 let diff = value - oldValue;
