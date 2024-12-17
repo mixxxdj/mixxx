@@ -189,3 +189,10 @@ repos:
         additional_dependencies:
           - lxml==5.3.0
         files: ^(res/translations/.*\.ts)$
+      - id: update-rendergraph-shaders
+        name: update-rendergraph-shaders
+        description: "Regenerate GL shaders for rendergraph"
+        entry: python tools/rg_generate_shaders_gl.py --cmake-output src/rendergraph/shaders/generated_shaders_gl.cmake src/rendergraph/shaders/
+        pass_filenames: false
+        language: python
+        files: ^src/rendergraph/shaders/.*\.(vert|frag|gl)$
