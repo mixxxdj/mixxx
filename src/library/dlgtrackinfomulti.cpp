@@ -654,9 +654,9 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refTrackInfo().setYear(year);
         }
         if (!key.isNull()) {
-            static_cast<void>(rec.updateGlobalKeyNormalizeText(
+            rec.updateGlobalKeyNormalizeText(
                     key,
-                    mixxx::track::io::key::USER));
+                    mixxx::track::io::key::USER);
         }
         if (!num.isNull()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num);

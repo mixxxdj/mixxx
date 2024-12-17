@@ -732,13 +732,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 
 void DlgTrackInfo::updateKeyText() {
     const auto keyText = txtKey->text();
-    const auto updateResult =
-            m_trackRecord.updateGlobalKeyNormalizeText(
-                    keyText,
-                    mixxx::track::io::key::USER);
-    if (updateResult == mixxx::UpdateResult::Rejected) {
-        // Restore the current key text
-    }
+    m_trackRecord.updateGlobalKeyNormalizeText(
+            keyText,
+            mixxx::track::io::key::USER);
     displayKeyText();
 }
 
