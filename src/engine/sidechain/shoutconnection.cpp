@@ -92,16 +92,6 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         errorDialog(tr("Error setting non-blocking mode:"),
                 shout_get_error(m_pShout));
     }
-
-#ifdef SHOUT_TLS
-    // Libshout defaults to SHOUT_TLS_AUTO if build with SHOUT_TLS
-    // Sometimes autodetection fails, resulting into no metadata send
-    // https://github.com/mixxxdj/mixxx/issues/9599
-    if (shout_set_tls(m_pShout, SHOUT_TLS_DISABLED) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting tls mode:"),
-                shout_get_error(m_pShout));
-    }
-#endif
 }
 
 ShoutConnection::~ShoutConnection() {
@@ -240,6 +230,27 @@ void ShoutConnection::updateFromPreferences() {
     if (!login.isEmpty()) {
         serverUrl.setUserName(login);
     }
+
+#ifdef SHOUT_TLS
+    BroadcastProfile::EncryptionMode encryptionMode = m_pProfile->getEncryptionMode();
+
+    int result;
+    switch (encryptionMode) {
+    case BroadcastProfile::EncryptionMode::Preferred:
+        result = shout_set_tls(m_pShout, SHOUT_TLS_AUTO);
+        break;
+    case BroadcastProfile::EncryptionMode::Disabled:
+        result = shout_set_tls(m_pShout, SHOUT_TLS_DISABLED);
+        break;
+    default: // Required
+        result = shout_set_tls(m_pShout, SHOUT_TLS_AUTO_NO_PLAIN);
+        break;
+    }
+    if (result != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting TLS mode:"),
+                shout_get_error(m_pShout));
+    }
+#endif
 
     kLogger.debug() << "Using server URL:" << serverUrl;
 
@@ -607,6 +618,29 @@ bool ShoutConnection::processConnect() {
             kLogger.warning()
                     << "processConnect() socket error."
                     << "Is socket already in use?";
+        } else if (m_iShoutStatus == SHOUTERR_NOLOGIN) {
+            m_lastErrorStr = "Invalid login details";
+            kLogger.warning()
+                    << "processConnect() failed with no invalid or missing login details:"
+                    << m_iShoutStatus << shout_get_error(m_pShout);
+#ifdef SHOUT_TLS
+        } else if (m_iShoutStatus == SHOUTERR_NOTLS) {
+            DEBUG_ASSERT(m_pProfile &&
+                    m_pProfile->getEncryptionMode() ==
+                            BroadcastProfile::EncryptionMode::Required);
+            m_lastErrorStr = "The server doesn't not provide the required TLS encryption";
+            kLogger.warning()
+                    << "processConnect() failed with no valid TLS:"
+                    << m_iShoutStatus << shout_get_error(m_pShout);
+        } else if (m_iShoutStatus == SHOUTERR_TLSBADCERT) {
+            DEBUG_ASSERT(m_pProfile &&
+                    m_pProfile->getEncryptionMode() !=
+                            BroadcastProfile::EncryptionMode::Disabled);
+            m_lastErrorStr = "The server TLS certificate couldn't be verified";
+            kLogger.warning()
+                    << "processConnect() failed with a bad TLS certificate:"
+                    << m_iShoutStatus << shout_get_error(m_pShout);
+#endif
         } else if (timeout >= kConnectRetries) {
             // Not translated, because shout_get_error() returns also English only
             m_lastErrorStr = QStringLiteral("Connection establishment time-out");
@@ -1010,7 +1044,7 @@ void ShoutConnection::run() {
         errorDialog(tr("Can't connect to streaming server"),
                 m_lastErrorStr + "\n\n" +
                         tr("Please check your connection to the Internet and "
-                           "verify that your username and password are "
+                           "verify that your username, password and encryption mode are "
                            "correct."));
         return;
     }
