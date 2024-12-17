@@ -131,7 +131,7 @@ void allshader::DigitsRenderer::updateTexture(
 
     const float y = maxTextHeight + space - 0.5f;
 
-    auto roundToPixel = makeRoundToPixel(devicePixelRatio);
+    auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
 
     float totalTextWidth{};
     std::array<float, NUM_CHARS> xs;

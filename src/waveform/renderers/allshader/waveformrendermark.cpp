@@ -203,7 +203,7 @@ void allshader::WaveformRenderMark::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto roundToPixel = makeRoundToPixel(devicePixelRatio);
+    auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
 
     for (const auto& pMark : std::as_const(m_marks)) {
         pMark->setBreadth(slipActive ? m_waveformRenderer->getBreadth() / 2
