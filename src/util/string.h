@@ -85,13 +85,15 @@ inline QString convertWCStringToQString(
 }
 
 /// Remove trailing spaces from the specified string.
-/// Currently only handles simple ASCII spaces (" ").
-inline QString removeTrailingWhitespaces(const QString& str) {
-    QString out = str;
-    while (out.endsWith(' ')) {
-        out.chop(1);
+inline QString removeTrailingWhitespaces(QString str) {
+    auto it = str.crbegin();
+    while (it != str.crend() && it->isSpace()) {
+        ++it;
     }
-    return out;
+    if (it != str.crbegin()) {
+        str.resize(std::distance(it, str.crend()));
+    }
+    return str;
 }
 
 } // namespace mixxx
