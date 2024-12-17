@@ -88,6 +88,7 @@ public slots:
   void slotControlRatePermUpSmall(double);
   void slotControlFastForward(double);
   void slotControlFastBack(double);
+  void notifySeek(mixxx::audio::FramePos position) override;
 
 private:
   void processTempRate(const int bufferSamples);
