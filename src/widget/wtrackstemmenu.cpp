@@ -12,7 +12,7 @@ const QList<mixxx::StemChannel> stemTracks = {
         mixxx::StemChannel::Third,
         mixxx::StemChannel::Fourth,
 };
-}
+} // namespace
 
 WTrackStemMenu::WTrackStemMenu(const QString& label,
         QWidget* parent,
