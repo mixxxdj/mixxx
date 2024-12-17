@@ -403,7 +403,11 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         composers.insert(rec.getMetadata().getTrackInfo().getComposer());
         grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
         years.insert(rec.getMetadata().getTrackInfo().getYear());
-        keys.insert(KeyUtils::keyToString(rec.getKeys().getGlobalKey()));
+        auto pTrack = getTrackFromSetById(rec.getId());
+        DEBUG_ASSERT(pTrack);
+        keys.insert(KeyUtils::keyFromKeyTextAndIdValues(
+                pTrack->getKeyText(),
+                pTrack->getKey()));
         nums.insert(rec.getMetadata().getTrackInfo().getTrackNumber());
         comments.insert(rec.getMetadata().getTrackInfo().getComment());
 
