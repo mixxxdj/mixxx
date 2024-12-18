@@ -26,11 +26,10 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(
-            QWidget* parent,
+            QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
@@ -141,6 +140,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:
