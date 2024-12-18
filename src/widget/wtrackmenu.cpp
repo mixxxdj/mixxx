@@ -2588,8 +2588,20 @@ void WTrackMenu::showDlgTrackInfo(const QString& property) {
         return;
     }
     slotShowDlgTrackInfo();
-    if (m_pDlgTrackInfo->isVisible()) {
-        m_pDlgTrackInfo->focusField(property);
+    if (m_pTrackModel && getTrackCount() > 1) {
+        VERIFY_OR_DEBUG_ASSERT(m_pDlgTrackInfoMulti) {
+            return;
+        }
+        if (m_pDlgTrackInfoMulti->isVisible()) {
+            m_pDlgTrackInfoMulti->focusField(property);
+        }
+    } else {
+        VERIFY_OR_DEBUG_ASSERT(m_pDlgTrackInfo) {
+            return;
+        }
+        if (m_pDlgTrackInfo->isVisible()) {
+            m_pDlgTrackInfo->focusField(property);
+        }
     }
 }
 

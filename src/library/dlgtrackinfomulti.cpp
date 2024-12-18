@@ -125,6 +125,22 @@ void DlgTrackInfoMulti::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
+    // Store tag edit widget pointers to allow focusing a specific widgets when
+    // this is opened by double-clicking a WTrackProperty label.
+    // Associate with property strings taken from library/dao/trackdao.h
+    m_propertyWidgets.insert("artist", txtArtist);
+    m_propertyWidgets.insert("title", txtTitle);
+    m_propertyWidgets.insert("titleInfo", txtTitle);
+    m_propertyWidgets.insert("album", txtAlbum);
+    m_propertyWidgets.insert("album_artist", txtAlbumArtist);
+    m_propertyWidgets.insert("composer", txtComposer);
+    m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("year", txtYear);
+    m_propertyWidgets.insert("tracknumber", txtTrackNumber);
+    m_propertyWidgets.insert("key", txtKey);
+    m_propertyWidgets.insert("grouping", txtGrouping);
+    m_propertyWidgets.insert("comment", txtComment);
+
     // QDialog buttons
     connect(btnApply,
             &QPushButton::clicked,
@@ -306,6 +322,16 @@ void DlgTrackInfoMulti::loadTracks(const QList<TrackPointer>& pTracks) {
     // Listen to all tracks' changed() signal so we don't need to listen to
     // individual signals such as cuesUpdates, coverArtUpdated(), etc.
     connectTracksChanged();
+}
+
+void DlgTrackInfoMulti::focusField(const QString& property) {
+    if (property.isEmpty()) {
+        return;
+    }
+    auto it = m_propertyWidgets.constFind(property);
+    if (it != m_propertyWidgets.constEnd()) {
+        it.value()->setFocus();
+    }
 }
 
 void DlgTrackInfoMulti::updateFromTracks() {

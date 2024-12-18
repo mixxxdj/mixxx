@@ -29,6 +29,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     ~DlgTrackInfoMulti() override = default;
 
     void loadTracks(const QList<TrackPointer>& pTracks);
+    void focusField(const QString& property);
 
     /// We need this to set the max width of the comment QComboBox which has
     /// issues with long lines / multi-line content. See init() for details.
@@ -106,6 +107,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
     QList<mixxx::TrackRecord> m_trackRecords;
+
+    QHash<QString, QWidget*> m_propertyWidgets;
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
