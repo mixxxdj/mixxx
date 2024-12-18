@@ -742,82 +742,82 @@
 <context>
     <name>CmdlineArgs</name>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="160"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="161"/>
         <source>Mixxx is an open source DJ software. For more information, see: </source>
         <translation>Mixxx is een open source DJ software. Voor meer informatie, zie:</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="168"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="169"/>
         <source>Starts Mixxx in full-screen mode</source>
         <translation>Start Mixxx in volledig scherm Modus</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="177"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="178"/>
         <source>Use a custom locale for loading translations. (e.g &apos;fr&apos;)</source>
         <translation>Gebruik een aangepaste landinstelling voor het laden van vertalingen. (bijv. &apos;fr&apos;)</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="206"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="207"/>
         <source>Top-level directory where Mixxx should look for its resource files such as MIDI mappings, overriding the default installation location.</source>
         <translation>Map op het hoogste niveau waar Mixxx moet zoeken naar zijn bronbestanden zoals MIDI-mappings, die de standaardinstallatielocatie overschrijft.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="220"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="221"/>
         <source>Path the debug statistics time line is written to</source>
         <translation>Pad waar de debug statistieken naar worden geschreven</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="244"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="245"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
         <translation>Zorgt ervoor dat Mixxx alle ontvangen controllergegevens en scriptfuncties die het laadt weergeeft/logt</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="257"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="258"/>
         <source>The controller mapping will issue more aggressive warnings and errors when detecting misuse of controller APIs. New Controller Mappings should be developed with this option enabled!</source>
         <translation>The verbinding met de controller zal emeer aggressieve meldingen en fouten weergeven wanner verkeerd gebruik van controller-API&apos;s wordt gedetecteerd. Nieuwe controller-verbindingen zullen worden ontwikkeld met deze optie geactiveerd.!</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="267"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="268"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
         <translation>Schakelt de ontwikkelaarsModus in. Bevat extra loginformatie, prestatiestatistieken en een menu voor ontwikkelaarstools.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="192"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="193"/>
         <source>Top-level directory where Mixxx should look for settings. Default is: </source>
         <translation>Hoofd-niveau bestandsmap waar Mixxx moet in kijken voor instellingen. Standaardmap is: </translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="185"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="186"/>
         <source>Starts Auto DJ when Mixxx is launched.</source>
         <translation>Start Auto DJ wanneer Mixxx wordt opgestart.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="232"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="233"/>
         <source>Use legacy vu meter</source>
         <translation>Gebruik de bestaande vu meter</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="238"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="239"/>
         <source>Use legacy spinny</source>
         <translation>gebruik de bestaande spinny</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="275"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="276"/>
         <source>Loads experimental QML GUI instead of legacy QWidget skin</source>
         <translation>Laadt de experimentele QML GUI opv de normale QWidget skin</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="281"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="282"/>
         <source>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</source>
         <translation>Schakelt veilige Modus in. Schakelt OpenGL-golfvormen en draaiende vinylwidgets uit. Probeer deze optie als Mixxx crasht bij het opstarten.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="292"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="293"/>
         <source>[auto|always|never] Use colors on the console output.</source>
         <translation>[auto|altijd|nooit] Gebruik kleuren op de console-uitvoer.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="300"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="301"/>
         <source>Sets the verbosity of command line logging.
 critical - Critical/Fatal only
 warning  - Above + Warnings
@@ -832,17 +832,22 @@ debug - Boven + Debug/Ontwikkelaarsberichten
 traceren - Boven + Profileringsberichten</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="316"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="317"/>
         <source>Sets the the logging level at which the log buffer is flushed to mixxx.log. &lt;level&gt; is one of the values defined at --log-level above.</source>
         <translation>Stelt het logging-niveau voor de log-buffer waarop de buffer naar de Mixxx-logs wordt gestuurd.  &lt;level&gt; is één van de waarden gedefinieerd op het --log-niveau bovenaan.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="330"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="331"/>
+        <source>Sets the maximum file size of the mixxx.log file in bytes. Use -1 for unlimited. The default is 100 MB as 1e5 or 100000000.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/util/cmdlineargs.cpp" line="343"/>
         <source>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</source>
         <translation>Breekt (SIGINT) Mixxx, als een DEBUG_ASSERT evalueert naar false. Onder een debugger kunt u daarna verdergaan.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="344"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="357"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
         <translation>Laad het/de opgegeven muziekbestand(en) bij het opstarten. Elk bestand dat u opgeeft, wordt in het volgende virtuele deck geladen.</translation>
     </message>
@@ -5200,22 +5205,22 @@ Instellingen toepassen en doorgaan?</translation>
         <translation>&lt;b&gt;%1&lt;/b&gt; bestaat al in de map voor Mappings.&lt;br&gt;Overschrijven of opslaan met een nieuwe naam?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="977"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="982"/>
         <source>Clear Input Mappings</source>
         <translation>Wis Input-Mappings (Invoerkoppelingen)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="978"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="983"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>Weet u het zeker dat u alle Input-Mappings (invoerkoppelingen) wilt wissen?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1015"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1020"/>
         <source>Clear Output Mappings</source>
         <translation>Wis Output-Mappings (Uitvoerkoppelingen)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1016"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1021"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>Weet u het zeker dat u alle Output-Mappings (Uitvoerkoppelingen) wilt wissen?</translation>
     </message>
@@ -7706,17 +7711,27 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <translation>Onderkant</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="195"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="76"/>
+        <source>1/3rd of waveform viewer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="77"/>
+        <source>Full waveform viewer height</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="202"/>
         <source>OpenGL not available</source>
         <translation>OpenGL niet beschikbaar</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="366"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="377"/>
         <source>dropped frames</source>
         <translation>verloren frames</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="418"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="434"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation>Waveforms in cache gebruiken %1 Mb op schijf</translation>
     </message>
@@ -7734,7 +7749,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <translation>Framesnelheid</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="615"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="635"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>Geeft weer welke OpenGL-versie wordt ondersteund door het huidige platform.</translation>
     </message>
@@ -7744,7 +7759,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <translation>Normaliseer Waveform-overzicht</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="641"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="661"/>
         <source>Average frame rate</source>
         <translation>Gemiddelde framesnelheid</translation>
     </message>
@@ -7760,7 +7775,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <translation>Standaard zoomniveau</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="651"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="671"/>
         <source>Displays the actual frame rate.</source>
         <translation>Geeft de werkelijke framesnelheid weer.</translation>
     </message>
@@ -7775,7 +7790,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <translation>Track-einde waarschuwing</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="608"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="628"/>
         <source>OpenGL status</source>
         <translation>OpenGL status</translation>
     </message>
@@ -7869,52 +7884,57 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <translation>Speel markeer hints af</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="474"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="476"/>
         <source>Beats until next marker</source>
         <translation>Beats tot de volgende markering</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="481"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="496"/>
+        <source>Preferred font size</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="509"/>
+        <source>Text height limit</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="522"/>
         <source>Time until next marker</source>
         <translation>Tijd tot de volgende markering</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="488"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="483"/>
         <source>Placement</source>
         <translation>Plaatsing</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="504"/>
-        <source>Font size</source>
-        <translation>Lettergrootte</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="520"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="535"/>
         <source> pt</source>
         <translation> pt</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="536"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="556"/>
         <source>This functionality requires a waveform type marked &quot;(GLSL)&quot;.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="546"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="566"/>
         <source>Caching</source>
         <translation>Caching</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="565"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="585"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>Mixxx buffert de waveforms van je Tracks in de cache op schijf wanneer een Track voor de eerste keer laadt. Dit vermindert het CPU-gebruik tijdens het live spelen, maar vereist extra schijfruimte.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="591"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="611"/>
         <source>Enable waveform caching</source>
         <translation>Schakel waveform caching in</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="598"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="618"/>
         <source>Generate waveforms when analyzing library</source>
         <translation>Genereer waveforms bij het analyseren van de Bibliotheek</translation>
     </message>
@@ -7944,7 +7964,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <translation>Verplaatst de speelmarkeringspositie op de waveforms naar links, rechts of midden (standaard).</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="558"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="578"/>
         <source>Clear Cached Waveforms</source>
         <translation>Wis gebufferde Waveforms</translation>
     </message>
@@ -8862,7 +8882,7 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="881"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="984"/>
         <source>(no color)</source>
         <translation>(geen kleur)</translation>
     </message>
@@ -9638,212 +9658,212 @@ Wil je het echt overschrijven?</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="652"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="649"/>
         <source>Sound Device Busy</source>
         <translation>Geluisapparaat bezig</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="661"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="658"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Probeer opnieuw&lt;/b&gt; na het afsluiten van de andere applicatie of het opnieuw aansluiten van een geluidsapparaat</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="665"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="692"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="716"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="662"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="689"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="713"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Configureer&lt;/b&gt; opnieuw de Mixxx instellingen van het  geluidsapparaat.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="668"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="695"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="665"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="692"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>&lt;b&gt;Hulp&lt;/b&gt;zoeken in de Mixxx Wiki.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="671"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="698"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="719"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="668"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="695"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="716"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Verlaat&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="612"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="609"/>
         <source>Retry</source>
         <translation>Probeer opnieuw</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="213"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="211"/>
         <source>skin</source>
         <translation>skin</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="565"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="562"/>
         <source>Allow Mixxx to hide the menu bar?</source>
         <translation>Mixxx toestaan om de menu balk te verbergen?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="567"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="564"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
         <translation>De menu balk altijd weergeven?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="568"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="565"/>
         <source>Always show</source>
         <translation>Altijd tonen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="571"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="568"/>
         <source>The Mixxx menu bar is hidden and can be toggled with a single press of the &lt;b&gt;Alt&lt;/b&gt; key.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; to agree.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; to disable that, for example if you don&apos;t use Mixxx with a keyboard.&lt;br&gt;&lt;br&gt;You can change this setting any time in Preferences -&gt; Interface.&lt;br&gt;</source>
         <extracomment>Keep formatting tags &lt;b&gt; (bold text) and &lt;br&gt; (linebreak). %1 is the placeholder for the 'Always show' button label</extracomment>
         <translation>De Mixxx menu balk is verborgen en kan worden opgeroepen met een enkele druk op de &lt;b&gt;Alt&lt;/b&gt; toets.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; om akkoord te gaan.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; om dit uit te schakelen, bijvoorbeeld wanneer u Mixxx niet met een toetsenbord gebruikt.&lt;br&gt;&lt;br&gt;U kan deze instelling altijd wijzigen in de Voorkeuren -&gt; Interface.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="586"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="583"/>
         <source>Ask me again</source>
         <translation>Vraag mij opnieuw</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="614"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="727"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="611"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="724"/>
         <source>Reconfigure</source>
         <translation>Opnieuw configureren</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="616"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="613"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="618"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="729"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="615"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="726"/>
         <source>Exit</source>
         <translation>Afsluiten</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="655"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="681"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="652"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="678"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx kon niet alle geconfigureerde geluidsapparaten openen.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="679"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="676"/>
         <source>Sound Device Error</source>
         <translation>Fout met geluidsapparaat</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="689"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="686"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>&lt;b&gt;Probeer opnieuw&lt;/b&gt; na het oplossen van een probleem</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="707"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="704"/>
         <source>No Output Devices</source>
         <translation>Geen uitvoerapparaten</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="709"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="706"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx is ingesteld zonder uitvoerapparaten voor geluid. Geluidsverwerking wordt uitgeschakeld zonder een geconfigureerd uitvoerapparaat.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="713"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="710"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Ga door&lt;/b&gt; zonder uitvoer.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="725"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="722"/>
         <source>Continue</source>
         <translation>Verdergaan</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="990"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="985"/>
         <source>Load track to Deck %1</source>
         <translation>Laad Track in deck %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="991"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="986"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Deck %1 speelt momenteel een Track af.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="993"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="988"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Bent u zeker dat u een nieuwe Track wil laden?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1087"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1078"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Er is geen invoerapparaat geselecteerd voor deze vinylbesturing.
 Selecteer eerst een invoerapparaat in de voorkeuren voor geluidshardware.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1101"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1092"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Er is geen invoerapparaat geselecteerd voor dit Directe Doorvoerapparaat.
 Selecteer eerst een invoerapparaat in de voorkeuren voor geluidsapparatuur.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1115"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1106"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation>Er is geen invoerapparaat geselecteerd voor deze microfoon.
 Wilt u een invoerapparaat selecteren?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1129"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1120"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation>Er is geen invoerapparaat geselecteerd voor deze Auxiliary.
 Wilt u een invoerapparaat selecteren?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1202"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1193"/>
         <source>Error in skin file</source>
         <translation>Fout in Skin-bestand</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1203"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1194"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>De geselecteerde Skin kan niet worden geladen.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1377"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1364"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL Direct Rendering</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1378"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1365"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>OpenGL Directe weergave-herberekening is niet ingeschakeld op uw computer.&lt;br&gt;&lt;br&gt; Dit betekent dat de weergave van de golfvormen erg&lt;br&gt;&lt;b&gt; traag zal zijn en uw CPU zwaar kan belasten&lt;/b&gt;. Werk uw &lt;br&gt; configuratie bij om OpenGL Directe weergave-herberekening mogelijk te maken of schakel&lt;br&gt;de waveform weergaven uit in de Mixxx-voorkeuren door &quot;Leeg&quot; te selecteren&lt;br&gt; als de waveform weergave in het gedeelte &quot;Interface&quot;.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1413"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1421"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1430"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1400"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1408"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1417"/>
         <source>Confirm Exit</source>
         <translation>Afsluiten bevestigen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1414"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1401"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Er is momenteel een deck actief. Mixxx afsluiten?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1422"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1409"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Er is momenteel een sampler actief. Mixxx afsluiten?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1431"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1418"/>
         <source>The preferences window is still open.</source>
         <translation>Het scherm &quot;Voorkeuren&quot; staat nog open.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1432"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1419"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Wijzigingen negeren en Mixxx afsluiten?</translation>
     </message>
@@ -11619,7 +11639,7 @@ release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
         <translation>De niveauknop wijzigt het niveau van het uitgangssignaal nadat de compressie werd toegepast.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="28"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="29"/>
         <source>various</source>
         <translation>allerlei</translation>
     </message>
@@ -14720,12 +14740,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="292"/>
+        <location filename="../../src/library/trackcollection.cpp" line="303"/>
         <source>Hiding tracks</source>
         <translation>Tracks Verbergen</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="293"/>
+        <location filename="../../src/library/trackcollection.cpp" line="304"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation>De geselecteerde Tracks staan in de volgende afspeellijsten: %1 Door ze te verbergen, worden ze uit deze afspeellijsten verwijderd. Verdergaan?</translation>
     </message>
@@ -16395,7 +16415,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1316"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1320"/>
         <source>legacy</source>
         <translation>standaard</translation>
     </message>
