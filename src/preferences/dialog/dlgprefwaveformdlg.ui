@@ -715,6 +715,10 @@ Select from different types of displays for the waveform, which differ primarily
   <tabstop>lowVisualGain</tabstop>
   <tabstop>midVisualGain</tabstop>
   <tabstop>highVisualGain</tabstop>
+  <tabstop>untilMarkShowBeatsCheckBox</tabstop>
+  <tabstop>untilMarkShowTimeCheckBox</tabstop>
+  <tabstop>untilMarkAlignComboBox</tabstop>
+  <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
   <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
   <tabstop>clearCachedWaveforms</tabstop>
