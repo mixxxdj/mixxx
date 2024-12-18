@@ -97,7 +97,7 @@ void allshader::WaveformRenderMark::initializeGL() {
 }
 
 void allshader::WaveformRenderMark::drawTexture(
-        const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture) {
+        const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture, float opacity) {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float texx1 = 0.f;
     const float texy1 = 0.f;
@@ -118,6 +118,7 @@ void allshader::WaveformRenderMark::drawTexture(
     const int textureLocation = m_textureShader.uniformLocation("texture");
     const int positionLocation = m_textureShader.attributeLocation("position");
     const int texcoordLocation = m_textureShader.attributeLocation("texcoord");
+    const int alphaLocation = m_textureShader.uniformLocation("alpha");
 
     m_textureShader.setUniformValue(matrixLocation, matrix);
 
@@ -129,6 +130,7 @@ void allshader::WaveformRenderMark::drawTexture(
             texcoordLocation, GL_FLOAT, texarray, 2);
 
     m_textureShader.setUniformValue(textureLocation, 0);
+    m_textureShader.setUniformValue(alphaLocation, opacity);
 
     texture->bind();
 
@@ -231,6 +233,10 @@ void allshader::WaveformRenderMark::paintGL() {
                 static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
                         ->texture();
 
+        QOpenGLTexture* pEndTexture =
+                static_cast<TextureGraphics*>(pMark->m_pEndGraphics.get())
+                        ->texture();
+
         if (!pTexture) {
             continue;
         }
@@ -272,7 +278,6 @@ void allshader::WaveformRenderMark::paintGL() {
 
         // Check if the range needs to be displayed.
         if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
-            DEBUG_ASSERT(samplePosition < sampleEndPosition);
             const float currentMarkEndPoint = static_cast<
                     float>(
                     m_waveformRenderer
@@ -280,15 +285,25 @@ void allshader::WaveformRenderMark::paintGL() {
                                     sampleEndPosition, positionType));
 
             if (visible || currentMarkEndPoint > 0) {
-                QColor color = pMark->fillColor();
-                color.setAlphaF(0.4f);
+                if (pMark->fillRange()) {
+                    QColor color = pMark->fillColor();
+                    color.setAlphaF(0.4f);
 
-                drawMark(matrix,
-                        QRectF(QPointF(currentMarkPoint, 0),
-                                QPointF(currentMarkEndPoint,
-                                        m_waveformRenderer
-                                                ->getBreadth())),
-                        color);
+                    drawMark(matrix,
+                            QRectF(QPointF(currentMarkPoint, 0),
+                                    QPointF(currentMarkEndPoint,
+                                            m_waveformRenderer
+                                                    ->getBreadth())),
+                            color);
+                } else {
+                    drawTexture(matrix,
+                            currentMarkEndPoint - markHalfWidth,
+                            !m_isSlipRenderer && slipActive
+                                    ? m_waveformRenderer->getBreadth() / 2
+                                    : 0,
+                            pEndTexture,
+                            static_cast<float>(pMark->opacity()));
+                }
                 visible = true;
             }
         }
@@ -473,6 +488,11 @@ void allshader::WaveformRenderMark::resizeGL(int, int) {
 void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
     pMark->m_pGraphics = std::make_unique<TextureGraphics>(
             pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
+}
+
+void allshader::WaveformRenderMark::updateEndMarkImage(WaveformMarkPointer pMark) {
+    pMark->m_pEndGraphics = std::make_unique<TextureGraphics>(
+            pMark->generateEndImage(m_waveformRenderer->getDevicePixelRatio()));
 }
 
 void allshader::WaveformRenderMark::updateUntilMark(
