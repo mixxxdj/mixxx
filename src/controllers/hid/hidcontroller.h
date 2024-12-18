@@ -20,6 +20,50 @@ class HidController final : public Controller {
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return m_deviceInfo.getPhysicalTransportProtocol();
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::HID;
+    }
+    // Note, that for non-USB devices, the VendorString/ProductString can
+    // contain the driver manufacturer, instead of the actual device
+    // manufacturer. The VID/PID is a more reliable way to identify a HID
+    // device.
+    QString getVendorString() const override {
+        return m_deviceInfo.getVendorString();
+    }
+    QString getProductString() const override {
+        return m_deviceInfo.getProductString();
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return m_deviceInfo.getProductId();
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return m_deviceInfo.getVendorId();
+    }
+    QString getSerialNumber() const override {
+        return m_deviceInfo.getSerialNumber();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_deviceInfo.getUsbInterfaceNumber();
+    }
+    uint16_t getUsagePage() const {
+        return m_deviceInfo.getUsagePage();
+    }
+
+    uint16_t getUsage() const {
+        return m_deviceInfo.getUsage();
+    }
+
+    QString getUsagePageDescription() const {
+        return m_deviceInfo.getUsagePageDescription();
+    }
+
+    QString getUsageDescription() const {
+        return m_deviceInfo.getUsageDescription();
+    }
     bool isMappable() const override {
         if (!m_pMapping) {
             return false;

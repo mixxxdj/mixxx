@@ -9,6 +9,21 @@
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
 
+enum class PhysicalTransportProtocol {
+    UNKNOWN,
+    USB,
+    BlueTooth,
+    I2C,
+    SPI,
+    FireWire // IEEE 1394
+};
+
+enum class DataRepresentationProtocol {
+    MIDI,
+    HID,
+    USB_BULK_TRANSFER // Bulk is only one of the 4 USB transfer modes
+};
+
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
@@ -45,9 +60,17 @@ class Controller : public QObject {
     inline const QString& getName() const {
         return m_sDeviceName;
     }
-    inline const QString& getCategory() const {
-        return m_sDeviceCategory;
-    }
+    virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
+    static QString physicalTransport2String(PhysicalTransportProtocol protocol);
+    virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
+
+    virtual QString getVendorString() const = 0;
+    virtual QString getProductString() const = 0;
+    virtual std::optional<uint16_t> getVendorId() const = 0;
+    virtual std::optional<uint16_t> getProductId() const = 0;
+    virtual QString getSerialNumber() const = 0;
+    virtual std::optional<uint8_t> getUsbInterfaceNumber() const = 0;
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
@@ -120,9 +143,6 @@ class Controller : public QObject {
     // To be called when receiving events
     void triggerActivity();
 
-    inline void setDeviceCategory(const QString& deviceCategory) {
-        m_sDeviceCategory = deviceCategory;
-    }
     inline void setOutputDevice(bool outputDevice) {
         m_bIsOutputDevice = outputDevice;
     }

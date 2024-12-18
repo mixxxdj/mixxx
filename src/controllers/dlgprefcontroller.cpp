@@ -18,6 +18,7 @@
 #endif
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgcontrollerlearning.h"
+#include "controllers/hid/hidcontroller.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -93,11 +94,100 @@ DlgPrefController::DlgPrefController(
     slotShowMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
-    QString category = m_pController->getCategory();
-    if (!category.isEmpty()) {
-        m_ui.labelDeviceCategory->setText(category);
+
+    m_ui.labelPhysicalInterfaceValue->setText(
+            Controller::physicalTransport2String(
+                    m_pController->getPhysicalTransportProtocol()));
+
+    const QString dataHandlingProtocol =
+            [protocol = m_pController->getDataRepresentationProtocol()] {
+                switch (protocol) {
+                case DataRepresentationProtocol::USB_BULK_TRANSFER:
+                    return QStringLiteral("USB Bulk");
+                case DataRepresentationProtocol::HID:
+                    return QStringLiteral("HID");
+                case DataRepresentationProtocol::MIDI:
+                    return QStringLiteral("MIDI");
+                }
+                return QString();
+            }();
+    m_ui.labelDataHandlingProtocolValue->setText(dataHandlingProtocol);
+
+    auto formatHex = [](unsigned short value) {
+        return QString::number(value, 16).toUpper().rightJustified(4, '0');
+    };
+
+    auto vendorString = m_pController->getVendorString();
+    if (!vendorString.isEmpty()) {
+        m_ui.labelVendorValue->setText(vendorString);
+        m_ui.labelVendor->setVisible(true);
+        m_ui.labelVendorValue->setVisible(true);
     } else {
-        m_ui.labelDeviceCategory->hide();
+        m_ui.labelVendor->setVisible(false);
+        m_ui.labelVendorValue->setVisible(false);
+    }
+
+    // Product-String is always available
+    m_ui.labelProductValue->setText(m_pController->getProductString());
+
+    if (auto vid = m_pController->getVendorId()) {
+        m_ui.labelVidValue->setText(formatHex(*vid));
+        m_ui.labelVid->setVisible(true);
+        m_ui.labelVidValue->setVisible(true);
+    } else {
+        m_ui.labelVid->setVisible(false);
+        m_ui.labelVidValue->setVisible(false);
+    }
+
+    if (auto pid = m_pController->getProductId()) {
+        m_ui.labelPidValue->setText(formatHex(*pid));
+        m_ui.labelPid->setVisible(true);
+        m_ui.labelPidValue->setVisible(true);
+    } else {
+        m_ui.labelPid->setVisible(false);
+        m_ui.labelPidValue->setVisible(false);
+    }
+
+    auto serialNo = m_pController->getSerialNumber();
+    if (!serialNo.isEmpty()) {
+        m_ui.labelSerialNumberValue->setText(serialNo);
+        m_ui.labelSerialNumber->setVisible(true);
+        m_ui.labelSerialNumberValue->setVisible(true);
+    } else {
+        m_ui.labelSerialNumber->setVisible(false);
+        m_ui.labelSerialNumberValue->setVisible(false);
+    }
+
+    auto interfaceNumber = m_pController->getUsbInterfaceNumber();
+    if (m_pController->getPhysicalTransportProtocol() == PhysicalTransportProtocol::USB &&
+            interfaceNumber) {
+        m_ui.labelUsbInterfaceNumberValue->setText(QString::number(*interfaceNumber));
+        m_ui.labelUsbInterfaceNumber->setVisible(true);
+        m_ui.labelUsbInterfaceNumberValue->setVisible(true);
+    } else {
+        // Not a USB device -> USB interface number is not applicable
+        m_ui.labelUsbInterfaceNumber->setVisible(false);
+        m_ui.labelUsbInterfaceNumberValue->setVisible(false);
+    }
+
+    // Display HID UsagePage and Usage if the controller is an HidController
+    if (auto* hidController = dynamic_cast<HidController*>(m_pController)) {
+        m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
+                        .arg(formatHex(hidController->getUsagePage()),
+                                hidController->getUsagePageDescription()));
+
+        m_ui.labelHidUsageValue->setText(QStringLiteral("%1 (%2)")
+                        .arg(formatHex(hidController->getUsage()),
+                                hidController->getUsageDescription()));
+        m_ui.labelHidUsagePage->setVisible(true);
+        m_ui.labelHidUsagePageValue->setVisible(true);
+        m_ui.labelHidUsage->setVisible(true);
+        m_ui.labelHidUsageValue->setVisible(true);
+    } else {
+        m_ui.labelHidUsagePage->setVisible(false);
+        m_ui.labelHidUsagePageValue->setVisible(false);
+        m_ui.labelHidUsage->setVisible(false);
+        m_ui.labelHidUsageValue->setVisible(false);
     }
 
     m_ui.groupBoxWarning->hide();
@@ -930,7 +1020,12 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
             }
         }
 
-        m_ui.groupBoxSettings->setVisible(!settings.isEmpty());
+        if (settings.isEmpty()) {
+            m_ui.groupBoxSettings->setVisible(false);
+        } else {
+            m_ui.groupBoxSettings->setVisible(true);
+            setScrollSafeGuardForAllInputWidgets(m_ui.groupBoxSettings);
+        }
     }
 
     // If there is still settings that may be saved and no new mapping selected

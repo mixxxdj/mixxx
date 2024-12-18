@@ -1,10 +1,10 @@
-#include <limits>
-
 #include <gtest/gtest.h>
 
-#include "util/duration.h"
-
 #include <QtDebug>
+#include <limits>
+
+#include "util/duration.h"
+#include "util/fpclassify.h"
 
 namespace {
 
@@ -117,7 +117,7 @@ TEST_F(DurationUtilTest, formatTime) {
     formatTime("25:00:01.000", 25 * 3600 + 1);
     // If you change the following line, check if it solves #13780,
     // and allows to remove -Wno-nan-infinity-disabled from the clang-tidy call
-    formatTime("?", std::numeric_limits<double>::infinity());
+    formatTime("?", util_double_infinity());
     formatTime("?", -1);
 }
 

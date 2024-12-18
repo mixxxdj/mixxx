@@ -913,6 +913,9 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
                 });
         pParentMenu->addMenu(pStemMenu);
     } else {
+#else
+    Q_UNUSED(pTrack)
+    Q_UNUSED(primaryDeck)
 #endif
         QAction* pAction = new QAction(label, this);
         pAction->setEnabled(enabled);
