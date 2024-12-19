@@ -133,7 +133,8 @@ DlgAbout::DlgAbout()
             << "Lukas Waslowski"
             << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
             << "HorstBaerbel"
-            << "gqzomer";
+            << "gqzomer"
+            << "Bacadam";
 
     QStringList specialThanks;
     specialThanks
