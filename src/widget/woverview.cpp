@@ -593,6 +593,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
+                    // Clear the pickup position display, we have all cue info in the menu.
+                    leaveEvent(nullptr);
                     m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
