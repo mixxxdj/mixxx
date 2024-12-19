@@ -38,6 +38,10 @@ class allshader::WaveformRendererTextured : public QObject,
     void paintGL() override;
     void resizeGL(int w, int h) override;
 
+    bool supportsSlip() const override {
+        return true;
+    }
+
     void onSetTrack() override;
 
   public slots:
