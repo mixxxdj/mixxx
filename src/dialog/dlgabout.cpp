@@ -134,7 +134,8 @@ DlgAbout::DlgAbout()
             << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
             << "HorstBaerbel"
             << "gqzomer"
-            << "Bacadam";
+            << "Bacadam"
+            << "Leon Eckardt";
 
     QStringList specialThanks;
     specialThanks
