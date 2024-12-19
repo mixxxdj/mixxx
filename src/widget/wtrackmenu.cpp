@@ -2546,7 +2546,8 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 [this]() {
                     if (m_pDlgTrackInfoMulti.get() == sender()) {
                         m_pDlgTrackInfoMulti.release()->deleteLater();
-                        setTrackPropertyName();
+                        // clear the track property name
+                        m_trackProperty.clear();
                     }
                 });
         QList<TrackPointer> tracks;
@@ -2569,7 +2570,8 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 [this]() {
                     if (m_pDlgTrackInfo.get() == sender()) {
                         m_pDlgTrackInfo.release()->deleteLater();
-                        setTrackPropertyName();
+                        // clear the track property name
+                        m_trackProperty.clear();
                     }
                 });
         // Method getFirstTrackPointer() is not applicable here!
