@@ -30,6 +30,7 @@ class WTrackTableView : public WLibraryTableView {
             bool sorting);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
+    QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;

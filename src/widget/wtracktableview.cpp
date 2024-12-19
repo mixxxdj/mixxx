@@ -532,12 +532,27 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi?
     // They could then focus the respective edit field.
     m_pTrackMenu->loadTrackModelIndices(indices);
+    const QModelIndex clickedIdx = indexAt(event->pos());
+    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(clickedIdx));
 
     saveCurrentIndex();
 
-    // Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
     // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
+}
+
+QString WTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return {};
+    }
+    VERIFY_OR_DEBUG_ASSERT(model()) {
+        return {};
+    }
+    return model()->headerData(
+                          index.column(),
+                          Qt::Horizontal,
+                          TrackModel::kHeaderNameRole)
+            .toString();
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -1085,17 +1100,9 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             // We use the column of the current index (last focus cell), even
             // it may not be part of the selection, we just assume it's in the
             // desired column.
-            const auto currIdx = currentIndex();
-            if (currIdx.isValid()) {
-                const QString columnName = model()->headerData(
-                                                          currIdx.column(),
-                                                          Qt::Horizontal,
-                                                          TrackModel::kHeaderNameRole)
-                                                   .toString();
-                m_pTrackMenu->showDlgTrackInfo(columnName);
-            } else {
-                m_pTrackMenu->slotShowDlgTrackInfo();
-            }
+            const QString columnName = columnNameOfIndex(currentIndex());
+            m_pTrackMenu->setTrackPropertyName(columnName);
+            m_pTrackMenu->slotShowDlgTrackInfo();
         }
         return;
     }

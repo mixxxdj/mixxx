@@ -191,7 +191,8 @@ void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* pEvent) {
     }
     ensureTrackMenuIsCreated();
     m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-    m_pTrackMenu->showDlgTrackInfo(m_displayProperty);
+    m_pTrackMenu->setTrackPropertyName(m_displayProperty);
+    m_pTrackMenu->slotShowDlgTrackInfo();
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent* pEvent) {
@@ -208,6 +209,7 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent* pEvent) {
         ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Show the right-click menu
+        m_pTrackMenu->setTrackPropertyName(m_displayProperty);
         m_pTrackMenu->popup(pEvent->globalPos());
         // Unset the hover state manually (stuck state is probably a Qt bug)
         // TODO(ronso0) Test whether this is still required with Qt6
