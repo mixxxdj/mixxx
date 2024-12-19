@@ -69,6 +69,7 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_isScratching(false),
           m_inertiaEnabled(false),
           m_prevSamplePos(0),
+          m_seekSamplePos(std::numeric_limits<double>::quiet_NaN()),
           m_samplePosDeltaSum(0),
           m_scratchTargetDelta(0),
           m_scratchStartPos(0),
@@ -286,7 +287,14 @@ void PositionScratchController::process(double currentSamplePos,
         m_scratchStartPos = scratchPosition;
         // qDebug() << "scratchEnable()" << currentSamplePos;
     }
-    m_prevSamplePos = currentSamplePos;
+
+    // Check if we need to adopt a new position after seek.
+    double now = m_seekSamplePos.exchange(std::numeric_limits<double>::quiet_NaN());
+    if (util_isnan(now)) {
+        m_prevSamplePos = currentSamplePos;
+    } else {
+        m_prevSamplePos = now;
+    }
 }
 
 bool PositionScratchController::isEnabled() {
@@ -302,5 +310,5 @@ void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
     // Scratching continues after seek due to calculating the relative
     // distance traveled in m_samplePosDeltaSum
-    m_prevSamplePos = position.toEngineSamplePos();
+    m_seekSamplePos.exchange(position.toEngineSamplePos());
 }

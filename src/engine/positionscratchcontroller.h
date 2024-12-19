@@ -36,6 +36,7 @@ class PositionScratchController : public QObject {
     bool m_isScratching;
     bool m_inertiaEnabled;
     double m_prevSamplePos;
+    std::atomic<double> m_seekSamplePos;
     double m_samplePosDeltaSum;
     double m_scratchTargetDelta;
     double m_scratchStartPos;
