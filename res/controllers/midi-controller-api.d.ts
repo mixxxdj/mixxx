@@ -1,6 +1,10 @@
+type MidiInputHandler = (channel: number, control: number, value:number, status:number, group:string) => void;
+
 declare interface MidiInputHandlerController {
     disconnect(): boolean;
 }
+
+/** MidiControllerJSProxy */
 
 declare namespace midi {
 
