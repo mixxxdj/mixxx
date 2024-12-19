@@ -2546,6 +2546,8 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 [this]() {
                     if (m_pDlgTrackInfoMulti.get() == sender()) {
                         m_pDlgTrackInfoMulti.release()->deleteLater();
+                        // clear the track property name
+                        m_trackProperty.clear();
                     }
                 });
         QList<TrackPointer> tracks;
@@ -2555,6 +2557,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         }
         m_pDlgTrackInfoMulti->loadTracks(tracks);
         m_pDlgTrackInfoMulti->show();
+        m_pDlgTrackInfoMulti->focusField(m_trackProperty);
     } else {
         // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
         // Create a fresh dialog on invocation.
@@ -2567,6 +2570,8 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 [this]() {
                     if (m_pDlgTrackInfo.get() == sender()) {
                         m_pDlgTrackInfo.release()->deleteLater();
+                        // clear the track property name
+                        m_trackProperty.clear();
                     }
                 });
         // Method getFirstTrackPointer() is not applicable here!
@@ -2580,28 +2585,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
             m_pDlgTrackInfo->loadTrack(m_pTrack);
         }
         m_pDlgTrackInfo->show();
-    }
-}
-
-void WTrackMenu::showDlgTrackInfo(const QString& property) {
-    if (isEmpty()) {
-        return;
-    }
-    slotShowDlgTrackInfo();
-    if (m_pTrackModel && getTrackCount() > 1) {
-        VERIFY_OR_DEBUG_ASSERT(m_pDlgTrackInfoMulti) {
-            return;
-        }
-        if (m_pDlgTrackInfoMulti->isVisible()) {
-            m_pDlgTrackInfoMulti->focusField(property);
-        }
-    } else {
-        VERIFY_OR_DEBUG_ASSERT(m_pDlgTrackInfo) {
-            return;
-        }
-        if (m_pDlgTrackInfo->isVisible()) {
-            m_pDlgTrackInfo->focusField(property);
-        }
+        m_pDlgTrackInfo->focusField(m_trackProperty);
     }
 }
 
