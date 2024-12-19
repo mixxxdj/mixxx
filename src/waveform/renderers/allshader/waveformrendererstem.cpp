@@ -26,7 +26,6 @@ void WaveformRendererStem::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererStem::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;

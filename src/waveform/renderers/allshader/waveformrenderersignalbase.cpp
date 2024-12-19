@@ -1,8 +1,16 @@
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
-using namespace allshader;
+namespace allshader {
 
-allshader::WaveformRendererSignalBase::WaveformRendererSignalBase(
+WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidget)
         : ::WaveformRendererSignalBase(waveformWidget) {
 }
+
+void WaveformRendererSignalBase::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
+}
+
+} // namespace allshader
