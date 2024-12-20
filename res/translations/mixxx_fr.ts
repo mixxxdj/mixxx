@@ -840,7 +840,7 @@ trace : ci-dessus + messages de profilage</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="331"/>
         <source>Sets the maximum file size of the mixxx.log file in bytes. Use -1 for unlimited. The default is 100 MB as 1e5 or 100000000.</source>
-        <translation type="unfinished"/>
+        <translation>Définit la taille maximale du fichier mixxx.log en octets. Utilisez -1 pour illimité. La valeur par défaut est de 100 Mo sous la forme 1e5 ou 1 000 000 000.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="343"/>
@@ -7717,12 +7717,12 @@ L&apos;intensité sonore visée est approximatif et suppose que les gains d&apos
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="76"/>
         <source>1/3rd of waveform viewer</source>
-        <translation type="unfinished"/>
+        <translation>1/3 du visualiseur de forme d&apos;onde</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="77"/>
         <source>Full waveform viewer height</source>
-        <translation type="unfinished"/>
+        <translation>Hauteur du visualiseur de forme d&apos;onde complète</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="202"/>
@@ -7895,12 +7895,12 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="496"/>
         <source>Preferred font size</source>
-        <translation type="unfinished"/>
+        <translation>Taille de police préférée</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="509"/>
         <source>Text height limit</source>
-        <translation type="unfinished"/>
+        <translation>Limite de hauteur du texte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="522"/>
@@ -15812,12 +15812,12 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="201"/>
         <source>Adjust BPM</source>
-        <translation>Ajuster le BPM</translation>
+        <translation>BPM ajustements</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="206"/>
         <source>Select Color</source>
-        <translation>Sélectionner la couleur</translation>
+        <translation>Couleur sélection</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="217"/>
