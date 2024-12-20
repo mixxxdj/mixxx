@@ -212,10 +212,9 @@ DJCi300.updateBeatmatchAlignLED = function(value, _group, _control) {
     // very different beat values and still be almost aligned. So we must adjust for this
     if (Math.abs(deck1Align - deck2Align) > .5) {
         // Add 1 to the smaller number to compensate for roll over
-        // If they are the same, do not add anything
         if (deck1Align < deck2Align) {
             deck1Align += 1;
-        } else if (deck1Align > deck2Align) {
+        } else {
             deck2Align += 1;
         }
     }
