@@ -22,7 +22,10 @@
   [#13273](https://github.com/mixxxdj/mixxx/pull/13273)
 * Maintain GL ES support
   [#13485](https://github.com/mixxxdj/mixxx/pull/13485)
-* Update overview immediately, when the normalize option or global gain changed [#13634](https://github.com/mixxxdj/mixxx/pull/13634)
+* Overview: Update immediately, when the normalize option or global gain changed
+  [#13634](https://github.com/mixxxdj/mixxx/pull/13634)
+* Overview: Clear pickup position display when opening cue menu
+  [#13693](https://github.com/mixxxdj/mixxx/pull/13693)
 
 ### Skins / Interface
 
@@ -76,6 +79,8 @@
 * Logging: Limit mixxx.log size to 100 MB or via --log-max-file-size
   [#13684](https://github.com/mixxxdj/mixxx/pull/13684)
   [#13660](https://github.com/mixxxdj/mixxx/issues/13660)
+* Adjust some skin controls, to allow point-and-click mapping
+  [#13906](https://github.com/mixxxdj/mixxx/pull/13906)
 
 ### Engine
 
@@ -102,7 +107,6 @@
   [#13041](https://github.com/mixxxdj/mixxx/pull/13041)
   [#13038](https://github.com/mixxxdj/mixxx/issues/13038)
   [#13199](https://github.com/mixxxdj/mixxx/pull/13199)
-* Fix seeking (e.g. to hotcue) while scratching with the waveform [#14024](https://github.com/mixxxdj/mixxx/pull/14024)
 * Recording: Fix bogus timestamp in CUE sheet after restarting a recording
   [#13966](https://github.com/mixxxdj/mixxx/pull/13966)
   [#13964](https://github.com/mixxxdj/mixxx/issues/13964)
@@ -128,7 +132,7 @@
   [#13361](https://github.com/mixxxdj/mixxx/issues/13361)
   [#13364](https://github.com/mixxxdj/mixxx/pull/13364)
   [#13958](https://github.com/mixxxdj/mixxx/pull/13958)
-  [#13958](https://github.com/mixxxdj/mixxx/issues/13100)
+  [#13100](https://github.com/mixxxdj/mixxx/issues/13100)
 * Track menu: Rephrase "Reset" to "Clear" [#12955](https://github.com/mixxxdj/mixxx/pull/12955)
 * Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
   [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
@@ -153,6 +157,9 @@
   [#13609](https://github.com/mixxxdj/mixxx/pull/13609)
   [#13597](https://github.com/mixxxdj/mixxx/issues/13597)
   [#13631](https://github.com/mixxxdj/mixxx/pull/13631)
+* Track property editor: focus the editing field in the track properties that corresponds to the focused column
+  [#13841](https://github.com/mixxxdj/mixxx/pull/13841)
+  [#14036](https://github.com/mixxxdj/mixxx/pull/14036)
 * Computer feature: add sidebar action "Refresh directory tree" [#12908](https://github.com/mixxxdj/mixxx/pull/12908)
 * Library: Add feedback to directory operations (add, remove, relink)
   [#12436](https://github.com/mixxxdj/mixxx/pull/12436)
@@ -207,6 +214,8 @@
   [#12740](https://github.com/mixxxdj/mixxx/issues/12740)
 * MIDI Input editor: allow selecting multiple Options [#12348](https://github.com/mixxxdj/mixxx/pull/12348)
 * Apply changes only after pressing Apply in color preferences [#13302](https://github.com/mixxxdj/mixxx/pull/13302)
+* Add/reorder tabstops in Library and Waveform preferences
+  [#13846](https://github.com/mixxxdj/mixxx/pull/13846)
 
 ### Controller Mappings
 
@@ -303,6 +312,11 @@
 * Skins: Fix Deere icons with 150% Scaling
   [#14013](https://github.com/mixxxdj/mixxx/pull/14013)
   [#13959](https://github.com/mixxxdj/mixxx/issues/13959)
+* Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
+  [#14034](https://github.com/mixxxdj/mixxx/pull/14034)
+  [#12972](https://github.com/mixxxdj/mixxx/issues/12972)
+* Skins: Center rate range labels
+  [#14035](https://github.com/mixxxdj/mixxx/pull/14035)
 * Introduce wrapper for non const iterators for erase and insert
   [#12201](https://github.com/mixxxdj/mixxx/pull/12201)
   [#13856](https://github.com/mixxxdj/mixxx/pull/13856)
@@ -448,7 +462,6 @@
   [#13873](https://github.com/mixxxdj/mixxx/pull/13873)
   [#13875](https://github.com/mixxxdj/mixxx/pull/13875)
   [#13898](https://github.com/mixxxdj/mixxx/pull/13898)
-  [#13899](https://github.com/mixxxdj/mixxx/pull/13899)
   [#13899](https://github.com/mixxxdj/mixxx/pull/13899)
   [#13870](https://github.com/mixxxdj/mixxx/issues/13870)
 * Update to latest vcpkg dependencies

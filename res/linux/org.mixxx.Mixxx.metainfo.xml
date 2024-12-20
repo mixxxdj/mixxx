@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-12-18" timestamp="1734502618">
+    <release version="2.5.0" type="development" date="2024-12-18" timestamp="1734505815">
       <description>
  <p>
   Waveforms
@@ -133,8 +133,12 @@
    #13485
   </li>
   <li>
-   Update overview immediately, when the normalize option or global gain changed
+   Overview: Update immediately, when the normalize option or global gain changed
    #13634
+  </li>
+  <li>
+   Overview: Clear pickup position display when opening cue menu
+   #13693
   </li>
  </ul>
  <p>
@@ -258,6 +262,10 @@
    #13684
    #13660
   </li>
+  <li>
+   Adjust some skin controls, to allow point-and-click mapping
+   #13906
+  </li>
  </ul>
  <p>
   Engine
@@ -312,10 +320,6 @@
    #13199
   </li>
   <li>
-   Fix seeking (e.g. to hotcue) while scratching with the waveform
-   #14024
-  </li>
-  <li>
    Recording: Fix bogus timestamp in CUE sheet after restarting a recording
    #13966
    #13964
@@ -359,7 +363,7 @@
    #13361
    #13364
    #13958
-   #13958
+   #13100
   </li>
   <li>
    Track menu: Rephrase "Reset" to "Clear"
@@ -402,6 +406,11 @@
    #13609
    #13597
    #13631
+  </li>
+  <li>
+   Track property editor: focus the editing field in the track properties that corresponds to the focused column
+   #13841
+   #14036
   </li>
   <li>
    Computer feature: add sidebar action "Refresh directory tree"
@@ -523,6 +532,10 @@
   <li>
    Apply changes only after pressing Apply in color preferences
    #13302
+  </li>
+  <li>
+   Add/reorder tabstops in Library and Waveform preferences
+   #13846
   </li>
  </ul>
  <p>
@@ -798,6 +811,15 @@
    Skins: Fix Deere icons with 150% Scaling
    #14013
    #13959
+  </li>
+  <li>
+   Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
+   #14034
+   #12972
+  </li>
+  <li>
+   Skins: Center rate range labels
+   #14035
   </li>
   <li>
    Introduce wrapper for non const iterators for erase and insert
@@ -1319,7 +1341,6 @@
    #13873
    #13875
    #13898
-   #13899
    #13899
    #13870
   </li>
