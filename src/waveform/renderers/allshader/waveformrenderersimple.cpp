@@ -18,7 +18,6 @@ void WaveformRendererSimple::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererSimple::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
