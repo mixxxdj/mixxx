@@ -119,7 +119,6 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pEffectsManager.reset();
         m_pTrackCollectionManager.reset();
         m_pControlIndicatorTimer.reset();
-        CoverArtCache::destroy();
     }
 
   protected:
