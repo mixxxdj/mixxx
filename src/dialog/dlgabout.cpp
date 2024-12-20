@@ -124,7 +124,8 @@ DlgAbout::DlgAbout()
             << "FrankwaP"
             << "Markus Kohlhase"
             << "Daniel Fernandes"
-            << "Frank Grimy";
+            << "Frank Grimy"
+            << "Al Hadebe";
 
     QStringList specialThanks;
     specialThanks
@@ -372,7 +373,6 @@ DlgAbout::DlgAbout()
             << "David Baker"
             << "Justin Kourie"
             << "Waylon Robertson"
-            << "Al Hadebe"
             << "Ball&oacute; Gy&ouml;rgy"
             << "Pino Toscano"
             << "Alexander Horner"
