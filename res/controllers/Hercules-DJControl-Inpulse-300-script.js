@@ -39,6 +39,10 @@
 // * SLICER: Currently resource intensive because it's connected to beat_distance (which is always updated).
 //           Is there a better way?
 //
+// * BEATMATCH: Also resource intensive because it's connected to beat_distance. We could optimize a bit by
+//              disconnecting functions when the beatmatch guide is disabled (currently the functions are
+//              always connected, but the LEDs are turned off by hardware controls)
+//
 // ****************************************************************************
 var DJCi300 = {};
 ///////////////////////////////////////////////////////////////
@@ -115,38 +119,6 @@ DJCi300.init = function() {
         "[Channel2]": DJCi300.padModeNone
     };
 
-    // Slicer variables
-    // Slicer storage (stores slicer button positions)
-    DJCi300.slicerPoints = {
-        "[Channel1]": [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-        "[Channel2]": [-1, -1, -1, -1, -1, -1, -1, -1, -1]
-    };
-    // Slicer buttons (stores whether or not slicer button is pressed)
-    DJCi300.slicerButtonEnabled = {
-        "[Channel1]": [false, false, false, false, false, false, false, false],
-        "[Channel2]": [false, false, false, false, false, false, false, false]
-    };
-    // Slicer beat (stores what beat slicer is on)
-    DJCi300.slicerBeat = {
-        "[Channel1]": 0,
-        "[Channel2]": 0
-    };
-
-    // Slicer connections
-    DJCi300.slicerConnections = {
-        size: [undefined, undefined], // Connected to beatloop_size
-        beat: [undefined, undefined], // Connected to beat_distance
-        load: [undefined, undefined], // Connected to LoadSelectedTrack
-    }
-
-    // Loop variables
-    // loopMode is true if the current loop is created by the "Loop In" button
-    // and false if it is created by the slicer buttons
-    DJCi300.loopMode = {
-        "[Channel1]": false,
-        "[Channel2]": false
-    };
-
     // Turn On Vinyl buttons LED(one for each deck).
     midi.sendShortMsg(0x91, 0x03, 0x7F);
     midi.sendShortMsg(0x92, 0x03, 0x7F);
@@ -187,16 +159,20 @@ DJCi300.init = function() {
     // Only connect one channel to updateBeatmatchAlignLED because beatmatch LEDs are only enabled when both decks are playing
     engine.makeConnection("[Channel1]", "beat_distance", DJCi300.updateBeatmatchAlignLED);
 
-    // Define slicer connections by connecting them
-    DJCi300.connectSlicerFunctions("[Channel1]");
-    DJCi300.connectSlicerFunctions("[Channel2]");
-    // Then disconnect them since we're not in slicer mode (yet)
-    DJCi300.disconnectSlicerFunctions("[Channel1]");
-    DJCi300.disconnectSlicerFunctions("[Channel2]");
-
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
+
+    DJCi300.deck = [];
+    for (let i = 0; i < 2; i++) {
+        DJCi300.deck[i] = new DJCi300.Deck(i + 1);
+        DJCi300.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
+        // For some reason, the slicer callback functions start out connected
+        // This is a dirty hack to ensure they start disconnected
+        DJCi300.deck[i].slicerPad.forEachComponent(function(component) {
+            component.disconnect();
+        })
+    }
 };
 
 // Update beatmatch tempo LEDs
@@ -370,37 +346,43 @@ DJCi300._samplesPerBeat = function(group) {
     return samplesPerBeat;
 };
 
+// Helper function that returns a deck object from a group
+DJCi300._deckObjectFromGroup = function(group) {
+    return DJCi300.deck[script.deckFromGroup(group) - 1];
+}
+
 // Mode buttons
 DJCi300.changeMode = function(_channel, control, value, _status, group) {
     const oldPadMode = DJCi300.padMode[group];
     DJCi300.padMode[group] = control;
+    deckObject = DJCi300._deckObjectFromGroup(group);
 
-    // Connect slicer functions when entering slicer or slicerloop mode
-    if ((DJCi300.padMode[group] === DJCi300.padModeSlicer) ||
-        (DJCi300.padMode[group] === DJCi300.padModeSlicerloop)) {
-
-        if (value) {
-            // Initialize slicer if it is not already initialized
-            if (DJCi300.slicerPoints[group][0] === -1) {
-                DJCi300.slicerInit(group, engine.getValue(group, "beat_closest"));
-                DJCi300.connectSlicerFunctions(group);
-                // Turn off loop mode
-                DJCi300.loopMode[group] = false;
-            // If slicer is already initialized, clear it
+    if (value) {
+        // Connect slicer when entering slicer or slicerloop mode
+        if ((DJCi300.padMode[group] === DJCi300.padModeSlicer) ||
+            (DJCi300.padMode[group] === DJCi300.padModeSlicerloop)) {
+    
+            // If slicer connections are not present, connect them. Otherwise, disconnect them
+            if (deckObject.slicerPad.beatConnection == undefined ||
+                deckObject.slicerPad.beatConnection.isConnected == false) {
+                
+                deckObject.slicerPad.forEachComponent(function(component) {
+                    component.connect(engine.getValue(group, "beat_closest"));
+                })
             } else {
-                DJCi300.slicerClear(group);
-                DJCi300.disconnectSlicerFunctions(group);
-                DJCi300.updateSlicerLED(group);
-            }
-        }
-    // When switching from slicer/slicer loop mode into the other modes, disconnect slicer functions
-    } else if ((oldPadMode === DJCi300.padModeSlicer) ||
-        (oldPadMode === DJCi300.padModeSlicerloop)) {
+                deckObject.slicerPad.forEachComponent(function(component) {
+                    component.disconnect();
+                })
+            };
 
-        // In loop mode, only clear slicer points (preserve the loop)
-        DJCi300.slicerClear(group);
-        DJCi300.disconnectSlicerFunctions(group);
-        DJCi300.updateSlicerLED(group);
+        // When switching from slicer/slicer loop mode into the other modes, disconnect slicer functions
+        } else if ((oldPadMode === DJCi300.padModeSlicer) ||
+            (oldPadMode === DJCi300.padModeSlicerloop)) {
+            
+            deckObject.slicerPad.forEachComponent(function(component) {
+                component.disconnect();
+            });
+        }
     }
 };
 
@@ -465,177 +447,15 @@ DJCi300.updateToneplayLED = function(value, group, _control) {
     midi.sendShortMsg(status, control + 8, 0x7F);
 };
 
-// Functions that connect and disconnect slicer functions to Mixxx callbacks, respectively
-DJCi300.connectSlicerFunctions = function(group) {
-    const index = script.deckFromGroup(group) - 1;
-    DJCi300.slicerConnections.size[index] = engine.makeConnection(group, "beatloop_size", DJCi300.slicerChangeSize);
-    DJCi300.slicerConnections.load[index] = engine.makeConnection(group, "LoadSelectedTrack", DJCi300.slicerLoadTrack);
-    DJCi300.slicerConnections.beat[index] = engine.makeConnection(group, "beat_distance", DJCi300.slicerCountBeat);
-};
-
-DJCi300.disconnectSlicerFunctions = function(group) {
-    const index = script.deckFromGroup(group) - 1;
-    if (DJCi300.slicerConnections.size[index].isConnected) { DJCi300.slicerConnections.size[index].disconnect(); }
-    if (DJCi300.slicerConnections.load[index].isConnected) { DJCi300.slicerConnections.load[index].disconnect(); }
-    if (DJCi300.slicerConnections.beat[index].isConnected) { DJCi300.slicerConnections.beat[index].disconnect(); }
-};
-
-// This function is called every time we enter slicer mode
-// It creates a loop to illustrate the active slicer section, and it
-// also calculates the 8 slicer points and stores them in an array
-// The startPos is the starting position of the loop (in samples)
-DJCi300.slicerInit = function(group, startPos) {
-    const samplesBetweenPts = DJCi300._samplesPerBeat(group) * engine.getValue(group, "beatloop_size") / 8;
-    for (let i = 0; i <= 8; i++) {
-        DJCi300.slicerPoints[group][i] = startPos + (samplesBetweenPts * i);
-    }
-
-    // Disable the old loop (if it exists)
-    if (engine.getValue(group, "loop_enabled") === 1) {
-        engine.setValue(group, "reloop_toggle", 1);
-    }
-    // Set a new loop at startPos
-    engine.setValue(group, "loop_start_position", DJCi300.slicerPoints[group][0]);
-    engine.setValue(group, "loop_end_position", DJCi300.slicerPoints[group][8]);
-
-    // Enable the loop if in slicer loop mode (and if loop is currently disabled)
-    if (DJCi300.padMode[group] === DJCi300.padModeSlicerloop) {
-        if (engine.getValue(group, "loop_enabled") === 0) {
-            engine.setValue(group, "reloop_toggle", 1);
-        }
-    // If in normal slicer mode, disable the loop (and if it is currently enabled)
-    } else {
-        if (engine.getValue(group, "loop_enabled") === 1) {
-            engine.setValue(group, "reloop_toggle", 1);
-        }
-    }
-};
-
-// This function clears all set slicer points and loop points
-DJCi300.slicerClear = function(group) {
-    // Clear slicer points
-    for (let i = 0; i <= 8; i++) {
-        DJCi300.slicerPoints[group][i] = -1;
-    }
-    // Remove all loop points
-    engine.setValue(group, "loop_start_position", -1);
-    engine.setValue(group, "loop_end_position", -1);
-};
-
-// This function calls slicerClear when a new track is loaded
-DJCi300.slicerLoadTrack = function(_value, group, _control) {
-    DJCi300.disconnectSlicerFunctions(group);
-    DJCi300.slicerClear(group);
-    DJCi300.updateSlicerLED(group);
-};
-
-// This function calls slicerInit when the length of the slicer section is adjusted
-DJCi300.slicerChangeSize = function(_value, group, _control) {
-    DJCi300.slicerInit(group, DJCi300.slicerPoints[group][0]);
-};
-
-// This function counts the beat that the slicer is on
-// This is useful for moving the loop forward or lighting the LEDs
-DJCi300.slicerCountBeat = function(_value, group, _control) {
-    // Calculate current position in samples
-    const currentPos = engine.getValue(group, "track_samples") * engine.getValue(group, "playposition");
-
-    // Calculate beat
-    DJCi300.slicerBeat[group] = -1;
-    for (let i = 0; i <= 8; i++) {
-        DJCi300.slicerBeat[group] = (currentPos >= DJCi300.slicerPoints[group][i]) ?
-            (DJCi300.slicerBeat[group] + 1) : DJCi300.slicerBeat[group];
-    }
-
-    // If in slicer mode (not slicer loop mode), check to see if the slicer section needs to be moved
-    if (DJCi300.padMode[group] === DJCi300.padModeSlicer) {
-
-        // If slicerBeat is 8, move the slicer section forward
-        if (DJCi300.slicerBeat[group] > 7) {
-            DJCi300.slicerInit(group, DJCi300.slicerPoints[group][8]);
-        }
-    }
-
-    DJCi300.updateSlicerLED(group);
-};
-
-// Slicer pad buttons
-DJCi300.slicerButton = function(_channel, control, value, _status, group) {
-    const button = control % 0x20;
-
-    // Update array. 1 for on, 0 for off
-    if (value) {
-        DJCi300.slicerButtonEnabled[group][button] = true;
-    } else {
-        DJCi300.slicerButtonEnabled[group][button] = false;
-    }
-
-    const start = DJCi300.slicerButtonEnabled[group].indexOf(true);
-    const end = DJCi300.slicerButtonEnabled[group].lastIndexOf(true) + 1;
-
-    // If the slicer points are uninitialized, then do nothing. Otherwise:
-    if (DJCi300.slicerPoints[group][0] !== -1) {
-        // If at least one button is pressed, create a loop between those points
-        if (start !== -1) {
-            engine.setValue(group, "loop_start_position", DJCi300.slicerPoints[group][start]);
-            engine.setValue(group, "loop_end_position", DJCi300.slicerPoints[group][end]);
-            engine.setValue(group, "loop_in_goto", 1);
-            // Enable a loop if it doesn't already exist
-            if (engine.getValue(group, "loop_enabled") === 0) {
-                engine.setValue(group, "reloop_toggle", 1);
-            }
-        // Otherwise, reset the loop (make it 4 beats again, or however long the spinbox is)
-        } else {
-            engine.setValue(group, "loop_start_position", DJCi300.slicerPoints[group][0]);
-            engine.setValue(group, "loop_end_position", DJCi300.slicerPoints[group][8]);
-
-            // Disable the loop (unless we're in slicer loop mode)
-            if (DJCi300.padMode[group] !== DJCi300.padModeSlicerloop) {
-                engine.setValue(group, "reloop_toggle", 1);
-            }
-        }
-
-        DJCi300.updateSlicerLED(group);
-    }
-};
-
-// Slicer LED update
-DJCi300.updateSlicerLED = function(group) {
-    const control = (DJCi300.padMode[group] === DJCi300.padModeSlicer) ? 0x20 : 0x60;
-    const status = (group === "[Channel1]") ? 0x96 : 0x97;
-
-    const start = DJCi300.slicerButtonEnabled[group].indexOf(true);
-    const end = DJCi300.slicerButtonEnabled[group].lastIndexOf(true) + 1;
-
-    // Turn off all LEDs
-    for (let i = 0; i < 8; i++) {
-        midi.sendShortMsg(status, control + i, 0x00);
-    }
-    // If the slicer points are uninitialized, then do nothing. Otherwise:
-    if (DJCi300.slicerPoints[group][0] !== -1) {
-        // If at least 1 button is held down, light that up
-        // Or in the case of 2+ buttons, light up everything between the outer 2 buttons
-        if (start !== -1) {
-            for (let i = start; i < end; i++) {
-                midi.sendShortMsg(status, control + i, 0x7F);
-            }
-        // Otherwise, light up the LED corresponding to the beat
-        } else {
-            midi.sendShortMsg(status, control + Math.min(DJCi300.slicerBeat[group], 7), 0x7F);
-        }
-    }
-};
-
 // Loop in button
 DJCi300.loopInButton = function(_channel, _control, value, _status, group) {
+    deckObject = DJCi300._deckObjectFromGroup(group);
+
     if (value) {
         // Override the active slicer if it exists
-        DJCi300.slicerClear(group);
-        DJCi300.disconnectSlicerFunctions(group);
-        DJCi300.updateSlicerLED(group);
-
-        // Turn on loop mode
-        DJCi300.loopMode[group] = true;
+        deckObject.slicerPad.forEachComponent(function(component) {
+            component.disconnect();
+        });
 
         // Create a 4 beat loop
         engine.setValue(group, "beatloop_4_activate", 1);
@@ -644,19 +464,186 @@ DJCi300.loopInButton = function(_channel, _control, value, _status, group) {
 
 // Loop out button
 DJCi300.loopOutButton = function(_channel, _control, value, _status, group) {
+    deckObject = DJCi300._deckObjectFromGroup(group);
+    
     if (value) {
         // Override the active slicer if it exists
-        DJCi300.slicerClear(group);
-        DJCi300.disconnectSlicerFunctions(group);
-        DJCi300.updateSlicerLED(group);
-
-        // Turn off loop mode
-        DJCi300.loopMode[group] = false;
+        deckObject.slicerPad.forEachComponent(function(component) {
+            component.disconnect();
+        });
 
         // Disable the current loop if it exists
         if (engine.getValue(group, "loop_enabled") === 1) { engine.setValue(group, "reloop_toggle", 1); }
     }
 };
+
+DJCi300.Deck = function(deckNumber) {
+    components.Deck.call(this, deckNumber);
+
+    // Slicer/slicer loop pad buttons
+    this.slicerPad = new components.ComponentContainer();
+    // It's easier to keep track of which buttons are pressed as an array instead of having a property for each button
+    this.slicerPad.pressed = [false, false, false, false, false, false, false, false]
+    // For slicer/slicer loop pads
+    for (const midiOffset of [0x20, 0x60]) { 
+        for (let i = 0; i < 8; i++) {
+            this.slicerPad[i] = new components.Button({
+                midi: [0x95 + deckNumber, midiOffset + i],
+                connect: function(startPos) {
+                    const group = this.currentDeck;
+                    const samplesBetweenSlices = DJCi300._samplesPerBeat(group) * engine.getValue(group, "beatloop_size") / 8;
+                    // Calculate the start and end points (in samples) for each slice
+                    this.slicerPad[i].startSample = (i == 0) ? startPos : this.slicerPad[i-1].endSample;
+                    this.slicerPad[i].endSample = this.slicerPad[i].startSample + samplesBetweenSlices;
+                    // Everything in the if-statement only needs to be done once (and not 8 times)
+                    // when connected, which is why it is only executed when i == 7 
+                    if (i == 7) {
+                        // Connect callback functions if they are not connected already
+                        if (this.slicerPad.beatConnection == undefined || this.slicerPad.beatConnection.isConnected == false) {
+                            this.slicerPad.beatConnection = engine.makeConnection(group, "beat_distance", this.slicerCountBeat);
+                            // This connection will reinitialize Slicer when the beatloop size spinbox changes
+                            this.slicerPad.sizeConnection = engine.makeConnection(group, "beatloop_size", function() {
+                                const nextStartPos = this.slicerPad[0].startSample;
+                                this.slicerPad.forEachComponent(function(component) {
+                                    component.disconnect();
+                                    component.connect(nextStartPos);
+                                });
+                            }.bind(this));
+                            // This connection will remove Slicer when a new track is loaded
+                            this.slicerPad.loadConnection = engine.makeConnection(group, "LoadSelectedTrack", function() {
+                                this.slicerPad.forEachComponent(function(component) {
+                                    component.disconnect();
+                                });
+                            }.bind(this));
+                        }
+                        // Set loop position indicators to the start and end of the Slicer section as visual feedback
+                        engine.setValue(group, "loop_start_position", this.slicerPad[0].startSample);
+                        engine.setValue(group, "loop_end_position", this.slicerPad[7].endSample);
+                        if (DJCi300.padMode[group] == DJCi300.padModeSlicer) {
+                            engine.setValue(group, "loop_enabled", 0);
+                        } else {
+                            engine.setValue(group, "loop_enabled", 1);
+                        }
+                    };
+                }.bind(this),
+                disconnect: function() {
+                    // Set start and end points of each slice to placeholder value
+                    this.slicerPad[i].startSample = -1;
+                    this.slicerPad[i].endSample = -1;
+                    // Much like before, everything in the if-statement only needs to be done once (not 8 times) 
+                    if (i == 0) {
+                        const group = this.currentDeck;
+                        // Disconnect callback functions if they are connected
+                        if (this.slicerPad.beatConnection !== undefined && this.slicerPad.beatConnection.isConnected == true) {
+                            this.slicerPad.beatConnection.disconnect();
+                            this.slicerPad.sizeConnection.disconnect();
+                            this.slicerPad.loadConnection.disconnect();
+                            this.slicerPad.beat = -1;
+                        }
+                        // Make loop position indicators disappear as visual feedback
+                        engine.setValue(group, "loop_start_position", -1);
+                        engine.setValue(group, "loop_end_position", -1)
+                        this.slicerUpdateLED(group);
+                    }
+                }.bind(this),
+                input: function(_channel, control, value, _status, group) {
+                    const button = control % 0x20;
+
+                    // Update array. 1 for on, 0 for off
+                    if (value) {
+                        this.slicerPad.pressed[button] = true;
+                    } else {
+                        this.slicerPad.pressed[button] = false;
+                    }
+
+                    const startPad = this.slicerPad.pressed.indexOf(true);
+                    const endPad = this.slicerPad.pressed.lastIndexOf(true);
+
+                    // If the slicer points are uninitialized, then do nothing. Otherwise:
+                    if (this.slicerPad[0].startSample !== -1) {
+                        // If at least one button is pressed, create a loop between those points
+                        if (startPad !== -1) {
+                            engine.setValue(group, "loop_start_position", this.slicerPad[startPad].startSample);
+                            engine.setValue(group, "loop_end_position", this.slicerPad[endPad].endSample);
+                            engine.setValue(group, "loop_in_goto", 1);
+                            // Enable a loop if it doesn't already exist
+                            if (engine.getValue(group, "loop_enabled") === 0) {
+                                engine.setValue(group, "reloop_toggle", 1);
+                            }
+                        // If no buttons are pressed, reset the loop
+                        } else {
+                            engine.setValue(group, "loop_start_position", this.slicerPad[0].startSample);
+                            engine.setValue(group, "loop_end_position", this.slicerPad[7].endSample);
+                
+                            // Disable the loop (if we're not in slicer loop mode)
+                            if (DJCi300.padMode[group] === DJCi300.padModeSlicer) {
+                                engine.setValue(group, "reloop_toggle", 1);
+                            }
+                        }
+                        this.slicerUpdateLED(group);
+                    }
+                }.bind(this),
+            })
+        }
+    }
+    // This function will count beats and move the Slicer section forward when needed
+    // It also lights up LEDs corresponding to the beat
+    this.slicerCountBeat = function(_value, group, _control) {
+        // Calculate current position in samples
+        const currentPos = engine.getValue(group, "track_samples") * engine.getValue(group, "playposition");
+        // Calculate beat
+        let beat = 0;
+        for (let i = 0; i < 8; i++) {
+            beat = (currentPos >= this.slicerPad[i].endSample) ? (beat + 1) : beat;
+        }
+    
+        // If the beat count has changed, update the object property's value
+        if (this.slicerPad.beat != beat) {
+            this.slicerPad.beat = beat;
+            // Only send an LED update if no pads are currently held down (pressed pad LEDs are handled above)
+            if (!this.slicerPad.pressed.includes(true)) { this.slicerUpdateLED(group); }
+        };
+
+        // If in slicer mode (not slicer loop mode), check to see if the slicer section needs to be moved
+        if (DJCi300.padMode[group] === DJCi300.padModeSlicer) {
+    
+            // If slicerBeat is 8, move the slicer section forward
+            if (beat > 7) {
+                const nextStartPos = this.slicerPad[7].endSample;
+                this.slicerPad.forEachComponent(function(component) {
+                    component.disconnect();
+                    component.connect(nextStartPos);
+                });
+            }
+        }
+    }.bind(this);
+    this.slicerUpdateLED = function(group) {
+        const offset = (DJCi300.padMode[group] === DJCi300.padModeSlicer) ? 0x20 : 0x60;
+        const status = (group === "[Channel1]") ? 0x96 : 0x97;
+    
+        const startPad = this.slicerPad.pressed.indexOf(true);
+        const endPad = this.slicerPad.pressed.lastIndexOf(true);
+    
+        // Turn off all LEDs
+        for (let i = 0; i < 8; i++) {
+            midi.sendShortMsg(status, offset + i, 0x00);
+        }
+        // If the slicer points are uninitialized, then do nothing. Otherwise:
+        if (this.slicerPad[0].startSample !== -1) {
+            // If at least 1 button is held down, light that up
+            // Or in the case of 2+ buttons, light up everything between the outer 2 buttons
+            if (startPad !== -1) {
+                for (let i = startPad; i <= endPad; i++) {
+                    midi.sendShortMsg(status, offset + i, 0x7F);
+                }
+            // Otherwise, light up the LED corresponding to the beat
+            } else {
+                midi.sendShortMsg(status, offset + Math.min(this.slicerPad.beat, 7), 0x7F);
+            }
+        }
+    };
+}
+DJCi300.Deck.prototype = new components.Deck();
 
 DJCi300.shutdown = function() {
     midi.sendShortMsg(0xB0, 0x7F, 0x00);
