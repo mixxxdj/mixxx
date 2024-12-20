@@ -212,7 +212,8 @@ bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
               << pEvent->type()
               << "for object";
         if (pEvent->type() == QEvent::DeferredDelete ||
-                pEvent->type() == QEvent::ChildRemoved) {
+                pEvent->type() == QEvent::ChildRemoved ||
+                pEvent->type() == QEvent::Timer) {
             // pTarget can be already dangling in case of DeferredDelete
             debug << static_cast<void*>(pTarget); // will print dangling address
         } else {

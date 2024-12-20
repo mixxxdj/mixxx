@@ -114,10 +114,10 @@ void DlgPrefKey::loadSettings() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    QString notation_name = m_keySettings.getKeyNotation();
-    KeyUtils::KeyNotation notation_type;
+    KeyUtils::KeyNotation notation_type =
+            KeyUtils::keyNotationFromString(m_keySettings.getKeyNotation());
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
-    if (notation_name == KEY_NOTATION_CUSTOM) {
+    if (notation_type == KeyUtils::KeyNotation::Custom) {
         radioNotationCustom->setChecked(true);
         // Read the custom notation from the config and store it in a temp QMap
         for (auto it = m_keyLineEdits.constBegin();
@@ -125,20 +125,15 @@ void DlgPrefKey::loadSettings() {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
             notation[it.key()] = it.value()->text();
         }
-        notation_type = KeyUtils::KeyNotation::Custom;
     } else {
-        if (notation_name == KEY_NOTATION_LANCELOT) {
+        if (notation_type == KeyUtils::KeyNotation::Lancelot) {
             radioNotationLancelot->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::Lancelot;
-        } else if (notation_name == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::LancelotAndTraditional) {
             radioNotationLancelotAndTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::LancelotAndTraditional;
-        } else if (notation_name == KEY_NOTATION_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::Traditional) {
             radioNotationTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::Traditional;
-        } else if (notation_name == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::OpenKeyAndTraditional) {
             radioNotationOpenKeyAndTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::OpenKeyAndTraditional;
         } else { // KEY_NOTATION_OPEN_KEY and unknown names
             radioNotationOpenKey->setChecked(true);
             notation_type = KeyUtils::KeyNotation::OpenKey;
