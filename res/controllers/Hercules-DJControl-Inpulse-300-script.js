@@ -136,7 +136,7 @@ DJCi300.init = function() {
     engine.makeConnection("[Main]", "vu_meter_left", DJCi300.vuMeterUpdateMain);
     engine.makeConnection("[Main]", "vu_meter_right", DJCi300.vuMeterUpdateMain);
 
-    for (const group of ["[Channel1]","[Channel2]"]) {
+    for (const group of ["[Channel1]", "[Channel2]"]) {
         // Connect left and right VUMeters
         engine.makeConnection(group, "vu_meter", DJCi300.vuMeterUpdateDeck);
 
@@ -166,12 +166,12 @@ DJCi300.init = function() {
     DJCi300.deck = [];
     for (let i = 0; i < 2; i++) {
         DJCi300.deck[i] = new DJCi300.Deck(i + 1);
-        DJCi300.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
+        DJCi300.deck[i].setCurrentDeck(`[Channel${  i + 1  }]`);
         // For some reason, the slicer callback functions start out connected
         // This is a dirty hack to ensure they start disconnected
         DJCi300.deck[i].slicerPad.forEachComponent(function(component) {
             component.disconnect();
-        })
+        });
     }
 };
 
@@ -322,7 +322,7 @@ DJCi300.jogWheel = function(_channel, _control, value, _status, group) {
     const deck = script.deckFromGroup(group);
 
     var interval = DJCi300._convertWheelRotation(value);
-    var scratchAction = DJCi300.scratchAction[group];
+    const scratchAction = DJCi300.scratchAction[group];
     if (scratchAction === DJCi300.kScratchActionScratch) {
         engine.scratchTick(deck, interval * DJCi300.scratchScale);
     } else if (scratchAction === DJCi300.kScratchActionSeek) {
@@ -349,7 +349,7 @@ DJCi300._samplesPerBeat = function(group) {
 // Helper function that returns a deck object from a group
 DJCi300._deckObjectFromGroup = function(group) {
     return DJCi300.deck[script.deckFromGroup(group) - 1];
-}
+};
 
 // Mode buttons
 DJCi300.changeMode = function(_channel, control, value, _status, group) {
@@ -361,24 +361,24 @@ DJCi300.changeMode = function(_channel, control, value, _status, group) {
         // Connect slicer when entering slicer or slicerloop mode
         if ((DJCi300.padMode[group] === DJCi300.padModeSlicer) ||
             (DJCi300.padMode[group] === DJCi300.padModeSlicerloop)) {
-    
+
             // If slicer connections are not present, connect them. Otherwise, disconnect them
             if (deckObject.slicerPad.beatConnection == undefined ||
                 deckObject.slicerPad.beatConnection.isConnected == false) {
-                
+
                 deckObject.slicerPad.forEachComponent(function(component) {
                     component.connect(engine.getValue(group, "beat_closest"));
-                })
+                });
             } else {
                 deckObject.slicerPad.forEachComponent(function(component) {
                     component.disconnect();
-                })
+                });
             };
 
         // When switching from slicer/slicer loop mode into the other modes, disconnect slicer functions
         } else if ((oldPadMode === DJCi300.padModeSlicer) ||
             (oldPadMode === DJCi300.padModeSlicerloop)) {
-            
+
             deckObject.slicerPad.forEachComponent(function(component) {
                 component.disconnect();
             });
@@ -388,7 +388,7 @@ DJCi300.changeMode = function(_channel, control, value, _status, group) {
 
 // Toneplay
 DJCi300.toneplay = function(_channel, control, value, _status, group) {
-    let button = control - 0x40 + 1;
+    const button = control - 0x40 + 1;
 
     if (value) {
         // Pad buttons (buttons 1-8) will jump to a hotcue and change pitch
@@ -465,7 +465,7 @@ DJCi300.loopInButton = function(_channel, _control, value, _status, group) {
 // Loop out button
 DJCi300.loopOutButton = function(_channel, _control, value, _status, group) {
     deckObject = DJCi300._deckObjectFromGroup(group);
-    
+
     if (value) {
         // Override the active slicer if it exists
         deckObject.slicerPad.forEachComponent(function(component) {
@@ -483,9 +483,9 @@ DJCi300.Deck = function(deckNumber) {
     // Slicer/slicer loop pad buttons
     this.slicerPad = new components.ComponentContainer();
     // It's easier to keep track of which buttons are pressed as an array instead of having a property for each button
-    this.slicerPad.pressed = [false, false, false, false, false, false, false, false]
+    this.slicerPad.pressed = [false, false, false, false, false, false, false, false];
     // For slicer/slicer loop pads
-    for (const midiOffset of [0x20, 0x60]) { 
+    for (const midiOffset of [0x20, 0x60]) {
         for (let i = 0; i < 8; i++) {
             this.slicerPad[i] = new components.Button({
                 midi: [0x95 + deckNumber, midiOffset + i],
@@ -496,7 +496,7 @@ DJCi300.Deck = function(deckNumber) {
                     this.slicerPad[i].startSample = (i == 0) ? startPos : this.slicerPad[i-1].endSample;
                     this.slicerPad[i].endSample = this.slicerPad[i].startSample + samplesBetweenSlices;
                     // Everything in the if-statement only needs to be done once (and not 8 times)
-                    // when connected, which is why it is only executed when i == 7 
+                    // when connected, which is why it is only executed when i == 7
                     if (i == 7) {
                         // Connect callback functions if they are not connected already
                         if (this.slicerPad.beatConnection == undefined || this.slicerPad.beatConnection.isConnected == false) {
@@ -520,9 +520,7 @@ DJCi300.Deck = function(deckNumber) {
                         engine.setValue(group, "loop_start_position", this.slicerPad[0].startSample);
                         engine.setValue(group, "loop_end_position", this.slicerPad[7].endSample);
                         if (DJCi300.padMode[group] == DJCi300.padModeSlicer) {
-                            engine.setValue(group, "loop_enabled", 0);
-                        } else {
-                            engine.setValue(group, "loop_enabled", 1);
+                            if (engine.getValue(group, "loop_enabled") === 1) { engine.setValue(group, "reloop_toggle", 1); }
                         }
                     };
                 }.bind(this),
@@ -530,7 +528,7 @@ DJCi300.Deck = function(deckNumber) {
                     // Set start and end points of each slice to placeholder value
                     this.slicerPad[i].startSample = -1;
                     this.slicerPad[i].endSample = -1;
-                    // Much like before, everything in the if-statement only needs to be done once (not 8 times) 
+                    // Much like before, everything in the if-statement only needs to be done once (not 8 times)
                     if (i == 0) {
                         const group = this.currentDeck;
                         // Disconnect callback functions if they are connected
@@ -542,7 +540,7 @@ DJCi300.Deck = function(deckNumber) {
                         }
                         // Make loop position indicators disappear as visual feedback
                         engine.setValue(group, "loop_start_position", -1);
-                        engine.setValue(group, "loop_end_position", -1)
+                        engine.setValue(group, "loop_end_position", -1);
                         this.slicerUpdateLED(group);
                     }
                 }.bind(this),
@@ -574,7 +572,7 @@ DJCi300.Deck = function(deckNumber) {
                         } else {
                             engine.setValue(group, "loop_start_position", this.slicerPad[0].startSample);
                             engine.setValue(group, "loop_end_position", this.slicerPad[7].endSample);
-                
+
                             // Disable the loop (if we're not in slicer loop mode)
                             if (DJCi300.padMode[group] === DJCi300.padModeSlicer) {
                                 engine.setValue(group, "reloop_toggle", 1);
@@ -596,7 +594,7 @@ DJCi300.Deck = function(deckNumber) {
         for (let i = 0; i < 8; i++) {
             beat = (currentPos >= this.slicerPad[i].endSample) ? (beat + 1) : beat;
         }
-    
+
         // If the beat count has changed, update the object property's value
         if (this.slicerPad.beat != beat) {
             this.slicerPad.beat = beat;
@@ -620,10 +618,10 @@ DJCi300.Deck = function(deckNumber) {
     this.slicerUpdateLED = function(group) {
         const offset = (DJCi300.padMode[group] === DJCi300.padModeSlicer) ? 0x20 : 0x60;
         const status = (group === "[Channel1]") ? 0x96 : 0x97;
-    
+
         const startPad = this.slicerPad.pressed.indexOf(true);
         const endPad = this.slicerPad.pressed.lastIndexOf(true);
-    
+
         // Turn off all LEDs
         for (let i = 0; i < 8; i++) {
             midi.sendShortMsg(status, offset + i, 0x00);
@@ -642,7 +640,7 @@ DJCi300.Deck = function(deckNumber) {
             }
         }
     };
-}
+};
 DJCi300.Deck.prototype = new components.Deck();
 
 DJCi300.shutdown = function() {
