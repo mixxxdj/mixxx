@@ -300,7 +300,7 @@ double PositionScratchController::getRate() {
 
 void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
-    // Scratching continues after seek due to calculating the relative
-    // distance traveled in m_samplePosDeltaSum
+    // scratching continues after seek due to calculating the relative distance traveled
+    // in m_samplePosDeltaSum
     m_prevSamplePos = position.toEngineSamplePos();
 }
