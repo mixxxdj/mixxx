@@ -51,7 +51,7 @@ var DJCi300 = {};
 
 // Beatmatch LED guide tolerances
 DJCi300.beatmatchTempoTolerance = .1; // Measured in BPM (e.g. LEDS turn off if decks are <0.1 BPM apart)
-DJCi300.beatmatchAlignTolerance = .01; // Measured in beats (e.g. LEDS turn off if decks are <0.01 beats apart)
+DJCi300.beatmatchAlignTolerance = .02; // Measured in beats (e.g. LEDS turn off if decks are <0.01 beats apart)
 
 // Determines how fast the wheel must be moving to be considered "slipping"
 // Higher numbers result in longer backspins
