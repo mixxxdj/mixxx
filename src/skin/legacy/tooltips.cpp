@@ -544,7 +544,7 @@ void Tooltips::addStandardTooltips() {
     QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
     QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
             "OR preview from it (Denon mode).");
-    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Decks.");
     QString latchingPlay = tr("Is latching the playing state.");
 
     // Currently used for decks
