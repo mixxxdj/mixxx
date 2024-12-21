@@ -2,30 +2,97 @@
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (Unreleased)
 
-### Waveforms
+### Target support
 
-* SlipMode waveform visual for RGB GLSL
-  [#13002](https://github.com/mixxxdj/mixxx/pull/13002)
-  [#13256](https://github.com/mixxxdj/mixxx/pull/13256)
-* Show beats and time until next marker in the waveform
-  [#12994](https://github.com/mixxxdj/mixxx/pull/12994)
-  [#13311](https://github.com/mixxxdj/mixxx/pull/13311)
-  [#13953](https://github.com/mixxxdj/mixxx/pull/13953)
-  [#13314](https://github.com/mixxxdj/mixxx/issues/13314)
-* Waveforms: don't elide hotcue labels
-  [#13219](https://github.com/mixxxdj/mixxx/pull/13219)
-  [#10722](https://github.com/mixxxdj/mixxx/issues/10722)
-* Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
-  [#13151](https://github.com/mixxxdj/mixxx/pull/13151)
-  [#12641](https://github.com/mixxxdj/mixxx/issues/12641)
-* Allow changing the waveform overview type without reloading the skin
-  [#13273](https://github.com/mixxxdj/mixxx/pull/13273)
-* Maintain GL ES support
-  [#13485](https://github.com/mixxxdj/mixxx/pull/13485)
-* Overview: Update immediately, when the normalize option or global gain changed
-  [#13634](https://github.com/mixxxdj/mixxx/pull/13634)
-* Overview: Clear pickup position display when opening cue menu
-  [#13693](https://github.com/mixxxdj/mixxx/pull/13693)
+* Lenient taglib 2.0 guard [#12793](https://github.com/mixxxdj/mixxx/pull/12793)
+* Tools: Add `rpm_buildenv.sh` for building on Fedora [#13069](https://github.com/mixxxdj/mixxx/pull/13069)
+* README: Recommend running buildenvs over sourcing them on Linux [#13071](https://github.com/mixxxdj/mixxx/pull/13071)
+* FindSndFile: Link mpg123 in static builds [#13087](https://github.com/mixxxdj/mixxx/pull/13087)
+* macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too [#12101](https://github.com/mixxxdj/mixxx/pull/12101)
+* Drop support for macOS versions earlier than 11
+* Drop support for Windows versions earlier than Windows 10 build 1809
+* Drop support for Ubuntu versions earlier than 22.04
+* Require a C++20 compiler
+* Support GCC 14.1.1
+  [#13504](https://github.com/mixxxdj/mixxx/pull/13504)
+  [#13467](https://github.com/mixxxdj/mixxx/issues/13467)
+
+### Update to Qt6
+
+* Qt6 prepare [#11863](https://github.com/mixxxdj/mixxx/pull/11863)
+* Qt6 switch [#11892](https://github.com/mixxxdj/mixxx/pull/11892)
+* CMakeLists: Default `QT6` to `ON` [#11934](https://github.com/mixxxdj/mixxx/pull/11934)
+* Build with Qt6 and optionally with QML [#11608](https://github.com/mixxxdj/mixxx/pull/11608)
+* Use constInsert() template [#11847](https://github.com/mixxxdj/mixxx/pull/11847)
+* DlgAbout: Add Qt version to the dialog [#11862](https://github.com/mixxxdj/mixxx/pull/11862)
+* CMakeLists: Fix `QT_TRANSLATION_FILE` path for Qt6 [#11880](https://github.com/mixxxdj/mixxx/pull/11880)
+* LibraryControl: Enable control inputs for Qt6 [#11877](https://github.com/mixxxdj/mixxx/pull/11877)
+* Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds [#11895](https://github.com/mixxxdj/mixxx/pull/11895)
+* WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6) [#11870](https://github.com/mixxxdj/mixxx/pull/11870)
+* Install libjpeg-turbo::jpeg to fix cover display with Qt6 [#11922](https://github.com/mixxxdj/mixxx/pull/11922)
+* Skins: Remove `border: 0px` from sidebar item styling
+  [#11970](https://github.com/mixxxdj/mixxx/pull/11970)
+  [#11957](https://github.com/mixxxdj/mixxx/issues/11957)
+* Skins: Fix checkbox styling on Qt 6 [#12050](https://github.com/mixxxdj/mixxx/pull/12050)
+* Skins: Fix Tango waveform splitter [#12939](https://github.com/mixxxdj/mixxx/pull/12939)
+* Skins: Fix Tango rate range label position [#13242](https://github.com/mixxxdj/mixxx/pull/13242)
+* Skins: Fix Tango icon scaling  by using 'image' instead of 'background-image' [#14014](https://github.com/mixxxdj/mixxx/pull/14014)
+* Skins: Hide reserved space for invisible table header sort indicators [#13535](https://github.com/mixxxdj/mixxx/pull/13535)
+* Skins: Fix Deere icons with 150% Scaling
+  [#14013](https://github.com/mixxxdj/mixxx/pull/14013)
+  [#13959](https://github.com/mixxxdj/mixxx/issues/13959)
+* Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
+  [#14034](https://github.com/mixxxdj/mixxx/pull/14034)
+  [#12972](https://github.com/mixxxdj/mixxx/issues/12972)
+* Skins: Center rate range labels
+  [#14035](https://github.com/mixxxdj/mixxx/pull/14035)
+* Introduce wrapper for non const iterators for erase and insert
+  [#12201](https://github.com/mixxxdj/mixxx/pull/12201)
+  [#13856](https://github.com/mixxxdj/mixxx/pull/13856)
+* Fix Qt6/QML build [#12255](https://github.com/mixxxdj/mixxx/pull/12255)
+* Fix track color background with Qt6 [#12380](https://github.com/mixxxdj/mixxx/pull/12380)
+* multi-line delegate: fix bg color, Qt6 on Linux
+  [#12478](https://github.com/mixxxdj/mixxx/pull/12478)
+* Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6" [#12342](https://github.com/mixxxdj/mixxx/pull/12342)
+* Fix: Replace deprecated `qAsConst` with `std::as_const` [#13028](https://github.com/mixxxdj/mixxx/pull/13028)
+* Fix Drag'n'drop: avoid unintended drag on hover (WTrackProperty, WCoverArt etc.)
+  [#13035](https://github.com/mixxxdj/mixxx/pull/13035)
+  [#13033](https://github.com/mixxxdj/mixxx/issues/13033)
+* Fix ambiguous overload error due to native qDebug impl for std::optional
+  [#12981](https://github.com/mixxxdj/mixxx/issues/12981)
+* Workaround for Qt6 'selected click' bug [#12488](https://github.com/mixxxdj/mixxx/pull/12488)
+* Fix menu icon position [#12216](https://github.com/mixxxdj/mixxx/pull/12216)
+* Qt 6.8 deprecated declaration fixes [#13845](https://github.com/mixxxdj/mixxx/pull/13845)
+* Add missing qt6-declarative-private-dev and qt6-base-private-dev package [#13904](https://github.com/mixxxdj/mixxx/pull/13904)
+
+### Engine
+
+* Beats: allow undoing the last BPM/beats change [#12954](https://github.com/mixxxdj/mixxx/pull/12954)
+  [#12774](https://github.com/mixxxdj/mixxx/issues/12774)
+  [#10138](https://github.com/mixxxdj/mixxx/issues/10138)
+  [#13339](https://github.com/mixxxdj/mixxx/pull/13339)
+* Add beatloop anchor to set and adjust loop from either start or end
+  [#12745](https://github.com/mixxxdj/mixxx/pull/12745)
+  [#13241](https://github.com/mixxxdj/mixxx/pull/13241)
+* Add Rate Tap button [#12104](https://github.com/mixxxdj/mixxx/pull/12104)
+* Store/restore regular loop when toggling rolling loops
+  [#12475](https://github.com/mixxxdj/mixxx/pull/12475)
+  [#8947](https://github.com/mixxxdj/mixxx/issues/8947)
+* Add `beats_translate_move` ControlEncoder [#12376](https://github.com/mixxxdj/mixxx/pull/12376)
+* Looping/Beatjump: use seconds if track has no beats
+  [#12961](https://github.com/mixxxdj/mixxx/pull/12961)
+  [#11124](https://github.com/mixxxdj/mixxx/issues/11124)
+* Add Track colour palette cycling controls `track_color_next` and `track_color_prev` to library, decks and samplers
+  [#13066](https://github.com/mixxxdj/mixxx/pull/13066)
+  [#12905](https://github.com/mixxxdj/mixxx/issues/12905)
+* Add Tempo locking controls
+  [#13041](https://github.com/mixxxdj/mixxx/pull/13041)
+  [#13041](https://github.com/mixxxdj/mixxx/pull/13041)
+  [#13038](https://github.com/mixxxdj/mixxx/issues/13038)
+  [#13199](https://github.com/mixxxdj/mixxx/pull/13199)
+* Recording: Fix bogus timestamp in CUE sheet after restarting a recording
+  [#13966](https://github.com/mixxxdj/mixxx/pull/13966)
+  [#13964](https://github.com/mixxxdj/mixxx/issues/13964)
 
 ### Skins / Interface
 
@@ -81,35 +148,6 @@
   [#13660](https://github.com/mixxxdj/mixxx/issues/13660)
 * Adjust some skin controls, to allow point-and-click mapping
   [#13906](https://github.com/mixxxdj/mixxx/pull/13906)
-
-### Engine
-
-* Beats: allow undoing the last BPM/beats change [#12954](https://github.com/mixxxdj/mixxx/pull/12954)
-  [#12774](https://github.com/mixxxdj/mixxx/issues/12774)
-  [#10138](https://github.com/mixxxdj/mixxx/issues/10138)
-  [#13339](https://github.com/mixxxdj/mixxx/pull/13339)
-* Add beatloop anchor to set and adjust loop from either start or end
-  [#12745](https://github.com/mixxxdj/mixxx/pull/12745)
-  [#13241](https://github.com/mixxxdj/mixxx/pull/13241)
-* Add Rate Tap button [#12104](https://github.com/mixxxdj/mixxx/pull/12104)
-* Store/restore regular loop when toggling rolling loops
-  [#12475](https://github.com/mixxxdj/mixxx/pull/12475)
-  [#8947](https://github.com/mixxxdj/mixxx/issues/8947)
-* Add `beats_translate_move` ControlEncoder [#12376](https://github.com/mixxxdj/mixxx/pull/12376)
-* Looping/Beatjump: use seconds if track has no beats
-  [#12961](https://github.com/mixxxdj/mixxx/pull/12961)
-  [#11124](https://github.com/mixxxdj/mixxx/issues/11124)
-* Add Track colour palette cycling controls `track_color_next` and `track_color_prev` to library, decks and samplers
-  [#13066](https://github.com/mixxxdj/mixxx/pull/13066)
-  [#12905](https://github.com/mixxxdj/mixxx/issues/12905)
-* Add Tempo locking controls
-  [#13041](https://github.com/mixxxdj/mixxx/pull/13041)
-  [#13041](https://github.com/mixxxdj/mixxx/pull/13041)
-  [#13038](https://github.com/mixxxdj/mixxx/issues/13038)
-  [#13199](https://github.com/mixxxdj/mixxx/pull/13199)
-* Recording: Fix bogus timestamp in CUE sheet after restarting a recording
-  [#13966](https://github.com/mixxxdj/mixxx/pull/13966)
-  [#13964](https://github.com/mixxxdj/mixxx/issues/13964)
 
 ### Effects
 
@@ -263,6 +301,31 @@
   [#12779](https://github.com/mixxxdj/mixxx/pull/12779)
 * Fix pending reference to the old mapping after selecting 'No mapping' [#13907](https://github.com/mixxxdj/mixxx/pull/13907)
 
+### Waveforms
+
+* SlipMode waveform visual for RGB GLSL
+  [#13002](https://github.com/mixxxdj/mixxx/pull/13002)
+  [#13256](https://github.com/mixxxdj/mixxx/pull/13256)
+* Show beats and time until next marker in the waveform
+  [#12994](https://github.com/mixxxdj/mixxx/pull/12994)
+  [#13311](https://github.com/mixxxdj/mixxx/pull/13311)
+  [#13953](https://github.com/mixxxdj/mixxx/pull/13953)
+  [#13314](https://github.com/mixxxdj/mixxx/issues/13314)
+* Waveforms: don't elide hotcue labels
+  [#13219](https://github.com/mixxxdj/mixxx/pull/13219)
+  [#10722](https://github.com/mixxxdj/mixxx/issues/10722)
+* Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
+  [#13151](https://github.com/mixxxdj/mixxx/pull/13151)
+  [#12641](https://github.com/mixxxdj/mixxx/issues/12641)
+* Allow changing the waveform overview type without reloading the skin
+  [#13273](https://github.com/mixxxdj/mixxx/pull/13273)
+* Maintain GL ES support
+  [#13485](https://github.com/mixxxdj/mixxx/pull/13485)
+* Overview: Update immediately, when the normalize option or global gain changed
+  [#13634](https://github.com/mixxxdj/mixxx/pull/13634)
+* Overview: Clear pickup position display when opening cue menu
+  [#13693](https://github.com/mixxxdj/mixxx/pull/13693)
+
 ### Experimental QML Skin
 
 * Add Experimental QML Skin that can be tested via the --qml command line option
@@ -287,54 +350,6 @@
 * Fix: allow missing COs on QML component [#13011](https://github.com/mixxxdj/mixxx/pull/13011)
 * Initialize CmdlineArgs::m_qml [#13152](https://github.com/mixxxdj/mixxx/pull/13152)
 * Fix: Remove target compile defs for non-existing QML CMake target [#13506](https://github.com/mixxxdj/mixxx/pull/13506)
-
-### Update to Qt6
-
-* Qt6 prepare [#11863](https://github.com/mixxxdj/mixxx/pull/11863)
-* Qt6 switch [#11892](https://github.com/mixxxdj/mixxx/pull/11892)
-* CMakeLists: Default `QT6` to `ON` [#11934](https://github.com/mixxxdj/mixxx/pull/11934)
-* Build with Qt6 and optionally with QML [#11608](https://github.com/mixxxdj/mixxx/pull/11608)
-* Use constInsert() template [#11847](https://github.com/mixxxdj/mixxx/pull/11847)
-* DlgAbout: Add Qt version to the dialog [#11862](https://github.com/mixxxdj/mixxx/pull/11862)
-* CMakeLists: Fix `QT_TRANSLATION_FILE` path for Qt6 [#11880](https://github.com/mixxxdj/mixxx/pull/11880)
-* LibraryControl: Enable control inputs for Qt6 [#11877](https://github.com/mixxxdj/mixxx/pull/11877)
-* Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds [#11895](https://github.com/mixxxdj/mixxx/pull/11895)
-* WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6) [#11870](https://github.com/mixxxdj/mixxx/pull/11870)
-* Install libjpeg-turbo::jpeg to fix cover display with Qt6 [#11922](https://github.com/mixxxdj/mixxx/pull/11922)
-* Skins: Remove `border: 0px` from sidebar item styling
-  [#11970](https://github.com/mixxxdj/mixxx/pull/11970)
-  [#11957](https://github.com/mixxxdj/mixxx/issues/11957)
-* Skins: Fix checkbox styling on Qt 6 [#12050](https://github.com/mixxxdj/mixxx/pull/12050)
-* Skins: Fix Tango waveform splitter [#12939](https://github.com/mixxxdj/mixxx/pull/12939)
-* Skins: Fix Tango rate range label position [#13242](https://github.com/mixxxdj/mixxx/pull/13242)
-* Skins: Fix Tango icon scaling  by using 'image' instead of 'background-image' [#14014](https://github.com/mixxxdj/mixxx/pull/14014)
-* Skins: Hide reserved space for invisible table header sort indicators [#13535](https://github.com/mixxxdj/mixxx/pull/13535)
-* Skins: Fix Deere icons with 150% Scaling
-  [#14013](https://github.com/mixxxdj/mixxx/pull/14013)
-  [#13959](https://github.com/mixxxdj/mixxx/issues/13959)
-* Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
-  [#14034](https://github.com/mixxxdj/mixxx/pull/14034)
-  [#12972](https://github.com/mixxxdj/mixxx/issues/12972)
-* Skins: Center rate range labels
-  [#14035](https://github.com/mixxxdj/mixxx/pull/14035)
-* Introduce wrapper for non const iterators for erase and insert
-  [#12201](https://github.com/mixxxdj/mixxx/pull/12201)
-  [#13856](https://github.com/mixxxdj/mixxx/pull/13856)
-* Fix Qt6/QML build [#12255](https://github.com/mixxxdj/mixxx/pull/12255)
-* Fix track color background with Qt6 [#12380](https://github.com/mixxxdj/mixxx/pull/12380)
-* multi-line delegate: fix bg color, Qt6 on Linux
-  [#12478](https://github.com/mixxxdj/mixxx/pull/12478)
-* Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6" [#12342](https://github.com/mixxxdj/mixxx/pull/12342)
-* Fix: Replace deprecated `qAsConst` with `std::as_const` [#13028](https://github.com/mixxxdj/mixxx/pull/13028)
-* Fix Drag'n'drop: avoid unintended drag on hover (WTrackProperty, WCoverArt etc.)
-  [#13035](https://github.com/mixxxdj/mixxx/pull/13035)
-  [#13033](https://github.com/mixxxdj/mixxx/issues/13033)
-* Fix ambiguous overload error due to native qDebug impl for std::optional
-  [#12981](https://github.com/mixxxdj/mixxx/issues/12981)
-* Workaround for Qt6 'selected click' bug [#12488](https://github.com/mixxxdj/mixxx/pull/12488)
-* Fix menu icon position [#12216](https://github.com/mixxxdj/mixxx/pull/12216)
-* Qt 6.8 deprecated declaration fixes [#13845](https://github.com/mixxxdj/mixxx/pull/13845)
-* Add missing qt6-declarative-private-dev and qt6-base-private-dev package [#13904](https://github.com/mixxxdj/mixxx/pull/13904)
 
 ### Experimental iOs support
 
@@ -367,21 +382,6 @@
 * CMakeLists: Require WebGL 2.0 when building for Wasm [#12952](https://github.com/mixxxdj/mixxx/pull/12952)
 * ScreenSaverHelper: Add no-op implementation for WASM [#12930](https://github.com/mixxxdj/mixxx/pull/12930)
 * SSE: Check `!defined(__EMSCRIPTEN__)` where intrinsics are unavailable on WASM [#12917](https://github.com/mixxxdj/mixxx/pull/12917)
-
-### Target support
-
-* Lenient taglib 2.0 guard [#12793](https://github.com/mixxxdj/mixxx/pull/12793)
-* Tools: Add `rpm_buildenv.sh` for building on Fedora [#13069](https://github.com/mixxxdj/mixxx/pull/13069)
-* README: Recommend running buildenvs over sourcing them on Linux [#13071](https://github.com/mixxxdj/mixxx/pull/13071)
-* FindSndFile: Link mpg123 in static builds [#13087](https://github.com/mixxxdj/mixxx/pull/13087)
-* macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too [#12101](https://github.com/mixxxdj/mixxx/pull/12101)
-* Drop support for macOS versions earlier than 11
-* Drop support for Windows versions earlier than Windows 10 build 1809
-* Drop support for Ubuntu versions earlier than 22.04
-* Require a C++20 compiler
-* Support GCC 14.1.1
-  [#13504](https://github.com/mixxxdj/mixxx/pull/13504)
-  [#13467](https://github.com/mixxxdj/mixxx/issues/13467)
 
 ### Misc Refactorings
 

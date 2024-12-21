@@ -96,49 +96,256 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-12-18" timestamp="1734505815">
+    <release version="2.5.0" type="development" date="2024-12-20" timestamp="1734686455">
       <description>
  <p>
-  Waveforms
+  Target support
  </p>
  <ul>
   <li>
-   SlipMode waveform visual for RGB GLSL
-   #13002
-   #13256
+   Lenient taglib 2.0 guard
+   #12793
   </li>
   <li>
-   Show beats and time until next marker in the waveform
-   #12994
-   #13311
-   #13953
-   #13314
+   Tools: Add
+   rpm_buildenv.sh
+   for building on Fedora
+   #13069
   </li>
   <li>
-   Waveforms: don't elide hotcue labels
-   #13219
-   #10722
+   README: Recommend running buildenvs over sourcing them on Linux
+   #13071
   </li>
   <li>
-   Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
-   #13151
-   #12641
+   FindSndFile: Link mpg123 in static builds
+   #13087
   </li>
   <li>
-   Allow changing the waveform overview type without reloading the skin
-   #13273
+   macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
+   #12101
   </li>
   <li>
-   Maintain GL ES support
-   #13485
+   Drop support for macOS versions earlier than 11
   </li>
   <li>
-   Overview: Update immediately, when the normalize option or global gain changed
-   #13634
+   Drop support for Windows versions earlier than Windows 10 build 1809
   </li>
   <li>
-   Overview: Clear pickup position display when opening cue menu
-   #13693
+   Drop support for Ubuntu versions earlier than 22.04
+  </li>
+  <li>
+   Require a C++20 compiler
+  </li>
+  <li>
+   Support GCC 14.1.1
+   #13504
+   #13467
+  </li>
+ </ul>
+ <p>
+  Update to Qt6
+ </p>
+ <ul>
+  <li>
+   Qt6 prepare
+   #11863
+  </li>
+  <li>
+   Qt6 switch
+   #11892
+  </li>
+  <li>
+   CMakeLists: Default
+   QT6
+   to
+   ON
+   #11934
+  </li>
+  <li>
+   Build with Qt6 and optionally with QML
+   #11608
+  </li>
+  <li>
+   Use constInsert() template
+   #11847
+  </li>
+  <li>
+   DlgAbout: Add Qt version to the dialog
+   #11862
+  </li>
+  <li>
+   CMakeLists: Fix
+   QT_TRANSLATION_FILE
+   path for Qt6
+   #11880
+  </li>
+  <li>
+   LibraryControl: Enable control inputs for Qt6
+   #11877
+  </li>
+  <li>
+   Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds
+   #11895
+  </li>
+  <li>
+   WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6)
+   #11870
+  </li>
+  <li>
+   Install libjpeg-turbo::jpeg to fix cover display with Qt6
+   #11922
+  </li>
+  <li>
+   Skins: Remove
+   border: 0px
+   from sidebar item styling
+   #11970
+   #11957
+  </li>
+  <li>
+   Skins: Fix checkbox styling on Qt 6
+   #12050
+  </li>
+  <li>
+   Skins: Fix Tango waveform splitter
+   #12939
+  </li>
+  <li>
+   Skins: Fix Tango rate range label position
+   #13242
+  </li>
+  <li>
+   Skins: Fix Tango icon scaling  by using 'image' instead of 'background-image'
+   #14014
+  </li>
+  <li>
+   Skins: Hide reserved space for invisible table header sort indicators
+   #13535
+  </li>
+  <li>
+   Skins: Fix Deere icons with 150% Scaling
+   #14013
+   #13959
+  </li>
+  <li>
+   Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
+   #14034
+   #12972
+  </li>
+  <li>
+   Skins: Center rate range labels
+   #14035
+  </li>
+  <li>
+   Introduce wrapper for non const iterators for erase and insert
+   #12201
+   #13856
+  </li>
+  <li>
+   Fix Qt6/QML build
+   #12255
+  </li>
+  <li>
+   Fix track color background with Qt6
+   #12380
+  </li>
+  <li>
+   multi-line delegate: fix bg color, Qt6 on Linux
+   #12478
+  </li>
+  <li>
+   Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6"
+   #12342
+  </li>
+  <li>
+   Fix: Replace deprecated
+   qAsConst
+   with
+   std::as_const
+   #13028
+  </li>
+  <li>
+   Fix Drag'n'drop: avoid unintended drag on hover (WTrackProperty, WCoverArt etc.)
+   #13035
+   #13033
+  </li>
+  <li>
+   Fix ambiguous overload error due to native qDebug impl for std::optional
+   #12981
+  </li>
+  <li>
+   Workaround for Qt6 'selected click' bug
+   #12488
+  </li>
+  <li>
+   Fix menu icon position
+   #12216
+  </li>
+  <li>
+   Qt 6.8 deprecated declaration fixes
+   #13845
+  </li>
+  <li>
+   Add missing qt6-declarative-private-dev and qt6-base-private-dev package
+   #13904
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   Beats: allow undoing the last BPM/beats change
+   #12954
+   #12774
+   #10138
+   #13339
+  </li>
+  <li>
+   Add beatloop anchor to set and adjust loop from either start or end
+   #12745
+   #13241
+  </li>
+  <li>
+   Add Rate Tap button
+   #12104
+  </li>
+  <li>
+   Store/restore regular loop when toggling rolling loops
+   #12475
+   #8947
+  </li>
+  <li>
+   Add
+   beats_translate_move
+   ControlEncoder
+   #12376
+  </li>
+  <li>
+   Looping/Beatjump: use seconds if track has no beats
+   #12961
+   #11124
+  </li>
+  <li>
+   Add Track colour palette cycling controls
+   track_color_next
+   and
+   track_color_prev
+   to library, decks and samplers
+   #13066
+   #12905
+  </li>
+  <li>
+   Add Tempo locking controls
+   #13041
+   #13041
+   #13038
+   #13199
+  </li>
+  <li>
+   Recording: Fix bogus timestamp in CUE sheet after restarting a recording
+   #13966
+   #13964
   </li>
  </ul>
  <p>
@@ -265,64 +472,6 @@
   <li>
    Adjust some skin controls, to allow point-and-click mapping
    #13906
-  </li>
- </ul>
- <p>
-  Engine
- </p>
- <ul>
-  <li>
-   Beats: allow undoing the last BPM/beats change
-   #12954
-   #12774
-   #10138
-   #13339
-  </li>
-  <li>
-   Add beatloop anchor to set and adjust loop from either start or end
-   #12745
-   #13241
-  </li>
-  <li>
-   Add Rate Tap button
-   #12104
-  </li>
-  <li>
-   Store/restore regular loop when toggling rolling loops
-   #12475
-   #8947
-  </li>
-  <li>
-   Add
-   beats_translate_move
-   ControlEncoder
-   #12376
-  </li>
-  <li>
-   Looping/Beatjump: use seconds if track has no beats
-   #12961
-   #11124
-  </li>
-  <li>
-   Add Track colour palette cycling controls
-   track_color_next
-   and
-   track_color_prev
-   to library, decks and samplers
-   #13066
-   #12905
-  </li>
-  <li>
-   Add Tempo locking controls
-   #13041
-   #13041
-   #13038
-   #13199
-  </li>
-  <li>
-   Recording: Fix bogus timestamp in CUE sheet after restarting a recording
-   #13966
-   #13964
   </li>
  </ul>
  <p>
@@ -659,6 +808,49 @@
   </li>
  </ul>
  <p>
+  Waveforms
+ </p>
+ <ul>
+  <li>
+   SlipMode waveform visual for RGB GLSL
+   #13002
+   #13256
+  </li>
+  <li>
+   Show beats and time until next marker in the waveform
+   #12994
+   #13311
+   #13953
+   #13314
+  </li>
+  <li>
+   Waveforms: don't elide hotcue labels
+   #13219
+   #10722
+  </li>
+  <li>
+   Waveforms: Allshader RGB, Filtered and Stacked Waveforms using textures for waveform data
+   #13151
+   #12641
+  </li>
+  <li>
+   Allow changing the waveform overview type without reloading the skin
+   #13273
+  </li>
+  <li>
+   Maintain GL ES support
+   #13485
+  </li>
+  <li>
+   Overview: Update immediately, when the normalize option or global gain changed
+   #13634
+  </li>
+  <li>
+   Overview: Clear pickup position display when opening cue menu
+   #13693
+  </li>
+ </ul>
+ <p>
   Experimental QML Skin
  </p>
  <ul>
@@ -725,154 +917,6 @@
   <li>
    Fix: Remove target compile defs for non-existing QML CMake target
    #13506
-  </li>
- </ul>
- <p>
-  Update to Qt6
- </p>
- <ul>
-  <li>
-   Qt6 prepare
-   #11863
-  </li>
-  <li>
-   Qt6 switch
-   #11892
-  </li>
-  <li>
-   CMakeLists: Default
-   QT6
-   to
-   ON
-   #11934
-  </li>
-  <li>
-   Build with Qt6 and optionally with QML
-   #11608
-  </li>
-  <li>
-   Use constInsert() template
-   #11847
-  </li>
-  <li>
-   DlgAbout: Add Qt version to the dialog
-   #11862
-  </li>
-  <li>
-   CMakeLists: Fix
-   QT_TRANSLATION_FILE
-   path for Qt6
-   #11880
-  </li>
-  <li>
-   LibraryControl: Enable control inputs for Qt6
-   #11877
-  </li>
-  <li>
-   Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds
-   #11895
-  </li>
-  <li>
-   WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6)
-   #11870
-  </li>
-  <li>
-   Install libjpeg-turbo::jpeg to fix cover display with Qt6
-   #11922
-  </li>
-  <li>
-   Skins: Remove
-   border: 0px
-   from sidebar item styling
-   #11970
-   #11957
-  </li>
-  <li>
-   Skins: Fix checkbox styling on Qt 6
-   #12050
-  </li>
-  <li>
-   Skins: Fix Tango waveform splitter
-   #12939
-  </li>
-  <li>
-   Skins: Fix Tango rate range label position
-   #13242
-  </li>
-  <li>
-   Skins: Fix Tango icon scaling  by using 'image' instead of 'background-image'
-   #14014
-  </li>
-  <li>
-   Skins: Hide reserved space for invisible table header sort indicators
-   #13535
-  </li>
-  <li>
-   Skins: Fix Deere icons with 150% Scaling
-   #14013
-   #13959
-  </li>
-  <li>
-   Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
-   #14034
-   #12972
-  </li>
-  <li>
-   Skins: Center rate range labels
-   #14035
-  </li>
-  <li>
-   Introduce wrapper for non const iterators for erase and insert
-   #12201
-   #13856
-  </li>
-  <li>
-   Fix Qt6/QML build
-   #12255
-  </li>
-  <li>
-   Fix track color background with Qt6
-   #12380
-  </li>
-  <li>
-   multi-line delegate: fix bg color, Qt6 on Linux
-   #12478
-  </li>
-  <li>
-   Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6"
-   #12342
-  </li>
-  <li>
-   Fix: Replace deprecated
-   qAsConst
-   with
-   std::as_const
-   #13028
-  </li>
-  <li>
-   Fix Drag'n'drop: avoid unintended drag on hover (WTrackProperty, WCoverArt etc.)
-   #13035
-   #13033
-  </li>
-  <li>
-   Fix ambiguous overload error due to native qDebug impl for std::optional
-   #12981
-  </li>
-  <li>
-   Workaround for Qt6 'selected click' bug
-   #12488
-  </li>
-  <li>
-   Fix menu icon position
-   #12216
-  </li>
-  <li>
-   Qt 6.8 deprecated declaration fixes
-   #13845
-  </li>
-  <li>
-   Add missing qt6-declarative-private-dev and qt6-base-private-dev package
-   #13904
   </li>
  </ul>
  <p>
@@ -983,50 +1027,6 @@
    !defined(__EMSCRIPTEN__)
    where intrinsics are unavailable on WASM
    #12917
-  </li>
- </ul>
- <p>
-  Target support
- </p>
- <ul>
-  <li>
-   Lenient taglib 2.0 guard
-   #12793
-  </li>
-  <li>
-   Tools: Add
-   rpm_buildenv.sh
-   for building on Fedora
-   #13069
-  </li>
-  <li>
-   README: Recommend running buildenvs over sourcing them on Linux
-   #13071
-  </li>
-  <li>
-   FindSndFile: Link mpg123 in static builds
-   #13087
-  </li>
-  <li>
-   macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
-   #12101
-  </li>
-  <li>
-   Drop support for macOS versions earlier than 11
-  </li>
-  <li>
-   Drop support for Windows versions earlier than Windows 10 build 1809
-  </li>
-  <li>
-   Drop support for Ubuntu versions earlier than 22.04
-  </li>
-  <li>
-   Require a C++20 compiler
-  </li>
-  <li>
-   Support GCC 14.1.1
-   #13504
-   #13467
   </li>
  </ul>
  <p>
