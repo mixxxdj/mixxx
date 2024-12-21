@@ -93,16 +93,8 @@ class TrackRecord final {
         return m_keys;
     }
 
-    track::io::key::ChromaticKey getGlobalKey() const {
-        return getKeys().getGlobalKey();
-    }
-    bool updateGlobalKey(
-            track::io::key::ChromaticKey key,
-            track::io::key::Source keySource);
-
-    QString getGlobalKeyText() const {
-        return KeyUtils::formatGlobalKey(getKeys());
-    }
+    // Key text will be stored as StandardID3v2
+    // Invalid Keys are rejected and empty string deletes the key
     UpdateResult updateGlobalKeyNormalizeText(
             const QString& keyText,
             track::io::key::Source keySource);

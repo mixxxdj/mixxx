@@ -6,10 +6,9 @@
 #include "controllers/bulk/bulksupported.h"
 #include "moc_bulkenumerator.cpp"
 
-BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
+BulkEnumerator::BulkEnumerator()
         : ControllerEnumerator(),
-          m_context(nullptr),
-          m_pConfig(pConfig) {
+          m_context(nullptr) {
     libusb_init(&m_context);
 }
 
@@ -21,14 +20,12 @@ BulkEnumerator::~BulkEnumerator() {
     libusb_exit(m_context);
 }
 
-static bool is_interesting(struct libusb_device_descriptor *desc) {
-    for (int i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == desc->idVendor) &&
-            (bulk_supported[i].product_id == desc->idProduct)) {
-            return true;
-        }
-    }
-    return false;
+static bool is_interesting(const libusb_device_descriptor& desc) {
+    return std::any_of(std::cbegin(bulk_supported),
+            std::cend(bulk_supported),
+            [&](const auto& dev) {
+                return dev.key.vendor_id == desc.idVendor && dev.key.product_id == desc.idProduct;
+            });
 }
 
 QList<Controller*> BulkEnumerator::queryDevices() {
@@ -43,7 +40,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
         struct libusb_device_descriptor desc;
 
         libusb_get_device_descriptor(device, &desc);
-        if (is_interesting(&desc)) {
+        if (is_interesting(desc)) {
             struct libusb_device_handle* handle = nullptr;
             err = libusb_open(device, &handle);
             if (err) {

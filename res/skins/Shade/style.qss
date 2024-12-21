@@ -369,6 +369,7 @@ WEffectSelector QAbstractScrollArea,
   #MainMenu::item:disabled,
   #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
+  WLibraryTextBrowser QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
@@ -396,6 +397,13 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu QMenu QCheckBox::indicator {
     border-width: 1px;
     border-style: solid;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator,
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    border: 0px;
+    background-color: transparent;
+    image: url(skin:/btn/btn_search_menu.svg);
+    margin-left: 2px;
   }
 
 #EffectSelectorGroup[highlight="1"] {
@@ -755,7 +763,7 @@ WTrackTableViewHeader {
 /*	Library header 'buttons'	*/
 WTrackTableViewHeader::section {
   height: 1.1em;
-  padding: 0.1em;
+  padding: 0.1em -0.7em 0.1em 0.1em;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;

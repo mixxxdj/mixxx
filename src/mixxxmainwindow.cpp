@@ -12,7 +12,8 @@
 #endif
 
 #ifdef __LINUX__
-#include <QtDBus>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
 #endif
 
 #ifdef MIXXX_USE_QOPENGL
@@ -49,6 +50,7 @@
 #include "util/debug.h"
 #include "util/desktophelper.h"
 #include "util/sandbox.h"
+#include "util/scopedoverridecursor.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -167,7 +169,6 @@ void MixxxMainWindow::initializeQOpenGL() {
 #endif
 
 void MixxxMainWindow::initialize() {
-    qWarning() << "     $ initialize";
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
@@ -204,7 +205,6 @@ void MixxxMainWindow::initialize() {
     if ((CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) &&
             // could be we're fullscreen already after setGeomtery(previousGeometry)
             !isFullScreen()) {
-        qWarning() << "     init: go fullscreen";
         showFullScreen();
     }
 
@@ -521,7 +521,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    qWarning() << "     $ initializeWindow";
     // be sure createMenuBar() is called first
     DEBUG_ASSERT(m_pMenuBar);
 
@@ -555,6 +554,7 @@ void MixxxMainWindow::initializeWindow() {
 
 #ifndef __APPLE__
 void MixxxMainWindow::alwaysHideMenuBarDlg() {
+    // Don't show the dialog if the user unchecked "Ask me again"
     if (!m_pCoreServices->getSettings()->getValue<bool>(
                 kMenuBarHintConfigKey, true)) {
         return;
@@ -773,8 +773,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 }
 
 void MixxxMainWindow::createMenuBar() {
-    qWarning() << "     $ createMenuBar";
-    ScopedTimer t(u"MixxxMainWindow::createMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
@@ -787,9 +786,8 @@ void MixxxMainWindow::createMenuBar() {
 void MixxxMainWindow::connectMenuBar() {
     // This function might be invoked multiple times on startup
     // so all connections must be unique!
-    qWarning() << "     $ connectMenuBar";
 
-    ScopedTimer t(u"MixxxMainWindow::connectMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::connectMenuBar"));
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
@@ -956,6 +954,7 @@ void MixxxMainWindow::connectMenuBar() {
 #endif
 }
 
+/// Enable/disable listening to Alt key press for toggling the menubar.
 #ifndef __APPLE__
 void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     if (!m_pCoreServices->getKeyboardEventFilter() || !m_pMenuBar) {
@@ -963,6 +962,7 @@ void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     }
 
     if (m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false)) {
+        // with Qt::UniqueConnection we don't need to check whether we're already connected
         connect(m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
                 m_pMenuBar,
@@ -1052,19 +1052,15 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
-    qWarning() << "     $ slotViewFullScreen" << toggle;
     if (isFullScreen() == toggle) {
-        qWarning() << "     (no-op)";
         return;
     }
 
     // Just switch the window state here. eventFilter() will catch the
     // QWindowStateChangeEvent and inform the menu bar that fullscreen changed.
     if (toggle) {
-        qWarning() << "     > showFullScreen()";
         showFullScreen();
     } else {
-        qWarning() << "     > showNormal()";
         showNormal();
     }
 }
@@ -1164,6 +1160,7 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
+    ScopedWaitCursor cursor;
     // safe geometry for later restoration
     const QRect initGeometry = geometry();
 
@@ -1238,7 +1235,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     return m_pCentralWidget != nullptr;
 }
 
-// Try to load default styles that can be overridden by skins
+/// Try to load default styles that can be overridden by skins
 void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
     QFile file(resPath + "/skins/default.qss");
@@ -1251,6 +1248,7 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     }
 }
 
+/// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
         // always show tooltips in the preferences window
@@ -1276,7 +1274,6 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         }
     } else if (event->type() == QEvent::WindowStateChange) {
 #ifndef __APPLE__
-        qWarning() << "$ WindowStateChange:" << windowState();
         if (windowState() == m_prevState) {
             // Ignore no-op. This happens if another window is raised above
             // MixxxMianWindow,  e.g. DlgPeferences. In such a case event->oldState()
@@ -1294,8 +1291,6 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         const bool isFullScreenNow = windowState() & Qt::WindowFullScreen;
         if ((isFullScreenNow && !wasFullScreen) ||
                 (!isFullScreenNow && wasFullScreen)) {
-            qWarning() << "$ fullscreen changed, now"
-                       << (isFullScreenNow ? "fullscreen" : "window");
 #ifdef __LINUX__
             // Fix for "No menu bar with ubuntu unity in full screen mode"
             // (issues #6072 and #6689). Before touching anything here, please
@@ -1303,16 +1298,24 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             // Set this attribute instead of calling setNativeMenuBar(false),
             // see https://github.com/mixxxdj/mixxx/issues/11320
             if (m_supportsGlobalMenuBar) {
-                qWarning() << "$ global menu > rebuild";
                 QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
                 createMenuBar();
                 connectMenuBar();
-                // With a global menu we didn't show the menubar auto-hide dialog
-                // during (windowed) startup, so ask now.
+            }
+#endif
+
+#ifndef __APPLE__
+#ifdef __LINUX__
+            // Only show the dialog if we are able to have the menubar in the
+            // main window, only then we're able to hide it.
+            if (!m_supportsGlobalMenuBar || isFullScreenNow)
+#endif
+            {
                 alwaysHideMenuBarDlg();
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif
+
             // This will toggle the Fullscreen checkbox and hide the menubar if
             // we go fullscreen.
             // Skip this during startup or the launchimage will be shifted

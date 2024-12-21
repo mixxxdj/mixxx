@@ -121,9 +121,13 @@
          <property name="displayFormat">
           <string>hh:mm</string>
          </property>
-         <property name="timeSpec">
-          <enum>Qt::LocalTime</enum>
-         </property>
+         <!--
+           TODO: Enable this once we require at least Qt 6.7 and remove the
+           corresponding code from the C++ file.
+           -->
+         <!--<property name="timeZone">
+          <enum>QTimeZone::LocalTime</enum>
+         </property>-->
          <property name="minimumSize">
           <size>
            <width>60</width>
@@ -254,6 +258,72 @@
    </item>
 
    <item>
+    <widget class="QGroupBox" name="CrossfaderBehaviour">
+      <property name="title">
+       <string>Crossfader Behaviour</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <layout class="QGridLayout" name="CrossfaderBehaviourLayout">
+
+        <item row="0" column="0">
+          <widget class="QLabel" name="CenterXfaderLabel">
+            <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+            <property name="text">
+              <string>Reset the Crossfader back to center after disabling AutoDJ</string>
+            </property>
+            <property name="buddy">
+              <cstring>CenterXfaderCheckBox</cstring>
+            </property>
+          </widget>
+        </item>
+
+        <item row="0" column="1">
+          <widget class="QCheckBox" name="CenterXfaderCheckBox"/>
+        </item>
+
+        <item row="0" column="2">
+          <spacer name="horizontalSpacerxfaderbehaviour">
+            <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+          </spacer>
+        </item>
+
+        <item row="1" column="0" colspan="3">
+          <widget class="QLabel" name="CenterXfaderHintText">
+            <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+              <string>Hint: Resetting the crossfader to center will cause a drop of the main output's volume if you've selected "Constant Power" crossfader curve in the Mixer preferences.</string>
+            </property>
+          </widget>
+        </item>
+
+      </layout>
+    </widget>
+   </item>
+
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -270,5 +340,6 @@
   </layout>
  </widget>
  <resources/>
+ <!-- tabstops -->
  <connections/>
 </ui>

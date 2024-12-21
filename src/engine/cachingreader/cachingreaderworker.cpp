@@ -25,11 +25,13 @@ constexpr SINT kNumSoundFrameToVerify = 2;
 CachingReaderWorker::CachingReaderWorker(
         const QString& group,
         FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
-        FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
+        FIFO<ReaderStatusUpdate>* pReaderStatusFIFO,
+        mixxx::audio::ChannelCount maxSupportedChannel)
         : m_group(group),
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
-          m_pReaderStatusFIFO(pReaderStatusFIFO) {
+          m_pReaderStatusFIFO(pReaderStatusFIFO),
+          m_maxSupportedChannel(maxSupportedChannel) {
 }
 
 ReaderStatusUpdate CachingReaderWorker::processReadRequest(
@@ -82,7 +84,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // to further checks whether a automatic offset adjustment is possible or a the
     // sample position metadata shall be treated as outdated.
     // Failures of the sanity check only result in an entry into the log at the moment.
-    verifyFirstSound(pChunk);
+    verifyFirstSound(pChunk, m_pAudioSource->getSignalInfo().getChannelCount());
 
     ReaderStatusUpdate result;
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
@@ -90,10 +92,20 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 }
 
 // WARNING: Always called from a different thread (GUI)
+#ifdef __STEM__
+void CachingReaderWorker::newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask) {
+#else
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
+#endif
     {
         const auto locker = lockMutex(&m_newTrackMutex);
+#ifdef __STEM__
+        m_pNewTrack = NewTrackRequest{
+                pTrack,
+                stemMask};
+#else
         m_pNewTrack = pTrack;
+#endif
         m_newTrackAvailable.storeRelease(1);
     }
     workReady();
@@ -111,16 +123,25 @@ void CachingReaderWorker::run() {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable.loadAcquire()) {
+#ifdef __STEM__
+            NewTrackRequest pLoadTrack;
+#else
             TrackPointer pLoadTrack;
+#endif
             { // locking scope
                 const auto locker = lockMutex(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
-                m_pNewTrack.reset();
                 m_newTrackAvailable.storeRelease(0);
             } // implicitly unlocks the mutex
+#ifdef __STEM__
+            if (pLoadTrack.track) {
+                // in this case the engine is still running with the old track
+                loadTrack(pLoadTrack.track, pLoadTrack.stemMask);
+#else
             if (pLoadTrack) {
                 // in this case the engine is still running with the old track
                 loadTrack(pLoadTrack);
+#endif
             } else {
                 // here, the engine is already stopped
                 unloadTrack();
@@ -166,7 +187,12 @@ void CachingReaderWorker::unloadTrack() {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 }
 
+#ifdef __STEM__
+void CachingReaderWorker::loadTrack(
+        const TrackPointer& pTrack, mixxx::StemChannelSelection stemMask) {
+#else
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
+#endif
     // This emit is directly connected and returns synchronized
     // after the engine has been stopped.
     emit trackLoading();
@@ -187,7 +213,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     mixxx::AudioSource::OpenParams config;
-    config.setChannelCount(CachingReaderChunk::kChannels);
+    config.setChannelCount(m_maxSupportedChannel);
+#ifdef __STEM__
+    config.setStemMask(stemMask);
+#endif
     m_pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
     if (!m_pAudioSource) {
         kLogger.warning()
@@ -199,6 +228,25 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' could not be loaded.")
                         .arg(QDir::toNativeSeparators(pTrack->getLocation())));
+        return;
+    }
+
+    // It is critical that the audio source doesn't contain more channels than
+    // requested as this could lead to overflow when reading chunks
+    VERIFY_OR_DEBUG_ASSERT(m_pAudioSource->getSignalInfo().getChannelCount() >=
+                    mixxx::audio::ChannelCount::mono() &&
+            m_pAudioSource->getSignalInfo().getChannelCount() <=
+                    m_maxSupportedChannel) {
+        m_pAudioSource.reset(); // Close open file handles
+        const auto update = ReaderStatusUpdate::trackUnloaded();
+        m_pReaderStatusFIFO->writeBlocking(&update, 1);
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' could not be loaded because it contains %2 "
+                   "channels, and only 1 to %3 are supported.")
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation()),
+                                QString::number(m_pAudioSource->getSignalInfo()
+                                                        .getChannelCount()),
+                                QString::number(m_maxSupportedChannel)));
         return;
     }
 
@@ -233,9 +281,6 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Emit that the track is loaded.
-    const double sampleCount =
-            CachingReaderChunk::dFrames2samples(
-                    m_pAudioSource->frameLength());
 
     // This code is a workaround until we have found a better solution to
     // verify and correct offsets.
@@ -252,7 +297,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     emit trackLoaded(
             pTrack,
             m_pAudioSource->getSignalInfo().getSampleRate(),
-            sampleCount);
+            m_pAudioSource->getSignalInfo().getChannelCount(),
+            mixxx::audio::FramePos(m_pAudioSource->frameLength()));
 }
 
 void CachingReaderWorker::quitWait() {
@@ -261,7 +307,8 @@ void CachingReaderWorker::quitWait() {
     wait();
 }
 
-void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
+void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk,
+        mixxx::audio::ChannelCount channelCount) {
     if (!m_firstSoundFrameToVerify.isValid()) {
         return;
     }
@@ -271,12 +318,14 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
                     m_firstSoundFrameToVerify.toLowerFrameBoundary()
                             .value()));
     if (pChunk->getIndex() == firstSoundIndex) {
-        CSAMPLE sampleBuffer[kNumSoundFrameToVerify * mixxx::kEngineChannelCount];
+        mixxx::SampleBuffer sampleBuffer(kNumSoundFrameToVerify * channelCount);
         SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
-        pChunk->readBufferedSampleFrames(sampleBuffer,
+        pChunk->readBufferedSampleFrames(sampleBuffer.data(),
+                channelCount,
                 mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
-        if (AnalyzerSilence::verifyFirstSound(std::span<const CSAMPLE>(sampleBuffer),
-                    mixxx::audio::FramePos(1))) {
+        if (AnalyzerSilence::verifyFirstSound(sampleBuffer.span(),
+                    mixxx::audio::FramePos(1),
+                    channelCount)) {
             qDebug() << "First sound found at the previously stored position";
         } else {
             // This can happen in case of track edits or replacements, changed

@@ -1,24 +1,24 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 
+#ifndef QT_OPENGL_ES_2
+
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 
 #include "moc_waveformrenderertextured.cpp"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
 
 namespace allshader {
 
 // static
-QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Type t) {
-    using Type = WaveformRendererTextured::Type;
+QString WaveformRendererTextured::fragShaderForType(::WaveformWidgetType::Type t) {
     switch (t) {
-    case Type::Filtered:
+    case ::WaveformWidgetType::Filtered:
         return QLatin1String(":/shaders/filteredsignal.frag");
-    case Type::RGB:
+    case ::WaveformWidgetType::RGB:
         return QLatin1String(":/shaders/rgbsignal.frag");
-    case Type::Stacked:
+    case ::WaveformWidgetType::Stacked:
         return QLatin1String(":/shaders/stackedsignal.frag");
     default:
         break;
@@ -27,12 +27,17 @@ QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Ty
     return QString();
 }
 
-WaveformRendererTextured::WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
-        Type t)
+WaveformRendererTextured::WaveformRendererTextured(
+        WaveformWidgetRenderer* waveformWidget,
+        ::WaveformWidgetType::Type t,
+        ::WaveformRendererAbstract::PositionSource type,
+        WaveformRendererSignalBase::Options options)
         : WaveformRendererSignalBase(waveformWidget),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
+          m_options(options),
           m_shadersValid(false),
           m_type(t),
           m_pFragShader(fragShaderForType(t)) {
@@ -124,6 +129,15 @@ bool WaveformRendererTextured::loadTexture() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     if (pWaveform != nullptr && data != nullptr) {
+        // Make a copy of the waveform data, stripping the stems portion. Note that the datasize is
+        // different from the texture size -- we want the full texture size so the upload works. See
+        // m_data in waveform/waveform.h.
+        if (m_data.size() == 0 || static_cast<int>(m_data.size()) != pWaveform->getTextureSize()) {
+            m_data.resize(pWaveform->getTextureSize());
+        }
+        for (int i = 0; i < pWaveform->getDataSize(); i++) {
+            m_data[i] = data[i].filtered;
+        }
         // Waveform ensures that getTextureSize is a multiple of
         // getTextureStride so there is no rounding here.
         int textureWidth = pWaveform->getTextureStride();
@@ -137,7 +151,7 @@ bool WaveformRendererTextured::loadTexture() {
                 0,
                 GL_RGBA,
                 GL_UNSIGNED_BYTE,
-                data);
+                m_data.data());
         int error = glGetError();
         if (error) {
             qDebug() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
@@ -267,6 +281,14 @@ void WaveformRendererTextured::slotWaveformUpdated() {
 }
 
 void WaveformRendererTextured::paintGL() {
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+        return;
+    }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
+
     ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
@@ -282,10 +304,16 @@ void WaveformRendererTextured::paintGL() {
         return;
     }
 
-    const WaveformData* data = pWaveform->data();
-    if (data == nullptr) {
+    if (pWaveform->data() == nullptr) {
         return;
     }
+#ifdef __STEM__
+    auto stemInfo = pTrack->getStemInfo();
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && pWaveform->hasStem()) {
+        return;
+    }
+#endif
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
@@ -293,7 +321,7 @@ void WaveformRendererTextured::paintGL() {
     }
 
     // NOTE(vRince): completion can change during loadTexture
-    // do not remove currenCompletion temp variable !
+    // do not remove currentCompletion temp variable !
     const int currentCompletion = pWaveform->getCompletion();
     if (m_textureRenderedWaveformCompletion < currentCompletion) {
         loadTexture();
@@ -305,10 +333,11 @@ void WaveformRendererTextured::paintGL() {
     getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     const auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            m_waveformRenderer->getFirstDisplayedPosition(positionType) * trackSamples /
             audioVisualRatio / 2.0);
     const auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio / 2.0);
+            m_waveformRenderer->getLastDisplayedPosition(positionType) *
+            trackSamples / audioVisualRatio / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;
@@ -352,13 +381,18 @@ void WaveformRendererTextured::paintGL() {
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
+        if (m_type == ::WaveformWidgetType::RGB) {
+            m_frameShaderProgram->setUniformValue("splitStereoSignal",
+                    m_options & WaveformRendererSignalBase::Option::SplitStereoSignal);
+        }
+
         m_frameShaderProgram->setUniformValue("axesColor",
                 QVector4D(static_cast<GLfloat>(m_axesColor_r),
                         static_cast<GLfloat>(m_axesColor_g),
                         static_cast<GLfloat>(m_axesColor_b),
                         static_cast<GLfloat>(m_axesColor_a)));
 
-        if (m_type == Type::Stacked) {
+        if (m_type == ::WaveformWidgetType::Stacked) {
             m_frameShaderProgram->setUniformValue("lowFilteredColor",
                     QVector4D(static_cast<GLfloat>(m_rgbLowFilteredColor_r),
                             static_cast<GLfloat>(m_rgbLowFilteredColor_g),
@@ -375,7 +409,7 @@ void WaveformRendererTextured::paintGL() {
                             static_cast<GLfloat>(m_rgbHighFilteredColor_b),
                             1.0));
         }
-        if (m_type == Type::RGB || m_type == Type::Stacked) {
+        if (m_type == ::WaveformWidgetType::RGB || m_type == ::WaveformWidgetType::Stacked) {
             m_frameShaderProgram->setUniformValue("lowColor",
                     QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
                             static_cast<GLfloat>(m_rgbLowColor_g),
@@ -513,3 +547,5 @@ void WaveformRendererTextured::paintGL() {
 }
 
 } // namespace allshader
+
+#endif // QT_OPENGL_ES_2

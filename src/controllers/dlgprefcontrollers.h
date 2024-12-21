@@ -41,6 +41,9 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   private slots:
     void rescanControllers();
+#ifdef __PORTMIDI__
+    void slotMidiThroughChanged(bool checked);
+#endif
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 
   private:

@@ -76,7 +76,7 @@ uint32_t seekTillAtom(QIODevice* reader,
         const QStringList& path,
         uint32_t boxSize = 0,
         uint32_t pathIdx = 0) {
-    if (path.size() == pathIdx) {
+    if (static_cast<uint32_t>(path.size()) == pathIdx) {
         return boxSize;
     }
 
@@ -171,7 +171,7 @@ QList<StemInfo> StemInfoImporter::importStemInfos(
         kLogger.debug() << "Unexpected or missing stems value in STEM manifest";
         return {};
     }
-    auto stemArray = stems.toArray();
+    const auto stemArray = stems.toArray();
     QList<StemInfo> stemsList;
     stemsList.reserve(stemArray.size());
     int stemIdx = 0;

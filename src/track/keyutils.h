@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
+#include "util/color/colorpalette.h"
 #include "util/math.h"
 #include "util/types.h"
 
@@ -21,7 +22,8 @@ class KeyUtils {
         Traditional = 4,
         OpenKeyAndTraditional = 5,
         LancelotAndTraditional = 6,
-        NumKeyNotations = 7
+        ID3v2 = 7,
+        NumKeyNotations = 8
     };
 
     enum class ScaleMode {
@@ -42,7 +44,7 @@ class KeyUtils {
                 key < mixxx::track::io::key::C_MINOR;
     }
 
-    // Returns the tonic, 0-indexed.
+    /// Returns the tonic, 0-indexed.
     static inline int keyToTonic(mixxx::track::io::key::ChromaticKey key) {
         if (key == mixxx::track::io::key::INVALID) {
             return mixxx::track::io::key::INVALID;
@@ -50,23 +52,27 @@ class KeyUtils {
         return static_cast<int>(key) - (keyIsMajor(key) ? 1 : 13);
     }
 
-    // Takes a 0-indexed tonic and whether it is major/minor and produces a key.
+    /// Takes a 0-indexed tonic and whether it is major/minor and produces a key.
     static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic, bool major) {
         return static_cast<mixxx::track::io::key::ChromaticKey>(
             tonic + (major ? 1 : 13));
     }
 
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
-                               KeyNotation notation = KeyNotation::Custom);
+            KeyNotation notation = KeyNotation::Custom);
 
     static QString formatGlobalKey(
             const Keys& keys,
             KeyNotation notation = KeyNotation::Custom);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
+    static mixxx::track::io::key::ChromaticKey keyFromNumericValue(int value);
     static KeyNotation keyNotationFromNumericValue(double value);
+    static KeyNotation keyNotationFromString(const QString& notationName);
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
+
+    static QColor keyToColor(mixxx::track::io::key::ChromaticKey key, const ColorPalette& palette);
 
     static QPair<mixxx::track::io::key::ChromaticKey, double> scaleKeyOctaves(
         mixxx::track::io::key::ChromaticKey key, double scale);
@@ -84,8 +90,8 @@ class KeyUtils {
     static int shortestStepsToCompatibleKey(mixxx::track::io::key::ChromaticKey key,
                                             mixxx::track::io::key::ChromaticKey target_key);
 
-    // Returns a list of keys that are harmonically compatible with key using
-    // the Circle of Fifths (including the key itself).
+    /// Returns a list of keys that are harmonically compatible with key using
+    /// the Circle of Fifths (including the key itself).
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key);
 
@@ -99,7 +105,7 @@ class KeyUtils {
     static void setNotation(
         const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);
 
-    // Returns pow(2, octaveChange)
+    /// Returns pow(2, octaveChange)
     static inline double octaveChangeToPowerOf2(const double& octaveChange) {
         // Some libraries (e.g. SoundTouch) calculate pow(2, octaveChange)
         // using this identity:
@@ -125,51 +131,15 @@ class KeyUtils {
 
     static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);
 
-    static inline int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
-        switch (key) {
-            case mixxx::track::io::key::C_MAJOR:
-            case mixxx::track::io::key::A_MINOR:
-                return 1;
-            case mixxx::track::io::key::G_MAJOR:
-            case mixxx::track::io::key::E_MINOR:
-                return 2;
-            case mixxx::track::io::key::D_MAJOR:
-            case mixxx::track::io::key::B_MINOR:
-                return 3;
-            case mixxx::track::io::key::A_MAJOR:
-            case mixxx::track::io::key::F_SHARP_MINOR:
-                return 4;
-            case mixxx::track::io::key::E_MAJOR:
-            case mixxx::track::io::key::C_SHARP_MINOR:
-                return 5;
-            case mixxx::track::io::key::B_MAJOR:
-            case mixxx::track::io::key::G_SHARP_MINOR:
-                return 6;
-            case mixxx::track::io::key::F_SHARP_MAJOR:
-            case mixxx::track::io::key::E_FLAT_MINOR:
-                return 7;
-            case mixxx::track::io::key::D_FLAT_MAJOR:
-            case mixxx::track::io::key::B_FLAT_MINOR:
-                return 8;
-            case mixxx::track::io::key::A_FLAT_MAJOR:
-            case mixxx::track::io::key::F_MINOR:
-                return 9;
-            case mixxx::track::io::key::E_FLAT_MAJOR:
-            case mixxx::track::io::key::C_MINOR:
-                return 10;
-            case mixxx::track::io::key::B_FLAT_MAJOR:
-            case mixxx::track::io::key::G_MINOR:
-                return 11;
-            case mixxx::track::io::key::F_MAJOR:
-            case mixxx::track::io::key::D_MINOR:
-                return 12;
-            default:
-                return 0;
-        }
-    }
+    static int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key);
 
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
+
+    static QVariant keyFromKeyTextAndIdFields(
+            const QVariant& keyTextField, const QVariant& keyIdField);
+    static QString keyFromKeyTextAndIdValues(const QString& keyText,
+            const mixxx::track::io::key::ChromaticKey& key);
 
   private:
     static QMutex s_notationMutex;

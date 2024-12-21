@@ -28,9 +28,9 @@ class LoopingControl : public EngineControl {
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentPosition.
-    void process(const double dRate,
+    void process(const double rate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize) override;
+            const std::size_t bufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentPosition and the playback direction.
@@ -103,7 +103,7 @@ class LoopingControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
-    double getTrackSamples() const;
+    mixxx::audio::FramePos getTrackFrame() const;
 
   signals:
     void loopReset();
@@ -171,6 +171,17 @@ class LoopingControl : public EngineControl {
     void clearLoopInfoAndControls();
     void updateBeatLoopingControls();
     bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
+    bool quantizeEnabledAndHasTrueTrackBeats() const;
+
+    // Fake beats that allow using looping/beatjump controls with no beats:
+    // one 'beat' = one second
+    mixxx::BeatsPointer getFake60BpmBeats() {
+        auto fakeBeats = mixxx::Beats::fromConstTempo(
+                frameInfo().sampleRate,
+                mixxx::audio::kStartFramePos,
+                mixxx::Bpm(60.0));
+        return fakeBeats;
+    }
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
@@ -252,6 +263,9 @@ class LoopingControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     mixxx::BeatsPointer m_pBeats;
+    // Flag that allows to act quantized only if we have true track beats.
+    // See quantizeEnabledAndHasTrueTrackBeats()
+    bool m_trueTrackBeats;
 
     friend class LoopingControlTest;
 };

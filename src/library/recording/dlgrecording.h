@@ -6,6 +6,9 @@
 #include "library/recording/ui_dlgrecording.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class WLibrary;
 class WTrackTableView;
@@ -24,12 +27,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void onShow() override{};
     bool hasFocus() const override;
     void setFocus() override;
-    void activateSelectedTrack() override;
-    void slotAddToAutoDJBottom() override;
-    void slotAddToAutoDJTop() override;
-    void slotAddToAutoDJReplace() override;
-    void loadSelectedTrackToGroup(const QString& group, bool play) override;
-    void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
@@ -43,7 +40,14 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool play);
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer tio,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool);
+#else
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
+#endif
     void restoreSearch(const QString& search);
     void restoreModelState();
 

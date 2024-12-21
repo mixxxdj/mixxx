@@ -24,18 +24,24 @@ bool calcUseColorsAuto() {
     // see https://no-color.org/
     if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
         return false;
-    } else {
-#ifndef __WINDOWS__
-        if (isatty(fileno(stderr))) {
-            return true;
-        }
-#else
-        if (_isatty(_fileno(stderr))) {
-            return true;
-        }
-#endif
     }
-    return false;
+
+#ifndef __WINDOWS__
+    if (!isatty(fileno(stderr))) {
+        return false;
+    }
+#else
+    if (!_isatty(_fileno(stderr))) {
+        return false;
+    }
+#endif
+
+    // Check if terminal is known to support ANSI colors
+    QString term = QProcessEnvironment::systemEnvironment().value("TERM");
+    return term == "alacritty" || term == "ansi" || term == "cygwin" || term == "linux" ||
+            term.startsWith("screen") || term.startsWith("xterm") ||
+            term.startsWith("vt100") || term.startsWith("rxvt") ||
+            term.endsWith("color");
 }
 
 } // namespace
@@ -43,6 +49,7 @@ bool calcUseColorsAuto() {
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_startAutoDJ(false),
+          m_rescanLibrary(false),
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
@@ -59,6 +66,7 @@ CmdlineArgs::CmdlineArgs()
           m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
+          m_logMaxFileSize(mixxx::kLogMaxFileSizeDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see #8090
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH))
@@ -180,6 +188,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "Starts Auto DJ when Mixxx is launched.")
                             : QString());
     parser.addOption(startAutoDJ);
+
+    const QCommandLineOption rescanLibrary(QStringLiteral("rescan-library"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Rescans the library when Mixxx is launched.")
+                            : QString());
+    parser.addOption(rescanLibrary);
 
     // An option with a value
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
@@ -320,6 +334,18 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(logFlushLevel);
     parser.addOption(logFlushLevelDeprecated);
 
+    const QCommandLineOption logMaxFileSize(QStringLiteral("log-max-file-size"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Sets the maximum file size of the "
+                                      "mixxx.log file in bytes. "
+                                      "Use -1 for unlimited. The default is "
+                                      "100 MB as 1e5 or 100000000.")
+                            : QString(),
+            QStringLiteral("bytes"));
+    logFlushLevelDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    logFlushLevelDeprecated.setValueName(logFlushLevel.valueName());
+    parser.addOption(logMaxFileSize);
+
     QCommandLineOption debugAssertBreak(QStringLiteral("debug-assert-break"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
@@ -339,6 +365,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "Load the specified music file(s) at start-up. Each file "
                                       "you specify will be loaded into the next virtual deck.")
                             : QString());
+
+    const QCommandLineOption controllerPreviewScreens(QStringLiteral("controller-preview-screens"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Preview rendered controller screens in the Setting windows.")
+                            : QString());
+    parser.addOption(controllerPreviewScreens);
 
     if (forUserFeedback) {
         // We know form the first path, that there will be likely an error message, check again.
@@ -379,6 +411,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_startAutoDJ = true;
     }
 
+    if (parser.isSet(rescanLibrary)) {
+        m_rescanLibrary = true;
+    }
+
     if (parser.isSet(settingsPath)) {
         m_settingsPath = parser.value(settingsPath);
         if (!m_settingsPath.endsWith("/")) {
@@ -408,6 +444,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_useLegacyVuMeter = parser.isSet(enableLegacyVuMeter);
     m_useLegacySpinny = parser.isSet(enableLegacySpinny);
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerPreviewScreens = parser.isSet(controllerPreviewScreens);
     m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML
@@ -447,6 +484,17 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
             fputs("\nlogFlushLevel wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
                   "Mixxx will only flush output after a critical message.\n",
                     stdout);
+        }
+    }
+
+    if (parser.isSet(logMaxFileSize)) {
+        QString strLogMaxFileSize = parser.value(logMaxFileSize);
+        bool ok = false;
+        // We parse it as double to also support exponential notation
+        m_logMaxFileSize = static_cast<qint64>(strLogMaxFileSize.toDouble(&ok));
+        if (!ok) {
+            fputs("\nFailed to parse log-max-file-size.\n", stdout);
+            return false;
         }
     }
 

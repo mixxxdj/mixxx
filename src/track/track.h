@@ -111,7 +111,7 @@ class Track : public QObject {
     QString getType() const;
 
     // Get number of channels
-    int getChannels() const;
+    mixxx::audio::ChannelCount getChannels() const;
 
     mixxx::audio::SampleRate getSampleRate() const;
 
@@ -185,7 +185,7 @@ class Track : public QObject {
 
     // Returns the content of the year library column.
     // This was original only the four digit (gregorian) calendar year of the release date
-    // but allows to store any user string. Now it is altenatively used as
+    // but allows to store any user string. Now it is alternatively used as
     // recording date/time in the ISO 8601 yyyy-MM-ddTHH:mm:ss format tunkated at any point,
     // following the TDRC ID3v2.4 frame or if not exists, TYER + TDAT.
     QString getYear() const;
@@ -338,7 +338,13 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_stemInfo;
     }
-    // Setter is only available internally. See setStemInfosWhileLocked
+    // Setter is only available internally. See setStemPointsWhileLocked
+
+    bool hasStem() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return !m_stemInfo.isEmpty();
+    }
 #endif
 
     enum class ImportStatus {
@@ -428,6 +434,16 @@ class Track : public QObject {
             mixxx::Duration duration);
     void setAudioProperties(
             const mixxx::audio::StreamInfo& streamInfo);
+
+    // Information about the actual properties of the
+    // audio stream is only available after opening the
+    // source at least once. On this occasion the metadata
+    // stream info of the track need to be updated to reflect
+    // these values.
+    bool hasStreamInfoFromSource() const {
+        const auto locked = lockMutex(&m_qMutex);
+        return m_record.hasStreamInfoFromSource();
+    }
 
   signals:
     void artistChanged(const QString&);
@@ -562,16 +578,6 @@ class Track : public QObject {
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
             const SyncTrackMetadataParams& syncParams);
-
-    // Information about the actual properties of the
-    // audio stream is only available after opening the
-    // source at least once. On this occasion the metadata
-    // stream info of the track need to be updated to reflect
-    // these values.
-    bool hasStreamInfoFromSource() const {
-        const auto locked = lockMutex(&m_qMutex);
-        return m_record.hasStreamInfoFromSource();
-    }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 

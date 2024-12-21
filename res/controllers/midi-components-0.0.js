@@ -31,7 +31,7 @@
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -481,8 +481,7 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
-                this.input(channel, control, value, status, group);
+                this.input(channel, control, (value << 7) + (this._firstLSB ? this._firstLSB : 0), status, group);
             }
             this.MSB = value;
         },
@@ -651,7 +650,13 @@
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
         },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         * @deprecated since 2.5.0. Use @{ComponentContainer#setLayer} instead
+         */
         applyLayer: function(newLayer, reconnectComponents) {
+            console.warn("ComponentContainer.applyLayer is deprecated; use ComponentContainer.setLayer instead");
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
             }
@@ -661,7 +666,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            script.deepMerge(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -669,6 +674,30 @@
                     component.trigger();
                 });
             }
+        },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         */
+        setLayer(newLayer, reconnectComponents) {
+            if (reconnectComponents !== false) {
+                reconnectComponents = true;
+            }
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.disconnect();
+                });
+            }
+
+            Object.assign(this, newLayer);
+
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.connect();
+                    component.trigger();
+                });
+            }
+
         },
         shutdown: function() {
             this.forEachComponent(function(component) {
@@ -733,35 +762,65 @@
     });
 
     const JogWheelBasic = function(options) {
+        if (options.deck !== undefined && options.group !== undefined) {
+            console.warn(
+                "options.deck and option.group are both set; " +
+                "options.deck will take priority"
+            );
+        }
+
+        const deck = options.deck;
+        const group = script.deckFromGroup(options.group);
+        delete options.deck;
+        delete options.group;
+
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+        this._deck = undefined;
 
-        if (!_.isInteger(this.deck)) {
-            console.warn("missing scratch deck");
-            return;
+        Object.defineProperties(this, {
+            deck: {
+                get: () => this._deck,
+                set: (value) => {
+                    if (Number.isInteger(value) && value > 0) {
+                        this._deck = value;
+                        this.reset();
+                    }
+                },
+            },
+            group: {
+                get: () => `[Channel${deck}]`,
+                set: value => {
+                    const deck = script.deckFromGroup(value);
+                    if (deck > 0) {
+                        this._deck = deck;
+                        this.reset();
+                    }
+                },
+            }
+        });
+
+        this.deck = deck;
+
+        if (!this.deck) {
+            this.group = group;  // try setting deck from group
         }
-        if (this.deck <= 0) {
-            console.warn("invalid deck number: " + this.deck);
-            return;
-        }
-        if (!_.isInteger(this.wheelResolution)) {
+
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
-        if (this.group === undefined) {
-            this.group = "[Channel" + this.deck + "]";
-        }
+
         this.inKey = "jog";
     };
 
@@ -773,6 +832,10 @@
             return value < 0x40 ? value : value - (this.max + 1);
         },
         inputWheel: function(_channel, _control, value, _status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
             value = this.inValueScale(value);
             if (engine.isScratching(this.deck)) {
                 engine.scratchTick(this.deck, value);
@@ -781,6 +844,10 @@
             }
         },
         inputTouch: function(channel, control, value, status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
             if (this.isPress(channel, control, value, status) && this.vinylMode) {
                 engine.scratchEnable(this.deck,
                     this.wheelResolution,
@@ -795,13 +862,7 @@
             throw "Called wrong input handler for " + status + ": " + control + ".\n" +
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
-        // this is needed for features such as "deck switching" that work
-        // by changing the component group. It is assumed they call `connect`
-        // afterwards.
-        connect: function() {
-            Component.prototype.connect.call(this);
-            this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
-        }
+        reset() {},
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {

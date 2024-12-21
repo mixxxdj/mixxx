@@ -28,9 +28,15 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
 
   private slots:
     void pluginSelected(int i);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void analyzerEnabled(Qt::CheckState state);
+    void fastAnalysisEnabled(Qt::CheckState state);
+    void reanalyzeEnabled(Qt::CheckState state);
+#else
     void analyzerEnabled(int i);
     void fastAnalysisEnabled(int i);
     void reanalyzeEnabled(int i);
+#endif
 
     void setNotation(KeyUtils::KeyNotation notation);
     void setNotationOpenKey(bool);
@@ -39,6 +45,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void setNotationLancelotAndTraditional(bool);
     void setNotationTraditional(bool);
     void setNotationCustom(bool);
+    void slotStemStrategyChanged(int index);
 
   private:
     void loadSettings();
@@ -51,4 +58,5 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
+    KeyDetectionSettings::StemStrategy m_stemStrategy;
 };
