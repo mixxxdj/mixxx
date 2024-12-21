@@ -57,7 +57,8 @@ DlgAbout::DlgAbout()
             << "Ferran Pujol Camins"
             << "J&ouml;rg Wartenberg"
             << "Fredrik Wieczerkowski"
-            << "Maarten de Boer";
+            << "Maarten de Boer"
+            << "Antoine Colombier";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
@@ -88,7 +89,6 @@ DlgAbout::DlgAbout()
             << "Jakob Leifhelm"
             << "Florian Goth"
             << "Chase Durand"
-            << "Antoine Colombier"
             << "John Last"
             << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
@@ -125,7 +125,8 @@ DlgAbout::DlgAbout()
             << "Markus Kohlhase"
             << "Daniel Fernandes"
             << "Frank Grimy"
-            << "Al Hadebe";
+            << "Al Hadebe"
+            << "Emilien Colombier";
 
     QStringList specialThanks;
     specialThanks
