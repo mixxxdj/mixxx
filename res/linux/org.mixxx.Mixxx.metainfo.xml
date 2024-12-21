@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-11-27" timestamp="1732740226">
+    <release version="2.5.0" type="development" date="2024-12-18" timestamp="1734505815">
       <description>
  <p>
   Waveforms
@@ -111,6 +111,8 @@
    Show beats and time until next marker in the waveform
    #12994
    #13311
+   #13953
+   #13314
   </li>
   <li>
    Waveforms: don't elide hotcue labels
@@ -131,8 +133,12 @@
    #13485
   </li>
   <li>
-   Update overview immediately, when the normalize option or global gain changed
+   Overview: Update immediately, when the normalize option or global gain changed
    #13634
+  </li>
+  <li>
+   Overview: Clear pickup position display when opening cue menu
+   #13693
   </li>
  </ul>
  <p>
@@ -147,6 +153,8 @@
   <li>
    Fullscreen toggle rework
    #11566
+   #13189
+   #13030
   </li>
   <li>
    Allow to edit track title and artist directly within the decks via a delayed double-click
@@ -202,8 +210,12 @@
    #9819
   </li>
   <li>
-   AutoDJ: Force-show decks 3/4 if we are going to use them
+   Auto DJ: Force-show decks 3/4 if we are going to use them
    #13455
+  </li>
+  <li>
+   Auto DJ: Add new random tracks if one track does not exists
+   #13551
   </li>
   <li>
    Show wait cursor when re/loading a skin (not during startup)
@@ -244,6 +256,15 @@
   <li>
    Logging: Include timestamps in messages by default
    #11861
+  </li>
+  <li>
+   Logging: Limit mixxx.log size to 100 MB or via --log-max-file-size
+   #13684
+   #13660
+  </li>
+  <li>
+   Adjust some skin controls, to allow point-and-click mapping
+   #13906
   </li>
  </ul>
  <p>
@@ -298,6 +319,11 @@
    #13038
    #13199
   </li>
+  <li>
+   Recording: Fix bogus timestamp in CUE sheet after restarting a recording
+   #13966
+   #13964
+  </li>
  </ul>
  <p>
   Effects
@@ -336,6 +362,8 @@
    #12020
    #13361
    #13364
+   #13958
+   #13100
   </li>
   <li>
    Track menu: Rephrase "Reset" to "Clear"
@@ -377,6 +405,12 @@
    #13299
    #13609
    #13597
+   #13631
+  </li>
+  <li>
+   Track property editor: focus the editing field in the track properties that corresponds to the focused column
+   #13841
+   #14036
   </li>
   <li>
    Computer feature: add sidebar action "Refresh directory tree"
@@ -452,6 +486,9 @@
    #11096
    #11095
    #13650
+   #14011
+   #14008
+   #14020
   </li>
   <li>
    Center date values, right-align Track #
@@ -463,6 +500,7 @@
    #13900
    #13889
    #13903
+   #14012
   </li>
   <li>
    Analysis: Fix stop button when analyzing crate/playlist
@@ -495,6 +533,10 @@
    Apply changes only after pressing Apply in color preferences
    #13302
   </li>
+  <li>
+   Add/reorder tabstops in Library and Waveform preferences
+   #13846
+  </li>
  </ul>
  <p>
   Controller Mappings
@@ -509,8 +551,16 @@
    #13589
   </li>
   <li>
+   Denon MC7000: Add sampler options to mapping settings
+   #13950
+  </li>
+  <li>
    MIDI for light: Implement new Active deck heuristic
    #13513
+  </li>
+  <li>
+   MIDI for light: Add settings GUI
+   #13721
   </li>
   <li>
    Numark Scratch: Add controller settings
@@ -531,6 +581,14 @@
   <li>
    Traktor Kontrol S4 Mk3: Rework jogwheel speed compute and motorized platter
    #13393
+  </li>
+  <li>
+   Traktor Kontrol S4 Mk3: Revert QuickEffect preset offset
+   #13997
+  </li>
+  <li>
+   Traktor Kontrol S4 Mk3: Correct wheel timestamp wrap-around
+   #14016
   </li>
  </ul>
  <p>
@@ -566,6 +624,8 @@
    #13045
    #13656
    #13738
+   #13979
+   #13990
   </li>
   <li>
    Registering MIDI Input Handlers From Javascript
@@ -592,6 +652,10 @@
   <li>
    Drop lodash dependency in ComponentJS
    #12779
+  </li>
+  <li>
+   Fix pending reference to the old mapping after selecting 'No mapping'
+   #13907
   </li>
  </ul>
  <p>
@@ -732,8 +796,30 @@
    #12939
   </li>
   <li>
-   Skin: Fix Tango rate range label position
+   Skins: Fix Tango rate range label position
    #13242
+  </li>
+  <li>
+   Skins: Fix Tango icon scaling  by using 'image' instead of 'background-image'
+   #14014
+  </li>
+  <li>
+   Skins: Hide reserved space for invisible table header sort indicators
+   #13535
+  </li>
+  <li>
+   Skins: Fix Deere icons with 150% Scaling
+   #14013
+   #13959
+  </li>
+  <li>
+   Skins: Fix LateNight PaleMoon EQ knob graphics for Qt6.5+
+   #14034
+   #12972
+  </li>
+  <li>
+   Skins: Center rate range labels
+   #14035
   </li>
   <li>
    Introduce wrapper for non const iterators for erase and insert
@@ -779,10 +865,6 @@
   <li>
    Fix menu icon position
    #12216
-  </li>
-  <li>
-   Fix/Skins: hide reserved space for invisible table header sort indicators
-   #13535
   </li>
   <li>
    Qt 6.8 deprecated declaration fixes
@@ -1232,6 +1314,27 @@
    #13913
   </li>
   <li>
+   Translations source copy check
+   #13419
+  </li>
+  <li>
+   CI: Use retry loop for CPack to work around macOS issue
+   #13991
+  </li>
+  <li>
+   AudioUnitManager: Wrap every instance in a shared pointer
+   #13945
+  </li>
+  <li>
+   fix running mixxx-test directly
+   #14023
+   #14025
+  </li>
+  <li>
+   Don't use deprecated "hotcue_1_enabled"/"hotcue_2_enabled" in unittests
+   #14026
+  </li>
+  <li>
    fix tsan issues
    #13876
    #13869
@@ -1239,6 +1342,7 @@
    #13875
    #13898
    #13899
+   #13870
   </li>
   <li>
    Update to latest vcpkg dependencies
