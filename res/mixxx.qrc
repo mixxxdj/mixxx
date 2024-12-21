@@ -2,7 +2,10 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>../LICENSE</file>
+      <!-- for track dnd cursor -->
         <file>images/library/ic_library_drag_and_drop.svg</file>
+      <!-- for drag abort cursor in overveiw waveform -->
+        <file>images/cross_circle_red.svg</file>
       <!-- open/closed lock icons for BPM button -->
         <file>images/library/ic_library_locked.svg</file>
         <file>images/library/ic_library_unlocked.svg</file>
