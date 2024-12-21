@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest.h>
+
 #include <QObject>
 
 #include "control/controlindicatortimer.h"
@@ -184,24 +186,20 @@ class RecordingManager;
 class Library;
 class PlayerManager;
 
-// We can't inherit from LibraryTest because that creates a key_notation control object that is also
-// created by the Library object itself. The duplicated CO creation causes a debug assert.
-/*class LegacyControllerMappingValidationTest : public MixxxDbTest,
-  SoundSourceProviderRegistration { public:
-    LegacyControllerMappingValidationTest()
-            : MixxxDbTest(true) {
-    }
-*/
-class LegacyControllerMappingValidationTest : public ::testing::TestWithParam<MappingInfo> {
+// Custom test fixture class
+class LegacyControllerMappingValidationTest
+        : public ::testing::TestWithParam<MappingInfo>,
+          public SoundSourceProviderRegistration {
   public:
-    LegacyControllerMappingValidationTest()
-            : MixxxDbTest(true) {
+    LegacyControllerMappingValidationTest() {
     }
 
   protected:
     bool testLoadMapping(const MappingInfo& mapping, const QDir& systemMappingsPath);
-#ifdef MIXXX_USE_QML
+    void SetUp() override;
     void TearDown() override;
+
+#ifdef MIXXX_USE_QML
 
     // bool testLoadMapping(const MappingInfo& mapping);
     TrackPointer getOrAddTrackByLocation(
@@ -220,8 +218,6 @@ class LegacyControllerMappingValidationTest : public ::testing::TestWithParam<Ma
     std::shared_ptr<Library> m_pLibrary;
 #endif
 
-    bool testLoadMapping(const MappingInfo& mapping);
-    bool testLoadMapping(const MappingInfo& mapping);
     QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
 };
 
