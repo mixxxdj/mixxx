@@ -58,6 +58,24 @@ To build Mixxx, run
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
 
+### Using Dev Container
+
+> [!NOTE]
+> Dev container have recently been introduced and they are likely incomplete!
+
+TBC
+
+You can build Mixxx using a similar command:
+
+```bash
+mkdir build
+cd build
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON # Needed for clangd
+cmake --build . -j $(nproc)
+```
+
+Once built, you should be able to run it directly for the container. Note that you will have to change the `devconatiner.json` if you want to mount your controller.
+
 ## Documentation
 
 For help using Mixxx, there are a variety of options:

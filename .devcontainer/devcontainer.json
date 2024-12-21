@@ -1,0 +1,45 @@
+{
+  "name": "mixxx",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "securityOpt": [ "label=type:container_runtime_t" ],
+  "runArgs": [
+    // Uncomment the following to enable HID controller support in the container. Make sure to replace `/dev/hidraw7` with your device address
+	  // "--device=/dev/usb",
+	  // "--device=/dev/hidraw7"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+        "installZsh": "false",
+        "username": "developer",
+        "userUid": "1000",
+        "userGid": "1000",
+        "upgradePackages": "false"
+      },
+  },
+  "initializeCommand": "touch ${localEnv:HOME}${localEnv:USERPROFILE}/.gitignore",
+  "customizations": {
+		"vscode": {
+			"extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "eamodio.gitlens",
+      ],
+		}
+  },
+  "remoteEnv": {
+    "XDG_RUNTIME_DIR": "/tmp"
+  },
+  "remoteUser": "developer",
+  "postCreateCommand": "git config --global core.excludesFile '/home/developer/.gitignore' && git config --global --add safe.directory ${containerWorkspaceFolder} && pre-commit install --overwrite --install-hooks",
+  "mounts": [
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/Music,target=/home/${localEnv:USERNAME}/Music",
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitignore,target=/home/developer/.gitignore",
+    "type=bind,source=/run/user/1000/pipewire-0,target=/tmp/pipewire-0",
+    "type=volume,source=mixxx-bashistory,target=/home/developer/.devcontainer",
+    "type=volume,source=mixxx-precommit,target=/home/developer/.cache/pre-commit",
+    "type=volume,source=mixxx-config,target=/home/developer/.mixxx",
+    "type=volume,source=mixxx-ccache,target=/tmp/ccache",
+  ],
+}
