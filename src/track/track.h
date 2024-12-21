@@ -11,6 +11,7 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#include "track/macro.h"
 #ifdef __STEM__
 #include "track/steminfo.h"
 #include "track/steminfoimporter.h"
@@ -361,6 +362,7 @@ class Track : public QObject {
     ImportStatus getCueImportStatus() const;
 
     bool isDirty() const;
+    MacroPointer getMacro(int slot);
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
@@ -416,6 +418,7 @@ class Track : public QObject {
             mixxx::TrackRecord newRecord,
             mixxx::BeatsPointer pOptionalBeats = nullptr);
 
+    bool isDirty();
     // Mark the track dirty if it isn't already.
     void markDirty();
     // Mark the track clean if it isn't already.
@@ -566,6 +569,12 @@ class Track : public QObject {
     void importPendingCueInfosMarkDirtyAndUnlock(
             QT_RECURSIVE_MUTEX_LOCKER* pLock);
 
+    // Get/Set all Macros of the track, only used from TrackDAO and tests
+    QMap<int, MacroPointer> getMacros() const;
+    void setMacros(const QMap<int, MacroPointer>& macros);
+    FRIEND_TEST(MacroControlTest, LoadTrackAndPlayAndClear);
+    FRIEND_TEST(MacroPlaybackTest, Playback);
+
     /// Merge additional metadata that is not (yet) stored in the database
     /// and only available from file tags.
     ///
@@ -604,6 +613,8 @@ class Track : public QObject {
     // The list of stem info
     QList<StemInfo> m_stemInfo;
 #endif
+
+    QMap<int, MacroPointer> m_macros;
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;

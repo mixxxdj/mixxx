@@ -77,11 +77,12 @@ QString locationPathPrefixFromRootDir(const QDir& rootDir) {
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        AnalysisDao& analysisDao,
+        LibraryHashDAO& libraryHashDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
+          m_macroDao(),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
@@ -107,6 +108,12 @@ TrackDAO::~TrackDAO() {
     qDebug() << "~TrackDAO()";
     //clear all leftover Transactions and rollback the db
     addTracksFinish(true);
+}
+
+void TrackDAO::initialize(
+        const QSqlDatabase& database) {
+    DAO::initialize(database);
+    m_macroDao.initialize(database);
 }
 
 void TrackDAO::finish() {
@@ -1509,6 +1516,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
     pTrack->markClean();
 
+    pTrack->setMacros(m_macroDao.loadMacros(trackId));
+
     // Synchronize the track's metadata with the corresponding source
     // file. This import might have never been completed successfully
     // before, so just check and try for every track that has been
@@ -1713,6 +1722,8 @@ bool TrackDAO::updateTrack(const Track& track) const {
             track.getWaveformSummary());
     m_cueDao.saveTrackCues(
             trackId, track.getCuePoints());
+    m_macroDao.saveMacros(
+            trackId, track.getMacros());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
