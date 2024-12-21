@@ -75,7 +75,6 @@ void WaveformRendererPreroll::setup(
 }
 
 void WaveformRendererPreroll::initializeGL() {
-    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 
