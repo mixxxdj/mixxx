@@ -25,7 +25,9 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformWidgetType::Type type,
         const QString& group,
         WaveformRendererSignalBase::Options options)
-        : WGLWidget(parent), WaveformWidgetAbstract(group) {
+        : WGLWidget(parent),
+          WaveformWidgetAbstract(group),
+          m_pWaveformRendererSignal(nullptr) {
     auto pTopNode = std::make_unique<rendergraph::Node>();
     auto pOpacityNode = std::make_unique<rendergraph::OpacityNode>();
 
