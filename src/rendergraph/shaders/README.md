@@ -21,9 +21,9 @@ The GLSL shaders are extracted programmatically with `QShader` and then used wit
 ### Qt < 6.6
 
 The GLSL shader have to extracted from the qsb shader bundles to be used by `QOpenGLShader`.
-This can be done using the script `generate_shaders_gl.pl`. To use this script, make sure
-that the qsb and spirv commands are in your path. qsb is part of Qt. spirv is part of the
-Vulkan SDK and can be downloaded from <https://vulkan.org>
+This can be done using the script `generate_shaders_gl.py` in the ../tools directory. To
+use this script, make sure that the qsb and spirv commands are in your path. qsb is part of
+Qt. spirv is part of the Vulkan SDK and can be downloaded from <https://vulkan.org>
 
-The script also generates the file ```generated_shaders_gl.cmake``` which sets a cmake
+The script also generates the file `generated_shaders_gl.cmake` which sets a cmake
 variable containing a list of all GLSL shaders, used by the CMakeLists.txt in this folder.
