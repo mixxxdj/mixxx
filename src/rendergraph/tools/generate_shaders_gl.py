@@ -20,7 +20,7 @@ import typing
 
 
 def find_executable(
-    executable_name: str, additional_paths: list[str] | None = None
+    executable_name: str, additional_paths: typing.Optional[list[str]] = None
 ) -> pathlib.Path:
     """Find an executable by name in $PATH and in the additional paths."""
     if executable_path := shutil.which(executable_name):
@@ -102,7 +102,7 @@ def get_paths(paths: list[pathlib.Path]) -> typing.Iterator[pathlib.Path]:
             yield path
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: typing.Optional[list[str]] = None) -> int:
     logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
     logger = logging.getLogger(__name__)
