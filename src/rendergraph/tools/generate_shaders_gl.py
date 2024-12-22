@@ -4,9 +4,9 @@ Converts a fragment or vertex shader file into a GL shader file.
 
 You can use it like this:
 
-    $ ./rg_generate_shaders_gl.py --cmake-output \\
-        ../src/rendergraph/shaders/generated_shaders_gl.cmake \\
-        ../src/rendergraph/shaders/*.{vert,frag}
+    $ ./generate_shaders_gl.py --cmake-output \\
+        ../shaders/generated_shaders_gl.cmake \\
+        ../shaders/*.{vert,frag}
 """
 import argparse
 import logging
