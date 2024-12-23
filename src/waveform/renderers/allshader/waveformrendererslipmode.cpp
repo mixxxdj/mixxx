@@ -63,7 +63,6 @@ void WaveformRendererSlipMode::setup(const QDomNode& node, const SkinContext& co
 }
 
 void WaveformRendererSlipMode::initializeGL() {
-    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 
