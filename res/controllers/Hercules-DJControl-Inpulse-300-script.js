@@ -596,7 +596,7 @@ DJCi300.Deck = function(deckNumber) {
         }
 
         // If the beat count has changed, update the object property's value
-        if (this.slicerPad.beat != beat) {
+        if (this.slicerPad.beat !== beat) {
             this.slicerPad.beat = beat;
             // Only send an LED update if no pads are currently held down (pressed pad LEDs are handled above)
             if (!this.slicerPad.pressed.includes(true)) { this.slicerUpdateLED(group); }
