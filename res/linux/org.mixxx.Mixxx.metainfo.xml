@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-12-21" timestamp="1734798790">
+    <release version="2.5.0" type="stable" date="2024-12-24" timestamp="1734998400">
       <description>
  <p>
   Modernized Platform: Update to Qt6
