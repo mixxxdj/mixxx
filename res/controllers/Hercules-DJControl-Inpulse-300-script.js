@@ -388,17 +388,16 @@ DJCi300.changeMode = function(_channel, control, value, _status, group) {
 
 // Toneplay
 DJCi300.toneplay = function(_channel, control, value, _status, group) {
-    const button = control - 0x40 + 1;
+    let button = control - 0x40;
 
     if (value) {
         // Pad buttons (buttons 1-8) will jump to a hotcue and change pitch
         // Shift + pad buttons (buttons 9-16) will only change pitch without jumping
-        if (button <= 8) {
+        if (button < 8) {
             // Jump to the most recently used hotcue
             const recentHotcue = engine.getValue(group, "hotcue_focus");
             if ((recentHotcue > 0) && (engine.getValue(group,
                 `hotcue_${  recentHotcue  }_status`) > 0)) {
-
                 engine.setValue(group, `hotcue_${  recentHotcue  }_goto`, 1);
             } else {
                 // If that hotcue doesn't exist or was deleted, jump to cue
@@ -407,13 +406,15 @@ DJCi300.toneplay = function(_channel, control, value, _status, group) {
             }
         }
 
+        // Subtract 8 from buttons if they're shifted
+        button = (button < 8) ? button : button - 8;
         // Adjust pitch
-        if (button <= 4) {
+        if (button < 4) {
             // Buttons 1-4 are +0 to +3 semitones
-            engine.setValue(group, "pitch", button - 1);
+            engine.setValue(group, "pitch", button);
             // Buttons 5-8 are -4 to -1 semitones
         } else {
-            engine.setValue(group, "pitch", button - 9);
+            engine.setValue(group, "pitch", button - 8);
         }
     }
 };
@@ -521,6 +522,8 @@ DJCi300.Deck = function(deckNumber) {
                         engine.setValue(group, "loop_end_position", this.slicerPad[7].endSample);
                         if (DJCi300.padMode[group] === DJCi300.padModeSlicer) {
                             if (engine.getValue(group, "loop_enabled") === 1) { engine.setValue(group, "reloop_toggle", 1); }
+                        } else if (DJCi300.padMode[group] === DJCi300.padModeSlicerloop) {
+                            if (engine.getValue(group, "loop_enabled") === 0) { engine.setValue(group, "reloop_toggle", 1); }
                         }
                     };
                 }.bind(this),
@@ -531,17 +534,17 @@ DJCi300.Deck = function(deckNumber) {
                     // Much like before, everything in the if-statement only needs to be done once (not 8 times)
                     if (i === 0) {
                         const group = this.currentDeck;
-                        // Disconnect callback functions if they are connected
+                        // Disconnect slicer if it is connected
                         if (this.slicerPad.beatConnection !== undefined && this.slicerPad.beatConnection.isConnected === true) {
                             this.slicerPad.beatConnection.disconnect();
                             this.slicerPad.sizeConnection.disconnect();
                             this.slicerPad.loadConnection.disconnect();
                             this.slicerPad.beat = -1;
+                            this.slicerUpdateLED(group);
                         }
                         // Make loop position indicators disappear as visual feedback
                         engine.setValue(group, "loop_start_position", -1);
                         engine.setValue(group, "loop_end_position", -1);
-                        this.slicerUpdateLED(group);
                     }
                 }.bind(this),
                 input: function(_channel, control, value, _status, group) {
@@ -575,7 +578,9 @@ DJCi300.Deck = function(deckNumber) {
 
                             // Disable the loop (if we're not in slicer loop mode)
                             if (DJCi300.padMode[group] === DJCi300.padModeSlicer) {
-                                engine.setValue(group, "reloop_toggle", 1);
+                                if (engine.getValue(group, "loop_enabled") === 1) { engine.setValue(group, "reloop_toggle", 1); }
+                            } else if (DJCi300.padMode[group] === DJCi300.padModeSlicerloop) {
+                                if (engine.getValue(group, "loop_enabled") === 0) { engine.setValue(group, "reloop_toggle", 1); }
                             }
                         }
                         this.slicerUpdateLED(group);
