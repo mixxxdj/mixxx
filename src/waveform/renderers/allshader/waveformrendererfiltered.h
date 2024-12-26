@@ -22,6 +22,10 @@ class allshader::WaveformRendererFiltered final
     void initializeGL() override;
     void paintGL() override;
 
+    rendergraph::BaseNode* asNode() override {
+        return this;
+    }
+
   private:
     const bool m_bRgbStacked;
     mixxx::UnicolorShader m_shader;

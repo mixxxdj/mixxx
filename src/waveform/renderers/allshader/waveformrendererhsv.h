@@ -23,6 +23,10 @@ class allshader::WaveformRendererHSV final
     void initializeGL() override;
     void paintGL() override;
 
+    rendergraph::BaseNode* asNode() override {
+        return this;
+    }
+
   private:
     mixxx::RGBShader m_shader;
     VertexData m_vertices;

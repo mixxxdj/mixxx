@@ -42,6 +42,10 @@ class allshader::WaveformRendererTextured final : public QObject,
 
     void onSetTrack() override;
 
+    rendergraph::BaseNode* asNode() override {
+        return this;
+    }
+
   public slots:
     void slotWaveformUpdated();
 

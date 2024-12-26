@@ -54,15 +54,12 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     }
 
     template<class T_Renderer, typename... Args>
-    inline std::unique_ptr<T_Renderer> addWaveformSignalRendererNode(Args&&... args) {
+    inline std::unique_ptr<T_Renderer> addWaveformSignalRenderer(Args&&... args) {
         auto pRenderer = addRenderer<T_Renderer>(std::forward<Args>(args)...);
-        if (!m_pWaveformRendererSignal) {
-            m_pWaveformRendererSignal = pRenderer;
-        }
         return std::unique_ptr<T_Renderer>(pRenderer);
     }
 
-    std::unique_ptr<rendergraph::BaseNode> addWaveformSignalRendererNode(
+    std::unique_ptr<allshader::WaveformRendererSignalBase> addWaveformSignalRenderer(
             WaveformWidgetType::Type type,
             WaveformRendererSignalBase::Options options,
             ::WaveformRendererAbstract::PositionSource positionSource);
