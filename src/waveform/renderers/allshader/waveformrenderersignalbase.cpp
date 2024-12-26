@@ -7,9 +7,7 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
         : ::WaveformRendererSignalBase(waveformWidget) {
 }
 
-void WaveformRendererSignalBase::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRendererSignalBase::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

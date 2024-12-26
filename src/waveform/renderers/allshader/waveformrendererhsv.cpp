@@ -14,8 +14,7 @@ WaveformRendererHSV::WaveformRendererHSV(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-void WaveformRendererHSV::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererHSV::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererHSV::initializeGL() {

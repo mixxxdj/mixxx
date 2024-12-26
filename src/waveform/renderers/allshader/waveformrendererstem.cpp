@@ -21,8 +21,7 @@ WaveformRendererStem::WaveformRendererStem(
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
-void WaveformRendererStem::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererStem::initializeGL() {

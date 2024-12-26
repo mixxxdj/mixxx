@@ -235,8 +235,7 @@ void WaveformRendererTextured::initializeGL() {
     }
 }
 
-void WaveformRendererTextured::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererTextured::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererTextured::onSetTrack() {
