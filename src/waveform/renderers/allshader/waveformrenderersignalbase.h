@@ -3,6 +3,7 @@
 #include <QFlags>
 #include <limits>
 
+#include "rendergraph/node.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
@@ -31,6 +32,8 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
     virtual bool supportsSlip() const {
         return false;
     }
+
+    virtual rendergraph::BaseNode* asNode() = 0;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererSignalBase);
 };

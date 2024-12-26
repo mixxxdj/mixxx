@@ -21,6 +21,11 @@
 
 namespace allshader {
 
+std::unique_ptr<rendergraph::BaseNode> convert(
+        std::unique_ptr<WaveformRendererSignalBase>&& pRenderer) {
+    return std::unique_ptr<rendergraph::BaseNode>(pRenderer.release()->asNode());
+}
+
 WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformWidgetType::Type type,
         const QString& group,
@@ -34,8 +39,8 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     pTopNode->appendChildNode(addRendererNode<WaveformRenderBackground>());
     pOpacityNode->appendChildNode(addRendererNode<WaveformRendererEndOfTrack>());
     pOpacityNode->appendChildNode(addRendererNode<WaveformRendererPreroll>());
-    pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMarkRange>());
-    m_pWaveformRenderMarkRange = static_cast<WaveformRenderMarkRange*>(pOpacityNode->lastChild());
+    m_pWaveformRenderMarkRange = pOpacityNode->appendChildNode(
+            addRendererNode<WaveformRenderMarkRange>());
 
 #ifdef __STEM__
     // The following two renderers work in tandem: if the rendered waveform is
@@ -43,11 +48,16 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     // WaveformRendererStem do the rendering, and vice-versa.
     pOpacityNode->appendChildNode(addRendererNode<WaveformRendererStem>());
 #endif
-    pOpacityNode->appendChildNode(addWaveformSignalRendererNode(
-            type, options, ::WaveformRendererAbstract::Play));
+    std::unique_ptr<WaveformRendererSignalBase> pWaveformRendererSignal = addWaveformSignalRenderer(
+            type, options, ::WaveformRendererAbstract::Play);
+    m_pWaveformRendererSignal = pWaveformRendererSignal.get();
+    if (pWaveformRendererSignal) {
+        // convert std::unique_ptr<WaveformRendererSignalBase>
+        // to std::unique_ptr<rendergraph::BaseNode>
+        pOpacityNode->appendChildNode(convert(std::move(pWaveformRendererSignal)));
+    }
     pOpacityNode->appendChildNode(addRendererNode<WaveformRenderBeat>());
-    pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMark>());
-    m_pWaveformRenderMark = static_cast<WaveformRenderMark*>(pOpacityNode->lastChild());
+    m_pWaveformRenderMark = pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMark>());
 
     // if the added signal renderer supports slip, we add it again, now for
     // slip, together with the other slip renderers
@@ -62,8 +72,11 @@ WaveformWidget::WaveformWidget(QWidget* parent,
                 addRendererNode<WaveformRendererStem>(
                         ::WaveformRendererAbstract::Slip));
 #endif
-        pOpacityNode->appendChildNode(addWaveformSignalRendererNode(
-                type, options, ::WaveformRendererAbstract::Slip));
+        std::unique_ptr<WaveformRendererSignalBase> pSlipNode = addWaveformSignalRenderer(
+                type, options, ::WaveformRendererAbstract::Slip);
+        // convert std::unique_ptr<WaveformRendererSignalBase>
+        // to std::unique_ptr<rendergraph::BaseNode>
+        pOpacityNode->appendChildNode(convert(std::move(pSlipNode)));
         pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderBeat>(
                         ::WaveformRendererAbstract::Slip));
@@ -74,8 +87,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
 
     m_initSuccess = init();
 
-    pTopNode->appendChildNode(std::move(pOpacityNode));
-    m_pOpacityNode = static_cast<rendergraph::OpacityNode*>(pTopNode->lastChild());
+    m_pOpacityNode = pTopNode->appendChildNode(std::move(pOpacityNode));
 
     m_pEngine = std::make_unique<rendergraph::Engine>(std::move(pTopNode));
 }
@@ -87,17 +99,17 @@ WaveformWidget::~WaveformWidget() {
     doneCurrent();
 }
 
-std::unique_ptr<rendergraph::BaseNode>
-WaveformWidget::addWaveformSignalRendererNode(WaveformWidgetType::Type type,
+std::unique_ptr<WaveformRendererSignalBase>
+WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
         WaveformRendererSignalBase::Options options,
         ::WaveformRendererAbstract::PositionSource positionSource) {
 #ifndef QT_OPENGL_ES_2
-    if (options & allshader::WaveformRendererSignalBase::Option::HighDetail) {
+    if (options & WaveformRendererSignalBase::Option::HighDetail) {
         switch (type) {
         case ::WaveformWidgetType::RGB:
         case ::WaveformWidgetType::Filtered:
         case ::WaveformWidgetType::Stacked:
-            return addWaveformSignalRendererNode<WaveformRendererTextured>(
+            return addWaveformSignalRenderer<WaveformRendererTextured>(
                     type, positionSource, options);
         default:
             break;
@@ -107,15 +119,15 @@ WaveformWidget::addWaveformSignalRendererNode(WaveformWidgetType::Type type,
 
     switch (type) {
     case ::WaveformWidgetType::Simple:
-        return addWaveformSignalRendererNode<WaveformRendererSimple>();
+        return addWaveformSignalRenderer<WaveformRendererSimple>();
     case ::WaveformWidgetType::RGB:
-        return addWaveformSignalRendererNode<WaveformRendererRGB>(positionSource, options);
+        return addWaveformSignalRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
-        return addWaveformSignalRendererNode<WaveformRendererHSV>();
+        return addWaveformSignalRenderer<WaveformRendererHSV>();
     case ::WaveformWidgetType::Filtered:
-        return addWaveformSignalRendererNode<WaveformRendererFiltered>(false);
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(false);
     case ::WaveformWidgetType::Stacked:
-        return addWaveformSignalRendererNode<WaveformRendererFiltered>(
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(
                 true); // true for RGB Stacked
     default:
         break;

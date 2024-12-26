@@ -30,6 +30,10 @@ class allshader::WaveformRendererStem final
     void initializeGL() override;
     void paintGL() override;
 
+    rendergraph::BaseNode* asNode() override {
+        return this;
+    }
+
   private:
     mixxx::RGBAShader m_shader;
     mixxx::TextureShader m_textureShader;
