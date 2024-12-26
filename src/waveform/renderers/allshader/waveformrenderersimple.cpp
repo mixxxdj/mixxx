@@ -13,8 +13,7 @@ WaveformRendererSimple::WaveformRendererSimple(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-void WaveformRendererSimple::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererSimple::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererSimple::initializeGL() {

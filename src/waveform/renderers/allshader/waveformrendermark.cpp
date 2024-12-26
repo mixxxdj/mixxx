@@ -79,9 +79,7 @@ bool allshader::WaveformRenderMark::init() {
     return true;
 }
 
-void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 
