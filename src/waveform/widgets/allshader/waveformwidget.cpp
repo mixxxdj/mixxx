@@ -95,6 +95,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
 WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
     m_rendererStack.clear();
+    // destruction of nodes needs to happen within the opengl context
     m_pEngine.reset();
     doneCurrent();
 }
