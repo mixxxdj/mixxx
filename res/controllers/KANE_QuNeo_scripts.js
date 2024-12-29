@@ -348,7 +348,7 @@ KANE_QuNeo.init = function (id) { // called when the device is opened & set up
   engine.connectControl("[Channel2]","visual_playposition","KANE_QuNeo.time2Keeper");
 
   // led controls for the master / flanger channels
-  engine.connectControl("[Master]","vu_meter","KANE_QuNeo.masterVuMeter");
+    engine.connectControl("[Main]", "vu_meter", "KANE_QuNeo.masterVuMeter");
   //engine.softTakeover("[Master]","volume",true);
   engine.connectControl("[Master]","headVolume","KANE_QuNeo.headVol");
   engine.connectControl("[Flanger]","lfoPeriod","KANE_QuNeo.flangerPeriod");
@@ -531,7 +531,7 @@ KANE_QuNeo.jumpLoop = function (deck, numBeats) {
     if (KANE_QuNeo.jumpHoldTimers[channel].length < 1)
     KANE_QuNeo.jumpHoldTimers[channel].push(
         engine.beginTimer(KANE_QuNeo.jumpHoldTime,
-                  () => KANE_QuNeo.jumpHeld(deck, numBeats),
+                () => KANE_QuNeo.jumpHeld(deck, numBeats),
                   true));
 
     // calculate samples per beat
@@ -599,8 +599,8 @@ KANE_QuNeo.jumpLoop = function (deck, numBeats) {
 KANE_QuNeo.scheduleSync = function (deck, syncType) {
     engine.beginTimer(
     KANE_QuNeo.jumpSyncTimer,
-    () => KANE_QuNeo.doSync(deck, syncType),
-    true);
+        () => KANE_QuNeo.doSync(deck, syncType),
+        true);
 }
 
 KANE_QuNeo.doSync = function (deck, syncType) {
@@ -615,7 +615,7 @@ KANE_QuNeo.doSync = function (deck, syncType) {
 
     // if our operation somehow changed loop enabling, immediately change it back
     engine.beginTimer(KANE_QuNeo.checkLoopDelay,
-              () => KANE_QuNeo.checkLoop(deck, loopEnabled), true);
+            () => KANE_QuNeo.checkLoop(deck, loopEnabled), true);
     }
 }
 
@@ -638,7 +638,7 @@ KANE_QuNeo.syncTrack = function (deck, type, scheduleFlag) {
 
 KANE_QuNeo.scheduleLoop = function (deck, numBeats) {
     engine.beginTimer(KANE_QuNeo.jumpLoopTimer,
-              () => KANE_QuNeo.doLoop(deck, numBeats), true);
+        () => KANE_QuNeo.doLoop(deck, numBeats), true);
 }
 
 KANE_QuNeo.doLoop = function (deck, numBeats) {
@@ -669,7 +669,7 @@ KANE_QuNeo.deckMultiplyLoop = function (deck, factor) {
 
     // if our operation somehow changed loop enabling, immediately change it back
     engine.beginTimer(KANE_QuNeo.checkLoopDelay,
-              () => KANE_QuNeo.checkLoop(deck, loopEnabled), true);
+        () => KANE_QuNeo.checkLoop(deck, loopEnabled), true);
 
     // emit LED updates, timer because engine is slow at registering loop stuffs
     KANE_QuNeo.delayedAssertion("KANE_QuNeo.assertBeatLEDs("+deck+")",true);
@@ -694,7 +694,7 @@ KANE_QuNeo.jumpHeld = function (deck, numBeats) {
     print("=====> AUTO JUMPING ACTIVATED WITH NUMBEATS: "+numBeats)
     KANE_QuNeo.jumpHoldTimers[channel].push(
         engine.beginTimer(KANE_QuNeo.autoJumpSpeed,
-                  () => KANE_QuNeo.jumpLoop(deck, numBeats)));
+                () => KANE_QuNeo.jumpLoop(deck, numBeats)));
     }
 }
 
@@ -717,7 +717,7 @@ KANE_QuNeo.verticalSliderTouch = function (slider, value) {
     KANE_QuNeo.verticalSliderDoubleTap[slider - 1] = 1;
     // then begin the reset timer
     engine.beginTimer(KANE_QuNeo.doubleTapWindow,
-              () => KANE_QuNeo.resetDoubleTap(slider),
+            () => KANE_QuNeo.resetDoubleTap(slider),
               true);
     }
 
@@ -889,7 +889,7 @@ KANE_QuNeo.deckZoom = function (deck, value) {
     var channel = deck - 1; // track channels start at 0 to properly reference arrays
     var channelName = KANE_QuNeo.getChannelName(deck)
     // range is 1..10
-    var normalized = Math.ceil(9 * ((127 - value) / 127)) + 1;
+    const normalized = Math.ceil(9 * ((127 - value) / 127)) + 1;
     // adjust zoom
     engine.setValue(channelName, "waveform_zoom", normalized)
 }
@@ -914,7 +914,7 @@ KANE_QuNeo.visualNudge = function (deck, direction) {
     // then set timer to see if button is held for more than half a second
     KANE_QuNeo.visualNudgeTimers[channel].push(
         engine.beginTimer(KANE_QuNeo.visualNudgeHoldTime,
-                  () => KANE_QuNeo.visualNudgeHeld(deck, direction),
+                () => KANE_QuNeo.visualNudgeHeld(deck, direction),
                   true))
     // then do the pressed nudge
     KANE_QuNeo.doVisualNudge(deck, direction);
@@ -931,7 +931,7 @@ KANE_QuNeo.visualNudgeHeld = function (deck, direction) {
     // ...so set a persistent scroll timer
     KANE_QuNeo.visualNudgeTimers[channel].push(
     engine.beginTimer(KANE_QuNeo.visualNudgeSpeed,
-              () => KANE_QuNeo.visualNudgeAll(deck, direction)))
+            () => KANE_QuNeo.visualNudgeAll(deck, direction)));
 }
 
 KANE_QuNeo.doVisualNudge = function (deck, direction) {
@@ -964,7 +964,7 @@ KANE_QuNeo.rateNudgePress = function (deck, direction) {
     if (!(KANE_QuNeo.rateNudge))
     KANE_QuNeo.rateNudgeTimers.push(
         engine.beginTimer(KANE_QuNeo.rateNudgeHoldTime,
-                  () => KANE_QuNeo.rateNudgeHeld(deck, direction),
+                () => KANE_QuNeo.rateNudgeHeld(deck, direction),
                   true))
     else { // if we are currently auto nudging,
     KANE_QuNeo.cancelRateNudge(); // toggle it off
@@ -980,7 +980,7 @@ KANE_QuNeo.rateNudgeHeld = function (deck, direction) {
     // then set a persistent nudge timer
     KANE_QuNeo.rateNudgeTimers.push(
     engine.beginTimer(KANE_QuNeo.rateNudgeSpeed,
-                () => KANE_QuNeo.rateNudgeAll(deck, direction)))
+            () => KANE_QuNeo.rateNudgeAll(deck, direction)));
 }
 
 KANE_QuNeo.rateNudgeAll = function (callingDeck, direction) {
@@ -1211,7 +1211,7 @@ KANE_QuNeo.timeKeeper = function (deck, value) {
     KANE_QuNeo.nextBeatTimer[channel].length == 0)
     KANE_QuNeo.nextBeatTimer[channel] =
         [engine.beginTimer(KANE_QuNeo.beatOffset,
-                    () => KANE_QuNeo.handleBeat(deck), true)];
+            () => KANE_QuNeo.handleBeat(deck), true)];
     // now determine whether or not the track has changed
     var channelName = KANE_QuNeo.getChannelName(deck);
     var trackSamples = engine.getValue(channelName, "track_samples");
@@ -1360,19 +1360,19 @@ KANE_QuNeo.scheduleBeat = function (deck, wholeBeat, direction) {
 
     // now set and store actual timers, in case we want to cancel them
 
-    let makeHandler = division => () => KANE_QuNeo.deckBeatLEDs(deck,wholeBeat,division);
+    const makeHandler = division => () => KANE_QuNeo.deckBeatLEDs(deck, wholeBeat, division);
 
     // the beat itself, do it now
     KANE_QuNeo.deckBeatLEDs(deck,wholeBeat,0);
     // e, add this and the following quarters to our list of timers
     KANE_QuNeo.scheduledBeats[channel].push(
-    engine.beginTimer(e,makeHandler(1/4), true))
+        engine.beginTimer(e, makeHandler(1/4), true));
     // and
     KANE_QuNeo.scheduledBeats[channel].push(
-    engine.beginTimer(and,makeHandler(1/2), true))
+        engine.beginTimer(and, makeHandler(1/2), true));
     // uh
     KANE_QuNeo.scheduledBeats[channel].push(
-    engine.beginTimer(uh,makeHandler(3/4), true))
+        engine.beginTimer(uh, makeHandler(3/4), true));
 }
 
 /***** (U) Utilities *****/
@@ -2348,7 +2348,7 @@ KANE_QuNeo.masterVuMeter = function (value) {
 KANE_QuNeo.deckZoomLEDs = function (deck, value) {
     var LEDGroup = KANE_QuNeo.getLEDGroup(deck);
     // normalize zoom LED value to be 0-127, range is 1..10
-    var zoom = ((value - 1) / 9) * 127
+    const zoom = ((value - 1) / 9) * 127;
     // determine which control we are manipulating
     var control = KANE_QuNeo.getSliderControl(deck, 0)
     // emit message

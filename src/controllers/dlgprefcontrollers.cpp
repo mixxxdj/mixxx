@@ -1,7 +1,6 @@
 #include "controllers/dlgprefcontrollers.h"
 
-#include <QDesktopServices>
-
+#include "control/controlproxy.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
@@ -9,7 +8,12 @@
 #include "defs_urls.h"
 #include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "util/desktophelper.h"
 #include "util/string.h"
+
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+} // namespace
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,
@@ -19,7 +23,11 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
           m_pDlgPreferences(pPreferences),
           m_pConfig(pConfig),
           m_pControllerManager(pControllerManager),
-          m_pControllersRootItem(pControllersRootItem) {
+          m_pControllersRootItem(pControllersRootItem),
+          m_pNumDecks(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_decks"), this)),
+          m_pNumSamplers(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_samplers"), this)) {
     setupUi(this);
     // Create text color for the cue mode link "?" to the manual
     createLinkColor();
@@ -78,7 +86,7 @@ DlgPrefControllers::~DlgPrefControllers() {
 }
 
 void DlgPrefControllers::openLocalFile(const QString& file) {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
+    mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(file));
 }
 
 void DlgPrefControllers::slotUpdate() {
@@ -137,7 +145,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
     // to keep this dialog and the controllermanager consistent.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    for (auto* pController : controllerList) {
+    for (auto* pController : std::as_const(controllerList)) {
         pController->disconnect(this);
     }
     while (!m_controllerPages.isEmpty()) {
@@ -167,7 +175,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    for (auto* pController : controllerList) {
+    for (auto* pController : std::as_const(controllerList)) {
         DlgPrefController* pControllerDlg = new DlgPrefController(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
@@ -178,6 +186,11 @@ void DlgPrefControllers::setupControllerWidgets() {
                 &DlgPrefController::mappingEnded,
                 m_pDlgPreferences,
                 &DlgPreferences::show);
+        // Recreate the control picker menus when decks or samplers are added
+        m_pNumDecks->connectValueChanged(pControllerDlg,
+                &DlgPrefController::slotRecreateControlPickerMenu);
+        m_pNumSamplers->connectValueChanged(pControllerDlg,
+                &DlgPrefController::slotRecreateControlPickerMenu);
 
         m_controllerPages.append(pControllerDlg);
 

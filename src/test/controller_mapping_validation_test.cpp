@@ -108,8 +108,7 @@ bool FakeController::isMappable() const {
 }
 
 void LegacyControllerMappingValidationTest::SetUp() {
-    m_mappingPath = QDir::current();
-    m_mappingPath.cd("res/controllers");
+    m_mappingPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
     m_pEnumerator.reset(new MappingInfoEnumerator(QList<QString>{m_mappingPath.absolutePath()}));
 }
 

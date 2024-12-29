@@ -10,6 +10,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "engine/engine.h"
+#include "library/dao/trackschema.h"
 #include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
@@ -108,8 +109,6 @@ class FakeDeck : public BaseTrackPlayer {
 
     MOCK_METHOD1(slotCloneFromGroup, void(const QString& group));
     MOCK_METHOD0(slotCloneDeck, void());
-
-    void slotSetTrackRating(int /*unused*/) override{};
 
     TrackPointer loadedTrack;
     ControlObject trackSamples;
@@ -590,12 +589,12 @@ TEST_F(AutoDJProcessorTest, DecksPlayingWarning) {
 TEST_F(AutoDJProcessorTest, Decks34PlayingWarning) {
     deck3.play.set(1);
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
-    EXPECT_EQ(AutoDJProcessor::ADJ_DECKS_3_4_PLAYING, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING, err);
 
     deck3.play.set(0);
     deck4.play.set(1);
     err = pProcessor->toggleAutoDJ(true);
-    EXPECT_EQ(AutoDJProcessor::ADJ_DECKS_3_4_PLAYING, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING, err);
 }
 
 TEST_F(AutoDJProcessorTest, QueueEmpty) {

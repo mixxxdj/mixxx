@@ -146,6 +146,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // clean frames counting and get current sample rate.
             m_frames = 0;
             m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+            m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();

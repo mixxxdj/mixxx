@@ -38,7 +38,7 @@ class TagFetcher : public QObject {
     // Link provided from preference option.
     // After a success task, related label updated with cover art.
     // If user presses apply, cover art downloaded and applied to the song.
-    void startFetchCoverArtImage(
+    void startFetchCoverArtImage(const QUuid& albumReleaseId,
             const QString& coverArtUrl);
 
   public slots:
@@ -47,7 +47,8 @@ class TagFetcher : public QObject {
   signals:
     void resultAvailable(
             TrackPointer pTrack,
-            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases,
+            const QString& whyEmptyMessage); // To explain why the result is empty
     void fetchProgress(
             const QString& message);
     void numberOfRecordingsFoundFromAcoustId(int totalNumberOfRecordings);
@@ -58,8 +59,10 @@ class TagFetcher : public QObject {
             const QString& message,
             int code);
     void fetchedCoverUpdate(const QByteArray& coverInfo);
-    void coverArtImageFetchAvailable(const QByteArray& coverArtBytes);
-    void coverArtArchiveLinksAvailable(const QList<QString>& allUrls);
+    void coverArtImageFetchAvailable(const QUuid& albumReleaseId,
+            const QByteArray& coverArtBytes);
+    void coverArtArchiveLinksAvailable(const QUuid& albumReleaseId,
+            const QList<QString>& allUrls);
     void coverArtLinkNotFound();
 
   private slots:
@@ -87,7 +90,8 @@ class TagFetcher : public QObject {
             const QString& errorString,
             const mixxx::network::WebResponseWithContent& responseWithContent);
 
-    void slotCoverArtArchiveLinksTaskSucceeded(const QList<QString>& allUrls);
+    void slotCoverArtArchiveLinksTaskSucceeded(const QUuid& albumReleaseId,
+            const QList<QString>& allUrls);
     void slotCoverArtArchiveLinksTaskFailed(
             const mixxx::network::JsonWebResponse& response);
     void slotCoverArtArchiveLinksTaskAborted();
@@ -96,7 +100,8 @@ class TagFetcher : public QObject {
             const QString& errorString,
             const mixxx::network::WebResponseWithContent& responseWithContent);
 
-    void slotCoverArtArchiveImageTaskSucceeded(const QByteArray& coverArtBytes);
+    void slotCoverArtArchiveImageTaskSucceeded(const QUuid& albumReleaseId,
+            const QByteArray& coverArtBytes);
     void slotCoverArtArchiveImageTaskFailed(
             const mixxx::network::WebResponse& response,
             int errorCode,

@@ -59,7 +59,7 @@ bool importCoverImageFromTag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     if (tag.itemListMap().contains("COVER ART (FRONT)")) {
         const TagLib::ByteVector nullStringTerminator(1, 0);
         TagLib::ByteVector item =
-                tag.itemListMap()["COVER ART (FRONT)"].value();
+                tag.itemListMap()["COVER ART (FRONT)"].binaryData();
         int pos = item.find(nullStringTerminator); // skip the filename
         if (++pos > 0) {
             const TagLib::ByteVector data(item.mid(pos));

@@ -41,7 +41,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private slots:
     void fetchTagFinished(
             TrackPointer pTrack,
-            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases,
+            const QString& whyEmptyMessage);
     void tagSelected();
     void showProgressOfConstantTask(const QString&);
     void setPercentOfEachRecordings(int totalRecordingsFound);
@@ -49,7 +50,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
     // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
-    void applyTagsAndCover();
+    void apply();
+    void applyTags();
     void applyCover();
     void retry();
     void quit();
@@ -60,8 +62,10 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
             const QObject* pRequester,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap);
-    void slotStartFetchCoverArt(const QList<QString>& allUrls);
-    void slotLoadBytesToLabel(const QByteArray& data);
+    void slotStartFetchCoverArt(const QUuid& albumReleaseId,
+            const QList<QString>& allUrls);
+    void slotLoadFetchedCoverArt(const QUuid& albumReleaseId,
+            const QByteArray& data);
     void slotCoverArtLinkNotFound();
     void slotWorkerStarted();
     void slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
@@ -73,9 +77,12 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private:
     // Called on population or changed via buttons Next&Prev.
     void loadTrackInternal(const TrackPointer& pTrack);
-    void addDivider(const QString& text, QTreeWidget* pParent) const;
-    void getCoverArt(const QString& url);
+    void getCoverArt(const QUuid& albumReleaseId, const QString& url);
     void loadCurrentTrackCover();
+
+    void saveCheckBoxState();
+
+    void loadPixmapToLabel(const QPixmap& pPixmap);
 
     UserSettingsPointer m_pConfig;
 
@@ -106,6 +113,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     Data m_data;
 
     QByteArray m_fetchedCoverArtByteArrays;
+
+    QMap<QString, QPixmap> m_coverCache;
 
     QScopedPointer<CoverArtCopyWorker> m_pWorker;
 };

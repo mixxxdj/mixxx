@@ -249,6 +249,7 @@
 
       </Children>
     </WidgetGroup>
+
     <WidgetGroup>
       <Layout>vertical</Layout>
       <SizePolicy>min,me</SizePolicy>

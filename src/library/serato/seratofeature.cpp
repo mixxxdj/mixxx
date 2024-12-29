@@ -1,9 +1,12 @@
 #include "library/serato/seratofeature.h"
 
+#include <QBuffer>
 #include <QMap>
+#include <QStandardPaths>
 #include <QTextCodec>
-#include <QtConcurrent>
+#include <QtConcurrentRun>
 #include <QtDebug>
+#include <QtEndian>
 
 #include "library/dao/trackschema.h"
 #include "library/library.h"
@@ -348,7 +351,8 @@ QString parseCrate(
     if (!Sandbox::askForAccess(&fileInfo) || !crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
-                   << " for reading.";
+                   << " for reading:"
+                   << crateFile.errorString();
         return QString();
     }
 

@@ -169,6 +169,11 @@ PioneerDDJFLX4.lights = {
 // Store timer IDs
 PioneerDDJFLX4.timers = {};
 
+// Keep alive timer
+PioneerDDJFLX4.sendKeepAlive = function() {
+    midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x04, 0x05, 0x00, 0x50, 0x02, 0xf7], 12); // This was reverse engineered with Wireshark
+};
+
 // Jog wheel constants
 PioneerDDJFLX4.vinylMode = true;
 PioneerDDJFLX4.alpha = 1.0/8;
@@ -239,7 +244,11 @@ PioneerDDJFLX4.init = function() {
     engine.softTakeover("[EffectRack1_EffectUnit1_Effect3]", "meta", true);
     engine.softTakeover("[EffectRack1_EffectUnit1]", "mix", true);
 
-    for (var i = 1; i <= 16; ++i) {
+    const samplerCount = 16;
+    if (engine.getValue("[App]", "num_samplers") < samplerCount) {
+        engine.setValue("[App]", "num_samplers", samplerCount);
+    }
+    for (let i = 1; i <= samplerCount; ++i) {
         engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJFLX4.samplerPlayOutputCallbackFunction);
     }
 
@@ -261,8 +270,22 @@ PioneerDDJFLX4.init = function() {
     }
     engine.makeConnection("[EffectRack1_EffectUnit1]", "focused_effect", PioneerDDJFLX4.toggleFxLight);
 
+    PioneerDDJFLX4.keepAliveTimer = engine.beginTimer(200, PioneerDDJFLX4.sendKeepAlive);
+
     // query the controller for current control positions on startup
-    midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x06, 0x00, 0x03, 0x01, 0xf7], 12);
+    PioneerDDJFLX4.sendKeepAlive(); // the query seems to double as a keep alive message
+};
+
+//
+// Waveform zoom
+//
+
+PioneerDDJFLX4.waveformZoom = function(midichan, control, value, status, group) {
+    if (value === 0x7f) {
+        script.triggerControl(group, "waveform_zoom_up", 100);
+    } else {
+        script.triggerControl(group, "waveform_zoom_down", 100);
+    }
 };
 
 //
@@ -803,4 +826,7 @@ PioneerDDJFLX4.shutdown = function() {
     // stop any flashing lights
     PioneerDDJFLX4.toggleLight(PioneerDDJFLX4.lights.beatFx, false);
     PioneerDDJFLX4.toggleLight(PioneerDDJFLX4.lights.shiftBeatFx, false);
+
+    // stop the keepalive timer
+    engine.stopTimer(PioneerDDJFLX4.keepAliveTimer);
 };

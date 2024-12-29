@@ -3,17 +3,14 @@
 #include <QAtomicPointer>
 #include <QMap>
 #include <QTime>
+#include <atomic>
 
 #include "control/controlvalue.h"
 #include "engine/slipmodestate.h"
 #include "util/performancetimer.h"
 
 class ControlProxy;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-typedef void VSyncThread;
-#else
 class VSyncThread;
-#endif
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time
@@ -40,6 +37,8 @@ class VisualPlayPositionData {
     double m_slipRate;
     SlipModeState m_slipModeState;
     bool m_loopEnabled;
+    bool m_loopInAdjustActive;
+    bool m_loopOutAdjustActive;
     double m_loopStartPos;
     double m_loopEndPos;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
@@ -62,6 +61,8 @@ class VisualPlayPosition : public QObject {
             double slipRate,
             SlipModeState slipModeState,
             bool loopEnabled,
+            bool loopInAdjustActive,
+            bool loopOutAdjustActive,
             double loopStartPos,
             double loopEndPos,
             double tempoTrackSeconds,
@@ -83,15 +84,17 @@ class VisualPlayPosition : public QObject {
     // This is called by SoundDevicePortAudio just after the callback starts.
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
-    void setInvalid() { m_valid = false; };
+    void setInvalid() {
+        m_valid.store(false);
+    };
     bool isValid() const {
-        return m_valid;
+        return m_valid.load();
     }
 
   private:
     double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
-    bool m_valid;
+    std::atomic<bool> m_valid;
     QString m_key;
     bool m_noTransport;
 

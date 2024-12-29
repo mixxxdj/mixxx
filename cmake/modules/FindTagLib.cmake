@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -47,19 +47,23 @@ include(IsStaticLibrary)
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
+  if(UNIX AND NOT APPLE)
+    # prioritize the taglib1 package introduced in https://www.archlinux.de/packages/extra/x86_64/taglib1
+    set(ENV{PKG_CONFIG_PATH} "/usr/lib/taglib1/pkgconfig/:$ENV{PKG_CONFIG_PATH}")
+  endif()
   pkg_check_modules(PC_TagLib QUIET taglib)
 endif()
 
 find_path(TagLib_INCLUDE_DIR
   NAMES tag.h
-  PATHS ${PC_TagLib_INCLUDE_DIRS}
+  HINTS ${PC_TagLib_INCLUDE_DIRS}
   PATH_SUFFIXES taglib
   DOC "TagLib include directory")
 mark_as_advanced(TagLib_INCLUDE_DIR)
 
 find_library(TagLib_LIBRARY
   NAMES tag
-  PATHS ${PC_TagLib_LIBRARY_DIRS}
+  HINTS ${PC_TagLib_LIBRARY_DIRS}
   DOC "TagLib library"
 )
 mark_as_advanced(TagLib_LIBRARY)

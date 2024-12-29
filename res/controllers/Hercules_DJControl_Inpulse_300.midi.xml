@@ -652,7 +652,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>loop_double</key>
-				<description>SHIFT + Loop Ou: Loop Double</description>
+				<description>SHIFT + Loop Out: Loop Double</description>
 				<status>0x95</status>
 				<midino>0x0A</midino>
 				<options>
@@ -4146,6 +4146,150 @@
 				<description>(Pad 4 DECK B)</description>
 				<status>0x97</status>
 				<midino>0x37</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+						<output>
+				<group>[Sampler1]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 1 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x38</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler9]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 1 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x38</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler2]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 2 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x39</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler10]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 2 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x39</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler3]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 3 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3A</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler11]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 3 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3A</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler4]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 4 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3B</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler12]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 4 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3B</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler5]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 5 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3C</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler13]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 5 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3C</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler6]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 6 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3D</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler14]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 6 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3D</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler7]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 7 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3E</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler15]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 7 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3E</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler8]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 8 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3F</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler16]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 4 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3F</midino>
 				<on>0x7F</on>
 				<minimum>0.5</minimum>
 			</output>

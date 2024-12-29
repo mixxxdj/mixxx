@@ -71,6 +71,7 @@ class Controller : public QObject {
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     virtual bool applyMapping();
+    virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -80,6 +81,10 @@ class Controller : public QObject {
     template<typename SpecificMappingType>
     std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
             std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        // When unsetting a mapping (select 'No mapping') we receive a nullptr
+        if (pMapping == nullptr) {
+            return nullptr;
+        }
         // Controller cannot take ownership if pMapping is referenced elsewhere because
         // the controller polling thread needs exclusive accesses to the non-thread safe
         // LegacyControllerMapping.
@@ -169,6 +174,7 @@ class Controller : public QObject {
     friend class ControllerManager;
     // For testing
     friend class LegacyControllerMappingValidationTest;
+    friend class MidiControllerTest;
 };
 
 // An object of this class gets exposed to the JS engine, so the methods of this class

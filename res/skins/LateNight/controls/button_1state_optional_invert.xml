@@ -1,0 +1,34 @@
+<!--
+Description:
+  A button that has click or display controls.
+  It is covered by a label if a certain CO is 1
+Variables:
+  ObjectName        : object name
+  ToolTipID         : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>stacked</Layout>
+    <Size><Variable name="Size"/></Size>
+    <Children>
+      <Label>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
+        <ObjectName><Variable name="CoverName"/></ObjectName>
+        <Size><Variable name="Size"/></Size>
+        <Connection>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+          <ConfigKey><Variable name="CoverConfigKey"/></ConfigKey>
+        </Connection>
+      </Label>
+      <Template src="skins:LateNight/controls/button_1state.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

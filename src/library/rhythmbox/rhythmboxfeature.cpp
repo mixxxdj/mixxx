@@ -2,7 +2,9 @@
 
 #include <QStringList>
 #include <QUrl>
-#include <QtConcurrent>
+#include <QXmlStreamAttributes>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include "library/baseexternalplaylistmodel.h"
@@ -164,6 +166,7 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     mixxx::FileInfo fileInfo(db);
     if (!Sandbox::askForAccess(&fileInfo) ||
             !db.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open Rhythmbox db at" << db.fileName() << db.errorString();
         return nullptr;
     }
 

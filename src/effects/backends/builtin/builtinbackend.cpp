@@ -17,12 +17,16 @@
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
 #include "effects/backends/builtin/autopaneffect.h"
+#include "effects/backends/builtin/compressoreffect.h"
 #include "effects/backends/builtin/distortioneffect.h"
 #include "effects/backends/builtin/echoeffect.h"
+#include "effects/backends/builtin/glitcheffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
 #include "effects/backends/builtin/phasereffect.h"
+#ifdef __RUBBERBAND__
 #include "effects/backends/builtin/pitchshifteffect.h"
+#endif
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
@@ -54,8 +58,12 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
     registerEffect<TremoloEffect>();
+#ifdef __RUBBERBAND__
     registerEffect<PitchShiftEffect>();
+#endif
     registerEffect<DistortionEffect>();
+    registerEffect<GlitchEffect>();
+    registerEffect<CompressorEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(

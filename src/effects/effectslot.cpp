@@ -247,12 +247,14 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
-    if (!pPreset || pPreset->isEmpty()) {
+    EffectManifestPointer pManifest;
+    if (pPreset && !pPreset->isEmpty()) {
+        pManifest = m_pBackendManager->getManifest(pPreset);
+    }
+    if (!pManifest) {
         loadEffectInner(nullptr, nullptr, true);
         return;
     }
-    EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-            pPreset->id(), pPreset->backendType());
     loadEffectInner(pManifest, pPreset, true);
 }
 
@@ -280,6 +282,14 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
+    }
+
+    // Don't load an effect into the '---' preset. The preset would remain
+    // selected in WEffectChainPresetSelector and WEffectChainPresetButton and
+    // therefore couldn't be used to clear the chain.
+    // Instead, load an empty, nameless preset, then load the desired effect.
+    if (m_pChain->isEmptyPlaceholderPresetLoaded()) {
+        m_pChain->loadEmptyNamelessPreset();
     }
 
     m_pManifest = pManifest;
@@ -322,8 +332,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
                     continue;
                 }
 
-                for (const auto& pParameter :
-                        m_allParameters.value(parameterType)) {
+                const auto& allParameters = m_allParameters.value(parameterType);
+                for (const auto& pParameter : allParameters) {
                     if (pParameter->manifest()->id() == parameterPreset.id()) {
                         m_loadedParameters[parameterType].append(pParameter);
                         break;

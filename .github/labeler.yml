@@ -22,7 +22,12 @@ code quality:
           - .pre-commit-config.yaml
           - pyproject.toml
 
-controllers:
+controller backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/controllers/**
+
+controller mappings:
   - changed-files:
       - any-glob-to-any-file:
           - res/controllers/**
@@ -101,6 +106,12 @@ preferences:
   - changed-files:
       - any-glob-to-any-file:
           - src/preferences/**
+
+qml:
+  - changed-files:
+      - any-glob-to-any-file:
+          - res/qml/**
+          - src/qml/**
 
 skins:
   - changed-files:

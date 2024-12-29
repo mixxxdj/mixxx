@@ -4,7 +4,9 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QStandardPaths>
 #include <QStringList>
+#include <memory>
 
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
@@ -12,14 +14,26 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_browsefeature.cpp"
-#include "util/memory.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
+const QString kViewName = QStringLiteral("BROWSEHOME");
+
 const QString kQuickLinksSeparator = QStringLiteral("-+-");
+
+#if defined(__LINUX__)
+const QStringList removableDriveRootPaths() {
+    QStringList paths;
+    const QString user = QString::fromLocal8Bit(qgetenv("USER"));
+    paths.append("/media");
+    paths.append(QStringLiteral("/media/") + user);
+    paths.append(QStringLiteral("/run/media/") + user);
+    return paths;
+}
+#endif
 
 } // anonymous namespace
 
@@ -33,10 +47,6 @@ BrowseFeature::BrowseFeature(
           m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)),
           m_pLastRightClickedItem(nullptr) {
-    connect(this,
-            &BrowseFeature::requestAddDir,
-            pLibrary,
-            &Library::slotRequestAddDir);
     connect(&m_browseModel,
             &BrowseTableModel::restoreModelState,
             this,
@@ -60,6 +70,12 @@ BrowseFeature::BrowseFeature(
             this,
             &BrowseFeature::slotAddToLibrary);
 
+    m_pRefreshDirTreeAction = new QAction(tr("Refresh directory tree"), this);
+    connect(m_pRefreshDirTreeAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotRefreshDirectoryTree);
+
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
     // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
@@ -79,7 +95,7 @@ BrowseFeature::BrowseFeature(
     // show drive letters
     QFileInfoList drives = QDir::drives();
     // show drive letters
-    foreach (QFileInfo drive, drives) {
+    for (const QFileInfo& drive : std::as_const(drives)) {
         // Using drive.filePath() to get path to display instead of drive.canonicalPath()
         // as it delay the startup too much if there is a network share mounted
         // (drive letter assigned) but unavailable
@@ -123,7 +139,7 @@ BrowseFeature::BrowseFeature(
 
     loadQuickLinks();
 
-    foreach (QString quickLinkPath, m_quickLinkList) {
+    for (const QString& quickLinkPath : std::as_const(m_quickLinkList)) {
         QString name = extractNameFromPath(quickLinkPath);
         qDebug() << "Appending Quick Link: " << name << "---" << quickLinkPath;
         m_pQuickLinkItem->appendChild(name, quickLinkPath);
@@ -165,7 +181,9 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit requestAddDir(spath);
+    if (!m_pLibrary->requestAddDir(spath)) {
+        return;
+    }
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -213,6 +231,24 @@ void BrowseFeature::slotRemoveQuickLink() {
     saveQuickLinks();
 }
 
+void BrowseFeature::slotRefreshDirectoryTree() {
+    if (!m_pLastRightClickedItem) {
+        return;
+    }
+
+    const auto* pItem = m_pLastRightClickedItem;
+    if (!pItem->getData().isValid()) {
+        return;
+    }
+
+    const QString path = pItem->getData().toString();
+    m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
+
+    // Update child items
+    const QModelIndex index = m_pSidebarModel->index(pItem->parentRow(), 0);
+    onLazyChildExpandation(index);
+}
+
 TreeItemModel* BrowseFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
@@ -222,7 +258,7 @@ void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
-    libraryWidget->registerView("BROWSEHOME", edit);
+    libraryWidget->registerView(kViewName, edit);
 }
 
 void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -231,7 +267,7 @@ void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void BrowseFeature::activate() {
-    emit switchToView("BROWSEHOME");
+    emit switchToView(kViewName);
     emit disableSearch();
     emit enableCoverArtDisplay(false);
 }
@@ -246,6 +282,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
+        // Clear the tracks view
         m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
@@ -274,10 +311,6 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
-    // Make sure that this is reset when the related TreeItem is deleted.
-    m_pLastRightClickedItem = item;
-
     if (!item) {
         return;
     }
@@ -288,29 +321,34 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         return;
     }
 
+    // Make sure that this is reset when TreeItems are deleted in onLazyChildExpandation()
+    m_pLastRightClickedItem = item;
+
     QMenu menu(m_pSidebarWidget);
+
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
+        // This is a QuickLink
         menu.addAction(m_pRemoveQuickLinkAction);
+        menu.addAction(m_pRefreshDirTreeAction);
         menu.exec(globalPos);
         onLazyChildExpandation(index);
         return;
     }
 
-    foreach (const QString& str, m_quickLinkList) {
-        if (str == path) {
-            // if path is a QuickLink:
-            // show remove action
-            menu.addAction(m_pRemoveQuickLinkAction);
-            menu.exec(globalPos);
-            onLazyChildExpandation(index);
-            return;
-        }
-     }
+    if (m_quickLinkList.contains(path)) {
+        // Path is in the Quick Link list
+        menu.addAction(m_pRemoveQuickLinkAction);
+        menu.addAction(m_pRefreshDirTreeAction);
+        menu.exec(globalPos);
+        onLazyChildExpandation(index);
+        return;
+    }
 
-     menu.addAction(m_pAddQuickLinkAction);
-     menu.addAction(m_pAddtoLibraryAction);
-     menu.exec(globalPos);
-     onLazyChildExpandation(index);
+    menu.addAction(m_pAddQuickLinkAction);
+    menu.addAction(m_pAddtoLibraryAction);
+    menu.addAction(m_pRefreshDirTreeAction);
+    menu.exec(globalPos);
+    onLazyChildExpandation(index);
 }
 
 namespace {
@@ -319,9 +357,9 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
     std::vector<std::unique_ptr<TreeItem>> ret;
 #if defined(__WINDOWS__)
     // Repopulate drive list
-    QFileInfoList drives = QDir::drives();
+    const QFileInfoList drives = QDir::drives();
     // show drive letters
-    foreach (QFileInfo drive, drives) {
+    for (const QFileInfo& drive : std::as_const(drives)) {
         // Using drive.filePath() instead of drive.canonicalPath() as it
         // freezes interface too much if there is a network share mounted
         // (drive letter assigned) but unavailable
@@ -339,21 +377,19 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
                 drive.filePath())); // Displays C:/
     }
 #elif defined(__LINUX__)
-    // To get devices on Linux, we look for directories under /media and
-    // /run/media/$USER.
     QFileInfoList devices;
-
-    // Add folders under /media to devices.
-    devices += QDir("/media").entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
-    devices += run_media_user_dir.entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
+    for (const QString& path : removableDriveRootPaths()) {
+        devices += QDir(path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    }
 
     // Convert devices into a QList<TreeItem*> for display.
-    foreach(QFileInfo device, devices) {
+    for (const QFileInfo& device : std::as_const(devices)) {
+        // On Linux, devices can be mounted in /media and /media/user and /run/media/[user]
+        // but there's no benefit of displaying the [user] dir in Devices.
+        // Show its children but skip the dir itself.
+        if (removableDriveRootPaths().contains(device.absoluteFilePath())) {
+            continue;
+        }
         ret.push_back(std::make_unique<TreeItem>(
                 device.fileName(),
                 QVariant(device.filePath() + QStringLiteral("/"))));
@@ -402,36 +438,53 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
+#if defined(__LINUX__)
+        // Tell the model to remove the cached 'hasChildren' states of all sub-
+        // directories when we expand the Device node.
+        // This ensures we show the real dir tree. This is relevant when devices
+        // were unmounted, changed and mounted again.
+        m_pSidebarModel->removeChildDirsFromCache(removableDriveRootPaths());
+#endif
         folders = createRemovableDevices();
     } else {
-        // we assume that the path refers to a folder in the file system
-        // populate children
-        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
-
-        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
-                QDir::Dirs | QDir::NoDotAndDotDot);
-
-        // loop through all the item and construct the children
-        foreach (QFileInfo one, all) {
-            // Skip folders that end with .app on OS X
-#if defined(__APPLE__)
-            if (one.isDir() && one.fileName().endsWith(".app"))
-                continue;
-#endif
-            // We here create new items for the sidebar models
-            // Once the items are added to the TreeItemModel,
-            // the models takes ownership of them and ensures their deletion
-            folders.push_back(std::make_unique<TreeItem>(
-                    one.fileName(),
-                    QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
-        }
+        folders = getChildDirectoryItems(path);
     }
-    // we need to check here if subfolders are found
-    // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
-    // has no subfolders
+
     if (!folders.empty()) {
         m_pSidebarModel->insertTreeItemRows(std::move(folders), 0, index);
     }
+}
+
+std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
+        const QString& path) const {
+    std::vector<std::unique_ptr<TreeItem>> items;
+
+    if (path.isEmpty()) {
+        return items;
+    }
+    // we assume that the path refers to a folder in the file system
+    // populate children
+    const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+
+    QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+            QDir::Dirs | QDir::NoDotAndDotDot);
+
+    // loop through all the item and construct the children
+    foreach (QFileInfo one, all) {
+        // Skip folders that end with .app on OS X
+#if defined(__APPLE__)
+        if (one.isDir() && one.fileName().endsWith(".app"))
+            continue;
+#endif
+        // We here create new items for the sidebar models
+        // Once the items are added to the TreeItemModel,
+        // the models takes ownership of them and ensures their deletion
+        items.push_back(std::make_unique<TreeItem>(
+                one.fileName(),
+                QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
+    }
+
+    return items;
 }
 
 QString BrowseFeature::getRootViewHtml() const {

@@ -29,7 +29,6 @@ EqualizerEffectChain::EqualizerEffectChain(
                 setFilterWaveform(
                         m_effectSlots.at(0)->getManifest()->isMixingEQ());
             });
-    // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setupLegacyAliasesForGroup(handleAndGroup.name());
 }

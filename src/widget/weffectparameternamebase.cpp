@@ -9,6 +9,7 @@
 #include "effects/effectparameterslotbase.h"
 #include "effects/effectslot.h"
 #include "moc_weffectparameternamebase.cpp"
+#include "util/dnd.h"
 #include "util/math.h"
 
 namespace {
@@ -59,7 +60,7 @@ void WEffectParameterNameBase::parameterUpdated() {
         } else {
             m_text = m_pParameterSlot->name();
         }
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 m_pParameterSlot->name(),
                 m_pParameterSlot->description()));
         EffectManifestParameterPointer pManifest = m_pParameterSlot->getManifest();
@@ -113,14 +114,18 @@ void WEffectParameterNameBase::showNewValue(double newValue) {
     m_displayNameResetTimer.start();
 }
 
-void WEffectParameterNameBase::mousePressEvent(QMouseEvent* event) {
+void WEffectParameterNameBase::mousePressEvent(QMouseEvent* pEvent) {
     VERIFY_OR_DEBUG_ASSERT(m_pParameterSlot && m_pParameterSlot->isLoaded()) {
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pEffectSlot && m_pEffectSlot->isLoaded()) {
         return;
     }
-    if (event->button() == Qt::LeftButton) {
+    DragAndDropHelper::mousePressed(pEvent);
+}
+
+void WEffectParameterNameBase::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         QDrag* drag = new QDrag(this);
         QMimeData* mimeData = new QMimeData;
 
@@ -133,29 +138,29 @@ void WEffectParameterNameBase::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WEffectParameterNameBase::dragEnterEvent(QDragEnterEvent* event) {
+void WEffectParameterNameBase::dragEnterEvent(QDragEnterEvent* pEvent) {
     VERIFY_OR_DEBUG_ASSERT(m_pParameterSlot && m_pParameterSlot->isLoaded()) {
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pEffectSlot && m_pEffectSlot->isLoaded()) {
         return;
     }
-    const QString& mimeText = event->mimeData()->text();
+    const QString& mimeText = pEvent->mimeData()->text();
     QStringList mimeTextLines = mimeText.split(kMimeTextDelimiter);
     if (mimeTextLines.at(0) == mimeTextIdentifier() &&
             mimeTextLines.at(1) == m_pEffectSlot->getManifest()->uniqueId()) {
-        event->acceptProposedAction();
+        pEvent->acceptProposedAction();
     }
 }
 
-void WEffectParameterNameBase::dropEvent(QDropEvent* event) {
+void WEffectParameterNameBase::dropEvent(QDropEvent* pEvent) {
     VERIFY_OR_DEBUG_ASSERT(m_pParameterSlot && m_pParameterSlot->isLoaded()) {
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pEffectSlot && m_pEffectSlot->isLoaded()) {
         return;
     }
-    const QString& mimeText = event->mimeData()->text();
+    const QString& mimeText = pEvent->mimeData()->text();
     QStringList mimeTextLines = mimeText.split(kMimeTextDelimiter);
     m_pEffectSlot->swapParameters(m_pParameterSlot->parameterType(),
             m_pParameterSlot->slotNumber(),

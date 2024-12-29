@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 #include <memory>
 
 #include "qml/qmllibrarytracklistmodel.h"
@@ -23,10 +23,13 @@ class QmlLibraryProxy : public QObject {
     explicit QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent = nullptr);
 
     static QmlLibraryProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
-    static inline QmlLibraryProxy* s_pInstance = nullptr;
+    static void registerLibrary(std::shared_ptr<Library> pLibrary) {
+        s_pLibrary = std::move(pLibrary);
+    }
 
   private:
-    static inline QJSEngine* s_pJsEngine = nullptr;
+    static inline std::shared_ptr<Library> s_pLibrary;
+
     std::shared_ptr<Library> m_pLibrary;
 
     /// This needs to be a plain pointer because it's used as a `Q_PROPERTY` member variable.

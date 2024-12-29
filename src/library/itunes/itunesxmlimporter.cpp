@@ -11,6 +11,8 @@
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/treeitem.h"
+#include "util/fileaccess.h"
+#include "util/fileinfo.h"
 #include "util/lcs.h"
 
 namespace {
@@ -65,8 +67,12 @@ ITunesImport ITunesXMLImporter::importLibrary() {
     ITunesImport iTunesImport;
     bool isMusicFolderLocatedAfterTracks = false;
 
+    // In sandboxed builds we have to obtain an access token
+    auto access = mixxx::FileAccess(mixxx::FileInfo(m_xmlFilePath));
+
     if (!m_xmlFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open iTunes music collection XML at " << m_xmlFilePath;
+        qWarning() << "Could not open iTunes music collection XML at " << m_xmlFilePath
+                   << ":" << m_xmlFile.errorString();
         return iTunesImport;
     }
 

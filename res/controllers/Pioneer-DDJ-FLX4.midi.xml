@@ -25,6 +25,16 @@
                     <SelectKnob/>
                 </options>
             </control>
+	    <control>
+                <description>BROWSE +SHIFT - Zoom waveform</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.waveformZoom</key>
+                <status>0xB6</status>
+                <midino>0x64</midino>
+                <options>
+                  <Script-Binding/>
+                </options>
+            </control>
             <control>
                 <description>BROWSE - press - Move cursor between track list and tree view</description>
                 <group>[Library]</group>
@@ -108,7 +118,7 @@
                 <group>[Channel1]</group>
                 <key>reverseroll</key>
                 <status>0x90</status>
-                <midino>0x47</midino>
+                <midino>0x0E</midino>
                 <options>
                     <Normal/>
                 </options>
@@ -128,7 +138,7 @@
                 <group>[Channel2]</group>
                 <key>reverseroll</key>
                 <status>0x91</status>
-                <midino>0x47</midino>
+                <midino>0x0E</midino>
                 <options>
                     <Normal/>
                 </options>
@@ -890,27 +900,6 @@
             </control>
 
             <control>
-                <description>CUE Channel +SHIFT - press - Adjust BPM to match tapped BPM</description>
-                <group>[Channel1]</group>
-                <key>bpm_tap</key>
-                <status>0x90</status>
-                <midino>0x68</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <description>CUE Channel +SHIFT - press - Adjust BPM to match tapped BPM</description>
-                <group>[Channel2]</group>
-                <key>bpm_tap</key>
-                <status>0x91</status>
-                <midino>0x68</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
                 <group>[Master]</group>
                 <key>headMix</key>
@@ -926,27 +915,6 @@
                 <key>headMix</key>
                 <status>0xB6</status>
                 <midino>0x0C</midino>
-                <options>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
-
-            <control>
-                <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
-                <group>[Master]</group>
-                <key>headGain</key>
-                <status>0xB6</status>
-                <midino>0x2D</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
-                <group>[Master]</group>
-                <key>headGain</key>
-                <status>0xB6</status>
-                <midino>0x0D</midino>
                 <options>
                     <fourteen-bit-msb/>
                 </options>

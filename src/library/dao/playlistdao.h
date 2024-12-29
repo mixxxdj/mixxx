@@ -8,23 +8,6 @@
 #include "track/trackid.h"
 #include "util/class.h"
 
-#define PLAYLIST_TABLE "Playlists"
-#define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
-
-const QString PLAYLISTTABLE_ID = QStringLiteral("id");
-const QString PLAYLISTTABLE_NAME = QStringLiteral("name");
-const QString PLAYLISTTABLE_POSITION = QStringLiteral("position");
-const QString PLAYLISTTABLE_HIDDEN = QStringLiteral("hidden");
-const QString PLAYLISTTABLE_DATECREATED = QStringLiteral("date_created");
-const QString PLAYLISTTABLE_DATEMODIFIED = QStringLiteral("date_modified");
-
-const QString PLAYLISTTRACKSTABLE_TRACKID = QStringLiteral("track_id");
-const QString PLAYLISTTRACKSTABLE_POSITION = QStringLiteral("position");
-const QString PLAYLISTTRACKSTABLE_PLAYLISTID = QStringLiteral("playlist_id");
-const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_added");
-
-#define AUTODJ_TABLE "Auto DJ"
-
 class AutoDJProcessor;
 class QSqlDatabase;
 
@@ -96,7 +79,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Returns the maximum position of the given playlist
     int getMaxPosition(const int playlistId) const;
     // Remove a track from all playlists
-    void removeTracksFromPlaylists(const QList<TrackId>& trackIds);
+    void removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool purged = false);
     // removes all hidden and purged Tracks from the playlist
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
@@ -107,6 +90,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(const QList<TrackId>& trackIds, const int playlistId, int position);
+    // Remove all tracks from the Auto-DJ Queue
+    void clearAutoDJQueue();
     // Add a playlist to the Auto-DJ Queue
     void addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc);
     // Add a list of tracks to the Auto-DJ Queue
@@ -139,7 +124,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(const QSet<int>& playlistIds);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
-    void tracksChanged(const QSet<int>& playlistIds); // added/removed/reordered
+    // added / removed / un/locked. Triggers playlist features to update the sidebar
+    void playlistContentChanged(const QSet<int>& playlistIds);
+    // Separate signals for PlaylistTableModel
+    void tracksAdded(const QSet<int>& playlistIds);
+    void tracksMoved(const QSet<int>& playlistIds);
+    void tracksRemoved(const QSet<int>& playlistIds);
     void tracksRemovedFromPlayedHistory(const QSet<TrackId>& playedTrackIds);
 
   private:

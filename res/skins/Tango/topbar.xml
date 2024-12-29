@@ -85,54 +85,27 @@ Description:
         </Children>
       </WidgetGroup><!-- /Logo + Main, Headphone & Booth Mixer -->
 
-      <WidgetGroup><!-- Crossfader, hidden with maximized library -->
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- Crossfader -->
+        <ObjectName>CrossfaderContainer</ObjectName>
+        <SizePolicy>min,f</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
-		      <WidgetGroup>
-		        <SizePolicy>min,min</SizePolicy>
-		        <Layout>horizontal</Layout>
-		        <Children>
-		          <WidgetGroup>
-		            <SizePolicy>min,min</SizePolicy>
-		            <Layout>horizontal</Layout>
-		            <Children>
-		              <WidgetGroup>
-		                <ObjectName>CrossfaderContainer</ObjectName>
-		                <SizePolicy>min,f</SizePolicy>
-		                <Layout>vertical</Layout>
-		                <Children>
-		                  <SliderComposed>
-		                    <TooltipId>crossfader</TooltipId>
-		                    <Size>108f,32f</Size>
-		                    <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_handle.svg</Handle>
-		                    <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_scale.svg</Slider>
-		                    <Horizontal>true</Horizontal>
-		                    <Connection>
-		                      <ConfigKey>[Master],crossfader</ConfigKey>
-		                    </Connection>
-		                  </SliderComposed>
-		                </Children>
-		              </WidgetGroup>
-		            </Children>
-		            <Connection>
-		              <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
-		              <BindProperty>visible</BindProperty>
-		            </Connection>
-		          </WidgetGroup>
-            </Children>
+          <SliderComposed>
+            <TooltipId>crossfader</TooltipId>
+            <Size>108f,28f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
+              <ConfigKey>[Master],crossfader</ConfigKey>
             </Connection>
-          </WidgetGroup>
+          </SliderComposed>
         </Children>
         <Connection>
-          <ConfigKey>[Skin],show_maximized_library</ConfigKey>
-          <Transform><Not/></Transform>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Crossfader, hidden with maximized library -->
+      </WidgetGroup><!-- /Crossfader -->
 
       <WidgetGroup><!-- Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
         <Layout>horizontal</Layout>
@@ -170,7 +143,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">wave_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">wave_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_waveforms</SetVariable>
               </Template>
 
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
@@ -308,7 +281,9 @@ Description:
 
           <WidgetGroup><!-- Clock + latency display -->
             <ObjectName>ClockBox</ObjectName>
-            <Size>52f,28f</Size>
+            <MinimumSize>52,28</MinimumSize>
+            <MaximumSize>64,28</MaximumSize>
+            <SizePolicy>max</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
@@ -319,9 +294,6 @@ Description:
                   <Time>
                     <TooltipId>time</TooltipId>
                     <ObjectName>Clock</ObjectName>
-                    <!-- <ShowSeconds>false</ShowSeconds>
-                    <ClockFormat>12AP</ClockFormat>
-                    This has no effect, neither has 'text-align' in qss.   -->
                     <Align>center</Align>
                   </Time>
                 </Children>

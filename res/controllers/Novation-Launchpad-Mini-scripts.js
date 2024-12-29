@@ -338,10 +338,10 @@ function ZoomKey(dir) {
     that.onPush = function()
     {
         // range is 1..10
-        if ( ZoomKey.zoom < 10 && this.dir == "+" ) {
+        if (ZoomKey.zoom < 10 && this.dir === "+") {
             ZoomKey.zoom++;
         }
-        if ( ZoomKey.zoom > 1 && this.dir == "-") {
+        if (ZoomKey.zoom > 1 && this.dir === "-") {
             ZoomKey.zoom--;
         }
 
@@ -402,6 +402,9 @@ NLM.init = function()
         NLM.page = 0;
         NLM.shiftstate = false;
         NLM.numofdecks = engine.getValue("[App]", "num_decks");
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
         // For testing NLM.numofdecks = 4;
 
         //Init hw

@@ -1,7 +1,8 @@
 #pragma once
 
+#include <memory>
+
 #include "effects/backends/effectprocessor.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 class EngineFilterBiquad1HighShelving;
@@ -12,7 +13,7 @@ class LoudnessContourEffectGroupState final : public EffectState {
     LoudnessContourEffectGroupState(const mixxx::EngineParameters& engineParameters);
     ~LoudnessContourEffectGroupState() override;
 
-    void setFilters(int sampleRate, double gain);
+    void setFilters(mixxx::audio::SampleRate sampleRate, double gain);
 
     std::unique_ptr<EngineFilterBiquad1Peaking> m_low;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_high;
@@ -45,7 +46,7 @@ class LoudnessContourEffect
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 
-    void setFilters(int sampleRate);
+    void setFilters(mixxx::audio::SampleRate sampleRate);
 
   private:
     LoudnessContourEffect(const LoudnessContourEffect&) = delete;

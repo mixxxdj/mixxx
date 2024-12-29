@@ -18,6 +18,12 @@ RE_XML_OBJNAME_SETVAR = re.compile(
 )
 RE_CLASSNAME = re.compile(r"^[A-Z]\w+$")
 RE_OBJNAME_VARTAG = re.compile(r"<.*>")
+# Some object names set via variables in
+# src/library/tabledelegates/checkboxdelegate.cpp
+CPP_OBJNAMES = [
+    "LibraryBPMButton",
+    "LibraryPlayedCheckbox",
+]
 
 # List of Qt Widgets, generated with:
 #     python -c 'import inspect, from PyQt5 import QtWidgets;
@@ -230,7 +236,7 @@ def get_skins(path):
 def get_global_names(mixxx_path):
     """Returns 2 sets with all class and object names in the Mixxx codebase."""
     classnames = set()
-    objectnames = set()
+    objectnames = set(CPP_OBJNAMES)
     for root, dirs, fnames in os.walk(os.path.join(mixxx_path, "src")):
         for fname in fnames:
             ext = os.path.splitext(fname)[1]

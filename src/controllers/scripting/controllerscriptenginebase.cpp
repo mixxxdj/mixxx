@@ -58,6 +58,7 @@ bool ControllerScriptEngineBase::initialize() {
 
 void ControllerScriptEngineBase::shutdown() {
     DEBUG_ASSERT(m_pJSEngine.use_count() == 1);
+    emit beforeShutdown();
     m_pJSEngine.reset();
 }
 
@@ -70,24 +71,24 @@ void ControllerScriptEngineBase::reload() {
 }
 
 bool ControllerScriptEngineBase::executeFunction(
-        QJSValue functionObject, const QJSValueList& args) {
+        QJSValue* pFunctionObject, const QJSValueList& args) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pJSEngine) {
         return false;
     }
 
-    const bool isError = functionObject.isError();
-    const bool isCallable = functionObject.isCallable();
+    const bool isError = pFunctionObject->isError();
+    const bool isCallable = pFunctionObject->isCallable();
     if (isError || !isCallable) {
         logOrThrowError((isError ? QStringLiteral("\"%1\" resulted in an error")
                                  : QStringLiteral("\"%1\" is not callable"))
-                                .arg(functionObject.toString()));
+                                .arg(pFunctionObject->toString()));
         return false;
     }
 
     // If it does happen to be a function, call it.
-    QJSValue returnValue = functionObject.call(args);
+    QJSValue returnValue = pFunctionObject->call(args);
     if (returnValue.isError()) {
         showScriptExceptionDialog(returnValue);
         return false;
@@ -109,7 +110,7 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     if (filename.isEmpty()) {
         filename = QStringLiteral("<passed code>");
     }
-    QString errorText = QString("Uncaught exception: %1:%2: %3").arg(filename, line, errorMessage);
+    QString errorText = QString("Uncaught exception: %1:%2:\n%3").arg(filename, line, errorMessage);
 
     // Do not include backtrace in dialog key because it might contain midi
     // slider values that will differ most of the time. This would break
@@ -117,7 +118,7 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     QString key = errorText;
 
     // Add backtrace to the error details
-    errorText += QStringLiteral("\nBacktrace: ") + backtrace;
+    errorText += QStringLiteral("\n\nBacktrace: ") + backtrace;
     qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
 
     if (!m_bDisplayingExceptionDialog) {

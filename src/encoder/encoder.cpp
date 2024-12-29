@@ -40,17 +40,17 @@ const EncoderFactory& EncoderFactory::getFactory()
 
 EncoderFactory::EncoderFactory() {
     // Add new supported formats here. Also modify the getNewEncoder/getEncoderSettings method.
-    m_formats.append(Encoder::Format("WAV PCM", ENCODING_WAVE, true, "wav"));
-    m_formats.append(Encoder::Format("AIFF PCM", ENCODING_AIFF, true, "aiff"));
-    m_formats.append(Encoder::Format("FLAC", ENCODING_FLAC, true, "flac"));
-    m_formats.append(Encoder::Format("MP3", ENCODING_MP3, false, "mp3"));
-    m_formats.append(Encoder::Format("OGG Vorbis", ENCODING_OGG, false, "ogg"));
+    m_formats.append(Encoder::Format{"WAV PCM", ENCODING_WAVE, true, "wav"});
+    m_formats.append(Encoder::Format{"AIFF PCM", ENCODING_AIFF, true, "aiff"});
+    m_formats.append(Encoder::Format{"FLAC", ENCODING_FLAC, true, "flac"});
+    m_formats.append(Encoder::Format{"MP3", ENCODING_MP3, false, "mp3"});
+    m_formats.append(Encoder::Format{"OGG Vorbis", ENCODING_OGG, false, "ogg"});
 #ifdef __OPUS__
-    m_formats.append(Encoder::Format("Opus", ENCODING_OPUS, false, "opus"));
+    m_formats.append(Encoder::Format{"Opus", ENCODING_OPUS, false, "opus"});
 #endif
-    m_formats.append(Encoder::Format("AAC", ENCODING_AAC, false, "aac"));
-    m_formats.append(Encoder::Format("HE-AAC", ENCODING_HEAAC, false, "aac"));
-    m_formats.append(Encoder::Format("HE-AACv2", ENCODING_HEAACV2, false, "aac"));
+    m_formats.append(Encoder::Format{"AAC", ENCODING_AAC, false, "aac"});
+    m_formats.append(Encoder::Format{"HE-AAC", ENCODING_HEAAC, false, "aac"});
+    m_formats.append(Encoder::Format{"HE-AACv2", ENCODING_HEAACV2, false, "aac"});
 }
 
 const QList<Encoder::Format> EncoderFactory::getFormats() const

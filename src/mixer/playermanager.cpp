@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -435,12 +436,19 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioPathType::Deck, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioPathType::Deck,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    deckIndex),
+            m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-    m_pSoundManager->registerInput(
-            AudioInput(AudioPathType::VinylControl, 0, 2, deckIndex), pEngineDeck);
+    m_pSoundManager->registerInput(AudioInput(AudioPathType::VinylControl,
+                                           0,
+                                           mixxx::audio::ChannelCount::stereo(),
+                                           deckIndex),
+            pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);
@@ -662,28 +670,45 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
         return;
     }
 
-    mixxx::Duration elapsed = m_cloneTimer.restart();
-    // If not present in the config, use & set the default value
-    bool cloneOnDoubleTap = m_pConfig->getValue(
-            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
+    bool clone = false;
+    if (isDeckGroup(group)) {
+        mixxx::Duration elapsed = m_cloneTimer.restart();
+        // If not present in the config, use & set the default value
+        bool cloneOnDoubleTap = m_pConfig->getValue(
+                ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
 
-    // If AutoDJ is enabled, prevent it from cloning decks if the same track
-    // is in the AutoDJ queue twice in a row. This can happen when the option to
-    // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
-    // button repeatedly.
-    // AutoDJProcessor is initialized after PlayerManager, so check that the
-    // ControlProxy is pointing to the real ControlObject.
-    if (!m_pAutoDjEnabled) {
-        m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
+        // If AutoDJ is enabled, prevent it from cloning decks if the same track
+        // is in the AutoDJ queue twice in a row. This can happen when the option to
+        // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
+        // button repeatedly.
+        // AutoDJProcessor is initialized after PlayerManager, so check that the
+        // ControlProxy is pointing to the real ControlObject.
+        if (!m_pAutoDjEnabled) {
+            m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
+        }
+        bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
+                (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+
+        if (cloneOnDoubleTap && m_lastLoadedPlayer == group &&
+                elapsed < mixxx::Duration::fromSeconds(0.5) &&
+                !autoDjSkipClone) {
+            // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
+            // so clone another playing deck instead of loading the selected track
+            clone = true;
+        }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
+        }
     }
-    bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
-            (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 
-    if (cloneOnDoubleTap && m_lastLoadedPlayer == group
-        && elapsed < mixxx::Duration::fromSeconds(0.5)
-        && !autoDjSkipClone) {
-        // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
-        // so clone another playing deck instead of loading the selected track
+    if (clone) {
         pPlayer->slotCloneDeck();
     } else {
         pPlayer->slotLoadTrack(pTrack, play);
@@ -702,10 +727,8 @@ void PlayerManager::slotLoadLocationToPlayer(
 void PlayerManager::slotLoadLocationToPlayerMaybePlay(
         const QString& location, const QString& group) {
     bool play = false;
-    LoadWhenDeckPlaying loadWhenDeckPlaying =
-            static_cast<LoadWhenDeckPlaying>(
-                    m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
-                            static_cast<int>(kDefaultLoadWhenDeckPlaying)));
+    LoadWhenDeckPlaying loadWhenDeckPlaying = m_pConfig->getValue(
+            kConfigKeyLoadWhenDeckPlaying, kDefaultLoadWhenDeckPlaying);
     switch (loadWhenDeckPlaying) {
     case LoadWhenDeckPlaying::AllowButStopDeck:
     case LoadWhenDeckPlaying::Reject:
