@@ -179,6 +179,13 @@ class ReloopReady {
         return color & 0b00111111;
     }
 
+    static arrayRange(start, stop, step = 1){
+        return Array.from(
+            { length: (stop - start) / step + 1 },
+            (_value, index) => start + index * step
+        );
+    }
+
 
     /**
      * creates an this.isPress guarded input handler, assumes to be called by components.Button or subclasses thereof
@@ -328,6 +335,9 @@ ReloopReady.Channel = class extends components.ComponentContainer {
             type: components.Button.prototype.types.toggle,
         });
 
+        // TODO properly handle output messages here
+        // the constant offset between channels doesn't seem to apply
+        // left shift: 0x1B, right shift: 0x10
         this.load = new components.Button({
             midi: [0x9E, 0x02 + deckIdx],
             shiftOffset: 0x0D,

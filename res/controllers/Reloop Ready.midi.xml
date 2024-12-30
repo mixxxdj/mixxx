@@ -176,6 +176,25 @@
 
             <control>
                 <group></group>
+                <key>ReloopReadyInstance.components.leftChannel.load.input</key>
+                <status>0x9E</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.leftChannel.load.input</key>
+                <status>0x8E</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group></group>
                 <key>ReloopReadyInstance.components.leftChannel.pfl.input</key>
                 <status>0x90</status>
                 <midino>0x1B</midino>
@@ -272,6 +291,25 @@
                 <key>ReloopReadyInstance.components.rightChannel.load.input</key>
                 <status>0x8E</status>
                 <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.rightChannel.load.input</key>
+                <status>0x9E</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.rightChannel.load.input</key>
+                <status>0x8E</status>
+                <midino>0x10</midino>
                 <options>
                     <script-binding/>
                 </options>
