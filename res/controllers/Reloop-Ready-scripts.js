@@ -431,7 +431,7 @@ ReloopReady.PadMode = class extends components.ComponentContainer {
     }
     shutdown() {
         // we want the pads to be completely off when shutdown, not dimmed
-        this.pads.forEach(pad => pad.send(ReloopReady.singleColorLED.off,));
+        this.pads.forEach(pad => pad.send(ReloopReady.singleColorLED.off));
         this.parameterLeft.shutdown();
         this.parameterRight.shutdown();
     }
@@ -485,6 +485,25 @@ ReloopReady.AbstractLoopPadMode = class extends ReloopReady.PadMode {
         if (new.target === ReloopReady.AbstractLoopPadMode) {
             throw new TypeError("Cannot construct AbstractLoopPadMode instances directly");
         }
+
+        const trigger = function() {
+            this.send(this.off);
+        };
+
+        // Loop Modes can always have their Parameter buttons
+        // implemented in terms of `makeParameterInputHandler` so do that here.
+        this.parameterLeft = new components.Button({
+            midi: [0x94 + deckIdx, 0x28], //shifted control: 0x2A
+            shiftOffset: 0x2,
+            input: this.makeParameterInputHandler(-1),
+            trigger: trigger,
+        });
+        this.parameterRight = new components.Button({
+            midi: [0x94 + deckIdx, 0x29], //shifted control: 0x2B
+            shiftOffset: 0x2,
+            input: this.makeParameterInputHandler(1),
+            trigger: trigger,
+        });
     }
 };
 ReloopReady.AutoLoopPadMode = class extends ReloopReady.AbstractLoopPadMode {
@@ -507,18 +526,6 @@ ReloopReady.AutoLoopPadMode = class extends ReloopReady.AbstractLoopPadMode {
             on: ReloopReady.padColorPalette.Red.lit,
             outConnect: false,
         }));
-
-        this.parameterLeft = new components.Button({
-            midi: [0x94 + deckIdx, 0x28], //shifted control: 0x2A
-            shiftOffset: 0x2,
-            input: this.makeParameterInputHandler(-1),
-        });
-        this.parameterRight = new components.Button({
-            midi: [0x94 + deckIdx, 0x29], //shifted control: 0x2B
-            shiftOffset: 0x2,
-            input: this.makeParameterInputHandler(1),
-        });
-
         this.setLoopSizes(this.currentLoopSizeExp);
     }
 };
