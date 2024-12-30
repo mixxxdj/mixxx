@@ -7,6 +7,84 @@
         <wiki></wiki>
         <forums></forums>
     </info>
+    <settings>
+        <option
+            variable="useButtonBacklight"
+            type="boolean"
+            default="true"
+            label="Use Button backlight"
+            >
+            <description>All buttons that have an LED will stay dimly lit even when turned off so they're easier to see in dark environments</description>
+        </option>
+        <option
+            variable="eqLayout"
+            type="enum"
+            label="Channel Knobs Assignment">
+            <description>Since the controller only has 3 buttons to map a three band EQ plus the Gain Knob, you can choose your preferred configuration here</description>
+            <!-- values are encoded as bitmap (low,mid,high,gain) -->
+            <value label="Filter, Low, High, Gain" default="true">11011</value>
+            <value label="Filter, Low, Mid, Gain">11101</value>
+            <value label="Filter, Low, Mid, High">11110</value>
+            <value label="Low, Mid, High, Gain">01111</value>
+        </option>
+        <option
+            variable="defaultLoopRootSize"
+            type="enum"
+            label="Loop size of the smallest Pad in Auto-Loop (and similar) Padmodes">
+            <!-- values are actually exponents 2**n-->
+            <value label="1/32">-5</value>
+            <value label="1/16">-4</value>
+            <value label="1/8">-3</value>
+            <value label="1/4">-2</value>
+            <value label="1/2">-1</value>
+            <value label="1" default="true">0</value>
+            <value label="2">1</value>
+            <value label="4">2</value>
+            <value label="8">3</value>
+            <value label="16">4</value>
+            <value label="32">5</value>
+            <value label="64">6</value>
+            <value label="128">7</value>
+            <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads. This can also be changed on the fly using :hwbtn:SHIFT + "parameter adjust"</description>
+        </option>
+        <group label="Tempo Fader neutral correction (See Manual)">
+            <!--
+                On my hardware unit, the tempo faders have such a cheap build-quality
+                that the notches in the center are not actually in the middle
+                If you find your notches are offset too, do this:
+                Load this mapping in mixxx using `developer` mode.
+                Then move the tempo fader into the notch at the position where
+                the tempo should then be the true tempo (+/- 0). Open the developer tools
+                and read the `rate` value of the channel. If its already 0.5 you should be
+                good, if its not that, copy the value here and the fader will be adjusted
+                for you.
+            -->
+            <row orientation="vertical">
+                <description>Since the tempo faders are cheaply constructed, on some units the physical indent representing the neutral position does not match the position where the value is actually neutral, this can be corrected here</description>
+                <!-- both options feature 10 decimal precision because that should be sufficient to represent the smallest 16-bit change in decimal (1/(2^16)) -->
+                <option
+                variable="tempoFaderCorrectionLeft"
+                type="real"
+                min="0"
+                max="1"
+                default="0.5"
+                precision="10"
+                label="Left Center">
+                <description>Input the parameter value from the developer tools here</description>
+                </option>
+                <option
+                variable="tempoFaderCorrectionRight"
+                type="real"
+                min="0"
+                max="1"
+                default="0.5"
+                precision="10"
+                label="Right Center">
+                <description>Input the parameter value from the developer tools here</description>
+                </option>
+            </row>
+        </group>
+    </settings>
     <controller id="ReloopReady">
         <scriptfiles>
             <file filename="lodash.mixxx.js"/>
@@ -93,7 +171,7 @@
 
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.knob1.input</key>
+                <key>ReloopReadyInstance.components.leftChannel.eqKnob[3].input</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
                 <options>
@@ -102,7 +180,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.knob2.input</key>
+                <key>ReloopReadyInstance.components.leftChannel.eqKnob[2].input</key>
                 <status>0xB0</status>
                 <midino>0x17</midino>
                 <options>
@@ -111,7 +189,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.knob3.input</key>
+                <key>ReloopReadyInstance.components.leftChannel.eqKnob[1].input</key>
                 <status>0xB0</status>
                 <midino>0x19</midino>
                 <options>
@@ -120,7 +198,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.filter.input</key>
+                <key>ReloopReadyInstance.components.leftChannel.eqKnob[0].input</key>
                 <status>0xB0</status>
                 <midino>0x1A</midino>
                 <options>
@@ -215,7 +293,7 @@
 
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.knob1.input</key>
+                <key>ReloopReadyInstance.components.rightChannel.eqKnob[3].input</key>
                 <status>0xB1</status>
                 <midino>0x16</midino>
                 <options>
@@ -224,7 +302,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.knob2.input</key>
+                <key>ReloopReadyInstance.components.rightChannel.eqKnob[2].input</key>
                 <status>0xB1</status>
                 <midino>0x17</midino>
                 <options>
@@ -233,7 +311,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.knob3.input</key>
+                <key>ReloopReadyInstance.components.rightChannel.eqKnob[1].input</key>
                 <status>0xB1</status>
                 <midino>0x19</midino>
                 <options>
@@ -242,7 +320,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.filter.input</key>
+                <key>ReloopReadyInstance.components.rightChannel.eqKnob[0].input</key>
                 <status>0xB1</status>
                 <midino>0x1A</midino>
                 <options>

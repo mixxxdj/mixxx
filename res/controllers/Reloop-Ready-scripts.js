@@ -13,12 +13,6 @@ class ReloopReady {
     }
     constructor() {
 
-        /// The controller only offers Low, High and Gain Knobs,
-        /// settings this to true will remap them to control Low, Mid, High instead.
-        this.threeBandEQ = false;
-
-        this.backlightButtons = true;
-
         /// On my hardware unit, the tempo faders have such a cheap build-quality
         /// that the notches in the center are not actually in the middle
         /// If you find your notches are offset too, do this:
@@ -28,10 +22,10 @@ class ReloopReady {
         /// and read the `rate` value of the channel. If its already 0.5 you should be
         /// good, if its not that, copy the value here and the fader will be adjusted
         /// for you.
-        this.tempoFaderMiddles = [0.5, 0.5];
+        this.tempoFaderMiddles = [engine.getSetting("tempoFaderCorrectionLeft"), engine.getSetting("tempoFaderCorrectionRight")];
 
 
-        components.Button.prototype.off = this.backlightButtons ? this.constructor.singleColorLED.dim : this.constructor.singleColorLED.off;
+        components.Button.prototype.off = engine.getSetting("useButtonBacklight") ? this.constructor.singleColorLED.dim : this.constructor.singleColorLED.off;
         components.Button.prototype.on = this.constructor.singleColorLED.lit;
 
 
@@ -261,43 +255,20 @@ ReloopReady.Channel = class extends components.ComponentContainer {
         const channel = deckIdx + 1;
         const group = `[Channel${channel}]`;
         const eqGroup = `[EqualizerRack1_${group}_Effect1]`;
-
-        if (parent.threeBandEQ) {
-            this.knob1 = new components.Pot({
-                midi: [0xB0 + deckIdx, 0x16],
-                group: eqGroup,
-                inKey: "parameter3"
-            });
-            this.knob2 = new components.Pot({
-                midi: [0xB0 + deckIdx, 0x17],
-                group: eqGroup,
-                inKey: "parameter2"
-            });
-        } else {
-            this.knob1 = new components.Pot({
-                midi: [0xB0 + deckIdx, 0x16],
-                inKey: "pregain"
-            });
-
-            this.knob2 = new components.Pot({
-                midi: [0xB0 + deckIdx, 0x17],
-                group: eqGroup,
-                inKey: "parameter3"
-            });
-        }
-
-        this.knob3 = new components.Pot({
-            midi: [0xB0 + deckIdx, 0x19],
-            group: eqGroup,
-            inKey: "parameter1"
-        });
-
-
-        this.filter = new components.Pot({
-            midi: [0xB0 + deckIdx, 0x1A],
-            group: `[QuickEffectRack1_${group}]`,
-            inKey: "super1"
-        });
+        const eqLayoutSetting = engine.getSetting("eqLayout"); // bitset string (eg. "10111") indicating which elements are used
+        const eqKnobAddresses = [0x1A, 0x19, 0x17, 0x16];
+        this.eqKnob = [
+            [`[QuickEffectRack1_${group}]`, "super1"],
+            [eqGroup, "parameter1", 0x19],
+            [eqGroup, "parameter2", 0x17],
+            [eqGroup, "parameter3", 0x16],
+            [group, "pregain"]]
+            .filter((_, i) => eqLayoutSetting[i] === "1")
+            .map(([group, key], i) => new components.Pot({
+                midi: [0xB0 + deckIdx, eqKnobAddresses[i]],
+                group: group,
+                inKey: key,
+            }));
 
         this.rate = new components.Pot({
             midi: [0xB0 + deckIdx, 0x09], // MSB control: 0x3F
@@ -523,7 +494,7 @@ ReloopReady.AutoLoopPadMode = class extends ReloopReady.AbstractLoopPadMode {
     constructor(deckIdx) {
         super(deckIdx);
 
-        this.currentLoopSizeExp = -2;
+        this.currentLoopSizeExp = engine.getSetting("defaultLoopRootSize");
 
         this.pads = this.pads.map(control => new components.Button({
             midi: [0x94 + deckIdx, control],
@@ -663,7 +634,7 @@ ReloopReady.LoopRollPadMode = class extends ReloopReady.AbstractLoopPadMode {
 
     constructor(deckIdx) {
         super(deckIdx);
-        this.currentLoopSizeExp = -2;
+        this.currentLoopSizeExp = engine.getSetting("defaultLoopRootSize");
 
         this.pads = this.pads.map(control => new components.Button({
             midi: [0x94 + deckIdx, control],
@@ -871,7 +842,7 @@ ReloopReady.ScratchBankPadMode = class extends ReloopReady.PadMode {
     constructor(deckIdx) {
         super(deckIdx);
 
-        this.currentJumpSizeExp = -2;
+        this.currentJumpSizeExp = engine.getSetting("defaultLoopRootSize");
 
         this.pads = this.pads.map(control =>
             new components.Button({
