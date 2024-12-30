@@ -162,16 +162,16 @@ class ReloopReady {
      * @returns {number} 24-bit (8-bit per channel) upscaled `color`
      */
     static midiToFullColor(color) {
-        const b = (color & 0b00000011) << 6;
-        const g = (color & 0b00001100) << 4;
-        const r = (color & 0b00110000) << 2;
+        let   b = (color & 0b00000011) << 6;
+        let   g = (color & 0b00001100) << 4;
+        let   r = (color & 0b00110000) << 2;
         const i = (color & 0b01000000) >> 6;
 
         if (i === 0) {
             // half the RGB intensity
-            r >> 0b1;
-            g >> 0b1;
-            b >> 0b1;
+            r >>= 0b1;
+            g >>= 0b1;
+            b >>= 0b1;
         }
         return (r << 16) | (g << 8) | b;
     }
