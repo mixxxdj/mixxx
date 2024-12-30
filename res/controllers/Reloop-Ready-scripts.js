@@ -659,6 +659,19 @@ ReloopReady.LoopRollPadMode = class extends ReloopReady.AbstractLoopPadMode {
             on: ReloopReady.padColorPalette.Green.lit,
             outConnect: false,
         }));
+
+        this.parameterLeft = new components.Button({
+            midi: [0x94 + deckIdx, 0x28], //shifted control: 0x2A
+            shiftOffset: 0x2,
+            input: this.makeParameterInputHandler(-1),
+        });
+        this.parameterRight = new components.Button({
+            midi: [0x94 + deckIdx, 0x29], //shifted control: 0x2B
+            shiftOffset: 0x2,
+            input: this.makeParameterInputHandler(1),
+        });
+
+        this.setLoopSizes(this.currentLoopSizeExp);
     }
 };
 
