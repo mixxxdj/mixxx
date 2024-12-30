@@ -224,9 +224,11 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+    // cast is necessary to clarify which .arg overload to call
+    const qulonglong recordedDuration = m_recordedDuration;
+    return QStringLiteral("%1:%2")
+            .arg(recordedDuration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(recordedDuration % 60, 2, 10, QChar('0')); // seconds
 }
 
 void EngineRecord::writeCueLine() {
