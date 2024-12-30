@@ -778,15 +778,11 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     }
 
     // These tabs are only usable for MIDI controllers
-    if (m_pController->getDataRepresentationProtocol() == DataRepresentationProtocol::MIDI &&
-            !mappingFilePath.isEmpty()) {
-        m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, true);
-        m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, true);
-
-    } else {
-        m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, false);
-        m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, false);
-    }
+    bool showMidiTabs = m_pController->getDataRepresentationProtocol() ==
+                    DataRepresentationProtocol::MIDI &&
+            !mappingFilePath.isEmpty();
+    m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, showMidiTabs);
+    m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, showMidiTabs);
 
     // Hide the entire QTabWidget if all tabs are removed
     m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
