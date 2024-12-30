@@ -95,6 +95,8 @@ class DlgPrefController : public DlgPreferencePage {
     void applyMappingChanges();
     bool saveMapping();
     void initTableView(QTableView* pTable);
+    unsigned int getNumberOfVisibleTabs();
+    int getIndexOfFirstVisibleTabs();
 
     /// Set dirty state (i.e. changes have been made).
     ///
@@ -139,4 +141,6 @@ class DlgPrefController : public DlgPreferencePage {
     bool m_bDirty;
     int m_inputMappingsTabIndex;  // Index of the input mappings tab
     int m_outputMappingsTabIndex; // Index of the output mappings tab
+    int m_settingsTabIndex;       // Index of the settings tab
+    int m_screensTabIndex;        // Index of the screens tab
 };

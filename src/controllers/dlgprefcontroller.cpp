@@ -82,7 +82,9 @@ DlgPrefController::DlgPrefController(
           m_GuiInitialized(false),
           m_bDirty(false),
           m_inputMappingsTabIndex(-1),
-          m_outputMappingsTabIndex(-1) {
+          m_outputMappingsTabIndex(-1),
+          m_settingsTabIndex(-1),
+          m_screensTabIndex(-1) {
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
     createLinkColor();
@@ -307,6 +309,8 @@ DlgPrefController::DlgPrefController(
     // Store the index of the input and output mappings tabs
     m_inputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.inputMappingsTab);
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
+    m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
+    m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -776,24 +780,35 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     // These tabs are only usable for MIDI controllers
     if (m_pController->getDataRepresentationProtocol() == DataRepresentationProtocol::MIDI &&
             !mappingFilePath.isEmpty()) {
-        if (m_ui.controllerTabs->indexOf(m_ui.inputMappingsTab) == -1) {
-            m_ui.controllerTabs->insertTab(m_inputMappingsTabIndex,
-                    m_ui.inputMappingsTab,
-                    tr("Input Mappings"));
-        }
-        if (m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab) == -1) {
-            m_ui.controllerTabs->insertTab(m_outputMappingsTabIndex,
-                    m_ui.outputMappingsTab,
-                    tr("Output Mappings"));
-        }
+        m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, true);
+        m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, true);
+
     } else {
-        m_ui.controllerTabs->removeTab(m_ui.controllerTabs->indexOf(m_ui.inputMappingsTab));
-        m_ui.controllerTabs->removeTab(m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab));
+        m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, false);
+        m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, false);
     }
 
     // Hide the entire QTabWidget if all tabs are removed
-    bool hasTabs = m_ui.controllerTabs->count() > 0;
-    m_ui.controllerTabs->setVisible(hasTabs);
+    m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
+}
+
+unsigned int DlgPrefController::getNumberOfVisibleTabs() {
+    unsigned int visibleTabsCount = 0;
+    for (int tabIdx = 0; tabIdx < m_ui.controllerTabs->count(); ++tabIdx) {
+        if (m_ui.controllerTabs->isTabVisible(tabIdx)) {
+            ++visibleTabsCount;
+        }
+    }
+    return visibleTabsCount;
+}
+
+int DlgPrefController::getIndexOfFirstVisibleTabs() {
+    for (int tabIdx = 0; tabIdx < m_ui.controllerTabs->count(); ++tabIdx) {
+        if (m_ui.controllerTabs->isTabVisible(tabIdx)) {
+            return tabIdx;
+        }
+    }
+    return -1;
 }
 
 bool DlgPrefController::saveMapping() {
@@ -1017,9 +1032,6 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     // the script files label if they are empty,
     // because without them the layout would be collapse.
 
-    // Remove all tabs first
-    m_ui.controllerTabs->clear();
-
     if (pMapping) {
         pMapping->loadSettings(m_pConfig, m_pController->getName());
         auto settings = pMapping->getSettings();
@@ -1044,13 +1056,9 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     }
 
     // Show or hide the settings tab based on the presence of settings
-    if (pMapping && !pMapping->getSettings().isEmpty()) {
-        if (m_ui.controllerTabs->indexOf(m_ui.settingsTab) == -1) {
-            m_ui.controllerTabs->addTab(m_ui.settingsTab, tr("Mapping Settings"));
-        }
-    } else {
-        m_ui.controllerTabs->removeTab(m_ui.controllerTabs->indexOf(m_ui.settingsTab));
-    }
+
+    m_ui.controllerTabs->setTabVisible(
+            m_settingsTabIndex, pMapping && !pMapping->getSettings().isEmpty());
 
     // If there is still settings that may be saved and no new mapping selected
     // (e.g restored default), we keep the the dirty mapping live so it can be
@@ -1068,16 +1076,12 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     if (pMapping && CmdlineArgs::Instance().getControllerPreviewScreens()) {
         auto screens = pMapping->getInfoScreens();
         bool hasScreens = !screens.isEmpty();
+        m_ui.controllerTabs->setTabVisible(m_screensTabIndex, hasScreens);
         if (hasScreens) {
-            if (m_ui.controllerTabs->indexOf(m_ui.screensTab) == -1) {
-                m_ui.controllerTabs->addTab(m_ui.screensTab, tr("Screens preview"));
-            }
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
-        } else {
-            m_ui.controllerTabs->removeTab(m_ui.controllerTabs->indexOf(m_ui.screensTab));
         }
     } else {
-        m_ui.controllerTabs->removeTab(m_ui.controllerTabs->indexOf(m_ui.screensTab));
+        m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
     }
 #endif
 
@@ -1138,12 +1142,12 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     slotOutputControlSearch();
 
     // Hide the entire QTabWidget if all tabs are removed
-    bool hasTabs = m_ui.controllerTabs->count() > 0;
-    m_ui.controllerTabs->setVisible(hasTabs);
+    m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
 
     // Set the first visible tab as the current tab
-    if (hasTabs) {
-        m_ui.controllerTabs->setCurrentIndex(0);
+    int firstVisibleTabIndex = getIndexOfFirstVisibleTabs();
+    if (firstVisibleTabIndex >= 0) {
+        m_ui.controllerTabs->setCurrentIndex(firstVisibleTabIndex);
     }
 }
 
