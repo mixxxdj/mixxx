@@ -224,10 +224,7 @@ ReloopReady.noopInputHandler = (_channel, _control, _value, _status, _group) => 
 
 (() => {
     // rewrite the following without lodash
-    const fullColorToMidiColorMap = _(_.range(0x00, 0x80))
-        .keyBy()
-        .mapKeys(ReloopReady.midiToFullColor)
-        .value();
+    const fullColorToMidiColorMap = _.keyBy(_.range(0x00, 0x80), ReloopReady.midiToFullColor);
 
     ReloopReady.padColorMapper = new ColorMapper(fullColorToMidiColorMap);
 
