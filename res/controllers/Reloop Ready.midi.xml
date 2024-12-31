@@ -234,7 +234,7 @@
 
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadLeft.input</key>
                 <status>0x9E</status>
                 <midino>0x02</midino>
                 <options>
@@ -243,7 +243,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadLeft.input</key>
                 <status>0x8E</status>
                 <midino>0x02</midino>
                 <options>
@@ -253,7 +253,7 @@
 
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadLeft.input</key>
                 <status>0x9E</status>
                 <midino>0x1B</midino>
                 <options>
@@ -262,7 +262,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.leftChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadLeft.input</key>
                 <status>0x8E</status>
                 <midino>0x1B</midino>
                 <options>
@@ -356,7 +356,7 @@
 
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadRight.input</key>
                 <status>0x9E</status>
                 <midino>0x03</midino>
                 <options>
@@ -365,7 +365,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadRight.input</key>
                 <status>0x8E</status>
                 <midino>0x03</midino>
                 <options>
@@ -375,7 +375,7 @@
 
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadRight.input</key>
                 <status>0x9E</status>
                 <midino>0x10</midino>
                 <options>
@@ -384,7 +384,7 @@
             </control>
             <control>
                 <group></group>
-                <key>ReloopReadyInstance.components.rightChannel.load.input</key>
+                <key>ReloopReadyInstance.components.loadRight.input</key>
                 <status>0x8E</status>
                 <midino>0x10</midino>
                 <options>

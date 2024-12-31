@@ -92,6 +92,33 @@ class ReloopReady {
             })
         });
 
+        this.components.loadLeft = new components.Button({
+            midi: [0x9E, 0x02],
+            shiftOffset: 0x19,
+            group: "[Channel1]",
+            shift: function() {
+                this.inKey = "eject";
+                this.outKey = this.inKey;
+            },
+            unshift: function() {
+                this.inKey = "LoadSelectedTrack";
+                this.outKey = this.inKey;
+            }
+        });
+        this.components.loadRight = new components.Button({
+            midi: [0x9E, 0x03],
+            shiftOffset: 0x0D,
+            group: "[Channel2]",
+            shift: function() {
+                this.inKey = "eject";
+                this.outKey = this.inKey;
+            },
+            unshift: function() {
+                this.inKey = "LoadSelectedTrack";
+                this.outKey = this.inKey;
+            }
+        });
+
         const shiftableComponents = this.components;
 
         this.shift = new components.Button({
@@ -304,23 +331,6 @@ ReloopReady.Channel = class extends components.ComponentContainer {
             key: "pfl",
             type: components.Button.prototype.types.toggle,
         });
-
-        // TODO properly handle output messages here
-        // the constant offset between channels doesn't seem to apply
-        // left shift: 0x1B, right shift: 0x10
-        this.load = new components.Button({
-            midi: [0x9E, 0x02 + deckIdx],
-            shiftOffset: 0x0D,
-            shift: function() {
-                this.inKey = "eject";
-                this.outKey = this.inKey;
-            },
-            unshift: function() {
-                this.inKey = "LoadSelectedTrack";
-                this.outKey = this.inKey;
-            }
-        });
-
 
         this.reconnectComponents(c => {
             if (c.group === undefined) {
