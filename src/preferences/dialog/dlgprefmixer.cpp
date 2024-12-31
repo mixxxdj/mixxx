@@ -41,12 +41,14 @@ const ConfigKey kLowEqFreqKey = ConfigKey(kMixerProfile, kLowEqFrequency);
 const ConfigKey kLowEqFreqPreciseKey =
         ConfigKey(kMixerProfile, QStringLiteral("LoEQFrequencyPrecise"));
 
+const QString kXfaderCalibration = QStringLiteral("xFaderCalibration");
+
 const ConfigKey kXfaderModeKey = ConfigKey(EngineXfader::kXfaderConfigKey,
         QStringLiteral("xFaderMode"));
 const ConfigKey kXfaderCurveKey = ConfigKey(EngineXfader::kXfaderConfigKey,
         QStringLiteral("xFaderCurve"));
 const ConfigKey kXfaderCalibrationKey = ConfigKey(EngineXfader::kXfaderConfigKey,
-        QStringLiteral("xFaderCalibration"));
+        kXfaderCalibration);
 const ConfigKey kXfaderReverseKey = ConfigKey(EngineXfader::kXfaderConfigKey,
         QStringLiteral("xFaderReverse"));
 
@@ -72,13 +74,14 @@ DlgPrefMixer::DlgPrefMixer(
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
-          m_transform(EngineXfader::kTransformDefault),
-          m_cal(0.0),
-          m_mode(kXfaderModeKey),
-          m_curve(kXfaderCurveKey),
-          m_calibration(kXfaderCalibrationKey),
-          m_reverse(kXfaderReverseKey),
-          m_crossfader("[Master]", "crossfader"),
+          m_xFaderTransform(EngineXfader::kTransformDefault),
+          m_xFaderCal(0.0),
+          m_xfModeCO(make_parented<ControlProxy>(kXfaderModeKey, this)),
+          m_xfCurveCO(make_parented<ControlProxy>(kXfaderCurveKey, this)),
+          m_xfReverseCO(make_parented<ControlProxy>(kXfaderReverseKey, this)),
+          m_xfCalibrationCO(
+                  ConfigKey(EngineXfader::kXfaderConfigKey, kXfaderCalibration)),
+          m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),
@@ -192,7 +195,6 @@ DlgPrefMixer::DlgPrefMixer(
     m_initializing = false;
 }
 
-// Create EQ & QuickEffect selectors and deck label for each added deck
 void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         // 1-based for display
@@ -688,19 +690,7 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
-    // xfader //////////////////////////////////////////////////////////////////
-    m_mode.set(m_xFaderMode);
-    m_curve.set(m_transform);
-    m_calibration.set(m_cal);
-    if (checkBoxReverse->isChecked() != m_xFaderReverse) {
-        m_reverse.set(checkBoxReverse->isChecked());
-        double position = m_crossfader.get();
-        m_crossfader.set(0.0 - position);
-        m_xFaderReverse = checkBoxReverse->isChecked();
-    }
-    m_pConfig->set(kXfaderModeKey, ConfigValue(m_xFaderMode));
-    m_pConfig->set(kXfaderCurveKey, ConfigValue(QString::number(m_transform)));
-    m_pConfig->set(kXfaderReverseKey, ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
+    applyXFader();
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
     m_pConfig->set(kEnableEqsKey, ConfigValue(m_eqBypass ? 0 : 1));
@@ -717,6 +707,21 @@ void DlgPrefMixer::slotApply() {
     storeEqShelves();
 }
 
+void DlgPrefMixer::applyXFader() {
+    m_xfModeCO->set(m_xFaderMode);
+    m_xfCurveCO->set(m_xFaderTransform);
+    m_xfCalibrationCO.set(m_xFaderCal);
+    if (m_xFaderReverse != m_xfReverseCO->toBool()) {
+        double position = m_crossfader.get();
+        m_crossfader.set(0.0 - position);
+    }
+    m_xfReverseCO->set(m_xFaderReverse ? 1.0 : 0.0);
+
+    m_pConfig->set(kXfaderModeKey, ConfigValue(m_xFaderMode));
+    m_pConfig->set(kXfaderCurveKey, ConfigValue(QString::number(m_xFaderTransform)));
+    m_pConfig->set(kXfaderReverseKey, ConfigValue(m_xFaderReverse ? 1 : 0));
+}
+
 void DlgPrefMixer::storeEqShelves() {
     if (m_initializing) {
         return;
@@ -726,14 +731,13 @@ void DlgPrefMixer::storeEqShelves() {
     m_pConfig->set(kLowEqFreqPreciseKey, ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
-// Update the widgets with values from config / EffectsManager
 void DlgPrefMixer::slotUpdate() {
     // xfader //////////////////////////////////////////////////////////////////
-    m_transform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
+    m_xFaderTransform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
 
     // Range SliderXFader 0 .. 100
     double sliderVal = RescalerUtils::oneByXToLinear(
-            m_transform - EngineXfader::kTransformMin + 1,
+            m_xFaderTransform - EngineXfader::kTransformMin + 1,
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
@@ -815,8 +819,6 @@ void DlgPrefMixer::slotUpdate() {
     updateMainEQ();
 }
 
-// Draw the crossfader curve graph. Only needs to get drawn when a change
-// has been made.
 void DlgPrefMixer::drawXfaderDisplay() {
     // Initialize or clear scene
     if (m_pxfScene) {
@@ -878,8 +880,8 @@ void DlgPrefMixer::drawXfaderDisplay() {
     for (int x = 1; x <= pointCount + 1; x++) {
         CSAMPLE_GAIN gainL, gainR;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * (x - 1))),
-                m_transform,
-                m_cal,
+                m_xFaderTransform,
+                m_xFaderCal,
                 m_xFaderMode,
                 checkBoxReverse->isChecked(),
                 &gainL,
@@ -915,7 +917,7 @@ void DlgPrefMixer::slotUpdateXFader() {
         m_xFaderMode = MIXXX_XFADER_CONSTPWR;
     }
 
-    // m_transform is in the range of 1 to 1000 while 50 % slider results
+    // m_xFaderTransform is in the range of 1 to 1000 while 50 % slider results
     // to ~2, which represents a medium rounded fader curve.
     double transform = RescalerUtils::linearToOneByX(
                                SliderXFader->value(),
@@ -924,8 +926,8 @@ void DlgPrefMixer::slotUpdateXFader() {
                                EngineXfader::kTransformMax) -
             1 + EngineXfader::kTransformMin;
     // Round to 4 decimal places to avoid round-trip offsets with default 1.0
-    m_transform = std::round(transform * 10000) / 10000;
-    m_cal = EngineXfader::getPowerCalibration(m_transform);
+    m_xFaderTransform = std::round(transform * 10000) / 10000;
+    m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderTransform);
 
     drawXfaderDisplay();
 }
