@@ -87,7 +87,6 @@
     </settings>
     <controller id="ReloopReady">
         <scriptfiles>
-            <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
             <file filename="common-controller-scripts.js"/>
             <file filename="Reloop-Ready-scripts.js" functionprefix="ReloopReadyInstance"/>

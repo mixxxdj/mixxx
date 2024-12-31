@@ -170,14 +170,10 @@ class ReloopReady {
         return (r << 16) | (g << 8) | b;
     }
     static dimColor(color) {
-        return color & 0b00111111;
+        return color & 0b0011_1111;
     }
-
-    static arrayRange(start, stop, step = 1){
-        return Array.from(
-            { length: (stop - start) / step + 1 },
-            (_value, index) => start + index * step
-        );
+    static clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
     }
 
 
@@ -202,7 +198,7 @@ class ReloopReady {
     }
 }
 
-ReloopReady.padColorPalette = {
+ReloopReady.padColorPaletteTemplate = {
     Off: 0x000000,
     Red: 0xFF0000,
     Green: 0x00FF00,
@@ -224,21 +220,24 @@ ReloopReady.singleColorLED = {
 ReloopReady.noopInputHandler = (_channel, _control, _value, _status, _group) => {};
 
 (() => {
-    // rewrite the following without lodash
-    const fullColorToMidiColorMap = _.keyBy(_.range(0x00, 0x80), ReloopReady.midiToFullColor);
+    const fullColorToMidiColorMap = {};
+    for (let midiColor = 0x00; midiColor <= 0b111_1111; ++midiColor) {
+        fullColorToMidiColorMap[ReloopReady.midiToFullColor(midiColor)] = midiColor;
+    }
 
     ReloopReady.padColorMapper = new ColorMapper(fullColorToMidiColorMap);
 
     // transform padColorPalette to low-res midi approximations:
 
-    ReloopReady.padColorPalette = _.mapValues(ReloopReady.padColorPalette, color => {
-        const litColor = ReloopReady.padColorMapper.getValueForNearestColor(color);
+    ReloopReady.padColorPalette = {};
+    for (const [name, fullColor] of Object.entries(ReloopReady.padColorPaletteTemplate)) {
+        const litColor = ReloopReady.padColorMapper.getValueForNearestColor(fullColor);
         const dimColor = ReloopReady.dimColor(litColor);
-        return {
+        ReloopReady.padColorPalette[name] = {
             lit: litColor,
             dim: dimColor,
         };
-    });
+    }
 })();
 
 components.Button.prototype.sendShifted = true;
@@ -259,9 +258,9 @@ ReloopReady.Channel = class extends components.ComponentContainer {
         const eqKnobAddresses = [0x1A, 0x19, 0x17, 0x16];
         this.eqKnob = [
             [`[QuickEffectRack1_${group}]`, "super1"],
-            [eqGroup, "parameter1", 0x19],
-            [eqGroup, "parameter2", 0x17],
-            [eqGroup, "parameter3", 0x16],
+            [eqGroup, "parameter1"],
+            [eqGroup, "parameter2"],
+            [eqGroup, "parameter3"],
             [group, "pregain"]]
             .filter((_, i) => eqLayoutSetting[i] === "1")
             .map(([group, key], i) => new components.Pot({
@@ -431,16 +430,15 @@ ReloopReady.HotcuePadMode = class extends ReloopReady.PadMode {
 
 ReloopReady.AbstractLoopPadMode = class extends ReloopReady.PadMode {
     clampLoopSizeExp(loopSizeExp) {
-        return _.clamp(loopSizeExp, -5, 2);
+        return ReloopReady.clamp(loopSizeExp, -5, 2);
     }
-    setLoopSizeProperties([_size, _pad]) {
+    setLoopSizeProperties(_size, _pad) {
         throw new TypeError("AbstractLoopPadMode.setLoopSizeProperties not overwritten!");
     }
     setLoopSizes(loopSizeExp) {
-        _(_.range(loopSizeExp, loopSizeExp + this.pads.length))
-            .map(exp => Math.pow(2, exp))
-            .zip(this.pads)
-            .forEach(this.setLoopSizeProperties);
+        for (let i = 0; i < this.pads.length; ++i) {
+            this.setLoopSizeProperties(Math.pow(loopSizeExp + i), this.pads[i]);
+        }
     }
     makeParameterInputHandler(loopSizeChangeAmount) {
         const theContainer = this;
@@ -486,7 +484,7 @@ ReloopReady.AbstractLoopPadMode = class extends ReloopReady.PadMode {
 };
 ReloopReady.AutoLoopPadMode = class extends ReloopReady.AbstractLoopPadMode {
 
-    setLoopSizeProperties([size, pad]) {
+    setLoopSizeProperties(size, pad) {
         pad.inKey = `beatloop_${size}_toggle`;
         pad.outKey = `beatloop_${size}_enabled`;
     }
@@ -615,7 +613,7 @@ ReloopReady.SamplerPadMode = class extends ReloopReady.PadMode {
     }
 };
 ReloopReady.LoopRollPadMode = class extends ReloopReady.AbstractLoopPadMode {
-    setLoopSizeProperties([size, pad]) {
+    setLoopSizeProperties(size, pad) {
         pad.inKey = `beatlooproll_${size}_activate`;
         pad.outKey = `beatloop_${size}_enabled`;
     }
@@ -813,7 +811,7 @@ ReloopReady.Pitch = class extends ReloopReady.PadMode {
 // PadMode for beatjumping.
 ReloopReady.ScratchBankPadMode = class extends ReloopReady.PadMode {
     clampJumpSizeExp(jumpSizeExp) {
-        return _.clamp(jumpSizeExp, -5, 6);
+        return ReloopReady.clamp(jumpSizeExp, -5, 6);
     }
     setjumpSizeExp(jumpSizeExp) {
         const middle = this.pads.length / 2;
