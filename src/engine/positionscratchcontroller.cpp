@@ -76,6 +76,7 @@ constexpr double kThrowThreshold = 2.5;
 // Max velocity we would like to stop in a given time period.
 constexpr double kMaxVelocity = 100;
 // Seconds to stop a throw at the max velocity.
+// TODO make configurable, eg. to customize spinbacks with controllers
 constexpr double kTimeToStop = 1.0;
 
 } // anonymous namespace
@@ -93,6 +94,9 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_isScratching(false),
           m_inertiaEnabled(false),
           m_prevSamplePos(0),
+          // TODO we might as well use FramePos in order to use more convenient
+          // mixxx::audio::kInvalidFramePos, then convert to sample pos on the fly
+          m_seekSamplePos(std::numeric_limits<double>::quiet_NaN()),
           m_samplePosDeltaSum(0),
           m_scratchTargetDelta(0),
           m_scratchStartPos(0),
@@ -102,6 +106,7 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_bufferSize(-1), // ?
           m_dt(1),
           m_callsPerDt(1),
+          m_callsToStop(1), // ?
           m_p(1),
           m_d(1),
           m_f(0.4) {
@@ -122,6 +127,8 @@ void PositionScratchController::slotUpdateFilterParameters(double sampleRate) {
     // have 0 ... 3 samples. The remaining jitter is ironed by the following IIR
     // lowpass filter
     m_callsPerDt = static_cast<int>(ceil(kDefaultSampleInterval / m_dt));
+
+    m_callsToStop = m_dt / kTimeToStop;
 
     // Tweak PD controller for different latencies
     m_p = 0.3;
@@ -155,6 +162,22 @@ void PositionScratchController::process(double currentSamplePos,
         slotUpdateFilterParameters(m_pMainSampleRate->get());
     }
 
+    if (!util_isnan(m_seekSamplePos)) {
+        // If we were notified about a sekk, adopt the new position immediately.
+        m_seekSamplePos = std::numeric_limits<double>::quiet_NaN();
+        m_prevSamplePos = currentSamplePos;
+        m_rate = 0;
+        // Reset filters in a way that the system is settled.
+        // Set to the remaining error of a p controller // ??
+        m_samplePosDeltaSum = -(releaseRate / m_p) * m_callsPerDt;
+        m_pVelocityController->reset(-m_samplePosDeltaSum);
+        m_pRateIIFilter->reset(-m_samplePosDeltaSum);
+        m_scratchStartPos = m_pScratchPos->get();
+        m_scratchTargetDelta = 0;
+        m_moveDelay = 0;
+        return;
+    }
+
     double scratchPosition = 0;
     m_mouseSampleTime += m_dt;
     if (m_mouseSampleTime >= kDefaultSampleInterval || !m_isScratching) {
@@ -182,7 +205,7 @@ void PositionScratchController::process(double currentSamplePos,
             // kMaxVelocity * alpha ^ (# callbacks to stop in) = decayThreshold
             // # callbacks = kTimeToStop / m_dt
             // alpha = (decayThreshold / kMaxVelocity) ^ (m_dt / kTimeToStop)
-            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity, m_dt / kTimeToStop);
+            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity, m_callsToStop);
 
             m_rate *= kExponentialDecay;
 

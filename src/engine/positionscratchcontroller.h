@@ -39,14 +39,17 @@ class PositionScratchController : public QObject {
 
   private:
     const QString m_group;
+
     std::unique_ptr<ControlObject> m_pScratchEnable;
     std::unique_ptr<ControlObject> m_pScratchPos;
     std::unique_ptr<ControlProxy> m_pMainSampleRate;
     std::unique_ptr<VelocityController> m_pVelocityController;
     std::unique_ptr<RateIIFilter> m_pRateIIFilter;
+
     bool m_isScratching;
     bool m_inertiaEnabled;
     double m_prevSamplePos;
+    double m_seekSamplePos;
     double m_samplePosDeltaSum;
     double m_scratchTargetDelta;
     double m_scratchStartPos;
@@ -58,6 +61,7 @@ class PositionScratchController : public QObject {
 
     double m_dt;
     double m_callsPerDt;
+    double m_callsToStop;
 
     double m_p;
     double m_d;
