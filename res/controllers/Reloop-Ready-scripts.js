@@ -584,6 +584,7 @@ ReloopReady.ManualLoopPadMode = class extends ReloopReady.PadMode {
             input: ReloopReady.makeButtonDownInputHandler(function() {
                 loopMoveBeats *= 0.5;
             }),
+            trigger: ReloopReady.makeIsPressedTrigger(),
         });
         this.parameterRight = new components.Button({
             midi: [0x94 + deckIdx, 0x29],
@@ -591,6 +592,7 @@ ReloopReady.ManualLoopPadMode = class extends ReloopReady.PadMode {
             input: ReloopReady.makeButtonDownInputHandler(function() {
                 loopMoveBeats *= 2;
             }),
+            trigger: ReloopReady.makeIsPressedTrigger(),
         });
 
         this.reconnectComponents(c => {
@@ -642,17 +644,6 @@ ReloopReady.LoopRollPadMode = class extends ReloopReady.AbstractLoopPadMode {
             on: ReloopReady.padColorPalette.Green.lit,
             outConnect: false,
         }));
-
-        this.parameterLeft = new components.Button({
-            midi: [0x94 + deckIdx, 0x28], //shifted control: 0x2A
-            shiftOffset: 0x2,
-            input: this.makeParameterInputHandler(-1),
-        });
-        this.parameterRight = new components.Button({
-            midi: [0x94 + deckIdx, 0x29], //shifted control: 0x2B
-            shiftOffset: 0x2,
-            input: this.makeParameterInputHandler(1),
-        });
 
         this.setLoopSizes(this.currentLoopSizeExp);
     }
@@ -776,6 +767,10 @@ ReloopReady.Pitch = class extends ReloopReady.PadMode {
             this.pads[n] = new this.PerformancePad(n);
         }
 
+        const litTrigger = function() {
+            this.send(this.off);
+        };
+
         this.parameterLeft = new components.Button({
             midi: [0x94 + deckIdx, 0x28],
             shiftOffset: 0x2,
@@ -789,6 +784,7 @@ ReloopReady.Pitch = class extends ReloopReady.PadMode {
                 }
                 theContainer.pads.forEachComponent(c => c.trigger());
             }),
+            trigger: litTrigger,
         });
         this.parameterRight = new components.Button({
             midi: [0x94 + deckIdx, 0x29],
@@ -803,17 +799,19 @@ ReloopReady.Pitch = class extends ReloopReady.PadMode {
                 }
                 theContainer.pads.forEachComponent(c => c.trigger());
             }),
+            trigger: litTrigger,
         });
     }
 };
 
-// There is no such thing as a scratch bank in Mixxx so I'm repurpusing this
+// There is no such thing as a scratch bank in Mixxx so I'm repurposing this
 // PadMode for beatjumping.
-ReloopReady.ScratchBankPadMode = class extends ReloopReady.PadMode {
-    clampJumpSizeExp(jumpSizeExp) {
+ReloopReady.ScratchBankPadMode = class extends ReloopReady.AbstractLoopPadMode {
+    // Note that "Jump" and "Loop" is used interchangeably used here
+    clampLoopSizeExp(jumpSizeExp) {
         return ReloopReady.clamp(jumpSizeExp, -5, 6);
     }
-    setjumpSizeExp(jumpSizeExp) {
+    setLoopSizes(jumpSizeExp) {
         const middle = this.pads.length / 2;
         let jumpsize = Math.pow(2, jumpSizeExp);
         for (let i = 0; i < middle; ++i) {
@@ -826,21 +824,10 @@ ReloopReady.ScratchBankPadMode = class extends ReloopReady.PadMode {
             jumpsize *= 2;
         }
     }
-    makeParameterInputHandler(jumpSizeChangeAmount) {
-        const theContainer = this;
-        return ReloopReady.makeButtonDownInputHandler(function() {
-            const newJumpSize = theContainer.clampJumpSizeExp(theContainer.currentJumpSizeExp + jumpSizeChangeAmount);
-            if (newJumpSize !== theContainer.currentJumpSizeExp) {
-                theContainer.currentJumpSizeExp = newJumpSize;
-                theContainer.setjumpSizeExp(newJumpSize);
-                theContainer.reconnectComponents();
-            }
-        });
-    }
     constructor(deckIdx) {
         super(deckIdx);
 
-        this.currentJumpSizeExp = engine.getSetting("defaultLoopRootSize");
+        this.currentLoopSizeExp = engine.getSetting("defaultLoopRootSize");
 
         this.pads = this.pads.map(control =>
             new components.Button({
@@ -852,19 +839,7 @@ ReloopReady.ScratchBankPadMode = class extends ReloopReady.PadMode {
                 outConnect: false,
             })
         );
-
-        this.parameterLeft = new components.Button({
-            midi: [0x94 + deckIdx, 0x28],
-            shiftOffset: 0x2,
-            input: this.makeParameterInputHandler(-1),
-        });
-        this.parameterRight = new components.Button({
-            midi: [0x94 + deckIdx, 0x29],
-            shiftOffset: 0x2,
-            input: this.makeParameterInputHandler(1),
-        });
-
-        this.setjumpSizeExp(this.currentJumpSizeExp);
+        this.setLoopSizes(this.currentLoopSizeExp);
     }
 };
 ReloopReady.BeatGridPadMode = class extends ReloopReady.PadMode {
