@@ -587,33 +587,33 @@ BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
     return nullptr;
 }
 
-Deck* PlayerManager::getDeck(unsigned int deck) const {
+Deck* PlayerManager::getDeck(int deckIndex) const {
     const auto locker = lockMutex(&m_mutex);
-    VERIFY_OR_DEBUG_ASSERT(deck > 0 && deck <= numDecks()) {
-        qWarning() << "getDeck() called with invalid number:" << deck;
+    VERIFY_OR_DEBUG_ASSERT(deckIndex >= 0 && deckIndex < m_decks.size()) {
+        qWarning() << "getDeck() called with invalid index:" << deckIndex;
         return nullptr;
     }
-    return m_decks[deck - 1];
+    return m_decks[deckIndex];
 }
 
-PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
+PreviewDeck* PlayerManager::getPreviewDeck(int previewDeckIndex) const {
     const auto locker = lockMutex(&m_mutex);
-    if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
+    VERIFY_OR_DEBUG_ASSERT(previewDeckIndex >= 0 && previewDeckIndex < m_previewDecks.size()) {
         kLogger.warning() << "Warning getPreviewDeck() called with invalid index: "
-                   << libPreviewPlayer;
+                          << previewDeckIndex;
         return nullptr;
     }
-    return m_previewDecks[libPreviewPlayer - 1];
+    return m_previewDecks[previewDeckIndex];
 }
 
-Sampler* PlayerManager::getSampler(unsigned int sampler) const {
+Sampler* PlayerManager::getSampler(int samplerIndex) const {
     const auto locker = lockMutex(&m_mutex);
-    if (sampler < 1 || sampler > numSamplers()) {
+    VERIFY_OR_DEBUG_ASSERT(samplerIndex >= 0 && samplerIndex < m_samplers.size()) {
         kLogger.warning() << "Warning getSampler() called with invalid index: "
-                   << sampler;
+                          << samplerIndex;
         return nullptr;
     }
-    return m_samplers[sampler - 1];
+    return m_samplers[samplerIndex];
 }
 
 TrackPointer PlayerManager::getLastEjectedTrack() const {

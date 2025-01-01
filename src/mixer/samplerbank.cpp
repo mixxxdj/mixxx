@@ -108,7 +108,7 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
     doc.appendChild(root);
 
     for (int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
-        Sampler* pSampler = m_pPlayerManager->getSampler(i + 1);
+        Sampler* pSampler = m_pPlayerManager->getSampler(i);
         if (!pSampler) {
             continue;
         }
