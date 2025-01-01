@@ -75,6 +75,6 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
     EngineEffectParameterPointer m_pPingPongParameter;
     EngineEffectParameterPointer m_pQuantizeParameter;
     EngineEffectParameterPointer m_pTripletParameter;
-    bool m_isReadyForDisable = true;
+    bool m_isReadyForDisable = false;
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);
 };
