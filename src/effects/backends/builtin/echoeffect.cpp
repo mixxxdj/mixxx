@@ -245,7 +245,7 @@ void EchoEffect::processChannel(
     pGroupState->prev_send = send_current;
     if (enableState == EffectEnableState::Disabling) {
         // Function to determine if echo tail is gone
-        // Calculate absolute difference between wet and dry buffers for the tail
+        // Calculate absolute if the delayline-buffer is approx. zero/empty.
         pGroupState->prev_send = 0;
         float differenceSum = 0.0f;
         for (SINT i = 0; i < pGroupState->delay_buf.size();
