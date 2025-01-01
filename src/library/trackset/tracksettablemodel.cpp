@@ -1,6 +1,7 @@
 #include "library/trackset/tracksettablemodel.h"
 
 #include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_tracksettablemodel.cpp"
 
@@ -18,7 +19,7 @@ bool TrackSetTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
+            (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||

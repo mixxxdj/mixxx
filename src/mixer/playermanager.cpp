@@ -93,13 +93,6 @@ inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
 
 } // anonymous namespace
 
-//static
-QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
-//static
-QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
-//static
-QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
-
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
@@ -158,10 +151,6 @@ PlayerManager::~PlayerManager() {
     m_samplers.clear();
     m_microphones.clear();
     m_auxiliaries.clear();
-
-    delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
-    delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
-    delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();
@@ -241,61 +230,6 @@ bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
 // static
 bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     return extractIntFromRegex(kPreviewDeckRegex, group, number);
-}
-
-// static
-int PlayerManager::numDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
-    if (pCOPNumDecks == nullptr) {
-        pCOPNumDecks = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_decks")));
-        if (!pCOPNumDecks->valid()) {
-            delete pCOPNumDecks;
-            pCOPNumDecks = nullptr;
-        } else {
-            m_pCOPNumDecks = pCOPNumDecks;
-        }
-    }
-    // m_pCOPNumDecks->get() fails on MacOs
-    return pCOPNumDecks ? static_cast<int>(pCOPNumDecks->get()) : 0;
-}
-
-// static
-int PlayerManager::numSamplers() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
-    if (pCOPNumSamplers == nullptr) {
-        pCOPNumSamplers = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
-        if (!pCOPNumSamplers->valid()) {
-            delete pCOPNumSamplers;
-            pCOPNumSamplers = nullptr;
-        } else {
-            m_pCOPNumSamplers = pCOPNumSamplers;
-        }
-    }
-    // m_pCOPNumSamplers->get() fails on MacOs
-    return pCOPNumSamplers ? static_cast<int>(pCOPNumSamplers->get()) : 0;
-}
-
-// static
-int PlayerManager::numPreviewDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
-    if (pCOPNumPreviewDecks == nullptr) {
-        pCOPNumPreviewDecks = new ControlProxy(
-                ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")));
-        if (!pCOPNumPreviewDecks->valid()) {
-            delete pCOPNumPreviewDecks;
-            pCOPNumPreviewDecks = nullptr;
-        } else {
-            m_pCOPNumPreviewDecks = pCOPNumPreviewDecks;
-        }
-    }
-    // m_pCOPNumPreviewDecks->get() fails on MacOs
-    return pCOPNumPreviewDecks ? static_cast<int>(pCOPNumPreviewDecks->get()) : 0;
 }
 
 void PlayerManager::slotChangeNumDecks(double v) {
