@@ -11,7 +11,8 @@
 
 using RubberBand::RubberBandStretcher;
 
-#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 3 || \
+        (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7))
 
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
