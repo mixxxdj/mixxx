@@ -1,5 +1,5 @@
 
-// eslint-disable-next-line no-var, no-unused-vars
+// eslint-disable-next-line no-var, @typescript-eslint/no-unused-vars
 var ReloopReadyInstance = {
     init: function() {
         ReloopReady.init();
