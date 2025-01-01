@@ -89,7 +89,9 @@ void ReverbEffect::processChannel(
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
     const auto bandwidth = static_cast<sample_t>(m_pBandWidthParameter->value());
     const auto damping = static_cast<sample_t>(m_pDampingParameter->value());
-    const auto sendCurrent = static_cast<sample_t>(m_pSendParameter->value());
+    const auto sendCurrent = enableState == EffectEnableState::Disabling
+            ? 0
+            : static_cast<sample_t>(m_pSendParameter->value());
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
@@ -98,6 +100,7 @@ void ReverbEffect::processChannel(
             pState->sampleRate != engineParameters.sampleRate()) {
         pState->reverb.init(engineParameters.sampleRate());
         pState->sampleRate = engineParameters.sampleRate();
+        m_isReadyForDisable = false;
     }
 
     pState->reverb.processBuffer(pInput,
@@ -109,13 +112,22 @@ void ReverbEffect::processChannel(
             sendCurrent,
             pState->sendPrevious);
 
-    // The ramping of the send parameter handles ramping when enabling, so
-    // this effect must handle ramping to dry when disabling itself (instead
-    // of being handled by EngineEffect::process).
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
-        pState->sendPrevious = 0;
-    } else {
-        pState->sendPrevious = sendCurrent;
+        // Function to determine if reverb tail is gone
+        // Calculate absolute difference between wet and dry buffers for the tail
+        float differenceSum = 0.0f;
+        const SINT tailCheckLength = engineParameters.samplesPerBuffer() / 4;
+        for (SINT i = engineParameters.samplesPerBuffer() - tailCheckLength;
+                i < engineParameters.samplesPerBuffer();
+                ++i) {
+            differenceSum += fabsf(pOutput[i] - pInput[i]);
+        }
+        // Calculate average of the differences
+        const float averageDifference = differenceSum / tailCheckLength;
+        constexpr float threshold = 0.002f;
+        const bool reverbTailFullyFaded = averageDifference < threshold;
+        if (reverbTailFullyFaded) {
+            m_isReadyForDisable = true;
+        }
     }
 }
