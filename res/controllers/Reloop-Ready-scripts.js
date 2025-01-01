@@ -197,7 +197,7 @@ class ReloopReady {
         return (r << 16) | (g << 8) | b;
     }
     static dimColor(color) {
-        return color & 0b0011_1111;
+        return color & 0b00111111;
     }
     static clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
@@ -248,7 +248,7 @@ ReloopReady.noopInputHandler = (_channel, _control, _value, _status, _group) => 
 
 (() => {
     const fullColorToMidiColorMap = {};
-    for (let midiColor = 0x00; midiColor <= 0b111_1111; ++midiColor) {
+    for (let midiColor = 0x00; midiColor <= 0b1111111; ++midiColor) {
         fullColorToMidiColorMap[ReloopReady.midiToFullColor(midiColor)] = midiColor;
     }
 
