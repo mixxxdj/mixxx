@@ -107,25 +107,19 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Return the number of players. Thread-safe.
     static int numDecks();
-    int numberOfDecks() const override {
-        return numDecks();
-    }
+    int numberOfDecks() const override;
 
     // Get the preview deck by its index.
     PreviewDeck* getPreviewDeck(int previewDeckIndex) const override;
     // Return the number of preview decks. Thread-safe.
     static int numPreviewDecks();
-    int numberOfPreviewDecks() const override {
-        return numPreviewDecks();
-    }
+    int numberOfPreviewDecks() const override;
 
     // Get the sampler by its index.
     Sampler* getSampler(int samplerIndex) const override;
     // Return the number of samplers. Thread-safe.
     static int numSamplers();
-    int numberOfSamplers() const override {
-        return numSamplers();
-    }
+    int numberOfSamplers() const override;
 
     // Returns the track that was last ejected or unloaded. Can return nullptr or
     // invalid TrackId in case of error.

@@ -828,3 +828,15 @@ void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress an
 void PlayerManager::onTrackAnalysisFinished() {
     emit trackAnalyzerIdle();
 }
+
+int PlayerManager::numberOfDecks() const {
+    return static_cast<int>(m_pCONumDecks->get());
+}
+
+int PlayerManager::numberOfPreviewDecks() const {
+    return static_cast<int>(m_pCONumPreviewDecks->get());
+}
+
+int PlayerManager::numberOfSamplers() const {
+    return static_cast<int>(m_pCONumSamplers->get());
+}
