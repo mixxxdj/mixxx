@@ -156,8 +156,7 @@ AutoDJProcessor::AutoDJProcessor(
     // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
     // are created.
     for (int i = 0; i < pPlayerManager->numberOfDecks(); ++i) {
-        QString group = PlayerManager::groupForDeck(i);
-        BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
+        BaseTrackPlayer* pPlayer = pPlayerManager->getDeckBase(i);
         // Shouldn't be possible.
         VERIFY_OR_DEBUG_ASSERT(pPlayer) {
             continue;

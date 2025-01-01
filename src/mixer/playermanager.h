@@ -37,7 +37,7 @@ class PlayerManagerInterface {
     virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
 
     // Get the deck by its deck index
-    virtual Deck* getDeck(int deckIndex) const = 0;
+    virtual BaseTrackPlayer* getDeckBase(int deckIndex) const = 0;
 
     virtual int numberOfDecks() const = 0;
 
@@ -102,7 +102,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     BaseTrackPlayer* getPlayer(const ChannelHandle& handle) const override;
 
     // Get the deck by its index.
-    Deck* getDeck(int deckIndex) const override;
+    Deck* getDeck(int deckIndex) const;
+    BaseTrackPlayer* getDeckBase(int deckIndex) const override;
+
     // Return the number of players. Thread-safe.
     static int numDecks();
     int numberOfDecks() const override {

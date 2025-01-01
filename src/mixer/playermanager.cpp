@@ -596,6 +596,10 @@ Deck* PlayerManager::getDeck(int deckIndex) const {
     return m_decks[deckIndex];
 }
 
+BaseTrackPlayer* PlayerManager::getDeckBase(int deckIndex) const {
+    return getDeck(deckIndex);
+}
+
 PreviewDeck* PlayerManager::getPreviewDeck(int previewDeckIndex) const {
     const auto locker = lockMutex(&m_mutex);
     VERIFY_OR_DEBUG_ASSERT(previewDeckIndex >= 0 && previewDeckIndex < m_previewDecks.size()) {
