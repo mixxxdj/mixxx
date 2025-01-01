@@ -441,7 +441,9 @@ void CoreServices::initialize(QApplication* pApp) {
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
-    for (int i = 0; i < (int)m_pPlayerManager->numDecks() && i < musicFiles.count(); ++i) {
+    for (int i = 0; i < m_pPlayerManager->numberOfDecks() &&
+            i < musicFiles.count();
+            ++i) {
         if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
