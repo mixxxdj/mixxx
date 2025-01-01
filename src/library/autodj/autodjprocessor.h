@@ -5,138 +5,19 @@
 
 #include "audio/frame.h"
 #include "control/controlproxy.h"
-#include "engine/channels/enginechannel.h"
+#include "library/autodj/track/deckattributes.h"
+#include "library/autodj/track/trackattributes.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
+#include "util/duration.h"
 
 class ControlPushButton;
 class TrackCollectionManager;
 class PlayerManagerInterface;
-class BaseTrackPlayer;
 class PlaylistTableModel;
 typedef QList<QModelIndex> QModelIndexList;
-
-class DeckAttributes : public QObject {
-    Q_OBJECT
-  public:
-    DeckAttributes(int index,
-            BaseTrackPlayer* pPlayer);
-    virtual ~DeckAttributes();
-
-    bool isLeft() const {
-        return m_orientation.get() == static_cast<double>(EngineChannel::LEFT);
-    }
-
-    bool isRight() const {
-        return m_orientation.get() == static_cast<double>(EngineChannel::RIGHT);
-    }
-
-    bool isPlaying() const {
-        return m_play.toBool();
-    }
-
-    void stop() {
-        m_play.set(0.0);
-    }
-
-    void play() {
-        m_play.set(1.0);
-    }
-
-    double playPosition() const {
-        return m_playPos.get();
-    }
-
-    void setPlayPosition(double playpos) {
-        m_playPos.set(playpos);
-    }
-
-    bool isRepeat() const {
-        return m_repeat.toBool();
-    }
-
-    void setRepeat(bool enabled) {
-        m_repeat.set(enabled ? 1.0 : 0.0);
-    }
-
-    mixxx::audio::FramePos introStartPosition() const {
-        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introStartPos.get());
-    }
-
-    mixxx::audio::FramePos introEndPosition() const {
-        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introEndPos.get());
-    }
-
-    mixxx::audio::FramePos outroStartPosition() const {
-        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroStartPos.get());
-    }
-
-    mixxx::audio::FramePos outroEndPosition() const {
-        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroEndPos.get());
-    }
-
-    mixxx::audio::SampleRate sampleRate() const {
-        return mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
-    }
-
-    mixxx::audio::FramePos trackEndPosition() const {
-        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_trackSamples.get());
-    }
-
-    double rateRatio() const {
-        return m_rateRatio.get();
-    }
-
-    TrackPointer getLoadedTrack() const;
-
-  signals:
-    void playChanged(DeckAttributes* pDeck, bool playing);
-    void playPositionChanged(DeckAttributes* pDeck, double playPosition);
-    void introStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
-    void introEndPositionChanged(DeckAttributes* pDeck, double introEndPosition);
-    void outroStartPositionChanged(DeckAttributes* pDeck, double outtroStartPosition);
-    void outroEndPositionChanged(DeckAttributes* pDeck, double outroEndPosition);
-    void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
-    void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void playerEmpty(DeckAttributes* pDeck);
-    void rateChanged(DeckAttributes* pDeck);
-
-  private slots:
-    void slotPlayPosChanged(double v);
-    void slotPlayChanged(double v);
-    void slotIntroStartPositionChanged(double v);
-    void slotIntroEndPositionChanged(double v);
-    void slotOutroStartPositionChanged(double v);
-    void slotOutroEndPositionChanged(double v);
-    void slotTrackLoaded(TrackPointer pTrack);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotPlayerEmpty();
-    void slotRateChanged(double v);
-
-  public:
-    int index;
-    QString group;
-    double startPos;     // Set in toDeck nature
-    double fadeBeginPos; // set in fromDeck nature
-    double fadeEndPos;   // set in fromDeck nature
-    bool isFromDeck;
-    bool loading; // The data is inconsistent during loading a deck
-
-  private:
-    ControlProxy m_orientation;
-    ControlProxy m_playPos;
-    ControlProxy m_play;
-    ControlProxy m_repeat;
-    ControlProxy m_introStartPos;
-    ControlProxy m_introEndPos;
-    ControlProxy m_outroStartPos;
-    ControlProxy m_outroEndPos;
-    ControlProxy m_trackSamples;
-    ControlProxy m_sampleRate;
-    ControlProxy m_rateRatio;
-    BaseTrackPlayer* m_pPlayer;
-};
 
 class AutoDJProcessor : public QObject {
     Q_OBJECT
@@ -190,6 +71,15 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
+    /// Gets the total remaining duration of tracks in the AutoDJ playlist,
+    /// excluding the track that is currently playing already.
+    mixxx::Duration getQueueDuration() const {
+        return m_queueDuration;
+    }
+
+    /// Gets the number of tracks remaining in the Auto DJ queue.
+    int getQueueTrackCount() const;
+
     bool nextTrackLoaded();
 
     void setTransitionTime(int seconds);
@@ -212,6 +102,7 @@ class AutoDJProcessor : public QObject {
 #endif
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void autoDJError(AutoDJProcessor::AutoDJError error);
+    void queueDurationChanged(int numTracks, mixxx::Duration duration);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
@@ -228,6 +119,11 @@ class AutoDJProcessor : public QObject {
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
     void playlistFirstTrackChanged();
+
+    void playlistTracksChanged();
+    void tracksChanged(const QSet<TrackId>& tracks);
+    void multipleTracksChanged();
+    void updateQueueDuration();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
@@ -258,23 +154,29 @@ class AutoDJProcessor : public QObject {
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
-    double getIntroStartSecond(DeckAttributes* pDeck);
-    double getIntroEndSecond(DeckAttributes* pDeck);
-    double getOutroStartSecond(DeckAttributes* pDeck);
-    double getOutroEndSecond(DeckAttributes* pDeck);
-    double getFirstSoundSecond(DeckAttributes* pDeck);
-    double getLastSoundSecond(DeckAttributes* pDeck);
-    double getEndSecond(DeckAttributes* pDeck);
-    double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
+    double getIntroStartSecond(const TrackOrDeckAttributes& track);
+    double getIntroEndSecond(const TrackOrDeckAttributes& track);
+    double getOutroStartSecond(const TrackOrDeckAttributes& track);
+    double getOutroEndSecond(const TrackOrDeckAttributes& track);
+    double getFirstSoundSecond(const TrackOrDeckAttributes& track);
+    double getLastSoundSecond(const TrackOrDeckAttributes& track);
+    double getEndSecond(const TrackOrDeckAttributes& track);
+    double framePositionToSeconds(mixxx::audio::FramePos position,
+            const TrackOrDeckAttributes& track);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
-    void calculateTransition(DeckAttributes* pFromDeck,
-            DeckAttributes* pToDeck,
-            bool seekToStartPoint);
-    void useFixedFadeTime(
+    void calculateTransition(
             DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
+            bool seekToStartPoint);
+    void calculateTransitionImpl(
+            FadeableTrackOrDeckAttributes& pFromDeck,
+            FadeableTrackOrDeckAttributes& pToDeck,
+            bool seekToStartPoint);
+    void useFixedFadeTime(
+            FadeableTrackOrDeckAttributes& fromTrack,
+            FadeableTrackOrDeckAttributes& toTrack,
             double fromDeckSecond,
             double fadeEndSecond,
             double toDeckStartSecond);
@@ -282,6 +184,10 @@ class AutoDJProcessor : public QObject {
     DeckAttributes* getRightDeck();
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
+
+    /// Calculates the total remaining duration of tracks in the AutoDJ playlist,
+    /// excluding the track that is currently playing already.
+    mixxx::Duration calculateQueueDuration();
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
@@ -310,6 +216,10 @@ class AutoDJProcessor : public QObject {
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
+
+    ControlObject* m_pQueueRemainingTracks;
+    ControlObject* m_pQueueRemainingDuration;
+    mixxx::Duration m_queueDuration;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
