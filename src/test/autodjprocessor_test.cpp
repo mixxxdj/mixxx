@@ -142,16 +142,16 @@ class MockPlayerManager : public PlayerManagerInterface {
     MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
     MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));
 
-    unsigned int numberOfDecks() const {
-        return static_cast<unsigned int>(numDecks.get());
+    int numberOfDecks() const {
+        return static_cast<int>(numDecks.get());
     }
 
-    unsigned int numberOfSamplers() const {
-        return static_cast<unsigned int>(numSamplers.get());
+    int numberOfSamplers() const {
+        return static_cast<int>(numSamplers.get());
     }
 
-    unsigned int numberOfPreviewDecks() const {
-        return static_cast<unsigned int>(numPreviewDecks.get());
+    int numberOfPreviewDecks() const {
+        return static_cast<int>(numPreviewDecks.get());
     }
 
     ControlObject numDecks;

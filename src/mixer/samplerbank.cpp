@@ -107,7 +107,7 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
     QDomElement root = doc.createElement(QStringLiteral("samplerbank"));
     doc.appendChild(root);
 
-    for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
+    for (int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         Sampler* pSampler = m_pPlayerManager->getSampler(i + 1);
         if (!pSampler) {
             continue;
@@ -207,7 +207,7 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                 int samplerNum;
 
                 if (!group.isEmpty() && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
-                    if (m_pPlayerManager->numSamplers() < (unsigned)samplerNum) {
+                    if (m_pPlayerManager->numSamplers() < samplerNum) {
                         m_pCONumSamplers->set(samplerNum);
                     }
 

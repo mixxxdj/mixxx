@@ -244,7 +244,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 }
 
 // static
-unsigned int PlayerManager::numDecks() {
+int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
@@ -262,7 +262,7 @@ unsigned int PlayerManager::numDecks() {
 }
 
 // static
-unsigned int PlayerManager::numSamplers() {
+int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
@@ -280,7 +280,7 @@ unsigned int PlayerManager::numSamplers() {
 }
 
 // static
-unsigned int PlayerManager::numPreviewDecks() {
+int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);

@@ -370,7 +370,7 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
     // Incorporate all tracks loaded into decks.
     // Each track has to be done as a separate database query, in case the same
     // track is loaded into multiple decks.
-    int iDecks = (int) PlayerManager::numDecks();
+    int iDecks = PlayerManager::numDecks();
     for (int i = 0; i < iDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
@@ -1103,8 +1103,8 @@ void AutoDJCratesDAO::playerInfoTrackLoaded(const QString& group,
     }
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
-    unsigned int numDecks = PlayerManager::numDecks();
-    for (unsigned int i = 0; i < numDecks; ++i) {
+    int numDecks = PlayerManager::numDecks();
+    for (int i = 0; i < numDecks; ++i) {
         if (group == PlayerManager::groupForDeck(i)) {
             // Update the number of auto-DJ-playlist references to this track.
             QSqlQuery oQuery(m_database);

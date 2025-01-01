@@ -39,18 +39,18 @@ class PlayerManagerInterface {
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
 
-    virtual unsigned int numberOfDecks() const = 0;
+    virtual int numberOfDecks() const = 0;
 
     // Get the preview deck by its deck number. Preview decks are numbered
     // starting with 1.
     virtual PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const = 0;
 
-    virtual unsigned int numberOfPreviewDecks() const = 0;
+    virtual int numberOfPreviewDecks() const = 0;
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
     virtual Sampler* getSampler(unsigned int sampler) const = 0;
 
-    virtual unsigned int numberOfSamplers() const = 0;
+    virtual int numberOfSamplers() const = 0;
 };
 
 class PlayerManager : public QObject, public PlayerManagerInterface {
@@ -105,23 +105,23 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Get the deck by its deck number. Decks are numbered starting with 1.
     Deck* getDeck(unsigned int player) const override;
     // Return the number of players. Thread-safe.
-    static unsigned int numDecks();
-    unsigned int numberOfDecks() const override {
+    static int numDecks();
+    int numberOfDecks() const override {
         return numDecks();
     }
 
     PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const override;
     // Return the number of preview decks. Thread-safe.
-    static unsigned int numPreviewDecks();
-    unsigned int numberOfPreviewDecks() const override {
+    static int numPreviewDecks();
+    int numberOfPreviewDecks() const override {
         return numPreviewDecks();
     }
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const override;
     // Return the number of samplers. Thread-safe.
-    static unsigned int numSamplers();
-    unsigned int numberOfSamplers() const override {
+    static int numSamplers();
+    int numberOfSamplers() const override {
         return numSamplers();
     }
 

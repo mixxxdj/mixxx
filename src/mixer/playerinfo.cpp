@@ -143,7 +143,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             &xfl,
             &xfr);
 
-    for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
+    for (int i = 0; i < PlayerManager::numDecks(); ++i) {
         DeckControls* pDc = getDeckControls(i);
 
         if (pDc->m_play.get() == 0.0) {
