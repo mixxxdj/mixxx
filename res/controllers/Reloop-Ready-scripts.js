@@ -619,7 +619,7 @@ ReloopReady.SamplerPadMode = class extends ReloopReady.PadMode {
             midi: [0x94 + deckIdx, control],
             number: i + 1,
             shiftOffset: 0x8,
-            off: 0x00,
+            off: ReloopReady.padColorPalette.Off,
             outConnect: false,
         }));
     }
@@ -1028,7 +1028,6 @@ ReloopReady.Deck = class extends components.Deck {
             shift: function() {
                 // match behavior labelled on hardware
                 this.inKey = "reverseroll";
-                // todo fix interaction with shift button
             },
         });
 
@@ -1041,7 +1040,7 @@ ReloopReady.Deck = class extends components.Deck {
         this.sync = new components.SyncButton({
             midi: [midiOn, 0x02],
             shiftOffset: 0x1,
-        }); // TODO investigate whether custom behavior is required to match controller
+        });
 
         this.vinyl = new components.Button({
             midi: [midiOn, 0x0F],
