@@ -46,6 +46,7 @@ LogCaptureGuard::LogCaptureGuard() {
 }
 
 LogCaptureGuard::~LogCaptureGuard() {
+    s_logMessagesExpected.clear();
     qInstallMessageHandler(s_oldHandler);
 }
 
