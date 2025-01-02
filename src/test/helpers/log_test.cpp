@@ -1,14 +1,18 @@
 #include "test/helpers/log_test.h"
 
-QList<std::tuple<QtMsgType, QRegularExpression>> logMessagesExpected;
+namespace {
 
-void logCapture(QtMsgType msgType, const QMessageLogContext&, const QString& msg) {
-    for (int i = 0; i < logMessagesExpected.size(); i++) {
-        if (std::get<QtMsgType>(logMessagesExpected[i]) == msgType &&
-                std::get<QRegularExpression>(logMessagesExpected[i])
+QList<std::tuple<QtMsgType, QRegularExpression>> s_logMessagesExpected;
+QtMessageHandler s_oldHandler;
+
+void logCapture(QtMsgType msgType, const QMessageLogContext& context, const QString& msg) {
+    s_oldHandler(msgType, context, msg);
+    for (int i = 0; i < s_logMessagesExpected.size(); i++) {
+        if (std::get<QtMsgType>(s_logMessagesExpected[i]) == msgType &&
+                std::get<QRegularExpression>(s_logMessagesExpected[i])
                         .match(msg)
                         .hasMatch()) {
-            logMessagesExpected.removeAt(i);
+            s_logMessagesExpected.removeAt(i);
             return;
         }
     }
@@ -35,10 +39,31 @@ void logCapture(QtMsgType msgType, const QMessageLogContext&, const QString& msg
     FAIL() << errMsg.toStdString();
 }
 
-LogCaptureGuard::LogCaptureGuard()
-        : m_oldHandler(qInstallMessageHandler(logCapture)) {
+} // namespace
+
+LogCaptureGuard::LogCaptureGuard() {
+    s_oldHandler = qInstallMessageHandler(logCapture);
 }
 
 LogCaptureGuard::~LogCaptureGuard() {
-    qInstallMessageHandler(m_oldHandler);
+    qInstallMessageHandler(s_oldHandler);
+}
+
+// static
+void LogCaptureGuard::expect(QtMsgType type, const QString& exp) {
+    s_logMessagesExpected.push_back(std::make_tuple(type, QRegularExpression(exp)));
+}
+
+// static
+QString LogCaptureGuard::clearExpectedGetMsg() {
+    QString errMsg;
+    if (!s_logMessagesExpected.isEmpty()) {
+        QDebug strm(&errMsg);
+        strm << s_logMessagesExpected.size() << "expected log messages didn't occur: \n";
+        for (const auto& msg : std::as_const(s_logMessagesExpected)) {
+            strm << "\t" << std::get<QtMsgType>(msg) << std::get<QRegularExpression>(msg) << "\n";
+        }
+        s_logMessagesExpected.clear();
+    }
+    return errMsg;
 }
