@@ -75,6 +75,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void slotTypeControlChanged(double v);
     void slotMinuteMarkersChanged(bool v);
+    void slotNormalizeOrVisualGainChanged();
 
   private:
     // Append the waveform overview pixmap according to available data

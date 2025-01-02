@@ -1,5 +1,9 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#include <QTimeZone>
+#endif
+
 #include "moc_dlgprefautodj.cpp"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
@@ -10,13 +14,21 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 
     // The auto-DJ replay-age for randomly-selected tracks
     connect(RequeueIgnoreCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefAutoDJ::slotToggleRequeueIgnore);
 
     // Auto DJ random enqueue
     connect(RandomQueueCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefAutoDJ::slotToggleRandomQueue);
 
@@ -32,6 +44,13 @@ void DlgPrefAutoDJ::slotUpdate() {
     // The auto-DJ replay-age for randomly-selected tracks
     RequeueIgnoreCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
+    /// TODO: Once we require at least Qt 6.7, remove this `setTimeZone` call
+    /// and uncomment the corresponding declarations in the UI file instead.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    RequeueIgnoreTimeEdit->setTimeZone(QTimeZone::LocalTime);
+#else
+    RequeueIgnoreTimeEdit->setTimeSpec(Qt::LocalTime);
+#endif
     RequeueIgnoreTimeEdit->setTime(
             QTime::fromString(
                     m_pConfig->getValue(
@@ -98,7 +117,11 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     CenterXfaderCheckBox->setChecked(false);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleRequeueIgnore(Qt::CheckState buttonState) {
+#else
 void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {
+#endif
     RequeueIgnoreTimeEdit->setEnabled(buttonState == Qt::Checked);
 }
 
@@ -106,6 +129,10 @@ void DlgPrefAutoDJ::considerRepeatPlaylistState(bool enable) {
     RandomQueueMinimumSpinBox->setEnabled(enable);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleRandomQueue(Qt::CheckState buttonState) {
+#else
 void DlgPrefAutoDJ::slotToggleRandomQueue(int buttonState) {
+#endif
     RandomQueueMinimumSpinBox->setEnabled(buttonState == Qt::Checked);
 }

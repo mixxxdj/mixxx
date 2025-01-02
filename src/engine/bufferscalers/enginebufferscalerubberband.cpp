@@ -97,7 +97,6 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
     // TODO: Resetting the sample rate will cause internal
     // memory allocations that may block the real-time thread.
     // When is this function actually invoked??
-    m_rubberBand.clear();
     if (!getOutputSignal().isValid()) {
         return;
     }

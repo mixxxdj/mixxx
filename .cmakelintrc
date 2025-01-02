@@ -1,0 +1,1 @@
+filter=-linelength,-convention/filename,-package/stdargs

@@ -21,6 +21,9 @@ constexpr int kDefaultDimBrightThreshold = 127;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),
+#ifdef __STEM__
+          m_selectedStems(mixxx::StemChannelSelection()),
+#endif
           m_orientation(Qt::Horizontal),
           m_dimBrightThreshold(kDefaultDimBrightThreshold),
           m_height(-1),
@@ -262,8 +265,8 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
-    const int lineX = static_cast<int>(m_width * m_playMarkerPosition);
-    const int lineY = static_cast<int>(m_height * m_playMarkerPosition);
+    const int lineX = std::lround(m_width * m_playMarkerPosition);
+    const int lineY = std::lround(m_height * m_playMarkerPosition);
 
     // draw dim outlines to increase playpos/waveform contrast
     painter->setOpacity(0.5);
@@ -415,6 +418,12 @@ void WaveformWidgetRenderer::setZoom(double zoom) {
 void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
+
+#ifdef __STEM__
+void WaveformWidgetRenderer::selectStem(mixxx::StemChannelSelection stemMask) {
+    m_selectedStems = stemMask;
+}
+#endif
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;

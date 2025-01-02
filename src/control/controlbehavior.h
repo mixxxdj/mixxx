@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QTimer>
 #include <QScopedPointer>
+#include <QTimer>
 
+#include "control/controlbuttonmode.h"
 #include "controllers/midi/midimessage.h"
 
 class ControlDoublePrivate;
@@ -130,17 +131,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     static const int kPowerWindowTimeMillis;
     static const int kLongPressLatchingTimeMillis;
 
-    // TODO(XXX) Duplicated from ControlPushButton. It's complicated and
-    // annoying to share them so I just copied them.
-    enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
-         TRIGGER
-    };
-
-    ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
+    ControlPushButtonBehavior(mixxx::control::ButtonMode buttonMode, int iNumStates);
     void setValueFromMidi(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
                 override;
@@ -154,7 +145,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
         }
         return m_pushTimer.data();
     }
-    ButtonMode m_buttonMode;
+    mixxx::control::ButtonMode m_buttonMode;
     int m_iNumStates;
     QScopedPointer<QTimer> m_pushTimer;
 };

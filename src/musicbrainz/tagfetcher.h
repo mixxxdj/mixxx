@@ -47,7 +47,8 @@ class TagFetcher : public QObject {
   signals:
     void resultAvailable(
             TrackPointer pTrack,
-            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases,
+            const QString& whyEmptyMessage); // To explain why the result is empty
     void fetchProgress(
             const QString& message);
     void numberOfRecordingsFoundFromAcoustId(int totalNumberOfRecordings);

@@ -13,7 +13,7 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlValue = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, itemPrefix));
-    m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pControlValue->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     m_pControlType = std::make_unique<ControlObject>(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 

@@ -88,10 +88,22 @@ WOverview::WOverview(
 
     m_pMinuteMarkersControl = make_parented<ControlProxy>(
             QStringLiteral("[Waveform]"),
-            QStringLiteral("DrawOverviewMinuteMarkers"),
+            QStringLiteral("draw_overview_minute_markers"),
             this);
     m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
     slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
+
+    // Update immediately when the normalize option or the visual gain have been
+    // changed in the preferences.
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overviewNormalizeChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+    connect(widgetFactory,
+            &WaveformWidgetFactory::overallVisualGainChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -222,13 +234,13 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     // qDebug() << "WOverview : std::as_const(m_marks)" << m_marks.size();
     // qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
-    if (!m_connections.isEmpty()) {
-        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-        if (defaultConnection) {
-            if (defaultConnection->getEmitOption() &
+    if (!m_connections.empty()) {
+        auto& pDefaultConnection = m_connections.at(0);
+        if (pDefaultConnection) {
+            if (pDefaultConnection->getEmitOption() &
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
-                defaultConnection->setEmitOption(
+                pDefaultConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_RELEASE);
             }
         }
@@ -430,6 +442,10 @@ void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
 
+void WOverview::slotNormalizeOrVisualGainChanged() {
+    update();
+}
+
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
@@ -565,6 +581,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
+            // Abort dragging
             m_iPickupPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
@@ -578,7 +595,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             // WOverview in the future, another way to associate
             // WaveformMarks with Cues will need to be implemented.
             CuePointer pHoveredCue;
-            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            const QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
             for (const auto& pCue : cueList) {
                 if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
                     pHoveredCue = pCue;
@@ -590,6 +607,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
+                    // Clear the pickup position display, we have all cue info in the menu.
+                    leaveEvent(nullptr);
                     m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
@@ -722,6 +741,10 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
     }
 
     if (!static_cast<bool>(m_pMinuteMarkersControl->get())) {
+        return;
+    }
+
+    if (m_pRateRatioControl->get() == 0) {
         return;
     }
 
@@ -1599,9 +1622,14 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 }
 
 double WOverview::samplePositionToSeconds(double sample) {
+    double rate = m_pRateRatioControl->get();
+    VERIFY_OR_DEBUG_ASSERT(rate != 0.0) {
+        return 1;
+    }
+
     double trackTime = sample /
             (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
-    return trackTime / m_pRateRatioControl->get();
+    return trackTime / rate;
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
