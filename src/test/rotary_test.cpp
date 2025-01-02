@@ -17,6 +17,13 @@ TEST(Rotary, basicOverflow) {
     EXPECT_EQ(rot.filter(-2), -2);
 }
 
+TEST(Rotary, noQuantization) {
+    Rotary rot(2);
+    EXPECT_DOUBLE_EQ(rot.filter(0.25), 0.125);
+    EXPECT_DOUBLE_EQ(rot.filter(0.0), 0.125);
+    EXPECT_DOUBLE_EQ(rot.filter(0.0), 0.0);
+}
+
 TEST(Rotary, hugeFilterSequential) {
     static constexpr int size = 200;
     Rotary rot(size);
