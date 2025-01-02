@@ -435,6 +435,42 @@ ReloopReady.HotcuePadMode = class extends ReloopReady.PadMode {
             colorMapper: ReloopReady.padColorMapper,
             outConnect: false,
         }));
+        this.parameterLeft = new components.Button({
+            midi: [0x94 + deckIdx, 0x28], //shifted control: 0x2A
+            shiftOffset: 0x2,
+            shift: function() {
+                this.inKey = "hotcue_focus_color_prev";
+                this.outKey = this.inKey;
+                this.trigger = function() {
+                    this.send(this.off);
+                };
+            },
+            unshift: function() {
+                this.inKey = undefined; // no function ATM
+                this.outKey = this.inKey;
+                this.trigger = function() {
+                    this.send(ReloopReady.singleColorLED.off);
+                };
+            }
+        });
+        this.parameterRight = new components.Button({
+            midi: [0x94 + deckIdx, 0x29], //shifted control: 0x2B
+            shiftOffset: 0x2,
+            shift: function() {
+                this.inKey = "hotcue_focus_color_next";
+                this.outKey = this.inKey;
+                this.trigger = function() {
+                    this.send(this.off);
+                };
+            },
+            unshift: function() {
+                this.inKey = undefined; // no function ATM
+                this.outKey = this.inKey;
+                this.trigger = function() {
+                    this.send(ReloopReady.singleColorLED.off);
+                };
+            }
+        });
     }
 };
 

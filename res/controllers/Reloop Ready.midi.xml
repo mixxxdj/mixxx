@@ -1787,6 +1787,42 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.rightDeck.padUnit.currentLayer.parameterRight.input</key>
+                <status>0x95</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.rightDeck.padUnit.currentLayer.parameterRight.input</key>
+                <status>0x85</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.rightDeck.padUnit.currentLayer.parameterLeft.input</key>
+                <status>0x95</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.rightDeck.padUnit.currentLayer.parameterLeft.input</key>
+                <status>0x85</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
 
             <control>
                 <group></group>
@@ -1984,6 +2020,42 @@
                 <key>ReloopReadyInstance.components.leftDeck.padUnit.currentLayer.parameterLeft.input</key>
                 <status>0x84</status>
                 <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.leftDeck.padUnit.currentLayer.parameterRight.input</key>
+                <status>0x94</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.leftDeck.padUnit.currentLayer.parameterRight.input</key>
+                <status>0x84</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.leftDeck.padUnit.currentLayer.parameterLeft.input</key>
+                <status>0x94</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>ReloopReadyInstance.components.leftDeck.padUnit.currentLayer.parameterLeft.input</key>
+                <status>0x84</status>
+                <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
