@@ -1075,7 +1075,7 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         return convertCharsetInternal(QLatin1String("windows-1250"), value);
     case Cyrillic:
         return convertCharsetInternal(QLatin1String("windows-1251"), value);
-    case Latin1:
+    case WesternEurope:
         return convertCharsetInternal(QLatin1String("windows-1252"), value);
     case Greek:
         return convertCharsetInternal(QLatin1String("windows-1253"), value);
@@ -1109,7 +1109,10 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         return convertCharsetInternal(QLatin1String("BOCU-1"), value);
     case CESU_8:
         return convertCharsetInternal(QLatin1String("CESU-8"), value);
+    case Latin1:
+        return convertCharsetInternal(QLatin1String("ISO-8859-1"), value);
     }
+
     m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
     return QByteArray();
 }
