@@ -122,7 +122,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
             const QJSValue& callback,
             bool skipSuperseded = false);
 
-    QByteArray convertCharsetInternal(const QString& targetCharset, const QString& value);
+    QByteArray convertCharsetInternal(const QLatin1String& targetCharset, const QString& value);
 
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
