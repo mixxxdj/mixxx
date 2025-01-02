@@ -22,7 +22,6 @@ class LegacyControllerMappingFileHandlerTest
     void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::addTestTime(10ms);
-        SETUP_LOG_CAPTURE();
     }
 
     void TearDown() override {
@@ -43,6 +42,9 @@ class LegacyControllerMappingFileHandlerTest
             const QDir&) {
         return QFileInfo(QDir("/dummy/path/").absoluteFilePath(filename));
     }
+
+  private:
+    LogCaptureGuard m_logCaptureGuard;
 };
 
 class MockLegacyControllerMapping : public LegacyControllerMapping {

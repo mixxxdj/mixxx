@@ -34,3 +34,11 @@ void logCapture(QtMsgType msgType, const QMessageLogContext&, const QString& msg
     strm << msgTypeStr;
     FAIL() << errMsg.toStdString();
 }
+
+LogCaptureGuard::LogCaptureGuard()
+        : m_oldHandler(qInstallMessageHandler(logCapture)) {
+}
+
+LogCaptureGuard::~LogCaptureGuard() {
+    qInstallMessageHandler(m_oldHandler);
+}

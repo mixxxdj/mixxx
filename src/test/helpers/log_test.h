@@ -26,3 +26,12 @@
 
 extern QList<std::tuple<QtMsgType, QRegularExpression>> logMessagesExpected;
 void logCapture(QtMsgType msgType, const QMessageLogContext&, const QString& msg);
+
+class LogCaptureGuard {
+  public:
+    LogCaptureGuard();
+    ~LogCaptureGuard();
+
+  private:
+    QtMessageHandler m_oldHandler;
+};
