@@ -926,6 +926,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                         </screens>
                 </controller>
                 )EOF"));
+    ASSERT_ALL_EXPECTED_MSG();
 
     mapping = std::make_shared<MockLegacyControllerMapping>();
     // This file always gets added
@@ -946,6 +947,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
             doc.documentElement(),
             mapping,
             QDir());
+    ASSERT_ALL_EXPECTED_MSG();
 }
 
 TEST_F(LegacyControllerMappingFileHandlerTest, canParseHybridMapping) {
