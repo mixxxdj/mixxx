@@ -484,6 +484,9 @@ Description:
             </Children>
           </WidgetGroup><!-- /Library -->
 
+          <!-- push the settings up, required with Qt6 -->
+          <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
+
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>

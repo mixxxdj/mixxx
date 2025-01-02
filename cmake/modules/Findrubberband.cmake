@@ -48,13 +48,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_rubberband QUIET rubberband)
 endif()
 
-find_path(rubberband_INCLUDE_DIR
+find_path(
+  rubberband_INCLUDE_DIR
   NAMES rubberband/RubberBandStretcher.h
   HINTS ${PC_rubberband_INCLUDE_DIRS}
-  DOC "rubberband include directory")
+  DOC "rubberband include directory"
+)
 mark_as_advanced(rubberband_INCLUDE_DIR)
 
-find_library(rubberband_LIBRARY
+find_library(
+  rubberband_LIBRARY
   NAMES rubberband rubberband-library rubberband-dll
   HINTS ${PC_rubberband_LIBRARY_DIRS}
   DOC "rubberband library"
@@ -79,7 +82,8 @@ if(rubberband_FOUND)
 
   if(NOT TARGET rubberband::rubberband)
     add_library(rubberband::rubberband UNKNOWN IMPORTED)
-    set_target_properties(rubberband::rubberband
+    set_target_properties(
+      rubberband::rubberband
       PROPERTIES
         IMPORTED_LOCATION "${rubberband_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_rubberband_CFLAGS_OTHER}"
@@ -88,20 +92,25 @@ if(rubberband_FOUND)
     is_static_library(rubberband_IS_STATIC rubberband::rubberband)
     if(rubberband_IS_STATIC)
       find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
-      set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        ${SAMPLERATE_LIBRARY}
+      set_property(
+        TARGET rubberband::rubberband
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES ${SAMPLERATE_LIBRARY}
       )
       find_package(FFTW)
-      if (FFTW_FOUND)
-        set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          FFTW::FFTW
+      if(FFTW_FOUND)
+        set_property(
+          TARGET rubberband::rubberband
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES FFTW::FFTW
         )
       endif()
       find_package(Sleef)
-      if (Sleef_FOUND)
-        set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          Sleef::sleef
-          Sleef::sleefdft
+      if(Sleef_FOUND)
+        set_property(
+          TARGET rubberband::rubberband
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES Sleef::sleef Sleef::sleefdft
         )
       endif()
     endif()

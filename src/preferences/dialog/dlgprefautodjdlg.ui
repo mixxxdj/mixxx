@@ -121,9 +121,13 @@
          <property name="displayFormat">
           <string>hh:mm</string>
          </property>
-         <property name="timeSpec">
-          <enum>Qt::LocalTime</enum>
-         </property>
+         <!--
+           TODO: Enable this once we require at least Qt 6.7 and remove the
+           corresponding code from the C++ file.
+           -->
+         <!--<property name="timeZone">
+          <enum>QTimeZone::LocalTime</enum>
+         </property>-->
          <property name="minimumSize">
           <size>
            <width>60</width>

@@ -552,14 +552,27 @@ void Library::slotLoadLocationToPlayer(const QString& location, const QString& g
     auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
+#ifdef __STEM__
+        emit loadTrackToPlayer(pTrack, group, mixxx::StemChannelSelection(), play);
+#else
         emit loadTrackToPlayer(pTrack, group, play);
+#endif
     }
 }
 
+#ifdef __STEM__
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
+    emit loadTrackToPlayer(pTrack, group, stemMask, play);
+}
+#else
 void Library::slotLoadTrackToPlayer(
         TrackPointer pTrack, const QString& group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
+#endif
 
 void Library::slotRefreshLibraryModels() {
     m_pMixxxLibraryFeature->refreshLibraryModels();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <utility>
 
 #include "controllers/scripting/legacy/scriptconnection.h"
 
@@ -10,13 +11,12 @@ class ScriptConnectionJSProxy : public QObject {
     Q_PROPERTY(QString id READ readId)
     Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
-    ScriptConnectionJSProxy(const ScriptConnection& conn) {
-        m_scriptConnection = conn;
-        m_idString = conn.id.toString();
-        m_isConnected = true;
+    ScriptConnectionJSProxy(ScriptConnection conn)
+            : m_scriptConnection(std::move(conn)),
+              m_isConnected(true) {
     }
-    const QString& readId() const {
-        return m_idString;
+    QString readId() const {
+        return m_scriptConnection.id.toString();
     }
     bool readIsConnected() const {
         return m_isConnected;
@@ -26,6 +26,5 @@ class ScriptConnectionJSProxy : public QObject {
 
   private:
     ScriptConnection m_scriptConnection;
-    QString m_idString;
     bool m_isConnected;
 };

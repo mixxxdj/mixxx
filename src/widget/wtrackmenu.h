@@ -99,18 +99,31 @@ class WTrackMenu : public QMenu {
 
     void loadTrack(
             const TrackPointer& pTrack, const QString& deckGroup);
+    /// Set the track property string which can be used to tell DlgTrackInfo/~Multi
+    /// to focus a specific metadata editor widget
+    void setTrackPropertyName(const QString& property = QString()) {
+        m_trackProperty = property;
+    }
 
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
     void slotShowDlgTrackInfo();
-    void showDlgTrackInfo(const QString& property = QString());
     // Library management
     void slotRemoveFromDisk();
     const QString getDeckGroup() const;
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play = false);
+#else
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            bool play = false);
+#endif
     void trackMenuVisible(bool visible);
     void saveCurrentViewState();
     void restoreCurrentViewStateOrIndex();
@@ -214,6 +227,13 @@ class WTrackMenu : public QMenu {
     void setupActions();
     void updateMenus();
 
+    void generateTrackLoadMenu(const QString& group,
+            const QString& label,
+            TrackPointer pTrack,
+            QMenu* pParentMenu,
+            bool primaryDeck,
+            bool enabled = true);
+
     bool featureIsEnabled(Feature flag) const;
 
     void addSelectionToPlaylist(int iPlaylistId);
@@ -225,7 +245,14 @@ class WTrackMenu : public QMenu {
     void clearBeats();
     void lockBpm(bool lock);
 
-    void loadSelectionToGroup(const QString& group, bool play = false);
+#ifdef __STEM__
+    void loadSelectionToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask = mixxx::StemChannelSelection(),
+            bool play = false);
+#else
+    void loadSelectionToGroup(const QString& group,
+            bool play = false);
+#endif
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
@@ -278,9 +305,6 @@ class WTrackMenu : public QMenu {
 
     // Save Track Metadata Action:
     QAction* m_pExportMetadataAct{};
-
-    // Load Track to PreviewDeck
-    QAction* m_pAddToPreviewDeck{};
 
     // Send to Auto-DJ Action
     QAction* m_pAutoDJBottomAct{};
@@ -365,6 +389,10 @@ class WTrackMenu : public QMenu {
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;
+
+    QString m_trackProperty;
+
+    static bool s_showPurgeSuccessPopup;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

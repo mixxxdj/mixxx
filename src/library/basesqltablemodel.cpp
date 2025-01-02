@@ -164,15 +164,18 @@ void BaseSqlTableModel::clearRows() {
         beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
         m_rowInfo.clear();
         m_trackIdToRows.clear();
+        m_trackPosToRow.clear();
         endRemoveRows();
     }
     DEBUG_ASSERT(m_rowInfo.isEmpty());
     DEBUG_ASSERT(m_trackIdToRows.isEmpty());
+    DEBUG_ASSERT(m_trackPosToRow.isEmpty());
 }
 
 void BaseSqlTableModel::replaceRows(
         QVector<RowInfo>&& rows,
-        TrackId2Rows&& trackIdToRows) {
+        TrackId2Rows&& trackIdToRows,
+        TrackPos2Row&& trackPosToRows) {
     // NOTE(uklotzde): Use r-value references for parameters here, because
     // conceptually those parameters should replace the corresponding internal
     // member variables. Currently Qt4/5 doesn't support move semantics and
@@ -182,12 +185,16 @@ void BaseSqlTableModel::replaceRows(
     // its container types in the future this code becomes even more efficient.
     DEBUG_ASSERT(rows.empty() == trackIdToRows.empty());
     DEBUG_ASSERT(rows.size() >= trackIdToRows.size());
+    if (hasPositionColumn()) {
+        DEBUG_ASSERT(rows.size() == trackPosToRows.size());
+    }
     if (rows.isEmpty()) {
         clearRows();
     } else {
         beginInsertRows(QModelIndex(), 0, rows.size() - 1);
         m_rowInfo = rows;
         m_trackIdToRows = trackIdToRows;
+        m_trackPosToRow = trackPosToRows;
         endInsertRows();
     }
 }
@@ -246,6 +253,7 @@ void BaseSqlTableModel::select() {
     QVector<RowInfo> rowInfos;
     QSet<TrackId> trackIds;
     int idColumn = -1;
+    int posColumn = -1;
     while (query.next()) {
         QSqlRecord sqlRecord = query.record();
 
@@ -253,11 +261,15 @@ void BaseSqlTableModel::select() {
             idColumn = sqlRecord.indexOf(m_idColumn);
         }
 
+        if (posColumn == -1 && hasPositionColumn()) {
+            posColumn = sqlRecord.indexOf(PLAYLISTTABLE_POSITION);
+        }
+
         // TODO(XXX): Can we get rid of the hard-coded assumption that
         // the the first column always contains the id?
         DEBUG_ASSERT(idColumn == kIdColumn);
 
-        VERIFY_OR_DEBUG_ASSERT(idColumn >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(idColumn != -1) {
             qCritical()
                     << "ID column not available in database query results:"
                     << m_idColumn;
@@ -269,11 +281,11 @@ void BaseSqlTableModel::select() {
 
         RowInfo rowInfo;
         rowInfo.trackId = trackId;
-        // current position defines the ordering
-        rowInfo.order = rowInfos.size();
-        rowInfo.metadata.reserve(sqlRecord.count());
+        rowInfo.row = rowInfos.size();
+
+        rowInfo.columnValues.reserve(sqlRecord.count());
         for (int i = 0; i < m_tableColumns.size(); ++i) {
-            rowInfo.metadata.push_back(sqlRecord.value(i));
+            rowInfo.columnValues.push_back(sqlRecord.value(i));
         }
         rowInfos.push_back(rowInfo);
     }
@@ -298,9 +310,9 @@ void BaseSqlTableModel::select() {
             // separate removed tracks (order == -1) from present tracks (order ==
             // 0). Otherwise we sort by the order that filterAndSort returned to us.
             if (m_trackSourceOrderBy.isEmpty()) {
-                rowInfo.order = m_trackSortOrder.contains(rowInfo.trackId) ? 0 : -1;
+                rowInfo.row = m_trackSortOrder.contains(rowInfo.trackId) ? 0 : -1;
             } else {
-                rowInfo.order = m_trackSortOrder.value(rowInfo.trackId, -1);
+                rowInfo.row = m_trackSortOrder.value(rowInfo.trackId, -1);
             }
         }
     }
@@ -317,8 +329,7 @@ void BaseSqlTableModel::select() {
     trackIdToRows.reserve(rowInfos.size());
     for (int i = 0; i < rowInfos.size(); ++i) {
         const RowInfo& rowInfo = rowInfos[i];
-
-        if (rowInfo.order == -1) {
+        if (rowInfo.row == -1) {
             // We've reached the end of valid rows. Resize rowInfo to cut off
             // this and all further elements.
             rowInfos.resize(i);
@@ -330,10 +341,22 @@ void BaseSqlTableModel::select() {
     // number of total rows returned by the query
     DEBUG_ASSERT(trackIdToRows.size() <= rowInfos.size());
 
+    TrackPos2Row trackPosToRows;
+    if (hasPositionColumn()) {
+        // We expect as many positions as we have rows
+        trackPosToRows.reserve(rowInfos.size());
+        for (int i = 0; i < rowInfos.size(); ++i) {
+            const RowInfo& rowInfo = rowInfos[i];
+            trackPosToRows.insert(rowInfo.getPosition(posColumn), i);
+        }
+        DEBUG_ASSERT(trackPosToRows.size() == rowInfos.size());
+    }
+
     // We're done! Issue the update signals and replace the main maps.
     replaceRows(
             std::move(rowInfos),
-            std::move(trackIdToRows));
+            std::move(trackIdToRows),
+            std::move(trackPosToRows));
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
 
@@ -651,13 +674,13 @@ QVariant BaseSqlTableModel::rawValue(
             return previewDeckTrackId() == trackId;
         }
 
-        const QVector<QVariant>& columns = rowInfo.metadata;
+        const QVector<QVariant>& columnValues = rowInfo.columnValues;
         if (sDebug) {
             qDebug() << "Returning table-column value"
-                    << columns.at(column)
-                    << "for column" << column;
+                     << columnValues.at(column)
+                     << "for column" << column;
         }
-        return columns[column];
+        return columnValues[column];
     }
 
     // Otherwise, return the information from the track record cache for the

@@ -2,6 +2,7 @@
 
 #include <QMessageBox>
 #include <QMetaMethod>
+#include <memory>
 
 #include "control/controlencoder.h"
 #include "control/controlobject.h"
@@ -24,7 +25,6 @@ namespace {
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
-constexpr int kMaxSupportedStems = 4;
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
@@ -53,12 +53,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pPrevFailedTrackId(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
-    m_pChannel = new EngineDeck(handleGroup,
+    auto channel = std::make_unique<EngineDeck>(handleGroup,
             pConfig,
             pMixingEngine,
             pEffectsManager,
             defaultOrientation,
             primaryDeck);
+    m_pChannel = channel.get();
 
     m_pInputConfigured = make_parented<ControlProxy>(getGroup(), "input_configured", this);
 #ifdef __VINYLCONTROL__
@@ -68,7 +69,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 #endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
-    pMixingEngine->addChannel(m_pChannel);
+    pMixingEngine->addChannel(std::move(channel));
 
     // Set the routing option defaults for the main and headphone mixes.
     m_pChannel->setMainMix(defaultMainMix);
@@ -285,9 +286,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     }
 
 #ifdef __STEM__
-    m_pStemColors.reserve(kMaxSupportedStems);
+    m_pStemColors.reserve(mixxx::kMaxSupportedStems);
     QString group = getGroup();
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
+    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
         QString stemGroup = QStringLiteral("%1Stem%2]")
                                     .arg(group.left(group.size() - 1),
                                             QString::number(stemIdx));
@@ -416,7 +417,11 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
     if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
         TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
         if (lastEjected) {
-            slotLoadTrack(lastEjected, false);
+            slotLoadTrack(lastEjected,
+#ifdef __STEM__
+                    mixxx::StemChannelSelection(),
+#endif
+                    false);
         }
         return;
     }
@@ -425,7 +430,11 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
     if (!m_pLoadedTrack) {
         TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
         if (lastEjected) {
-            slotLoadTrack(lastEjected, false);
+            slotLoadTrack(lastEjected,
+#ifdef __STEM__
+                    mixxx::StemChannelSelection(),
+#endif
+                    false);
         }
         return;
     }
@@ -539,7 +548,14 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
     disconnect(m_pLoadedTrack.get(), nullptr, m_pKey.get(), nullptr);
 }
 
-void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
+#ifdef __STEM__
+void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
+        mixxx::StemChannelSelection stemMask,
+        bool bPlay) {
+#else
+void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
+        bool bPlay) {
+#endif
     //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
@@ -562,7 +578,17 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
 
     // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+#ifdef __STEM__
+    pEngineBuffer->loadTrack(pNewTrack,
+            stemMask,
+            bPlay,
+            m_pChannelToCloneFrom);
+
+    // Select a specific stem if requested
+    emit selectedStems(stemMask);
+#else
     pEngineBuffer->loadTrack(pNewTrack, bPlay, m_pChannelToCloneFrom);
+#endif
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& reason) {
@@ -694,7 +720,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 #ifdef __STEM__
         if (m_pStemColors.size()) {
             const auto& stemInfo = m_pLoadedTrack->getStemInfo();
-            DEBUG_ASSERT(stemInfo.size() <= kMaxSupportedStems);
+            DEBUG_ASSERT(stemInfo.size() <= mixxx::kMaxSupportedStems);
             int stemIdx = 0;
             for (const auto& stemColorCo : m_pStemColors) {
                 auto color = kNoTrackColor;
@@ -773,7 +799,11 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
 
     m_pChannelToCloneFrom = pChannel;
     bool play = ControlObject::toBool(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play"));
-    slotLoadTrack(pTrack, play);
+    slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            play);
 }
 
 void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
@@ -797,7 +827,11 @@ void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
         return;
     }
 
-    slotLoadTrack(pTrack, false);
+    slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 }
 
 bool BaseTrackPlayerImpl::isTrackMenuControlAvailable() {

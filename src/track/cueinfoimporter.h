@@ -22,6 +22,7 @@ class CueInfoImporter {
     /// in subclasses.
     virtual double guessTimingOffsetMillis(
             const QString& filePath,
+            const QString& fileType,
             const audio::SignalInfo& signalInfo) const;
 
     int size() const;
@@ -29,6 +30,7 @@ class CueInfoImporter {
 
     QList<CueInfo> importCueInfosAndApplyTimingOffset(
             const QString& filePath,
+            const QString& fileType,
             const audio::SignalInfo& signalInfo);
 
   private:

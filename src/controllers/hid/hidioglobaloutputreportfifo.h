@@ -38,4 +38,5 @@ class HidIoGlobalOutputReportFifo {
   private:
     // Lockless FIFO queue
     rigtorp::SPSCQueue<QByteArray> m_fifoQueue;
+    bool m_hidWriteErrorLogged;
 };

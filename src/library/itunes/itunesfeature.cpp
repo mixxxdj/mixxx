@@ -4,7 +4,8 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QMessageBox>
-#include <QtConcurrent>
+#include <QStandardPaths>
+#include <QtConcurrentRun>
 #include <QtDebug>
 #include <memory>
 #include <utility>

@@ -62,6 +62,10 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
+QString fileTypeToString(taglib::FileType fileType) {
+    return QVariant::fromValue(fileType).toString();
+}
+
 } // anonymous namespace
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
@@ -91,7 +95,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Nothing to import"
                 << "from file" << m_fileName
-                << "of type" << m_fileType;
+                << "of type" << fileTypeToString(m_fileType);
         return afterImport(ImportResult::Unavailable);
     }
     if (kLogger.traceEnabled()) {
@@ -101,7 +105,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                                            : (pTrackMetadata ? "track metadata"
                                                              : "cover art"))
                         << "from file" << m_fileName
-                        << "of type" << m_fileType;
+                        << "of type" << fileTypeToString(m_fileType);
     }
 
     // Rationale: If a file contains different types of tags only
@@ -111,7 +115,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
     // is read and data in subsequent tags is ignored.
 
     switch (m_fileType) {
-    case taglib::FileType::MP3: {
+    case taglib::FileType::MPEG: {
         TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -198,7 +202,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::OGG: {
+    case taglib::FileType::OggVorbis: {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -207,14 +211,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (pTag) {
             taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
                     *pTag,
-                    taglib::FileType::OGG,
+                    taglib::FileType::OggVorbis,
                     resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
         break;
     }
-    case taglib::FileType::OPUS: {
+    case taglib::FileType::Opus: {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -223,14 +227,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (pTag) {
             taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
                     *pTag,
-                    taglib::FileType::OPUS,
+                    taglib::FileType::Opus,
                     resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
         break;
     }
-    case taglib::FileType::WV: {
+    case taglib::FileType::WavPack: {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -285,14 +289,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Cannot import track metadata"
                 << "from file" << m_fileName
-                << "with unknown or unsupported type" << m_fileType;
+                << "of unknown or unsupported type" << fileTypeToString(m_fileType);
         return afterImport(ImportResult::Failed);
     }
 
     kLogger.info()
             << "No track metadata or cover art found"
             << "in file" << m_fileName
-            << "with type" << m_fileType;
+            << "of type" << fileTypeToString(m_fileType);
     return afterImport(ImportResult::Unavailable);
 }
 
@@ -474,7 +478,7 @@ class OggTagSaver : public TagSaver {
 #else
         return pFile->isOpen() &&
                 taglib::xiph::exportTrackMetadataIntoTag(
-                        pFile->tag(), trackMetadata, taglib::FileType::OGG);
+                        pFile->tag(), trackMetadata, taglib::FileType::OggVorbis);
 #endif
     }
 
@@ -503,7 +507,7 @@ class OpusTagSaver : public TagSaver {
             const TrackMetadata& trackMetadata) {
         return pFile->isOpen() &&
                 taglib::xiph::exportTrackMetadataIntoTag(
-                        pFile->tag(), trackMetadata, taglib::FileType::OPUS);
+                        pFile->tag(), trackMetadata, taglib::FileType::Opus);
     }
 
     TagLib::Ogg::Opus::File m_file;
@@ -636,7 +640,7 @@ MetadataSourceTagLib::exportTrackMetadata(
 
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
-    case taglib::FileType::MP3: {
+    case taglib::FileType::MPEG: {
         pTagSaver = std::make_unique<MpegTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
@@ -648,15 +652,15 @@ MetadataSourceTagLib::exportTrackMetadata(
         pTagSaver = std::make_unique<FlacTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::OGG: {
+    case taglib::FileType::OggVorbis: {
         pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::OPUS: {
+    case taglib::FileType::Opus: {
         pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::WV: {
+    case taglib::FileType::WavPack: {
         pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
@@ -672,8 +676,8 @@ MetadataSourceTagLib::exportTrackMetadata(
         kLogger.debug()
                 << "Cannot export track metadata"
                 << "into file" << m_fileName
-                << "with unknown or unsupported type"
-                << m_fileType;
+                << "of unknown or unsupported type"
+                << fileTypeToString(m_fileType);
         return afterExport(ExportResult::Unsupported);
     }
 

@@ -1,18 +1,23 @@
 #pragma once
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 
 #include "effects/effectsmanager.h"
+#include "qml/qmlchainpresetmodel.h"
 #include "qml/qmleffectslotproxy.h"
 #include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
 namespace qml {
 
+class QmlChainPresetModel;
+
 class QmlEffectsManagerProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(mixxx::qml::QmlVisibleEffectsModel* visibleEffectsModel
                     MEMBER m_pVisibleEffectsModel CONSTANT);
+    Q_PROPERTY(mixxx::qml::QmlChainPresetModel* quickChainPresetModel
+                    MEMBER m_pQuickChainPresetModel CONSTANT);
     QML_NAMED_ELEMENT(EffectsManager)
     QML_SINGLETON
 
@@ -34,6 +39,7 @@ class QmlEffectsManagerProxy : public QObject {
 
     const std::shared_ptr<EffectsManager> m_pEffectsManager;
     QmlVisibleEffectsModel* m_pVisibleEffectsModel;
+    QmlChainPresetModel* m_pQuickChainPresetModel;
 };
 
 } // namespace qml

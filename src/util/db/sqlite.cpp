@@ -1,5 +1,7 @@
 #include "util/db/sqlite.h"
 
+#include <QTimeZone>
+
 #include "util/assert.h"
 
 namespace {
@@ -40,7 +42,11 @@ QDateTime readGeneratedTimestamp(const QVariant& value) {
     VERIFY_OR_DEBUG_ASSERT(time.isValid()) {
         return QDateTime();
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    return QDateTime(date, time, QTimeZone::UTC);
+#else
     return QDateTime(date, time, Qt::UTC);
+#endif
 }
 
 QVariant writeGeneratedTimestamp(const QDateTime& value) {

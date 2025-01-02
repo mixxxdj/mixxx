@@ -86,7 +86,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_numericFilters << "track"
                      << "played"
                      << "rating"
-                     << "bitrate";
+                     << "bitrate"
+                     << "id";
     m_specialFilters << "year"
                      << "key"
                      << "bpm"
@@ -117,6 +118,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["location"] << "location";
     m_fieldToSqlColumns["type"] << "filetype";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
+    m_fieldToSqlColumns["id"] << "id";
 
     m_textFilterMatcher = QRegularExpression(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegularExpression(
@@ -308,7 +310,7 @@ std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(const QString& query) c
 std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) const {
     auto pQuery = std::make_unique<OrNode>();
 
-    QStringList rawAndNodes = query.split(kSplitOnOrOperatorRegexp,
+    const QStringList rawAndNodes = query.split(kSplitOnOrOperatorRegexp,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             Qt::SkipEmptyParts);
 #else

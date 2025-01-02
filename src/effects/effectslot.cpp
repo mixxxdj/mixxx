@@ -68,7 +68,7 @@ EffectSlot::EffectSlot(const QString& group,
     // Default to disabled to prevent accidental activation of effects
     // at the beginning of a set.
     m_pControlEnabled = std::make_unique<ControlPushButton>(ConfigKey(m_group, "enabled"));
-    m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pControlEnabled->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     connect(m_pControlEnabled.get(),
             &ControlObject::valueChanged,
             this,
@@ -330,8 +330,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
                     continue;
                 }
 
-                for (const auto& pParameter :
-                        m_allParameters.value(parameterType)) {
+                const auto& allParameters = m_allParameters.value(parameterType);
+                for (const auto& pParameter : allParameters) {
                     if (pParameter->manifest()->id() == parameterPreset.id()) {
                         m_loadedParameters[parameterType].append(pParameter);
                         break;

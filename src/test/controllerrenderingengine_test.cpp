@@ -34,7 +34,8 @@ class MockRenderingEngine : public ControllerRenderingEngine {
 };
 
 TEST_F(ControllerRenderingEngineTest, createValidRendererWithSupportedTypes) {
-    for (auto pixelFormat : supportedPixelFormat()) {
+    const auto& supportedPixelFormats = supportedPixelFormat();
+    for (const auto& pixelFormat : supportedPixelFormats) {
         MockRenderingEngine screenTest(LegacyControllerMapping::ScreenInfo{
                 "",                                                    // identifier
                 QSize(0, 0),                                           // size

@@ -62,7 +62,7 @@ class SeratoMarkersTest : public testing::Test {
         dir.setFilter(QDir::Files);
         dir.setNameFilters(QStringList() << "*.octet-stream");
 
-        QFileInfoList fileList = dir.entryInfoList();
+        const QFileInfoList fileList = dir.entryInfoList();
         EXPECT_FALSE(fileList.isEmpty());
         for (const QFileInfo& fileInfo : fileList) {
             qDebug() << "--- File:" << fileInfo.fileName();
@@ -181,7 +181,7 @@ TEST_F(SeratoMarkersTest, ParseMarkersDataMP3) {
     parseMarkersDataInDirectory(
             QDir(MixxxTest::getOrInitTestDir().filePath(
                     QStringLiteral("serato/data/mp3/markers_"))),
-            mixxx::taglib::FileType::MP3);
+            mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
@@ -192,7 +192,7 @@ TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP3) {
-    parseEmptyMarkersData(mixxx::taglib::FileType::MP3);
+    parseEmptyMarkersData(mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP4) {

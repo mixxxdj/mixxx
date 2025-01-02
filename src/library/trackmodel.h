@@ -4,7 +4,6 @@
 #include <QList>
 #include <QUrl>
 #include <QVector>
-#include <QtSql>
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
@@ -129,6 +128,15 @@ class TrackModel {
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
+    virtual int getTrackRowByPosition(int position) const {
+        Q_UNUSED(position);
+        return -1;
+    }
+
+    virtual const QList<int> getSelectedPositions(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+        return {};
+    }
 
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
@@ -236,7 +244,6 @@ class TrackModel {
 
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key
-    /// @param baseOnly return only a identifier for the whole subsystem
     virtual QString modelKey(bool noSearch) const = 0;
 
     virtual bool getRequireConfirmationToHideRemoveTracks() {

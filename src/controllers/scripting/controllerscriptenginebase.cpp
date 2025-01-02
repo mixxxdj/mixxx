@@ -156,7 +156,7 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     if (filename.isEmpty()) {
         filename = QStringLiteral("<passed code>");
     }
-    QString errorText = QString("Uncaught exception: %1:%2: %3").arg(filename, line, errorMessage);
+    QString errorText = QString("Uncaught exception: %1:%2:\n%3").arg(filename, line, errorMessage);
 
     // Do not include backtrace in dialog key because it might contain midi
     // slider values that will differ most of the time. This would break
@@ -164,7 +164,7 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     QString key = errorText;
 
     // Add backtrace to the error details
-    errorText += QStringLiteral("\nBacktrace: ") + backtrace;
+    errorText += QStringLiteral("\n\nBacktrace: ") + backtrace;
     qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
 
     if (!m_bDisplayingExceptionDialog) {

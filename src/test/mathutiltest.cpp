@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
-#include <limits>
+#include <cstring>
 
 #include "util/denormalsarezero.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace {
@@ -51,11 +52,11 @@ TEST_F(MathUtilTest, IsNaN) {
 TEST_F(MathUtilTest, IsInf) {
     // Test floats can be recognized as infinity.
     EXPECT_FALSE(util_isinf(0.0f));
-    EXPECT_TRUE(util_isinf(std::numeric_limits<float>::infinity()));
+    EXPECT_TRUE(util_isinf(util_float_infinity()));
 
     // Test doubles can be recognized as infinity.
     EXPECT_FALSE(util_isinf(0.0f));
-    EXPECT_TRUE(util_isinf(std::numeric_limits<double>::infinity()));
+    EXPECT_TRUE(util_isinf(util_double_infinity()));
 }
 
 TEST_F(MathUtilTest, Denormal) {
@@ -89,5 +90,16 @@ TEST_F(MathUtilTest, Denormal) {
 #endif
 }
 
+TEST_F(MathUtilTest, DoubleValues) {
+    // This verifies that the infinity value can be copied into -ffastmath code
+
+    // All supported targets are using IEC559 floats
+    static_assert(std::numeric_limits<double>::is_iec559);
+    long long int_value;
+    double double_value = util_double_infinity();
+    std::memcpy(&int_value, &double_value, sizeof(double_value));
+    // IEC 559 (IEEE 754) Infinity
+    EXPECT_EQ(int_value, 0x7FF0000000000000);
+}
 
 }  // namespace

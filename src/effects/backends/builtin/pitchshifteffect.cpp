@@ -6,6 +6,7 @@
 
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "util/math.h"
 #include "util/sample.h"
 
 namespace {

@@ -1,8 +1,8 @@
 #pragma once
 #include <QColor>
 #include <QObject>
+#include <QQmlEngine>
 #include <QVariantList>
-#include <QtQml>
 
 #include "preferences/usersettings.h"
 

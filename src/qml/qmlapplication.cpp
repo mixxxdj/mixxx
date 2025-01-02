@@ -1,6 +1,7 @@
 #include "qmlapplication.h"
 
 #include <QQmlEngineExtensionPlugin>
+#include <QQuickStyle>
 
 #include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"
@@ -46,6 +47,8 @@ QmlApplication::QmlApplication(
           m_mainFilePath(pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
           m_autoReload() {
+    QQuickStyle::setStyle("Basic");
+
     m_pCoreServices->initialize(app);
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {

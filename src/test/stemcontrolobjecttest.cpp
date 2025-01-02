@@ -16,9 +16,32 @@ class StemControlTest : public BaseSignalPathTest {
                 .arg(deckGroup.left(deckGroup.size() - 1),
                         QString::number(stemIdx));
     }
+    QString getFxGroupForStem(const QString& deckGroup, int stemIdx) {
+        return QStringLiteral("[QuickEffectRack1_%1]")
+                .arg(getGroupForStem(deckGroup, stemIdx));
+    }
 
     void SetUp() override {
         BaseSignalPathTest::SetUp();
+
+        for (int i = 1; i <= 4; i++) {
+            ChannelHandleAndGroup stemHandleGroup =
+                    m_pEngineMixer->registerChannelGroup(getGroupForStem(m_sGroup1, i));
+            m_pChannel1->addStemHandle(stemHandleGroup);
+            m_pEffectsManager->addStem(stemHandleGroup);
+        }
+        for (int i = 1; i <= 4; i++) {
+            ChannelHandleAndGroup stemHandleGroup =
+                    m_pEngineMixer->registerChannelGroup(getGroupForStem(m_sGroup2, i));
+            m_pChannel2->addStemHandle(stemHandleGroup);
+            m_pEffectsManager->addStem(stemHandleGroup);
+        }
+        for (int i = 1; i <= 4; i++) {
+            ChannelHandleAndGroup stemHandleGroup =
+                    m_pEngineMixer->registerChannelGroup(getGroupForStem(m_sGroup3, i));
+            m_pChannel3->addStemHandle(stemHandleGroup);
+            m_pEffectsManager->addStem(stemHandleGroup);
+        }
 
         const QString kStemFileLocationTest = getTestDir().filePath("stems/test.stem.mp4");
         TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
@@ -48,6 +71,19 @@ class StemControlTest : public BaseSignalPathTest {
                 getGroupForStem(m_sGroup1, 3), "color");
         m_pStem4Color = std::make_unique<PollingControlProxy>(
                 getGroupForStem(m_sGroup1, 4), "color");
+        m_pStem1FXEnabled = std::make_unique<PollingControlProxy>(
+                getFxGroupForStem(m_sGroup1, 1), "enabled");
+        m_pStem2FXEnabled = std::make_unique<PollingControlProxy>(
+                getFxGroupForStem(m_sGroup1, 2), "enabled");
+        m_pStem3FXEnabled = std::make_unique<PollingControlProxy>(
+                getFxGroupForStem(m_sGroup1, 3), "enabled");
+        m_pStem4FXEnabled = std::make_unique<PollingControlProxy>(
+                getFxGroupForStem(m_sGroup1, 4), "enabled");
+
+        m_pStem1FXEnabled->set(0.0);
+        m_pStem2FXEnabled->set(0.0);
+        m_pStem3FXEnabled->set(0.0);
+        m_pStem4FXEnabled->set(0.0);
 
         m_pStemCount = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_count");
     }
@@ -58,16 +94,34 @@ class StemControlTest : public BaseSignalPathTest {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
-        BaseSignalPathTest::loadTrack(pDeck, pTrack);
         // Because there is connection across the main thread in caching reader
-        // thread, we need to manually process the eventloop to trigger
+        // thread, we need to manually process the Qt event loop to trigger
         // `BaseTrackPlayerImpl::slotTrackLoaded` Here is the chain of
         // connections (Symbol (thread)) EngineDeck::slotLoadTrack (main) ->
         // EngineBuffer::loadTrack (main) -> CachingReader*::newTrack (main) ->
         // CachingReaderWorker::trackLoaded (CachingReader) ->
         // EngineBuffer::loaded (CachingReader, direct) ->
         // BaseTrackPlayerImpl::slotTrackLoaded  (main)
-        QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+        TrackPointer pLoadedTrack;
+        QMetaObject::Connection connection = QObject::connect(pDeck,
+                &BaseTrackPlayerImpl::newTrackLoaded,
+                [&pLoadedTrack]( // clazy:exclude=lambda-in-connect
+                        TrackPointer pNewTrack) { pLoadedTrack = pNewTrack; });
+        BaseSignalPathTest::loadTrack(pDeck, pTrack);
+
+        for (int i = 0; i < 10000; ++i) {
+            if (pLoadedTrack == pTrack) {
+                break;
+            }
+            int maxtime = 1; // ms
+            QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, maxtime);
+            // 1 ms for waiting 10 s at max
+        }
+        QObject::disconnect(connection);
+        if (pLoadedTrack != pTrack) {
+            qWarning() << "Timeout: failed loading track" << pTrack->getLocation();
+        }
     }
 
     std::unique_ptr<PollingControlProxy> m_pPlay;
@@ -83,6 +137,10 @@ class StemControlTest : public BaseSignalPathTest {
     std::unique_ptr<PollingControlProxy> m_pStem2Color;
     std::unique_ptr<PollingControlProxy> m_pStem3Color;
     std::unique_ptr<PollingControlProxy> m_pStem4Color;
+    std::unique_ptr<PollingControlProxy> m_pStem1FXEnabled;
+    std::unique_ptr<PollingControlProxy> m_pStem2FXEnabled;
+    std::unique_ptr<PollingControlProxy> m_pStem3FXEnabled;
+    std::unique_ptr<PollingControlProxy> m_pStem4FXEnabled;
     std::unique_ptr<PollingControlProxy> m_pStemCount;
 };
 
@@ -136,28 +194,31 @@ TEST_F(StemControlTest, Volume) {
     m_pStem3Volume->set(0.0);
     m_pStem4Volume->set(0.0);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlSilence");
+            QStringLiteral("StemVolumeControlSilence"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pStem1Volume->set(1.0);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlDrumOnly");
+            QStringLiteral("StemVolumeControlDrumOnly"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pStem2Volume->set(0.8);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlDrumAndBass");
+            QStringLiteral("StemVolumeControlDrumAndBass"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
@@ -165,10 +226,11 @@ TEST_F(StemControlTest, Volume) {
     m_pStem3Volume->set(0.2);
     m_pStem4Volume->set(0.4);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlFull");
+            QStringLiteral("StemVolumeControlFull"));
 }
 
 TEST_F(StemControlTest, VolumeResetOnLoad) {
@@ -219,36 +281,40 @@ TEST_F(StemControlTest, Mute) {
     m_pStem3Mute->set(1.0);
     m_pStem4Mute->set(1.0);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlSilence"); // Same than volume test
+            QStringLiteral("StemVolumeControlSilence")); // Same than volume test
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pStem1Mute->set(0.0);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemVolumeControlDrumOnly"); // Same than volume test
+            QStringLiteral("StemVolumeControlDrumOnly")); // Same than volume test
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pStem2Mute->set(0.0);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemMuteControlDrumAndBass");
+            QStringLiteral("StemMuteControlDrumAndBass"));
 
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pStem3Mute->set(0.0);
     m_pStem4Mute->set(0.0);
 
-    m_pEngineMixer->process(kMaxEngineChannels * kMaxEngineFrames);
+    // Proceed the buffer a first time to proceed the ramping gain
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            kProcessBufferSize,
-            "StemMuteControlFull");
+            QStringLiteral("StemMuteControlFull"));
 }

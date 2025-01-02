@@ -351,7 +351,9 @@ void ThreeBandBiquadEQEffect::processChannel(
     }
 
     if (activeFilters == 0) {
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        }
     }
 
     if (enableState == EffectEnableState::Disabling) {

@@ -10,7 +10,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMixer::GainCalculator&
         QVarLengthArray<EngineMixer::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
         const ChannelHandle& outputHandle,
-        unsigned int iBufferSize,
+        std::size_t bufferSize,
         mixxx::audio::SampleRate sampleRate,
         EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
@@ -22,7 +22,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMixer::GainCalculator&
     //     C) Processes effects on the temporary buffer
     //     D) Mixes the temporary buffer into pOutput
     // The original channel input buffers are not modified.
-    SampleUtil::clear(pOutput, iBufferSize);
+    SampleUtil::clear(pOutput, bufferSize);
     ScopedTimer t(QStringLiteral("EngineMixer::applyEffectsAndMixChannels"));
     for (auto* pChannelInfo : activeChannels) {
         EngineMixer::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
@@ -42,7 +42,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMixer::GainCalculator&
                 outputHandle,
                 pChannelInfo->m_pBuffer.data(),
                 pOutput,
-                iBufferSize,
+                bufferSize,
                 sampleRate,
                 pChannelInfo->m_features,
                 oldGain,
@@ -59,7 +59,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 channelGainCache,
         CSAMPLE* pOutput,
         const ChannelHandle& outputHandle,
-        unsigned int iBufferSize,
+        std::size_t bufferSize,
         mixxx::audio::SampleRate sampleRate,
         EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
@@ -69,7 +69,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
     //    B) Applies effects to the buffer, modifying the original input buffer
     // 4. Mix the channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
     ScopedTimer t(QStringLiteral("EngineMixer::applyEffectsInPlaceAndMixChannels"));
-    SampleUtil::clear(pOutput, iBufferSize);
+    SampleUtil::clear(pOutput, bufferSize);
     for (auto* pChannelInfo : activeChannels) {
         EngineMixer::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
@@ -87,12 +87,12 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
         pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle,
                 outputHandle,
                 pChannelInfo->m_pBuffer.data(),
-                iBufferSize,
+                bufferSize,
                 sampleRate,
                 pChannelInfo->m_features,
                 oldGain,
                 newGain,
                 fadeout);
-        SampleUtil::add(pOutput, pChannelInfo->m_pBuffer.data(), iBufferSize);
+        SampleUtil::add(pOutput, pChannelInfo->m_pBuffer.data(), bufferSize);
     }
 }

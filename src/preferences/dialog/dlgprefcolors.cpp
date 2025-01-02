@@ -22,7 +22,7 @@ const ConfigKey kAutoHotcueColorsConfigKey("[Controls]", "auto_hotcue_colors");
 const ConfigKey kAutoLoopColorsConfigKey("[Controls]", "auto_loop_colors");
 const ConfigKey kHotcueDefaultColorIndexConfigKey("[Controls]", "HotcueDefaultColorIndex");
 const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorIndex");
-const ConfigKey kKeyColorsEnabledConfigKey("[Config]", "KeyColorsEnabled");
+const ConfigKey kKeyColorsEnabledConfigKey("[Config]", "key_colors_enabled");
 
 } // anonymous namespace
 
