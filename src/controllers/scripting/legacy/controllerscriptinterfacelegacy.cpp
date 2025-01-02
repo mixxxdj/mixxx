@@ -1118,7 +1118,7 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
 }
 
 QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
-        const QLatin1String& targetCharset, const QString& value) {
+        QLatin1String targetCharset, const QString& value) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     QAnyStringView encoderName = QAnyStringView(targetCharset);
 #else
