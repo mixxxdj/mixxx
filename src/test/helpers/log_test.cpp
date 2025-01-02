@@ -12,11 +12,25 @@ void logCapture(QtMsgType msgType, const QMessageLogContext&, const QString& msg
             return;
         }
     }
+
     // Unexpected info or debug message aren't considered as a failure
-    if (msgType < QtMsgType::QtWarningMsg)
+    QString msgTypeStr;
+    switch (msgType) {
+    case QtDebugMsg:
+    case QtInfoMsg:
         return;
+    case QtWarningMsg:
+        msgTypeStr = QStringLiteral("Warning: ") + msg;
+        break;
+    case QtCriticalMsg:
+        msgTypeStr = QStringLiteral("Critical:") + msg;
+        break;
+    case QtFatalMsg:
+        msgTypeStr = QStringLiteral("Fatal:") + msg;
+        break;
+    }
     QString errMsg("Got an unexpected log message: \n\t");
     QDebug strm(&errMsg);
-    strm << msgType << msg;
+    strm << msgTypeStr;
     FAIL() << errMsg.toStdString();
 }
