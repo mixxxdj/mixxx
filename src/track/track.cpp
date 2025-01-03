@@ -989,6 +989,63 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     markDirtyAndUnlock(&locked);
 }
 
+void Track::setHotcueIndicesSortedByPosition(bool compress) {
+    auto locked = lockMutex(&m_qMutex);
+
+    // Populate lists of positions and indices
+    QList<int> indices;
+    QList<mixxx::audio::FramePos> positions;
+    indices.reserve(m_cuePoints.size());
+    positions.reserve(m_cuePoints.size());
+    for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
+        if (pCue->getType() != mixxx::CueType::HotCue) {
+            continue;
+        }
+        const auto pos = pCue->getPosition();
+        positions.append(pos);
+        if (!compress) {
+            // We shall keep empty hotcues (start offset, gaps), so we need
+            // to store the indices
+            indices.append(pCue->getHotCue());
+        }
+    }
+
+    std::sort(positions.begin(), positions.end());
+    if (!compress) {
+        DEBUG_ASSERT(positions.size() == indices.size());
+        std::sort(indices.begin(), indices.end());
+    }
+
+    // The actual sorting:
+    // re-map hotcue positions to indices in ascending order
+    QHash<mixxx::audio::FramePos, int> posIndexHash;
+    if (compress) {
+        // Assign new indices, start with 0
+        int index = mixxx::kFirstHotCueIndex;
+        for (int i = 0; i < positions.size(); i++) {
+            posIndexHash.insert(positions[i], index);
+            index++;
+        }
+    } else {
+        // Assign sorted indices
+        for (int i = 0; i < positions.size(); i++) {
+            posIndexHash.insert(positions[i], indices[i]);
+        }
+    }
+
+    // Finally set new indices on hotcues
+    for (CuePointer& pCue : m_cuePoints) {
+        if (pCue->getType() != mixxx::CueType::HotCue) {
+            continue;
+        }
+        int newIndex = posIndexHash.take(pCue->getPosition());
+        pCue->setHotCue(newIndex);
+    }
+
+    markDirtyAndUnlock(&locked);
+    emit cuesUpdated();
+}
+
 void Track::analysisFinished() {
     emit analyzed();
 }
@@ -1062,6 +1119,21 @@ CuePointer Track::findCueById(DbId id) const {
     return CuePointer();
 }
 
+CuePointer Track::findHotcueByIndex(int idx) const {
+    auto locked = lockMutex(&m_qMutex);
+    auto cueIt = std::find_if(
+            m_cuePoints.begin(),
+            m_cuePoints.end(),
+            [idx](const CuePointer& pCue) {
+                return pCue && pCue->getHotCue() == idx;
+            });
+    if (cueIt != m_cuePoints.end()) {
+        return *cueIt;
+    } else {
+        return {};
+    }
+}
+
 void Track::removeCue(const CuePointer& pCue) {
     if (!pCue) {
         return;
@@ -1101,6 +1173,30 @@ void Track::removeCuesOfType(mixxx::CueType type) {
         markDirtyAndUnlock(&locked);
         emit cuesUpdated();
     }
+}
+
+void Track::swapHotcues(int a, int b) {
+    VERIFY_OR_DEBUG_ASSERT(a != b) {
+        qWarning() << "Track::swapHotcues rejected," << a << "==" << b;
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(a != Cue::kNoHotCue || b != Cue::kNoHotCue) {
+        qWarning() << "Track::swapHotcues rejected, both a and b are kNoHotCue";
+        return;
+    }
+    auto locked = lockMutex(&m_qMutex);
+    CuePointer pCueA = findHotcueByIndex(a);
+    CuePointer pCueB = findHotcueByIndex(b);
+    if (!pCueA && !pCueB) {
+        return;
+    }
+    if (pCueA) {
+        pCueA->setHotCue(b);
+    }
+    if (pCueB) {
+        pCueB->setHotCue(a);
+    }
+    emit cuesUpdated();
 }
 
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {

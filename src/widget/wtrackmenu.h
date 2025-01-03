@@ -166,6 +166,9 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
     void slotUndoBeatsChange();
 
+    // Hotcues
+    void slotSortHotcuesByPosition(bool compress = false);
+
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
     void slotShowDlgTagFetcher();
@@ -365,6 +368,8 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearKeyAction{};
     QAction* m_pClearReplayGainAction{};
     QAction* m_pClearAllMetadataAction{};
+    QAction* m_pSortHotcuesByPositionAction{};
+    QAction* m_pSortHotcuesByPositionCompressAction{};
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
