@@ -1250,8 +1250,9 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::ToolTip) {
-        // always show tooltips in the preferences window
+    // Always show tooltips if Ctrl is held down
+    if (event->type() == QEvent::ToolTip &&
+            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
                 QLatin1String(activeWindow->metaObject()->className()) !=
