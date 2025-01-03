@@ -36,7 +36,8 @@ class PlayerManagerInterface {
     virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
     virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
 
-    // Get the deck by its deck index
+    // Get the deck as BaseTrackPlayer by its deck index
+    // to allow unit test to return a mocked Deck
     virtual BaseTrackPlayer* getDeckBase(int deckIndex) const = 0;
 
     virtual int numberOfDecks() const = 0;
