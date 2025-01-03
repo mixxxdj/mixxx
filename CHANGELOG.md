@@ -185,12 +185,17 @@
   [#13687](https://github.com/mixxxdj/mixxx/pull/13687)
   [#13968](https://github.com/mixxxdj/mixxx/pull/13968)
   [#13965](https://github.com/mixxxdj/mixxx/issues/13965)
+  [#14107](https://github.com/mixxxdj/mixxx/pull/14107)
+  [#14095](https://github.com/mixxxdj/mixxx/issues/14095)
+  [#14087](https://github.com/mixxxdj/mixxx/pull/14087)
+  [#14086](https://github.com/mixxxdj/mixxx/issues/14086)
 * ci(pre-commit): Add cmake-lint hook [#13932](https://github.com/mixxxdj/mixxx/pull/13932)
 * refactor: remove samplew_autogen.h
   [#13988](https://github.com/mixxxdj/mixxx/pull/13988)
   [#14005](https://github.com/mixxxdj/mixxx/pull/14005)
 * fix clang-tidy complain [#14029](https://github.com/mixxxdj/mixxx/pull/14029)
 * ci(dependabot): Open PRs against 2.5 branch instead of main [#14060](https://github.com/mixxxdj/mixxx/pull/14060)
+* Happy New Year 2025! [#14098](https://github.com/mixxxdj/mixxx/pull/14098)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
@@ -322,6 +327,7 @@
 * Add backend for Audio Unit (AU) plugins on macOS
   [#12112](https://github.com/mixxxdj/mixxx/pull/12112)
   [#13938](https://github.com/mixxxdj/mixxx/pull/13938)
+  [#13887](https://github.com/mixxxdj/mixxx/pull/13887)
 * Effect Meta knob: Draw arc from default meta position
   [#12638](https://github.com/mixxxdj/mixxx/pull/12638)
   [#12634](https://github.com/mixxxdj/mixxx/issues/12634)

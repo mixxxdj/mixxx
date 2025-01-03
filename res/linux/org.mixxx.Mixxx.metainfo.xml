@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2024-12-29" timestamp="1735492448">
+    <release version="2.6.0" type="development" date="2025-01-03" timestamp="1735896888">
       <description>
  <p>
   Engine
@@ -662,6 +662,10 @@
    #13687
    #13968
    #13965
+   #14107
+   #14095
+   #14087
+   #14086
   </li>
   <li>
    ci(pre-commit): Add cmake-lint hook
@@ -679,6 +683,10 @@
   <li>
    ci(dependabot): Open PRs against 2.5 branch instead of main
    #14060
+  </li>
+  <li>
+   Happy New Year 2025!
+   #14098
   </li>
  </ul>
 </description>
@@ -952,6 +960,7 @@
    Add backend for Audio Unit (AU) plugins on macOS
    #12112
    #13938
+   #13887
   </li>
   <li>
    Effect Meta knob: Draw arc from default meta position
