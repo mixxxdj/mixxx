@@ -29,7 +29,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
         UTF_32BE,
         CentralEurope,
         Cyrillic,
-        Latin1,
+        WesternEurope,
         Greek,
         Turkish,
         Hebrew,
@@ -45,7 +45,8 @@ class ControllerScriptInterfaceLegacy : public QObject {
         UCS2,
         SCSU,
         BOCU_1,
-        CESU_8
+        CESU_8,
+        Latin1
     };
     Q_ENUM(Charset)
 
@@ -122,7 +123,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
             const QJSValue& callback,
             bool skipSuperseded = false);
 
-    QByteArray convertCharsetInternal(const QString& targetCharset, const QString& value);
+    QByteArray convertCharsetInternal(QLatin1String targetCharset, const QString& value);
 
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
