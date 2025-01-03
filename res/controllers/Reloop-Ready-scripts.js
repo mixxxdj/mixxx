@@ -45,7 +45,8 @@ class ReloopReady {
         this.components.crossfader = new components.Pot({
             midi: [0xBE, 0x08],
             group: "[Master]",
-            inKey: "crossfader"
+            inKey: "crossfader",
+            softTakeover: false, // see volume faders
         });
 
         this.components.masterVol = new components.Pot({
