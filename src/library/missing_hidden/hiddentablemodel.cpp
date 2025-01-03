@@ -99,7 +99,8 @@ TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
             Capability::Unhide |
             Capability::RemoveFromDisk |
             Capability::EditMetadata |
-            Capability::Properties;
+            Capability::Properties |
+            Capability::Sorting;
 }
 
 QString HiddenTableModel::modelKey(bool noSearch) const {
