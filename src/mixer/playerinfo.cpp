@@ -225,9 +225,9 @@ int PlayerInfo::numDecks() const {
 }
 
 int PlayerInfo::numPreviewDecks() const {
-    return static_cast<int>(m_numSamplers.get());
+    return static_cast<int>(m_numPreviewDecks.get());
 }
 
 int PlayerInfo::numSamplers() const {
-    return static_cast<int>(m_numPreviewDecks.get());
+    return static_cast<int>(m_numSamplers.get());
 }

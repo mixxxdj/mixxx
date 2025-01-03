@@ -370,8 +370,8 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
     // Incorporate all tracks loaded into decks.
     // Each track has to be done as a separate database query, in case the same
     // track is loaded into multiple decks.
-    int iDecks = PlayerInfo::instance().numDecks();
-    for (int i = 0; i < iDecks; ++i) {
+    int numDecks = PlayerInfo::instance().numDecks();
+    for (int i = 0; i < numDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
         if (pTrack) {
