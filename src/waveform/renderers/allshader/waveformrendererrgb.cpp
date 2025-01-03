@@ -22,12 +22,10 @@ WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
           m_options(options) {
 }
 
-void WaveformRendererRGB::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererRGB::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererRGB::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 

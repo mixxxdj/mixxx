@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/rgbdata.h"
@@ -10,7 +11,9 @@ namespace allshader {
 class WaveformRendererHSV;
 }
 
-class allshader::WaveformRendererHSV final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererHSV final
+        : public allshader::WaveformRendererSignalBase,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget);
 
@@ -19,6 +22,10 @@ class allshader::WaveformRendererHSV final : public allshader::WaveformRendererS
 
     void initializeGL() override;
     void paintGL() override;
+
+    rendergraph::BaseNode* asNode() override {
+        return this;
+    }
 
   private:
     mixxx::RGBShader m_shader;

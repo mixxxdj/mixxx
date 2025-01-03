@@ -2,6 +2,7 @@
 
 #ifndef QT_OPENGL_ES_2
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbshader.h"
 #include "track/track_decl.h"
 #include "util/class.h"
@@ -19,8 +20,9 @@ class WaveformRendererTextured;
 }
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured : public QObject,
-                                            public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererTextured final : public QObject,
+                                                  public allshader::WaveformRendererSignalBase,
+                                                  public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
     explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
@@ -39,6 +41,10 @@ class allshader::WaveformRendererTextured : public QObject,
     void resizeGL(int w, int h) override;
 
     void onSetTrack() override;
+
+    rendergraph::BaseNode* asNode() override {
+        return this;
+    }
 
   public slots:
     void slotWaveformUpdated();

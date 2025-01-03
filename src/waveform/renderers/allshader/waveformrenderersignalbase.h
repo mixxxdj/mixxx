@@ -3,8 +3,8 @@
 #include <QFlags>
 #include <limits>
 
+#include "rendergraph/node.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
 class WaveformWidgetRenderer;
@@ -13,8 +13,7 @@ namespace allshader {
 class WaveformRendererSignalBase;
 }
 
-class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
-                                              public allshader::WaveformRendererAbstract {
+class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase {
   public:
     enum class Option {
         None = 0b0,
@@ -24,6 +23,8 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
     };
     Q_DECLARE_FLAGS(Options, Option)
 
+    void draw(QPainter* painter, QPaintEvent* event) override final;
+
     static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};
 
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
@@ -32,14 +33,7 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
         return false;
     }
 
-    void draw(QPainter* painter, QPaintEvent* event) override {
-        Q_UNUSED(painter);
-        Q_UNUSED(event);
-    }
-
-    allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {
-        return this;
-    }
+    virtual rendergraph::BaseNode* asNode() = 0;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererSignalBase);
 };

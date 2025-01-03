@@ -11,10 +11,10 @@ WaveformRenderBackground::WaveformRenderBackground(
 }
 
 void WaveformRenderBackground::setup(const QDomNode& node,
-        const SkinContext& context) {
+        const SkinContext& skinContext) {
     m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
 
-    QString backgroundPixmapPath = context.selectString(node, "BgPixmap");
+    QString backgroundPixmapPath = skinContext.selectString(node, "BgPixmap");
     if (!backgroundPixmapPath.isEmpty()) {
         qWarning() << "WaveformView BgPixmap is not supported by "
                       "allshader::WaveformRenderBackground";
