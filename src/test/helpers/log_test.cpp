@@ -27,10 +27,10 @@ void logCapture(QtMsgType msgType, const QMessageLogContext& context, const QStr
         msgTypeStr = QStringLiteral("Warning: ") + msg;
         break;
     case QtCriticalMsg:
-        msgTypeStr = QStringLiteral("Critical:") + msg;
+        msgTypeStr = QStringLiteral("Critical: ") + msg;
         break;
     case QtFatalMsg:
-        msgTypeStr = QStringLiteral("Fatal:") + msg;
+        msgTypeStr = QStringLiteral("Fatal: ") + msg;
         break;
     }
     QString errMsg("Got an unexpected log message: \n\t");
@@ -74,10 +74,10 @@ QString LogCaptureGuard::clearExpectedGetMsg() {
                 msgTypeStr = QStringLiteral("Warning: ");
                 break;
             case QtCriticalMsg:
-                msgTypeStr = QStringLiteral("Critical:");
+                msgTypeStr = QStringLiteral("Critical: ");
                 break;
             case QtFatalMsg:
-                msgTypeStr = QStringLiteral("Fatal:");
+                msgTypeStr = QStringLiteral("Fatal: ");
                 break;
             }
             strm << "\t" << msgTypeStr + std::get<QRegularExpression>(msg).pattern() << "\n";
