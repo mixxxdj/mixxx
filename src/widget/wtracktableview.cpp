@@ -1151,9 +1151,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             moveSelectedTracks(event);
             return;
         }
-        if (event->key() == Qt::Key_Escape) {
-            clearSelection();
-            setCurrentIndex(QModelIndex());
+        if (event->modifiers().testFlag(Qt::ControlModifier) &&
+                event->modifiers().testFlag(Qt::ShiftModifier) &&
+                event->key() == Qt::Key_C) {
+            // copy the cell content as native QKeySequence::Copy would
+            QKeyEvent ke =
+                    QKeyEvent{QEvent::KeyPress, Qt::Key_C, Qt::ControlModifier};
+            QTableView::keyPressEvent(&ke);
+            return;
         }
     }
     QTableView::keyPressEvent(event);
