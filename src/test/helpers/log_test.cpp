@@ -5,8 +5,16 @@ namespace {
 QList<std::tuple<QtMsgType, QRegularExpression>> s_logMessagesExpected;
 QtMessageHandler s_oldHandler;
 
-void logCapture(QtMsgType msgType, const QMessageLogContext& context, const QString& msg) {
+void callOldHandler(QtMsgType msgType, const QMessageLogContext& context, const QString& msg) {
+    // QtMessageHandler is a typedef for a pointer to a function
     s_oldHandler(msgType, context, msg);
+}
+
+void logCapture(QtMsgType msgType, const QMessageLogContext& context, const QString& msg) {
+    // First log msg as usual
+    callOldHandler(msgType, context, msg);
+
+    // Return without failing if the msg has been expected
     for (int i = 0; i < s_logMessagesExpected.size(); i++) {
         if (std::get<QtMsgType>(s_logMessagesExpected[i]) == msgType &&
                 std::get<QRegularExpression>(s_logMessagesExpected[i])
