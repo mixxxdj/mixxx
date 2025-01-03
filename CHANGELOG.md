@@ -10,15 +10,6 @@
 * fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
 * Tooltips: fix cue mode setting location [#14045](https://github.com/mixxxdj/mixxx/pull/14045)
 
-### Experimental Features
-
-* SoundManagerIOS: Remove unsupported/redundant options [#13487](https://github.com/mixxxdj/mixxx/pull/13487)
-* ControllerRenderingEngine: Disable BGRA when targeting Wasm [#13502](https://github.com/mixxxdj/mixxx/pull/13502)
-* BaseTrackTableModel: Disable inline track editing on iOS [#13494](https://github.com/mixxxdj/mixxx/pull/13494)
-* set QQuickStyle to "basic" [#13696](https://github.com/mixxxdj/mixxx/pull/13696)
-  [#13600](https://github.com/mixxxdj/mixxx/issues/13600)
-* fix: trigger QML waveform slot at init [#13736](https://github.com/mixxxdj/mixxx/pull/13736)
-
 ### Preferences
 
 * (fix) Sound preferences: don't set m_settingsModified in update slots [#13450](https://github.com/mixxxdj/mixxx/pull/13450)
@@ -119,6 +110,15 @@
   [#11571](https://github.com/mixxxdj/mixxx/issues/11571)
 * Auto DJ: Add context menu action for enabling/disabling the Auto DJ [#13593](https://github.com/mixxxdj/mixxx/pull/13593)
 * Auto DJ Cross fader center [#13628](https://github.com/mixxxdj/mixxx/pull/13628)
+
+### Experimental Features
+
+* SoundManagerIOS: Remove unsupported/redundant options [#13487](https://github.com/mixxxdj/mixxx/pull/13487)
+* ControllerRenderingEngine: Disable BGRA when targeting Wasm [#13502](https://github.com/mixxxdj/mixxx/pull/13502)
+* BaseTrackTableModel: Disable inline track editing on iOS [#13494](https://github.com/mixxxdj/mixxx/pull/13494)
+* set QQuickStyle to "basic" [#13696](https://github.com/mixxxdj/mixxx/pull/13696)
+  [#13600](https://github.com/mixxxdj/mixxx/issues/13600)
+* fix: trigger QML waveform slot at init [#13736](https://github.com/mixxxdj/mixxx/pull/13736)
 
 ### Target support
 

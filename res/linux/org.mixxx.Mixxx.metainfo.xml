@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2024-12-27" timestamp="1735326800">
+    <release version="2.6.0" type="development" date="2024-12-29" timestamp="1735492448">
       <description>
  <p>
   Engine
@@ -114,32 +114,6 @@
   <li>
    Tooltips: fix cue mode setting location
    #14045
-  </li>
- </ul>
- <p>
-  Experimental Features
- </p>
- <ul>
-  <li>
-   SoundManagerIOS: Remove unsupported/redundant options
-   #13487
-  </li>
-  <li>
-   ControllerRenderingEngine: Disable BGRA when targeting Wasm
-   #13502
-  </li>
-  <li>
-   BaseTrackTableModel: Disable inline track editing on iOS
-   #13494
-  </li>
-  <li>
-   set QQuickStyle to "basic"
-   #13696
-   #13600
-  </li>
-  <li>
-   fix: trigger QML waveform slot at init
-   #13736
   </li>
  </ul>
  <p>
@@ -423,6 +397,32 @@
   <li>
    Auto DJ Cross fader center
    #13628
+  </li>
+ </ul>
+ <p>
+  Experimental Features
+ </p>
+ <ul>
+  <li>
+   SoundManagerIOS: Remove unsupported/redundant options
+   #13487
+  </li>
+  <li>
+   ControllerRenderingEngine: Disable BGRA when targeting Wasm
+   #13502
+  </li>
+  <li>
+   BaseTrackTableModel: Disable inline track editing on iOS
+   #13494
+  </li>
+  <li>
+   set QQuickStyle to "basic"
+   #13696
+   #13600
+  </li>
+  <li>
+   fix: trigger QML waveform slot at init
+   #13736
   </li>
  </ul>
  <p>
