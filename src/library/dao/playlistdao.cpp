@@ -253,6 +253,34 @@ bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
     return true;
 }
 
+bool PlaylistDAO::deletePlaylistsByType(
+        PlaylistDAO::HiddenType type,
+        bool unlockedOnly) {
+    QString queryStr =
+            "SELECT id FROM Playlists "
+            "WHERE hidden = :type";
+    if (unlockedOnly) {
+        queryStr.append(" AND locked = 0");
+    }
+    QSqlQuery query(m_database);
+    query.prepare(queryStr);
+    query.bindValue(":type", static_cast<int>(type));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    QStringList idStringList;
+    while (query.next()) {
+        idStringList.append(query.value(0).toString());
+    }
+    qInfo() << "Prepared deletion of" << idStringList.size()
+            << QString(unlockedOnly ? "unlocked" : QString())
+            << "playlists of type" << type;
+
+    return deletePlaylists(idStringList);
+}
+
 bool PlaylistDAO::deleteUnlockedPlaylists(QStringList&& idStringList) {
     if (idStringList.isEmpty()) {
         return false;

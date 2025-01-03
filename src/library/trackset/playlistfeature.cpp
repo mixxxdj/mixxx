@@ -33,11 +33,24 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
 
-    m_pShufflePlaylistAction = new QAction(tr("Shuffle Playlist"), this);
+    m_pShufflePlaylistAction = make_parented<QAction>(tr("Shuffle Playlist"), this);
     connect(m_pShufflePlaylistAction,
             &QAction::triggered,
             this,
             &PlaylistFeature::slotShufflePlaylist);
+
+    m_pDeleteAllPlaylists = make_parented<QAction>(tr("Delete all playlists"), this);
+    connect(m_pDeleteAllPlaylists,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotDeleteAllPlaylists);
+
+    m_pDeleteAllUnlockedPlaylists =
+            make_parented<QAction>(tr("Delete all unlocked playlists"), this);
+    connect(m_pDeleteAllUnlockedPlaylists,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
 }
 
 QVariant PlaylistFeature::title() {
@@ -48,6 +61,9 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pDeleteAllPlaylists);
+    menu.addAction(m_pDeleteAllUnlockedPlaylists);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
@@ -231,6 +247,52 @@ void PlaylistFeature::slotShufflePlaylist() {
 
         pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
     }
+}
+
+void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Do you really want to delete all unlocked playlists?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    btn = QMessageBox::question(nullptr,
+            tr("Delete all unlocked playlists"),
+            tr("Are you sure?"
+               "This operation can not be undone!"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    m_playlistDao.deletePlaylistsByType(PlaylistDAO::PLHT_NOT_HIDDEN);
+}
+
+void PlaylistFeature::slotDeleteAllPlaylists() {
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Do you really want to delete ALL playlists?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    btn = QMessageBox::question(nullptr,
+            tr("Delete all playlists"),
+            tr("Are you sure?"
+               "This operation can not be undone!"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    m_playlistDao.deletePlaylistsByType(PlaylistDAO::PLHT_NOT_HIDDEN, false);
 }
 
 /// Purpose: When inserting or removing playlists,
