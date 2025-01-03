@@ -61,26 +61,26 @@ QString LogCaptureGuard::clearExpectedGetMsg() {
     if (!s_logMessagesExpected.isEmpty()) {
         QDebug strm(&errMsg);
         strm << s_logMessagesExpected.size() << "expected log messages didn't occur: \n";
-        for (const auto& msg : std::as_const(s_logMessagesExpected)) {
+        for (const auto& [type, regex] : std::as_const(s_logMessagesExpected)) {
             QString msgTypeStr;
-            switch (std::get<QtMsgType>(msg)) {
+            switch (type) {
             case QtDebugMsg:
-                msgTypeStr = QStringLiteral("Warning: ");
+                msgTypeStr = QStringLiteral("Warning: ") + regex.pattern();
                 break;
             case QtInfoMsg:
-                msgTypeStr = QStringLiteral("Warning: ");
+                msgTypeStr = QStringLiteral("Warning: ") + regex.pattern();
                 break;
             case QtWarningMsg:
-                msgTypeStr = QStringLiteral("Warning: ");
+                msgTypeStr = QStringLiteral("Warning: ") + regex.pattern();
                 break;
             case QtCriticalMsg:
-                msgTypeStr = QStringLiteral("Critical: ");
+                msgTypeStr = QStringLiteral("Critical: ") + regex.pattern();
                 break;
             case QtFatalMsg:
-                msgTypeStr = QStringLiteral("Fatal: ");
+                msgTypeStr = QStringLiteral("Fatal: ") + regex.pattern();
                 break;
             }
-            strm << "\t" << msgTypeStr + std::get<QRegularExpression>(msg).pattern() << "\n";
+            strm << "\t" << msgTypeStr << "\n";
         }
         s_logMessagesExpected.clear();
     }
