@@ -37,6 +37,9 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
 
     static QString getId();
     static EffectManifestPointer getManifest();
+    bool isReadyForDisable() override {
+        return m_isReadyForDisable;
+    };
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
@@ -53,6 +56,8 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     QString debugString() const {
         return getId();
     }
+
+    bool m_isReadyForDisable = false;
 
     EngineEffectParameterPointer m_pDecayParameter;
     EngineEffectParameterPointer m_pBandWidthParameter;
