@@ -1680,6 +1680,7 @@ set(
   src/util/font.h
   src/util/fpclassify.h
   src/util/gitinfostore.h
+  src/util/hosttimefilter.h
   src/util/imagefiledata.h
   src/util/imageutils.h
   src/util/indexrange.h
@@ -2442,6 +2443,7 @@ add_executable(
   src/test/fileinfo_test.cpp
   src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
+  src/test/hosttimefilter_test.cpp
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp

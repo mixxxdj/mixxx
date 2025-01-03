@@ -16,6 +16,12 @@
 #include "util/trace.h"
 #include "waveform/visualplayposition.h"
 
+// HostTime clock reference type
+// note that the resolution of std::chrono::steady_clock is not guaranteed
+// to be high resolution, but it is guaranteed to be monotonic.
+// However, on all major platforms, it is high resolution enough.
+using ClockT = std::chrono::steady_clock;
+
 namespace {
 constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
@@ -41,7 +47,8 @@ SoundDeviceNetwork::SoundDeviceNetwork(
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
-          m_targetTime(0) {
+          m_targetTime(0),
+          m_hostTimeFilter(512) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
@@ -520,10 +527,14 @@ void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
 
-    // Use Ableton's HostTimeFilter class to create a smooth linear regression
+    // Use HostTimeFilter class to create a smooth linear regression
     // between absolute network time and absolute host time
-    m_absTimeWhenPrevOutputBufferReachesDac = m_hostTimeFilter.sampleTimeToHostTime(
-                                                      static_cast<double>(currentTime)) +
+
+    auto hostTime = std::chrono::duration_cast<std::chrono::microseconds>(
+            ClockT::now().time_since_epoch());
+
+    m_absTimeWhenPrevOutputBufferReachesDac = m_hostTimeFilter.calcFilteredHostTime(
+                                                      static_cast<double>(currentTime), hostTime) +
             std::chrono::microseconds(static_cast<long long>(callbackEntrytoDacSecs * 1000000));
 
     VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);

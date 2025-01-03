@@ -3,8 +3,6 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QThread>
-#include <ableton/link/HostTimeFilter.hpp>
-#include <ableton/platforms/stl/Clock.hpp>
 
 #ifdef __LINUX__
 #include <pthread.h>
@@ -16,6 +14,7 @@
 #include "engine/sidechain/networkoutputstreamworker.h"
 #include "soundio/sounddevice.h"
 #include "util/fifo.h"
+#include "util/hosttimefilter.h"
 #include "util/performancetimer.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
@@ -24,13 +23,6 @@
 class SoundManager;
 class EngineNetworkStream;
 class SoundDeviceNetworkThread;
-
-// std::chrono::steady_clock
-// -> selected by keyword 'stl' in ableton-link
-// Note that the resolution of std::chrono::steady_clock is not guaranteed
-// to be high resolution, but it is guaranteed to be monotonic.
-// However, on all major platforms, it is high resolution enough.
-using MixxxClockRef = ableton::platforms::stl::Clock;
 
 class SoundDeviceNetwork : public SoundDevice {
   public:
@@ -78,7 +70,7 @@ class SoundDeviceNetwork : public SoundDevice {
     qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
 
-    ableton::link::HostTimeFilter<MixxxClockRef> m_hostTimeFilter;
+    mixxx::HostTimeFilter m_hostTimeFilter;
 };
 
 class SoundDeviceNetworkThread : public QThread {

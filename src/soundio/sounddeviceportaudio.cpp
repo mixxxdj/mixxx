@@ -20,6 +20,12 @@
 #include "util/trace.h"
 #include "waveform/visualplayposition.h"
 
+// HostTime clock reference type
+// note that the resolution of std::chrono::steady_clock is not guaranteed
+// to be high resolution, but it is guaranteed to be monotonic.
+// However, on all major platforms, it is high resolution enough.
+using ClockT = std::chrono::steady_clock;
+
 #ifdef PA_USE_ALSA
 // for PaAlsa_EnableRealtimeScheduling
 #include <pa_linux_alsa.h>
@@ -99,8 +105,9 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_invalidTimeInfoCount(0),
           m_lastCallbackEntrytoDacSecs(0),
           m_callbackResult(paAbort),
+          m_hostTimeFilter(512),
           m_cummulatedBufferTime(0),
-          m_meanOutputLatency(MovingInterquartileMean(501)) {
+          m_meanOutputLatency(MovingInterquartileMean(512)) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
@@ -1090,14 +1097,16 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
             - timeInfo->currentTime;
     double bufferSizeSec = framesPerBuffer / m_sampleRate.toDouble();
 
-    // Use Ableton's HostTimeFilter class to create a smooth linear regression
+    // Use HostTimeFilter class to create a smooth linear regression
     // between absolute sound card time and absolute host time
     PaTime soundCardTimeNow = Pa_GetStreamTime(
             m_pStream); // There is a delay & jitter to timeInfo->currentTime
 
     m_cummulatedBufferTime += bufferSizeSec;
-    auto filteredHostTimeNow =
-            m_hostTimeFilter.sampleTimeToHostTime(m_cummulatedBufferTime);
+    auto hostTime = std::chrono::duration_cast<std::chrono::microseconds>(
+            ClockT::now().time_since_epoch());
+    auto filteredHostTimeNow = m_hostTimeFilter.calcFilteredHostTime(
+            m_cummulatedBufferTime, hostTime);
 
     qWarning() << "Pa_GetStreamTime: "
                << static_cast<long long>(soundCardTimeNow * 1000000)
