@@ -195,8 +195,8 @@ TEST_F(StemControlTest, Volume) {
     m_pStem4Volume->set(0.0);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemVolumeControlSilence"));
 
@@ -205,8 +205,8 @@ TEST_F(StemControlTest, Volume) {
     m_pStem1Volume->set(1.0);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemVolumeControlDrumOnly"));
 
@@ -215,8 +215,8 @@ TEST_F(StemControlTest, Volume) {
     m_pStem2Volume->set(0.8);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemVolumeControlDrumAndBass"));
 
@@ -227,8 +227,8 @@ TEST_F(StemControlTest, Volume) {
     m_pStem4Volume->set(0.4);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemVolumeControlFull"));
 }
@@ -282,8 +282,8 @@ TEST_F(StemControlTest, Mute) {
     m_pStem4Mute->set(1.0);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemVolumeControlSilence")); // Same than volume test
 
@@ -292,8 +292,8 @@ TEST_F(StemControlTest, Mute) {
     m_pStem1Mute->set(0.0);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemVolumeControlDrumOnly")); // Same than volume test
 
@@ -302,8 +302,8 @@ TEST_F(StemControlTest, Mute) {
     m_pStem2Mute->set(0.0);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemMuteControlDrumAndBass"));
 
@@ -313,8 +313,8 @@ TEST_F(StemControlTest, Mute) {
     m_pStem4Mute->set(0.0);
 
     // Proceed the buffer a first time to proceed the ramping gain
-    m_pEngineMixer->process(kProcessBufferSize);
-    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
+    m_pEngineMixer->process(kProcessBufferSize, std::chrono::microseconds(0));
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemMuteControlFull"));
 }
