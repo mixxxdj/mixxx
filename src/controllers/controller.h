@@ -92,6 +92,7 @@ class Controller : public QObject {
         VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
             return nullptr;
         }
+        DEBUG_ASSERT(pMapping.use_count() == 2);
         return pDowncastedMapping;
     }
 

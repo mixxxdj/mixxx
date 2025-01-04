@@ -690,9 +690,13 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
 std::shared_ptr<LegacyMidiControllerMapping> MidiController::getSharedMapping() const {
 #ifdef __cpp_lib_atomic_shared_ptr
     // Used Spinlock
-    return m_pMapping.load(std::memory_order_relaxed);
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping =
+            m_pMapping.load(std::memory_order_relaxed);
 #else
     // Uses Mutex
-    return std::atomic_load_explicit(&m_pMapping, std::memory_order_relaxed);
+    std::shared_ptr<LegacyMidiControllerMapping> pMapping =
+            std::atomic_load_explicit(&m_pMapping, std::memory_order_relaxed);
 #endif
+    DEBUG_ASSERT(!pMapping || pMapping.use_count() == 2);
+    return pMapping;
 }
