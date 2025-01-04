@@ -77,6 +77,21 @@ void ReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
 }
 
+float averageSampleDifferenceEnergy(const SINT samplesPerBuffer,
+        const CSAMPLE* buffer_in,
+        const CSAMPLE* buffer_out,
+        const SINT tailCheckLength) {
+    float differenceSum = 0.0f;
+    for (SINT i = samplesPerBuffer - tailCheckLength;
+            i < samplesPerBuffer;
+            ++i) {
+        differenceSum += fabsf(buffer_out[i] - buffer_in[i]);
+    }
+    // Calculate average of the differences
+    const float averageDifference = differenceSum / tailCheckLength;
+    return averageDifference;
+}
+
 void ReverbEffect::processChannel(
         ReverbGroupState* pState,
         const CSAMPLE* pInput,
@@ -113,20 +128,14 @@ void ReverbEffect::processChannel(
             pState->sendPrevious);
 
     if (enableState == EffectEnableState::Disabling) {
-        // Function to determine if reverb tail is gone
         // Calculate absolute difference between wet and dry buffers for the tail
-        float differenceSum = 0.0f;
         const SINT tailCheckLength = engineParameters.samplesPerBuffer() / 4;
-        for (SINT i = engineParameters.samplesPerBuffer() - tailCheckLength;
-                i < engineParameters.samplesPerBuffer();
-                ++i) {
-            differenceSum += fabsf(pOutput[i] - pInput[i]);
-        }
-        // Calculate average of the differences
-        const float averageDifference = differenceSum / tailCheckLength;
-        constexpr float threshold = 0.002f;
-        const bool reverbTailFullyFaded = averageDifference < threshold;
-        if (reverbTailFullyFaded) {
+        const float averageDifference = averageSampleDifferenceEnergy(
+                engineParameters.samplesPerBuffer(),
+                pInput,
+                pOutput,
+                tailCheckLength);
+        if (averageDifference < 0.002f) {
             m_isReadyForDisable = true;
         }
     }

@@ -118,6 +118,17 @@ void EchoEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
+float averageSampleEnergy(SINT delayBufferSize, mixxx::SampleBuffer const& delay_buffer) {
+    float differenceSum = 0.0f;
+    for (SINT i = 0; i < delayBufferSize;
+            i = i + 16) { // We don't need to consider *all* samples,
+                          // assuming 44.1kHz sample-rate this sums every
+                          // ~1/3ms
+        differenceSum += fabsf(delay_buffer[i]);
+    }
+    return differenceSum;
+}
+
 void EchoEffect::processChannel(
         EchoGroupState* pGroupState,
         const CSAMPLE* pInput,
@@ -244,22 +255,13 @@ void EchoEffect::processChannel(
     }
     pGroupState->prev_send = send_current;
     if (enableState == EffectEnableState::Disabling) {
-        // Function to determine if echo tail is gone
-        // Calculate absolute if the delayline-buffer is approx. zero/empty.
         pGroupState->prev_send = 0;
-        float differenceSum = 0.0f;
-        for (SINT i = 0; i < pGroupState->delay_buf.size();
-                i = i + 16) { // We don't need to consider *all* samples,
-                              // assuming 44.1kHz sample-rate this sums every
-                              // ~1/3ms
-            differenceSum += fabsf(pGroupState->delay_buf[i]);
-        }
-        // Calculate average of the differences
-        constexpr float threshold = 0.00001f;
-        const bool echoTailFullyFaded = differenceSum < threshold;
-        if (echoTailFullyFaded) {
+        // Calculate if the delayline-buffer is approx. zero/empty.
+        const float avgSampleEnergy = averageSampleEnergy(
+                pGroupState->delay_buf.size(), pGroupState->delay_buf);
+        // If echo tail fully faded
+        if (avgSampleEnergy < 0.00001f) {
             m_isReadyForDisable = true;
-
             pGroupState->delay_buf.clear();
         }
     }

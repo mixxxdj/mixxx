@@ -66,3 +66,8 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
+
+float averageSampleDifferenceEnergy(const SINT samplesPerBuffer,
+        const CSAMPLE* buffer_in,
+        const CSAMPLE* buffer_out,
+        const SINT tailCheckLength);
