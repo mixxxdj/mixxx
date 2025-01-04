@@ -213,10 +213,10 @@ class ReloopReady {
     static makeButtonDownInputHandler(handler) {
         return function(channel, control, value, status, _group) {
             this.isPressed = this.isPress(channel, control, value, status);
-            this.trigger();
             if (this.isPressed) {
                 handler.call(this, value);
             }
+            this.trigger();
         };
     }
     static makeIsPressedTrigger() {
@@ -1092,12 +1092,9 @@ ReloopReady.Deck = class extends components.Deck {
                 // prevent binding to slip_enabled when unshifted
                 // (otherwise vinyl led would glitch when a new track is loaded).
                 this.inKey = this.outKey = undefined;
-                this.input = function(channel, control, value, status, _group) {
-                    if (this.isPress(channel, control, value, status)) {
-                        thisDeck.jog.vinylMode = !thisDeck.jog.vinylMode;
-                        this.output(thisDeck.jog.vinylMode);
-                    }
-                };
+                this.input = ReloopReady.makeButtonDownInputHandler(function() {
+                    thisDeck.jog.vinylMode = !thisDeck.jog.vinylMode;
+                });
             },
             trigger: function() {
                 this.output(thisDeck.jog.vinylMode);
