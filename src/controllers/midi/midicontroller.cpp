@@ -20,14 +20,15 @@ const QString kMakeInputHandlerError = QStringLiteral(
         "Please pass a function and make sure that your code contains no syntax errors.");
 
 MidiInputHandleJSProxy::MidiInputHandleJSProxy(
-        const std::shared_ptr<LegacyMidiControllerMapping> mapping,
+        MidiController* pMidiController,
         const MidiInputMapping& inputMapping)
-        : m_mapping(mapping), m_inputMapping(inputMapping) {
+        : m_pMidiController(pMidiController),
+          m_inputMapping(inputMapping) {
 }
 
 bool MidiInputHandleJSProxy::disconnect() {
     // We want to remove only this mapping when disconnecting
-    return m_mapping->removeInputMapping(m_inputMapping.key.key, m_inputMapping);
+    return m_pMidiController->removeInputMapping(m_inputMapping.key.key, m_inputMapping);
 }
 
 MidiController::MidiController(const QString& deviceName)
@@ -655,5 +656,13 @@ QJSValue MidiController::makeInputHandler(unsigned char status,
             std::make_shared<QJSValue>(scriptCode));
 
     m_pMapping->addInputMapping(inputMapping.key.key, inputMapping);
-    return pJsEngine->newQObject(new MidiInputHandleJSProxy(m_pMapping, inputMapping));
+    // The returned object can be used for disconnecting like this:
+    // var connection = midi.makeInputHandler();
+    // connection.disconnect();
+    return pJsEngine->newQObject(new MidiInputHandleJSProxy(this, inputMapping));
+}
+
+bool MidiController::removeInputMapping(
+        uint16_t key, const MidiInputMapping& mapping) {
+    return m_pMapping->removeInputMapping(key, mapping);
 }

@@ -9,17 +9,18 @@
 #include "controllers/softtakeover.h"
 
 class MidiOutputHandler;
+class MidiController;
 
 class MidiInputHandleJSProxy final : public QObject {
     Q_OBJECT
   public:
     MidiInputHandleJSProxy(
-            const std::shared_ptr<LegacyMidiControllerMapping> mapping,
+            MidiController* pMidiController,
             const MidiInputMapping& inputMapping);
     Q_INVOKABLE bool disconnect();
 
   protected:
-    std::shared_ptr<LegacyMidiControllerMapping> m_mapping;
+    MidiController* m_pMidiController;
     MidiInputMapping m_inputMapping;
 };
 
@@ -50,6 +51,7 @@ class MidiController : public Controller {
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
+    bool removeInputMapping(uint16_t key, const MidiInputMapping& mapping);
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
