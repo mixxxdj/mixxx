@@ -311,7 +311,7 @@ void CrateFeature::oldactivateChild(const QModelIndex& index) {
     m_lastRightClickedIndex = QModelIndex();
     m_prevSiblingCrate = CrateId();
     emit saveModelState();
-    QList<QVariantMap> groupedCrates = m_crateTableModel.getGroupedCrates();
+    // QList<QVariantMap> groupedCrates = m_crateTableModel.getGroupedCrates();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
     emit enableCoverArtDisplay(true);
@@ -1030,12 +1030,13 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
 
         QMap<QString, TreeItem*> groupItems;
         std::vector<std::unique_ptr<TreeItem>> modelRows;
-        int selectedRow = -1;
+        int selectedRow;
+        // int selectedRow = -1;
 
         for (const QVariantMap& crateData : groupedCrates) {
             const QString& groupName = crateData["group_name"].toString();
             CrateId crateId(crateData["crate_id"]);
-            const QString& crateName = crateData["crate_name"].toString();
+            // const QString& crateName = crateData["crate_name"].toString();
 
             CrateSummary crateSummary;
             if (!m_pTrackCollection->crates().readCrateSummaryById(crateId, &crateSummary)) {
@@ -1320,7 +1321,7 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
                 });
 
         if (updatedGroup != groupedCrates.end()) {
-            const QString& groupName = (*updatedGroup)["group_name"].toString();
+            // const QString& groupName = (*updatedGroup)["group_name"].toString();
             QModelIndex index = indexFromCrateId(crateId);
             if (index.isValid()) {
                 // Update the existing item
