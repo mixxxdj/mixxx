@@ -49,6 +49,17 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotPopulateQuickEffectSelectors();
 
     void slotUpdateXFader();
+    void updateXFaderWidgets();
+
+    void slotXFaderReverseBoxToggled();
+    void slotXFaderModeBoxToggled();
+    void slotXFaderSliderChanged();
+
+    void slotXFaderCurveControlChanged(double v);
+    void slotXFaderCalibrationControlChanged(double v);
+    void slotXFaderModeControlChanged(double v);
+    void slotXFaderReverseControlChanged(double v);
+
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
 
@@ -83,12 +94,12 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     // X-fader values
     int m_xFaderMode;
-    double m_xFaderTransform, m_xFaderCal;
+    double m_xFaderCurve, m_xFaderCal;
 
     parented_ptr<ControlProxy> m_xfModeCO;
     parented_ptr<ControlProxy> m_xfCurveCO;
     parented_ptr<ControlProxy> m_xfReverseCO;
-    PollingControlProxy m_xfCalibrationCO;
+    parented_ptr<ControlProxy> m_xfCalibrationCO;
     PollingControlProxy m_crossfader;
 
     bool m_xFaderReverse;
