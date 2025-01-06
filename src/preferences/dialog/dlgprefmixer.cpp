@@ -3,6 +3,7 @@
 #include <QButtonGroup>
 #include <QPainterPath>
 #include <QStandardItemModel>
+#include <QTimer>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -113,14 +114,40 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderXFader,
             QOverload<int>::of(&QSlider::valueChanged),
             this,
-            &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdateXFader);
+            &DlgPrefMixer::slotXFaderWidgetsChanged);
+    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotXFaderWidgetsChanged);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotXFaderWidgetsChanged);
+    connect(radioButtonAdditive,
+            &QRadioButton::clicked,
+            this,
+            &DlgPrefMixer::slotXFaderWidgetsChanged);
     connect(radioButtonConstantPower,
             &QRadioButton::clicked,
             this,
-            &DlgPrefMixer::slotUpdateXFader);
+            &DlgPrefMixer::slotXFaderWidgetsChanged);
+    connect(checkBoxReverse,
+            // TODO deprecated after Qt 6.9, replace with checkStateChanged(Qt::CheckState)
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefMixer::slotXFaderReverseBoxToggled);
+
+    m_xfModeCO->connectValueChanged(this, &DlgPrefMixer::slotXFaderControlChanged);
+    m_xfCurveCO->connectValueChanged(this, &DlgPrefMixer::slotXFaderControlChanged);
+    m_xfReverseCO->connectValueChanged(this, &DlgPrefMixer::slotXFaderControlChanged);
+    // When e.g. controller mappings rapidly set multiple xfader controls we may
+    // get concurrent calls of slotUpdateXFaderFromConfigOrControls().
+    // In slotXFaderControlChanged() we start a timer to avoid that, only the last
+    // calls th update method.
+    connect(&m_xfaderControlUpdateTimer,
+            &QTimer::timeout,
+            this,
+            [this]() {
+                slotUpdateXFaderFromConfigOrControls();
+                // store new settings in config
+                applyXFader();
+            });
+    m_xfaderControlUpdateTimer.setSingleShot(true);
+    m_xfaderControlUpdateTimer.setInterval(200);
 
     // Don't allow the xfader graph getting keyboard focus
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
@@ -733,28 +760,7 @@ void DlgPrefMixer::storeEqShelves() {
 }
 
 void DlgPrefMixer::slotUpdate() {
-    // xfader //////////////////////////////////////////////////////////////////
-    m_xFaderTransform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
-
-    // Range SliderXFader 0 .. 100
-    double sliderVal = RescalerUtils::oneByXToLinear(
-            m_xFaderTransform - EngineXfader::kTransformMin + 1,
-            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
-            SliderXFader->minimum(),
-            SliderXFader->maximum());
-    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
-
-    m_xFaderMode = m_pConfig->getValueString(kXfaderModeKey).toInt();
-    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
-        radioButtonConstantPower->setChecked(true);
-    } else {
-        radioButtonAdditive->setChecked(true);
-    }
-
-    m_xFaderReverse = m_pConfig->getValueString(kXfaderReverseKey).toInt() == 1;
-    checkBoxReverse->setChecked(m_xFaderReverse);
-
-    slotUpdateXFader();
+    slotUpdateXFaderFromConfigOrControls();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
     QString eqsOnly = m_pConfig->getValueString(kEqsOnlyKey);
@@ -818,6 +824,46 @@ void DlgPrefMixer::slotUpdate() {
     }
 
     updateMainEQ();
+}
+
+void DlgPrefMixer::slotUpdateXFaderFromConfigOrControls() {
+    // Read values from config only on first update if the xfader curve controls
+    // are still at their default values. This should detect if controller mappings
+    // (or skin attributes) have changed the xfader controls.
+    // Else and on later calls, always read the current state from controls.
+    if (m_initializing &&
+            m_xfCurveCO->get() == m_xfCurveCO->getDefault() &&
+            m_xfCalibrationCO.get() == m_xfCalibrationCO.getDefault() &&
+            m_xfModeCO->get() == m_xfModeCO->getDefault() &&
+            m_xfReverseCO->get() == m_xfReverseCO->getDefault()) {
+        m_xFaderTransform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
+        m_xFaderMode = m_pConfig->getValueString(kXfaderModeKey).toInt();
+        m_xFaderReverse = m_pConfig->getValueString(kXfaderReverseKey).toInt() == 1;
+    } else {
+        // Update xfader from controls
+        m_xFaderTransform = m_xfCurveCO->get();
+        m_xFaderMode = static_cast<int>(m_xfModeCO->get());
+        m_xFaderReverse = static_cast<bool>(m_xfReverseCO->get());
+    }
+
+    checkBoxReverse->setChecked(m_xFaderReverse);
+
+    // Range SliderXFader 0 .. 100
+    double sliderVal = RescalerUtils::oneByXToLinear(
+            m_xFaderTransform - EngineXfader::kTransformMin + 1,
+            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
+            SliderXFader->minimum(),
+            SliderXFader->maximum());
+    // This triggers slotXFaderWidgetsChanged() which calculates
+    // m_xFaderCal and calls drawXfaderDisplay()
+    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
+
+    // These also trigger slotXFaderWidgetsChanged()
+    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
+        radioButtonConstantPower->setChecked(true);
+    } else {
+        radioButtonAdditive->setChecked(true);
+    }
 }
 
 void DlgPrefMixer::drawXfaderDisplay() {
@@ -884,7 +930,7 @@ void DlgPrefMixer::drawXfaderDisplay() {
                 m_xFaderTransform,
                 m_xFaderCal,
                 m_xFaderMode,
-                checkBoxReverse->isChecked(),
+                m_xFaderReverse,
                 &gainL,
                 &gainR);
 
@@ -911,13 +957,16 @@ void DlgPrefMixer::drawXfaderDisplay() {
     graphicsViewXfader->repaint();
 }
 
-void DlgPrefMixer::slotUpdateXFader() {
-    if (radioButtonAdditive->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
-    } else {
-        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
-    }
+void DlgPrefMixer::slotXFaderControlChanged() {
+    // calls slotUpdateXFaderFromConfigOrControls() on timeout
+    m_xfaderControlUpdateTimer.start();
+}
 
+void DlgPrefMixer::slotXFaderReverseBoxToggled() {
+    m_xFaderReverse = checkBoxReverse->isChecked();
+}
+
+void DlgPrefMixer::slotXFaderWidgetsChanged() {
     // m_xFaderTransform is in the range of 1 to 1000 while 50 % slider results
     // to ~2, which represents a medium rounded fader curve.
     double transform = RescalerUtils::linearToOneByX(

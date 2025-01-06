@@ -13,6 +13,7 @@
 class QComboBox;
 class QWidget;
 class EffectsManager;
+class QTimer;
 
 class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT
@@ -48,7 +49,11 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotPopulateDeckEqSelectors();
     void slotPopulateQuickEffectSelectors();
 
-    void slotUpdateXFader();
+    void slotUpdateXFaderFromConfigOrControls();
+    void slotXFaderReverseBoxToggled();
+    void slotXFaderControlChanged();
+    void slotXFaderWidgetsChanged();
+
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
 
@@ -127,4 +132,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;
+
+    QTimer m_xfaderControlUpdateTimer;
 };
