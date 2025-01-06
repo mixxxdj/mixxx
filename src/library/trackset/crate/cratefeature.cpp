@@ -1030,7 +1030,6 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
 
         QMap<QString, TreeItem*> groupItems;
         std::vector<std::unique_ptr<TreeItem>> modelRows;
-        int selectedRow;
         // int selectedRow = -1;
 
         for (const QVariantMap& crateData : groupedCrates) {
@@ -1073,18 +1072,18 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
                     qDebug() << "[GROUPEDCRATESFEATURE] Added CrateId to group:"
                              << crateId << "Group:" << groupName;
                 }
-                if (selectedCrateId == crateId) {
-                    selectedRow = static_cast<int>(modelRows.size()) - 1;
-                }
+                // if (selectedCrateId == crateId) {
+                //    selectedRow = static_cast<int>(modelRows.size()) - 1;
+                // }
             } else {
                 auto newCrate = std::make_unique<TreeItem>(
                         crateSummaryName, crateId.toVariant().toInt());
                 newCrate->setFullPath(crateSummaryName);
                 updateTreeItemForCrateSummary(newCrate.get(), crateSummary);
 
-                if (selectedCrateId == crateId) {
-                    selectedRow = static_cast<int>(modelRows.size());
-                }
+                // if (selectedCrateId == crateId) {
+                //    selectedRow = static_cast<int>(modelRows.size());
+                //}
                 modelRows.push_back(std::move(newCrate));
             }
         }
