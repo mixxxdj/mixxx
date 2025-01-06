@@ -42,6 +42,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void deletePlaylist(const int playlistId);
     // Delete a set of playlists.
     bool deletePlaylists(const QStringList& idStringList);
+    bool deletePlaylistsByType(PlaylistDAO::HiddenType type, bool unlockedOnly = true);
     bool deleteUnlockedPlaylists(QStringList&& idStringList);
     /// Delete Playlists with fewer entries then "minNumberOfTracks"
     /// Needs to be called inside a transaction.
@@ -52,6 +53,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
     bool setPlaylistLocked(const int playlistId, const bool locked);
+    int setPlaylistsLockedByType(const HiddenType hidden, const bool lock);
     int setPlaylistsLocked(const QSet<int>& playlistIds, const bool lock);
     // Find out the state of a playlist lock
     bool isPlaylistLocked(const int playlistId) const;
@@ -63,6 +65,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     unsigned int playlistCount() const;
     // Get all playlist ids and names of a specific type
     QList<QPair<int, QString>> getPlaylists(const HiddenType hidden) const;
+    QList<QPair<int, QString>> getUnlockedPlaylists(const HiddenType hidden) const;
     // Find out the name of the playlist at the given Id
     QString getPlaylistName(const int playlistId) const;
     // Get the playlist id by its name
