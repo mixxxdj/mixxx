@@ -1279,7 +1279,6 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             // MixxxMianWindow,  e.g. DlgPeferences. In such a case event->oldState()
             // will be Qt::WindowNoState which is wrong anyway, so there is nothing
             // to do internally.
-            qWarning() << "$ WindowStateChange IGNORE";
             return QMainWindow::eventFilter(obj, event);
         }
         m_prevState = windowState();

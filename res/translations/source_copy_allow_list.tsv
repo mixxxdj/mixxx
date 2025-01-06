@@ -259,8 +259,6 @@ nl,sv	Center 1
 nl	Label...
 sn	Super Knob
 ca,es*,gl,ro	Control
-it	Jog Wheel / Select Knob
-ca,it	Jog Wheel / Select Knob
 nl	Volume Fader
 nl	Mid EQ
 nl	Loop %1 Beats
@@ -288,7 +286,7 @@ lb,nl	Crossfader Curve
 nb,nn,ro,sv	Artist
 nl	Cover Art
 nl	Scan
-nl,pt_BR,pt_PT	Item
+nl,pt*	Item
 ca	Controls
 ca,de,fr,nb,oc,pl,ro,sl,sv	Format
 ca,fr,nl,ro,sv	Permanent
@@ -363,10 +361,10 @@ es*,fr,it,nl,pt*	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
-fr	 pt
+fr,it,nl	 pt
 it	Password
 nl,sv,vi	Equalizers
-nl	Controllers
+nl,it	Controllers
 nl	Audio Buffer
 nl,sv	OpenGL Direct Rendering
 nl	Hard Clip
@@ -414,7 +412,7 @@ de,et,it,nl,pl,pt_BR,tr	Host
 de	Controller Name
 de	Name:
 de	Mappings
-de,it	Multi-Sampling
+de,it,nl	Multi-Sampling
 de,sv	Version:
 de,lb,oc,pt_BR,pt_PT	Linear
 de,nl,vi	Tags
@@ -429,6 +427,13 @@ de,nl	Track
 de,nl	Tracks
 it	legacy
 nl	Waveform type
-es*	Knee (dBFS)
-es*	Knee
-es*	Release
+es*,it,nl	Knee (dBFS)
+es*,it,nl	Knee
+es*,nl	Release
+it,nl	Auto Makeup Gain
+it,nl	Makeup
+it	controllers
+nl	&Reset
+nl	Compressor
+nl	Release (ms)
+it	Tempo Tap

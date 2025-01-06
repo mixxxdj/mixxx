@@ -424,6 +424,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     if (!pMapping) {
         closeController(pController);
         // Unset the controller mapping for this controller
+        pController->setMapping(nullptr);
         m_pConfig->remove(key);
         emit mappingApplied(false);
         return;
