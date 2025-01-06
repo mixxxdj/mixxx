@@ -40,10 +40,14 @@ class CrateFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+    QString fullPathFromIndex(const QModelIndex& index) const;
+    void reviewGroupCrateIds(const QString& fullPath, const QList<CrateId>& crateIds);
 
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+    void oldactivateChild(const QModelIndex& index);
+    // void oldactivateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
@@ -77,6 +81,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
   private:
+    QMap<QString, QList<CrateId>> groupCrateIds;
     void initActions();
     void connectLibrary(Library* pLibrary);
     void connectTrackCollection();
@@ -90,7 +95,9 @@ class CrateFeature : public BaseTrackSetFeature {
             const CrateSummary& crateSummary) const;
 
     QModelIndex rebuildChildModel(CrateId selectedCrateId = CrateId());
+    QModelIndex oldrebuildChildModel(CrateId selectedCrateId = CrateId());
     void updateChildModel(const QSet<CrateId>& updatedCrateIds);
+    void oldupdateChildModel(const QSet<CrateId>& updatedCrateIds);
 
     CrateId crateIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromCrateId(CrateId crateId) const;
@@ -132,4 +139,6 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    QString groupNameFromIndex(const QModelIndex& index) const;
+    void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
 };
