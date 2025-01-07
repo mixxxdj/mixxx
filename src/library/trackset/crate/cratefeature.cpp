@@ -1023,7 +1023,8 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedCratesLength")) == 0) {
         // Fixed prefix length
         QMap<QString, int> groupCounts;
-        for (const auto& crateData : groupedCrates) {
+        for (int i = 0; i < groupedCrates.size(); ++i) {
+            const auto& crateData = groupedCrates[i];        
             const QString& groupName = crateData["group_name"].toString();
             groupCounts[groupName]++;
         }
@@ -1032,7 +1033,8 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
         std::vector<std::unique_ptr<TreeItem>> modelRows;
         // int selectedRow = -1;
 
-        for (const auto& crateData : groupedCrates) {
+        for (int i = 0; i < groupedCrates.size(); ++i) {
+            const auto& crateData = groupedCrates[i];
             const QString& groupName = crateData["group_name"].toString();
             CrateId crateId(crateData["crate_id"]);
             // const QString& crateName = crateData["crate_name"].toString();
@@ -1094,7 +1096,8 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     } else {
         // variable group prefix length with mask
         QMap<QString, QList<QVariantMap>> topLevelGroups;
-        for (const auto& crateData : groupedCrates) {
+        for (int i = 0; i < groupedCrates.size(); ++i) {
+            const auto& crateData = groupedCrates[i];
             const QString& groupName = crateData["group_name"].toString();
             const QString& topGroup = groupName.section(delimiter, 0, 0);
             topLevelGroups[topGroup].append(crateData);
@@ -1299,7 +1302,8 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
     QList<QVariantMap> groupedCrates = m_crateTableModel.getGroupedCrates();
 
     QMap<QString, QList<QVariantMap>> groupedCratesMap;
-    for (const auto& crateData : groupedCrates) {
+    for (int i = 0; i < groupedCrates.size(); ++i) {
+        const auto& crateData = groupedCrates[i];
         groupedCratesMap[crateData["group_name"].toString()].append(crateData);
     }
 
