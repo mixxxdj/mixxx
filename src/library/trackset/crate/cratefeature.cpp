@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
+#include <QStandardPaths>
 #include <algorithm>
 #include <vector>
 

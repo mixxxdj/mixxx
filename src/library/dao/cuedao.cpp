@@ -1,5 +1,6 @@
 #include "library/dao/cuedao.h"
 
+#include <QThread>
 #include <QVariant>
 #include <QtDebug>
 
@@ -158,14 +159,15 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     if (cue->getId().isValid()) {
         // Update cue
         query.prepare(QStringLiteral("UPDATE " CUE_TABLE " SET "
-                        "track_id=:track_id,"
-                        "type=:type,"
-                        "position=:position,"
-                        "length=:length,"
-                        "hotcue=:hotcue,"
-                        "label=:label,"
-                        "color=:color"
-                        " WHERE id=:id"));
+                                     "track_id=:track_id,"
+                                     "type=:type,"
+                                     "position=:position,"
+                                     "length=:length,"
+                                     "hotcue=:hotcue,"
+                                     "label=:label,"
+                                     "color=:color"
+                                     " WHERE id=:id"));
+
         query.bindValue(":id", cue->getId().toVariant());
     } else {
         // New cue

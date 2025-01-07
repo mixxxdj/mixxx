@@ -7,6 +7,7 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -80,8 +81,6 @@ BulkController::BulkController(libusb_context* context,
     m_manufacturer = get_string(handle, desc->iManufacturer);
     m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
-
-    setDeviceCategory(tr("USB Controller"));
 
     setInputDevice(true);
     setOutputDevice(true);
@@ -264,13 +263,13 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
     sendBytes(temp);
 }
 
-void BulkController::sendBytes(const QByteArray& data) {
+bool BulkController::sendBytes(const QByteArray& data) {
     VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
             m_pMapping->getDeviceDirection() &
                     LegacyControllerMapping::DeviceDirection::Outgoing) {
         qDebug() << "The mapping for the bulk device" << getName()
                  << "doesn't require sending data. Ignoring sending request.";
-        return;
+        return false;
     }
 
     int ret;
@@ -287,8 +286,10 @@ void BulkController::sendBytes(const QByteArray& data) {
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
                                << "serial #" << m_sUID << "-" << libusb_error_name(ret);
+        return false;
     } else if (CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(m_logOutput) << transferred << "bytes sent to" << getName()
                              << "serial #" << m_sUID;
     }
+    return true;
 }

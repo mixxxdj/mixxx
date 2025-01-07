@@ -26,8 +26,40 @@ class MockMidiController : public MidiController {
             void(unsigned char status,
                     unsigned char byte1,
                     unsigned char byte2));
-    MOCK_METHOD1(sendBytes, void(const QByteArray& data));
+    MOCK_METHOD1(sendBytes, bool(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
+
+    QString getVendorString() const override {
+        static const QString manufacturer = "Test Manufacturer";
+        return manufacturer;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+
+    QString getProductString() const override {
+        static const QString product = "Test Product";
+        return product;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+
+    QString getSerialNumber() const override {
+        static const QString serialNumber = "123456789";
+        return serialNumber;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
 };
 
 class MidiControllerTest : public MixxxTest {

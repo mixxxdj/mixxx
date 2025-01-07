@@ -4,13 +4,28 @@
 
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
-#include "controllers/hid/hiddevice.h"
+#include "controllers/hid/hidusagetables.h"
 #include "moc_hidenumerator.cpp"
 #include "util/cmdlineargs.h"
 
-namespace {
+namespace mixxx {
 
-bool recognizeDevice(const hid_device_info& device_info) {
+namespace hid {
+
+constexpr unsigned short kGenericDesktopUsagePage = 0x01;
+
+constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
+constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;
+
+// Apple has two two different vendor IDs which are used for different devices.
+constexpr unsigned short kAppleVendorId = 0x5ac;
+constexpr unsigned short kAppleIncVendorId = 0x004c;
+
+} // namespace hid
+
+} // namespace mixxx
+
+bool HidEnumerator::recognizeDevice(const hid_device_info& device_info) const {
     // Skip mice and keyboards. Users can accidentally disable their mouse
     // and/or keyboard by enabling them as HID controllers in Mixxx.
     // https://github.com/mixxxdj/mixxx/issues/10498
@@ -66,8 +81,6 @@ bool recognizeDevice(const hid_device_info& device_info) {
     }
     return true;
 }
-
-} // namespace
 
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
