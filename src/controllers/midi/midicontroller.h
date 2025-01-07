@@ -110,7 +110,7 @@ class MidiController : public Controller {
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
 

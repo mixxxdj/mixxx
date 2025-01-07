@@ -285,7 +285,7 @@ void ControllerManager::slotSetUpDevices() {
         pMapping->loadSettings(m_pConfig, pController->getName());
 
         // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-        pController->setMapping(pMapping->clone());
+        pController->setMapping(std::move(pMapping));
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -439,7 +439,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     m_pConfig->set(key, pMapping->filePath());
 
     // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-    pController->setMapping(pMapping->clone());
+    pController->setMapping(std::move(pMapping));
 
     if (bEnabled) {
         openController(pController);

@@ -40,8 +40,6 @@ class LegacyControllerMapping {
     }
     virtual ~LegacyControllerMapping() = default;
 
-    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
-
     struct ScriptFileInfo {
         ScriptFileInfo()
                 : builtin(false) {
