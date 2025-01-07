@@ -1024,7 +1024,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
         // Fixed prefix length
         QMap<QString, int> groupCounts;
         for (int i = 0; i < groupedCrates.size(); ++i) {
-            const auto& crateData = groupedCrates[i];        
+            const auto& crateData = groupedCrates[i];
             const QString& groupName = crateData["group_name"].toString();
             groupCounts[groupName]++;
         }
