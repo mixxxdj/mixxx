@@ -12,10 +12,6 @@ class LegacyMidiControllerMapping : public LegacyControllerMapping {
     LegacyMidiControllerMapping(){};
     virtual ~LegacyMidiControllerMapping(){};
 
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        return std::make_shared<LegacyMidiControllerMapping>(*this);
-    }
-
     bool saveMapping(const QString& fileName) const override;
 
     virtual bool isMappable() const override;
