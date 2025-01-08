@@ -3,16 +3,9 @@
 #include <QPainter>
 
 #include "util/colorcomponents.h"
-#include "util/logger.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformwidgetfactory.h"
-
-namespace {
-
-const mixxx::Logger kLogger("WaveformOverviewRenderer");
-
-} // anonymous namespace
 
 QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,

@@ -44,11 +44,6 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
           m_pCache(OverviewCache::instance()),
           m_type(mixxx::OverviewType::RGB),
           m_inhibitLazyLoading(false) {
-    VERIFY_OR_DEBUG_ASSERT(m_pCache) {
-        kLogger.warning() << "Caching of overviews is not available";
-        return;
-    }
-
     WLibrary* pLibrary = findLibraryWidgetParent(pTableView);
     if (pLibrary) {
         m_signalColors = pLibrary->getOverviewSignalColors();
@@ -148,11 +143,6 @@ void OverviewDelegate::slotOverviewChanged(const TrackId trackId) {
 void OverviewDelegate::paintItem(QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    if (!m_pCache) {
-        paintItemBackground(painter, option, index);
-        return;
-    }
-
     const TrackId trackId(m_pTrackModel->getTrackId(index));
     const double scaleFactor = m_pTableView->devicePixelRatioF();
     QPixmap pixmap = m_pCache->requestCachedOverview(m_type,
