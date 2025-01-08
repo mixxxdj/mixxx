@@ -108,10 +108,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
-        return static_cast<int>(m_a * value - m_b);
+        return static_cast<int>(m_maxPixelPos * value);
     }
     inline double positionToValue(int position) const {
-        return (static_cast<double>(position) + m_b) / m_a;
+        return static_cast<double>(position) / m_maxPixelPos;
     }
 
     void updateCues(const QList<CuePointer> &loadedCues);
@@ -166,9 +166,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     Qt::Orientation m_orientation;
     int m_iLabelFontSize;
 
-    // Coefficient value-position linear transposition
-    double m_a;
-    double m_b;
+    // Coefficient for linear value <-> position  transposition
+    double m_maxPixelPos;
 
     AnalyzerProgress m_analyzerProgress;
     bool m_trackLoaded;
