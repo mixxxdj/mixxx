@@ -17,7 +17,6 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/library_prefs.h"
-#include "library/overviewcache.h"
 #include "library/queryutil.h"
 #include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"

@@ -10,7 +10,7 @@ class WaveformSignalColors;
 
 class WaveformOverviewRenderer {
   public:
-    static QImage render(ConstWaveformPointer,
+    static QImage render(ConstWaveformPointer pWaveform,
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
             bool mono = false);
