@@ -78,12 +78,12 @@ if(DEFINED ENV{MIXXX_VCPKG_ROOT} AND NOT DEFINED MIXXX_VCPKG_ROOT)
 endif()
 
 if(DEFINED MIXXX_VCPKG_ROOT)
-  if(EXISTS "$ENV{MIXXX_VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "$ENV{MIXXX_VCPKG_ROOT}/ports")
+  if(EXISTS "${MIXXX_VCPKG_ROOT}/overlay/ports" OR NOT EXISTS "${MIXXX_VCPKG_ROOT}/ports")
     # MIXXX_VCPKG_ROOT points to our vcpkg environment
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
-    message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
+    message(STATUS "Using MIXXX_VCPKG_ROOT: ${MIXXX_VCPKG_ROOT}")
   else()
-    message(STATUS "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    message(STATUS "MIXXX_VCPKG_ROOT not correct (missing ${MIXXX_VCPKG_ROOT}/overlay/ports)")
     FATAL_ERROR_MISSING_ENV()
   endif()
 
