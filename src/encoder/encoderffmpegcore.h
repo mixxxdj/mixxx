@@ -43,7 +43,7 @@ public:
 #endif
     ~EncoderFfmpegCore();
     int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
-    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;

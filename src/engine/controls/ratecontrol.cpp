@@ -165,19 +165,8 @@ RateControl::RateControl(const QString& group,
 
 
     m_pJog = new ControlObject(ConfigKey(group, "jog"));
-    m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
-    m_pJogFilter->setFilterLength(25);
-
-//     // Update Internal Settings
-//     // Set Pitchbend Mode
-//     m_eRateRampMode = static_cast<RampMode>(
-//         getConfig()->getValue(ConfigKey("[Controls]","RateRamp"),
-//                               static_cast<int>(RampMode::Stepping)));
-
-//     // Set the Sensitivity
-//     m_iRateRampSensitivity =
-//             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+    m_pJogFilter = new Rotary(25);
 
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
 }
@@ -394,14 +383,16 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-double RateControl::calculateSpeed(double baserate, double speed, bool paused,
-                                   int iSamplesPerBuffer,
-                                   bool* pReportScratching,
-                                   bool* pReportReverse) {
+double RateControl::calculateSpeed(double baserate,
+        double speed,
+        bool paused,
+        std::size_t samplesPerBuffer,
+        bool* pReportScratching,
+        bool* pReportReverse) {
     *pReportScratching = false;
     *pReportReverse = false;
 
-    processTempRate(iSamplesPerBuffer);
+    processTempRate(samplesPerBuffer);
 
     double rate;
     const double searching = m_pRateSearch->get();
@@ -466,7 +457,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         // (beatloop or track repeat) so it can correctly interpret the sample position delta.
         m_pScratchController->process(currentSample,
                 rate,
-                iSamplesPerBuffer,
+                samplesPerBuffer,
                 baserate,
                 m_wrapAroundCount,
                 m_jumpPos,
@@ -510,7 +501,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     return rate;
 }
 
-void RateControl::processTempRate(const int bufferSamples) {
+void RateControl::processTempRate(const std::size_t bufferSamples) {
     // Code to handle temporary rate change buttons.
     // We support two behaviors, the standard ramped pitch bending
     // and pitch shift stepping, which is the old behavior.

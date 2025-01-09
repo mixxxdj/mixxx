@@ -9,7 +9,7 @@ class EngineVuMeter : public EngineObject {
   public:
     EngineVuMeter(const QString& group, const QString& legacyGroup = QString());
 
-    virtual void process(CSAMPLE* pInOut, const int iBufferSize);
+    virtual void process(CSAMPLE* pInOut, const std::size_t bufferSize);
 
     void reset();
 

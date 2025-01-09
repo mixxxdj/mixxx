@@ -513,6 +513,7 @@ void DlgPrefInterface::slotApply() {
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
         m_skinNameOnUpdate = m_pSkin->name();
+        m_colorSchemeOnUpdate = m_colorScheme;
     }
 }
 

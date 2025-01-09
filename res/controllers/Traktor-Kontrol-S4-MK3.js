@@ -1262,7 +1262,7 @@ class FXSelect extends Button {
         if (this.mixer.firstPressedFxSelector !== null) {
             for (const deck of [1, 2, 3, 4]) {
                 const presetNumber = this.mixer.calculatePresetNumber();
-                engine.setValue(`[QuickEffectRack1_[Channel${deck}]]`, "loaded_chain_preset", presetNumber + 1);
+                engine.setValue(`[QuickEffectRack1_[Channel${deck}]]`, "loaded_chain_preset", presetNumber);
             }
         }
         if (this.mixer.firstPressedFxSelector === this.number) {
@@ -1296,7 +1296,7 @@ class QuickEffectButton extends Button {
         } else {
             const presetNumber = this.mixer.calculatePresetNumber();
             this.color = QuickEffectPresetColors[presetNumber - 1];
-            engine.setValue(this.group, "loaded_chain_preset", presetNumber + 1);
+            engine.setValue(this.group, "loaded_chain_preset", presetNumber);
             this.mixer.firstPressedFxSelector = null;
             this.mixer.secondPressedFxSelector = null;
             this.mixer.resetFxSelectorColors();
@@ -1317,7 +1317,7 @@ class QuickEffectButton extends Button {
         }
     }
     presetLoaded(presetNumber) {
-        this.color = QuickEffectPresetColors[presetNumber - 2];
+        this.color = QuickEffectPresetColors[presetNumber - 1];
         this.outConnections[1].trigger();
     }
     outConnect() {
@@ -2454,7 +2454,7 @@ class S4Mk3Deck extends Deck {
                 let [oldValue, oldTimestamp, speed] = this.oldValue;
 
                 if (timestamp < oldTimestamp) {
-                    oldTimestamp -= wheelRelativeMax;
+                    oldTimestamp -= wheelTimerMax;
                 }
 
                 let diff = value - oldValue;

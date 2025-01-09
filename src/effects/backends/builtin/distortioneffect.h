@@ -91,7 +91,7 @@ class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
         pState->m_previousMakeUpGain = gain;
 
         // Crossfade
-        CSAMPLE crossfadeParam = math_min(driveParam / ModeParams::crossfadeEndParam, 1.f);
+        CSAMPLE crossfadeParam = std::min(driveParam / ModeParams::crossfadeEndParam, 1.f);
         SampleUtil::applyRampingGain(pOutput,
                 pState->m_crossfadeParameter,
                 crossfadeParam,

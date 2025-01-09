@@ -4,18 +4,18 @@
 
 #include <QRegularExpression>
 
+#include "controllers/defs_controllers.h"
 #include "controllers/midi/portmidicontroller.h"
 #include "moc_portmidienumerator.cpp"
 #include "util/cmdlineargs.h"
 
 namespace {
 
-const auto kMidiThroughPortPrefix = QLatin1String("MIDI Through Port");
-
-bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
+bool recognizeDevice(const PmDeviceInfo& deviceInfo, UserSettingsPointer pConfig) {
     // In developer mode we show the MIDI Through Port, otherwise ignore it
     // since it routinely causes trouble.
     return CmdlineArgs::Instance().getDeveloper() ||
+            pConfig->getValue(kMidiThroughCfgKey, false) ||
             !QLatin1String(deviceInfo.name)
                      .startsWith(kMidiThroughPortPrefix, Qt::CaseInsensitive);
 }
@@ -99,7 +99,8 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
 
 } // namespace
 
-PortMidiEnumerator::PortMidiEnumerator() {
+PortMidiEnumerator::PortMidiEnumerator(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig) {
     PmError err = Pm_Initialize();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
@@ -172,11 +173,12 @@ bool shouldLinkInputToOutput(const QString& input_name,
     return false;
 }
 
-/** Enumerate the MIDI devices
-  * This method needs a bit of intelligence because PortMidi (and the underlying MIDI APIs) like to split
-  * output and input into separate devices. Eg. PortMidi would tell us the Hercules is two half-duplex devices.
-  * To help simplify a lot of code, we're going to aggregate these two streams into a single full-duplex device.
-  */
+/// Enumerate the MIDI devices
+/// This method needs a bit of intelligence because PortMidi (and the underlying
+/// MIDI APIs) like to split output and input into separate devices. Eg.
+/// PortMidi would tell us the Hercules is two half-duplex devices. To help
+/// simplify a lot of code, we're going to aggregate these two streams into a
+/// single full-duplex device.
 QList<Controller*> PortMidiEnumerator::queryDevices() {
     qDebug() << "Scanning PortMIDI devices:";
 
@@ -201,7 +203,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
         }
-        if (!recognizeDevice(*pDeviceInfo) || !pDeviceInfo->output) {
+        if (!recognizeDevice(*pDeviceInfo, m_pConfig) || !pDeviceInfo->output) {
             continue;
         }
         qDebug() << " Found output device"
@@ -216,7 +218,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
         }
-        if (!recognizeDevice(*pDeviceInfo) || !pDeviceInfo->input) {
+        if (!recognizeDevice(*pDeviceInfo, m_pConfig) || !pDeviceInfo->input) {
             // Is there a use case for output-only devices such as message
             // displays? Then this condition has to be split and
             // deviceInfo->output also needs to be checked and handled.

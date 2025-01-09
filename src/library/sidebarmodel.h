@@ -39,7 +39,7 @@ class SidebarModel : public QAbstractItemModel {
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole) const override;
     bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
-    bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
+    bool dragMoveAccept(const QModelIndex& index, const QUrl& url) const;
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
     QModelIndex translateChildIndex(const QModelIndex& index) {

@@ -35,8 +35,7 @@ class GlobalTrackCacheHelper : public GlobalTrackCacheSaver {
 class TrackMetadataExportTest : public MixxxTest, private SoundSourceProviderRegistration {
   public:
     TrackMetadataExportTest()
-            : m_testDataDir(QDir::current().absoluteFilePath(
-                      "src/test/id3-test-data")) {
+            : m_testDataDir(getTestDir().absoluteFilePath(QStringLiteral("id3-test-data"))) {
     }
 
   protected:
@@ -51,7 +50,7 @@ TEST_F(TrackMetadataExportTest, keepWithespaceKey) {
     constexpr std::string_view kId3Key = "Bbm";
 
     // Generate a file name for exporting metadata
-    const QString exportTrackPath = m_exportTempDir.filePath(kEmptyFile);
+    const QString exportTrackPath = m_exportTempDir.filePath("keepWithespaceKey.mp3");
     mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
     TrackPointer pTrack = Track::newTemporary(exportTrackPath);
 

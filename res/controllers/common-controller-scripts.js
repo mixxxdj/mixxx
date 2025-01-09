@@ -248,6 +248,9 @@ script.midiDebug = function(channel, control, value, status, group) {
 // Returns the deck number of a "ChannelN" or "SamplerN" group
 script.deckFromGroup = function(group) {
     let deck = 0;
+    if (group === undefined) {
+        return undefined;
+    }
     if (group.substring(2, 8) === "hannel") {
         // Extract deck number from the group text
         deck = group.substring(8, group.length - 1);

@@ -84,6 +84,18 @@ inline QString convertWCStringToQString(
     return QString::fromWCharArray(wcs, static_cast<int>(wcsnlen_s(wcs, maxLen)));
 }
 
+/// Remove trailing spaces from the specified string.
+inline QString removeTrailingWhitespaces(QString str) {
+    auto it = str.crbegin();
+    while (it != str.crend() && it->isSpace()) {
+        ++it;
+    }
+    if (it != str.crbegin()) {
+        str.resize(std::distance(it, str.crend()));
+    }
+    return str;
+}
+
 } // namespace mixxx
 
 // Helper to create html link strings to be used for ui files, mostly in

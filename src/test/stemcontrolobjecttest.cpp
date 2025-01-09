@@ -94,16 +94,34 @@ class StemControlTest : public BaseSignalPathTest {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
-        BaseSignalPathTest::loadTrack(pDeck, pTrack);
         // Because there is connection across the main thread in caching reader
-        // thread, we need to manually process the eventloop to trigger
+        // thread, we need to manually process the Qt event loop to trigger
         // `BaseTrackPlayerImpl::slotTrackLoaded` Here is the chain of
         // connections (Symbol (thread)) EngineDeck::slotLoadTrack (main) ->
         // EngineBuffer::loadTrack (main) -> CachingReader*::newTrack (main) ->
         // CachingReaderWorker::trackLoaded (CachingReader) ->
         // EngineBuffer::loaded (CachingReader, direct) ->
         // BaseTrackPlayerImpl::slotTrackLoaded  (main)
-        QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+        TrackPointer pLoadedTrack;
+        QMetaObject::Connection connection = QObject::connect(pDeck,
+                &BaseTrackPlayerImpl::newTrackLoaded,
+                [&pLoadedTrack]( // clazy:exclude=lambda-in-connect
+                        TrackPointer pNewTrack) { pLoadedTrack = pNewTrack; });
+        BaseSignalPathTest::loadTrack(pDeck, pTrack);
+
+        for (int i = 0; i < 10000; ++i) {
+            if (pLoadedTrack == pTrack) {
+                break;
+            }
+            int maxtime = 1; // ms
+            QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, maxtime);
+            // 1 ms for waiting 10 s at max
+        }
+        QObject::disconnect(connection);
+        if (pLoadedTrack != pTrack) {
+            qWarning() << "Timeout: failed loading track" << pTrack->getLocation();
+        }
     }
 
     std::unique_ptr<PollingControlProxy> m_pPlay;

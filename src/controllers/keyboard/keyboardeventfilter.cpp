@@ -12,7 +12,8 @@
 #include "widget/wbasewidget.h"
 
 namespace {
-const ConfigKey kKbdEnabledCfgKey = ConfigKey("[Keyboard]", "Enabled");
+const ConfigKey kKbdEnabledCfgKey =
+        ConfigKey(QStringLiteral("[Keyboard]"), QStringLiteral("Enabled"));
 mixxx::Logger kLogger("KeyboardEventFilter");
 
 const QString mappingFilePath(const QString& dir, const QString& fileName) {
