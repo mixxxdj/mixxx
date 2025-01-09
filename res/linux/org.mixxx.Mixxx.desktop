@@ -9,6 +9,7 @@ Comment=A digital DJ interface
 Comment[de]=Ein digitales DJ-System
 Comment[fr]=Une interface numérique pour DJ
 Exec=sh -c "pasuspender -- mixxx || mixxx"
+Keywords=dj;music;alsa;jack:realtime;standalone;
 Terminal=false
 Icon=mixxx
 Type=Application
