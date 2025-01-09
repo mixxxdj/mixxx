@@ -164,6 +164,11 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
+    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    TrackPointer getTestTrack() const {
+        return Track::newTemporary(mixxx::FileAccess(mixxx::FileInfo(kTrackLocationTest)));
+    }
+
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {

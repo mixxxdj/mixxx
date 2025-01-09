@@ -229,6 +229,16 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
+    for (int i = 1; i <= kMacrosPerChannel; ++i) {
+        auto* pMacroControl = new MacroControl(group, pConfig, i);
+        connect(this,
+                &EngineBuffer::cueJumpQueued,
+                pMacroControl,
+                &MacroControl::slotJumpQueued,
+                Qt::DirectConnection);
+        addControl(pMacroControl);
+    }
+
     connect(m_pLoopingControl,
             &LoopingControl::loopReset,
             m_pCueControl,
@@ -711,6 +721,7 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 // WARNING: This method is called by EngineControl and runs in the engine thread
 void EngineBuffer::seekAbs(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
+    emit cueJumpQueued(position);
     doSeekPlayPos(position, SEEK_STANDARD);
 }
 

@@ -71,7 +71,7 @@ constexpr int kQuickBeatChangeDeltaMillis = 800;
 //static
 const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 
-//static
+// static
 SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
         const UserSettings& userSettings) {
     return SyncTrackMetadataParams{
@@ -1360,6 +1360,42 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
 
     markDirtyAndUnlock(pLock);
     emit cuesUpdated();
+}
+
+QMap<int, MacroPointer> Track::getMacros() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_macros;
+}
+
+void Track::setMacros(const QMap<int, MacroPointer>& macros) {
+    const auto locked = lockMutex(&m_qMutex);
+    m_macros = macros;
+}
+
+MacroPointer Track::getMacro(int slot) {
+    const auto locked = lockMutex(&m_qMutex);
+    MacroPointer macro = m_macros.value(slot);
+    if (!macro) {
+        macro = std::make_shared<Macro>();
+        m_macros.insert(slot, macro);
+    }
+    // No need to mark the track dirty, we don't need to save empty Macros
+    return macro;
+}
+
+bool Track::isDirty() {
+    const auto locked = lockMutex(&m_qMutex);
+    if (m_bDirty) {
+        return true;
+    }
+    // FIXME(xeruf) this should be incorporated in the dirty state of the track itself
+    // but that is non-trivial, since, unlike other track properties, Macros are mutable
+    for (const MacroPointer& pMacro : std::as_const(m_macros)) {
+        if (pMacro->isDirty()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Track::markDirty() {
