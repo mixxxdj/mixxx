@@ -108,7 +108,7 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   )
     # MIXXX_VCPKG_ROOT points to our vcpkg environment
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
-    message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
+    message(STATUS "Using MIXXX_VCPKG_ROOT: ${MIXXX_VCPKG_ROOT}")
   else()
     message(
       STATUS
@@ -4705,7 +4705,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy mantic noble oracular)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy noble oracular plucky)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
