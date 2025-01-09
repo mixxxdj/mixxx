@@ -374,7 +374,7 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pRecordingManager.get());
 
     OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
-    connect(&(m_pLibrary->trackCollectionManager()->internalCollection()->getTrackDAO()),
+    connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
             &TrackDAO::waveformSummaryUpdated,
             pOverviewCache,
             &OverviewCache::onTrackSummaryChanged);
