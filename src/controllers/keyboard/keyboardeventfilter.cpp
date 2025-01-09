@@ -265,7 +265,7 @@ void KeyboardEventFilter::updateWidgetShortcuts() {
     // kLogger.debug() << "updateWidgetShortcuts";
     ScopedTimer timer(QStringLiteral("KeyboardEventFilter::updateWidgetShortcuts"));
     QStringList shortcutHints;
-    for (auto* pWidget : m_widgets) {
+    for (auto* pWidget : std::as_const(m_widgets)) {
         shortcutHints.clear();
         QString keyString;
         const QList<std::pair<ConfigKey, QString>> controlsCommands =
