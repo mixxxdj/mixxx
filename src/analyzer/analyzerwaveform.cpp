@@ -353,12 +353,8 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
 
     // Set waveforms on track AFTER they'been written to disk in order to have
     // a consistency when OverviewCache asks AnalysisDAO for a waveform summary.
-    if (m_waveform) {
-        tio->setWaveform(m_waveform);
-    }
-    if (m_waveformSummary) {
-        tio->setWaveformSummary(m_waveformSummary);
-    }
+    tio->setWaveform(m_waveform);
+    tio->setWaveformSummary(m_waveformSummary);
 
     kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
                     << m_timer.elapsed().debugSecondsWithUnit();
