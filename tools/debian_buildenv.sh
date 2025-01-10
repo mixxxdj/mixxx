@@ -10,6 +10,19 @@ case "$1" in
         ;;
 
     setup)
+        source /etc/lsb-release 2>/dev/null
+        case "${DISTRIB_CODENAME}" in
+            focal|jammy|bullseye) # <= Ubuntu 22.04.5 LTS
+                PACKAGES_EXTRA=(
+                    libqt6shadertools6-dev
+                )
+                ;;
+            *)
+                PACKAGES_EXTRA=(
+                    qt6-shadertools-dev
+                )
+        esac
+
         sudo apt-get update
 
         # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
@@ -68,9 +81,7 @@ case "$1" in
             libportmidi-dev \
             libprotobuf-dev \
             libqt6core5compat6-dev\
-            libqt6shadertools6-dev \
             libqt6opengl6-dev \
-            libqt6shadertools6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
             librubberband-dev \
