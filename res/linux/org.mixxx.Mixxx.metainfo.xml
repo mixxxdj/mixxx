@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-01-03" timestamp="1735896888">
+    <release version="2.6.0" type="development" date="2025-01-03" timestamp="1735859957">
       <description>
  <p>
   Engine
@@ -687,6 +687,37 @@
   <li>
    Happy New Year 2025!
    #14098
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.5.1" type="development" date="2025-01-03" timestamp="1735859957">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Numark NS6II: Add new controller mapping
+   #11075
+  </li>
+  <li>
+   Hercules Inpulse 300: Updated mapping
+   #14051
+  </li>
+ </ul>
+ <p>
+  Fixes
+ </p>
+ <ul>
+  <li>
+   Deere (64 samplers): Bring back library in regular view
+   #14101
+   #14097
+  </li>
+  <li>
+   Enable R3 time-stretching with Rubberband 4.0.0 API version numbers
+   #14100
   </li>
  </ul>
 </description>

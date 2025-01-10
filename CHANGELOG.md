@@ -197,6 +197,20 @@
 * ci(dependabot): Open PRs against 2.5 branch instead of main [#14060](https://github.com/mixxxdj/mixxx/pull/14060)
 * Happy New Year 2025! [#14098](https://github.com/mixxxdj/mixxx/pull/14098)
 
+## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (unreleased)
+
+### Controller Mappings
+
+* Numark NS6II: Add new controller mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
+* Hercules Inpulse 300: Updated mapping [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
+
+### Fixes
+
+* Deere (64 samplers): Bring back library in regular view
+  [#14101](https://github.com/mixxxdj/mixxx/pull/14101)
+  [#14097](https://github.com/mixxxdj/mixxx/issues/14097)
+* Enable R3 time-stretching with Rubberband 4.0.0 API version numbers [#14100](https://github.com/mixxxdj/mixxx/pull/14100)
+
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
 ### Modernized Platform: Update to Qt6
