@@ -10,19 +10,6 @@ case "$1" in
         ;;
 
     setup)
-        source /etc/lsb-release 2>/dev/null
-        case "${DISTRIB_CODENAME}" in
-            bionic) # Ubuntu 18.04 LTS
-                PACKAGES_EXTRA=(
-                    libmp4v2-dev
-                )
-                ;;
-            *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
-                PACKAGES_EXTRA=(
-                    libavformat-dev
-                )
-        esac
-
         sudo apt-get update
 
         # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
@@ -58,6 +45,7 @@ case "$1" in
             fonts-ubuntu \
             g++ \
             lcov \
+            libavformat-dev \
             libbenchmark-dev \
             libchromaprint-dev \
             libdistro-info-perl \
