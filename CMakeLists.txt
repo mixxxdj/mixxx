@@ -103,8 +103,8 @@ endif()
 
 if(DEFINED MIXXX_VCPKG_ROOT)
   if(
-    EXISTS "$ENV{MIXXX_VCPKG_ROOT}/overlay/ports"
-    OR NOT EXISTS "$ENV{MIXXX_VCPKG_ROOT}/ports"
+    EXISTS "{MIXXX_VCPKG_ROOT}/overlay/ports"
+    OR NOT EXISTS "{MIXXX_VCPKG_ROOT}/ports"
   )
     # MIXXX_VCPKG_ROOT points to our vcpkg environment
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
