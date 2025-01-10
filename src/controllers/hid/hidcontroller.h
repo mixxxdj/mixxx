@@ -4,6 +4,7 @@
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidiothread.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
+#include "util/compatibility/qmutex.h"
 
 /// HID controller backend
 class HidController final : public Controller {
@@ -24,6 +25,7 @@ class HidController final : public Controller {
         if (!m_pMapping) {
             return false;
         }
+        const auto locker = lockMutex(&m_mappingMutex);
         return m_pMapping->isMappable();
     }
 
@@ -41,6 +43,7 @@ class HidController final : public Controller {
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;
+    mutable QMutex m_mappingMutex;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 
     friend class HidControllerJSProxy;

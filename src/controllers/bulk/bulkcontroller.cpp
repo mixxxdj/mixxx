@@ -5,6 +5,7 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
+#include "util/compatibility/qmutex.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -97,6 +98,7 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    const auto locker = lockMutex(&m_mappingMutex);
     m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
@@ -104,6 +106,7 @@ std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
     if (!m_pMapping) {
         return nullptr;
     }
+    const auto locker = lockMutex(&m_mappingMutex);
     return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
@@ -205,6 +208,8 @@ int BulkController::open() {
     setOpen(true);
     startEngine();
 
+    const auto locker = lockMutex(&m_mappingMutex);
+
     if (m_pReader != nullptr) {
         qCWarning(m_logBase) << "BulkReader already present for" << getName();
     } else if (m_pMapping &&
@@ -235,6 +240,7 @@ int BulkController::close() {
 
     qCInfo(m_logBase) << "Shutting down USB Bulk device" << getName();
 
+    const auto locker = lockMutex(&m_mappingMutex);
     // Stop the reading thread
     if (m_pReader == nullptr &&
             m_pMapping->getDeviceDirection() &
@@ -282,6 +288,7 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
 }
 
 void BulkController::sendBytes(const QByteArray& data) {
+    const auto locker = lockMutex(&m_mappingMutex);
     VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
             m_pMapping->getDeviceDirection() &
                     LegacyControllerMapping::DeviceDirection::Outgoing) {
