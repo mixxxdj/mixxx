@@ -13,7 +13,10 @@ bool LegacyMidiControllerMapping::isMappable() const {
 
 void LegacyMidiControllerMapping::addInputMapping(uint16_t key, const MidiInputMapping& mapping) {
     m_inputMappings.insert(key, mapping);
-    setDirty(true);
+    if (!std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+        // Note: JS handler are not saved to the XML file
+        setDirty(true);
+    }
 }
 
 void LegacyMidiControllerMapping::removeInputMapping(uint16_t key) {
