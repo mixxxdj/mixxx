@@ -28,6 +28,7 @@ QString HidController::mappingExtension() {
 }
 
 void HidController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    const auto locker = lockMutex(&m_mappingMutex);
     m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
@@ -35,6 +36,7 @@ std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
     if (!m_pMapping) {
         return nullptr;
     }
+    const auto locker = lockMutex(&m_mappingMutex);
     return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
