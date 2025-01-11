@@ -16,16 +16,55 @@ jobs:
           - from_branch: "2.5"
             to_branch: "main"
     runs-on: ubuntu-latest
+    env:
+      SYNC_COMMITTER: github-actions[bot]
     steps:
-      - name: Merge ${{ matrix.from_branch }} into ${{ matrix.to_branch }}
-        if: github.event_name == 'workflow_dispatch' || github.ref_name == matrix.from_branch
-        # Commit is pinned due to low popularity of the action repo.
-        uses: tretuna/sync-branches@ea58ab6e406fd3ad016a064b31270bbb41127f41
-        with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          FROM_BRANCH: ${{ matrix.from_branch }}
+      - name: "Check out repository"
+        uses: actions/checkout@v4.1.7
+
+      - name: "Install merge driver"
+        run: |
+          git config --global merge.ours.driver true
+
+      - name: "Check if merge branch already exists"
+        id: check_sync
+        run: |
+          if git fetch origin "${SYNC_BRANCH}"; then
+            echo "Branch ${SYNC_BRANCH} already exists, checking if the branch was modified..."
+            COMMITTER="$(git show --pretty=format:"%cn <%ce>" --no-patch "origin/${SYNC_BRANCH}")"
+            if [ "${COMMITTER}" = "${SYNC_COMMITTER}" ]; then
+              echo "Branch ${SYNC_BRANCH} was not modified."
+            else
+              echo "Branch ${SYNC_BRANCH} was modified, either delete it or update it yourself."
+              echo "skip_sync=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "Branch ${SYNC_BRANCH} does not exist yet."
+          fi
+        env:
+          SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
+
+      - name: "Merge Changes"
+        if: steps.check_sync.outputs.skip_sync != 'true'
+        run: |
+          git checkout -b "${SYNC_BRANCH}"
+          git fetch origin "${TO_BRANCH}"
+          git reset --hard "origin/${TO_BRANCH}"
+          git pull --no-edit origin "${FROM_BRANCH}"
+          COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
+          COMMIT_MERGE="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
+          if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
+            git status
+            echo "No changes (or merge conflict), skipping push and PR creation."
+          else
+            git push --force origin "${SYNC_BRANCH}"
+            gh pr create -B "${FROM_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --labels "sync-branches"
+          fi
+        env:
+          FROM_BRANCH: ${{ matrix.from_branch}}
           TO_BRANCH: ${{ matrix.to_branch }}
-          CONTENT_COMPARISON: true # Prevent empty PRs
+          SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_TITLE: Merge changes from `${{ matrix.from_branch }}` into `${{ matrix.to_branch }}`
           PULL_REQUEST_BODY: |
             New content has landed in the `${{ matrix.from_branch }}` branch, so let's merge the changes into `${{ matrix.to_branch }}`.
