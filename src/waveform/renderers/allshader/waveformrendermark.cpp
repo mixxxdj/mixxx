@@ -97,7 +97,7 @@ void allshader::WaveformRenderMark::initializeGL() {
 }
 
 void allshader::WaveformRenderMark::drawTexture(
-        const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture) {
+        const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* pTexture) {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float texx1 = 0.f;
     const float texy1 = 0.f;
@@ -105,9 +105,9 @@ void allshader::WaveformRenderMark::drawTexture(
     const float texy2 = 1.f;
 
     const float posx1 = x;
-    const float posx2 = x + static_cast<float>(texture->width() / devicePixelRatio);
+    const float posx2 = x + static_cast<float>(pTexture->width() / devicePixelRatio);
     const float posy1 = y;
-    const float posy2 = y + static_cast<float>(texture->height() / devicePixelRatio);
+    const float posy2 = y + static_cast<float>(pTexture->height() / devicePixelRatio);
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
@@ -130,11 +130,11 @@ void allshader::WaveformRenderMark::drawTexture(
 
     m_textureShader.setUniformValue(textureLocation, 0);
 
-    texture->bind();
+    pTexture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    texture->release();
+    pTexture->release();
 
     m_textureShader.disableAttributeArray(positionLocation);
     m_textureShader.disableAttributeArray(texcoordLocation);
