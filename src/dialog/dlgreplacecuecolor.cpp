@@ -5,6 +5,8 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
@@ -151,11 +153,19 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     // Update dialog widgets when conditions checkboxes are (un)checked
     connect(checkBoxCurrentColorCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
     connect(checkBoxHotcueIndexCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
 

@@ -9,15 +9,15 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
         const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber, EffectParameterType::Button) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
-    m_pControlLoaded = new ControlObject(
+    m_pControlLoaded = std::make_unique<ControlObject>(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
-    m_pControlValue = new ControlPushButton(
+    m_pControlValue = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, itemPrefix));
-    m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
-    m_pControlType = new ControlObject(
+    m_pControlValue->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+    m_pControlType = std::make_unique<ControlObject>(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlValue,
+    connect(m_pControlValue.get(),
             &ControlObject::valueChanged,
             this,
             &EffectButtonParameterSlot::slotValueChanged);
@@ -29,10 +29,7 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
     clear();
 }
 
-EffectButtonParameterSlot::~EffectButtonParameterSlot() {
-    // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
-    delete m_pControlValue;
-}
+EffectButtonParameterSlot::~EffectButtonParameterSlot() = default;
 
 void EffectButtonParameterSlot::loadParameter(EffectParameterPointer pEffectParameter) {
     if (m_pEffectParameter) {

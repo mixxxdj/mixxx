@@ -43,7 +43,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //}
 }
 
-// Drag enter event, happens when a dragged item enters the track sources view
+/// Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
@@ -62,7 +62,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     //QTreeView::dragEnterEvent(event);
 }
 
-// Drag move event, happens when a dragged item hovers over the track sources view...
+/// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
@@ -102,10 +102,12 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
-                        // consider we have a long list of valid files, checking all will
-                        // take a lot of time that stales Mixxx and this makes the drop feature useless
-                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
-                        // but the EXE is sorted out later after dropping
+                        // Consider that we might have a long list of files,
+                        // checking all will take a lot of time that stalls
+                        // Mixxx and this makes the drop feature useless.
+                        // E.g. you may have tried to drag two MP3's and an EXE,
+                        // the drop is accepted here, but the EXE is filtered
+                        // out later after dropping
                         accepted = true;
                         break;
                     }
@@ -239,12 +241,17 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
     // item is not focused, require second press to perform the desired action.
 
-    // make the selected item the navigation starting point
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    QModelIndex selIndex = selectedIndex();
+    if (sidebarModel && selIndex.isValid() && event->matches(QKeySequence::Paste)) {
+        sidebarModel->paste(selIndex);
+        return;
+    }
+
     focusSelectedIndex();
 
     switch (event->key()) {
     case Qt::Key_Return:
-        focusSelectedIndex();
         toggleSelectedItem();
         return;
     case Qt::Key_Down:
@@ -266,6 +273,14 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // we pressed Up, Home or PageUp.
         scrollTo(selIndex);
         emit pressed(selIndex);
+        return;
+    }
+    case Qt::Key_Right: {
+        if (event->modifiers() & Qt::ControlModifier) {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        } else {
+            QTreeView::keyPressEvent(event);
+        }
         return;
     }
     case Qt::Key_Left: {

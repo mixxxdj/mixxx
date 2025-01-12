@@ -4,9 +4,13 @@
 #include <QString>
 #include <QTableView>
 
+#include "library/library_decl.h"
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class QFont;
 
@@ -24,8 +28,6 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     WLibraryTableView(QWidget* parent,
             UserSettingsPointer pConfig);
     ~WLibraryTableView() override;
-
-    void moveSelection(int delta) override;
 
     /// @brief saveTrackModelState function saves current positions of scrollbars,
     /// current item selection and current index in a QCache using a unique
@@ -57,10 +59,16 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+#ifdef __STEM__
+            mixxx::StemChannelSelection stemMask,
+#endif
+            bool play = false);
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   public slots:
     void setTrackTableFont(const QFont& font);

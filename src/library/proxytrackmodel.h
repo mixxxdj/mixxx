@@ -36,6 +36,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     bool isColumnInternal(int column) final;
     bool isColumnHiddenByDefault(int column) final;
     void removeTracks(const QModelIndexList& indices) final;
+    void copyTracks(const QModelIndexList& indices) const final;
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) final;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) final;
     QString getModelSetting(const QString& name) final;

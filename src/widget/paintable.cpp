@@ -15,58 +15,56 @@
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
-    if (str.compare("FIXED", Qt::CaseInsensitive) == 0) {
-        return FIXED;
-    } else if (str.compare("STRETCH", Qt::CaseInsensitive) == 0) {
-        return STRETCH;
-    } else if (str.compare("STRETCH_ASPECT", Qt::CaseInsensitive) == 0) {
-        return STRETCH_ASPECT;
-    } else if (str.compare("TILE", Qt::CaseInsensitive) == 0) {
-        return TILE;
+    static const QMap<QString, DrawMode> stringMap = {
+            {"FIXED", DrawMode::Fixed},
+            {"STRETCH", DrawMode::Stretch},
+            {"STRETCH_ASPECT", DrawMode::StretchAspect},
+            {"TILE", DrawMode::Tile}};
+
+    auto it = stringMap.find(str.toUpper());
+    if (it == stringMap.end()) {
+        qWarning() << "Unknown DrawMode string passed to DrawModeFromString:"
+                   << str << "using DrawMode::Fixed as fallback";
+        return DrawMode::Fixed;
     }
 
-    // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode string in DrawModeFromString:"
-               << str << "using FIXED";
-    return FIXED;
+    return it.value();
 }
 
 // static
 QString Paintable::DrawModeToString(DrawMode mode) {
-    switch (mode) {
-        case FIXED:
-            return "FIXED";
-        case STRETCH:
-            return "STRETCH";
-        case STRETCH_ASPECT:
-            return "STRETCH_ASPECT";
-        case TILE:
-            return "TILE";
+    static const QMap<DrawMode, QString> modeMap = {
+            {DrawMode::Fixed, "FIXED"},
+            {DrawMode::Stretch, "STRETCH"},
+            {DrawMode::StretchAspect, "STRETCH_ASPECT"},
+            {DrawMode::Tile, "TILE"}};
+
+    auto it = modeMap.find(mode);
+    if (it == modeMap.end()) {
+        qWarning() << "Unknown DrawMode passed to DrawModeToString "
+                   << static_cast<int>(mode) << "using FIXED as fallback";
+        DEBUG_ASSERT(false);
+        return "FIXED";
     }
-    // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode in DrawModeToString " << mode
-               << "using FIXED";
-    return "FIXED";
+
+    return it.value();
 }
 
 Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
         : m_drawMode(mode) {
     if (!source.isSVG()) {
-        m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
+        auto pPixmap = WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor);
+        if (!pPixmap) {
+            qWarning() << "Failed to load pixmap from path:" << source.getPath();
+            return;
+        }
+        m_pPixmap = std::move(pPixmap);
     } else {
+        if (source.getPath().isEmpty()) {
+            return;
+        }
         auto pSvg = std::make_unique<QSvgRenderer>();
-        if (!source.getSvgSourceData().isEmpty()) {
-            // Call here the different overload for svg content
-            if (!pSvg->load(source.getSvgSourceData())) {
-                // The above line already logs a warning
-                return;
-            }
-        } else if (!source.getPath().isEmpty()) {
-            if (!pSvg->load(source.getPath())) {
-                // The above line already logs a warning
-                return;
-            }
-        } else {
+        if (!pSvg->load(source.getPath())) {
             return;
         }
         m_pSvg = std::move(pSvg);
@@ -120,22 +118,26 @@ QRectF Paintable::rect() const {
 }
 
 QImage Paintable::toImage() const {
-    // Note: m_pPixmap is a QScopedPointer<QPixmap> and not a QPixmap.
-    // This confusion let to the wrong assumption that we could simple
-    //   return m_pPixmap->toImage();
-    // relying on QPixmap returning QImage() when it was null.
-    return m_pPixmap ? m_pPixmap->toImage() : QImage();
+    if (m_pPixmap) {
+        return m_pPixmap->toImage();
+    }
+
+    if (m_pSvg) {
+        QImage image(m_pSvg->defaultSize(), QImage::Format_ARGB32_Premultiplied);
+        // The constructor doesn't initialize the image with data,
+        // so we need to fill it before we can draw on it.
+        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        m_pSvg->render(&painter);
+        return image;
+    }
+
+    return QImage();
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
     // The sourceRect is implicitly the entire Paintable.
     draw(targetRect, pPainter, rect());
-}
-
-void Paintable::draw(int x, int y, QPainter* pPainter) {
-    QRectF sourceRect(rect());
-    QRectF targetRect(QPointF(x, y), sourceRect.size());
-    draw(targetRect, pPainter, sourceRect);
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
@@ -145,7 +147,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
     }
 
     switch (m_drawMode) {
-    case FIXED: {
+    case DrawMode::Fixed: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -155,7 +157,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         drawInternal(adjustedTarget, pPainter, adjustedSource);
         break;
     }
-    case STRETCH_ASPECT: {
+    case DrawMode::StretchAspect: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -172,10 +174,10 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         }
         break;
     }
-    case STRETCH:
+    case DrawMode::Stretch:
         drawInternal(targetRect, pPainter, sourceRect);
         break;
-    case TILE:
+    case DrawMode::Tile:
         drawInternal(targetRect, pPainter, sourceRect);
         break;
     }
@@ -184,7 +186,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
 void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
     switch (m_drawMode) {
-    case FIXED: {
+    case DrawMode::Fixed: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -197,7 +199,7 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
         drawInternal(adjustedTarget, pPainter, adjustedSource);
         break;
     }
-    case STRETCH_ASPECT: {
+    case DrawMode::StretchAspect: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -214,10 +216,10 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
         }
         break;
     }
-    case STRETCH:
+    case DrawMode::Stretch:
         drawInternal(targetRect, pPainter, sourceRect);
         break;
-    case TILE:
+    case DrawMode::Tile:
         // TODO(XXX): What's the right behavior here? Draw the first tile at the
         // center point and then tile all around it based on that?
         drawInternal(targetRect, pPainter, sourceRect);
@@ -230,7 +232,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
     // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_drawMode)
     //          << targetRect << sourceRect;
     if (m_pSvg) {
-        if (m_drawMode == TILE) {
+        if (m_drawMode == DrawMode::Tile) {
             if (!m_pPixmap) {
                 // qDebug() << "Paintable cache miss";
                 qreal devicePixelRatio = pPainter->device()->devicePixelRatio();
@@ -276,7 +278,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
     if (m_pPixmap) {
         // Note: Qt rounds the target rect to device pixels internally
         // using  roundInDeviceCoordinates()
-        if (m_drawMode == TILE) {
+        if (m_drawMode == DrawMode::Tile) {
             pPainter->drawTiledPixmap(targetRect, *m_pPixmap);
         } else {
             if (static_cast<QRectF>(m_pPixmap->rect()) == sourceRect &&
@@ -293,23 +295,6 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
     }
 }
 
-// static
-QString Paintable::getAltFileName(const QString& fileName) {
-    // Detect if the alternate image file exists and, if it does,
-    // return its path instead
-    QStringList temp = fileName.split('.');
-    if (temp.length() != 2) {
-        return fileName;
-    }
-
-    QString newFileName = temp[0] + QLatin1String("@2x.") + temp[1];
-    QFile file(newFileName);
-    if (QFileInfo(file).exists()) {
-        return newFileName;
-    } else {
-        return fileName;
-    }
-}
 
 void Paintable::mayCorrectColors() {
     if (WPixmapStore::willCorrectColors()) {

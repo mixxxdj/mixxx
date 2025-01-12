@@ -47,6 +47,7 @@ Variables:
               <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skins:Tango/controls/button_2state_persist.xml">
                 <SetVariable name="ObjectName">SamplersMiniMaxi</SetVariable>
+                <SetVariable name="TooltipId">expand_samplers</SetVariable>
                 <SetVariable name="Size">20f,30me</SetVariable>
                 <SetVariable name="ConfigKey">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
               </Template>

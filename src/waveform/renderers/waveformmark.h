@@ -37,6 +37,10 @@ class WaveformMark {
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
+    float getOffset() const {
+        return m_offset;
+    }
+
     int getHotCue() const {
         return m_iHotCue;
     };
@@ -63,10 +67,17 @@ class WaveformMark {
         return m_pPositionCO->get();
     }
     double getSampleEndPosition() const {
-        if (m_pEndPositionCO) {
-            return m_pEndPositionCO->get();
+        if (!m_pEndPositionCO ||
+                // A hotcue may have an end position although it isn't a saved
+                // loop anymore. This happens when the user changes the cue
+                // type. However, we persist the end position if the user wants
+                // to restore the cue to a saved loop
+                (m_pTypeCO &&
+                        static_cast<mixxx::CueType>(m_pTypeCO->get()) !=
+                                mixxx::CueType::Loop)) {
+            return Cue::kNoPosition;
         }
-        return Cue::kNoPosition;
+        return m_pEndPositionCO->get();
     }
     QString getItem() const {
         return m_pPositionCO->getKey().item;
@@ -81,6 +92,9 @@ class WaveformMark {
             return true;
         }
         return m_pVisibleCO->toBool();
+    }
+    bool isShowUntilNext() const {
+        return m_showUntilNext;
     }
 
     template<typename Receiver, typename Slot>
@@ -148,6 +162,7 @@ class WaveformMark {
     QString m_iconPath;
 
     float m_linePosition;
+    float m_offset;
     float m_breadth;
 
     // When there are overlapping marks, level is increased for each overlapping mark,
@@ -160,12 +175,16 @@ class WaveformMark {
   private:
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
+    std::unique_ptr<ControlProxy> m_pTypeCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
 
     std::unique_ptr<Graphics> m_pGraphics;
 
     int m_iPriority;
     int m_iHotCue;
+
+    // Whether this marker is used in the show beats/time until next marker display.
+    bool m_showUntilNext;
 
     QColor m_fillColor;
     QColor m_borderColor;

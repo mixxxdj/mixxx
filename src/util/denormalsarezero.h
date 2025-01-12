@@ -20,7 +20,7 @@
 #define _MM_DENORMALS_ZERO_OFF      0x0000
 #endif
 
-#ifdef __SSE__
+#if defined(__SSE__) && !defined(__EMSCRIPTEN__)
 
 #include <xmmintrin.h>
 

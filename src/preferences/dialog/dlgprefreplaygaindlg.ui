@@ -231,6 +231,9 @@
         <property name="text">
          <string>ReplayGain 2.0 (ITU-R BS.1770)</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupAnalyzer</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -238,6 +241,9 @@
         <property name="text">
          <string>ReplayGain 1.0</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupAnalyzer</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -245,6 +251,9 @@
         <property name="text">
          <string>Disabled</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupAnalyzer</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -307,6 +316,18 @@ The loudness target is approximate and assumes track pregain and main output lev
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>EnableGain</tabstop>
+  <tabstop>SliderReplayGainBoost</tabstop>
+  <tabstop>SliderDefaultBoost</tabstop>
+  <tabstop>radioButtonRG1</tabstop>
+  <tabstop>radioButtonRG2</tabstop>
+  <tabstop>radioButtonDisable</tabstop>
+  <tabstop>checkBoxReanalyze</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupAnalyzer"/>
+ </buttongroups>
 </ui>

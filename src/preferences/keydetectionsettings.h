@@ -23,9 +23,18 @@
 #define KEY_NOTATION_TRADITIONAL "Traditional"
 #define KEY_NOTATION_CUSTOM "Custom"
 #define KEY_NOTATION_CUSTOM_PREFIX "CustomKeyNotation"
+#define KEY_STEM_STRATEGY "stem_strategy"
 
 class KeyDetectionSettings {
   public:
+    enum class StemStrategy {
+        Disabled = 0,
+        // TODO (xxx) - detect if the stem is using compliant labels for its
+        // channels and use all channels but the first one if so - to be
+        // implemented Automatic = 1,
+        Enforced = 2
+    };
+
     KeyDetectionSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
 
     DEFINE_PREFERENCE_HELPERS(KeyDetectionEnabled, bool,
@@ -40,6 +49,12 @@ class KeyDetectionSettings {
     // TODO(rryan): Enum
     DEFINE_PREFERENCE_HELPERS(KeyNotation, QString,
                               KEY_CONFIG_KEY, KEY_NOTATION, KEY_NOTATION_TRADITIONAL);
+
+    DEFINE_PREFERENCE_HELPERS(StemStrategy,
+            StemStrategy,
+            KEY_CONFIG_KEY,
+            KEY_STEM_STRATEGY,
+            StemStrategy::Disabled);
 
     QString getCustomKeyNotation(mixxx::track::io::key::ChromaticKey key) {
         return m_pConfig->getValue<QString>(ConfigKey(KEY_CONFIG_KEY,

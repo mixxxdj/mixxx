@@ -9,7 +9,7 @@ class EngineVuMeter : public EngineObject {
   public:
     EngineVuMeter(const QString& group, const QString& legacyGroup = QString());
 
-    virtual void process(CSAMPLE* pInOut, const int iBufferSize);
+    virtual void process(CSAMPLE* pInOut, const std::size_t bufferSize);
 
     void reset();
 
@@ -23,7 +23,7 @@ class EngineVuMeter : public EngineObject {
     CSAMPLE m_fRMSvolumeSumL;
     CSAMPLE m_fRMSvolumeR;
     CSAMPLE m_fRMSvolumeSumR;
-    int m_iSamplesCalculated;
+    unsigned int m_samplesCalculated;
 
     ControlObject m_peakIndicator;
     ControlObject m_peakIndicatorLeft;

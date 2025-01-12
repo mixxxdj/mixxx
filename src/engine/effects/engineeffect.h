@@ -6,6 +6,7 @@
 #include <QVector>
 #include <memory>
 
+#include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/channelhandle.h"
@@ -25,6 +26,7 @@ class EngineEffect final : public EffectsRequestHandler {
             const QSet<ChannelHandleAndGroup>& registeredInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
     /// Called in main thread by EffectSlot
+    // Doesn't deal with ownership; only for conditional debug output
     ~EngineEffect();
 
     /// Called from the main thread to make sure that the channel already has states
@@ -40,8 +42,8 @@ class EngineEffect final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const unsigned int numSamples,
-            const unsigned int sampleRate,
+            const std::size_t numSamples,
+            const mixxx::audio::SampleRate sampleRate,
             const EffectEnableState chainEnableState,
             const GroupFeatureState& groupFeatures);
 
@@ -70,5 +72,4 @@ class EngineEffect final : public EffectsRequestHandler {
     QVector<EngineEffectParameterPointer> m_parameters;
     QMap<QString, EngineEffectParameterPointer> m_parametersById;
 
-    DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };

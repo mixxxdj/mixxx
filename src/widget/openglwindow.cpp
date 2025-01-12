@@ -13,6 +13,12 @@ OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
         : m_pWidget(pWidget),
           m_pTrackDropTarget(nullptr) {
     setFormat(WaveformWidgetFactory::getSurfaceFormat());
+#ifdef __EMSCRIPTEN__
+    // This is required to ensure that QOpenGLWindows have no minimum size (When
+    // targeting WebAssembly, the widgets will otherwise always have a minimum
+    // width and minimum height of 100 pixels).
+    setFlag(Qt::FramelessWindowHint);
+#endif
     // Prevent this window/widget from getting keyboard focus on click.
     setFlag(Qt::WindowDoesNotAcceptFocus);
 }
@@ -67,8 +73,12 @@ bool OpenGLWindow::event(QEvent* pEv) {
         // Tooltip don't work by forwarding the events. This mimics the
         // tooltip behavior.
         if (t == QEvent::MouseMove) {
-            ToolTipQOpenGL::singleton().start(
-                    m_pWidget, dynamic_cast<QMouseEvent*>(pEv)->globalPos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPosition().toPoint();
+#else
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPos();
+#endif
+            ToolTipQOpenGL::singleton().start(m_pWidget, eventPosition);
         }
 
         if (t == QEvent::Leave) {

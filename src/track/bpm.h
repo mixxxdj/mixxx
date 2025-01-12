@@ -14,7 +14,7 @@ public:
     static constexpr double kValueMin = 0.0; // lower bound (exclusive)
     static constexpr double kValueMax = 500.0; // upper bound (inclusive)
 
-    constexpr Bpm()
+    constexpr Bpm() noexcept
             : Bpm(kValueUndefined) {
     }
     explicit constexpr Bpm(double value)

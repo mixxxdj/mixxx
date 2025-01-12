@@ -33,12 +33,18 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
   private slots:
     void slotHotcuePaletteIndexChanged(int paletteIndex);
+    void slotKeyPaletteIndexChanged(int paletteIndex);
     void trackPaletteUpdated(const QString& palette);
     void hotcuePaletteUpdated(const QString& palette);
     void palettesUpdated();
     void slotReplaceCueColorClicked();
     void slotEditTrackPaletteClicked();
     void slotEditHotcuePaletteClicked();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotKeyColorsEnabled(Qt::CheckState state);
+#else
+    void slotKeyColorsEnabled(int i);
+#endif
 
   private:
     void openColorPaletteEditor(
@@ -54,6 +60,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
+    bool m_bKeyColorsEnabled;
     // Pointer to color replace dialog
     DlgReplaceCueColor* m_pReplaceCueColorDlg;
 };

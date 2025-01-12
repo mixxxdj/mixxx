@@ -9,15 +9,13 @@ const mixxx::Logger kLogger("NetworkStreamWorker");
 } // namespace
 
 NetworkOutputStreamWorker::NetworkOutputStreamWorker()
-    : m_sampleRate(0),
-      m_numOutputChannels(0),
-      m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
-      m_functionCode(0),
-      m_runCount(0),
-      m_streamStartTimeUs(-1),
-      m_streamFramesWritten(0),
-      m_writeOverflowCount(0),
-      m_outputDrift(false) {
+        : m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
+          m_functionCode(0),
+          m_runCount(0),
+          m_streamStartTimeUs(-1),
+          m_streamFramesWritten(0),
+          m_writeOverflowCount(0),
+          m_outputDrift(false) {
 }
 
 void NetworkOutputStreamWorker::outputAvailable() {
@@ -31,8 +29,9 @@ QSharedPointer<FIFO<CSAMPLE>> NetworkOutputStreamWorker::getOutputFifo() {
     return QSharedPointer<FIFO<CSAMPLE>>();
 }
 
-void NetworkOutputStreamWorker::startStream(double samplerate, int numOutputChannels) {
-    m_sampleRate = samplerate;
+void NetworkOutputStreamWorker::startStream(
+        mixxx::audio::SampleRate sampleRate, mixxx::audio::ChannelCount numOutputChannels) {
+    m_sampleRate = sampleRate;
     m_numOutputChannels = numOutputChannels;
 
     m_streamStartTimeUs = EngineNetworkStream::getNetworkTimeUs();
@@ -40,8 +39,8 @@ void NetworkOutputStreamWorker::startStream(double samplerate, int numOutputChan
 }
 
 void NetworkOutputStreamWorker::stopStream() {
-    m_sampleRate = 0;
-    m_numOutputChannels = 0;
+    m_sampleRate = mixxx::audio::SampleRate();
+    m_numOutputChannels = mixxx::audio::ChannelCount();
 
     m_streamStartTimeUs = -1;
 }
@@ -51,7 +50,8 @@ bool NetworkOutputStreamWorker::threadWaiting() {
 }
 
 qint64 NetworkOutputStreamWorker::getStreamTimeFrames() {
-    return static_cast<qint64>(static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0);
+    return static_cast<qint64>(static_cast<double>(getStreamTimeUs()) *
+            m_sampleRate.toDouble() / 1000000.0);
 }
 
 qint64 NetworkOutputStreamWorker::getStreamTimeUs() {

@@ -2,26 +2,37 @@
 
 #include "engine/engine.h"
 #include "moc_enginebufferscale.cpp"
+#include "soundio/soundmanagerconfig.h"
 
 EngineBufferScale::EngineBufferScale()
-        : m_outputSignal(
+        : m_signal(
                   mixxx::audio::SignalInfo(
-                          mixxx::kEngineChannelCount,
+                          mixxx::kEngineChannelOutputCount,
                           mixxx::audio::SampleRate())),
           m_dBaseRate(1.0),
           m_bSpeedAffectsPitch(false),
           m_dTempoRatio(1.0),
           m_dPitchRatio(1.0),
           m_effectiveRate(1.0) {
-    DEBUG_ASSERT(!m_outputSignal.isValid());
+    DEBUG_ASSERT(!m_signal.isValid());
 }
 
-void EngineBufferScale::setSampleRate(
-        mixxx::audio::SampleRate sampleRate) {
+void EngineBufferScale::setSignal(
+        mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount) {
     DEBUG_ASSERT(sampleRate.isValid());
-    if (sampleRate != m_outputSignal.getSampleRate()) {
-        m_outputSignal.setSampleRate(sampleRate);
-        onSampleRateChanged();
+    DEBUG_ASSERT(channelCount.isValid());
+    bool changed = false;
+    if (sampleRate != m_signal.getSampleRate()) {
+        m_signal.setSampleRate(sampleRate);
+        changed = true;
     }
-    DEBUG_ASSERT(m_outputSignal.isValid());
+    if (channelCount != m_signal.getChannelCount()) {
+        m_signal.setChannelCount(channelCount);
+        changed = true;
+    }
+    if (changed) {
+        onSignalChanged();
+    }
+    DEBUG_ASSERT(m_signal.isValid());
 }

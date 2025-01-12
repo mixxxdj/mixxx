@@ -1,6 +1,6 @@
 #pragma once
 
-#include "waveform/renderers/glwaveformrenderer.h"
+#include "waveform/renderers/deprecated/glwaveformrenderer.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wglwidget.h"

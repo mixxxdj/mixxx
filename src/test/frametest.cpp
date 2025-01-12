@@ -19,6 +19,8 @@ TEST_F(FrameTest, TestFramePosValid) {
     // Denormals
     EXPECT_TRUE(mixxx::audio::FramePos(0.0).isValid());
     EXPECT_TRUE(mixxx::audio::FramePos(std::numeric_limits<double>::min() / 2.0).isValid());
+    // If you change the following line, check if it solves #13780,
+    // and allows to remove -Wno-nan-infinity-disabled from the clang-tidy call
     EXPECT_FALSE(mixxx::audio::FramePos(util_double_infinity()).isValid());
     // NaN
     EXPECT_FALSE(mixxx::audio::FramePos().isValid());
@@ -54,6 +56,8 @@ TEST_F(FrameTest, TestFramePosEquality) {
     EXPECT_EQ(mixxx::audio::FramePos(),
             mixxx::audio::FramePos(std::numeric_limits<
                     mixxx::audio::FramePos::value_t>::quiet_NaN()));
+    // If you change the following 3 tests, check if it solves #13780,
+    // and allows to remove -Wno-nan-infinity-disabled from the clang-tidy call
     EXPECT_EQ(mixxx::audio::FramePos(),
             mixxx::audio::FramePos(util_double_infinity()));
     EXPECT_EQ(mixxx::audio::FramePos(),

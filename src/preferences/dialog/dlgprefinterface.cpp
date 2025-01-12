@@ -4,11 +4,14 @@
 #include <QList>
 #include <QLocale>
 #include <QScreen>
+#include <QVariant>
+#include <QtGlobal>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefinterface.cpp"
+#include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"
@@ -25,12 +28,19 @@ namespace {
 
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlsGroup = QStringLiteral("[Controls]");
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kSchemeKey = QStringLiteral("Scheme");
 const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
+
+// TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
+const bool kStartInFullscreenDefault = false;
+const bool kHideMenuBarDefault = true;
 
 } // namespace
 
@@ -169,14 +179,51 @@ DlgPrefInterface::DlgPrefInterface(
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
-            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::Off));
     comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
-            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
+            QVariant::fromValue((mixxx::preferences::ScreenSaver::On)));
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
-            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::OnPlay));
 
-    int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+            QVariant::fromValue(m_pScreensaverManager->status())));
+
+    // Multi-Sampling
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        multiSamplingComboBox->clear();
+        multiSamplingComboBox->addItem(tr("Disabled"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Disabled));
+        multiSamplingComboBox->addItem(tr("2x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Two));
+        multiSamplingComboBox->addItem(tr("4x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Four));
+        multiSamplingComboBox->addItem(tr("8x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Eight));
+        multiSamplingComboBox->addItem(tr("16x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Sixteen));
+
+        m_multiSampling = m_pConfig->getValue<mixxx::preferences::MultiSamplingMode>(
+                ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+                mixxx::preferences::MultiSamplingMode::Four);
+        int multiSamplingIndex = multiSamplingComboBox->findData(
+                QVariant::fromValue((m_multiSampling)));
+        if (multiSamplingIndex != -1) {
+            multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
+        } else {
+            multiSamplingComboBox->setCurrentIndex(0); // Disabled
+            m_pConfig->setValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+                    mixxx::preferences::MultiSamplingMode::Disabled);
+        }
+    } else
+#endif
+    {
+#ifdef MIXXX_USE_QML
+        m_multiSampling = mixxx::preferences::MultiSamplingMode::Disabled;
+#endif
+        multiSamplingLabel->hide();
+        multiSamplingComboBox->hide();
+    }
 
     // Tooltip configuration
     connect(buttonGroupTooltips,
@@ -270,12 +317,15 @@ void DlgPrefInterface::slotUpdate() {
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kStartInFullscreenKey), false));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), kStartInFullscreenDefault));
+
+    checkBoxHideMenuBar->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kHideMenuBarKey), kHideMenuBarDefault));
 
     loadTooltipPreferenceFromConfig();
 
-    int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+            QVariant::fromValue(m_pScreensaverManager->status())));
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
@@ -293,22 +343,38 @@ void DlgPrefInterface::slotResetToDefaults() {
     spinBoxScaleFactor->setValue(100);
 
     // Don't start in full screen.
-    checkBoxStartFullScreen->setChecked(false);
+    checkBoxStartFullScreen->setChecked(kStartInFullscreenDefault);
+
+    // Always show the menu bar
+    checkBoxHideMenuBar->setChecked(kHideMenuBarDefault);
+    // Also show the menu bar hint again on next start?
+    // Use bool member to set [Config],show_menubar_hint to 1 in slotApply()
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::On)));
 
+#ifdef MIXXX_USE_QML
+    multiSamplingComboBox->setCurrentIndex(
+            multiSamplingComboBox->findData(QVariant::fromValue(
+                    mixxx::preferences::MultiSamplingMode::Four))); // 4x MSAA
+#endif
+
+#ifdef Q_OS_IOS
+    // Tooltips off everywhere.
+    radioButtonTooltipsOff->setChecked(true);
+#else
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+#endif
 }
 
 void DlgPrefInterface::slotSetTooltips() {
-    m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ON;
+    m_tooltipMode = mixxx::preferences::Tooltips::On;
     if (radioButtonTooltipsOff->isChecked()) {
-        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_OFF;
+        m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
-        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY;
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
     }
 }
 
@@ -316,7 +382,7 @@ void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(this,
             tr("Information"),
-            tr("Mixxx must be restarted before the new locale or scaling "
+            tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
                "settings will take effect."));
 }
 
@@ -392,8 +458,7 @@ void DlgPrefInterface::slotApply() {
         m_pConfig->set(ConfigKey(kConfigGroup, kSchemeKey), m_colorScheme);
     }
 
-    QString locale = ComboBoxLocale->itemData(
-            ComboBoxLocale->currentIndex()).toString();
+    QString locale = ComboBoxLocale->currentData().toString();
     m_pConfig->set(ConfigKey(kConfigGroup, kLocaleKey), locale);
 
     double scaleFactor = spinBoxScaleFactor->value() / 100;
@@ -402,24 +467,42 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey(kConfigGroup, kStartInFullscreenKey),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
-    m_pConfig->set(ConfigKey(kControlsGroup, kTooltipsKey),
-            ConfigValue(static_cast<int>(m_tooltipMode)));
+    m_pConfig->set(ConfigKey(kConfigGroup, kHideMenuBarKey),
+            ConfigValue(checkBoxHideMenuBar->isChecked()));
+    emit menuBarAutoHideChanged();
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, kTooltipsKey),
+            m_tooltipMode);
     emit tooltipModeChanged(m_tooltipMode);
 
     // screensaver mode update
-    int screensaverComboBoxState = comboBoxScreensaver->itemData(
-            comboBoxScreensaver->currentIndex()).toInt();
-    int screensaverConfiguredState = static_cast<int>(m_pScreensaverManager->status());
+    const auto screensaverComboBoxState =
+            comboBoxScreensaver->currentData().value<mixxx::preferences::ScreenSaver>();
+    const auto screensaverConfiguredState = m_pScreensaverManager->status();
     if (screensaverComboBoxState != screensaverConfiguredState) {
-        m_pScreensaverManager->setStatus(
-                static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
+        m_pScreensaverManager->setStatus(screensaverComboBoxState);
     }
 
-    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor) {
+#ifdef MIXXX_USE_QML
+    mixxx::preferences::MultiSamplingMode multiSampling =
+            multiSamplingComboBox->currentData()
+                    .value<mixxx::preferences::MultiSamplingMode>();
+    m_pConfig->setValue<mixxx::preferences::MultiSamplingMode>(
+            ConfigKey(kPreferencesGroup, kMultiSamplingKey), multiSampling);
+#endif
+
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
+#ifdef MIXXX_USE_QML
+            || multiSampling != m_multiSampling
+#endif
+    ) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
         m_dScaleFactor = scaleFactor;
+#ifdef MIXXX_USE_QML
+        m_multiSampling = multiSampling;
+#endif
     }
 
     // load skin/scheme if necessary
@@ -430,21 +513,26 @@ void DlgPrefInterface::slotApply() {
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
         m_skinNameOnUpdate = m_pSkin->name();
+        m_colorSchemeOnUpdate = m_colorScheme;
     }
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    const auto tooltipMode = static_cast<mixxx::TooltipsPreference>(
-            m_pConfig->getValue(ConfigKey(kControlsGroup, kTooltipsKey),
-                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+    const auto tooltipMode = m_pConfig->getValue<mixxx::preferences::Tooltips>(
+            ConfigKey(kControlsGroup, kTooltipsKey),
+#ifdef Q_OS_IOS
+            mixxx::preferences::Tooltips::Off);
+#else
+            mixxx::preferences::Tooltips::On);
+#endif
     switch (tooltipMode) {
-    case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+    case mixxx::preferences::Tooltips::Off:
         radioButtonTooltipsOff->setChecked(true);
         break;
-    case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+    case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
         break;
-    case mixxx::TooltipsPreference::TOOLTIPS_ON:
+    case mixxx::preferences::Tooltips::On:
     default:
         radioButtonTooltipsLibraryAndSkin->setChecked(true);
         break;

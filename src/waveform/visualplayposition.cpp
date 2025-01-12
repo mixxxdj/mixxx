@@ -1,10 +1,9 @@
 #include "waveform/visualplayposition.h"
 
 #include "moc_visualplayposition.cpp"
+#include "util/cmdlineargs.h"
 #include "util/math.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
-#endif
 
 //static
 QMap<QString, QWeakPointer<VisualPlayPosition>> VisualPlayPosition::m_listVisualPlayPosition;
@@ -12,9 +11,9 @@ PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
-        : m_valid(false),
-          m_key(key),
-          m_noTransport(false) {
+        : m_valid{false},
+          m_key{key},
+          m_noTransport{false} {
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
@@ -54,20 +53,24 @@ void VisualPlayPosition::set(
 
     // Atomic write
     m_data.setValue(data);
-    m_valid = true;
+    m_valid.store(true);
 }
 
 double VisualPlayPosition::calcOffsetAtNextVSync(
         VSyncThread* pVSyncThread, const VisualPlayPositionData& data) {
     if (data.m_audioBufferMicroS != 0.0) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        Q_UNUSED(pVSyncThread);
-        const int refToVSync = 0;
-        const int syncIntervalTimeMicros = 0;
-#else
-        const int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        const int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
+        int refToVSync;
+        int syncIntervalTimeMicros;
+#ifdef MIXXX_USE_QML
+        if (CmdlineArgs::Instance().isQml()) {
+            refToVSync = 0;
+            syncIntervalTimeMicros = 0;
+        } else
 #endif
+        {
+            refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+            syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
+        }
         // The positive offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
@@ -159,7 +162,7 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
 }
 
 double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
-    if (m_valid) {
+    if (m_valid.load()) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
 
@@ -171,7 +174,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
 void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double* pPlayPosition,
         double* pSlipPosition) {
-    if (m_valid) {
+    if (m_valid.load()) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
 
@@ -187,7 +190,7 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
 }
 
 double VisualPlayPosition::getEnginePlayPos() {
-    if (m_valid) {
+    if (m_valid.load()) {
         VisualPlayPositionData data = m_data.getValue();
         return data.m_playPos;
     } else {
@@ -196,7 +199,7 @@ double VisualPlayPosition::getEnginePlayPos() {
 }
 
 void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds) {
-    if (m_valid) {
+    if (m_valid.load()) {
         VisualPlayPositionData data = m_data.getValue();
         *pPlayPosition = data.m_playPos;
         *pTempoTrackSeconds = data.m_tempoTrackSeconds;

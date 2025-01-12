@@ -11,4 +11,6 @@ class TrackSetTableModel : public BaseSqlTableModel {
             const char* settingsNamespace);
 
     bool isColumnInternal(int column) override;
+
+    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
 };

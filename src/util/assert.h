@@ -39,7 +39,7 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 /// corrupting user data. Handle errors gracefully whenever possible.
 #define RELEASE_ASSERT(cond)                                                  \
     do                                                                        \
-        if (Q_UNLIKELY(!static_cast<bool>(cond))) {                           \
+        if (!static_cast<bool>(cond)) [[unlikely]] {                          \
             mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
         }                                                                     \
     while (0)
@@ -56,7 +56,7 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define DEBUG_ASSERT(cond)                                                  \
     do                                                                      \
-        if (Q_UNLIKELY(!static_cast<bool>(cond))) {                         \
+        if (!static_cast<bool>(cond)) [[unlikely]] {                        \
             mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
         }                                                                   \
     while (0)
@@ -80,5 +80,5 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
     if (Q_UNLIKELY(!static_cast<bool>(cond)) && \
             mixxx_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
 #else
-#define VERIFY_OR_DEBUG_ASSERT(cond) if (Q_UNLIKELY(!static_cast<bool>(cond)))
+#define VERIFY_OR_DEBUG_ASSERT(cond) if (!static_cast<bool>(cond)) [[unlikely]]
 #endif

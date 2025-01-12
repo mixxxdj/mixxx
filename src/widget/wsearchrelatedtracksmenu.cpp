@@ -1,10 +1,16 @@
 #include "widget/wsearchrelatedtracksmenu.h"
 
+#include <QCheckBox>
+#include <QMouseEvent>
 #include <QScreen>
+#include <QStyleOptionButton>
+#include <QWidgetAction>
 
+#include "library/searchquery.h"
 #include "moc_wsearchrelatedtracksmenu.cpp"
 #include "track/track.h"
 #include "util/math.h"
+#include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
 
@@ -14,17 +20,7 @@ namespace {
 // a viable upper bound for the context menu.
 constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
-constexpr double kRelativeBpmRange = 0.06; // +/-6 %
-
 const QString kActionTextPrefixSuffixSeparator = QStringLiteral(" | ");
-
-inline int bpmLowerBound(double bpm) {
-    return static_cast<int>(std::floor((1 - kRelativeBpmRange) * bpm));
-}
-
-inline int bpmUpperBound(double bpm) {
-    return static_cast<int>(std::ceil((1 + kRelativeBpmRange) * bpm));
-}
 
 inline QString quoteSearchQueryText(const QString& text) {
     return QChar('"') + text + QChar('"');
@@ -58,8 +54,8 @@ QString extractCalendarYearNumberFromReleaseDate(
 } // namespace
 
 WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
-        QWidget* parent)
-        : QMenu(tr("Search related Tracks"), parent) {
+        QWidget* pParent)
+        : QMenu(tr("Search related Tracks"), pParent) {
 }
 
 void WSearchRelatedTracksMenu::addTriggerSearchAction(
@@ -78,12 +74,32 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
             elideActionText(
                     actionTextPrefix,
                     elidableTextSuffix);
-    addAction(
+
+    auto pCheckBox = make_parented<QCheckBox>(
             mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
+            this);
+    pCheckBox->setProperty("query", searchQuery);
+    connect(pCheckBox.get(),
+            &QCheckBox::toggled,
+            this,
+            &WSearchRelatedTracksMenu::updateSearchButton);
+    // Use the event filter to capture clicks on the checkbox label
+    pCheckBox.get()->installEventFilter(this);
+
+    auto pAction = make_parented<QWidgetAction>(this);
+    pAction->setDefaultWidget(pCheckBox.get());
+    // While the checkbox is selected (via keyboard, not hovered by pointer)
+    // pressing Space will toggle it whereas pressing Return triggers the action.
+    connect(pAction.get(),
+            &QAction::triggered,
             this,
             [this, searchQuery]() {
+                // TODO Call combineQueriesTriggerSearch() so we can check multiple
+                // actions and press return on the last selected action without
+                // having to go to the Search button?
                 emit triggerSearch(searchQuery);
             });
+    addAction(pAction.get());
 }
 
 QString WSearchRelatedTracksMenu::elideActionText(
@@ -141,18 +157,23 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     {
         const auto bpm = track.getBpm();
         if (bpm > 0) {
-            const auto minBpmNumber = QString::number(bpmLowerBound(bpm));
-            const auto maxBpmNumber = QString::number(bpmUpperBound(bpm));
+            QString bpmStr = QString::number(bpm);
+            // BpmFilterNode has the user value for the fuzzy range, set in DlgPrefLibrary
+            BpmFilterNode* pBpmNode = new BpmFilterNode(bpmStr, true /* fuzzy search */);
+            double bpmLowerBound = 0.0;
+            double bpmUpperBound = 0.0;
+            std::tie(bpmLowerBound, bpmUpperBound) = pBpmNode->getBpmRange();
             const QString searchQuery =
                     QStringLiteral("bpm:>=") +
-                    minBpmNumber +
+                    QString::number(bpmLowerBound) +
                     QStringLiteral(" bpm:<=") +
-                    maxBpmNumber;
-            addTriggerSearchAction(
-                    &addSeparatorBeforeNextAction,
+                    QString::number(bpmUpperBound);
+            addTriggerSearchAction(&addSeparatorBeforeNextAction,
                     searchQuery,
                     tr("BPM"),
-                    tr("between %1 and %2").arg(minBpmNumber, maxBpmNumber));
+                    tr("between %1 and %2")
+                            .arg(QString::number(bpmLowerBound),
+                                    QString::number(bpmUpperBound)));
         }
     }
 
@@ -331,5 +352,99 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     tr("Directory"),
                     locationPathWithTerminator);
         }
+    }
+
+    addSeparator();
+
+    // Make the Search button a checkbox to simplify setting an icon via qss.
+    // This is not possible with a QAction, and tedious with a QPushButton.
+    auto pCheckBox = make_parented<QCheckBox>(tr("&Search selected"), this);
+    pCheckBox->setObjectName("SearchSelectedAction");
+    m_pSearchAction = make_parented<QWidgetAction>(this);
+    m_pSearchAction->setDefaultWidget(pCheckBox.get());
+    addAction(m_pSearchAction.get());
+    m_pSearchAction->setDisabled(true);
+
+    // This is for Enter/Return key
+    connect(m_pSearchAction.get(),
+            &QAction::triggered,
+            this,
+            &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
+    // This is for click and Space key
+    connect(pCheckBox.get(),
+            &QCheckBox::clicked,
+            this,
+            &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
+}
+
+bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
+    if (e->type() == QEvent::MouseButtonPress) {
+        // Clicking any spot in the checkbox that is not inside the indicator's
+        // 'click' rectangle triggers the search, ignoring other checked boxes.
+        // Clicks on the indicator are passed on to the event filter, hence
+        // toggling the checkbox happens as usual.
+        QCheckBox* pBox = qobject_cast<QCheckBox*>(pObj);
+        if (pBox) {
+            QMouseEvent* pMe = static_cast<QMouseEvent*>(e);
+            VERIFY_OR_DEBUG_ASSERT(pMe) {
+                return true;
+            }
+            QStyleOptionButton option;
+            option.initFrom(pBox);
+            auto* pStyle = pBox->style();
+            if (!pStyle) {
+                return true;
+            }
+            const QRect indicatorClickRect = pStyle->subElementRect(QStyle::SE_CheckBoxClickRect,
+                    &option,
+                    pBox);
+            if (!indicatorClickRect.contains(pMe->pos())) {
+                // Text ('border' ractangle) was clicked, trigger the search.
+                const QString query = pBox->property("query").toString();
+                emit triggerSearch(query);
+                // Note that this click will not emit QAction::triggered like
+                // when pressing Return on a selected action, hence we need to
+                // make sure WTrackMenu closes when receiving triggerSearch().
+            }
+        }
+    }
+    return QObject::eventFilter(pObj, e);
+}
+
+void WSearchRelatedTracksMenu::updateSearchButton() {
+    // Enable the Search button if at least opChildbox is checked.
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchAction) {
+        return;
+    }
+    m_pSearchAction->setDisabled(true);
+    for (const auto* pChild : std::as_const(children())) {
+        const auto* pBox = qobject_cast<const QCheckBox*>(pChild);
+        if (pBox && pBox->isChecked()) {
+            m_pSearchAction->setEnabled(true);
+            return;
+        }
+    }
+}
+
+void WSearchRelatedTracksMenu::combineQueriesTriggerSearch() {
+    // collect queries of all checked checkboxes
+    QStringList queries;
+    for (const auto* pChild : std::as_const(children())) {
+        if (pChild == m_pSearchAction) {
+            continue;
+        }
+        const auto* pBox = qobject_cast<const QCheckBox*>(pChild);
+        if (pBox && pBox->isChecked()) {
+            QString query = pBox->property("query").toString();
+            if (!query.isEmpty()) {
+                queries.append(query);
+            }
+        }
+    }
+    if (queries.isEmpty()) {
+        return;
+    } else {
+        QString queryCombo = queries.join(QChar(' '));
+        emit triggerSearch(queryCombo);
     }
 }

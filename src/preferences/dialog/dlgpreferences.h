@@ -75,9 +75,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     // Emitted if the user clicks Reset to Defaults.
     void resetToDefaults();
 
-  signals:
     void reloadUserInterface();
-    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+    void tooltipModeChanged(mixxx::preferences::Tooltips tooltipMode);
+    void menuBarAutoHideChanged();
 
   protected:
     bool eventFilter(QObject*, QEvent*);

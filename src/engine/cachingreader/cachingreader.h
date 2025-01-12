@@ -82,7 +82,8 @@ class CachingReader : public QObject {
   public:
     // Construct a CachingReader with the given group.
     CachingReader(const QString& group,
-            UserSettingsPointer _config);
+            UserSettingsPointer _config,
+            mixxx::audio::ChannelCount maxSupportedChannel);
     ~CachingReader() override;
 
     void process();
@@ -100,7 +101,11 @@ class CachingReader : public QObject {
     // buffer. It always writes numSamples to the buffer and otherwise
     // returns ReadResult::UNAVAILABLE.
     // It support reading stereo samples in reverse (backward) order.
-    virtual ReadResult read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer);
+    virtual ReadResult read(SINT startSample,
+            SINT numSamples,
+            bool reverse,
+            CSAMPLE* buffer,
+            mixxx::audio::ChannelCount channelCount);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
@@ -111,7 +116,11 @@ class CachingReader : public QObject {
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
+#ifdef __STEM__
+    void newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask = {});
+#else
     void newTrack(TrackPointer pTrack);
+#endif
 
     void setScheduler(EngineWorkerScheduler* pScheduler) {
         m_worker.setScheduler(pScheduler);
@@ -120,7 +129,10 @@ class CachingReader : public QObject {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int trackSampleRate, double trackNumSamples);
+    void trackLoaded(TrackPointer pTrack,
+            mixxx::audio::SampleRate trackSampleRate,
+            mixxx::audio::ChannelCount trackChannelCount,
+            mixxx::audio::FramePos trackNumFrame);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

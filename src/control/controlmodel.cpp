@@ -1,5 +1,7 @@
 #include "control/controlmodel.h"
 
+#include <QStringBuilder>
+
 #include "moc_controlmodel.cpp"
 
 ControlModel::ControlModel(QObject* pParent)
@@ -17,6 +19,9 @@ ControlModel::ControlModel(QObject* pParent)
             ControlDoublePrivate::getAllInstances();
 
     QSet<ConfigKey> controlKeys;
+
+    // Reserve memory for m_controls, which will be used later in addControl
+    m_controls.reserve(controlsList.size());
 
     for (const QSharedPointer<ControlDoublePrivate>& pControl : controlsList) {
         if (!pControl) {

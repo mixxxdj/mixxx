@@ -141,29 +141,41 @@ void WaveformSignalColors::fallBackFromSignalColor() {
     if (s < 0.1) { // gray
         const float sMax = 1.0f - h;
         m_lowColor.setHslF(h,s,l);
-        m_midColor.setHslF(h,s+sMax*0.2,l);
-        m_highColor.setHslF(h,s+sMax*0.4,l);
+        m_midColor.setHslF(h, s + sMax * 0.2f, l);
+        m_highColor.setHslF(h, s + sMax * 0.4f, l);
     } else {
         if (l < 0.1) { // ~white
             const float lMax = 1.0f - l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(h,s,l+lMax*0.2);
-            m_highColor.setHslF(h,s,l+lMax*0.4);
+            m_midColor.setHslF(h, s, l + lMax * 0.2f);
+            m_highColor.setHslF(h, s, l + lMax * 0.4f);
         } else if (l < 0.5) {
             const float lMax = 1.0f - l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
-            m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
+            m_midColor.setHslF(
+                    static_cast<float>(stableHue(h - analogousAngle * 0.3)),
+                    s,
+                    l + lMax * 0.1f);
+            m_highColor.setHslF(
+                    static_cast<float>(stableHue(h + analogousAngle * 0.3)),
+                    s,
+                    l + lMax * 0.4f);
         } else if (l < 0.9) {
             const float lMin = l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l-lMin*0.1);
-            m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l-lMin*0.4);
+            m_midColor.setHslF(
+                    static_cast<float>(stableHue(h - analogousAngle * 0.3)),
+                    s,
+                    l - lMin * 0.1f);
+            m_highColor.setHslF(
+                    static_cast<float>(stableHue(h + analogousAngle * 0.3)),
+                    s,
+                    l - lMin * 0.4f);
         } else { // ~black
             const float lMin = l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(h,s,l-lMin*0.2);
-            m_highColor.setHslF(h,s,l-lMin*0.4);
+            m_midColor.setHslF(h, s, l - lMin * 0.2f);
+            m_highColor.setHslF(h, s, l - lMin * 0.4f);
         }
     }
 

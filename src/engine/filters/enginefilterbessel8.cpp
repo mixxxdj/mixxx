@@ -9,17 +9,16 @@ constexpr char kFidSpecBandPassBessel8[] = "BpBe8";
 constexpr char kFidSpecHighPassBessel8[] = "HpBe8";
 } // namespace
 
-EngineFilterBessel8Low::EngineFilterBessel8Low(int sampleRate,
-                                               double freqCorner1) {
+EngineFilterBessel8Low::EngineFilterBessel8Low(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterBessel8Low::setFrequencyCorners(int sampleRate,
-                                                 double freqCorner1) {
+void EngineFilterBessel8Low::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     // Copy the old coefficients into m_oldCoef
     setCoefs(kFidSpecLowPassBessel8, sizeof(kFidSpecLowPassBessel8), sampleRate, freqCorner1);
 }
-
 
 int EngineFilterBessel8Low::setFrequencyCornersForIntDelay(
         double desiredCorner1Ratio, int maxDelay) {
@@ -72,15 +71,15 @@ int EngineFilterBessel8Low::setFrequencyCornersForIntDelay(
     return iDelay;
 }
 
-EngineFilterBessel8Band::EngineFilterBessel8Band(int sampleRate,
-                                                 double freqCorner1,
-                                                 double freqCorner2) {
+EngineFilterBessel8Band::EngineFilterBessel8Band(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1,
+        double freqCorner2) {
     setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
 }
 
-void EngineFilterBessel8Band::setFrequencyCorners(int sampleRate,
-                                                  double freqCorner1,
-                                                  double freqCorner2) {
+void EngineFilterBessel8Band::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1,
+        double freqCorner2) {
     setCoefs(kFidSpecBandPassBessel8,
             sizeof(kFidSpecBandPassBessel8),
             sampleRate,
@@ -88,13 +87,12 @@ void EngineFilterBessel8Band::setFrequencyCorners(int sampleRate,
             freqCorner2);
 }
 
-
-EngineFilterBessel8High::EngineFilterBessel8High(int sampleRate,
-                                                 double freqCorner1) {
+EngineFilterBessel8High::EngineFilterBessel8High(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterBessel8High::setFrequencyCorners(int sampleRate,
-                                                  double freqCorner1) {
+void EngineFilterBessel8High::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setCoefs(kFidSpecHighPassBessel8, sizeof(kFidSpecHighPassBessel8), sampleRate, freqCorner1);
 }

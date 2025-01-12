@@ -9,7 +9,7 @@
         <Layout>stacked</Layout>
         <Children>
           <PushButton>
-            <TooltipId>show_samplers</TooltipId>
+            <TooltipId>expand_samplers</TooltipId>
             <ObjectName>SamplerExpandOverlay</ObjectName>
             <Size>16f,36me</Size>
             <NumberStates>2</NumberStates>

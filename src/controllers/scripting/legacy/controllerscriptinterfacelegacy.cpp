@@ -1,12 +1,18 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <QStringEncoder>
+#include <gsl/pointers>
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "control/controlpotmeter.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
+#include "util/cmdlineargs.h"
 #include "util/fpclassify.h"
+#include "util/make_const_iterator.h"
 #include "util/time.h"
 
 #define SCRATCH_DEBUG_OUTPUT false
@@ -77,15 +83,15 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
 
     // Free all the ControlObjectScripts
     {
-        auto it = m_controlCache.begin();
-        while (it != m_controlCache.end()) {
+        auto it = m_controlCache.constBegin();
+        while (it != m_controlCache.constEnd()) {
             qCDebug(m_logger)
                     << "Deleting ControlObjectScript"
                     << it.key().group
                     << it.key().item;
             delete it.value();
             // Advance iterator
-            it = m_controlCache.erase(it);
+            it = constErase(&m_controlCache, it);
         }
     }
 }
@@ -105,6 +111,29 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
         }
     }
     return coScript;
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy) {
+        return QJSValue::UndefinedValue;
+    }
+    if (name.isEmpty()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("getSetting called with empty name "
+                               "string, returning undefined")
+                        .arg(name));
+        return QJSValue::UndefinedValue;
+    }
+
+    const auto it = m_pScriptEngineLegacy->m_settings.constFind(name);
+    if (it != m_pScriptEngineLegacy->m_settings.constEnd()) {
+        return it.value();
+    } else {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown controllerSetting (%1) returning undefined")
+                        .arg(name));
+        return QJSValue::UndefinedValue;
+    }
 }
 
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
@@ -496,7 +525,9 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     m_timers[timerId] = info;
     if (timerId == 0) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Script timer could not be created"));
-    } else if (oneShot) {
+    } else if (oneShot &&
+            // FIXME workaround log spam (Github issue to be created)
+            CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(m_logger) << "Starting one-shot timer:" << timerId;
     } else {
         qCDebug(m_logger) << "Starting timer:" << timerId;
@@ -511,7 +542,9 @@ void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
                                                        .arg(timerId));
         return;
     }
-    qCDebug(m_logger) << "Killing timer:" << timerId;
+    if (CmdlineArgs::Instance().getControllerDebug()) {
+        qCDebug(m_logger) << "Killing timer:" << timerId;
+    }
     killTimer(timerId);
     m_timers.remove(timerId);
 }
@@ -546,23 +579,24 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
     // why but this causes segfaults in ~QScriptValue while scratching if we
     // don't copy here -- even though internalExecute passes the QScriptValues
     // by value. *boggle*
-    const TimerInfo timerTarget = it.value();
+    TimerInfo timerTarget = it.value();
     if (timerTarget.oneShot) {
         stopTimer(timerId);
     }
 
-    m_pScriptEngineLegacy->executeFunction(timerTarget.callback);
+    m_pScriptEngineLegacy->executeFunction(&timerTarget.callback);
 }
 
 void ControllerScriptInterfaceLegacy::softTakeover(
         const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
-    if (!pControl) {
-        return;
-    }
     if (set) {
-        m_st.enable(pControl);
+        auto* pControlPotmeter = qobject_cast<ControlPotmeter*>(pControl);
+        if (!pControlPotmeter) {
+            return;
+        }
+        m_st.enable(gsl::not_null(pControlPotmeter));
     } else {
         m_st.disable(pControl);
     }
@@ -577,6 +611,17 @@ void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
     }
 
     m_st.ignoreNext(pControl);
+}
+
+bool ControllerScriptInterfaceLegacy::softTakeoverWillIgnore(
+        const QString& group, const QString& name, double parameter) {
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name));
+    if (!pControl) {
+        return false;
+    }
+
+    return m_st.willIgnore(pControl, parameter);
 }
 
 double ControllerScriptInterfaceLegacy::getDeckRate(const QString& group) {
@@ -1007,4 +1052,80 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
     // activate the ramping in scratchProcess()
     m_ramp[deck] = true;
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const ControllerScriptInterfaceLegacy::Charset targetCharset,
+        const QString& value) {
+    using enum Charset;
+    switch (targetCharset) {
+    case ASCII:
+        return convertCharsetInternal(QStringLiteral("US-ASCII"), value);
+    case UTF_8:
+        return convertCharsetInternal(QStringLiteral("UTF-8"), value);
+    case UTF_16LE:
+        return convertCharsetInternal(QStringLiteral("UTF-16LE"), value);
+    case UTF_16BE:
+        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
+    case UTF_32LE:
+        return convertCharsetInternal(QStringLiteral("UTF-32LE"), value);
+    case UTF_32BE:
+        return convertCharsetInternal(QStringLiteral("UTF-32BE"), value);
+    case CentralEurope:
+        return convertCharsetInternal(QStringLiteral("windows-1250"), value);
+    case Cyrillic:
+        return convertCharsetInternal(QStringLiteral("windows-1251"), value);
+    case Latin1:
+        return convertCharsetInternal(QStringLiteral("windows-1252"), value);
+    case Greek:
+        return convertCharsetInternal(QStringLiteral("windows-1253"), value);
+    case Turkish:
+        return convertCharsetInternal(QStringLiteral("windows-1254"), value);
+    case Hebrew:
+        return convertCharsetInternal(QStringLiteral("windows-1255"), value);
+    case Arabic:
+        return convertCharsetInternal(QStringLiteral("windows-1256"), value);
+    case Baltic:
+        return convertCharsetInternal(QStringLiteral("windows-1257"), value);
+    case Vietnamese:
+        return convertCharsetInternal(QStringLiteral("windows-1258"), value);
+    case Latin9:
+        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
+    case Shift_JIS:
+        return convertCharsetInternal(QStringLiteral("Shift_JIS"), value);
+    case EUC_JP:
+        return convertCharsetInternal(QStringLiteral("EUC-JP"), value);
+    case EUC_KR:
+        return convertCharsetInternal(QStringLiteral("EUC-KR"), value);
+    case Big5_HKSCS:
+        return convertCharsetInternal(QStringLiteral("Big5-HKSCS"), value);
+    case KOI8_U:
+        return convertCharsetInternal(QStringLiteral("KOI8-U"), value);
+    case UCS2:
+        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
+    case SCSU:
+        return convertCharsetInternal(QStringLiteral("SCSU"), value);
+    case BOCU_1:
+        return convertCharsetInternal(QStringLiteral("BOCU-1"), value);
+    case CESU_8:
+        return convertCharsetInternal(QStringLiteral("CESU-8"), value);
+    }
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
+    return QByteArray();
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
+        const QString& targetCharset, const QString& value) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QAnyStringView encoderName = QAnyStringView(targetCharset);
+#else
+    QByteArray encoderNameArray = targetCharset.toUtf8();
+    const char* encoderName = encoderNameArray.constData();
+#endif
+    QStringEncoder fromUtf16 = QStringEncoder(encoderName);
+    if (!fromUtf16.isValid()) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
+    }
+    return fromUtf16(value);
 }

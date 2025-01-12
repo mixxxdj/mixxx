@@ -12,12 +12,16 @@ class EmptyWaveformWidget : public NonGLWaveformWidgetAbstract {
   public:
     virtual ~EmptyWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Empty;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("Empty"); }
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
+    static inline bool useTextureForWaveform() {
+        return false;
+    }
     static inline WaveformWidgetCategory category() {
         return WaveformWidgetCategory::Default;
     }

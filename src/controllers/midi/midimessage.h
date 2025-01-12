@@ -1,13 +1,18 @@
 #pragma once
 
 #include <QFlags>
+#include <QJSValue>
 #include <QList>
 #include <QMetaType>
 #include <QPair>
+#include <QUuid>
 #include <QtDebug>
 #include <cstdint>
+#include <memory>
+#include <variant>
 
 #include "preferences/usersettings.h"
+#include "util/always_false_v.h"
 #include "util/compatibility/qhash.h"
 
 // The second value of each OpCode will be the channel number the message
@@ -146,15 +151,14 @@ struct MidiOutput {
 
     double min;
     double max;
-    union
-    {
-        uint32_t    message;
+    union {
+        uint32_t message;
         struct
         {
-            unsigned char    status  : 8;
-            unsigned char    control : 8;
-            unsigned char    on      : 8;
-            unsigned char    off     : 8;
+            unsigned char status : 8;
+            unsigned char control : 8;
+            unsigned char on : 8;
+            unsigned char off : 8;
         };
     };
 };
@@ -167,13 +171,12 @@ struct MidiKey {
         return key == other.key;
     }
 
-    union
-    {
-        uint16_t    key;
+    union {
+        uint16_t key;
         struct
         {
-            unsigned char    status  : 8;
-            unsigned char    control : 8;
+            unsigned char status : 8;
+            unsigned char control : 8;
         };
     };
 };
@@ -187,7 +190,9 @@ struct MidiInputMapping {
               options(options) {
     }
 
-    MidiInputMapping(MidiKey key, MidiOptions options, const ConfigKey& control)
+    MidiInputMapping(MidiKey key,
+            MidiOptions options,
+            const std::variant<ConfigKey, std::shared_ptr<QJSValue>>& control)
             : key(key),
               options(options),
               control(control) {
@@ -195,7 +200,7 @@ struct MidiInputMapping {
 
     MidiInputMapping(MidiKey key,
             MidiOptions options,
-            const ConfigKey& control,
+            const std::variant<ConfigKey, std::shared_ptr<QJSValue>>& control,
             const QString& description)
             : key(key),
               options(options),
@@ -204,13 +209,34 @@ struct MidiInputMapping {
     }
 
     bool operator==(const MidiInputMapping& other) const {
-        return key == other.key && options == other.options &&
-                control == other.control && description == other.description;
+        return std::visit([&](auto first, auto second) {
+            using T = std::decay_t<decltype(first)>;
+            using U = std::decay_t<decltype(second)>;
+
+            if constexpr (!std::is_same_v<T, U>) {
+                return false;
+            } else if constexpr (std::is_same_v<T, ConfigKey>) {
+                return key == other.key &&
+                        options == other.options &&
+                        std::get<ConfigKey>(control) == std::get<ConfigKey>(other.control) &&
+                        description == other.description;
+            } else if constexpr (std::is_same_v<T, std::shared_ptr<QJSValue>>) {
+                const auto& otherControl = std::get<std::shared_ptr<QJSValue>>(other.control);
+                const auto& thisControl = std::get<std::shared_ptr<QJSValue>>(control);
+                return key == other.key && options == other.options &&
+                        thisControl->strictlyEquals(*otherControl) &&
+                        description == other.description;
+            } else
+                static_assert(always_false_v<T>, "non-exhaustive visitor");
+        },
+                control,
+                other.control);
     }
 
     MidiKey key;
     MidiOptions options;
-    ConfigKey control;
+    // TODO: find a new name to represent both an XML's control entry and an anonymous JS function
+    std::variant<ConfigKey, std::shared_ptr<QJSValue>> control;
     QString description;
 };
 typedef QList<MidiInputMapping> MidiInputMappings;

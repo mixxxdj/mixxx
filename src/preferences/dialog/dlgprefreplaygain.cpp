@@ -19,12 +19,12 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
           m_enabled(kConfigKey, kReplayGainEnabled) {
     setupUi(this);
 
-    m_analysisButtonGroup.addButton(radioButtonRG1);
-    m_analysisButtonGroup.addButton(radioButtonRG2);
-    m_analysisButtonGroup.addButton(radioButtonDisable);
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(EnableGain, &QCheckBox::checkStateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
+#else
     connect(EnableGain, &QCheckBox::stateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
-    connect(&m_analysisButtonGroup,
+#endif
+    connect(buttonGroupAnalyzer,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
             &QButtonGroup::idClicked,
 #else
@@ -53,7 +53,11 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
     setScrollSafeGuard(SliderDefaultBoost);
 
     connect(checkBoxReanalyze,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefReplayGain::slotSetReanalyze);
 
@@ -68,7 +72,6 @@ void DlgPrefReplayGain::loadSettings() {
     SliderReplayGainBoost->setValue(iReplayGainBoost);
     setLabelCurrentReplayGainBoost(iReplayGainBoost);
 
-
     int iDefaultBoost = m_rgSettings.getInitialDefaultBoost();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
@@ -79,7 +82,6 @@ void DlgPrefReplayGain::loadSettings() {
 
     bool analyzerEnabled = m_rgSettings.getReplayGainAnalyzerEnabled();
     int version = m_rgSettings.getReplayGainAnalyzerVersion();
-
     if (!analyzerEnabled) {
         radioButtonDisable->setChecked(true);
     } else if (version == 1) {
@@ -87,7 +89,6 @@ void DlgPrefReplayGain::loadSettings() {
     } else {
         radioButtonRG2->setChecked(true);
     }
-
     checkBoxReanalyze->setEnabled(analyzerEnabled);
 
     bool reanalyse = m_rgSettings.getReplayGainReanalyze();
@@ -100,7 +101,7 @@ void DlgPrefReplayGain::loadSettings() {
 
 void DlgPrefReplayGain::slotResetToDefaults() {
     EnableGain->setChecked(true);
-    // Turn ReplayGain Analyzer on by default as it does not give appreciable
+    // Turn ReplayGain Analyzer on by default as it does not give noticeable
     // delay on recent hardware (<5 years old).
     radioButtonRG2->setChecked(true);
     checkBoxReanalyze->setChecked(false);
@@ -120,8 +121,13 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGEnabled() {
-    m_rgSettings.setReplayGainEnabled(EnableGain->isChecked());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefReplayGain::slotSetRGEnabled(Qt::CheckState state) {
+    m_rgSettings.setReplayGainEnabled(state == Qt::Checked);
+#else
+void DlgPrefReplayGain::slotSetRGEnabled(int isChecked) {
+    m_rgSettings.setReplayGainEnabled(static_cast<bool>(isChecked));
+#endif
     slotUpdate();
     slotApply();
 }
@@ -185,8 +191,12 @@ void DlgPrefReplayGain::slotApply() {
     m_enabled.set(EnableGain->isChecked() ? 1.0 : 0.0);
 }
 
-void DlgPrefReplayGain::slotSetReanalyze() {
-    bool checked = checkBoxReanalyze->isChecked();
-    m_rgSettings.setReplayGainReanalyze(checked);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefReplayGain::slotSetReanalyze(Qt::CheckState state) {
+    m_rgSettings.setReplayGainReanalyze(state == Qt::Checked);
+#else
+void DlgPrefReplayGain::slotSetReanalyze(int state) {
+    m_rgSettings.setReplayGainReanalyze(static_cast<bool>(state));
+#endif
     slotApply();
 }

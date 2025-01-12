@@ -1,6 +1,7 @@
 #pragma once
 
-#include "util/timer.h"
+#include <QObject>
+#include <QTimer>
 
 class Battery : public QObject {
     Q_OBJECT
@@ -43,5 +44,5 @@ class Battery : public QObject {
     int m_iMinutesLeft;
 
   private:
-    GuiTickTimer m_timer;
+    QTimer m_timer;
 };

@@ -164,11 +164,11 @@ void WaveformRendererHSV::draw(
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
             } else {
-                lo = hi = 0.0;
+                lo = hi = 0.0f;
             }
 
             // Set color
-            color.setHsvF(h, 1.0-hi, 1.0-lo);
+            color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
             pen.setColor(color);
 

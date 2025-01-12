@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -105,6 +106,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
+          m_pLibrary(nullptr),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
@@ -435,15 +437,32 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioPathType::Deck, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioPathType::Deck,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    deckIndex),
+            m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-    m_pSoundManager->registerInput(
-            AudioInput(AudioPathType::VinylControl, 0, 2, deckIndex), pEngineDeck);
+    m_pSoundManager->registerInput(AudioInput(AudioPathType::VinylControl,
+                                           0,
+                                           mixxx::audio::ChannelCount::stereo(),
+                                           deckIndex),
+            pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);
+
+#ifdef __STEM__
+    // Setup stem QuickEffect chain for this deck
+    for (int i = 0; i < 4; i++) {
+        ChannelHandleAndGroup stemHandleGroup =
+                m_pEngine->registerChannelGroup(groupForDeckStem(deckIndex, i));
+        pDeck->getEngineDeck()->addStemHandle(stemHandleGroup);
+        m_pEffectsManager->addStem(stemHandleGroup);
+    }
+#endif
 
     // Setup EQ ControlProxies used for resetting EQs on track load
     pDeck->setupEqControls();
@@ -652,7 +671,15 @@ void PlayerManager::slotCloneDeck(const QString& source_group, const QString& ta
     pPlayer->slotCloneFromGroup(source_group);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
+#ifdef __STEM__
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
+#else
+void PlayerManager::slotLoadTrackToPlayer(
+        TrackPointer pTrack, const QString& group, bool play) {
+#endif
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
@@ -688,12 +715,26 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
             // so clone another playing deck instead of loading the selected track
             clone = true;
         }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
+        }
     }
 
     if (clone) {
         pPlayer->slotCloneDeck();
     } else {
+#ifdef __STEM__
+        pPlayer->slotLoadTrack(pTrack, stemMask, play);
+#else
         pPlayer->slotLoadTrack(pTrack, play);
+#endif
     }
 
     m_lastLoadedPlayer = group;
@@ -709,10 +750,8 @@ void PlayerManager::slotLoadLocationToPlayer(
 void PlayerManager::slotLoadLocationToPlayerMaybePlay(
         const QString& location, const QString& group) {
     bool play = false;
-    LoadWhenDeckPlaying loadWhenDeckPlaying =
-            static_cast<LoadWhenDeckPlaying>(
-                    m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
-                            static_cast<int>(kDefaultLoadWhenDeckPlaying)));
+    LoadWhenDeckPlaying loadWhenDeckPlaying = m_pConfig->getValue(
+            kConfigKeyLoadWhenDeckPlaying, kDefaultLoadWhenDeckPlaying);
     switch (loadWhenDeckPlaying) {
     case LoadWhenDeckPlaying::AllowButStopDeck:
     case LoadWhenDeckPlaying::Reject:
@@ -747,7 +786,11 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         return;
     }
 
-    pDeck->slotLoadTrack(pTrack, false);
+    pDeck->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 }
 
 void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
@@ -770,7 +813,11 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     }
     locker.unlock();
 
+#ifdef __STEM__
+    pSampler->slotLoadTrack(pTrack, mixxx::StemChannelSelection(), false);
+#else
     pSampler->slotLoadTrack(pTrack, false);
+#endif
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {

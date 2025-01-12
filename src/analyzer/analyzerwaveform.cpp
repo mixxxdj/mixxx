@@ -1,6 +1,7 @@
 #include "analyzer/analyzerwaveform.h"
 
 #include "analyzer/analyzertrack.h"
+#include "analyzer/constants.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "track/track.h"
 #include "util/logger.h"
@@ -10,6 +11,10 @@ namespace {
 
 mixxx::Logger kLogger("AnalyzerWaveform");
 
+constexpr double kLowMidFreqHz = 600.0;
+
+constexpr double kMidHighFreqHz = 4000.0;
+
 } // namespace
 
 AnalyzerWaveform::AnalyzerWaveform(
@@ -18,7 +23,7 @@ AnalyzerWaveform::AnalyzerWaveform(
         : m_analysisDao(pConfig),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
-          m_stride(0, 0),
+          m_stride(0, 0, 0),
           m_currentStride(0),
           m_currentSummaryStride(0) {
     m_filter[0] = nullptr;
@@ -34,6 +39,7 @@ AnalyzerWaveform::~AnalyzerWaveform() {
 
 bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     if (frameLength <= 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
@@ -56,10 +62,13 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
     // two visual sample per pixel in full width overview in full hd
     constexpr int summaryWaveformSamples = 2 * 1920;
 
+    int stemCount = channelCount == mixxx::kAnalysisChannels
+            ? 0
+            : channelCount / mixxx::kAnalysisChannels;
     m_waveform = WaveformPointer(new Waveform(
-            sampleRate, frameLength, mainWaveformSampleRate, -1));
+            sampleRate, frameLength, mainWaveformSampleRate, -1, stemCount));
     m_waveformSummary = WaveformPointer(new Waveform(
-            sampleRate, frameLength, mainWaveformSampleRate, summaryWaveformSamples));
+            sampleRate, frameLength, mainWaveformSampleRate, summaryWaveformSamples, stemCount));
 
     // Now, that the Waveform memory is initialized, we can set set them to
     // the TIO. Be aware that other threads of Mixxx can touch them from
@@ -71,10 +80,12 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
     m_waveformSummaryData = m_waveformSummary->data();
 
     m_stride = WaveformStride(m_waveform->getAudioVisualRatio(),
-            m_waveformSummary->getAudioVisualRatio());
+            m_waveformSummary->getAudioVisualRatio(),
+            stemCount);
 
     m_currentStride = 0;
     m_currentSummaryStride = 0;
+    m_channelCount = channelCount;
 
     //debug
     //m_waveform->dump();
@@ -92,6 +103,9 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
+#ifdef __STEM__
+    bool isStemTrack = !tio->getStemInfo().isEmpty();
+#endif
 
     TrackId trackId = tio->getId();
     bool missingWaveform = pTrackWaveform.isNull();
@@ -131,6 +145,19 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
         }
     }
 
+#ifdef __STEM__
+    // If the waveform was generated without stem information but the track has
+    // some, or the waveform contains stem information but the track doesn't
+    // have any, we need to regenerate the waveform.
+    if (!missingWaveform &&
+            ((!pTrackWaveform.isNull() &&
+                     pTrackWaveform->hasStem() != isStemTrack) ||
+                    (!pLoadedTrackWaveform.isNull() &&
+                            pLoadedTrackWaveform->hasStem() != isStemTrack))) {
+        missingWaveform = true;
+    }
+#endif
+
     // If we don't need to calculate the waveform/wavesummary, skip.
     if (!missingWaveform && !missingWavesummary) {
         kLogger.debug() << "loadStored - Stored waveform loaded";
@@ -146,12 +173,12 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
 }
 
 void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
-    // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
-    // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
-    // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
-    m_filter[Low] = new EngineFilterBessel4Low(sampleRate, 600);
-    m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, 600, 4000);
-    m_filter[High] = new EngineFilterBessel4High(sampleRate, 4000);
+    // m_filter[Low] = new EngineFilterButterworth8Low(sampleRate, kLowMidFreqHz);
+    // m_filter[Mid] = new EngineFilterButterworth8Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
+    // m_filter[High] = new EngineFilterButterworth8High(sampleRate, kMidHighFreqHz);
+    m_filter[Low] = new EngineFilterBessel4Low(sampleRate, kLowMidFreqHz);
+    m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
+    m_filter[High] = new EngineFilterBessel4High(sampleRate, kMidHighFreqHz);
     // settle filters for silence in preroll to avoids ramping (Issue #7776)
     for (int i = 0; i < FilterCount; ++i) {
         m_filter[i]->assumeSettled();
@@ -167,12 +194,31 @@ void AnalyzerWaveform::destroyFilters() {
     }
 }
 
-bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, SINT count) {
+bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_waveform) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(m_waveformSummary) {
         return false;
+    }
+
+    SINT numFrames = count / m_channelCount;
+    count = numFrames * mixxx::audio::ChannelCount::stereo();
+    int stemCount = 0;
+
+    const CSAMPLE* pWaveformInput = pIn;
+    CSAMPLE* pMixedChannel = nullptr;
+
+    if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
+        DEBUG_ASSERT(0 == m_channelCount % mixxx::audio::ChannelCount::stereo());
+
+        pMixedChannel = SampleUtil::alloc(count);
+        VERIFY_OR_DEBUG_ASSERT(pMixedChannel) {
+            return false;
+        }
+        SampleUtil::mixMultichannelToStereo(pMixedChannel, pIn, numFrames, m_channelCount);
+        stemCount = m_channelCount / mixxx::audio::ChannelCount::stereo();
+        pWaveformInput = pMixedChannel;
     }
 
     // This should only append once if count is constant
@@ -182,16 +228,16 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, SINT count) {
         m_buffers[High].resize(count);
     }
 
-    m_filter[Low]->process(buffer, &m_buffers[Low][0], count);
-    m_filter[Mid]->process(buffer, &m_buffers[Mid][0], count);
-    m_filter[High]->process(buffer, &m_buffers[High][0], count);
+    m_filter[Low]->process(pWaveformInput, &m_buffers[Low][0], count);
+    m_filter[Mid]->process(pWaveformInput, &m_buffers[Mid][0], count);
+    m_filter[High]->process(pWaveformInput, &m_buffers[High][0], count);
 
     m_waveform->setSaveState(Waveform::SaveState::NotSaved);
     m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
 
     for (SINT i = 0; i < count; i += 2) {
         // Take max value, not average of data
-        CSAMPLE cover[2] = {fabs(buffer[i]), fabs(buffer[i + 1])};
+        CSAMPLE cover[2] = {fabs(pWaveformInput[i]), fabs(pWaveformInput[i + 1])};
         CSAMPLE clow[2] = {fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1])};
         CSAMPLE cmid[2] = {fabs(m_buffers[Mid][i]), fabs(m_buffers[Mid][i + 1])};
         CSAMPLE chigh[2] = {fabs(m_buffers[High][i]), fabs(m_buffers[High][i + 1])};
@@ -216,6 +262,15 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, SINT count) {
         storeIfGreater(&m_stride.m_filteredData[Right][Mid], cmid[Right]);
         storeIfGreater(&m_stride.m_filteredData[Left][High], chigh[Left]);
         storeIfGreater(&m_stride.m_filteredData[Right][High], chigh[Right]);
+
+        for (int s = 0; s < stemCount; s++) {
+            CSAMPLE cstem[2] = {
+                    fabs(pIn[i * stemCount + s * mixxx::kAnalysisChannels]),
+                    fabs(pIn[i * stemCount + s * mixxx::kAnalysisChannels +
+                            1])};
+            storeIfGreater(&m_stride.m_stemData[Left][s], cstem[Left]);
+            storeIfGreater(&m_stride.m_stemData[Right][s], cstem[Right]);
+        }
 
         m_stride.m_position++;
 
@@ -253,6 +308,9 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, SINT count) {
 
     //kLogger.debug() << "process - m_waveform->getCompletion()" << m_waveform->getCompletion() << "off" << m_waveform->getDataSize();
     //kLogger.debug() << "process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion() << "off" << m_waveformSummary->getDataSize();
+    if (pMixedChannel) {
+        SampleUtil::free(pMixedChannel);
+    }
     return true;
 }
 

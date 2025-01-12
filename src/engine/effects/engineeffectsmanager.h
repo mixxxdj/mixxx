@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/types.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "util/samplebuffer.h"
@@ -19,7 +20,8 @@ struct GroupFeatureState;
 ///                                      PFL switch --> QuickEffectChains & StandardEffectChains --> mix channels into headphone mix --> headphone effect processing
 class EngineEffectsManager final : public EffectsRequestHandler {
   public:
-    EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe);
+    // passing by rvalue-ref because we want to ensure we're the only on with access to that pipe
+    EngineEffectsManager(EffectsResponsePipe&& responsePipe);
     ~EngineEffectsManager() override = default;
 
     void onCallbackStart();
@@ -30,8 +32,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
-            unsigned int numSamples,
-            unsigned int sampleRate);
+            std::size_t numSamples,
+            mixxx::audio::SampleRate sampleRate);
 
     /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
     /// the contents of the input buffer.
@@ -39,8 +41,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
-            unsigned int numSamples,
-            unsigned int sampleRate,
+            std::size_t numSamples,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
@@ -56,8 +58,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            unsigned int numSamples,
-            unsigned int sampleRate,
+            std::size_t numSamples,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
@@ -87,14 +89,14 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            unsigned int numSamples,
-            unsigned int sampleRate,
+            std::size_t numSamples,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
             bool fadeout = false);
 
-    std::unique_ptr<EffectsResponsePipe> m_pResponsePipe;
+    EffectsResponsePipe m_responsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
     QList<EngineEffect*> m_effects;
 

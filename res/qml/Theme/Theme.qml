@@ -36,6 +36,15 @@ QtObject {
     property color buttonNormalColor: midGray
     property color textColor: lightGray2
     property color toolbarActiveColor: white
+    property color waveformPrerollColor: midGray
+    property color waveformPostrollColor: midGray
+    property color waveformBeatColor: lightGray
+    property color waveformCursorColor: white
+    property color waveformMarkerDefault: '#ff7a01'
+    property color waveformMarkerLabel: Qt.rgba(255, 255, 255, 0.8)
+    property color waveformMarkerIntroOutroColor: '#2c5c9a'
+    property color waveformMarkerLoopColor: '#00b400'
+    property color waveformMarkerLoopColorDisabled: '#FFFFFF'
     property string fontFamily: "Open Sans"
     property int textFontPixelSize: 14
     property int buttonFontPixelSize: 10

@@ -1,27 +1,28 @@
 #include "engine/effects/engineeffectsmanager.h"
 
+#include "audio/types.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectchain.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffectsManager::EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe)
-        : m_pResponsePipe(std::move(pResponsePipe)),
-          m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN) {
+EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe&& responsePipe)
+        : m_responsePipe(std::move(responsePipe)),
+          m_buffer1(kMaxEngineSamples),
+          m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
 
 void EngineEffectsManager::onCallbackStart() {
     EffectsRequest* request = nullptr;
-    while (m_pResponsePipe->readMessage(&request)) {
+    while (m_responsePipe.readMessage(&request)) {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
         case EffectsRequest::ADD_EFFECT_CHAIN:
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            if (processEffectsRequest(*request, m_pResponsePipe.get())) {
+            if (processEffectsRequest(*request, &m_responsePipe)) {
                 processed = true;
             }
             break;
@@ -43,7 +44,7 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             }
             processed = request->pTargetChain->processEffectsRequest(
-                    *request, m_pResponsePipe.get());
+                    *request, &m_responsePipe);
             if (processed) {
                 // When an effect becomes active (part of a chain), keep
                 // it in our main list so that we can respond to
@@ -70,7 +71,7 @@ void EngineEffectsManager::onCallbackStart() {
             }
 
             processed = request->pTargetEffect
-                                ->processEffectsRequest(*request, m_pResponsePipe.get());
+                                ->processEffectsRequest(*request, &m_responsePipe);
 
             if (!processed) {
                 // If we got here, the message was not handled for an
@@ -86,7 +87,7 @@ void EngineEffectsManager::onCallbackStart() {
         }
 
         if (!processed) {
-            m_pResponsePipe->writeMessage(response);
+            m_responsePipe.writeMessage(response);
         }
     }
 }
@@ -94,8 +95,8 @@ void EngineEffectsManager::onCallbackStart() {
 void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
-        unsigned int numSamples,
-        unsigned int sampleRate) {
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer effects do not make use of it.
     GroupFeatureState featureState;
@@ -113,8 +114,8 @@ void EngineEffectsManager::processPostFaderInPlace(
         const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
-        unsigned int numSamples,
-        unsigned int sampleRate,
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
@@ -137,8 +138,8 @@ void EngineEffectsManager::processPostFaderAndMix(
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        unsigned int numSamples,
-        unsigned int sampleRate,
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
@@ -162,8 +163,8 @@ void EngineEffectsManager::processInner(
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        unsigned int numSamples,
-        unsigned int sampleRate,
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,

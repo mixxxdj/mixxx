@@ -103,7 +103,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNode.isNull()) {
         setPixmapBackground(
                 context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::TILE),
+                context.selectScaleMode(backPathNode, Paintable::DrawMode::Tile),
                 context.getScaleFactor());
     }
 
@@ -113,7 +113,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNodeHighlighted.isNull()) {
         setPixmapBackgroundHighlighted(
                 context.getPixmapSource(backPathNodeHighlighted),
-                context.selectScaleMode(backPathNodeHighlighted, Paintable::TILE),
+                context.selectScaleMode(backPathNodeHighlighted, Paintable::DrawMode::Tile),
                 context.getScaleFactor());
     }
 

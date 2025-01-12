@@ -45,6 +45,7 @@
 
           <Template src="skin:hide_show_button.xml">
             <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
+            <SetVariable name="TooltipId">expand_samplers</SetVariable>
             <SetVariable name="control">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
           </Template>
 

@@ -1,11 +1,26 @@
 #pragma once
 
+#include <QJSValue>
+
 #include "controllers/controller.h"
-#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/softtakeover.h"
 
 class MidiOutputHandler;
+
+class MidiInputHandleJSProxy final : public QObject {
+    Q_OBJECT
+  public:
+    MidiInputHandleJSProxy(
+            const std::shared_ptr<LegacyMidiControllerMapping> mapping,
+            const MidiInputMapping& inputMapping);
+    Q_INVOKABLE bool disconnect();
+
+  protected:
+    std::shared_ptr<LegacyMidiControllerMapping> m_mapping;
+    MidiInputMapping m_inputMapping;
+};
 
 /// MIDI Controller base class
 ///
@@ -25,6 +40,10 @@ class MidiController : public Controller {
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -51,6 +70,8 @@ class MidiController : public Controller {
         send(data);
     }
 
+    QJSValue makeInputHandler(int status, int midino, const QJSValue& scriptCode);
+
   protected slots:
     virtual void receivedShortMessage(
             unsigned char status,
@@ -60,9 +81,10 @@ class MidiController : public Controller {
     // For receiving System Exclusive messages
     void receive(const QByteArray& data, mixxx::Duration timestamp) override;
     int close() override;
+    void slotBeforeEngineShutdown() override;
 
   private slots:
-    bool applyMapping() override;
+    bool applyMapping(const QString& resourcePath) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
@@ -116,6 +138,10 @@ class MidiControllerJSProxy : public ControllerJSProxy {
 
     Q_INVOKABLE void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         m_pMidiController->sendSysexMsg(data, length);
+    }
+
+    Q_INVOKABLE QJSValue makeInputHandler(int status, int midino, const QJSValue& scriptCode) {
+        return m_pMidiController->makeInputHandler(status, midino, scriptCode);
     }
 
   private:

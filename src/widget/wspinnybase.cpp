@@ -146,8 +146,8 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
             context.getScaleFactor());
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
-            Paintable::FIXED);
-    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
+            Paintable::DrawMode::Fixed);
+    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::DrawMode::Fixed) {
         setFixedSize(m_pBgImage->size());
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -502,8 +502,8 @@ void WSpinnyBase::updateSlipEnabled(double enabled) {
 
 void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    int y = e->position().y();
-    int x = e->position().x();
+    int y = static_cast<int>(e->position().y());
+    int x = static_cast<int>(e->position().x());
 #else
     int y = e->y();
     int x = e->x();
@@ -566,8 +566,13 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
     }
 
     if (e->button() == Qt::LeftButton) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        int y = static_cast<int>(e->position().y());
+        int x = static_cast<int>(e->position().x());
+#else
         int y = e->y();
         int x = e->x();
+#endif
 
         m_iStartMouseX = x;
         m_iStartMouseY = y;

@@ -1,13 +1,7 @@
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
-#include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
-
 #include "broadcast/broadcastmanager.h"
+
+#include <shoutidjc/shout.h>
+
 #include "broadcast/defs_broadcast.h"
 #include "control/controlpushbutton.h"
 #include "engine/sidechain/enginenetworkstream.h"
@@ -28,7 +22,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
-    m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pBroadcastEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(m_pBroadcastEnabled,
             &ControlPushButton::valueChanged,
             this,

@@ -15,7 +15,7 @@ class GraphicEQEffectGroupState : public EffectState {
     GraphicEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
     ~GraphicEQEffectGroupState() override;
 
-    void setFilters(int sampleRate);
+    void setFilters(mixxx::audio::SampleRate sampleRate);
 
     EngineFilterBiquad1LowShelving* m_low;
     QList<EngineFilterBiquad1Peaking*> m_bands;

@@ -41,6 +41,13 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   private slots:
     void rescanControllers();
+#ifdef __PORTMIDI__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotMidiThroughChanged(Qt::CheckState state);
+#else
+    void slotMidiThroughChanged(bool checked);
+#endif
+#endif
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 
   private:

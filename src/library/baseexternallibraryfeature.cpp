@@ -6,6 +6,7 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crate.h"
 #include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
 #include "widget/wlibrarysidebar.h"
@@ -40,11 +41,17 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(
             this,
             &BaseExternalLibraryFeature::slotAddToAutoDJReplace);
 
-    m_pImportAsMixxxPlaylistAction = make_parented<QAction>(tr("Import Playlist"), this);
+    m_pImportAsMixxxPlaylistAction = make_parented<QAction>(tr("Import as Playlist"), this);
     connect(m_pImportAsMixxxPlaylistAction,
             &QAction::triggered,
             this,
             &BaseExternalLibraryFeature::slotImportAsMixxxPlaylist);
+
+    m_pImportAsMixxxCrateAction = make_parented<QAction>(tr("Import as Crate"), this);
+    connect(m_pImportAsMixxxCrateAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotImportAsMixxxCrate);
 }
 
 void BaseExternalLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -68,6 +75,7 @@ void BaseExternalLibraryFeature::onRightClickChild(
     menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
     menu.addAction(m_pImportAsMixxxPlaylistAction);
+    menu.addAction(m_pImportAsMixxxCrateAction);
     menu.exec(globalPos);
 }
 
@@ -101,7 +109,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotImportAsMixxxPlaylist() row:" << m_lastRightClickedIndex.data();
 
     QList<TrackId> trackIds;
     QString playlist;
@@ -122,6 +130,30 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         QMessageBox::warning(nullptr,
                 tr("Playlist Creation Failed"),
                 tr("An unknown error occurred while creating playlist: ") + playlist);
+    }
+}
+
+void BaseExternalLibraryFeature::slotImportAsMixxxCrate() {
+    // qDebug() << "slotImportAsMixxxCrate() row:" << m_lastRightClickedIndex.data();
+
+    QList<TrackId> trackIds;
+    QString playlist;
+    appendTrackIdsFromRightClickIndex(&trackIds, &playlist);
+    if (trackIds.isEmpty()) {
+        return;
+    }
+
+    Crate crate;
+    crate.setName(playlist);
+
+    CrateId crateId;
+
+    if (m_pTrackCollection->insertCrate(crate, &crateId)) {
+        m_pTrackCollection->addCrateTracks(crateId, trackIds);
+    } else {
+        QMessageBox::warning(nullptr,
+                tr("Crate Creation Failed"),
+                tr("Could not create crate, it most likely already exists: ") + playlist);
     }
 }
 

@@ -101,6 +101,8 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
+    std::shared_ptr<QDialog> makeDlgPreferences() const;
+
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
@@ -113,6 +115,9 @@ class CoreServices : public QObject {
     void initializeSettings();
     void initializeScreensaverManager();
     void initializeLogging();
+#ifdef MIXXX_USE_QML
+    void initializeQMLSingletons();
+#endif
 
     /// Tear down CoreServices that were previously initialized by `initialize()`.
     void finalize();

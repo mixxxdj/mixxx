@@ -62,6 +62,10 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
+QString fileTypeToString(taglib::FileType fileType) {
+    return QVariant::fromValue(fileType).toString();
+}
+
 } // anonymous namespace
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
@@ -91,7 +95,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Nothing to import"
                 << "from file" << m_fileName
-                << "of type" << m_fileType;
+                << "of type" << fileTypeToString(m_fileType);
         return afterImport(ImportResult::Unavailable);
     }
     if (kLogger.traceEnabled()) {
@@ -101,7 +105,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                                            : (pTrackMetadata ? "track metadata"
                                                              : "cover art"))
                         << "from file" << m_fileName
-                        << "of type" << m_fileType;
+                        << "of type" << fileTypeToString(m_fileType);
     }
 
     // Rationale: If a file contains different types of tags only
@@ -285,14 +289,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Cannot import track metadata"
                 << "from file" << m_fileName
-                << "with unknown or unsupported type" << m_fileType;
+                << "of unknown or unsupported type" << fileTypeToString(m_fileType);
         return afterImport(ImportResult::Failed);
     }
 
     kLogger.info()
             << "No track metadata or cover art found"
             << "in file" << m_fileName
-            << "with type" << m_fileType;
+            << "of type" << fileTypeToString(m_fileType);
     return afterImport(ImportResult::Unavailable);
 }
 
@@ -672,8 +676,8 @@ MetadataSourceTagLib::exportTrackMetadata(
         kLogger.debug()
                 << "Cannot export track metadata"
                 << "into file" << m_fileName
-                << "with unknown or unsupported type"
-                << m_fileType;
+                << "of unknown or unsupported type"
+                << fileTypeToString(m_fileType);
         return afterExport(ExportResult::Unsupported);
     }
 

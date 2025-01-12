@@ -116,9 +116,9 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
 
     // create the output format
     const UInt32 numChannels =
-            params.getSignalInfo().getChannelCount().isValid() ?
-            params.getSignalInfo().getChannelCount() :
-            mixxx::kEngineChannelCount;
+            params.getSignalInfo().getChannelCount().isValid()
+            ? params.getSignalInfo().getChannelCount()
+            : mixxx::kEngineChannelOutputCount;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels,
             CAStreamBasicDescription::kPCMFormatFloat32,

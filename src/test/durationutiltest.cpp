@@ -115,6 +115,8 @@ TEST_F(DurationUtilTest, formatTime) {
     formatTime("24:00:00.000", 24 * 3600);
     formatTime("24:00:01.000", 24 * 3600 + 1);
     formatTime("25:00:01.000", 25 * 3600 + 1);
+    // If you change the following line, check if it solves #13780,
+    // and allows to remove -Wno-nan-infinity-disabled from the clang-tidy call
     formatTime("?", util_double_infinity());
     formatTime("?", -1);
 }

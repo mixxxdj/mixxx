@@ -10,14 +10,7 @@
 #include <unistd.h>
 #endif
 
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "encoder/encoder.h"
@@ -707,7 +700,7 @@ int ShoutConnection::filelen() {
     return 0;
 }
 
-bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
+bool ShoutConnection::writeSingle(const unsigned char* data, std::size_t len) {
     setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
@@ -732,7 +725,7 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
     return true;
 }
 
-void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+void ShoutConnection::process(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     setFunctionCode(4);
     if (!m_pProfile->getEnabled()) {
         return;
@@ -751,9 +744,9 @@ void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     const EncoderPointer pEncoder = m_encoder;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && pEncoder) {
+    if (bufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        pEncoder->encodeBuffer(pBuffer, iBufferSize);
+        pEncoder->encodeBuffer(pBuffer, bufferSize);
         // the encoded frames are received by the write() callback.
     }
 

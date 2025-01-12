@@ -22,17 +22,9 @@ class LibraryView {
     /// Reimplement if LibraryView should be able to search
     virtual void onSearch(const QString& text) {Q_UNUSED(text);}
 
-    /// If applicable, requests that the LibraryView load the selected
-    /// track. Does nothing otherwise.
-    virtual void activateSelectedTrack() {
+    virtual void pasteFromSidebar() {
     }
 
-    virtual void slotAddToAutoDJBottom() {
-    }
-    virtual void slotAddToAutoDJTop() {
-    }
-    virtual void slotAddToAutoDJReplace() {
-    }
     virtual void saveCurrentViewState() {
     }
     /// @brief restores current view state.
@@ -40,17 +32,6 @@ class LibraryView {
     virtual bool restoreCurrentViewState() {
         return false;
     };
-
-    /// If applicable, requests that the LibraryView load the selected track to
-    /// the specified group. Does nothing otherwise.
-    virtual void loadSelectedTrackToGroup(const QString& group, bool play) {
-        Q_UNUSED(group); Q_UNUSED(play);
-    }
-
-    /// If a selection is applicable for this view, request that the selection be
-    /// increased or decreased by the provided delta. For example, for a value of
-    /// 1, the view should move to the next selection in the list.
-    virtual void moveSelection(int delta) {Q_UNUSED(delta);}
 
     virtual TrackModel::SortColumnId getColumnIdFromCurrentIndex() {
         return TrackModel::SortColumnId::Invalid;

@@ -297,11 +297,11 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         }
 
         // Grab data from madHeader
-        const unsigned int madSampleRate = madHeader.samplerate;
+        const audio::SampleRate madSampleRate = audio::SampleRate(madHeader.samplerate);
 
         // MAD must not change its enum values!
         static_assert(MAD_UNITS_8000_HZ == 8000);
-        const mad_units madUnits = static_cast<mad_units>(madSampleRate);
+        const mad_units madUnits = static_cast<mad_units>(madSampleRate.value());
 
         const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
         if (0 >= madFrameLength) {
@@ -363,8 +363,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                     << m_file.fileName();
         }
 
-        const int sampleRateIndex = getIndexBySampleRate(
-                audio::SampleRate(madSampleRate));
+        const int sampleRateIndex = getIndexBySampleRate(madSampleRate);
         if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                               << madSampleRate;

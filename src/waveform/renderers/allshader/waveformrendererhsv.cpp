@@ -43,6 +43,13 @@ void WaveformRendererHSV::paintGL() {
     if (data == nullptr) {
         return;
     }
+#ifdef __STEM__
+    auto stemInfo = pTrack->getStemInfo();
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+        return;
+    }
+#endif
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
@@ -131,8 +138,6 @@ void WaveformRendererHSV::paintGL() {
             maxMid[chn] = static_cast<float>(u8maxMid);
             maxHigh[chn] = static_cast<float>(u8maxHigh);
             maxAll[chn] = static_cast<float>(u8maxAll);
-            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
-            // maxAll[chn] = unscale(u8maxAll);
         }
 
         float total{};

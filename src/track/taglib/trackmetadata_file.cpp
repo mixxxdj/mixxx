@@ -11,6 +11,7 @@
 
 #include <tfile.h>
 
+#include "moc_trackmetadata_file.cpp"
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 
@@ -79,6 +80,7 @@ FileType stringToEnumFileType(
             TypePair{"tta"_L1, FileType::TrueAudio},
             TypePair{"caf"_L1, FileType::MP4},
             TypePair{"m4a"_L1, FileType::MP4},
+            TypePair{"stem.m4a"_L1, FileType::MP4},
             TypePair{"m4r"_L1, FileType::MP4},
             TypePair{"m4b"_L1, FileType::MP4},
             TypePair{"m4p"_L1, FileType::MP4},
@@ -86,6 +88,7 @@ FileType stringToEnumFileType(
             TypePair{"mj2"_L1, FileType::MP4},
             TypePair{"mov"_L1, FileType::MP4},
             TypePair{"mp4"_L1, FileType::MP4},
+            TypePair{"stem.mp4"_L1, FileType::MP4},
             TypePair{"3gp"_L1, FileType::MP4},
             TypePair{"3g2"_L1, FileType::MP4},
             TypePair{"wma"_L1, FileType::ASF},

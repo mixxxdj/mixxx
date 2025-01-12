@@ -8,6 +8,12 @@
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
 ;(function() {
+  const DEPRECATION_MSG = (
+      "Lodash is deprecated and will be removed in a future release of Mixxx; refer to the page " +
+      "https://github.com/mixxxdj/mixxx/wiki/Lodash-Migration for migrations instructions"
+  );
+
+  console.warn(DEPRECATION_MSG);
 
   /** Used as a safe reference for `undefined` in pre-ES5 environments. */
   var undefined;
@@ -17068,8 +17074,17 @@
   /*--------------------------------------------------------------------------*/
 
   // Export lodash.
+  /**
+   * @deprecated since 2.5.0
+   * @global
+   */
   var _ = runInContext();
 
   // Export to the global object.
-  root._ = _;
+  Object.defineProperty(root, "_", {
+    get() {
+      console.warn(DEPRECATION_MSG);
+      return _;
+    }
+  })
 }.call(this));

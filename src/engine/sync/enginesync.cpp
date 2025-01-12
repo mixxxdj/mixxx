@@ -274,9 +274,9 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
         }
     }
 
-    const SyncLockAlgorithm picker = static_cast<SyncLockAlgorithm>(
-            m_pConfig->getValue<int>(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
-                    PREFER_SOFT_LEADER));
+    const SyncLockAlgorithm picker = m_pConfig->getValue(
+            ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+            PREFER_SOFT_LEADER);
     switch (picker) {
     case PREFER_SOFT_LEADER:
         // Always pick a deck for a new leader.
@@ -585,11 +585,11 @@ void EngineSync::addSyncableDeck(Syncable* pSyncable) {
     m_syncables.append(pSyncable);
 }
 
-void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
 }
 
-void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
 }
 

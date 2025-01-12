@@ -9,6 +9,21 @@
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
 
+enum class PhysicalTransportProtocol {
+    UNKNOWN,
+    USB,
+    BlueTooth,
+    I2C,
+    SPI,
+    FireWire // IEEE 1394
+};
+
+enum class DataRepresentationProtocol {
+    MIDI,
+    HID,
+    USB_BULK_TRANSFER // Bulk is only one of the 4 USB transfer modes
+};
+
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
@@ -45,12 +60,24 @@ class Controller : public QObject {
     inline const QString& getName() const {
         return m_sDeviceName;
     }
-    inline const QString& getCategory() const {
-        return m_sDeviceCategory;
-    }
+    virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
+    static QString physicalTransport2String(PhysicalTransportProtocol protocol);
+    virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
+
+    virtual QString getVendorString() const = 0;
+    virtual QString getProductString() const = 0;
+    virtual std::optional<uint16_t> getVendorId() const = 0;
+    virtual std::optional<uint16_t> getProductId() const = 0;
+    virtual QString getSerialNumber() const = 0;
+    virtual std::optional<uint8_t> getUsbInterfaceNumber() const = 0;
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
+    }
+
+    inline std::shared_ptr<ControllerScriptEngineLegacy> getScriptEngine() const {
+        return m_pScriptEngineLegacy;
     }
 
     virtual bool matchMapping(const MappingInfo& mapping) = 0;
@@ -58,6 +85,12 @@ class Controller : public QObject {
   signals:
     /// Emitted when the controller is opened or closed.
     void openChanged(bool bOpen);
+
+    /// Emitted when the controller has started a new engine.
+    void engineStarted(const ControllerScriptEngineLegacy* engine);
+
+    /// Emitted when the controller has stopped its engine.
+    void engineStopped();
 
     // Making these slots protected/private ensures that other parts of Mixxx can
     // only signal them which allows us to use no locks.
@@ -70,7 +103,8 @@ class Controller : public QObject {
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
-    virtual bool applyMapping();
+    virtual bool applyMapping(const QString& resourcePath);
+    virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -80,6 +114,10 @@ class Controller : public QObject {
     template<typename SpecificMappingType>
     std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
             std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        // When unsetting a mapping (select 'No mapping') we receive a nullptr
+        if (pMapping == nullptr) {
+            return nullptr;
+        }
         // Controller cannot take ownership if pMapping is referenced elsewhere because
         // the controller polling thread needs exclusive accesses to the non-thread safe
         // LegacyControllerMapping.
@@ -98,10 +136,6 @@ class Controller : public QObject {
     // were required to specify it.
     virtual void send(const QList<int>& data, unsigned int length = 0);
 
-    // This must be reimplemented by sub-classes desiring to send raw bytes to a
-    // controller.
-    virtual void sendBytes(const QByteArray& data) = 0;
-
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
     virtual void startEngine();
@@ -113,12 +147,6 @@ class Controller : public QObject {
     // To be called when receiving events
     void triggerActivity();
 
-    inline ControllerScriptEngineLegacy* getScriptEngine() const {
-        return m_pScriptEngineLegacy;
-    }
-    inline void setDeviceCategory(const QString& deviceCategory) {
-        m_sDeviceCategory = deviceCategory;
-    }
     inline void setOutputDevice(bool outputDevice) {
         m_bIsOutputDevice = outputDevice;
     }
@@ -135,6 +163,12 @@ class Controller : public QObject {
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
 
+  public:
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller. Return true in case of successful completion, false in case
+    // of partial completion or failure.
+    virtual bool sendBytes(const QByteArray& data) = 0;
+
   private: // but used by ControllerManager
 
     virtual int open() = 0;
@@ -150,7 +184,9 @@ class Controller : public QObject {
     }
 
   private:
-    ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
+    /// Controllers have multiple ownership over an engine.
+    /// A ControllerScriptEngine must not own a controller.
+    std::shared_ptr<ControllerScriptEngineLegacy> m_pScriptEngineLegacy;
 
     // Verbose and unique description of device type, defaults to empty
     QString m_sDeviceCategory;
@@ -169,6 +205,7 @@ class Controller : public QObject {
     friend class ControllerManager;
     // For testing
     friend class LegacyControllerMappingValidationTest;
+    friend class MidiControllerTest;
 };
 
 // An object of this class gets exposed to the JS engine, so the methods of this class

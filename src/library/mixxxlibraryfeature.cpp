@@ -7,10 +7,10 @@
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
-#include "library/dlghidden.h"
-#include "library/dlgmissing.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
+#include "library/missing_hidden/dlghidden.h"
+#include "library/missing_hidden/dlgmissing.h"
 #include "library/parser.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"

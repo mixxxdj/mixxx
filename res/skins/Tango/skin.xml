@@ -410,9 +410,9 @@
                         [Library] -->
                     <Splitter>
                       <ObjectName>WaveformSplitter</ObjectName>
-                      <SizePolicy>me,me</SizePolicy>
                       <Orientation>vertical</Orientation>
-                      <SplitSizes>100,10000</SplitSizes>
+                      <SizePolicy>me,me</SizePolicy>
+                      <SplitSizes>100,550</SplitSizes>
                       <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
                       <Connection>
@@ -424,7 +424,7 @@
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>
-                          <SizePolicy>me,max</SizePolicy>
+                          <SizePolicy>me,me</SizePolicy>
                           <Children>
                             <Template src="skins:Tango/waveforms_container.xml"/>
                           </Children>

@@ -17,6 +17,9 @@ namespace {
 /// been chosen as a compromise between usability and responsiveness.
 constexpr int kPressedUntilClickedTimeoutMillis = 300;
 
+/// Enables additional debugging output.
+constexpr bool kDebug = false;
+
 } // anonymous namespace
 
 SidebarModel::SidebarModel(
@@ -101,8 +104,11 @@ void SidebarModel::activateDefaultSelection() {
 
 QModelIndex SidebarModel::index(int row, int column,
                                 const QModelIndex& parent) const {
-    // qDebug() << "SidebarModel::index row=" << row
-      //       << "column=" << column << "parent=" << parent.getData();
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::index row=" << row
+                 << "column=" << column << "parent=" << parent;
+    }
+
     if (parent.isValid()) {
         /* If we have selected the root of a library feature at position 'row'
          * its internal pointer is the current sidebar object model
@@ -137,7 +143,9 @@ QModelIndex SidebarModel::index(int row, int column,
 }
 
 QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
-    // qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
+    }
     QModelIndex ind;
     for (int i = 0; i < m_sFeatures.size(); ++i) {
         if (m_sFeatures[i] == pFeature) {
@@ -148,8 +156,28 @@ QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
     return ind;
 }
 
+void SidebarModel::clear(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->clear();
+    }
+}
+
+void SidebarModel::paste(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->paste();
+    } else {
+        TreeItem* pTreeItem = (TreeItem*)index.internalPointer();
+        if (pTreeItem) {
+            LibraryFeature* feature = pTreeItem->feature();
+            feature->pasteChild(index);
+        }
+    }
+}
+
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
-    //qDebug() << "SidebarModel::parent index=" << index.getData();
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::parent index=" << index;
+    }
     if (index.isValid()) {
         // If we have selected the root of a library feature
         // its internal pointer is the current sidebar object model
@@ -189,7 +217,9 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
 }
 
 int SidebarModel::rowCount(const QModelIndex& parent) const {
-    //qDebug() << "SidebarModel::rowCount parent=" << parent.getData();
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::rowCount parent=" << parent;
+    }
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
             return m_sFeatures[parent.row()]->sidebarModel()->rowCount();
@@ -207,7 +237,9 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
 
 int SidebarModel::columnCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    //qDebug() << "SidebarModel::columnCount parent=" << parent;
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::columnCount parent=" << parent;
+    }
     // TODO(rryan) will we ever have columns? I don't think so.
     return 1;
 }
@@ -229,8 +261,14 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
 }
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
-    // qDebug("SidebarModel::data row=%d column=%d pointer=%8x, role=%d",
-    //        index.row(), index.column(), index.internalPointer(), role);
+    if constexpr (kDebug) {
+        qDebug("SidebarModel::data() row=%d column=%d pointer=%p, role=%d",
+                index.row(),
+                index.column(),
+                index.internalPointer(),
+                role);
+    }
+
     if (!index.isValid()) {
         return QVariant();
     }
@@ -387,7 +425,8 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
     }
 
     if (index.internalPointer() == this) {
-        // can't delete root features
+        // Used only to call AutoDJFeature::clear()
+        m_sFeatures[index.row()]->clear();
         return;
     } else {
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
@@ -399,7 +438,9 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
 }
 
 bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
-    //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
+    }
     bool result = false;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
@@ -422,8 +463,10 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) {
-    //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) const {
+    if constexpr (kDebug) {
+        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+    }
     bool result = false;
 
     if (index.isValid()) {
@@ -475,7 +518,7 @@ QModelIndex SidebarModel::translateIndex(
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
@@ -499,8 +542,8 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsInserted" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsInserted" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 

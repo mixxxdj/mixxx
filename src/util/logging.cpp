@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include <QByteArray>
+#include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
@@ -12,6 +13,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QThread>
+#include <atomic>
 #include <string_view>
 
 #include "util/assert.h"
@@ -28,6 +30,8 @@ QMutex s_mutexStdErr;
 
 // The file handle for Mixxx's log file.
 QFile s_logfile;
+qint64 s_logMaxFileSize = mixxx::kLogMaxFileSizeDefault;
+std::atomic<bool> s_logMaxFileSizeReached = false;
 
 QLoggingCategory::CategoryFilter oldCategoryFilter = nullptr;
 
@@ -121,6 +125,8 @@ inline QString formatLogFileMessage(
         QtMsgType type,
         const QString& message,
         const QString& threadName) {
+    QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
+
     QString levelName;
     switch (type) {
     case QtDebugMsg:
@@ -140,7 +146,7 @@ inline QString formatLogFileMessage(
         break;
     }
 
-    return levelName + QStringLiteral(" [") + threadName + QStringLiteral("] ") + message;
+    return QStringLiteral("%1 %2 [%3] %4").arg(timestamp, levelName, threadName, message);
 }
 
 /// Actually write a log message to a file.
@@ -149,6 +155,10 @@ inline void writeToFile(
         const QString& message,
         const QString& threadName,
         bool flush) {
+    if (s_logMaxFileSizeReached.load(std::memory_order_relaxed)) {
+        return;
+    }
+
     QString formattedMessageStr =
             formatLogFileMessage(type, message, threadName) +
             QChar('\n');
@@ -158,6 +168,13 @@ inline void writeToFile(
     // Writing to a closed QFile could cause an infinite recursive loop
     // by logging to qWarning!
     if (s_logfile.isOpen()) {
+        if (s_logMaxFileSize >= 0 && s_logfile.pos() >= s_logMaxFileSize) {
+            formattedMessage =
+                    "Maximum log file size reached. It can be adjusted via: "
+                    "--log-max-file-size <bytes>";
+            s_logMaxFileSizeReached.store(true, std::memory_order_relaxed);
+            flush = true;
+        }
         const int written = s_logfile.write(formattedMessage);
         Q_UNUSED(written);
         DEBUG_ASSERT(written == formattedMessage.size());
@@ -434,6 +451,8 @@ void Logging::initialize(
         oldCategoryFilter = QLoggingCategory::installFilter(nullptr);
         QLoggingCategory::installFilter(controllerDebugCategoryFilter);
     }
+
+    s_logMaxFileSize = CmdlineArgs::Instance().getLogMaxFileSize();
 }
 
 // static

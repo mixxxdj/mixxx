@@ -16,8 +16,8 @@ namespace {
 class EngineMicrophoneTest : public SignalPathTest {
   protected:
     void SetUp() override {
-        inputLength = MAX_BUFFER_LEN;
-        outputLength = MAX_BUFFER_LEN;
+        inputLength = kMaxEngineSamples;
+        outputLength = kMaxEngineSamples;
         input = SampleUtil::alloc(inputLength);
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
@@ -84,7 +84,10 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
     FillBuffer(input, 0.1f, inputLength);
     ClearBuffer(output, outputLength);
 
-    AudioInput micInput = AudioInput(AudioPathType::Microphone, 0, 1, 0);
+    AudioInput micInput = AudioInput(AudioPathType::Microphone,
+            0,
+            mixxx::audio::ChannelCount::mono(),
+            0);
     m_pTalkover->set(1.0);
 
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
@@ -96,7 +99,10 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
 
 TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
     ClearBuffer(output, outputLength);
-    AudioInput micInput = AudioInput(AudioPathType::Microphone, 0, 1, 0);
+    AudioInput micInput = AudioInput(AudioPathType::Microphone,
+            0,
+            mixxx::audio::ChannelCount::mono(),
+            0);
     m_pTalkover->set(1.0);
 
     for (int i = 0; i < 10; i++) {

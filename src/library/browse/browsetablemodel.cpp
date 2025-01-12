@@ -1,12 +1,13 @@
 #include "library/browse/browsetablemodel.h"
 
 #include <QMessageBox>
+#include <QMimeData>
 #include <QStringList>
 #include <QUrl>
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "library/previewbuttondelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -14,6 +15,7 @@
 #include "moc_browsetablemodel.cpp"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "util/clipboard.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -314,6 +316,20 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
 }
 
+void BrowseTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+
+    // TODO Investigate if we can also implement cut and paste (via QFile
+    // operations) so mixxx could manage files in the filesystem, rather than
+    // having to go switch between mixxx and the system file browser.
+}
+
 void BrowseTableModel::removeTracks(const QModelIndexList&) {
 }
 
@@ -388,6 +404,12 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
 
     int column = index.column();
 
+#ifdef Q_OS_IOS
+    // Make items non-editable on iOS by default, since tapping any track will
+    // otherwise trigger the on-screen keyboard (even if they cannot actually
+    // be edited).
+    return defaultFlags;
+#else
     switch (column) {
     case COLUMN_FILENAME:
     case COLUMN_BITRATE:
@@ -402,6 +424,7 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
         // editable
         return defaultFlags | Qt::ItemIsEditable;
     }
+#endif
 }
 
 bool BrowseTableModel::setData(

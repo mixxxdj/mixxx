@@ -34,8 +34,7 @@ constexpr T math_clamp(T value, T min, T max) {
 // to manually convert so they are aware of the conversion.
 template<typename T>
 // since we also want to this to work on size_t and ptrdiff_t, is_integer would be too strict.
-constexpr bool even(T value) {
-    static_assert(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>);
+requires(std::is_arithmetic_v<T> && !std::is_floating_point_v<T>) constexpr bool even(T value) {
     return value % 2 == 0;
 }
 
@@ -73,14 +72,14 @@ roundToFraction(double value, int denominator) {
 }
 
 template<typename T>
+requires std::is_floating_point_v<T>
         CMATH_CONSTEXPR T ratio2db(T a) {
-    static_assert(std::is_floating_point_v<T>);
-    return log10(a) * 20;
+    return static_cast<T>(log10(a) * 20);
 }
 
 template<typename T>
+requires std::is_floating_point_v<T>
         CMATH_CONSTEXPR T db2ratio(T a) {
-    static_assert(std::is_floating_point_v<T>);
     return static_cast<T>(pow(10, a / 20));
 }
 
@@ -88,8 +87,8 @@ template<typename T>
 
 /// https://en.wikipedia.org/wiki/Sign_function
 template<typename T>
+requires std::is_arithmetic_v<T>
 constexpr T sgn(const T a) {
-    static_assert(std::is_arithmetic_v<T>);
     // silence -Wtype-limits
     if constexpr (std::is_unsigned_v<T>) {
         return static_cast<T>(a > T(0));

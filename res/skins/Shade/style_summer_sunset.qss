@@ -14,6 +14,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -67,7 +68,7 @@ WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu QCheckBox:selected,
 WTrackTableViewHeader QMenu QCheckBox:focus,
 WTrackTableViewHeader QMenu QCheckBox:hover,
-QTextBrowser QMenu::item:selected,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -144,6 +145,12 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #cdbb5d;
 }
+#CueSavedLoopButton {
+  background-color: #cdbb5d;
+}
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #54fd05;
+}
 #CueLabelEdit {
   background-color: #706633;
 }
@@ -153,6 +160,10 @@ WLibrarySidebar:focus,
 WLibraryTextBrowser:focus,
 WSearchLineEdit:focus {
   border-color: #78C70B;
+}
+
+#LibraryBPMButton::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_lib_bpm_unlocked_white.svg);
 }
 
 #LibraryFeatureControls QPushButton:enabled {

@@ -153,11 +153,55 @@
     <Scheme>
       <Name>Classic</Name>
       <SetVariable name="color_scheme">classic</SetVariable>
+      <LaunchImageStyle>
+        LaunchImage { background-color: #202020; }
+        QLabel {
+          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          padding:0;
+          margin:0;
+          border:none;
+          min-width: 208px;
+          min-height: 48px;
+          max-width: 208px;
+          max-height: 48px;
+        }
+        QProgressBar {
+          background-color: #202020;
+          border:none;
+          min-width: 208px;
+          min-height: 3px;
+          max-width: 208px;
+          max-height: 3px;
+        }
+        QProgressBar::chunk { background-color: #ec4522; }
+      </LaunchImageStyle>
       <Filters/>
     </Scheme>
     <Scheme>
       <Name>Dark</Name>
       <SetVariable name="color_scheme">dark</SetVariable>
+      <LaunchImageStyle>
+        LaunchImage { background-color: #202020; }
+        QLabel {
+          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          padding:0;
+          margin:0;
+          border:none;
+          min-width: 208px;
+          min-height: 48px;
+          max-width: 208px;
+          max-height: 48px;
+        }
+        QProgressBar {
+          background-color: #202020;
+          border:none;
+          min-width: 208px;
+          min-height: 3px;
+          max-width: 208px;
+          max-height: 3px;
+        }
+        QProgressBar::chunk { background-color: #67A60E; }
+      </LaunchImageStyle>
       <Filters>
         <HSVTweak>
           <HConst>75</HConst>
@@ -173,6 +217,28 @@
     <Scheme>
       <Name>Summer Sunset</Name>
       <SetVariable name="color_scheme">summersunset</SetVariable>
+      <LaunchImageStyle>
+        LaunchImage { background-color: #202020; }
+        QLabel {
+          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          padding:0;
+          margin:0;
+          border:none;
+          min-width: 208px;
+          min-height: 48px;
+          max-width: 208px;
+          max-height: 48px;
+        }
+        QProgressBar {
+          background-color: #202020;
+          border:none;
+          min-width: 208px;
+          min-height: 3px;
+          max-width: 208px;
+          max-height: 3px;
+        }
+        QProgressBar::chunk { background-color: #998A3D; }
+      </LaunchImageStyle>
       <Filters>
         <HSVTweak>
           <SMin>100</SMin>
@@ -205,29 +271,6 @@
          src-windows="skins:default-menu-styles-windows.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
-    <LaunchImageStyle>
-      LaunchImage { background-color: #202020; }
-        QLabel {
-          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
-          padding:0;
-          margin:0;
-          border:none;
-          min-width: 208px;
-          min-height: 48px;
-          max-width: 208px;
-          max-height: 48px;
-        }
-        QProgressBar {
-          background-color: #202020;
-          border:none;
-          min-width: 208px;
-          min-height: 3px;
-          max-width: 208px;
-          max-height: 3px;
-        }
-        QProgressBar::chunk { background-color: #ec4522; }
-    </LaunchImageStyle>
-
 
     <Children>
     <!--

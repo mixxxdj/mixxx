@@ -167,7 +167,7 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
         qCWarning(m_logInput)
                 << "getInputReport is unable to get data from"
                 << m_deviceInfo.formatName() << "serial #"
-                << m_deviceInfo.serialNumber() << ":"
+                << m_deviceInfo.getSerialNumber() << ":"
                 << mixxx::convertWCStringToQString(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         // Note, that the GetInputReport request is optional, according to the HID specification,
@@ -184,7 +184,7 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
 
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
                         << m_deviceInfo.formatName() << "serial #"
-                        << m_deviceInfo.serialNumber()
+                        << m_deviceInfo.getSerialNumber()
                         << "(including one byte for the report ID:"
                         << QString::number(static_cast<quint8>(reportID), 16)
                                    .toUpper()
@@ -286,7 +286,7 @@ void HidIoThread::sendFeatureReport(
         qCWarning(m_logOutput)
                 << "sendFeatureReport is unable to send data to"
                 << m_deviceInfo.formatName() << "serial #"
-                << m_deviceInfo.serialNumber() << ":"
+                << m_deviceInfo.getSerialNumber() << ":"
                 << mixxx::convertWCStringToQString(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         return;
@@ -297,7 +297,7 @@ void HidIoThread::sendFeatureReport(
     qCDebug(m_logOutput)
             << result << "bytes sent by sendFeatureReport to"
             << m_deviceInfo.formatName() << "serial #"
-            << m_deviceInfo.serialNumber() << "(including report ID of"
+            << m_deviceInfo.getSerialNumber() << "(including report ID of"
             << reportID << ") - Needed: "
             << (mixxx::Time::elapsed() - startOfHidSendFeatureReport)
                        .formatMicrosWithUnit();
@@ -320,7 +320,7 @@ QByteArray HidIoThread::getFeatureReport(
         qCWarning(m_logInput)
                 << "getFeatureReport is unable to get data from"
                 << m_deviceInfo.formatName() << "serial #"
-                << m_deviceInfo.serialNumber() << ":"
+                << m_deviceInfo.getSerialNumber() << ":"
                 << mixxx::convertWCStringToQString(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         return {};
@@ -331,7 +331,7 @@ QByteArray HidIoThread::getFeatureReport(
     qCDebug(m_logInput)
             << bytesRead << "bytes received by getFeatureReport from"
             << m_deviceInfo.formatName() << "serial #"
-            << m_deviceInfo.serialNumber()
+            << m_deviceInfo.getSerialNumber()
             << "(including one byte for the report ID:"
             << QString::number(static_cast<quint8>(reportID), 16)
                        .toUpper()

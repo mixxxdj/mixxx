@@ -2,7 +2,7 @@
 
 #include "waveform/renderers/waveformrenderbackground.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-#include "waveform/renderers/glwaveformrenderer.h"
+#include "waveform/renderers/deprecated/glwaveformrenderer.h"
 #endif
 
 class GLWaveformRenderBackground : public WaveformRenderBackground

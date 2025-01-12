@@ -1,12 +1,102 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3.0+">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5.0+">
   <info>
     <name>Numark Scratch</name>
     <author>Al Hadebe(NotYourAverageAl)</author>
     <description>Mapping for the Numark Scratch Mixer</description>
-    <forums>NumarkScratch</forums>
-    <manual>NumarkScratch</manual>
+    <forums>https://mixxx.discourse.group/t/numark-scratch-mapping/25186</forums>
+    <manual>https://manual.mixxx.org/latest/en/hardware/controllers/numark_scratch</manual>
   </info>
+  <settings>
+    <group label="Alternative Mapping">
+      <option
+        variable="invertLoopEncoderFunction"
+        type="boolean"
+        default="false"
+        label="Invert the Loop Encoder functionality">
+        <description>
+          By default the Encoder manages looping and Shift + Encoder scrolls the library/loads track.
+          If this option is selected the Encoder scrolls the library/loads track and Shift + Encoder manages looping.
+        </description>
+      </option>
+    </group>
+    <group label="Mixer Lighting">
+      <option
+        variable="inactiveLightsAlwaysBacklit"
+        type="boolean"
+        default="true"
+        label="Keep LEDs dimmed instead of off when inactive">
+        <description>
+          This will consistently ensure buttons are backlit, which can be helpful in low-light environments.
+          Please note the PAD MODE and CUE buttons are hardware controlled and always dim when inactive.
+        </description>
+      </option>
+    </group>
+    <group label="Beatloop Roll Size">
+      <row orientation="vertical">
+          <option
+              variable="beatLoopRollsSize1"
+              type="enum"
+              label="First Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4" default="true">0.25</value>
+              <value label="1/2">0.5</value>
+              <value label="1">1</value>
+              <value label="2">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The first pad.</description>
+          </option>
+          <option
+              variable="beatLoopRollsSize2"
+              type="enum"
+              label="Second Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4">0.25</value>
+              <value label="1/2" default="true">0.5</value>
+              <value label="1">1</value>
+              <value label="2">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The second pad.</description>
+          </option>
+          <option
+              variable="beatLoopRollsSize3"
+              type="enum"
+              label="Third Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4">0.25</value>
+              <value label="1/2">0.5</value>
+              <value label="1" default="true">1</value>
+              <value label="2">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The third pad.</description>
+          </option>
+          <option
+              variable="beatLoopRollsSize4"
+              type="enum"
+              label="Fourth Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4">0.25</value>
+              <value label="1/2">0.5</value>
+              <value label="1">1</value>
+              <value label="2" default="true">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The fourth pad.</description>
+          </option>
+      </row>
+  </group>
+  </settings>
   <controller id="Numark-Scratch">
     <scriptfiles>
       <file functionprefix="" filename="lodash.mixxx.js"/>

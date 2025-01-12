@@ -69,7 +69,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
 
 BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
-          m_pHighBuf(MAX_BUFFER_LEN),
+          m_pHighBuf(engineParameters.samplesPerBuffer()),
           m_oldSampleRate(engineParameters.sampleRate()),
           m_freq(kMinCornerHz),
           m_oldBalance(0),
@@ -81,7 +81,7 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& engineParame
     m_high->setStartFromDry(true);
 }
 
-void BalanceGroupState::setFilters(int sampleRate, double freq) {
+void BalanceGroupState::setFilters(mixxx::audio::SampleRate sampleRate, double freq) {
     m_low->setFrequencyCorners(sampleRate, freq);
     m_high->setFrequencyCorners(sampleRate, freq);
 }

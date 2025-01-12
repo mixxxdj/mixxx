@@ -21,14 +21,15 @@ constexpr int kDefaultDimBrightThreshold = 127;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),
+#ifdef __STEM__
+          m_selectedStems(mixxx::StemChannelSelection()),
+#endif
           m_orientation(Qt::Horizontal),
           m_dimBrightThreshold(kDefaultDimBrightThreshold),
           m_height(-1),
           m_width(-1),
           m_devicePixelRatio(1.0f),
 
-          m_firstDisplayedPosition(0.0),
-          m_lastDisplayedPosition(0.0),
           m_trackPixelCount(0.0),
 
           m_zoomFactor(1.0),
@@ -37,7 +38,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_alphaBeatGrid(90),
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
-          m_playPosVSample(0),
           m_totalVSamples(0),
           m_pRateRatioCO(nullptr),
           m_pGainControlObject(nullptr),
@@ -46,10 +46,17 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_trackSamples(0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
-          m_passthroughEnabled(false),
-          m_playPos(-1.0),
-          m_truePosSample(-1.0) {
+          m_passthroughEnabled(false) {
     //qDebug() << "WaveformWidgetRenderer";
+    for (int type = ::WaveformRendererAbstract::Play;
+            type <= ::WaveformRendererAbstract::Slip;
+            type++) {
+        m_firstDisplayedPosition[type] = 0.0;
+        m_lastDisplayedPosition[type] = 0.0;
+        m_posVSample[type] = 0.0;
+        m_pos[type] = -1.0; // disable renderers
+        m_truePosSample[type] = -1.0;
+    }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_timer = new QTime();
@@ -103,7 +110,13 @@ bool WaveformWidgetRenderer::init() {
 
 void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     if (m_passthroughEnabled) {
-        m_playPos = -1; // disables renderers in draw()
+        // disables renderers in draw()
+        for (int type = ::WaveformRendererAbstract::Play;
+                type <= ::WaveformRendererAbstract::Slip;
+                type++) {
+            m_pos[type] = -1.0;
+            m_truePosSample[type] = -1.0;
+        }
         return;
     }
 
@@ -133,19 +146,15 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         }
     }
 
-    double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
+    double truePos[2]{0};
+    m_visualPlayPosition->getPlaySlipAtNextVSync(vsyncThread,
+            truePos + ::WaveformRendererAbstract::Play,
+            truePos + ::WaveformRendererAbstract::Slip);
     // truePlayPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
-    if (m_audioSamplePerPixel > 0 && truePlayPos != -1) {
+    if (m_audioSamplePerPixel > 0) {
         // Track length in pixels.
         m_trackPixelCount = m_trackSamples / 2.0 / m_audioSamplePerPixel;
-
-        // Avoid pixel jitter in play position by rounding to the nearest track
-        // pixel.
-        m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
-        m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
-        m_playPosVSample = static_cast<int>(m_playPos * m_totalVSamples);
-        m_truePosSample = truePlayPos * static_cast<double>(m_trackSamples);
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
 
@@ -159,11 +168,26 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         //        "displayedLengthLeft=" << displayedLengthLeft <<
         //        "displayedLengthRight=" << displayedLengthRight;
 
-        m_firstDisplayedPosition = m_playPos - displayedLengthLeft;
-        m_lastDisplayedPosition = m_playPos + displayedLengthRight;
+        m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
+        for (int type = ::WaveformRendererAbstract::Play;
+                type <= ::WaveformRendererAbstract::Slip;
+                type++) {
+            // Avoid pixel jitter in play position by rounding to the nearest track
+            // pixel.
+            m_pos[type] = round(truePos[type] * m_trackPixelCount) / m_trackPixelCount;
+            m_posVSample[type] = static_cast<int>(m_pos[type] * m_totalVSamples);
+            m_truePosSample[type] = truePos[type] * static_cast<double>(m_trackSamples);
+            m_firstDisplayedPosition[type] = m_pos[type] - displayedLengthLeft;
+            m_lastDisplayedPosition[type] = m_pos[type] + displayedLengthRight;
+        }
+
     } else {
-        m_playPos = -1.0; // disable renderers
-        m_truePosSample = -1.0;
+        for (int type = ::WaveformRendererAbstract::Play;
+                type <= ::WaveformRendererAbstract::Slip;
+                type++) {
+            m_pos[type] = -1.0; // disable renderers
+            m_truePosSample[type] = -1.0;
+        }
     }
 
     // qDebug() << "WaveformWidgetRenderer::onPreRender" <<
@@ -241,8 +265,8 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
-    const int lineX = static_cast<int>(m_width * m_playMarkerPosition);
-    const int lineY = static_cast<int>(m_height * m_playMarkerPosition);
+    const int lineX = std::lround(m_width * m_playMarkerPosition);
+    const int lineY = std::lround(m_height * m_playMarkerPosition);
 
     // draw dim outlines to increase playpos/waveform contrast
     painter->setOpacity(0.5);
@@ -315,7 +339,11 @@ void WaveformWidgetRenderer::drawPassthroughLabel(QPainter* painter) {
     font.setFamily("Open Sans"); // default label font
     // Make the label always fit
     font.setPixelSize(math_min(25, int(m_height * 0.8)));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     font.setWeight(75); // bold
+#else
+    font.setWeight(QFont::Bold); // bold
+#endif
     font.setItalic(false);
 
     QString label = QObject::tr("Passthrough");
@@ -390,6 +418,12 @@ void WaveformWidgetRenderer::setZoom(double zoom) {
 void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
+
+#ifdef __STEM__
+void WaveformWidgetRenderer::selectStem(mixxx::StemChannelSelection stemMask) {
+    m_selectedStems = stemMask;
+}
+#endif
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
+#include "util/samplebuffer.h"
 
 class ReadAheadManager;
 
@@ -24,7 +25,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                              double* pPitchRatio) override;
 
   private:
-    void onSampleRateChanged() override {}
+    void onSignalChanged() override;
 
     double do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
@@ -36,7 +37,9 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     CSAMPLE* m_bufferInt;
     SINT m_bufferIntSize;
 
-    CSAMPLE m_floorSampleOld[2];
+    mixxx::SampleBuffer m_floorSampleOld;
+    mixxx::SampleBuffer m_floorSample;
+    mixxx::SampleBuffer m_ceilSample;
 
     bool m_bClear;
     double m_dRate;
