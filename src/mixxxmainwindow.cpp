@@ -1149,9 +1149,10 @@ void MixxxMainWindow::slotHelpAbout() {
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
-    // Don't show the report dialog when the sacn is run during startup and no
+    // Don't show the report dialog when the scan is run during startup and no
     // noteworthy changes have been detected.
     if (result.autoscan &&
+            result.numNewTracks == 0 &&
             result.numNewMissingTracks == 0 &&
             result.numRediscoveredTracks == 0) {
         return;
