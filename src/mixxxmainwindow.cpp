@@ -1181,7 +1181,8 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
-                    tr("%1 tracks have been rediscovered").arg(QString::number(result.numRediscoveredTracks));
+                    tr("%1 tracks have been rediscovered")
+                            .arg(QString::number(result.numRediscoveredTracks));
         }
         summary += QStringLiteral("<br><br><b>") +
                 tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
