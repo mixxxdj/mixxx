@@ -388,18 +388,18 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
 // Note that in the legacy waveform widgets this is drawn directly
 // in the WaveformWidgetRenderer itself. Doing it here is cleaner.
 void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
-    const float imgheight = m_waveformRenderer->getBreadth();
-    const float imgwidth = 11.f;
+    const float imgHeight = m_waveformRenderer->getBreadth();
+    const float imgWidth = 11.f;
 
-    if (imgheight == 0.0f) {
+    if (imgHeight == 0.0f) {
         return;
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float lineX = 5.5f;
 
-    QImage image(static_cast<int>(imgwidth * devicePixelRatio),
-            static_cast<int>(imgheight * devicePixelRatio),
+    QImage image(static_cast<int>(imgWidth * devicePixelRatio),
+            static_cast<int>(imgHeight * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
     if (image.isNull()) {
         return;
@@ -424,8 +424,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     // lines next to playpos
     // Note: don't draw lines where they would overlap the triangles,
     // otherwise both translucent strokes add up to a darker tone.
-    painter.drawLine(QLineF(lineX + 1.f, 4.f, lineX + 1.f, imgheight));
-    painter.drawLine(QLineF(lineX - 1.f, 4.f, lineX - 1.f, imgheight));
+    painter.drawLine(QLineF(lineX + 1.f, 4.f, lineX + 1.f, imgHeight));
+    painter.drawLine(QLineF(lineX - 1.f, 4.f, lineX - 1.f, imgHeight));
 
     // triangle at top edge
     // Increase line/waveform contrast
@@ -440,7 +440,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     painter.setPen(fgColor);
     painter.setOpacity(1.0);
     // play position line
-    painter.drawLine(QLineF(lineX, 0.f, lineX, imgheight));
+    painter.drawLine(QLineF(lineX, 0.f, lineX, imgHeight));
     // triangle at top edge
     {
         QPointF baseL = QPointF(lineX - 4.f, 0.f);
