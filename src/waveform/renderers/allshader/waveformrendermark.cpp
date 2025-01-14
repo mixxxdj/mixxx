@@ -97,7 +97,7 @@ void allshader::WaveformRenderMark::initializeGL() {
 }
 
 void allshader::WaveformRenderMark::drawTexture(
-        const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture) {
+        const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* pTexture) {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float texx1 = 0.f;
     const float texy1 = 0.f;
@@ -105,9 +105,9 @@ void allshader::WaveformRenderMark::drawTexture(
     const float texy2 = 1.f;
 
     const float posx1 = x;
-    const float posx2 = x + static_cast<float>(texture->width() / devicePixelRatio);
+    const float posx2 = x + static_cast<float>(pTexture->width() / devicePixelRatio);
     const float posy1 = y;
-    const float posy2 = y + static_cast<float>(texture->height() / devicePixelRatio);
+    const float posy2 = y + static_cast<float>(pTexture->height() / devicePixelRatio);
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
     const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
@@ -130,11 +130,11 @@ void allshader::WaveformRenderMark::drawTexture(
 
     m_textureShader.setUniformValue(textureLocation, 0);
 
-    texture->bind();
+    pTexture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    texture->release();
+    pTexture->release();
 
     m_textureShader.disableAttributeArray(positionLocation);
     m_textureShader.disableAttributeArray(texcoordLocation);
@@ -230,6 +230,11 @@ void allshader::WaveformRenderMark::paintGL() {
         QOpenGLTexture* pTexture =
                 static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
                         ->texture();
+
+        if (!pTexture->isCreated()) {
+            // This happens if the height is zero
+            continue;
+        }
 
         const float currentMarkPoint =
                 std::round(
@@ -383,20 +388,22 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
 // Note that in the legacy waveform widgets this is drawn directly
 // in the WaveformWidgetRenderer itself. Doing it here is cleaner.
 void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
-    float imgwidth;
-    float imgheight;
+    const float imgHeight = m_waveformRenderer->getBreadth();
+    const float imgWidth = 11.f;
 
-    const float height = m_waveformRenderer->getBreadth();
+    if (imgHeight == 0.0f) {
+        return;
+    }
+
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-
     const float lineX = 5.5f;
 
-    imgwidth = 11.f;
-    imgheight = height;
-
-    QImage image(static_cast<int>(imgwidth * devicePixelRatio),
-            static_cast<int>(imgheight * devicePixelRatio),
+    QImage image(static_cast<int>(imgWidth * devicePixelRatio),
+            static_cast<int>(imgHeight * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
+    VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
+        return;
+    }
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(QColor(0, 0, 0, 0).rgba());
 
@@ -417,8 +424,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     // lines next to playpos
     // Note: don't draw lines where they would overlap the triangles,
     // otherwise both translucent strokes add up to a darker tone.
-    painter.drawLine(QLineF(lineX + 1.f, 4.f, lineX + 1.f, height));
-    painter.drawLine(QLineF(lineX - 1.f, 4.f, lineX - 1.f, height));
+    painter.drawLine(QLineF(lineX + 1.f, 4.f, lineX + 1.f, imgHeight));
+    painter.drawLine(QLineF(lineX - 1.f, 4.f, lineX - 1.f, imgHeight));
 
     // triangle at top edge
     // Increase line/waveform contrast
@@ -433,7 +440,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     painter.setPen(fgColor);
     painter.setOpacity(1.0);
     // play position line
-    painter.drawLine(QLineF(lineX, 0.f, lineX, height));
+    painter.drawLine(QLineF(lineX, 0.f, lineX, imgHeight));
     // triangle at top edge
     {
         QPointF baseL = QPointF(lineX - 4.f, 0.f);
