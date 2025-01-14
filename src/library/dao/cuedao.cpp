@@ -148,7 +148,7 @@ bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) const {
 
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE track_id in (%1)")
-                    .arg(idList.join(",")));        
+                    .arg(idList.join(",")));
     if (query.exec()) {
         return true;
     } else {
