@@ -27,7 +27,8 @@
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
-          m_bRescanLibrary(false) {
+          m_bRescanLibrary(false),
+          m_upgradedFrom21OrEarlier(false) {
 }
 
 Upgrade::~Upgrade() {
@@ -321,8 +322,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     QString configVersion = config->getValueString(kVersionCfgKey);
 
-    if (configVersion.isEmpty()) {
+    const auto oldConfigFileVersion = QVersionNumber::fromString(configVersion);
+    if (oldConfigFileVersion < QVersionNumber(2, 1, 0)) {
+        m_upgradedFrom21OrEarlier = true;
+    }
 
+    if (configVersion.isEmpty()) {
 #ifdef __APPLE__
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
         // Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)

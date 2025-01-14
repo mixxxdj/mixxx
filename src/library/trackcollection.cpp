@@ -269,7 +269,8 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    // Warn if tracks have a playlist membership
+    // Warn if tracks are in playlists.
+    // Always keep them in History playlists.
     QSet<int> allPlaylistIds;
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;

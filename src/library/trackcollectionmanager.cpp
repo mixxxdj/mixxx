@@ -615,6 +615,10 @@ bool TrackCollectionManager::updateTrackGenre(
             genre);
 }
 
+void TrackCollectionManager::removeHiddenTracksFromPlaylists() {
+    m_pInternalCollection->getPlaylistDAO().removeHiddenTracksFromPlaylists();
+}
+
 #if defined(__EXTRA_METADATA__)
 bool TrackCollectionManager::updateTrackMood(
         Track* pTrack,
