@@ -532,12 +532,27 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi?
     // They could then focus the respective edit field.
     m_pTrackMenu->loadTrackModelIndices(indices);
+    const QModelIndex clickedIdx = indexAt(event->pos());
+    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(clickedIdx));
 
     saveCurrentIndex();
 
-    // Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
     // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
+}
+
+QString WTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return {};
+    }
+    VERIFY_OR_DEBUG_ASSERT(model()) {
+        return {};
+    }
+    return model()->headerData(
+                          index.column(),
+                          Qt::Horizontal,
+                          TrackModel::kHeaderNameRole)
+            .toString();
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -795,7 +810,7 @@ QModelIndexList WTrackTableView::getSelectedRows() const {
 }
 
 QList<int> WTrackTableView::getSelectedRowNumbers() const {
-    QModelIndexList indices = getSelectedRows();
+    const QModelIndexList indices = getSelectedRows();
     QList<int> selectedRows;
     for (const QModelIndex& idx : indices) {
         selectedRows.append(idx.row());
@@ -1069,13 +1084,24 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         if (event->modifiers().testFlag(Qt::NoModifier)) {
             slotMouseDoubleClicked(currentIndex());
         } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
+            TrackModel* pTrackModel = getTrackModel();
+            if (!pTrackModel ||
+                    !pTrackModel->hasCapabilities(
+                            TrackModel::Capability::EditMetadata)) {
+                return;
+            }
             const QModelIndexList indices = getSelectedRows();
             if (indices.isEmpty()) {
                 return;
             }
-            // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi
-            // can focus the respective edit field.
             m_pTrackMenu->loadTrackModelIndices(indices);
+            // Pass the name of the focused column to DlgTrackInfo/~Multi
+            // so they can focus the respective edit field.
+            // We use the column of the current index (last focus cell), even
+            // it may not be part of the selection, we just assume it's in the
+            // desired column.
+            const QString columnName = columnNameOfIndex(currentIndex());
+            m_pTrackMenu->setTrackPropertyName(columnName);
             m_pTrackMenu->slotShowDlgTrackInfo();
         }
         return;
@@ -1090,21 +1116,28 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         break;
     }
     TrackModel* pTrackModel = getTrackModel();
-    if (pTrackModel && !pTrackModel->isLocked()) {
-        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
-            removeSelectedTracks();
-            return;
+    if (pTrackModel) {
+        if (!pTrackModel->isLocked()) {
+            if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+                removeSelectedTracks();
+                return;
+            }
+            if (event->matches(QKeySequence::Cut)) {
+                cutSelectedTracks();
+                return;
+            }
+            if (event->matches(QKeySequence::Paste)) {
+                pasteTracks(currentIndex());
+                return;
+            }
+            if (event->key() == Qt::Key_Escape) {
+                clearSelection();
+                setCurrentIndex(QModelIndex());
+            }
         }
-        if (event->matches(QKeySequence::Cut)) {
-            cutSelectedTracks();
-            return;
-        }
+
         if (event->matches(QKeySequence::Copy)) {
             copySelectedTracks();
-            return;
-        }
-        if (event->matches(QKeySequence::Paste)) {
-            pasteTracks(currentIndex());
             return;
         }
         if (event->modifiers().testFlag(Qt::AltModifier) &&
@@ -1118,9 +1151,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             moveSelectedTracks(event);
             return;
         }
-        if (event->key() == Qt::Key_Escape) {
-            clearSelection();
-            setCurrentIndex(QModelIndex());
+        if (event->modifiers().testFlag(Qt::ControlModifier) &&
+                event->modifiers().testFlag(Qt::ShiftModifier) &&
+                event->key() == Qt::Key_C) {
+            // copy the cell content as native QKeySequence::Copy would
+            QKeyEvent ke =
+                    QKeyEvent{QEvent::KeyPress, Qt::Key_C, Qt::ControlModifier};
+            QTableView::keyPressEvent(&ke);
+            return;
         }
     }
     QTableView::keyPressEvent(event);
@@ -1269,7 +1307,14 @@ void WTrackTableView::activateSelectedTrack() {
     slotMouseDoubleClicked(indices.at(0));
 }
 
-void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
+#ifdef __STEM__
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
+#else
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
+        bool play) {
+#endif
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
@@ -1303,7 +1348,12 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
     auto* pTrackModel = getTrackModel();
     TrackPointer pTrack;
     if (pTrackModel && (pTrack = pTrackModel->getTrack(index))) {
+#ifdef __STEM__
+        DEBUG_ASSERT(!stemMask || pTrack->hasStem());
+        emit loadTrackToPlayer(pTrack, group, stemMask, play);
+#else
         emit loadTrackToPlayer(pTrack, group, play);
+#endif
     }
 }
 

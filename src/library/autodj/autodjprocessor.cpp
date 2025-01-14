@@ -120,15 +120,17 @@ AutoDJProcessor::AutoDJProcessor(
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
-    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
-                                                 "mixxx.db.model.autodj");
+    m_pAutoDJTableModel = new PlaylistTableModel(
+            this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
     m_pAutoDJTableModel->select();
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    connect(m_pShufflePlaylist, &ControlPushButton::valueChanged,
-            this, &AutoDJProcessor::controlShuffle);
+    connect(m_pShufflePlaylist,
+            &ControlPushButton::valueChanged,
+            this,
+            &AutoDJProcessor::controlShuffle);
 
     m_pSkipNext = new ControlPushButton(
             ConfigKey("[AutoDJ]", "skip_next"));
@@ -169,6 +171,7 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
+    m_crossfaderStartCenter = false;
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -396,15 +399,30 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             return ADJ_BOTH_DECKS_PLAYING;
         }
 
-        // TODO: This is a total bandaid for making Auto DJ work with decks 3
-        // and 4.  We should design a nicer way to handle this.
-        for (int i = 2; i < m_decks.length(); ++i) {
-            if (m_decks[i] && m_decks[i]->isPlaying()) {
+        // TODO: This is a total bandaid for making Auto DJ work with four decks.
+        // We should design a nicer way to handle this.
+        for (const auto& pDeck : std::as_const(m_decks)) {
+            VERIFY_OR_DEBUG_ASSERT(pDeck) {
+                continue;
+            }
+            if (pDeck == pLeftDeck) {
+                continue;
+            }
+            if (pDeck == pRightDeck) {
+                continue;
+            }
+            if (pDeck->isPlaying()) {
                 // Keep the current state.
                 emitAutoDJStateChanged(m_eState);
-                emit autoDJError(ADJ_DECKS_3_4_PLAYING);
-                return ADJ_DECKS_3_4_PLAYING;
+                emit autoDJError(ADJ_UNUSED_DECK_PLAYING);
+                return ADJ_UNUSED_DECK_PLAYING;
             }
+        }
+
+        if (pLeftDeck->index > 1 || pRightDeck->index > 1) {
+            // Left and/or right deck is deck 3/4 which may not be visible.
+            // Make sure it is, if the current skin is a 4-deck skin.
+            ControlObject::set(ConfigKey("[Skin]", "show_4decks"), 1);
         }
 
         // Never load the same track if it is already playing
@@ -812,12 +830,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     otherDeck->setPlayPosition(otherDeck->startPos);
                 }
 
-                if (!otherDeckPlaying) {
-                    otherDeck->play();
+                if (m_crossfaderStartCenter) {
+                    setCrossfader(0.0);
+                } else if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
+                    setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
 
-                if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
-                    setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
+                if (!otherDeckPlaying) {
+                    otherDeck->play();
                 }
 
                 // Now that we have started the other deck playing, remove the track
@@ -836,6 +856,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         double crossfaderTarget;
         if (m_eState == ADJ_LEFT_FADING) {
             crossfaderTarget = 1.0;
+
         } else if (m_eState == ADJ_RIGHT_FADING) {
             crossfaderTarget = -1.0;
         } else {
@@ -895,20 +916,23 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 
     while (true) {
-        TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
+        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(
+                m_pAutoDJTableModel->index(0, 0));
 
-        if (nextTrack) {
-            if (nextTrack->getFileInfo().checkFileExists()) {
-                return nextTrack;
+        if (pNextTrack) {
+            if (pNextTrack->getFileInfo().checkFileExists()) {
+                return pNextTrack;
             } else {
-                // Remove missing song from auto DJ playlist.
+                // Remove missing track from auto DJ playlist.
+                qWarning() << "Auto DJ: Skip missing track" << pNextTrack->getLocation();
                 m_pAutoDJTableModel->removeTrack(
                         m_pAutoDJTableModel->index(0, 0));
+                // Don't "Requeue" missing tracks to avoid andless loops
+                maybeFillRandomTracks();
             }
         } else {
             // We're out of tracks. Return the null TrackPointer.
-            return nextTrack;
+            return pNextTrack;
         }
     }
 }
@@ -1346,6 +1370,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                  << "outroLength" << outroLength;
     }
 
+    m_crossfaderStartCenter = false;
     switch (m_transitionMode) {
     case TransitionMode::FullIntroOutro: {
         // Use the outro or intro length for the transition time, whichever is
@@ -1445,6 +1470,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, outroEnd, toDeckStartSeconds);
         }
     } break;
+    case TransitionMode::FixedStartCenterSkipSilence:
+        m_crossfaderStartCenter = true;
+        // fall through intended!
+        [[fallthrough]];
     case TransitionMode::FixedSkipSilence: {
         double toDeckStartSecond;
         pToDeck->fadeBeginPos = getLastSoundSecond(pToDeck);

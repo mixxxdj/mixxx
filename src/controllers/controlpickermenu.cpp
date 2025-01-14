@@ -661,7 +661,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                "position as loop end") +
             noBeatsSeconds;
 
-    QList<double> beatSizes = LoopingControl::getBeatSizes();
+    const QList<double> beatSizes = LoopingControl::getBeatSizes();
 
     QMap<double, QString> humanBeatSizes;
     humanBeatSizes[0.03125] = tr("1/32");
@@ -1389,23 +1389,23 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Skin Controls
     QMenu* pGuiMenu = addSubmenu(tr("User Interface"));
-    addControl("[Samplers]",
+    addControl("[Skin]",
             "show_samplers",
             tr("Samplers Show/Hide"),
             tr("Show/hide the sampler section"),
             pGuiMenu);
-    addControl("[Microphone]",
+    addControl("[Skin]",
             "show_microphone",
             tr("Microphone & Auxiliary Show/Hide"),
             tr("Show/hide the microphone & auxiliary section"),
             pGuiMenu);
-    addControl("[PreviewDeck]",
-            "show_previewdeck",
+    addControl("[Skin]",
+            "show_previewdecks",
             tr("Preview Deck Show/Hide"),
             tr("Show/hide the preview deck"),
             pGuiMenu);
-    addControl("[EffectRack1]",
-            "show",
+    addControl("[Skin]",
+            "show_effectrack",
             tr("Effect Rack Show/Hide"),
             tr("Show/hide the effect rack"),
             pGuiMenu);

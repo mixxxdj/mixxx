@@ -156,6 +156,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
+    void setUntilMarkTextHeightLimit(float value);
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -169,9 +170,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int getUntilMarkTextPointSize() const {
         return m_untilMarkTextPointSize;
     }
-
+    float getUntilMarkTextHeightLimit() const {
+        return m_untilMarkTextHeightLimit;
+    }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
+    static float toUntilMarkTextHeightLimit(int index);
+    static int toUntilMarkTextHeightLimitIndex(float value);
 
     /// Returns the desired surface format for the OpenGLWindow
     static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
@@ -281,6 +286,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_untilMarkShowTime;
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
+    float m_untilMarkTextHeightLimit;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

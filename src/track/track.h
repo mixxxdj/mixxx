@@ -435,6 +435,16 @@ class Track : public QObject {
     void setAudioProperties(
             const mixxx::audio::StreamInfo& streamInfo);
 
+    // Information about the actual properties of the
+    // audio stream is only available after opening the
+    // source at least once. On this occasion the metadata
+    // stream info of the track need to be updated to reflect
+    // these values.
+    bool hasStreamInfoFromSource() const {
+        const auto locked = lockMutex(&m_qMutex);
+        return m_record.hasStreamInfoFromSource();
+    }
+
   signals:
     void artistChanged(const QString&);
     void titleChanged(const QString&);
@@ -568,16 +578,6 @@ class Track : public QObject {
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
             const SyncTrackMetadataParams& syncParams);
-
-    // Information about the actual properties of the
-    // audio stream is only available after opening the
-    // source at least once. On this occasion the metadata
-    // stream info of the track need to be updated to reflect
-    // these values.
-    bool hasStreamInfoFromSource() const {
-        const auto locked = lockMutex(&m_qMutex);
-        return m_record.hasStreamInfoFromSource();
-    }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 

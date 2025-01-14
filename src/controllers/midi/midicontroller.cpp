@@ -33,7 +33,6 @@ bool MidiInputHandleJSProxy::disconnect() {
 
 MidiController::MidiController(const QString& deviceName)
         : Controller(deviceName) {
-    setDeviceCategory(tr("MIDI Controller"));
 }
 
 void MidiController::slotBeforeEngineShutdown() {

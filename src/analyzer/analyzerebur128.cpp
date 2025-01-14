@@ -73,8 +73,8 @@ void AnalyzerEbur128::storeResults(TrackPointer pTrack) {
     if (averageLufs == -HUGE_VAL ||
             averageLufs == HUGE_VAL ||
             // This catches 0 and abnormal values inf and -inf (that may have
-            // slipped through in libebur for some reason.
-            util_isnormal(averageLufs)) {
+            // slipped through in libebur128 for some reason.
+            !util_isnormal(averageLufs)) {
         qWarning() << "AnalyzerEbur128::storeResults() averageLufs invalid:"
                    << averageLufs;
         return;
