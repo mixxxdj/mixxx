@@ -110,7 +110,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                     0,
                     static_cast<float>(ControlObject::getControl(
                             oscIn.oscGroup, oscIn.oscKey)
-                                               ->get()));
+                                    ->get()));
             qDebug() << "OSC Msg Rcvd: Get Group, Key: Value:" << oscIn.oscGroup
                      << "," << oscIn.oscKey << ":" << oscIn.oscValue;
         }
