@@ -382,7 +382,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     // Create the image
     QImage image{markerGeometry.getImageSize(devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied};
-    if (image.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
         return image;
     }
     image.setDevicePixelRatio(devicePixelRatio);

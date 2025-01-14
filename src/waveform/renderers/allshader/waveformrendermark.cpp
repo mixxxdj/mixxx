@@ -401,7 +401,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     QImage image(static_cast<int>(imgWidth * devicePixelRatio),
             static_cast<int>(imgHeight * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
-    if (image.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
         return;
     }
     image.setDevicePixelRatio(devicePixelRatio);
