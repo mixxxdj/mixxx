@@ -88,10 +88,10 @@ endif()
 
 foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
 
-  if (RELEASE STREQUAL "bionic")
-    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libmp4v2-dev,")
+  if (RELEASE STREQUAL "jammy")
+    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libqt6shadertools6-dev,")
   else()
-    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavformat-dev,")
+    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "qt6-shadertools-dev,")
   endif()
 
   configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/packaging/debian/control.in
