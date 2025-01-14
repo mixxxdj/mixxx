@@ -280,7 +280,8 @@ void exportMetadata(
 
     // Write waveform.
     if (pWaveform) {
-        djinterop::waveform_extents extents = dbSchemaVersion >= djinterop::engine::engine_schema::schema_2_18_0
+        djinterop::waveform_extents extents = dbSchemaVersion >=
+                        djinterop::engine::engine_schema::schema_2_18_0
                 ? e::calculate_overview_waveform_extents(
                           frameCount, pTrack->getSampleRate())
                 : e::calculate_high_resolution_waveform_extents(
