@@ -3012,15 +3012,15 @@ target_include_directories(
 )
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 
-IF(WIN32)
+if(WIN32)
   set(IpSystemTypePath src/osc/ip/win32)
   set(LIBS ${LIBS} Ws2_32 winmm)
-ELSE(WIN32)
+else(WIN32)
   set(IpSystemTypePath src/osc/ip/posix)
-ENDIF(WIN32)
+endif(WIN32)
 
 #eve osc
-ADD_LIBRARY(
+add_library(
   oscpack
   src/osc/ip/IpEndpointName.cpp
   src/osc/ip/IpEndpointName.h
