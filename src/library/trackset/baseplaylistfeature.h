@@ -26,8 +26,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             PlaylistTableModel* pModel,
             const QString& rootViewName,
             const QString& iconName,
-            const QString& countsDurationTableName,
-            bool keepHiddenTracks = false);
+            const QString& countsDurationTableName);
     ~BasePlaylistFeature() override = default;
 
     TreeItemModel* sidebarModel() const override;
@@ -130,7 +129,4 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
     QString fetchPlaylistLabel(int playlistId);
-
-
-    const bool m_keepHiddenTracks;
 };
