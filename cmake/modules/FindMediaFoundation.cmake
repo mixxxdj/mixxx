@@ -3,18 +3,27 @@
 #
 # MediaFoundation_LIBRARIES   - List of libraries when using MediaFoundation
 # MediaFoundation_FOUND       - True if MediaFoundation found
+#
+# lint_cmake: -package/consistency
 
-IF (MSVC)
-  SET( MediaFoundation_LIBRARIES mf.lib mfplat.lib mfreadwrite.lib mfuuid.lib strmiids.lib )
-  SET( MediaFoundation_FOUND true )
-ENDIF (MSVC)
+if(MSVC)
+  set(
+    MediaFoundation_LIBRARIES
+    mf.lib
+    mfplat.lib
+    mfreadwrite.lib
+    mfuuid.lib
+    strmiids.lib
+  )
+  set(MediaFoundation_FOUND true)
+endif()
 
-IF (MediaFoundation_FOUND)
-  IF (NOT MediaFoundation_FIND_QUIETLY)
-    MESSAGE(STATUS "Found MediaFoundation: ${MediaFoundation_LIBRARIES}")
-  ENDIF (NOT MediaFoundation_FIND_QUIETLY)
-ELSE (MediaFoundation_FOUND)
-  IF (MediaFoundation_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Could not find MediaFoundation")
-  ENDIF (MediaFoundation_FIND_REQUIRED)
-ENDIF (MediaFoundation_FOUND)
+if(MediaFoundation_FOUND)
+  if(NOT MediaFoundation_FIND_QUIETLY)
+    message(STATUS "Found MediaFoundation: ${MediaFoundation_LIBRARIES}")
+  endif()
+else()
+  if(MediaFoundation_FIND_REQUIRED)
+    message(FATAL_ERROR "Could not find MediaFoundation")
+  endif()
+endif()

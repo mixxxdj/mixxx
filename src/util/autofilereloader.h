@@ -10,6 +10,7 @@ class AutoFileReloader : public QObject {
     Q_OBJECT
   public:
     explicit AutoFileReloader(const RuntimeLoggingCategory& loggingCategory);
+    ~AutoFileReloader() override;
 
     void clear() {
         const auto files = m_fileWatcher.files();

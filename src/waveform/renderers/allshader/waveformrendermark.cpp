@@ -5,6 +5,7 @@
 
 #include "track/track.h"
 #include "util/colorcomponents.h"
+#include "util/roundtopixel.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -20,6 +21,8 @@
 // only to draw on a QImage. This is only done once when needed and the images are
 // then used as textures to be drawn with a GLSL shader.
 
+namespace {
+
 class TextureGraphics : public WaveformMark::Graphics {
   public:
     TextureGraphics(const QImage& image) {
@@ -33,19 +36,9 @@ class TextureGraphics : public WaveformMark::Graphics {
     OpenGLTexture2D m_texture;
 };
 
-// Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
-// from WaveformRenderMarkBase. The base-class takes care of updating the marks
-// when needed and flagging them when their image needs to be updated (resizing,
-// cue changes, position changes)
-//
-// While in the case of ::WaveformRenderMark those images can be updated immediately,
-// in the case of allshader::WaveformRenderMark we need to do that when we have an
-// openGL context, as we create new textures.
-//
-// The boolean argument for the WaveformRenderMarkBase constructor indicates
-// that updateMarkImages should not be called immediately.
+constexpr float kPlayPosWidth{11.f};
+constexpr float kPlayPosOffset{-(kPlayPosWidth - 1.f) / 2.f};
 
-namespace {
 QString timeSecToString(double timeSec) {
     int hundredths = std::lround(timeSec * 100.0);
     int seconds = hundredths / 100;
@@ -57,6 +50,18 @@ QString timeSecToString(double timeSec) {
 }
 
 } // namespace
+
+// Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
+// from WaveformRenderMarkBase. The base-class takes care of updating the marks
+// when needed and flagging them when their image needs to be updated (resizing,
+// cue changes, position changes)
+//
+// While in the case of ::WaveformRenderMark those images can be updated immediately,
+// in the case of allshader::WaveformRenderMark we need to do that when we have an
+// openGL context, as we create new textures.
+//
+// The boolean argument for the WaveformRenderMarkBase constructor indicates
+// that updateMarkImages should not be called immediately.
 
 allshader::WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidget,
@@ -85,8 +90,14 @@ void allshader::WaveformRenderMark::initializeGL() {
     updatePlayPosMarkTexture();
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
+    const auto untilMarkTextHeightLimit =
+            WaveformWidgetFactory::instance()
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
+    const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
+
     m_digitsRenderer.updateTexture(untilMarkTextPointSize,
-            getMaxHeightForText(),
+            untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 }
 
@@ -198,6 +209,8 @@ void allshader::WaveformRenderMark::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
+
     for (const auto& pMark : std::as_const(m_marks)) {
         pMark->setBreadth(slipActive ? m_waveformRenderer->getBreadth() / 2
                                      : m_waveformRenderer->getBreadth());
@@ -229,14 +242,9 @@ void allshader::WaveformRenderMark::paintGL() {
             continue;
         }
 
-        const float currentMarkPoint =
-                std::round(
-                        static_cast<float>(
-                                m_waveformRenderer
-                                        ->transformSamplePositionInRendererWorld(
-                                                samplePosition, positionType)) *
-                        devicePixelRatio) /
-                devicePixelRatio;
+        const float currentMarkPos = static_cast<float>(
+                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                        samplePosition, positionType));
         if (pMark->isShowUntilNext() &&
                 samplePosition >= playPosition + 1.0 &&
                 samplePosition < nextMarkPosition) {
@@ -244,21 +252,17 @@ void allshader::WaveformRenderMark::paintGL() {
         }
         const double sampleEndPosition = pMark->getSampleEndPosition();
 
-        // Pixmaps are expected to have the mark stroke at the center,
-        // and preferably have an odd width in order to have the stroke
-        // exactly at the sample position.
-        const float markHalfWidth = pTexture->width() / devicePixelRatio / 2.f;
-        const float drawOffset = currentMarkPoint - markHalfWidth;
+        const float markWidth = pTexture->width() / devicePixelRatio;
+        const float drawOffset = currentMarkPos + pMark->getOffset();
 
         bool visible = false;
         // Check if the current point needs to be displayed.
-        if (drawOffset > -markHalfWidth &&
-                drawOffset < m_waveformRenderer->getLength() +
-                                markHalfWidth) {
+        if (drawOffset > -markWidth &&
+                drawOffset < m_waveformRenderer->getLength()) {
             drawTexture(matrix,
-                    drawOffset,
+                    roundToPixel(drawOffset),
                     !m_isSlipRenderer && slipActive
-                            ? m_waveformRenderer->getBreadth() / 2
+                            ? roundToPixel(m_waveformRenderer->getBreadth() / 2.f)
                             : 0,
                     pTexture);
             visible = true;
@@ -267,19 +271,16 @@ void allshader::WaveformRenderMark::paintGL() {
         // Check if the range needs to be displayed.
         if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
             DEBUG_ASSERT(samplePosition < sampleEndPosition);
-            const float currentMarkEndPoint = static_cast<
-                    float>(
-                    m_waveformRenderer
-                            ->transformSamplePositionInRendererWorld(
-                                    sampleEndPosition, positionType));
-
-            if (visible || currentMarkEndPoint > 0) {
+            const float currentMarkEndPos = static_cast<float>(
+                    m_waveformRenderer->transformSamplePositionInRendererWorld(
+                            sampleEndPosition, positionType));
+            if (visible || currentMarkEndPos > 0.f) {
                 QColor color = pMark->fillColor();
                 color.setAlphaF(0.4f);
 
                 drawMark(matrix,
-                        QRectF(QPointF(currentMarkPoint, 0),
-                                QPointF(currentMarkEndPoint,
+                        QRectF(QPointF(roundToPixel(currentMarkPos), 0),
+                                QPointF(roundToPixel(currentMarkEndPos),
                                         m_waveformRenderer
                                                 ->getBreadth())),
                         color);
@@ -295,16 +296,10 @@ void allshader::WaveformRenderMark::paintGL() {
     }
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
-    const float currentMarkPoint =
-            std::round(static_cast<float>(
-                               m_waveformRenderer->getPlayMarkerPosition() *
-                               m_waveformRenderer->getLength()) *
-                    devicePixelRatio) /
-            devicePixelRatio;
-
+    const float playMarkerPos = static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
+            m_waveformRenderer->getLength());
     if (m_playPosMarkTexture.isStorageAllocated()) {
-        const float markHalfWidth = m_playPosMarkTexture.width() / devicePixelRatio / 2.f;
-        const float drawOffset = currentMarkPoint - markHalfWidth;
+        const float drawOffset = roundToPixel(playMarkerPos + kPlayPosOffset);
 
         drawTexture(matrix, drawOffset, 0.f, &m_playPosMarkTexture);
     }
@@ -312,7 +307,7 @@ void allshader::WaveformRenderMark::paintGL() {
     if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
             WaveformWidgetFactory::instance()->getUntilMarkShowTime()) {
         updateUntilMark(playPosition, nextMarkPosition);
-        drawUntilMark(matrix, currentMarkPoint + 20);
+        drawUntilMark(matrix, roundToPixel(playMarkerPos + 20.f));
     }
 }
 
@@ -323,8 +318,14 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
 
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
+    const auto untilMarkTextHeightLimit =
+            WaveformWidgetFactory::instance()
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
+    const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
+
     m_digitsRenderer.updateTexture(untilMarkTextPointSize,
-            getMaxHeightForText(),
+            untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 
     if (m_timeUntilMark == 0.0) {
@@ -337,7 +338,8 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    bool multiLine = untilMarkShowBeats && untilMarkShowTime && ch * 2.f < getMaxHeightForText();
+    bool multiLine = untilMarkShowBeats && untilMarkShowTime &&
+            ch * 2.f < untilMarkMaxHeightForText;
 
     if (multiLine) {
         if (untilMarkAlign != Qt::AlignTop) {
@@ -382,7 +384,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
 
     const float lineX = 5.5f;
 
-    imgwidth = 11.f;
+    imgwidth = kPlayPosWidth;
     imgheight = height;
 
     QImage image(static_cast<int>(imgwidth * devicePixelRatio),
@@ -517,6 +519,6 @@ void allshader::WaveformRenderMark::updateUntilMark(
                     (endPosition - playPosition));
 }
 
-float allshader::WaveformRenderMark::getMaxHeightForText() const {
-    return m_waveformRenderer->getBreadth() / 3;
+float allshader::WaveformRenderMark::getMaxHeightForText(float proportion) const {
+    return std::roundf(m_waveformRenderer->getBreadth() * proportion);
 }

@@ -52,8 +52,10 @@ class Paintable {
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,
                       const QRectF& sourceRect);
+    void mayCorrectColors();
 
     std::unique_ptr<QPixmap> m_pPixmap;
     std::unique_ptr<QSvgRenderer> m_pSvg;
     DrawMode m_drawMode;
+    QRectF m_lastSourceRect;
 };
