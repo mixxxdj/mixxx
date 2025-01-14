@@ -699,7 +699,12 @@ void Tooltips::addStandardTooltips() {
                   << QString("%1 + %2: %3")
                              .arg(rightClick,
                                      shift,
-                                     tr("Delete selected hotcue."));
+                                     tr("Delete selected hotcue."))
+                  << tr("Drag this button onto another Hotcue button to move it "
+                        "there (change its index). If the other hotcue is set, "
+                        "the two are swapped.")
+                  << tr("Dragging with Shift key pressed will not start previewing "
+                        "the hotcue");
 
     // Status displays and toggle buttons
     add("toggle_recording")

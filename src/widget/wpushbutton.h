@@ -98,6 +98,8 @@ class WPushButton : public WWidget {
     bool m_bPressed;
     // True, if the button is pointer is above button
     bool m_bHovered;
+    // Set true by WHotcueButton while it's being dragged
+    bool m_dragging;
 
     // Array of associated pixmaps
     int m_iNoStates;
