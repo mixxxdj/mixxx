@@ -337,6 +337,10 @@ class MarkerGeometry {
 QImage WaveformMark::generateImage(float devicePixelRatio) {
     DEBUG_ASSERT(needsImageUpdate());
 
+    if (m_breadth == 0.0f) {
+        return {};
+    }
+
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
 
@@ -378,6 +382,9 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     // Create the image
     QImage image{markerGeometry.getImageSize(devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied};
+    if (image.isNull()) {
+        return image;
+    }
     image.setDevicePixelRatio(devicePixelRatio);
 
     // Fill with transparent pixels
