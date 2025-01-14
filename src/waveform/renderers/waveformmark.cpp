@@ -335,7 +335,7 @@ class MarkerGeometry {
 };
 
 QImage WaveformMark::generateImage(float devicePixelRatio) {
-    assert(needsImageUpdate());
+    DEBUG_ASSERT(needsImageUpdate());
 
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
