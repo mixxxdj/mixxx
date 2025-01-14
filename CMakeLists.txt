@@ -3015,9 +3015,9 @@ target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 if(WIN32)
   set(IpSystemTypePath src/osc/ip/win32)
   set(LIBS ${LIBS} Ws2_32 winmm)
-else(WIN32)
+else()
   set(IpSystemTypePath src/osc/ip/posix)
-endif(WIN32)
+endif()
 
 #eve osc
 add_library(
