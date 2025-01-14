@@ -128,6 +128,20 @@ CueControl::CueControl(const QString& group,
     m_pPassthrough->connectValueChanged(this,
             &CueControl::passthroughChanged,
             Qt::DirectConnection);
+
+    m_pSortHotcuesByPos = std::make_unique<ControlPushButton>(ConfigKey(group, "sort_hotcues"));
+    connect(m_pSortHotcuesByPos.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::setHotcueIndicesSortedByPosition,
+            Qt::DirectConnection);
+    m_pSortHotcuesByPosCompress = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "sort_hotcues_remove_offsets"));
+    connect(m_pSortHotcuesByPosCompress.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::setHotcueIndicesSortedByPositionCompress,
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -445,6 +459,18 @@ void CueControl::passthroughChanged(double enabled) {
     } else {
         // Reconnect all controls when deck returns to regular mode.
         connectControls();
+    }
+}
+
+void CueControl::setHotcueIndicesSortedByPosition(double v) {
+    if (v > 0 && m_pLoadedTrack) {
+        m_pLoadedTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::KeepOffsets);
+    }
+}
+
+void CueControl::setHotcueIndicesSortedByPositionCompress(double v) {
+    if (v > 0 && m_pLoadedTrack) {
+        m_pLoadedTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::RemoveOffsets);
     }
 }
 
