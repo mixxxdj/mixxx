@@ -31,6 +31,24 @@ declare interface ScriptConnection {
     readonly isConnected: boolean;
 }
 
+/** QmlPlayerProxy */
+declare interface PlayerManager {
+    isLoaded(): boolean;
+    getTrack(): string;
+    getTitle(): string;
+    getArtist(): string;
+    getAlbum(): string;
+    getAlbumArtist(): string;
+    getGenre(): string;
+    getComposer(): string;
+    getGrouping(): string;
+    getYear(): string;
+    getTrackNumber(): string;
+    getTrackTotal(): string;
+    getComment(): string;
+    getKeyText(): string;
+}
+
 
 /** ControllerScriptInterfaceLegacy */
 
@@ -44,6 +62,12 @@ declare namespace engine {
      * @returns Value of the setting, or undefined in failure case
      */
     function getSetting(name: string): SettingValue | undefined;
+
+    /**
+     *
+     * @param group
+     */
+    function getPlayer(group: string): PlayerManager | undefined;
 
     /**
      * Gets the control value

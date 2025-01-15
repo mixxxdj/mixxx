@@ -12,6 +12,8 @@
 #include "moc_controllerscriptenginebase.cpp"
 #ifdef MIXXX_USE_QML
 #include "qml/asyncimageprovider.h"
+#include "mixer/playermanager.h"
+#include "qml/qmlplayerproxy.h"
 #endif
 #include "util/cmdlineargs.h"
 
@@ -34,6 +36,10 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
 void ControllerScriptEngineBase::registerTrackCollectionManager(
         std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
+}
+
+void ControllerScriptEngineBase::registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager)  {
+    s_pPlayerManager = std::move(pPlayerManager);
 }
 
 void ControllerScriptEngineBase::handleQMLErrors(const QList<QQmlError>& qmlErrors) {
@@ -193,6 +199,32 @@ void ControllerScriptEngineBase::showQMLExceptionDialog(
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, errorText, bFatalError);
     }
+}
+
+QObject* ControllerScriptEngineBase::getPlayer(const QString& group) {
+    BaseTrackPlayer* pPlayer = s_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        qWarning() << "PlayerManagerProxy failed to find player for group" << group;
+        return nullptr;
+    }
+
+    // Don't set a parent here, so that the QML engine deletes the object when
+    // the corresponding JS object is garbage collected.
+    mixxx::qml::QmlPlayerProxy* pPlayerProxy = new mixxx::qml::QmlPlayerProxy(pPlayer);
+    QQmlEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+    connect(pPlayerProxy,
+            &mixxx::qml::QmlPlayerProxy::loadTrackFromLocationRequested,
+            this,
+            [this, group](const QString& trackLocation, bool play) {
+                s_pPlayerManager->slotLoadLocationToPlayer(trackLocation, group, play);
+            });
+    connect(pPlayerProxy,
+            &mixxx::qml::QmlPlayerProxy::cloneFromGroup,
+            this,
+            [this, group](const QString& sourceGroup) {
+                s_pPlayerManager->slotCloneDeck(sourceGroup, group);
+            });
+    return pPlayerProxy;
 }
 #endif
 
