@@ -5,6 +5,7 @@
 
 #include "controllers/scripting/controllerscriptenginebase.h"
 
+
 /// ControllerScriptModuleEngine loads and executes script module files for controller mappings.
 class ControllerScriptModuleEngine : public ControllerScriptEngineBase {
     Q_OBJECT

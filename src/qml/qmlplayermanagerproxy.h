@@ -25,7 +25,7 @@ class QmlPlayerManagerProxy : public QObject {
     Q_INVOKABLE void loadLocationToPlayer(
             const QString& location, const QString& group, bool play = false);
 
-    static QmlPlayerManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
+    static QmlPlayerManagerProxy* create(QJSEngine* pJsEngine, QObject* parent);
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager) {
         s_pPlayerManager = std::move(pPlayerManager);
     }

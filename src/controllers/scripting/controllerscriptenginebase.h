@@ -10,12 +10,14 @@
 #include "util/runtimeloggingcategory.h"
 #ifdef MIXXX_USE_QML
 #include "controllers/controllerenginethreadcontrol.h"
+#include "controllers/scripting/javascriptplayerproxy.h"
 #endif
 
 class Controller;
 class QJSEngine;
 #ifdef MIXXX_USE_QML
 class TrackCollectionManager;
+class PlayerManager;
 #endif
 
 /// ControllerScriptEngineBase manages the JavaScript engine for controller scripts.
@@ -38,6 +40,7 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
     /// Precondition: QML.isValid() == true
     void showQMLExceptionDialog(const QQmlError& evaluationResult, bool bFatal = false);
+    QObject* getPlayer(const QString& deck);
 #endif
     void throwJSError(const QString& message);
 
@@ -56,6 +59,8 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
     static void registerTrackCollectionManager(
             std::shared_ptr<TrackCollectionManager> pTrackCollectionManager);
+
+    static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager);
 #endif
   signals:
     void beforeShutdown();
@@ -88,12 +93,15 @@ class ControllerScriptEngineBase : public QObject {
 
 #ifdef MIXXX_USE_QML
     bool m_bQmlMode;
+
 #endif
     bool m_bTesting;
 
 #ifdef MIXXX_USE_QML
   private:
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
+    static inline std::shared_ptr<PlayerManager> s_pPlayerManager;
+    const std::shared_ptr<PlayerManager> m_pPlayerManager;
 
   protected:
     /// Pause the GUI main thread. Pause is required by rendering

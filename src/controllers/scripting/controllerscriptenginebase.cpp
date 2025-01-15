@@ -23,6 +23,7 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
           m_logger(logger),
           m_bAbortOnWarning(false),
 #ifdef MIXXX_USE_QML
+          m_pPlayerManager(s_pPlayerManager),
           m_bQmlMode(false),
 #endif
           m_bTesting(false) {
@@ -193,6 +194,20 @@ void ControllerScriptEngineBase::showQMLExceptionDialog(
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, errorText, bFatalError);
     }
+}
+
+QObject* ControllerScriptEngineBase::getPlayer(const QString& deck) {
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(deck);
+    if (!pPlayer) {
+        qWarning() << "PlayerManagerProxy failed to find player for group" << deck;
+        return nullptr;
+    }
+
+    // Don't set a parent here, so that the QML engine deletes the object when
+    // the corresponding JS object is garbage collected.
+    mixxx::qml::JavascriptPlayerProxy* pPlayerProxy = new mixxx::qml::JavascriptPlayerProxy(pPlayer);
+    QJSEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+    return pPlayerProxy;
 }
 #endif
 
