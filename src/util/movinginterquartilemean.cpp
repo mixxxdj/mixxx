@@ -1,46 +1,42 @@
 #include "movinginterquartilemean.h"
 
-MovingInterquartileMean::MovingInterquartileMean(const unsigned int listMaxSize)
-        : m_dMean(0.0),
-          m_iListMaxSize(listMaxSize),
-          m_bChanged(true) {
-}
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <numeric>
 
-MovingInterquartileMean::~MovingInterquartileMean() {};
+#include "util/assert.h"
 
 double MovingInterquartileMean::insert(double value) {
-    m_bChanged = true;
-
-    // Insert new value
-    if (m_list.empty()) {
-        m_list.push_front(value);
-        m_queue.enqueue(m_list.begin());
-    } else if (value < m_list.front()) {
-        m_list.push_front(value);
-        m_queue.enqueue(m_list.begin());
-    } else if (value >= m_list.back()) {
-        m_list.push_back(value);
-        m_queue.enqueue(--m_list.end());
-    } else {
-        std::list<double>::iterator it = m_list.begin()++;
-        while (value >= *it) {
-            ++it;
-        }
-        m_queue.enqueue(m_list.insert(it, value));
-        // (If value already exists in the list, the new instance
-        // is appended next to the old ones: 2·-> 1 2 3 = 1 2 2· 3)
+    // make space if needed
+    // NOTE: after benchmarking, replacing the erase+insert with a rotate+swap does
+    // not result in significant enough speedup to warrant the complexity.
+    if (m_list.size() == m_list.capacity()) {
+        m_list.erase(std::lower_bound(m_list.begin(), m_list.end(), m_queue.front()));
+        m_queue.pop();
     }
+    auto insertPosition = std::lower_bound(m_list.cbegin(), m_list.cend(), value);
+    m_list.insert(insertPosition, value);
+    // we explicitly insert the value and not an index or iterator here,
+    // because those would get invalidated when the contents of m_list are
+    // shifted around (due to the erase and insert above). updating those
+    // iterators/indices is likely more expensive than recovering them when
+    // needed using the first std::lower_bound
+    m_queue.push(value);
 
-    // If list was already full, delete the oldest value:
-    if (m_list.size() == static_cast<std::size_t>(m_iListMaxSize + 1)) {
-        m_list.erase(m_queue.dequeue());
-    }
-    return mean();
+    DEBUG_ASSERT(std::is_sorted(m_list.cbegin(), m_list.cend()));
+
+    // no need to set m_bChanged and check m_list.empty().
+    // we know the preconditions are satisfied so call `calcMean()` directly
+    m_dMean = calcMean();
+    return m_dMean;
 }
 
 void MovingInterquartileMean::clear() {
     m_bChanged = true;
-    m_queue.clear();
+    // std::queue has no .clear(), so creating a temporary and std::swap is the
+    // next most elegant solution
+    std::queue<double>().swap(m_queue);
     m_list.clear();
 }
 
@@ -48,48 +44,40 @@ double MovingInterquartileMean::mean() {
     if (!m_bChanged || m_list.empty()) {
         return m_dMean;
     }
-
+    m_dMean = calcMean();
     m_bChanged = false;
-    const int listSize = size();
+    return m_dMean;
+}
+
+double MovingInterquartileMean::calcMean() const {
+    // assumes m_list is not empty
+    auto simpleMean = [](auto begin, auto end) -> double {
+        double size = std::distance(begin, end);
+        return std::accumulate(begin, end, 0.0) / size;
+    };
+
+    const auto listSize = m_list.size();
     if (listSize <= 4) {
-        double d_sum = 0;
-        for (const double d : std::as_const(m_list)) {
-            d_sum += d;
-        }
-        m_dMean = d_sum / listSize;
+        return simpleMean(m_list.cbegin(), m_list.cend());
     } else if (listSize % 4 == 0) {
-        int quartileSize = listSize / 4;
-        double interQuartileRange = 2 * quartileSize;
-        double d_sum = 0;
-        std::list<double>::iterator it = m_list.begin();
-        std::advance(it, quartileSize);
-        for (int k = 0; k < 2 * quartileSize; ++k, ++it) {
-            d_sum += *it;
-        }
-        m_dMean = d_sum / interQuartileRange;
+        std::size_t quartileSize = listSize / 4;
+        auto start = m_list.cbegin() + quartileSize;
+        auto end = m_list.cend() - quartileSize;
+        return simpleMean(start, end);
     } else {
         // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
         double quartileSize = listSize / 4.0;
         double interQuartileRange = 2 * quartileSize;
-        int nFullValues = listSize - 2 * static_cast<int>(quartileSize) - 2;
+        std::size_t nFullValues = listSize - 2 * static_cast<std::size_t>(quartileSize) - 2;
         double quartileWeight = (interQuartileRange - nFullValues) / 2;
-        std::list<double>::iterator it = m_list.begin();
-        std::advance(it, static_cast<int>(quartileSize));
+        auto it = m_list.begin();
+        std::advance(it, static_cast<std::size_t>(quartileSize));
         double d_sum = *it * quartileWeight;
         ++it;
-        for (int k = 0; k < nFullValues; ++k, ++it) {
+        for (std::size_t k = 0; k < nFullValues; ++k, ++it) {
             d_sum += *it;
         }
         d_sum += *it * quartileWeight;
-        m_dMean = d_sum / interQuartileRange;
+        return d_sum / interQuartileRange;
     }
-    return m_dMean;
-}
-
-int MovingInterquartileMean::size() const {
-    return static_cast<int>(m_list.size());
-}
-
-int MovingInterquartileMean::listMaxSize() const {
-    return m_iListMaxSize;
 }

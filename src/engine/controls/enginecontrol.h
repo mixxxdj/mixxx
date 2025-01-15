@@ -48,17 +48,17 @@ class EngineControl : public QObject {
             UserSettingsPointer pConfig);
     ~EngineControl() override;
 
-    // Called by EngineBuffer::process every latency period. See the above
-    // comments for information about guarantees that hold during this call. An
-    // EngineControl can perform any upkeep operations that are necessary during
-    // this call.
-    virtual void process(const double dRate,
+    /// Called by EngineBuffer::process every latency period.
+    /// See the above comments for information about guarantees that hold during this call.
+    /// An EngineControl can perform any upkeep operations necessary here.
+    /// @param dRate current playback rate in audio frames per second
+    virtual void process(const double rate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize);
+            const std::size_t bufferSize);
 
-    // hintReader allows the EngineControl to provide hints to the reader to
-    // indicate that the given portion of a song is a potential imminent seek
-    // target.
+    /// hintReader allows the EngineControl to provide hints to the reader
+    /// to indicate that the given portion of a song
+    /// is a potential imminent seek target.
     virtual void hintReader(gsl::not_null<HintVector*> pHintList);
 
     virtual void setEngineMixer(EngineMixer* pEngineMixer);
@@ -73,7 +73,7 @@ class EngineControl : public QObject {
             mixxx::audio::FramePos endPosition,
             bool enabled);
 
-    // Called to collect player features for effects processing.
+    /// Collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
         Q_UNUSED(pGroupFeatures);
     }
@@ -103,9 +103,10 @@ class EngineControl : public QObject {
     }
     void seek(double fractionalPosition);
     void seekAbs(mixxx::audio::FramePos position);
-    // Seek to an exact sample and don't allow quantizing adjustment.
-    void seekExact(mixxx::audio::FramePos position);
-    // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
+    /// Seek to an exact frame, no quantizing
+    /// virtual only for tests!
+    virtual void seekExact(mixxx::audio::FramePos position);
+    /// Return an EngineBuffer to target for syncing. Returns nullptr if none found.
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();

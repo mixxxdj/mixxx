@@ -5,7 +5,7 @@
 #include <QVector>
 #include <memory>
 
-#include "control/controlpushbutton.h"
+#include "control/controlbuttonmode.h"
 #include "util/fpclassify.h"
 #include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
@@ -98,6 +98,8 @@ class WPushButton : public WWidget {
     bool m_bPressed;
     // True, if the button is pointer is above button
     bool m_bHovered;
+    // Set true by WHotcueButton while it's being dragged
+    bool m_dragging;
 
     // Array of associated pixmaps
     int m_iNoStates;

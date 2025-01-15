@@ -53,7 +53,7 @@ void ReadAheadSampleBuffer::clear() {
 void ReadAheadSampleBuffer::adjustCapacity(SINT capacity) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    SINT newCapacity = math_max(readableLength(), capacity);
+    SINT newCapacity = std::max(readableLength(), capacity);
     if (newCapacity != this->capacity()) {
         ReadAheadSampleBuffer tmp(*this, newCapacity);
         swap(tmp);
@@ -65,7 +65,7 @@ void ReadAheadSampleBuffer::adjustCapacity(SINT capacity) {
 SampleBuffer::WritableSlice ReadAheadSampleBuffer::growForWriting(SINT maxWriteLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT tailLength = math_min(maxWriteLength, writableLength());
+    const SINT tailLength = std::min(maxWriteLength, writableLength());
     const SampleBuffer::WritableSlice tailSlice(
             m_sampleBuffer, m_readableRange.end(), tailLength);
     m_readableRange.growBack(tailLength);
@@ -77,7 +77,7 @@ SampleBuffer::WritableSlice ReadAheadSampleBuffer::growForWriting(SINT maxWriteL
 SINT ReadAheadSampleBuffer::shrinkAfterWriting(SINT maxShrinkLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT shrinkLength = math_min(maxShrinkLength, readableLength());
+    const SINT shrinkLength = std::min(maxShrinkLength, readableLength());
     m_readableRange.shrinkBack(shrinkLength);
     // If the buffer has become empty reset the write head back to the start
     // of the available memory
@@ -92,7 +92,7 @@ SINT ReadAheadSampleBuffer::shrinkAfterWriting(SINT maxShrinkLength) {
 SampleBuffer::ReadableSlice ReadAheadSampleBuffer::shrinkForReading(SINT maxReadLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT headLength = math_min(maxReadLength, readableLength());
+    const SINT headLength = std::min(maxReadLength, readableLength());
     const SampleBuffer::ReadableSlice headSlice(
             m_sampleBuffer, m_readableRange.start(), headLength);
     m_readableRange.shrinkFront(headLength);

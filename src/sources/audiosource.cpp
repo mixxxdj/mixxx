@@ -193,7 +193,7 @@ bool AudioSource::verifyReadable() {
     // Counterexample: The broken FAAD version 2.9.1 is able to open a file
     // but then fails to decode any sample frames.
     const SINT numSampleFrames =
-            math_min(kVerifyReadableMaxFrameCount, frameIndexRange().length());
+            std::min(kVerifyReadableMaxFrameCount, frameIndexRange().length());
     SampleBuffer sampleBuffer(
             m_signalInfo.frames2samples(numSampleFrames));
     WritableSampleFrames writableSampleFrames(

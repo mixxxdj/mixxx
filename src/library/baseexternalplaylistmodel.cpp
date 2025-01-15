@@ -136,7 +136,7 @@ void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
     // The ordering of columns is relevant (see below)!
     auto playlistViewColumns = QStringList{
             QStringLiteral("track_id"),
-            QStringLiteral("position"),
+            PLAYLISTTRACKSTABLE_POSITION,
             QStringLiteral("'' AS ") + LIBRARYTABLE_PREVIEW};
     const auto queryString =
             QStringLiteral(

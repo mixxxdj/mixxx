@@ -241,6 +241,17 @@ WSearchLineEdit {
   border-bottom: 1px solid #0c0c0c;
 }
 
+#BeatgridControls,
+#StemControls {
+  border-top: 1px solid #1c1c1c;
+  border-left: 1px solid #1c1c1c;
+  border-bottom: 1px solid #020202;
+  border-right: 1px solid #111;
+  border-radius: 1px;
+  background-color: #151517;
+  }
+
+
 #FxParametersFocusBg {
   border: 1px solid #257B82;
   background-color: rgba(0,0,1,50);
@@ -900,7 +911,8 @@ WEffectSelector:!editable:on {
       names start getting cut off. Adding explicit padding improves this. */
   padding: 3px 0px 1px 5px;
   margin: 0px;
-}
+  }
+
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on {
   min-height: 17px;
@@ -1536,6 +1548,7 @@ WEffectSelector:!editable,
   }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#StemControls WPushButton, WPushButton#StemControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 #RateControls WPushButton,
 WPushButton#PlayDeck,
@@ -1587,6 +1600,7 @@ WPushButton#CueDeck[displayValue="0"],
 WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
+WPushButton#StemMuteButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
@@ -1672,6 +1686,7 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
+WPushButton#StemMuteButton,
 #PassthroughButton[displayValue="1"],
 #BroadcastButton[displayValue="4"], /* warning */
 QPushButton#pushButtonAutoDJ:checked,
@@ -1849,6 +1864,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 
 /* Special flat/invisible buttons */
 #BeatgridControlsToggle,
+#StemControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
 WPushButton#PlaySampler[displayValue="0"],
@@ -2218,6 +2234,10 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
   }
 
+#StemMuteButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__stem_mute.svg) no-repeat center center;
+}
+
 #QuickEffectButton[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__star.svg) no-repeat center center;
 }
@@ -2352,6 +2372,13 @@ WPushButton#PlayDeck[value="0"] {
       image: url(skins:LateNight/palemoon/buttons/btn__keylock_active_34.svg) no-repeat center center;
     }
 
+#StemControlsToggle[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__stem_controls_expand.svg) no-repeat center center;
+  }
+  #StemControlsToggle[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
+  }
+
 #BeatgridControlsToggle[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
   }
@@ -2362,8 +2389,15 @@ WPushButton#PlayDeck[value="0"] {
   #BpmLockToggle[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__bpm_locked.svg);
     }
-  #BpmLockToggle[value="0"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__bpm_unlocked.svg);
+    #BpmLockToggle[value="0"] {
+      image: url(skins:LateNight/palemoon/buttons/btn__bpm_unlocked.svg);
+    }
+
+  #Undo[value="0"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/palemoon/buttons/btn__undo_active.svg) no-repeat center center;
     }
 
   #BeatCurposLarge[displayValue="0"] {
@@ -2402,13 +2436,13 @@ WPushButton#PlayDeck[value="0"] {
     }
   #HotcuesEarlier {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
-  }
+    }
     #HotcuesEarlier[pressed="true"] {
       image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
     }
   #HotcuesLater {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
-  }
+    }
     #HotcuesLater[pressed="true"] {
       image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
     }
