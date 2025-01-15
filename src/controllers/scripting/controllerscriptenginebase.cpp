@@ -38,10 +38,6 @@ void ControllerScriptEngineBase::registerTrackCollectionManager(
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
 }
 
-void ControllerScriptEngineBase::registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager)  {
-    s_pPlayerManager = std::move(pPlayerManager);
-}
-
 void ControllerScriptEngineBase::handleQMLErrors(const QList<QQmlError>& qmlErrors) {
     for (const QQmlError& error : std::as_const(qmlErrors)) {
         showQMLExceptionDialog(error, m_bErrorsAreFatal);
@@ -177,56 +173,6 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
         scriptErrorDialog(errorText, key, bFatalError);
     }
 }
-
-#ifdef MIXXX_USE_QML
-void ControllerScriptEngineBase::showQMLExceptionDialog(
-        const QQmlError& error, bool bFatalError) {
-    VERIFY_OR_DEBUG_ASSERT(error.isValid()) {
-        return;
-    }
-
-    QString filename = error.url().isLocalFile() ? error.url().toLocalFile()
-                                                 : error.url().toString();
-
-    if (filename.isEmpty()) {
-        filename = QStringLiteral("<passed code>");
-    }
-    QString errorText = QStringLiteral("Uncaught exception: %1:%2: %3")
-                                .arg(filename, QString::number(error.line()), error.description());
-
-    qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
-
-    if (!m_bDisplayingExceptionDialog) {
-        scriptErrorDialog(errorText, errorText, bFatalError);
-    }
-}
-
-QObject* ControllerScriptEngineBase::getPlayer(const QString& group) {
-    BaseTrackPlayer* pPlayer = s_pPlayerManager->getPlayer(group);
-    if (!pPlayer) {
-        qWarning() << "PlayerManagerProxy failed to find player for group" << group;
-        return nullptr;
-    }
-
-    // Don't set a parent here, so that the QML engine deletes the object when
-    // the corresponding JS object is garbage collected.
-    mixxx::qml::QmlPlayerProxy* pPlayerProxy = new mixxx::qml::QmlPlayerProxy(pPlayer);
-    QQmlEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
-    connect(pPlayerProxy,
-            &mixxx::qml::QmlPlayerProxy::loadTrackFromLocationRequested,
-            this,
-            [this, group](const QString& trackLocation, bool play) {
-                s_pPlayerManager->slotLoadLocationToPlayer(trackLocation, group, play);
-            });
-    connect(pPlayerProxy,
-            &mixxx::qml::QmlPlayerProxy::cloneFromGroup,
-            this,
-            [this, group](const QString& sourceGroup) {
-                s_pPlayerManager->slotCloneDeck(sourceGroup, group);
-            });
-    return pPlayerProxy;
-}
-#endif
 
 void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
     if (m_bAbortOnWarning) {

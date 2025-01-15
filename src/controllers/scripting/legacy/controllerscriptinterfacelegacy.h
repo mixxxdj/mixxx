@@ -7,6 +7,10 @@
 #include "util/alphabetafilter.h"
 #include "util/runtimeloggingcategory.h"
 
+#ifdef MIXXX_USE_QML
+#include "qml/qmlplayermanagerproxy.h"
+#endif
+
 class ControllerScriptEngineLegacy;
 class ControlObjectScript;
 class ScriptConnection;
@@ -152,4 +156,8 @@ class ControllerScriptInterfaceLegacy : public QObject {
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
     const RuntimeLoggingCategory m_logger;
+
+#ifdef MIXXX_USE_QML
+    std::unique_ptr<mixxx::qml::QmlPlayerManagerProxy> m_pPlayerManagerProxy;
+#endif
 };

@@ -39,7 +39,6 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
     /// Precondition: QML.isValid() == true
     void showQMLExceptionDialog(const QQmlError& evaluationResult, bool bFatal = false);
-    QObject* getPlayer(const QString& group);
 #endif
     void throwJSError(const QString& message);
 
@@ -58,7 +57,6 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
     static void registerTrackCollectionManager(
             std::shared_ptr<TrackCollectionManager> pTrackCollectionManager);
-    static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager);
 #endif
   signals:
     void beforeShutdown();

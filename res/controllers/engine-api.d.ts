@@ -32,21 +32,21 @@ declare interface ScriptConnection {
 }
 
 /** QmlPlayerProxy */
-declare interface PlayerManager {
+declare interface PlayerInfo {
     isLoaded(): boolean;
-    getTrack(): string;
-    getTitle(): string;
-    getArtist(): string;
-    getAlbum(): string;
-    getAlbumArtist(): string;
-    getGenre(): string;
-    getComposer(): string;
-    getGrouping(): string;
-    getYear(): string;
-    getTrackNumber(): string;
-    getTrackTotal(): string;
-    getComment(): string;
-    getKeyText(): string;
+    track(): string;
+    title(): string;
+    artist(): string;
+    album(): string;
+    albumArtist(): string;
+    genre(): string;
+    composer(): string;
+    grouping(): string;
+    year(): string;
+    trackNumber(): string;
+    trackTotal(): string;
+    comment(): string;
+    keyText(): string;
 }
 
 
@@ -67,7 +67,7 @@ declare namespace engine {
      *
      * @param group
      */
-    function getPlayer(group: string): PlayerManager | undefined;
+    function getPlayer(group: string): PlayerInfo | undefined;
 
     /**
      * Gets the control value
