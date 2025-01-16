@@ -36,7 +36,7 @@ QList<QVariantMap> CrateTableModel::getGroupedCrates() {
     QList<QVariantMap> groupedCrates;
 
     QSqlQuery query(m_database);
-    QString queryString;
+    // QString queryString;
 
     if (sDebug) {
         qDebug() << "[GROUPEDCRATESTABLEMODEL] configvalue GroupedCratesLength = "

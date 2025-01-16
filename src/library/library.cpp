@@ -106,8 +106,20 @@ Library::Library(
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
 
-    m_pCrateFeature = new CrateFeature(this, m_pConfig);
-    addFeature(m_pCrateFeature);
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesReplace"), false))) {
+        qDebug() << "[GROUPEDCRATESFEATURE] -> GroupedCratesEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesEnabled"));
+
+        qDebug() << "[GROUPEDCRATESFEATURE] -> GroupedCratesReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesReplace"));
+        //            m_pCrateFeature = new CrateFeature(this, m_pConfig);
+        //            addFeature(m_pCrateFeature);
+    } else {
+        m_pCrateFeature = new CrateFeature(this, m_pConfig);
+        addFeature(m_pCrateFeature);
+    }
+
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
