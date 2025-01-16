@@ -4,25 +4,25 @@
  **********************************************************************/
 // TrackEndWarning: "true": when you reach the end of the track,
 // the jog wheel Button will flash. "false": No flash of Jog Wheel Button
-var TrackEndWarning = true;
+const TrackEndWarning = engine.getSetting("TrackEndWarning") === "true";
 
 //iCutEnabled: iCut mode will automatically cut your track with the cross fader
 // when SHIFT enabled and scratching with the jog wheel
-var iCutEnabled = true;
+const iCutEnabled = engine.getSetting("iCutEnabled") === "true";
 
 //activate PFL of deck on track load
-var smartPFL = true;
+const smartPFL = engine.getSetting("smartPFL") === "true";
 
 //Disable Play on Sync button Double Press
-var noPlayOnSyncDoublePress = false;
+const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === "true";
 
 // Shift+Filter control behavior
 // true (default) - FX parameter 4 (when the FX is focused)
 // false - Channel Gain
-var ShiftFilterFX4 = true;
+const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === "true";
 
 // allow pitch bend with wheel when wheel is not active
-var PitchBendOnWheelOff = true;
+const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === "true";
 
 /**************************
  *  scriptpause
@@ -1078,24 +1078,34 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
 };
 
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
-    var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.
-        D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
+    const shifted = (
+        NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
+        NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
+    );
 
     if (value === ON) {
-	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
-	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Skin]", "show_maximized_library");
-	        }
-	    }
+        if (engine.getSetting("libraryMode") === "focus") {
+            if (shifted) {
+                // SHIFT + BROWSE push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            } else {
+                // Browse push : expand sidebar item or load track when in track table
+                engine.setValue("[Library]", "GoToItem", true);
+            }
+        } else { // Classic mode
+            if (shifted) {
+                // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+                engine.setValue("[Library]", "GoToItem", true);
+            } else {
+                // Browse push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            }
+        }
     }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    var shifted = (
+    const shifted = (
         NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
         NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
     );
@@ -1103,11 +1113,20 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
     var nval = (value > 0x40 ? value - 0x80 : value);
 
-    // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
-    if (shifted) {
-        engine.setValue("[Playlist]", "SelectPlaylist", nval);
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+    if (engine.getSetting("libraryMode") === "focus") {
+        // SHIFT+Turn BROWSE Knob : change focus between search, track table, and sidebar
+        if (shifted) {
+            engine.setValue("[Library]", "MoveFocus", nval);
+        } else {
+            engine.setValue("[Library]", "MoveVertical", nval);
+        }
+    } else { // Classic mode
+        // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
+        if (shifted) {
+            engine.setValue("[Playlist]", "SelectPlaylist", nval);
+        } else {
+            engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+        }
     }
 };
 
