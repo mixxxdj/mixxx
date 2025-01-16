@@ -1510,6 +1510,7 @@ add_library(
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
+  src/widget/hotcuedrag.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp

@@ -75,7 +75,6 @@ class WPushButton : public WWidget {
     void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
-  protected:
     virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget

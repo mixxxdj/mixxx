@@ -1917,7 +1917,7 @@ QString LegacySkinParser::getSharedGroupString(const QString& channelStr) {
 
 QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     QString group = lookupNodeGroup(element);
-    WHotcueButton* pWidget = new WHotcueButton(group, m_pParent);
+    WHotcueButton* pWidget = new WHotcueButton(m_pParent, group);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
