@@ -311,7 +311,7 @@ void GroupedCratesFeature::oldactivateChild(const QModelIndex& index) {
     m_lastRightClickedIndex = QModelIndex();
     m_prevSiblingCrate = CrateId();
     emit saveModelState();
-    QList<QVariantMap> groupedCrates = m_crateTableModel.getGroupedCrates();
+    // QList<QVariantMap> groupedCrates = m_crateTableModel.getGroupedCrates();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
     emit enableCoverArtDisplay(true);
