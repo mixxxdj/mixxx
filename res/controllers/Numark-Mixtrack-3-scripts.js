@@ -1078,20 +1078,20 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
 };
 
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
-    var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.
-        D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
+    var shifted = (
+	NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey || 
+	NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
+    );
 
     if (value === ON) {
 	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
+	        // SHIFT + BROWSE push : maximize/minimize library view
+	        script.toggleControl("[Skin]", "show_maximized_library");
 	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Skin]", "show_maximized_library");
+	        // Browse push : expand sidebar item or load track when in track table
+	        engine.setValue("[Library]", "GoToItem", true);
 	        }
 	    }
-    }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
@@ -1103,11 +1103,11 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
     var nval = (value > 0x40 ? value - 0x80 : value);
 
-    // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
+    // SHIFT+Turn BROWSE Knob : change focus between search, track table, and sidebar
     if (shifted) {
-        engine.setValue("[Playlist]", "SelectPlaylist", nval);
+        engine.setValue("[Library]", "MoveFocus", nval);
     } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+        engine.setValue("[Library]", "MoveVertical", nval);
     }
 };
 
