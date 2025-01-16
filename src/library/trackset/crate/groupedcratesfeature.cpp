@@ -781,8 +781,10 @@ void GroupedCratesFeature::slotExportPlaylist() {
     }
 
     QString lastCrateDirectory = m_pConfig->getValue(
-            kConfigKeyLastImportExportCrateDirectoryKey,
-            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+            kConfigKeyLastImportExportCrateDirectoryKey);
+    //    QString lastCrateDirectory = m_pConfig->getValue(
+    //            kConfigKeyLastImportExportCrateDirectoryKey,
+    //            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     // Open a dialog to let the user choose the file location for crate export.
     // The location is set to the last used directory for import/export and the file

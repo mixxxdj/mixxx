@@ -165,6 +165,10 @@ Library::Library(
             &CrateFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
+    connect(m_pGroupedCratesFeature,
+            &GroupedCratesFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
     connect(this,
             &Library::analyzeTracks,
             m_pAnalysisFeature,
