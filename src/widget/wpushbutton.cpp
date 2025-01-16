@@ -460,18 +460,6 @@ bool WPushButton::event(QEvent* e) {
     return WWidget::event(e);
 }
 
-void WPushButton::focusOutEvent(QFocusEvent* e) {
-    qDebug() << "focusOutEvent" << e->reason();
-    if (m_bPressed && e->reason() != Qt::MouseFocusReason) {
-        // Since we support multi touch there is no reason to reset
-        // the pressed flag if the Primary touch point is moved to an
-        // other widget
-        m_bPressed = false;
-        restyleAndRepaint();
-    }
-    QWidget::focusOutEvent(e);
-}
-
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
