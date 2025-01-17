@@ -51,8 +51,7 @@ WOverview::WOverview(
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
-          m_a(1.0),
-          m_b(0.0),
+          m_maxPixelPos(1.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
           m_pHoveredMark(nullptr),
@@ -607,6 +606,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
+                    // Clear the pickup position display, we have all cue info in the menu.
+                    leaveEvent(nullptr);
                     m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
@@ -1632,19 +1633,7 @@ double WOverview::samplePositionToSeconds(double sample) {
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
-    // Play-position potmeters range from 0 to 1 but they allow out-of-range
-    // sets. This is to give VC access to the pre-roll area.
-    constexpr double kMaxPlayposRange = 1.0;
-    constexpr double kMinPlayposRange = 0.0;
-
-    // Values of zero and one in normalized space.
-    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-
-    // These coefficients convert between widget space and normalized value
-    // space.
-    m_a = (length() - 1) / (one - zero);
-    m_b = zero * m_a;
+    m_maxPixelPos = length() - 1;
 
     m_devicePixelRatio = devicePixelRatioF();
 
