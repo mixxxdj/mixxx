@@ -59,7 +59,8 @@ class OscReceivePacketListener : public osc::OscPacketListener {
     void determineOscAction(oscResult& oscIn) {
         bool oscGetP = oscIn.oscAddress.startsWith("GetP#", Qt::CaseInsensitive);
         bool oscGetV = oscIn.oscAddress.startsWith("GetV#", Qt::CaseInsensitive);
-        bool oscSet = !(oscGetP || oscGetV);
+        bool oscGetT = oscIn.oscAddress.startsWith("GetT#", Qt::CaseInsensitive);
+        bool oscSet = !(oscGetP || oscGetV || oscGetT);
 
         int posDel = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
         if (posDel > 0) {
@@ -75,6 +76,8 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                 doGetP(oscIn);
             } else if (oscGetV) {
                 doGetV(oscIn);
+            } else if (oscGetT) {
+                doGetT(oscIn);
             } else if (oscSet) {
                 doSet(oscIn, oscIn.oscValue);
             }
@@ -114,6 +117,25 @@ class OscReceivePacketListener : public osc::OscPacketListener {
             qDebug() << "OSC Msg Rcvd: Get Group, Key: Value:" << oscIn.oscGroup
                      << "," << oscIn.oscKey << ":" << oscIn.oscValue;
         }
+    }
+
+    // OSC wants info from Mixxx -> TrackArtist & TrackTitle
+    void doGetT(oscResult& oscIn) {
+        QString searchOscKey = QString(oscIn.oscGroup + oscIn.oscKey);
+        qDebug() << "OSC Msg Rcvd: Get Group, TrackInfo: " << oscIn.oscGroup
+                 << "," << oscIn.oscKey;
+        const QString& sendOscValue = m_pConfig->getValue(ConfigKey("[OSC]", searchOscKey));
+        OscFunctionsSendPtrType(m_pConfig,
+                oscIn.oscGroup,
+                oscIn.oscKey,
+                DefOscBodyType::STRINGBODY,
+                sendOscValue,
+                0,
+                0,
+                0);
+
+        qDebug() << "OSC Msg Rcvd: Get TrackInfo, Key: Value:" << oscIn.oscGroup
+                 << "," << oscIn.oscKey << ":" << sendOscValue;
     }
 
     // Input from OSC -> Changes in Mixxx

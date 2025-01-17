@@ -153,6 +153,11 @@ void OscNoTrackLoadedInGroup(UserSettingsPointer m_pConfig, const QString& OscGr
             0,
             0,
             0);
+    QString oscKeyArtist = QString(OscGroup + "TrackArtist");
+    QString oscKeyValueNoTrackLoaded = QString("no track loaded");
+    m_pConfig->set(ConfigKey("[OSC]", oscKeyArtist), oscKeyValueNoTrackLoaded);
+    QString oscKeyTitle = QString(OscGroup + "TrackTitle");
+    m_pConfig->set(ConfigKey("[OSC]", oscKeyTitle), oscKeyValueNoTrackLoaded);
 }
 
 void OscTrackLoadedInGroup(UserSettingsPointer m_pConfig,
@@ -202,6 +207,10 @@ void OscTrackLoadedInGroup(UserSettingsPointer m_pConfig,
             0,
             0,
             playposition);
+    QString oscKeyArtist = QString(OscGroup + "TrackArtist");
+    m_pConfig->set(ConfigKey("[OSC]", oscKeyArtist), TrackArtist);
+    QString oscKeyTitle = QString(OscGroup + "TrackTitle");
+    m_pConfig->set(ConfigKey("[OSC]", oscKeyTitle), TrackTitle);
 }
 
 void OscChangedPlayState(UserSettingsPointer m_pConfig,
