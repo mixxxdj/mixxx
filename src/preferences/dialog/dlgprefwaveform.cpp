@@ -545,12 +545,15 @@ void DlgPrefWaveform::updateEnableUntilMark() {
 #endif
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
-    untilMarkAlignLabel->setEnabled(enabled);
-    untilMarkAlignComboBox->setEnabled(enabled);
-    untilMarkTextPointSizeLabel->setEnabled(enabled);
-    untilMarkTextPointSizeSpinBox->setEnabled(enabled);
-    untilMarkTextHeightLimitLabel->setEnabled(enabled);
-    untilMarkTextHeightLimitComboBox->setEnabled(enabled);
+    // Disable the beats/time options if neither beats nor time is enabled
+    bool beatsOrTimeEnabled = untilMarkShowBeatsCheckBox->isChecked() ||
+            untilMarkShowTimeCheckBox->isChecked();
+    untilMarkAlignLabel->setEnabled(beatsOrTimeEnabled);
+    untilMarkAlignComboBox->setEnabled(beatsOrTimeEnabled);
+    untilMarkTextPointSizeLabel->setEnabled(beatsOrTimeEnabled);
+    untilMarkTextPointSizeSpinBox->setEnabled(beatsOrTimeEnabled);
+    untilMarkTextHeightLimitLabel->setEnabled(beatsOrTimeEnabled);
+    untilMarkTextHeightLimitComboBox->setEnabled(beatsOrTimeEnabled);
     requiresGLSLLabel->setVisible(!enabled && useWaveformCheckBox->isChecked());
 }
 
@@ -649,10 +652,12 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowBeats(checked);
+    updateEnableUntilMark();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
+    updateEnableUntilMark();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
