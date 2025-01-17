@@ -207,10 +207,6 @@ void WHotcueButton::mouseMoveEvent(QMouseEvent* pEvent) {
 }
 
 void WHotcueButton::dragEnterEvent(QDragEnterEvent* pEvent) {
-    if (pEvent->source() == this) {
-        pEvent->ignore();
-        return;
-    }
     TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
     if (!pTrack) {
         return;
@@ -221,8 +217,7 @@ void WHotcueButton::dragEnterEvent(QDragEnterEvent* pEvent) {
     }
     HotcueDragInfo dragData = HotcueDragInfo::fromByteArray(mimeDataBytes);
     if (dragData.isValid() &&
-            dragData.trackId == pTrack->getId() &&
-            dragData.hotcue != m_hotcue) {
+            dragData.trackId == pTrack->getId()) {
         pEvent->acceptProposedAction();
     }
 }
