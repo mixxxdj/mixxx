@@ -3369,37 +3369,38 @@ target_include_directories(
 )
 target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 
-IF(WIN32)
-	 set(IpSystemTypePath src/osc/ip/win32)
-	 set(LIBS ${LIBS} Ws2_32 winmm)
-	ELSE(WIN32)
-	 set(IpSystemTypePath src/osc/ip/posix)
-	ENDIF(WIN32)
+if(WIN32)
+  set(IpSystemTypePath src/osc/ip/win32)
+  set(LIBS ${LIBS} Ws2_32 winmm)
+else()
+  set(IpSystemTypePath src/osc/ip/posix)
+endif()
 
 #eve osc
-ADD_LIBRARY(oscpack
-	src/osc/ip/IpEndpointName.cpp
-    src/osc/ip/IpEndpointName.h
-	src/osc/ip/NetworkingUtils.h
-	${IpSystemTypePath}/NetworkingUtils.cpp
-	src/osc/ip/PacketListener.h
-    src/osc/ip/TimerListener.h
-    src/osc/ip/UdpSocket.h
-	${IpSystemTypePath}/UdpSocket.cpp
-	src/osc/osc/MessageMappingOscPacketListener.h
-    src/osc/osc/OscException.h
-    src/osc/osc/OscHostEndianness.h
-    src/osc/osc/OscOutboundPacketStream.cpp
-    src/osc/osc/OscOutboundPacketStream.h
-    src/osc/osc/OscPacketListener.h
-    src/osc/osc/OscPrintReceivedElements.cpp
-    src/osc/osc/OscPrintReceivedElements.h
-    src/osc/osc/OscReceivedElements.cpp
-	src/osc/osc/OscReceivedElements.h
-	src/osc/osc/OscTypes.cpp
-	src/osc/osc/OscTypes.h
-	)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
+add_library(
+  oscpack
+  src/osc/ip/IpEndpointName.cpp
+  src/osc/ip/IpEndpointName.h
+  src/osc/ip/NetworkingUtils.h
+  ${IpSystemTypePath}/NetworkingUtils.cpp
+  src/osc/ip/PacketListener.h
+  src/osc/ip/TimerListener.h
+  src/osc/ip/UdpSocket.h
+  ${IpSystemTypePath}/UdpSocket.cpp
+  src/osc/osc/MessageMappingOscPacketListener.h
+  src/osc/osc/OscException.h
+  src/osc/osc/OscHostEndianness.h
+  src/osc/osc/OscOutboundPacketStream.cpp
+  src/osc/osc/OscOutboundPacketStream.h
+  src/osc/osc/OscPacketListener.h
+  src/osc/osc/OscPrintReceivedElements.cpp
+  src/osc/osc/OscPrintReceivedElements.h
+  src/osc/osc/OscReceivedElements.cpp
+  src/osc/osc/OscReceivedElements.h
+  src/osc/osc/OscTypes.cpp
+  src/osc/osc/OscTypes.h
+)
+include_directories(${CMAKE_SOURCE_DIR})
 #target_link_libraries(mixxx oscpack ${LIBS})
 target_include_directories(mixxx-lib SYSTEM PRIVATE ip)
 target_include_directories(mixxx-lib SYSTEM PRIVATE osc)
