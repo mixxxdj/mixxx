@@ -28,6 +28,11 @@
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
+// EVE
+#include "library/trackset/smarties/smarties.h"
+#include "library/trackset/smarties/smartiesfeaturehelper.h"
+#include "library/trackset/smarties/smartiessummary.h"
+// EVE
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
@@ -114,6 +119,7 @@ WTrackMenu::WTrackMenu(
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
+          m_bSmartiesMenuLoaded(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
     // Warn if any of the chosen features depend on a TrackModel
@@ -187,6 +193,15 @@ void WTrackMenu::createMenus() {
         m_pCrateMenu->setObjectName("CratesMenu");
         connect(m_pCrateMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateCrateMenu);
     }
+
+    // EVE
+    if (featureIsEnabled(Feature::Smarties)) {
+        m_pSmartiesMenu = new QMenu(this);
+        m_pSmartiesMenu->setTitle(tr("Smarties"));
+        m_pSmartiesMenu->setObjectName("SmartiesMenu");
+        connect(m_pSmartiesMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateSmartiesMenu);
+    }
+    // EVE
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu = new QMenu(this);
@@ -594,6 +609,10 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::Crate)) {
         addMenu(m_pCrateMenu);
+    }
+
+    if (featureIsEnabled(Feature::Smarties)) {
+        addMenu(m_pSmartiesMenu);
     }
 
     if (featureIsEnabled(Feature::Remove)) {
@@ -1047,6 +1066,15 @@ void WTrackMenu::updateMenus() {
         // to avoid unnecessary database queries
         m_bCrateMenuLoaded = false;
     }
+
+    // EVE
+    if (featureIsEnabled(Feature::Smarties)) {
+        // Smarties menu is lazy loaded on hover by slotPopulateSmartiesMenu
+        // to avoid unnecessary database queries
+        m_bSmartiesMenuLoaded = false;
+    }
+
+    // EVE
 
     if (featureIsEnabled(Feature::Remove)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
@@ -1616,6 +1644,75 @@ void WTrackMenu::slotPopulateCrateMenu() {
     connect(newCrateAction, &QAction::triggered, this, &WTrackMenu::addSelectionToNewCrate);
     m_bCrateMenuLoaded = true;
 }
+
+// EVE
+void WTrackMenu::slotPopulateSmartiesMenu() {
+    // The user may open the Smarties submenu, move their cursor away, then
+    // return to the Smarties submenu before exiting the track context menu.
+    // Avoid querying the database multiple times in that case.
+    if (m_bSmartiesMenuLoaded) {
+        return;
+    }
+    m_pSmartiesMenu->clear();
+    const TrackIdList trackIds = getTrackIds();
+
+    SmartiesSummarySelectResult allSmarties(
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->smarties()
+                    .selectSmartiesWithTrackCount(trackIds));
+
+    SmartiesSummary smarties;
+    while (allSmarties.populateNext(&smarties)) {
+        auto pAction = make_parented<QWidgetAction>(
+                m_pSmartiesMenu);
+        auto pCheckBox = make_parented<QCheckBox>(
+                mixxx::escapeTextPropertyWithoutShortcuts(smarties.getName()),
+                m_pSmartiesMenu);
+        pCheckBox->setProperty("smartiesId", QVariant::fromValue(smarties.getId()));
+        pCheckBox->setEnabled(!smarties.isLocked());
+        // Strangely, the normal styling of QActions does not automatically
+        // apply to QWidgetActions. The :selected pseudo-state unfortunately
+        // does not work with QWidgetAction. :hover works for selecting items
+        // with the mouse, but not with the keyboard. :focus works for the
+        // keyboard but with the mouse, the last clicked item keeps the style
+        // after the mouse cursor is moved to hover over another item.
+
+        // ronso0 Disabling this stylesheet allows to override the OS style
+        // of the :hover and :focus state.
+        //        pCheckBox->setStyleSheet(
+        //            QString("QCheckBox {color: %1;}").arg(
+        //                    pCheckBox->palette().text().color().name()) + "\n" +
+        //            QString("QCheckBox:hover {background-color: %1;}").arg(
+        //                    pCheckBox->palette().highlight().color().name()));
+        pAction->setEnabled(!smarties.isLocked());
+        pAction->setDefaultWidget(pCheckBox.get());
+
+        if (smarties.getTrackCount() == 0) {
+            pCheckBox->setChecked(false);
+        } else if (smarties.getTrackCount() == (uint)trackIds.length()) {
+            pCheckBox->setChecked(true);
+        } else {
+            pCheckBox->setTristate(true);
+            pCheckBox->setCheckState(Qt::PartiallyChecked);
+        }
+
+        m_pSmartiesMenu->addAction(pAction.get());
+        //        connect(pAction.get(), &QAction::triggered, this, [this,
+        //        pCheckBox{pCheckBox.get()}] {
+        //        updateSelectionSmarties(pCheckBox); });
+        //        connect(pCheckBox.get(), &QCheckBox::stateChanged, this,
+        //        [this, pCheckBox{pCheckBox.get()}] {
+        //        updateSelectionSmarties(pCheckBox); });
+    }
+    m_pSmartiesMenu->addSeparator();
+    //    QAction* newSmartiesAction = new QAction(tr("Add to New Smarties"),
+    //    m_pSmartiesMenu); m_pSmartiesMenu->addAction(newSmartiesAction);
+    //    connect(newSmartiesAction, &QAction::triggered, this,
+    //    &WTrackMenu::addSelectionToNewSmarties);
+    m_bSmartiesMenuLoaded = true;
+}
+// EVE
 
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
@@ -2822,6 +2919,9 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
                         TrackModel::Capability::LoadToPreviewDeck);
     case Feature::Playlist:
     case Feature::Crate:
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::Capability::AddToTrackSet);
+    case Feature::Smarties:
         return m_pTrackModel->hasCapabilities(
                 TrackModel::Capability::AddToTrackSet);
     case Feature::Remove:

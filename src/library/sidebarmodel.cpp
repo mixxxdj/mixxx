@@ -433,6 +433,7 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
         if (pTreeItem) {
             LibraryFeature* pFeature = pTreeItem->feature();
             pFeature->deleteItem(index);
+            pFeature->SetActiveSmartiesToLastRightClicked(index);
         }
     }
 }

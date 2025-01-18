@@ -43,20 +43,22 @@ class WTrackMenu : public QMenu {
         LoadTo = 1 << 1,
         Playlist = 1 << 2,
         Crate = 1 << 3,
-        Remove = 1 << 4,
-        Metadata = 1 << 5,
-        Reset = 1 << 6,
-        BPM = 1 << 7,
-        Color = 1 << 8,
-        HideUnhidePurge = 1 << 9,
-        RemoveFromDisk = 1 << 10,
-        FileBrowser = 1 << 11,
-        Properties = 1 << 12,
-        SearchRelated = 1 << 13,
-        UpdateReplayGainFromPregain = 1 << 14,
-        SelectInLibrary = 1 << 15,
-        Analyze = 1 << 16,
-        FindOnWeb = 1 << 17,
+        Smarties = 1 << 4,
+        Remove = 1 << 5,
+        Metadata = 1 << 6,
+        Reset = 1 << 7,
+        BPM = 1 << 8,
+        Color = 1 << 9,
+        HideUnhidePurge = 1 << 10,
+        RemoveFromDisk = 1 << 11,
+        FileBrowser = 1 << 12,
+        Properties = 1 << 13,
+        SearchRelated = 1 << 14,
+        UpdateReplayGainFromPregain = 1 << 15,
+        SelectInLibrary = 1 << 16,
+        Analyze = 1 << 17,
+        FindOnWeb = 1 << 18,
+
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
@@ -71,6 +73,7 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::SearchRelated |
             WTrackMenu::Feature::Playlist |
             WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Smarties |
             WTrackMenu::Feature::Metadata |
             WTrackMenu::Feature::Reset |
             WTrackMenu::Feature::Analyze |
@@ -178,6 +181,9 @@ class WTrackMenu : public QMenu {
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
 
+    // Smarties
+    void slotPopulateSmartiesMenu();
+
     // Auto DJ
     void slotAddToAutoDJBottom();
     void slotAddToAutoDJTop();
@@ -283,6 +289,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pSamplerMenu{};
     QMenu* m_pPlaylistMenu{};
     QMenu* m_pCrateMenu{};
+    QMenu* m_pSmartiesMenu{};
     QMenu* m_pMetadataMenu{};
     QMenu* m_pMetadataUpdateExternalCollectionsMenu{};
     QMenu* m_pClearMetadataMenu{};
@@ -386,6 +393,7 @@ class WTrackMenu : public QMenu {
 
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
+    bool m_bSmartiesMenuLoaded;
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;

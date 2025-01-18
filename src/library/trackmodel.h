@@ -49,6 +49,9 @@ class TrackModel {
         Purge = 1u << 13u,
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
+        // EVE
+        // RemoveSmarties = 1u << 15u,
+        // EVE
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
         Properties = 1u << 18u,

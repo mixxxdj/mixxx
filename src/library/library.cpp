@@ -28,6 +28,9 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
+// EVE
+#include "library/trackset/smarties/smartiesfeature.h"
+// EVE
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
@@ -73,6 +76,7 @@ Library::Library(
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
+          m_pSmartiesFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -105,6 +109,11 @@ Library::Library(
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+    // EVE
+    m_pSmartiesFeature = new SmartiesFeature(this, m_pConfig);
+    addFeature(m_pSmartiesFeature);
+    // EVE
+
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
@@ -147,6 +156,12 @@ Library::Library(
             &CrateFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
+    // EVE
+    connect(m_pSmartiesFeature,
+            &SmartiesFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
+    // EVE
     connect(this,
             &Library::analyzeTracks,
             m_pAnalysisFeature,
@@ -304,6 +319,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::search,
             this,
             &Library::search);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::newSmarties,
+            this,
+            &Library::slotCreateSmartiesFromSearch);
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
@@ -585,6 +604,14 @@ void Library::slotCreatePlaylist() {
 
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
+}
+
+void Library::slotCreateSmartiesFromSearch(const QString& text) {
+    m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
+}
+
+void Library::slotCreateSmarties() {
+    m_pSmartiesFeature->slotCreateSmarties();
 }
 
 void Library::onSkinLoadFinished() {

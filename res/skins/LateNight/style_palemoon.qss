@@ -15,6 +15,11 @@
 
 /**********************************************************************
 ************** container background colors & borders *****************/
+QToolTip {
+  font-size: 30px;
+  color: white;
+  background-color: darkgray;
+}
 #SkinContainer {
   background-color: #080808;
 }
@@ -1115,7 +1120,11 @@ WEffectSelector:!editable:on {
 
 
 /************** SkinSettings **************************************************/
-
+QToolTip {
+  font-size: 30px;
+  color: white;
+  background-color: darkgray;
+}
 #SkinSettings {
   padding: 3px;
   border-top: 1px solid #585858;
@@ -1236,7 +1245,7 @@ WLibrarySidebar,
 #LibraryFeatureControls QPushButton,
 #LibraryFeatureControls QRadioButton,
 /* Tooltip and menus */
-QToolTip,
+/* QToolTip,*/
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu QCheckBox,
@@ -1254,6 +1263,11 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 WCoverArtMenu {
   color: #c2b3a5;
+}
+QToolTip {
+  font-size: 30px;
+  color: white;
+  background-color: darkgray;
 }
 /* Override the 'missing' color in Tracks > Missing,
    it's not useful there */

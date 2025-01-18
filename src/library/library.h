@@ -9,6 +9,9 @@
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
+// EVE
+#include "library/trackset/smarties/smartiesid.h"
+// EVE
 #endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -19,6 +22,9 @@ class AnalysisFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
+// EVE
+class SmartiesFeature;
+// EVE
 class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
@@ -126,6 +132,11 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    // EVE
+    void slotCreateSmarties();
+    //    void slotCreateSmartiesFromSearch();
+    void slotCreateSmartiesFromSearch(const QString& text);
+    // EVE
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;
@@ -146,6 +157,9 @@ class Library: public QObject {
 #endif
     void restoreSearch(const QString&);
     void search(const QString& text);
+    // EVE
+    //    void newSmartiesFromSearch(const QString& text);
+    // EVE
     void disableSearch();
     void pasteFromSidebar();
     // emit this signal to enable/disable the cover art widget
@@ -156,6 +170,9 @@ class Library: public QObject {
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);
+    // EVE
+    void exportSmarties(SmartiesId smartiesId);
+    // EVE
 #endif
     void saveModelState();
     void restoreModelState();
@@ -186,6 +203,7 @@ class Library: public QObject {
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    SmartiesFeature* m_pSmartiesFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;
