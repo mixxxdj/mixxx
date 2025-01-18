@@ -33,7 +33,5 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
         return false;
     }
 
-    virtual rendergraph::BaseNode* asNode() = 0;
-
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererSignalBase);
 };

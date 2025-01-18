@@ -22,10 +22,6 @@ class allshader::WaveformRendererSimple final
     void initializeGL() override;
     void paintGL() override;
 
-    rendergraph::BaseNode* asNode() override {
-        return this;
-    }
-
   private:
     mixxx::UnicolorShader m_shader;
     VertexData m_vertices[2];

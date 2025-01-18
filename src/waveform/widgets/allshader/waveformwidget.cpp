@@ -21,11 +21,6 @@
 
 namespace allshader {
 
-std::unique_ptr<rendergraph::BaseNode> convert(
-        std::unique_ptr<WaveformRendererSignalBase>&& pRenderer) {
-    return std::unique_ptr<rendergraph::BaseNode>(pRenderer.release()->asNode());
-}
-
 WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformWidgetType::Type type,
         const QString& group,
@@ -52,9 +47,9 @@ WaveformWidget::WaveformWidget(QWidget* parent,
             type, options, ::WaveformRendererAbstract::Play);
     m_pWaveformRendererSignal = pWaveformRendererSignal.get();
     if (pWaveformRendererSignal) {
-        // convert std::unique_ptr<WaveformRendererSignalBase>
-        // to std::unique_ptr<rendergraph::BaseNode>
-        pOpacityNode->appendChildNode(convert(std::move(pWaveformRendererSignal)));
+        auto pNode = dynamic_cast<rendergraph::BaseNode*>(pWaveformRendererSignal.release());
+        DEBUG_ASSERT(pNode);
+        pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
     }
     pOpacityNode->appendChildNode(addRendererNode<WaveformRenderBeat>());
     m_pWaveformRenderMark = pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMark>());
@@ -74,9 +69,9 @@ WaveformWidget::WaveformWidget(QWidget* parent,
 #endif
         std::unique_ptr<WaveformRendererSignalBase> pSlipNode = addWaveformSignalRenderer(
                 type, options, ::WaveformRendererAbstract::Slip);
-        // convert std::unique_ptr<WaveformRendererSignalBase>
-        // to std::unique_ptr<rendergraph::BaseNode>
-        pOpacityNode->appendChildNode(convert(std::move(pSlipNode)));
+        auto pNode = dynamic_cast<rendergraph::BaseNode*>(pSlipNode.release());
+        DEBUG_ASSERT(pNode);
+        pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
         pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderBeat>(
                         ::WaveformRendererAbstract::Slip));
