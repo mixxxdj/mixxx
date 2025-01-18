@@ -7,14 +7,17 @@ namespace rendergraph {
 template<class T_Node>
 class NodeInterface : public T_Node {
   public:
-    void appendChildNode(std::unique_ptr<BaseNode> pNode) {
+    template<class T_AppendNode>
+    T_AppendNode* appendChildNode(std::unique_ptr<T_AppendNode> pNode) {
         // Transfers ownership to this.
-        BaseNode* pRawNode = pNode.release();
+        T_AppendNode* pRawNode = pNode.release();
         // Note: Ideally we would use unique_ptrs internally, but
         // Qt uses raw pointers for QSGNode hierarchy. For simplicity
         // we mimic this.
 
         T_Node::appendChildNode(pRawNode);
+
+        return pRawNode;
     }
 
     std::unique_ptr<BaseNode> detachChildNode(BaseNode* pNode) {

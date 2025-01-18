@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/rgbdata.h"
@@ -10,7 +11,9 @@ namespace allshader {
 class WaveformRendererRGB;
 }
 
-class allshader::WaveformRendererRGB final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererRGB final
+        : public allshader::WaveformRendererSignalBase,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =

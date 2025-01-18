@@ -4,6 +4,7 @@
 #include <QImage>
 #include <memory>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/patternshader.h"
 #include "util/class.h"
 #include "util/opengltexture2d.h"
@@ -16,18 +17,19 @@ class QOpenGLTexture;
 
 namespace allshader {
 class WaveformRendererPreroll;
-class WaveformRendererSlipPreroll;
 }
 
-class allshader::WaveformRendererPreroll : public allshader::WaveformRenderer {
+class allshader::WaveformRendererPreroll final
+        : public allshader::WaveformRenderer,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererPreroll(
-            WaveformWidgetRenderer* waveformWidgetRenderer,
+            WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
     ~WaveformRendererPreroll() override;
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
     void paintGL() override;
     void initializeGL() override;
 

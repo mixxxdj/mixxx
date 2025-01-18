@@ -2,11 +2,11 @@
 
 #include <QColor>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
 #include "util/opengltexture2d.h"
 #include "waveform/renderers/allshader/digitsrenderer.h"
-#include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
@@ -17,23 +17,16 @@ namespace allshader {
 class WaveformRenderMark;
 }
 
-class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
-                                      public allshader::WaveformRendererAbstract {
+class allshader::WaveformRenderMark final
+        : public ::WaveformRenderMarkBase,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
-    void draw(QPainter* painter, QPaintEvent* event) override {
-        Q_UNUSED(painter);
-        Q_UNUSED(event);
-    }
-
-    allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {
-        return this;
-    }
-
     bool init() override;
+    void draw(QPainter* painter, QPaintEvent* event) override;
 
     void initializeGL() override;
     void paintGL() override;

@@ -308,8 +308,8 @@ class MarkerGeometry {
         }
     }
     QSize getImageSize(float devicePixelRatio) const {
-        return QSize{static_cast<int>(m_imageSize.width() * devicePixelRatio),
-                static_cast<int>(m_imageSize.height() * devicePixelRatio)};
+        return QSize{static_cast<int>(std::lround(m_imageSize.width() * devicePixelRatio)),
+                static_cast<int>(std::lround(m_imageSize.height() * devicePixelRatio))};
     }
 
     const QFont font() const {
@@ -381,9 +381,13 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
     m_label.setAreaRect(markerGeometry.labelRect());
 
-    // Create the image
-    QImage image{markerGeometry.getImageSize(devicePixelRatio),
-            QImage::Format_ARGB32_Premultiplied};
+    const QSize size{markerGeometry.getImageSize(devicePixelRatio)};
+
+    if (size.width() <= 0 || size.height() <= 0) {
+        return QImage{};
+    }
+
+    QImage image{size, QImage::Format_ARGB32_Premultiplied};
     VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
         return image;
     }
