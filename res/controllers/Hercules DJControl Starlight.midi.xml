@@ -450,7 +450,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>super1</key>
@@ -461,7 +461,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
@@ -745,7 +745,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>
