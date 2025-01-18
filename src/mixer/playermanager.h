@@ -194,7 +194,14 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
+#ifdef __STEM__
+    void slotLoadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+#endif
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
 

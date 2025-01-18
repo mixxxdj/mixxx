@@ -51,8 +51,7 @@ WOverview::WOverview(
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
-          m_a(1.0),
-          m_b(0.0),
+          m_maxPixelPos(1.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
           m_pHoveredMark(nullptr),
@@ -234,13 +233,13 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     // qDebug() << "WOverview : std::as_const(m_marks)" << m_marks.size();
     // qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
-    if (!m_connections.isEmpty()) {
-        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-        if (defaultConnection) {
-            if (defaultConnection->getEmitOption() &
+    if (!m_connections.empty()) {
+        auto& pDefaultConnection = m_connections.at(0);
+        if (pDefaultConnection) {
+            if (pDefaultConnection->getEmitOption() &
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
-                defaultConnection->setEmitOption(
+                pDefaultConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_RELEASE);
             }
         }
@@ -581,6 +580,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
+            // Abort dragging
             m_iPickupPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
@@ -594,7 +594,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             // WOverview in the future, another way to associate
             // WaveformMarks with Cues will need to be implemented.
             CuePointer pHoveredCue;
-            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            const QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
             for (const auto& pCue : cueList) {
                 if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
                     pHoveredCue = pCue;
@@ -606,6 +606,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
+                    // Clear the pickup position display, we have all cue info in the menu.
+                    leaveEvent(nullptr);
                     m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
@@ -1631,19 +1633,7 @@ double WOverview::samplePositionToSeconds(double sample) {
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
-    // Play-position potmeters range from 0 to 1 but they allow out-of-range
-    // sets. This is to give VC access to the pre-roll area.
-    constexpr double kMaxPlayposRange = 1.0;
-    constexpr double kMinPlayposRange = 0.0;
-
-    // Values of zero and one in normalized space.
-    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-
-    // These coefficients convert between widget space and normalized value
-    // space.
-    m_a = (length() - 1) / (one - zero);
-    m_b = zero * m_a;
+    m_maxPixelPos = length() - 1;
 
     m_devicePixelRatio = devicePixelRatioF();
 

@@ -10,24 +10,6 @@
 // functions that work independently of the Qt version are needed.
 
 template<typename T>
-inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    return atomicInt.loadAcquire();
-#else
-    return atomicInt.load();
-#endif
-}
-
-template<typename T>
-inline T* atomicLoadAcquire(const QAtomicPointer<T>& atomicPtr) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    return atomicPtr.loadAcquire();
-#else
-    return atomicPtr.load();
-#endif
-}
-
-template<typename T>
 inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicInt.loadRelaxed();
@@ -42,15 +24,6 @@ inline T* atomicLoadRelaxed(const QAtomicPointer<T>& atomicPtr) {
     return atomicPtr.loadRelaxed();
 #else
     return atomicPtr.load();
-#endif
-}
-
-template<typename T>
-inline void atomicStoreRelaxed(QAtomicInteger<T>& atomicInt, T newValue) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    atomicInt.storeRelaxed(newValue);
-#else
-    atomicInt.store(newValue);
 #endif
 }
 

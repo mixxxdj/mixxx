@@ -219,8 +219,6 @@ void WaveformRendererTextured::createFrameBuffers() {
 }
 
 void WaveformRendererTextured::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
-
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -237,8 +235,7 @@ void WaveformRendererTextured::initializeGL() {
     }
 }
 
-void WaveformRendererTextured::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererTextured::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererTextured::onSetTrack() {

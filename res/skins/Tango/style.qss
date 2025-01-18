@@ -1312,6 +1312,10 @@ WBeatSpinBox,
         image: url(skin:/../Tango/buttons/btn_key_down_hover.svg) no-repeat center center;
       }
 
+#RateDisplayBox {
+  padding: 0 3px 0 5px;
+}
+
 
 /* ################################################################
 ####### Deck Colors ##################################################
@@ -1548,28 +1552,24 @@ decks, samplers, mic, aux, fx */
   color: #888;
 }
 
-#FixedLoopSizesMiniMaxi,
-#FxMiniMaxi,
-#SamplersMiniMaxi {
-  background-repeat: no-repeat;
-}
 #FixedLoopSizesMiniMaxi {
-  background-position: center center;
+  image-position: center center;
 }
 #SamplersMiniMaxi {
-  background-position: top center;
+  image-position: top center;
 }
 
 #FxUnitLeft #FxMiniMaxi {
-  background-position: bottom left;
-  margin-left: 10px;
+  image-position: bottom left;
+  margin: 1px 0 1px 10px;
 }
 #FxUnitRight #FxMiniMaxi {
-  background-position: bottom right;
-  margin-right: 10px;
+  image-position: bottom right;
+  margin: 1px 10px 1px 0;
   }
   #FxUnitMini #FxMiniMaxi {
-    background-position: bottom center;
+    image-position: bottom center;
+    margin-top: 14px;
   }
 
 #FxUnitLeft #FxUnitLabel {
@@ -1580,22 +1580,22 @@ decks, samplers, mic, aux, fx */
 #FixedLoopSizesMiniMaxi[displayValue="0"],
 #FxMiniMaxi[displayValue="0"],
 #SamplersMiniMaxi[displayValue="0"] {
-  background-image: url(skin:/../Tango/buttons/btn_arrow_down.svg)
+  image: url(skin:/../Tango/buttons/btn_arrow_down.svg)
   }
   #FixedLoopSizesMiniMaxi[displayValue="0"]:hover,
   #FxMiniMaxi[displayValue="0"]:hover,
   #SamplersMiniMaxi[displayValue="0"]:hover {
-    background-image: url(skin:/../Tango/buttons/btn_arrow_down_hover.svg);
+    image: url(skin:/../Tango/buttons/btn_arrow_down_hover.svg);
   }
 #FixedLoopSizesMiniMaxi[displayValue="1"],
 #FxMiniMaxi[displayValue="1"],
 #SamplersMiniMaxi[displayValue="1"] {
-  background-image: url(skin:/../Tango/buttons/btn_arrow_up.svg);
+  image: url(skin:/../Tango/buttons/btn_arrow_up.svg);
   }
   #FixedLoopSizesMiniMaxi[displayValue="1"]:hover,
   #FxMiniMaxi[displayValue="1"]:hover,
   #SamplersMiniMaxi[displayValue="1"]:hover {
-    background-image: url(skin:/../Tango/buttons/btn_arrow_up_hover.svg);
+    image: url(skin:/../Tango/buttons/btn_arrow_up_hover.svg);
   }
 
 #FxUnitControls {
@@ -2229,7 +2229,6 @@ WTrackProperty#SamplerTitle_mini {
 WEffectSelector::checked, /* selected item */
 WEffectSelector::indicator, /* checkbox, tick mark */
 WEffectSelector::indicator:unchecked,
-
 WEffectSelector::drop-down,
 WEffectChainPresetSelector::checked,
 WEffectChainPresetSelector::indicator,
@@ -3215,11 +3214,4 @@ WEffectChainPresetSelector::indicator::unchecked:selected,
 
 WRateRange {
     font-size: 11px;
-}
-
-#RateDisplayTopPrefix,
-#RateDisplayBottomPrefix,
-#RateDisplayTopRate,
-#RateDisplayBottomRate {
-    qproperty-alignment: 'AlignHCenter';
 }
