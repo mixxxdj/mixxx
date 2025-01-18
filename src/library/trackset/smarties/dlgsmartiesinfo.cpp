@@ -429,10 +429,15 @@ void dlgSmartiesInfo::populateUI() {
                 valueLineEdit->setVisible(false);
                 valueComboBox->setVisible(true);
                 valueComboBox->clear();
-                for (const auto& playlist : playlistTable) {
-                    valueComboBox->addItem(playlist.second);
-                    // valueComboBox->addItem(playlist.second, playlist.first);
+                for (auto it = playlistTable.constBegin(); it != playlistTable.constEnd(); ++it) {
+                    // const QString& subgroupName = it.key();
+                    valueComboBox->addItem(it->second);
                 }
+
+                // for (const auto& playlist : playlistTable) {
+                //     valueComboBox->addItem(playlist.second);
+                //  valueComboBox->addItem(playlist.second, playlist.first);
+                //}
                 // valueLineEdit->setText(conditionsTable[i][3]);
                 // valueComboBox->setCurrentText(conditionsTable[i][3]);
                 if (conditionsTable[i][3].indexOf("|||", 0) > 0) {
@@ -476,10 +481,15 @@ void dlgSmartiesInfo::populateUI() {
                 valueLineEdit->setVisible(false);
                 valueComboBox->setVisible(true);
                 valueComboBox->clear();
-                for (const auto& historylist : historyTable) {
-                    valueComboBox->addItem(historylist.second);
-                    // valueComboBox->addItem(cratelist.second, cratelist.first);
+                for (auto it = historyTable.constBegin(); it != historyTable.constEnd(); ++it) {
+                    // const QString& subgroupName = it.key();
+                    valueComboBox->addItem(it->second);
                 }
+
+                // for (const auto& historylist : historyTable) {
+                //     valueComboBox->addItem(historylist.second);
+                //  valueComboBox->addItem(cratelist.second, cratelist.first);
+                //}
                 // valueLineEdit->setText(conditionsTable[i][3]);
                 // valueComboBox->setCurrentText(conditionsTable[i][3]);
                 //  crate could be renamed, id stays -> get name
@@ -523,10 +533,14 @@ void dlgSmartiesInfo::populateUI() {
                 valueLineEdit->setVisible(false);
                 valueComboBox->setVisible(true);
                 valueComboBox->clear();
-                for (const auto& cratelist : crateTable) {
-                    valueComboBox->addItem(cratelist.second);
-                    // valueComboBox->addItem(cratelist.second, cratelist.first);
+                for (auto it = crateTable.constBegin(); it != crateTable.constEnd(); ++it) {
+                    // const QString& subgroupName = it.key();
+                    valueComboBox->addItem(it->second);
                 }
+                // for (const auto& cratelist : crateTable) {
+                //     valueComboBox->addItem(cratelist.second);
+                //  valueComboBox->addItem(cratelist.second, cratelist.first);
+                //}
                 // valueLineEdit->setText(conditionsTable[i][3]);
                 // valueComboBox->setCurrentText(conditionsTable[i][3]);
                 //  crate could be renamed, id stays -> get name
@@ -1150,14 +1164,16 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
             valueComboBox->setVisible(true);
             //            valueComboBox->setEnabled(true);
             valueComboBox->clear();
-            for (const auto& playlist : playlistTable) {
-                valueComboBox->addItem(playlist.second);
-                // valueComboBox->addItem(playlist.second, playlist.first);
+
+            for (auto it = playlistTable.constBegin(); it != playlistTable.constEnd(); ++it) {
+                // for (const auto& playlist : playlistTable) {
+                //     valueComboBox->addItem(playlist.second);
+                //  valueComboBox->addItem(playlist.second, playlist.first);
                 if (sDebug) {
                     qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
-                                "comboBoxValue -> playlist -> playlist.second "
-                             << playlist.second << " playlist.first "
-                             << playlist.first;
+                                "comboBoxValue -> playlist -> it->second "
+                             << it->second << " it->first "
+                             << it->first;
                 }
             }
             valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
@@ -1166,15 +1182,16 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
             valueComboBox->setVisible(true);
             //            valueComboBox->setEnabled(true);
             valueComboBox->clear();
-            for (const auto& historylist : historyTable) {
-                valueComboBox->addItem(historylist.second);
+            for (auto it = historyTable.constBegin(); it != historyTable.constEnd(); ++it) {
+                // for (const auto& historylist : historyTable) {
+                valueComboBox->addItem(it->second);
                 // valueComboBox->addItem(historylist.second, historylist.first);
                 if (sDebug) {
                     qDebug()
                             << "[SMARTIES] [EDIT DLG] --> POPULATE "
-                               "comboBoxValue -> historylist -> historylist.second "
-                            << historylist.second << " historylist.first "
-                            << historylist.first;
+                               "comboBoxValue -> historylist -> it->second "
+                            << it->second << " it->first "
+                            << it->first;
                 }
             }
             valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
@@ -1183,15 +1200,16 @@ void dlgSmartiesInfo::onOperatorComboBoxChanged() {
             valueComboBox->setVisible(true);
             //            valueComboBox->setEnabled(true);
             valueComboBox->clear();
-            for (const auto& cratelist : crateTable) {
-                valueComboBox->addItem(cratelist.second);
+            for (auto it = crateTable.constBegin(); it != crateTable.constEnd(); ++it) {
+                // for (const auto& cratelist : crateTable) {
+                valueComboBox->addItem(it->second);
                 // valueComboBox->addItem(cratelist.second, cratelist.first);
                 if (sDebug) {
                     qDebug()
                             << "[SMARTIES] [EDIT DLG] --> POPULATE "
-                               "comboBoxValue -> cratelist -> cratelist.second "
-                            << cratelist.second << " cratelist.first "
-                            << cratelist.first;
+                               "comboBoxValue -> cratelist -> it->second "
+                            << it->second << " it->first "
+                            << it->first;
                 }
             }
             valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
@@ -1314,7 +1332,8 @@ void dlgSmartiesInfo::storeUIIn2Table() {
 // validatity check
 bool dlgSmartiesInfo::validationCheck() {
     storeUIIn2Table();
-    textEditValidation->setText(QStringLiteral(""));
+    // textEditValidation->setText(QStringLiteral(""));
+    textEditValidation->setText(QString(""));
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",

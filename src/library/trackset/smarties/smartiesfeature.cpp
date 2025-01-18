@@ -30,6 +30,7 @@
 
 namespace {
 
+constexpr int kInvalidSmartiesId = -1;
 const bool sDebug = false;
 
 QString formatLabel(
@@ -60,7 +61,8 @@ SmartiesFeature::SmartiesFeature(Library* pLibrary, UserSettingsPointer pConfig)
                   pLibrary->trackCollectionManager()->internalCollection()),
           m_smartiesTableModel(this,
                   pLibrary->trackCollectionManager(),
-                  pLibrary->trackCollectionManager()->internalCollection()) {
+                  pLibrary->trackCollectionManager()->internalCollection(),
+                  pConfig) {
     initActions();
 
     // construct child model
@@ -249,7 +251,8 @@ void SmartiesFeature::updateTreeItemForSmartiesSummary(
         DEBUG_ASSERT(SmartiesId(pTreeItem->getData()) == smartiesSummary.getId());
     }
     // Update mutable properties
-    pTreeItem->setLabel(formatLabel(smartiesSummary));
+    // next line disabled to let the new treeitem creation format the displayname
+    // pTreeItem->setLabel(formatLabel(smartiesSummary));
     pTreeItem->setIcon(smartiesSummary.isLocked() ? m_lockedSmartiesIcon : QIcon());
 }
 
@@ -316,7 +319,7 @@ void SmartiesFeature::activate() {
     BaseTrackSetFeature::activate();
 }
 
-void SmartiesFeature::activateChild(const QModelIndex& index) {
+void SmartiesFeature::oldactivateChild(const QModelIndex& index) {
     if (sDebug) {
         qDebug() << "[SMARTIESFEATURE] [ACTIVATE CHILD] -> index " << index;
     }
@@ -946,7 +949,7 @@ void SmartiesFeature::slotToggleSmartiesLock() {
 //     }
 // }
 
-QModelIndex SmartiesFeature::rebuildChildModel(SmartiesId selectedSmartiesId) {
+QModelIndex SmartiesFeature::oldrebuildChildModel(SmartiesId selectedSmartiesId) {
     if (sDebug) {
         qDebug() << "[SMARTIESFEATURE] [REBUILD CHILD MODEL] -> "
                     "selectedSmartiesId "
@@ -989,7 +992,7 @@ QModelIndex SmartiesFeature::rebuildChildModel(SmartiesId selectedSmartiesId) {
     }
 }
 
-void SmartiesFeature::updateChildModel(const QSet<SmartiesId>& updatedSmartiesIds) {
+void SmartiesFeature::oldupdateChildModel(const QSet<SmartiesId>& updatedSmartiesIds) {
     const SmartiesStorage& smartiesStorage = m_pTrackCollection->smarties();
     for (const SmartiesId& smartiesId : updatedSmartiesIds) {
         QModelIndex index = indexFromSmartiesId(smartiesId);
@@ -1378,4 +1381,497 @@ void SmartiesFeature::slotTrackSelected(TrackId trackId) {
 
 void SmartiesFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
+}
+
+QModelIndex SmartiesFeature::rebuildChildModel(SmartiesId selectedSmartiesId) {
+    if (sDebug) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> rebuildChildModel()" << selectedSmartiesId;
+    }
+
+    QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
+
+    // remember open/close state of group
+    QMap<QString, bool> groupExpandedStates;
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex groupIndex = m_pSidebarModel->index(row, 0);
+        if (groupIndex.isValid()) {
+            TreeItem* pGroupItem = m_pSidebarModel->getItem(groupIndex);
+            if (pGroupItem) {
+                const QString& groupName = pGroupItem->getLabel();
+                groupExpandedStates[groupName] = m_pSidebarWidget->isExpanded(groupIndex);
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESFEATURE] Saved open/close state "
+                                "for group:"
+                             << groupName << "->"
+                             << groupExpandedStates[groupName];
+                }
+            }
+        }
+    }
+
+    m_lastRightClickedIndex = QModelIndex();
+    TreeItem* pRootItem = m_pSidebarModel->getRootItem();
+    VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
+        return QModelIndex();
+    }
+    m_pSidebarModel->removeRows(0, pRootItem->childRows());
+
+    QList<QVariantMap> groupedSmarties = m_smartiesTableModel.getGroupedSmarties();
+    const QString& delimiter = m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedSmartiesVarLengthMask"));
+
+    if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedSmartiesLength")) == 0) {
+        // Fixed prefix length
+        QMap<QString, int> groupCounts;
+        for (int i = 0; i < groupedSmarties.size(); ++i) {
+            const auto& smartiesData = groupedSmarties[i];
+            const QString& groupName = smartiesData["group_name"].toString();
+            groupCounts[groupName]++;
+        }
+
+        QMap<QString, TreeItem*> groupItems;
+        std::vector<std::unique_ptr<TreeItem>> modelRows;
+
+        for (int i = 0; i < groupedSmarties.size(); ++i) {
+            const auto& smartiesData = groupedSmarties[i];
+            const QString& groupName = smartiesData["group_name"].toString();
+            SmartiesId smartiesId(smartiesData["smarties_id"]);
+
+            SmartiesSummary smartiesSummary;
+            if (!m_pTrackCollection->smarties().readSmartiesSummaryById(
+                        smartiesId, &smartiesSummary)) {
+                qWarning() << "[GROUPEDSMARTIESFEATURE] -> Failed to fetch summary "
+                              "for smarties ID:"
+                           << smartiesId;
+                continue;
+            }
+
+            const QString& smartiesSummaryName = formatLabel(smartiesSummary);
+
+            if (groupCounts[groupName] > 1) {
+                TreeItem* pGroupItem = groupItems.value(groupName, nullptr);
+                if (!pGroupItem) {
+                    auto newGroup = std::make_unique<TreeItem>(groupName, kInvalidSmartiesId);
+                    pGroupItem = newGroup.get();
+                    groupItems.insert(groupName, pGroupItem);
+                    modelRows.push_back(std::move(newGroup));
+                }
+
+                const QString& displaySmartiesName =
+                        smartiesSummaryName.mid(groupName.length()).trimmed();
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESFEATURE] -> smartiesSummaryName - "
+                                "displaySmartiesName = "
+                             << smartiesSummaryName << " - " << displaySmartiesName;
+                }
+
+                TreeItem* pChildItem = pGroupItem->appendChild(
+                        displaySmartiesName, smartiesId.toVariant().toInt());
+                pChildItem->setFullPath(groupName + delimiter + displaySmartiesName);
+                updateTreeItemForSmartiesSummary(pChildItem, smartiesSummary);
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESFEATURE] Added SmartiesId to group:"
+                             << smartiesId << "Group:" << groupName;
+                }
+            } else {
+                auto newSmarties = std::make_unique<TreeItem>(
+                        smartiesSummaryName, smartiesId.toVariant().toInt());
+                newSmarties->setFullPath(smartiesSummaryName);
+                updateTreeItemForSmartiesSummary(newSmarties.get(), smartiesSummary);
+
+                modelRows.push_back(std::move(newSmarties));
+            }
+        }
+
+        m_pSidebarModel->insertTreeItemRows(std::move(modelRows), 0);
+        slotTrackSelected(m_selectedTrackId);
+
+    } else {
+        // variable group prefix length with mask
+        QMap<QString, QList<QVariantMap>> topLevelGroups;
+        for (int i = 0; i < groupedSmarties.size(); ++i) {
+            const auto& smartiesData = groupedSmarties[i];
+            const QString& groupName = smartiesData["group_name"].toString();
+            const QString& topGroup = groupName.section(delimiter, 0, 0);
+            topLevelGroups[topGroup].append(smartiesData);
+        }
+
+        if (sDebug) {
+            qDebug() << "[GROUPEDSMARTIESFEATURE] Top-level groups:";
+            for (auto it = topLevelGroups.constBegin(); it != topLevelGroups.constEnd(); ++it) {
+                qDebug() << "Group:" << it.key() << "-> Smarties:" << it.value().size();
+            }
+        }
+        // lambda function to build tree
+        std::function<void(
+                const QString&, const QList<QVariantMap>&, TreeItem*)>
+                buildTreeStructure;
+        buildTreeStructure = [&](const QString& currentPath,
+                                     const QList<QVariantMap>& smartiesGroups,
+                                     TreeItem* pParentItem) {
+            QMap<QString, QList<QVariantMap>> subgroupedSmarties;
+
+            for (const QVariantMap& smartiesData : smartiesGroups) {
+                const QString& groupName = smartiesData["group_name"].toString();
+
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESFEATURE] Processing smarties with "
+                                "groupName:"
+                             << groupName << "currentPath:" << currentPath;
+                }
+
+                if (!groupName.startsWith(currentPath)) {
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDSMARTIESFEATURE] Skipping smarties. "
+                                    "Group name does not match path:"
+                                 << groupName << "Current path:" << currentPath;
+                    }
+                    continue;
+                }
+
+                const QString& remainingPath = groupName.mid(currentPath.length());
+                int delimiterPos = remainingPath.indexOf(delimiter);
+
+                if (delimiterPos >= 0) {
+                    const QString& subgroupName = remainingPath.left(delimiterPos);
+                    subgroupedSmarties[subgroupName].append(smartiesData);
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDSMARTIESFEATURE] Added smarties to "
+                                    "subgroup:"
+                                 << subgroupName
+                                 << "Remaining path:" << remainingPath;
+                    }
+                } else {
+                    SmartiesId smartiesId(smartiesData["smarties_id"]);
+                    SmartiesSummary smartiesSummary;
+                    if (!m_pTrackCollection->smarties().readSmartiesSummaryById(
+                                smartiesId, &smartiesSummary)) {
+                        qWarning() << "[GROUPEDSMARTIESFEATURE] Failed to fetch "
+                                      "summary for smarties ID:"
+                                   << smartiesId;
+                        continue;
+                    }
+
+                    const QString& displaySmartiesName =
+                            formatLabel(smartiesSummary).mid(currentPath.length());
+
+                    TreeItem* pChildItem = pParentItem->appendChild(
+                            displaySmartiesName.trimmed(), smartiesId.toVariant());
+                    pChildItem->setFullPath(currentPath + delimiter + displaySmartiesName);
+                    updateTreeItemForSmartiesSummary(pChildItem, smartiesSummary);
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDSMARTIESFEATURE] Added smarties "
+                                    "displaySmartiesName: "
+                                 << displaySmartiesName
+                                 << "to Parent:" << pParentItem->getLabel();
+                    }
+                }
+            }
+
+            for (auto it = subgroupedSmarties.constBegin();
+                    it != subgroupedSmarties.constEnd();
+                    ++it) {
+                const QString& subgroupName = it.key();
+                const QList<QVariantMap>& subgroupSmarties = it.value();
+                if (!subgroupSmarties.isEmpty()) {
+                    if (subgroupSmarties.size() > 1) {
+                        // subgroup has > 1 smarties -> create subgroup
+                        auto pNewSubgroup = std::make_unique<TreeItem>(
+                                subgroupName, kInvalidSmartiesId);
+                        TreeItem* pSubgroupItem = pNewSubgroup.get();
+                        pParentItem->insertChild(pParentItem->childCount(),
+                                std::move(pNewSubgroup));
+                        if (sDebug) {
+                            qDebug() << "[GROUPEDSMARTIESFEATURE] Created subgroup:" << subgroupName
+                                     << "Parent:" << pParentItem->getLabel();
+                        }
+
+                        // loop into the subgroup
+                        buildTreeStructure(
+                                currentPath + subgroupName + delimiter,
+                                subgroupSmarties,
+                                pSubgroupItem);
+                    } else {
+                        // only one smarties -> directly under the parent, NO subgroup
+                        const QVariantMap& smartiesData = subgroupSmarties.first();
+                        SmartiesId smartiesId(smartiesData["smarties_id"]);
+                        SmartiesSummary smartiesSummary;
+                        if (!m_pTrackCollection->smarties().readSmartiesSummaryById(
+                                    smartiesId, &smartiesSummary)) {
+                            qWarning() << "[GROUPEDSMARTIESFEATURE] Failed to "
+                                          "fetch summary for smarties ID:"
+                                       << smartiesId;
+                            continue;
+                        }
+
+                        const QString& displaySmartiesName =
+                                formatLabel(smartiesSummary)
+                                        .mid(currentPath.length());
+
+                        TreeItem* pChildItem = pParentItem->appendChild(
+                                displaySmartiesName.trimmed(), smartiesId.toVariant());
+                        pChildItem->setFullPath(currentPath + delimiter + displaySmartiesName);
+                        updateTreeItemForSmartiesSummary(pChildItem, smartiesSummary);
+                        if (sDebug) {
+                            qDebug()
+                                    << "[GROUPEDSMARTIESFEATURE] Added single "
+                                       "smarties displaySmartiesName: "
+                                    << displaySmartiesName
+                                    << " to Parent:" << pParentItem->getLabel();
+                        }
+                    }
+                }
+            }
+        };
+        // building rootlevel groups
+        for (auto it = topLevelGroups.constBegin(); it != topLevelGroups.constEnd(); ++it) {
+            const QString& groupName = it.key();
+            const QList<QVariantMap>& smartiesGroups = it.value();
+
+            if (smartiesGroups.size() > 1) {
+                auto pNewGroup = std::make_unique<TreeItem>(groupName, kInvalidSmartiesId);
+                TreeItem* pGroupItem = pNewGroup.get();
+                pRootItem->insertChild(pRootItem->childCount(), std::move(pNewGroup));
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESFEATURE] Created top-level group:" << groupName;
+                }
+
+                buildTreeStructure(groupName + delimiter, smartiesGroups, pGroupItem);
+            } else {
+                const QVariantMap& smartiesData = smartiesGroups.first();
+                SmartiesId smartiesId(smartiesData["smarties_id"]);
+                SmartiesSummary smartiesSummary;
+
+                if (!m_pTrackCollection->smarties().readSmartiesSummaryById(
+                            smartiesId, &smartiesSummary)) {
+                    qWarning() << "[GROUPEDSMARTIESFEATURE] Failed to fetch "
+                                  "summary for smarties ID:"
+                               << smartiesId;
+                    continue;
+                }
+
+                const QString& displaySmartiesName = formatLabel(smartiesSummary);
+                TreeItem* pChildItem = pRootItem->appendChild(
+                        displaySmartiesName.trimmed(), smartiesId.toVariant());
+                updateTreeItemForSmartiesSummary(pChildItem, smartiesSummary);
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESFEATURE] Added smarties to "
+                                "root:"
+                             << displaySmartiesName;
+                }
+            }
+        }
+    }
+    // store open/close state of groups
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex groupIndex = m_pSidebarModel->index(row, 0);
+        if (groupIndex.isValid()) {
+            TreeItem* pGroupItem = m_pSidebarModel->getItem(groupIndex);
+            if (pGroupItem) {
+                const QString& groupName = pGroupItem->getLabel();
+                if (groupExpandedStates.contains(groupName)) {
+                    m_pSidebarWidget->setExpanded(groupIndex, groupExpandedStates[groupName]);
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDSMARTIESFEATURE] Restored expanded "
+                                    "state for group:"
+                                 << groupName << "->"
+                                 << groupExpandedStates[groupName];
+                    }
+                }
+            }
+        }
+    }
+
+    if (previouslySelectedIndex.isValid()) {
+        return previouslySelectedIndex;
+    }
+
+    return QModelIndex();
+}
+
+void SmartiesFeature::updateChildModel(const QSet<SmartiesId>& updatedSmartiesIds) {
+    if (sDebug) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> updateChildModel() -> Updating "
+                    "smarties"
+                 << updatedSmartiesIds;
+    }
+
+    QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
+
+    // Fetch grouped smarties using SmartiesTableModel
+    QList<QVariantMap> groupedSmarties = m_smartiesTableModel.getGroupedSmarties();
+
+    QMap<QString, QList<QVariantMap>> groupedSmartiesMap;
+    for (int i = 0; i < groupedSmarties.size(); ++i) {
+        const auto& smartiesData = groupedSmarties[i];
+        groupedSmartiesMap[smartiesData["group_name"].toString()].append(smartiesData);
+    }
+
+    //    const QString& delimiter = m_pConfig->getValue(ConfigKey("[Library]",
+    //    "GroupedSmartiesVarLengthMask"));
+
+    // Update full paths recursively for all items starting from the root
+    updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+
+    // Update or rebuild items
+    for (const SmartiesId& smartiesId : updatedSmartiesIds) {
+        // Find the updated smarties in groupedSmarties
+        auto updatedGroup = std::find_if(
+                groupedSmarties.begin(),
+                groupedSmarties.end(),
+                [&smartiesId](const QVariantMap& smartiesData) {
+                    return smartiesData["smarties_id"].toInt() == smartiesId.toVariant().toInt();
+                });
+
+        if (updatedGroup != groupedSmarties.end()) {
+            /////////            // const QString& groupName =
+            ///(*updatedGroup)["group_name"].toString();
+            QModelIndex index = indexFromSmartiesId(smartiesId);
+            if (index.isValid()) {
+                // Update the existing item
+                TreeItem* pItem = m_pSidebarModel->getItem(index);
+                VERIFY_OR_DEBUG_ASSERT(pItem != nullptr) {
+                    continue;
+                }
+                pItem->setData((*updatedGroup)["smarties_name"].toString());
+                updateTreeItemForSmartiesSummary(pItem, SmartiesSummary(smartiesId));
+
+                // Update fullPath for the entire tree under this item
+                updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+
+                m_pSidebarModel->triggerRepaint(index);
+            } else {
+                // Rebuild the group if the smarties is missing
+                rebuildChildModel(smartiesId);
+            }
+        }
+    }
+    if (previouslySelectedIndex.isValid()) {
+        m_lastRightClickedIndex = previouslySelectedIndex;
+    }
+}
+
+void SmartiesFeature::activateChild(const QModelIndex& index) {
+    if (sDebug) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> activateChild() -> index" << index;
+    }
+
+    SmartiesId smartiesId(smartiesIdFromIndex(index));
+
+    if (smartiesId.toString() == "-1") {
+        // Group activated
+        if (sDebug) {
+            qDebug() << "[GROUPEDSMARTIESFEATURE] -> activateChild() -> Group activated";
+        }
+        const QString& fullPath = fullPathFromIndex(index);
+        if (fullPath.isEmpty()) {
+            qWarning() << "[GROUPEDSMARTIESFEATURE] -> activateChild() -> Group "
+                          "activated: No valid full path for index: "
+                       << index;
+            return;
+        }
+        if (sDebug) {
+            qDebug() << "[GROUPEDSMARTIESFEATURE] -> activateChild() -> Group "
+                        "activated -> fullPath:"
+                     << fullPath;
+        }
+
+        m_lastClickedIndex = index;
+        m_lastRightClickedIndex = QModelIndex();
+        m_prevSiblingSmarties = SmartiesId();
+        emit saveModelState();
+        emit disableSearch();
+        emit enableCoverArtDisplay(false);
+
+        m_smartiesTableModel.selectSmartiesGroup(fullPath);
+        emit featureSelect(this, m_lastClickedIndex);
+        emit showTrackModel(&m_smartiesTableModel);
+    } else {
+        // Smarties activated
+        if (sDebug) {
+            qDebug() << "[GROUPEDSMARTIESFEATURE] -> activateChild() -> Child "
+                        "smarties activated -> smartiesId: "
+                     << smartiesId;
+        }
+        VERIFY_OR_DEBUG_ASSERT(smartiesId.isValid()) {
+            return;
+        }
+        m_lastClickedIndex = index;
+        m_lastRightClickedIndex = QModelIndex();
+        m_prevSiblingSmarties = SmartiesId();
+        emit saveModelState();
+        m_smartiesTableModel.selectSmarties(smartiesId);
+        emit showTrackModel(&m_smartiesTableModel);
+        emit enableCoverArtDisplay(true);
+    }
+}
+
+QString SmartiesFeature::fullPathFromIndex(const QModelIndex& index) const {
+    const QString& delimiter = m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedSmartiesVarLengthMask"));
+    if (!index.isValid()) {
+        return QString();
+    }
+
+    TreeItem* pItem = m_pSidebarModel->getItem(index);
+    if (!pItem) {
+        return QString();
+    }
+
+    QString fullPath;
+    TreeItem* currentItem = pItem;
+    while (currentItem) {
+        if (!fullPath.isEmpty()) {
+            // Prepend delimiter
+            fullPath.prepend(delimiter);
+        }
+        // Prepend current item's label
+        fullPath.prepend(currentItem->getLabel());
+        currentItem = currentItem->parent();
+    }
+
+    // remove the last prepended delimiter (we don't know the depth of the tree)
+    // if another root level smarties exists that is not in the group
+    // (beginning of the name equal to root level groop name),
+    // the member tracks would be added to the group,
+    // with added delimiter only tracks in group member smarties are added
+    fullPath = fullPath.mid(delimiter.length()).append(delimiter);
+    return fullPath;
+}
+
+QString SmartiesFeature::groupNameFromIndex(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        // If index Invalid -> return an empty string
+        return QString();
+    }
+
+    TreeItem* pItem = m_pSidebarModel->getItem(index);
+    if (!pItem) {
+        // ig no item found for this index -> return an empty string
+        return QString();
+    }
+    // if index & label found -> return label
+    return pItem->getLabel();
+}
+
+void SmartiesFeature::updateFullPathRecursive(TreeItem* pItem, const QString& parentPath) {
+    const QString& delimiter = m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedSmartiesVarLengthMask"));
+    if (!pItem) {
+        return;
+    }
+
+    QString currentFullPath = parentPath.isEmpty()
+            ? pItem->getLabel()
+            : parentPath + delimiter + pItem->getLabel();
+    pItem->setFullPath(currentFullPath);
+
+    if (sDebug) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> Updated full path for item: " << pItem->getLabel()
+                 << " FullPath: " << currentFullPath;
+    }
+
+    for (TreeItem* pChild : pItem->children()) {
+        updateFullPathRecursive(pChild, currentFullPath);
+    }
 }

@@ -29,12 +29,147 @@ const QString kModelName = QStringLiteral("smarties");
 SmartiesTableModel::SmartiesTableModel(
         QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager,
-        TrackCollection* pTrackCollection)
+        TrackCollection* pTrackCollection,
+        UserSettingsPointer pConfig)
         : TrackSetTableModel(
                   pParent,
                   pTrackCollectionManager,
                   "mixxx.db.model.smarties"),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pConfig(pConfig) {
+}
+
+QList<QVariantMap> SmartiesTableModel::getGroupedSmarties() {
+    if (sDebug) {
+        qDebug() << "[GROUPEDCRATESTABLEMODEL] Generating grouped crates list.";
+    }
+
+    QList<QVariantMap> groupedSmarties;
+
+    QSqlQuery query(m_database);
+    // QString queryString;
+
+    if (sDebug) {
+        qDebug() << "[GROUPEDSMARTIESTABLEMODEL] configvalue GroupedSmartiesLength = "
+                 << m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedSmartiesLength"));
+        qDebug() << "[GROUPEDSMARTIESTABLEMODEL] configvalue "
+                    "GroupedSmartiesFixedLength = "
+                 << m_pConfig->getValue<int>(
+                            ConfigKey(
+                                    "[Library]", "GroupedSmartiesFixedLength"),
+                            0);
+        qDebug() << "[GROUPEDSMARTIESTABLEMODEL] configvalue GroupedSmartiesVarLengthMask = "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesVarLengthMask"));
+    }
+
+    // fixed prefix length
+    if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedSmartiesLength")) == 0) {
+        QString queryString =
+                QStringLiteral(
+                        "SELECT DISTINCT "
+                        "  SUBSTR(name, 1, %1) AS group_name, "
+                        "  id AS smarties_id, "
+                        "  name AS smarties_name "
+                        "FROM smarties "
+                        "ORDER BY LOWER(name)")
+                        .arg(m_pConfig->getValue(
+                                ConfigKey("[Library]",
+                                        "GroupedSmartiesFixedLength"),
+                                0));
+        if (sDebug) {
+            qDebug() << "[GROUPEDSMARTIESTABLEMODEL] queryString: " << queryString;
+        }
+        if (!query.exec(queryString)) {
+            qWarning() << "[GROUPEDSMARTIESTABLEMODEL] Failed to execute grouped "
+                          "smarties query:"
+                       << query.lastError();
+            return groupedSmarties;
+        }
+
+        while (query.next()) {
+            QVariantMap smartiesData;
+            // QString groupName = query.value("group_name").toString().trimmed();
+            QString groupName = query.value("group_name").toString();
+            smartiesData["group_name"] = groupName;
+            smartiesData["smarties_id"] = query.value("smarties_id");
+            smartiesData["smarties_name"] = query.value("smarties_name");
+            groupedSmarties.append(smartiesData);
+            if (sDebug) {
+                qDebug() << "[GROUPEDSMARTIESTABLEMODEL] Grouped smarties -> smarties "
+                            "added: "
+                         << smartiesData;
+            }
+        }
+    } else {
+        // Variable prefix length with mask, multiple occurrences -> multilevel subgroups
+        QString queryString = QStringLiteral(
+                "SELECT DISTINCT "
+                "  id AS smarties_id, "
+                "  name AS smarties_name "
+                "FROM smarties "
+                "ORDER BY LOWER(name)");
+        if (sDebug) {
+            qDebug() << "[GROUPEDSMARTIESTABLEMODEL] queryString: " << queryString;
+        }
+        if (!query.exec(queryString)) {
+            qWarning() << "[GROUPEDSMARTIESTABLEMODEL] Failed to execute grouped "
+                          "smarties query:"
+                       << query.lastError();
+            return groupedSmarties;
+        }
+        const QString& searchDelimit = m_pConfig->getValue(
+                ConfigKey("[Library]", "GroupedSmartiesVarLengthMask"));
+
+        while (query.next()) {
+            QString smartiesName = query.value("smarties_name").toString();
+            if (smartiesName.contains(searchDelimit)) {
+                // QStringList groupHierarchy = crateName.split(searchDelimit, Qt::SkipEmptyParts);
+                QStringList groupHierarchy = smartiesName.split(searchDelimit);
+                QString currentGroup;
+
+                for (int i = 0; i < groupHierarchy.size(); ++i) {
+                    // currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i].trimmed();
+                    currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i];
+
+                    QVariantMap smartiesData;
+                    smartiesData["group_name"] = currentGroup;
+                    smartiesData["smarties_id"] = query.value("smarties_id");
+                    smartiesData["smarties_name"] = smartiesName;
+
+                    // Add only the full crate record for the last level
+                    if (i == groupHierarchy.size() - 1) {
+                        groupedSmarties.append(smartiesData);
+                    }
+
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDSMARTIESTABLEMODEL] Grouped "
+                                    "smarties -> smarties added: "
+                                 << smartiesData;
+                    }
+                }
+            } else {
+                // No delimiter in crate name -> root-level
+                QVariantMap smartiesData;
+                // crateData["group_name"] = crateName.trimmed();
+                smartiesData["group_name"] = smartiesName;
+                smartiesData["smarties_id"] = query.value("smarties_id");
+                smartiesData["smarties_name"] = smartiesName;
+                groupedSmarties.append(smartiesData);
+
+                if (sDebug) {
+                    qDebug() << "[GROUPEDSMARTIESTABLEMODEL] Grouped smarties -> "
+                                "smarties added at root level: "
+                             << smartiesData;
+                }
+            }
+        }
+    }
+    if (sDebug) {
+        qDebug() << "[GROUPEDSMARTIESTABLEMODEL] Grouped smarties list generated "
+                    "with"
+                 << groupedSmarties.size() << "entries.";
+    }
+    return groupedSmarties;
 }
 
 void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
@@ -163,14 +298,6 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                         "SELECT %1, library.id FROM library WHERE %2")
                         .arg(smartiesId.toVariant().toString(), whereClause);
         ;
-        //        const QString& queryStringIDtoSmartiesTracks = QString(
-        //                "INSERT OR IGNORE INTO smarties_tracks (smarties_id, track_id) "
-        //                "SELECT " +
-        //                smartiesId.toVariant().toString() +
-        //                ", library.id FROM library "
-        //                //        "SELECT :smartiesId, library.id FROM library "
-        //                "WHERE " +
-        //                whereClause);
         FwdSqlQuery(m_database, queryStringIDtoSmartiesTracks).execPrepared();
         if (sDebug) {
             qDebug() << "[SMARTIESTABLEMODEL] [SELECT] -> NOT LOCKED -> CREATE "
@@ -199,25 +326,6 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
                                 columns.join(","), // 2
                                 LIBRARY_TABLE,     // 3
                                 whereClause);      // 4
-                                                   //        const QString&
-                                              //        queryStringTempView =
-                                              //                QString(
-                                              //                        "CREATE
-                                              //                        TEMPORARY
-                                              //                        VIEW IF
-                                              //                        NOT
-                                              //                        EXISTS
-                                              //                        %1 AS "
-                                              //                        "SELECT
-                                              //                        %2 FROM
-                                              //                        %3 "
-                                              //                        "WHERE "
-                                              //                        +
-                                              //                        whereClause)
-                                              //                        .arg(tableName,
-                                              //                        // 1
-                                              //                                columns.join(","), // 2
-                                              //                                LIBRARY_TABLE);    // 3
 
         if (sDebug) {
             qDebug() << "[SMARTIESTABLEMODEL] [SELECT] -> NOT LOCKED -> CREATE "
@@ -243,6 +351,58 @@ void SmartiesTableModel::selectSmarties(SmartiesId smartiesId) {
     // Restore search text
     setSearch(m_searchTexts.value(m_selectedSmarties));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+}
+
+void SmartiesTableModel::selectSmartiesGroup(const QString& groupName) {
+    if (sDebug) {
+        qDebug() << "[SmartiesTableModel] -> selectSmartiesGroup() -> Searching for "
+                    "tracks in groups starting with:"
+                 << groupName;
+    }
+    const QString& checkStamp = QDateTime::currentDateTime().toString("hhmmss");
+
+    const QString& tableName = QStringLiteral("crate_%1").arg(checkStamp);
+
+    QStringList columns;
+    columns << LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+    QString queryString =
+            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 "
+                    "WHERE library.id IN(SELECT smarties_tracks.track_id from "
+                    "smarties_tracks "
+                    "WHERE smarties_tracks.smarties_id IN(SELECT smarties.id from "
+                    "smarties WHERE smarties.name LIKE '%4%')) "
+                    "AND %5=0")
+                    .arg(tableName,
+                            columns.join(","),
+                            LIBRARY_TABLE,
+                            groupName,
+                            LIBRARYTABLE_MIXXXDELETED);
+
+    if (sDebug) {
+        qDebug() << "[SmartiesTableModel] -> Generated SQL Query:" << queryString;
+    }
+
+    // Execute the query
+    FwdSqlQuery(m_database, queryString).execPrepared();
+    columns[0] = LIBRARYTABLE_ID;
+    columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_COVERART;
+
+    // Update the table and view
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            columns,
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    if (sDebug) {
+        qDebug() << "[SmartiesTableModel] -> Group table successfully created "
+                    "with provided Smarties IDs.";
+    }
 }
 
 // bool SmartiesTableModel::addTrack(const QModelIndex& index, const QString& location) {

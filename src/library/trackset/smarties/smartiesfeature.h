@@ -45,6 +45,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+    QString fullPathFromIndex(const QModelIndex& index) const;
 
   signals:
     void updateSmartiesData(const QVariantList& smartiesData);
@@ -52,6 +53,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
   public slots:
     void activate() override;
+    void oldactivateChild(const QModelIndex& index);
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
@@ -108,7 +110,9 @@ class SmartiesFeature : public BaseTrackSetFeature {
     void selectSmartiesForEdit(SmartiesId selectedSmartiesId = SmartiesId());
 
     QModelIndex rebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
+    QModelIndex oldrebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
     void updateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
+    void oldupdateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
 
     SmartiesId smartiesIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromSmartiesId(SmartiesId smartiesId) const;
@@ -159,4 +163,6 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
     //    QList<QVariantList> m_smartiesList;
     QVariantList smartiesData;
+    QString groupNameFromIndex(const QModelIndex& index) const;
+    void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
 };

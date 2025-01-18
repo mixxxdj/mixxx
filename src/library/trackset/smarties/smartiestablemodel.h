@@ -13,13 +13,17 @@ class SmartiesTableModel final : public TrackSetTableModel {
     SmartiesTableModel(
             QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
-            TrackCollection* pTrackCollection);
+            TrackCollection* pTrackCollection,
+            UserSettingsPointer pConfig);
     ~SmartiesTableModel() final = default;
 
     void selectSmarties(SmartiesId smartiesId = SmartiesId());
     SmartiesId selectedSmarties() const {
         return m_selectedSmarties;
     }
+
+    void selectSmartiesGroup(const QString& groupName);
+    QList<QVariantMap> getGroupedSmarties();
 
     void loadSmartiesList();
 
@@ -60,4 +64,6 @@ class SmartiesTableModel final : public TrackSetTableModel {
     SmartiesId m_selectedSmarties;
     QHash<SmartiesId, QString> m_searchTexts;
     TrackCollection* m_pTrackCollection;
+
+    UserSettingsPointer m_pConfig;
 };
