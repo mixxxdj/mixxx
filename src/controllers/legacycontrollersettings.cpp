@@ -122,7 +122,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
-        : LegacyControllerSettingBase(element) {
+        : LegacyControllerSettingMixin(element) {
     m_defaultValue = parseValue(element.attribute("default"));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
@@ -228,7 +228,7 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         const QDomElement& element)
-        : LegacyControllerSettingBase(element, 0),
+        : LegacyControllerSettingMixin(element, 0),
           m_options() {
     size_t pos = 0;
     for (QDomElement value = element.firstChildElement("value");
@@ -306,7 +306,7 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerColorSetting::LegacyControllerColorSetting(
         const QDomElement& element)
-        : LegacyControllerSettingBase(element, QColor(element.attribute("default"))) {
+        : LegacyControllerSettingMixin(element, QColor(element.attribute("default"))) {
 }
 
 LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
@@ -367,7 +367,7 @@ QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerFileSetting::LegacyControllerFileSetting(
         const QDomElement& element)
-        : LegacyControllerSettingBase(element, QFileInfo(element.attribute("default"))),
+        : LegacyControllerSettingMixin(element, QFileInfo(element.attribute("default"))),
           m_fileFilter(element.attribute("pattern")) {
 }
 LegacyControllerFileSetting::~LegacyControllerFileSetting() = default;

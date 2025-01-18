@@ -129,7 +129,7 @@ class AbstractLegacyControllerSetting : public QObject {
 /// @brief Base setting class generic
 /// @tparam T The type of value this setting type is holding
 template<class T>
-class LegacyControllerSettingBase : public AbstractLegacyControllerSetting {
+class LegacyControllerSettingMixin : public AbstractLegacyControllerSetting {
   public:
     bool isDefault() const override {
         return m_savedValue == m_defaultValue;
@@ -148,17 +148,19 @@ class LegacyControllerSettingBase : public AbstractLegacyControllerSetting {
     }
 
   protected:
-    LegacyControllerSettingBase(const QDomElement& element)
+    LegacyControllerSettingMixin(const QDomElement& element)
             : AbstractLegacyControllerSetting(element) {
     }
-    LegacyControllerSettingBase(const QDomElement& element,
+    LegacyControllerSettingMixin(const QDomElement& element,
             T defaultValue)
             : AbstractLegacyControllerSetting(element),
-              m_defaultValue(defaultValue) {
+              m_savedValue(defaultValue),
+              m_defaultValue(defaultValue),
+              m_editedValue(defaultValue) {
         reset();
         save();
     }
-    LegacyControllerSettingBase(const QDomElement& element,
+    LegacyControllerSettingMixin(const QDomElement& element,
             T currentValue,
             T defaultValue)
             : AbstractLegacyControllerSetting(element),
@@ -173,7 +175,7 @@ class LegacyControllerSettingBase : public AbstractLegacyControllerSetting {
 
 class LegacyControllerBooleanSetting
         : public LegacyControllerSettingFactory<LegacyControllerBooleanSetting>,
-          public LegacyControllerSettingBase<bool> {
+          public LegacyControllerSettingMixin<bool> {
   public:
     LegacyControllerBooleanSetting(const QDomElement& element);
 
@@ -231,18 +233,17 @@ class LegacyControllerNumberSetting
                           ValueSerializer,
                           ValueDeserializer,
                           InputWidget>>,
-          public LegacyControllerSettingBase<SettingType> {
+          public LegacyControllerSettingMixin<SettingType> {
   public:
-    using LegacyControllerSettingBase<SettingType>::m_savedValue;
-    using LegacyControllerSettingBase<SettingType>::m_defaultValue;
-    using LegacyControllerSettingBase<SettingType>::m_editedValue;
-    using LegacyControllerSettingBase<SettingType>::save;
-    using LegacyControllerSettingBase<SettingType>::reset;
-    using LegacyControllerSettingBase<SettingType>::connect;
-    using LegacyControllerSettingBase<SettingType>::changed;
-
+    using LegacyControllerSettingMixin<SettingType>::m_savedValue;
+    using LegacyControllerSettingMixin<SettingType>::m_defaultValue;
+    using LegacyControllerSettingMixin<SettingType>::m_editedValue;
+    using LegacyControllerSettingMixin<SettingType>::save;
+    using LegacyControllerSettingMixin<SettingType>::reset;
+    using LegacyControllerSettingMixin<SettingType>::connect;
+    using LegacyControllerSettingMixin<SettingType>::changed;
     LegacyControllerNumberSetting(const QDomElement& element)
-            : LegacyControllerSettingBase<SettingType>(element) {
+            : LegacyControllerSettingMixin<SettingType>(element) {
         bool isOk = false;
         m_minValue = ValueDeserializer(element.attribute("min"), &isOk);
         if (!isOk) {
@@ -308,7 +309,7 @@ class LegacyControllerNumberSetting
             SettingType minValue,
             SettingType maxValue,
             SettingType stepValue)
-            : LegacyControllerSettingBase<SettingType>(element,
+            : LegacyControllerSettingMixin<SettingType>(element,
                       currentValue,
                       defaultValue),
               m_minValue(minValue),
@@ -375,7 +376,7 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
 
 class LegacyControllerEnumSetting
         : public LegacyControllerSettingFactory<LegacyControllerEnumSetting>,
-          public LegacyControllerSettingBase<size_t> {
+          public LegacyControllerSettingMixin<size_t> {
   public:
     struct Item {
         QString value;
@@ -420,7 +421,7 @@ class LegacyControllerEnumSetting
             const QList<Item>& options,
             size_t currentValue,
             size_t defaultValue)
-            : LegacyControllerSettingBase(element, currentValue, defaultValue),
+            : LegacyControllerSettingMixin(element, currentValue, defaultValue),
               m_options(options) {
     }
 
@@ -436,7 +437,7 @@ class LegacyControllerEnumSetting
 
 class LegacyControllerColorSetting
         : public LegacyControllerSettingFactory<LegacyControllerColorSetting>,
-          public LegacyControllerSettingBase<QColor> {
+          public LegacyControllerSettingMixin<QColor> {
   public:
     LegacyControllerColorSetting(const QDomElement& element);
 
@@ -474,7 +475,7 @@ class LegacyControllerColorSetting
     LegacyControllerColorSetting(const QDomElement& element,
             QColor currentValue,
             QColor defaultValue)
-            : LegacyControllerSettingBase(element,
+            : LegacyControllerSettingMixin(element,
                       defaultValue,
                       currentValue) {
     }
@@ -487,7 +488,7 @@ class LegacyControllerColorSetting
 
 class LegacyControllerFileSetting
         : public LegacyControllerSettingFactory<LegacyControllerFileSetting>,
-          public LegacyControllerSettingBase<QFileInfo> {
+          public LegacyControllerSettingMixin<QFileInfo> {
   public:
     LegacyControllerFileSetting(const QDomElement& element);
 
@@ -524,7 +525,7 @@ class LegacyControllerFileSetting
     LegacyControllerFileSetting(const QDomElement& element,
             const QFileInfo& currentValue,
             const QFileInfo& defaultValue)
-            : LegacyControllerSettingBase(element,
+            : LegacyControllerSettingMixin(element,
                       defaultValue,
                       currentValue) {
     }
