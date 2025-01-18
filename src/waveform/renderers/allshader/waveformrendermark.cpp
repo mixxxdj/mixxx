@@ -394,11 +394,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float lineX = 5.5f;
 
-    imgwidth = 11.f;
-    imgheight = height;
-
-    const QSize size{static_cast<int>(std::lround(imgwidth * devicePixelRatio)),
-            static_cast<int>(std::lround(imgheight * devicePixelRatio))};
+    const QSize size{static_cast<int>(std::lround(imgWidth * devicePixelRatio)),
+            static_cast<int>(std::lround(imgHeight * devicePixelRatio))};
 
     if (size.width() <= 0 || size.height() <= 0) {
         return;
