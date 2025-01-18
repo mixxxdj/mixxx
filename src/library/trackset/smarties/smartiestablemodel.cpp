@@ -733,7 +733,7 @@ void SmartiesTableModel::saveQVL2Smarties(SmartiesId smartiesId, const QVariantL
         qDebug() << "[SMARTIESTABLEMODEL] [SAVEQVL2SMARTIES] -> UPDATE SQL WhereClause "
                  << buildWhereClause(smartiesData).replace("'", "");
     }
-    const QString& whereClause2Save = buildWhereClause(smartiesData).replace("'", "");
+    QString whereClause2Save = buildWhereClause(smartiesData).replace("'", "");
     if (sDebug) {
         qDebug() << "[SMARTIESTABLEMODEL] [SAVEQVL2SMARTIES] -> UPDATE SQL WhereClause "
                  << whereClause2Save;

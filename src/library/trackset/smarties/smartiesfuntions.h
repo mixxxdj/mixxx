@@ -70,8 +70,8 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             } else if (op == "between") {
                 if (value.indexOf("|", 0) > 0) {
                     int posBar = value.indexOf("|", 0);
-                    const QString& yearFrom = value.mid(0, posBar).replace("-", "");
-                    const QString& yearTo =
+                    QString yearFrom = value.mid(0, posBar).replace("-", "");
+                    QString yearTo =
                             value.mid(posBar + 1, value.length() - posBar + 1)
                                     .replace("-", "");
                     if (yearFrom.toInt() < yearTo.toInt()) {
@@ -205,10 +205,10 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                 } else if (op == "between") {
                     if (value.indexOf("|", 0) > 0) {
                         int posBar = value.indexOf("|", 0);
-                        const QString& nrFrom = value.mid(0, posBar).replace("-", "");
-                        const QString& nrTo = value.mid(posBar + 1,
-                                                           value.length() - posBar + 1)
-                                                      .replace("-", "");
+                        QString nrFrom = value.mid(0, posBar).replace("-", "");
+                        QString nrTo = value.mid(posBar + 1,
+                                                    value.length() - posBar + 1)
+                                               .replace("-", "");
                         // qDebug() << "between numbers - nrfrom" << nrFrom << " nrTo" << nrTo;
                         if (nrFrom.toInt() < nrTo.toInt()) {
                             // qDebug() << "between nrs - nrFrom" << nrFrom << " < nrTo" << nrTo;
@@ -288,8 +288,8 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             } else if (op == "between") {
                 if (value.indexOf("|", 0) > 0) {
                     int posBar = value.indexOf("|", 0);
-                    const QString& nrFrom = value.mid(0, posBar).replace("-", "");
-                    const QString& nrTo =
+                    QString nrFrom = value.mid(0, posBar).replace("-", "");
+                    QString nrTo =
                             value.mid(posBar + 1, value.length() - posBar + 1)
                                     .replace("-", "");
                     if (sDebug) {
@@ -323,7 +323,7 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             //                value = "459";
             if (value.indexOf("|||", 0) > 0) {
                 int posBar = value.indexOf("|||", 0);
-                const QString& playlistId = value.mid(0, posBar);
+                QString playlistId = value.mid(0, posBar);
                 // QString playlistName = value.mid(posBar + 3, value.length() - posBar + 3);
                 if (sDebug) {
                     qDebug() << "PLAYLIST -> playlistId: " << playlistId;
@@ -349,7 +349,7 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             //                value = "5";
             if (value.indexOf("|||", 0) > 0) {
                 int posBar = value.indexOf("|||", 0);
-                const QString& historyId = value.mid(0, posBar);
+                QString historyId = value.mid(0, posBar);
                 // QString historyName = value.mid(posBar + 3, value.length() - posBar + 3);
                 if (sDebug) {
                     qDebug() << "HISTORY -> historyId: " << historyId;
@@ -375,7 +375,7 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             //                value = "5";
             if (value.indexOf("|||", 0) > 0) {
                 int posBar = value.indexOf("|||", 0);
-                const QString& crateId = value.mid(0, posBar);
+                QString crateId = value.mid(0, posBar);
                 // QString crateName = value.mid(posBar + 3, value.length() - posBar + 3);
                 if (sDebug) {
                     qDebug() << "CRATE -> crateId: " << crateId;
