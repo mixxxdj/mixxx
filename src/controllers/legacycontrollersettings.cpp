@@ -66,10 +66,12 @@ LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
 }
 
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
-    m_variableName = element.attribute("variable").trimmed();
-    m_label = replaceMarkupStyleStr(element.attribute("label", m_variableName).trimmed());
+    m_variableName = element.attribute(QStringLiteral("variable")).trimmed();
+    m_label = replaceMarkupStyleStr(
+            element.attribute(QStringLiteral("label"), m_variableName)
+                    .trimmed());
 
-    QDomElement description = element.firstChildElement("description");
+    QDomElement description = element.firstChildElement(QStringLiteral("description"));
     if (!description.isNull()) {
         m_description = replaceMarkupStyleStr(description.text().trimmed());
     }
@@ -106,7 +108,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
     pLabelWidget->setText(label());
 
     if (!description().isEmpty()) {
-        pRoot->setToolTip(QString("<p>%1</p>").arg(description()));
+        pRoot->setToolTip(QStringLiteral("<p>%1</p>").arg(description()));
     }
 
     pLayout->addWidget(pLabelWidget);
@@ -123,7 +125,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
         : LegacyControllerSettingMixin(element) {
-    m_defaultValue = parseValue(element.attribute("default"));
+    m_defaultValue = parseValue(element.attribute(QStringLiteral("default")));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
 }
@@ -143,7 +145,7 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     }
 
     if (!description().isEmpty()) {
-        pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
+        pCheckBox->setToolTip(QStringLiteral("<p>%1</p>").arg(description()));
     }
 
     connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, pCheckBox]() {
@@ -177,9 +179,9 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "boolean",
+    return element.hasAttribute(QStringLiteral("type")) &&
+            QString::compare(element.attribute(QStringLiteral("type")),
+                    QStringLiteral("boolean"),
                     Qt::CaseInsensitive) == 0;
 }
 
@@ -231,20 +233,20 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         : LegacyControllerSettingMixin(element, 0),
           m_options() {
     size_t pos = 0;
-    for (QDomElement value = element.firstChildElement("value");
+    for (QDomElement value = element.firstChildElement(QStringLiteral("value"));
             !value.isNull();
-            value = value.nextSiblingElement("value")) {
+            value = value.nextSiblingElement(QStringLiteral("value"))) {
         QString val = value.text();
-        QColor color = QColor(value.attribute("color"));
+        QColor color = QColor(value.attribute(QStringLiteral("color")));
         // TODO: Remove once we mandate GCC 10/Clang 16
 #if defined(__cpp_aggregate_paren_init) &&       \
         __cpp_aggregate_paren_init >= 201902L && \
         !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
-        m_options.emplace_back(val, value.attribute("label", val), color);
+        m_options.emplace_back(val, value.attribute(QStringLiteral("label"), val), color);
 #else
-        m_options.emplace_back(Item{val, value.attribute("label", val), color});
+        m_options.emplace_back(Item{val, value.attribute(QStringLiteral("label"), val), color});
 #endif
-        if (value.hasAttribute("default")) {
+        if (value.hasAttribute(QStringLiteral("default"))) {
             m_defaultValue = pos;
         }
         pos++;
@@ -306,7 +308,8 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerColorSetting::LegacyControllerColorSetting(
         const QDomElement& element)
-        : LegacyControllerSettingMixin(element, QColor(element.attribute("default"))) {
+        : LegacyControllerSettingMixin(element,
+                  QColor(element.attribute(QStringLiteral("default")))) {
 }
 
 LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
@@ -367,8 +370,9 @@ QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerFileSetting::LegacyControllerFileSetting(
         const QDomElement& element)
-        : LegacyControllerSettingMixin(element, QFileInfo(element.attribute("default"))),
-          m_fileFilter(element.attribute("pattern")) {
+        : LegacyControllerSettingMixin(element,
+                  QFileInfo(element.attribute(QStringLiteral("default")))),
+          m_fileFilter(element.attribute(QStringLiteral("pattern"))) {
 }
 LegacyControllerFileSetting::~LegacyControllerFileSetting() = default;
 
