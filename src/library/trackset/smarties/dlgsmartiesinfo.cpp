@@ -1566,7 +1566,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                         "or dates separated by a '|'. \n"
                                         "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
                                         "Smarties is NOT saved.")
-                                                                    .arg(i));
+                                                .arg(i));
                                 checkFieldMatchesOperator = false;
                                 // checkOperatorMatchesValue = false;
                                 foundMatchError = true;
@@ -1592,7 +1592,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                     "dates separated by a '|'. \n"
                                     "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
                                     "Smarties is NOT saved.")
-                                                                .arg(i));
+                                            .arg(i));
                             checkFieldMatchesOperator = false;
                             // checkOperatorMatchesValue = false;
                             foundMatchError = true;
@@ -1625,7 +1625,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                     "separated by a '|'. \n"
                                     "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
                                     "Smarties is NOT saved.")
-                                                                .arg(i));
+                                            .arg(i));
                             checkFieldMatchesOperator = false;
                             // checkOperatorMatchesValue = false;
                             foundMatchError = true;
@@ -1650,7 +1650,7 @@ bool dlgSmartiesInfo::validationCheck() {
                                     "dates separated by a '|'. \n"
                                     "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
                                     "Smarties is NOT saved.")
-                                                                .arg(i));
+                                            .arg(i));
                             checkFieldMatchesOperator = false;
                             // checkOperatorMatchesValue = false;
                             foundMatchError = true;
