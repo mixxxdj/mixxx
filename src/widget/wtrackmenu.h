@@ -358,8 +358,8 @@ class WTrackMenu : public QMenu {
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {
-        QPointer<ExternalTrackCollection> externalTrackCollection;
-        QAction* action{};
+        QPointer<ExternalTrackCollection> pExternalTrackCollection;
+        QAction* pAction{};
     };
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;

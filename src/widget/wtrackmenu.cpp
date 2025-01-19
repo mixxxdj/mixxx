@@ -417,13 +417,13 @@ void WTrackMenu::createActions() {
         for (auto* const pExternalTrackCollection :
                 m_pLibrary->trackCollectionManager()->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
-            updateInExternalTrackCollection.externalTrackCollection = pExternalTrackCollection;
-            updateInExternalTrackCollection.action = new QAction(
+            updateInExternalTrackCollection.pExternalTrackCollection = pExternalTrackCollection;
+            updateInExternalTrackCollection.pAction = make_parented<QAction>(
                     pExternalTrackCollection->name(), m_pMetadataMenu);
-            updateInExternalTrackCollection.action->setToolTip(
+            updateInExternalTrackCollection.pAction->setToolTip(
                     pExternalTrackCollection->description());
             m_updateInExternalTrackCollections += updateInExternalTrackCollection;
-            connect(updateInExternalTrackCollection.action,
+            connect(updateInExternalTrackCollection.pAction,
                     &QAction::triggered,
                     this,
                     [this, pExternalTrackCollection] {
@@ -661,7 +661,7 @@ void WTrackMenu::setupActions() {
         for (const auto& updateInExternalTrackCollection :
                 std::as_const(m_updateInExternalTrackCollections)) {
             m_pMetadataUpdateExternalCollectionsMenu->addAction(
-                    updateInExternalTrackCollection.action);
+                    updateInExternalTrackCollection.pAction);
         }
         if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
@@ -673,9 +673,9 @@ void WTrackMenu::setupActions() {
                     [this] {
                         for (const auto& updateInExternalTrackCollection :
                                 std::as_const(m_updateInExternalTrackCollections)) {
-                            updateInExternalTrackCollection.action->setEnabled(
+                            updateInExternalTrackCollection.pAction->setEnabled(
                                     updateInExternalTrackCollection
-                                            .externalTrackCollection
+                                            .pExternalTrackCollection
                                             ->isConnected());
                         }
                     });
@@ -954,7 +954,7 @@ void WTrackMenu::updateMenus() {
                 bool deckEnabled =
                         (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
                         singleTrackSelected;
-                QAction* pAction = new QAction(tr("Deck %1").arg(i), this);
+                auto pAction = make_parented<QAction>(tr("Deck %1").arg(i), this);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
                 connect(pAction, &QAction::triggered, this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
@@ -973,7 +973,7 @@ void WTrackMenu::updateMenus() {
                     samplersInMenu = 0;
                     int limit = iNumSamplers > i + 15 ? i + 15 : iNumSamplers;
                     const QString label = samplerTrString(i) + QStringLiteral("- %1").arg(limit);
-                    pMenu = new QMenu(label, m_pSamplerMenu);
+                    pMenu = make_parented<QMenu>(label, m_pSamplerMenu);
                     m_pSamplerMenu->addMenu(pMenu);
                 }
                 samplersInMenu++;
@@ -982,7 +982,7 @@ void WTrackMenu::updateMenus() {
                 bool samplerPlaying = ControlObject::get(
                                               ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && singleTrackSelected;
-                QAction* pAction = new QAction(samplerTrString(i), pMenu);
+                auto pAction = make_parented<QAction>(samplerTrString(i), pMenu);
                 pAction->setEnabled(samplerEnabled);
                 pMenu->addAction(pAction);
                 connect(pAction,
@@ -1431,7 +1431,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         // No leak because making the menu the parent means they will be
         // auto-deleted
         int plId = id;
-        auto* pAction = new QAction(
+        auto pAction = make_parented<QAction>(
                 mixxx::escapeTextPropertyWithoutShortcuts(name),
                 m_pPlaylistMenu);
         bool locked = playlistDao.isPlaylistLocked(plId);
@@ -1445,7 +1445,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
                 });
     }
     m_pPlaylistMenu->addSeparator();
-    QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
+    auto newPlaylistAction = make_parented<QAction>(tr("Create New Playlist"), m_pPlaylistMenu);
     m_pPlaylistMenu->addAction(newPlaylistAction);
     connect(newPlaylistAction, &QAction::triggered, this, [this] { addSelectionToPlaylist(-1); });
     m_bPlaylistMenuLoaded = true;
