@@ -90,10 +90,10 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
     getRgbF(m_color, &r, &g, &b, &a);
 
     const float posx0 = 0.f;
-    const float posx1 = size.width() / 2.f;
-    const float posx2 = size.width();
+    const float posx1 = static_cast<float>(size.width()) / 2.f;
+    const float posx2 = static_cast<float>(size.width());
     const float posy1 = 0.f;
-    const float posy2 = size.height();
+    const float posy2 = static_cast<float>(size.height());
 
     float minAlpha = 0.5f * static_cast<float>(alpha);
     float maxAlpha = 0.83f * static_cast<float>(alpha);
