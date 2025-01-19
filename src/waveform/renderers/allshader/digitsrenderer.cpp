@@ -9,12 +9,12 @@
 #include <QPainterPath>
 #include <cmath>
 
-#include "util/assert.h"
-#include "util/roundtopixel.h"
 #include "rendergraph/context.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/texturematerial.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
+#include "util/assert.h"
+#include "util/roundtopixel.h"
 
 // Render digits using a texture (generated) with digits with blurred dark outline
 
