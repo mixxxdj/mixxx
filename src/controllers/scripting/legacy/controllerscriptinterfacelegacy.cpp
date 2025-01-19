@@ -142,7 +142,7 @@ QObject* ControllerScriptInterfaceLegacy::getPlayer(const QString& deck) {
 #ifndef MIXXX_USE_QML
     return nullptr;
 #endif
-    return m_pPlayerManagerProxy->getPlayer(deck);
+    return new PlayerProxy((mixxx::qml::QmlPlayerProxy*)m_pPlayerManagerProxy->getPlayer(deck));
 }
 
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
