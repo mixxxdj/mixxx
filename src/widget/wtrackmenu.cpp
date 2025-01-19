@@ -293,18 +293,18 @@ void WTrackMenu::createActions() {
                     kHideRemoveShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
-        m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
+        m_pAutoDJBottomAct = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
         connect(m_pAutoDJBottomAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJBottom);
 
-        m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
+        m_pAutoDJTopAct = make_parented<QAction>(tr("Add to Auto DJ Queue (top)"), this);
         connect(m_pAutoDJTopAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJTop);
 
-        m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+        m_pAutoDJReplaceAct = make_parented<QAction>(tr("Add to Auto DJ Queue (replace)"), this);
         connect(m_pAutoDJReplaceAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJReplace);
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), m_pLoadToMenu);
+        m_pAddToPreviewDeck = make_parented<QAction>(tr("Preview Deck"), m_pLoadToMenu);
         // currently there is only one preview deck so just map it here.
         QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
         connect(m_pAddToPreviewDeck, &QAction::triggered, this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
@@ -313,21 +313,21 @@ void WTrackMenu::createActions() {
     if (featureIsEnabled(Feature::Remove)) {
         // Keyboard shortcuts are set here just to have them displayed in the menu.
         // Actual keypress is handled in WTrackTableView::keyPressEvent().
-        m_pRemoveAct = new QAction(tr("Remove"), this);
+        m_pRemoveAct = make_parented<QAction>(tr("Remove"), this);
         m_pRemoveAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemoveAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
-        m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
+        m_pRemovePlaylistAct = make_parented<QAction>(tr("Remove from Playlist"), this);
         m_pRemovePlaylistAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
-        m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
+        m_pRemoveCrateAct = make_parented<QAction>(tr("Remove from Crate"), this);
         m_pRemoveCrateAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemoveCrateAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        m_pHideAct = new QAction(tr("Hide from Library"), this);
+        m_pHideAct = make_parented<QAction>(tr("Hide from Library"), this);
         // This is just for having the shortcut displayed next to the action in the menu.
         // The actual keypress is handled in WTrackTableView::keyPressEvent().
         // Note: don't show the hotkey for more than one action
@@ -336,18 +336,19 @@ void WTrackMenu::createActions() {
         }
         connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
-        m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
+        m_pUnhideAct = make_parented<QAction>(tr("Unhide from Library"), this);
         connect(m_pUnhideAct, &QAction::triggered, this, &WTrackMenu::slotUnhide);
 
-        m_pPurgeAct = new QAction(tr("Purge from Library"), this);
+        m_pPurgeAct = make_parented<QAction>(tr("Purge from Library"), this);
         connect(m_pPurgeAct, &QAction::triggered, this, &WTrackMenu::slotPurge);
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        m_pRemoveFromDiskAct = new QAction(tr("Move Track File(s) to Trash"), this);
+        m_pRemoveFromDiskAct = make_parented<QAction>(tr("Move Track File(s) to Trash"), this);
 #else
-        m_pRemoveFromDiskAct = new QAction(tr("Delete Files from Disk"), m_pRemoveFromDiskMenu);
+        m_pRemoveFromDiskAct = make_parented<QAction>(
+                tr("Delete Files from Disk"), m_pRemoveFromDiskMenu);
 #endif
         connect(m_pRemoveFromDiskAct,
                 &QAction::triggered,
@@ -356,7 +357,7 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
-        m_pStarRatingAction = new WStarRatingAction(this);
+        m_pStarRatingAction = make_parented<WStarRatingAction>(this);
         m_pStarRatingAction->setObjectName("RatingAction");
         connect(m_pStarRatingAction,
                 &WStarRatingAction::ratingSet,
@@ -365,7 +366,7 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
-        m_pPropertiesAct = new QAction(tr("Properties"), this);
+        m_pPropertiesAct = make_parented<QAction>(tr("Properties"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
         // The keypress is caught in WTrackTableView::keyPressEvent
@@ -380,32 +381,32 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {
-        m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
+        m_pFileBrowserAct = make_parented<QAction>(tr("Open in File Browser"), this);
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
     if (featureIsEnabled(Feature::SelectInLibrary)) {
-        m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
+        m_pSelectInLibraryAct = make_parented<QAction>(tr("Select in Library"), this);
         connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromFileAct =
-                new QAction(tr("Import From File Tags"), m_pMetadataMenu);
+                make_parented<QAction>(tr("Import From File Tags"), m_pMetadataMenu);
         connect(m_pImportMetadataFromFileAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotImportMetadataFromFileTags);
 
         m_pImportMetadataFromMusicBrainzAct =
-                new QAction(tr("Import From MusicBrainz"), m_pMetadataMenu);
+                make_parented<QAction>(tr("Import From MusicBrainz"), m_pMetadataMenu);
         connect(m_pImportMetadataFromMusicBrainzAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotShowDlgTagFetcher);
 
         m_pExportMetadataAct =
-                new QAction(tr("Export To File Tags"), m_pMetadataMenu);
+                make_parented<QAction>(tr("Export To File Tags"), m_pMetadataMenu);
         connect(m_pExportMetadataAct,
                 &QAction::triggered,
                 this,
@@ -433,64 +434,64 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Reset)) {
         // Clear metadata actions
-        m_pClearBeatsAction = new QAction(tr("BPM and Beatgrid"), m_pClearMetadataMenu);
+        m_pClearBeatsAction = make_parented<QAction>(tr("BPM and Beatgrid"), m_pClearMetadataMenu);
         connect(m_pClearBeatsAction, &QAction::triggered, this, &WTrackMenu::slotClearBeats);
 
-        m_pClearPlayCountAction = new QAction(tr("Play Count"), m_pClearMetadataMenu);
+        m_pClearPlayCountAction = make_parented<QAction>(tr("Play Count"), m_pClearMetadataMenu);
         connect(m_pClearPlayCountAction, &QAction::triggered, this, &WTrackMenu::slotClearPlayCount);
 
-        m_pClearRatingAction = new QAction(tr("Rating"), m_pClearMetadataMenu);
+        m_pClearRatingAction = make_parented<QAction>(tr("Rating"), m_pClearMetadataMenu);
         connect(m_pClearRatingAction, &QAction::triggered, this, &WTrackMenu::slotClearRating);
 
-        m_pClearMainCueAction = new QAction(tr("Cue Point"), m_pClearMetadataMenu);
+        m_pClearMainCueAction = make_parented<QAction>(tr("Cue Point"), m_pClearMetadataMenu);
         connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotResetMainCue);
 
-        m_pClearHotCuesAction = new QAction(tr("Hotcues"), m_pClearMetadataMenu);
+        m_pClearHotCuesAction = make_parented<QAction>(tr("Hotcues"), m_pClearMetadataMenu);
         connect(m_pClearHotCuesAction, &QAction::triggered, this, &WTrackMenu::slotClearHotCues);
 
-        m_pClearIntroCueAction = new QAction(tr("Intro"), m_pClearMetadataMenu);
+        m_pClearIntroCueAction = make_parented<QAction>(tr("Intro"), m_pClearMetadataMenu);
         connect(m_pClearIntroCueAction, &QAction::triggered, this, &WTrackMenu::slotResetIntroCue);
 
-        m_pClearOutroCueAction = new QAction(tr("Outro"), m_pClearMetadataMenu);
+        m_pClearOutroCueAction = make_parented<QAction>(tr("Outro"), m_pClearMetadataMenu);
         connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotResetOutroCue);
 
-        m_pClearLoopsAction = new QAction(tr("Loops"), m_pClearMetadataMenu);
+        m_pClearLoopsAction = make_parented<QAction>(tr("Loops"), m_pClearMetadataMenu);
         connect(m_pClearLoopsAction, &QAction::triggered, this, &WTrackMenu::slotClearLoops);
 
-        m_pClearKeyAction = new QAction(tr("Key"), m_pClearMetadataMenu);
+        m_pClearKeyAction = make_parented<QAction>(tr("Key"), m_pClearMetadataMenu);
         connect(m_pClearKeyAction, &QAction::triggered, this, &WTrackMenu::slotClearKey);
 
-        m_pClearReplayGainAction = new QAction(tr("ReplayGain"), m_pClearMetadataMenu);
+        m_pClearReplayGainAction = make_parented<QAction>(tr("ReplayGain"), m_pClearMetadataMenu);
         connect(m_pClearReplayGainAction, &QAction::triggered, this, &WTrackMenu::slotClearReplayGain);
 
-        m_pClearWaveformAction = new QAction(tr("Waveform"), m_pClearMetadataMenu);
+        m_pClearWaveformAction = make_parented<QAction>(tr("Waveform"), m_pClearMetadataMenu);
         connect(m_pClearWaveformAction, &QAction::triggered, this, &WTrackMenu::slotClearWaveform);
 
-        m_pClearCommentAction = new QAction(tr("Comment"), m_pClearMetadataMenu);
+        m_pClearCommentAction = make_parented<QAction>(tr("Comment"), m_pClearMetadataMenu);
         connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
 
-        m_pClearAllMetadataAction = new QAction(tr("All"), m_pClearMetadataMenu);
+        m_pClearAllMetadataAction = make_parented<QAction>(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
     }
 
     if (featureIsEnabled(Feature::BPM)) {
-        m_pBpmLockAction = new QAction(tr("Lock BPM"), m_pBPMMenu);
-        m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), m_pBPMMenu);
+        m_pBpmLockAction = make_parented<QAction>(tr("Lock BPM"), m_pBPMMenu);
+        m_pBpmUnlockAction = make_parented<QAction>(tr("Unlock BPM"), m_pBPMMenu);
         connect(m_pBpmLockAction, &QAction::triggered, this, &WTrackMenu::slotLockBpm);
         connect(m_pBpmUnlockAction, &QAction::triggered, this, &WTrackMenu::slotUnlockBpm);
 
         //BPM edit actions
-        m_pBpmDoubleAction = new QAction(tr("Double BPM"), m_pBPMMenu);
+        m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
-        m_pBpmHalveAction = new QAction(tr("Halve BPM"), m_pBPMMenu);
+        m_pBpmHalveAction = make_parented<QAction>(tr("Halve BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmHalveAction, 0.5);
-        m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), m_pBPMMenu);
+        m_pBpmTwoThirdsAction = make_parented<QAction>(tr("2/3 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmTwoThirdsAction, 2.0 / 3.0);
-        m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), m_pBPMMenu);
+        m_pBpmThreeFourthsAction = make_parented<QAction>(tr("3/4 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeFourthsAction, 3.0 / 4.0);
-        m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), m_pBPMMenu);
+        m_pBpmFourThirdsAction = make_parented<QAction>(tr("4/3 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmFourThirdsAction, 4.0 / 3.0);
-        m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
+        m_pBpmThreeHalvesAction = make_parented<QAction>(tr("3/2 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeHalvesAction, 3.0 / 2.0);
 
         connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
@@ -512,13 +513,13 @@ void WTrackMenu::createActions() {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
         });
 
-        m_pBpmResetAction = new QAction(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
+        m_pBpmResetAction = make_parented<QAction>(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
         connect(m_pBpmResetAction,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotClearBeats);
 
-        m_pBpmUndoAction = new QAction(tr("Undo last BPM/beats change"), m_pBPMMenu);
+        m_pBpmUndoAction = make_parented<QAction>(tr("Undo last BPM/beats change"), m_pBPMMenu);
         connect(m_pBpmUndoAction,
                 &QAction::triggered,
                 this,
@@ -526,19 +527,19 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
-        m_pAnalyzeAction = new QAction(tr("Analyze"), this);
+        m_pAnalyzeAction = make_parented<QAction>(tr("Analyze"), this);
         connect(m_pAnalyzeAction, &QAction::triggered, this, &WTrackMenu::slotAnalyze);
 
-        m_pReanalyzeAction = new QAction(tr("Reanalyze"), this);
+        m_pReanalyzeAction = make_parented<QAction>(tr("Reanalyze"), this);
         connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
 
-        m_pReanalyzeConstBpmAction = new QAction(tr("Reanalyze (constant BPM)"), this);
+        m_pReanalyzeConstBpmAction = make_parented<QAction>(tr("Reanalyze (constant BPM)"), this);
         connect(m_pReanalyzeConstBpmAction,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotReanalyzeWithFixedTempo);
 
-        m_pReanalyzeVarBpmAction = new QAction(tr("Reanalyze (variable BPM)"), this);
+        m_pReanalyzeVarBpmAction = make_parented<QAction>(tr("Reanalyze (variable BPM)"), this);
         connect(m_pReanalyzeVarBpmAction,
                 &QAction::triggered,
                 this,
@@ -549,8 +550,8 @@ void WTrackMenu::createActions() {
     // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
     // don't create it if a track model is set.
     if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGainFromPregain)) {
-        m_pUpdateReplayGainAct =
-                new QAction(tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
+        m_pUpdateReplayGainAct = make_parented<QAction>(
+                tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
         connect(m_pUpdateReplayGainAct,
                 &QAction::triggered,
                 this,
@@ -559,7 +560,7 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Color)) {
         ColorPaletteSettings colorPaletteSettings(m_pConfig);
-        m_pColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowNoColor,
+        m_pColorPickerAction = make_parented<WColorPickerAction>(WColorPicker::Option::AllowNoColor,
                 colorPaletteSettings.getTrackColorPalette(),
                 m_pColorMenu);
         m_pColorPickerAction->setObjectName("TrackColorPickerAction");
