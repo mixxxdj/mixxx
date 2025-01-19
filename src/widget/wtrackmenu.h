@@ -255,18 +255,18 @@ class WTrackMenu : public QMenu {
     QString m_deckGroup;
 
     // Submenus
-    QMenu* m_pLoadToMenu{};
-    QMenu* m_pDeckMenu{};
-    QMenu* m_pSamplerMenu{};
-    QMenu* m_pPlaylistMenu{};
-    QMenu* m_pCrateMenu{};
-    QMenu* m_pMetadataMenu{};
-    QMenu* m_pMetadataUpdateExternalCollectionsMenu{};
-    QMenu* m_pClearMetadataMenu{};
-    QMenu* m_pAnalyzeMenu{};
-    QMenu* m_pBPMMenu{};
-    QMenu* m_pColorMenu{};
-    WCoverArtMenu* m_pCoverMenu{};
+    parented_ptr<QMenu> m_pLoadToMenu;
+    parented_ptr<QMenu> m_pDeckMenu;
+    parented_ptr<QMenu> m_pSamplerMenu;
+    parented_ptr<QMenu> m_pPlaylistMenu;
+    parented_ptr<QMenu> m_pCrateMenu;
+    parented_ptr<QMenu> m_pMetadataMenu;
+    parented_ptr<QMenu> m_pMetadataUpdateExternalCollectionsMenu;
+    parented_ptr<QMenu> m_pClearMetadataMenu;
+    parented_ptr<QMenu> m_pAnalyzeMenu;
+    parented_ptr<QMenu> m_pBPMMenu;
+    parented_ptr<QMenu> m_pColorMenu;
+    parented_ptr<WCoverArtMenu> m_pCoverMenu;
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)

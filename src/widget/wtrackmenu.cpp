@@ -162,58 +162,64 @@ void WTrackMenu::popup(const QPoint& pos, QAction* at) {
 
 void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::LoadTo)) {
-        m_pLoadToMenu = new QMenu(this);
+        m_pLoadToMenu = make_parented<QMenu>(this);
         m_pLoadToMenu->setTitle(tr("Load to"));
-        m_pDeckMenu = new QMenu(m_pLoadToMenu);
+        m_pDeckMenu = make_parented<QMenu>(m_pLoadToMenu);
         m_pDeckMenu->setTitle(tr("Deck"));
-        m_pSamplerMenu = new QMenu(m_pLoadToMenu);
+        m_pSamplerMenu = make_parented<QMenu>(m_pLoadToMenu);
         m_pSamplerMenu->setTitle(tr("Sampler"));
     }
 
     if (featureIsEnabled(Feature::Playlist)) {
-        m_pPlaylistMenu = new QMenu(this);
+        m_pPlaylistMenu = make_parented<QMenu>(this);
         m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
         connect(m_pPlaylistMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulatePlaylistMenu);
     }
 
     if (featureIsEnabled(Feature::Crate)) {
-        m_pCrateMenu = new QMenu(this);
+        m_pCrateMenu = make_parented<QMenu>(this);
         m_pCrateMenu->setTitle(tr("Crates"));
         m_pCrateMenu->setObjectName("CratesMenu");
         connect(m_pCrateMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateCrateMenu);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
-        m_pMetadataMenu = new QMenu(this);
+        m_pMetadataMenu = make_parented<QMenu>(this);
         m_pMetadataMenu->setTitle(tr("Metadata"));
 
-        m_pMetadataUpdateExternalCollectionsMenu = new QMenu(m_pMetadataMenu);
+        m_pMetadataUpdateExternalCollectionsMenu = make_parented<QMenu>(m_pMetadataMenu);
         m_pMetadataUpdateExternalCollectionsMenu->setTitle(tr("Update external collections"));
 
-        m_pCoverMenu = new WCoverArtMenu(m_pMetadataMenu);
+        m_pCoverMenu = make_parented<WCoverArtMenu>(m_pMetadataMenu);
         m_pCoverMenu->setTitle(tr("Cover Art"));
-        connect(m_pCoverMenu, &WCoverArtMenu::coverInfoSelected, this, &WTrackMenu::slotCoverInfoSelected);
-        connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WTrackMenu::slotReloadCoverArt);
+        connect(m_pCoverMenu.get(),
+                &WCoverArtMenu::coverInfoSelected,
+                this,
+                &WTrackMenu::slotCoverInfoSelected);
+        connect(m_pCoverMenu.get(),
+                &WCoverArtMenu::reloadCoverArt,
+                this,
+                &WTrackMenu::slotReloadCoverArt);
     }
 
     if (featureIsEnabled(Feature::BPM)) {
-        m_pBPMMenu = new QMenu(this);
+        m_pBPMMenu = make_parented<QMenu>(this);
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
     }
 
     if (featureIsEnabled(Feature::Color)) {
-        m_pColorMenu = new QMenu(this);
+        m_pColorMenu = make_parented<QMenu>(this);
         m_pColorMenu->setTitle(tr("Select Color"));
     }
 
     if (featureIsEnabled(Feature::Reset)) {
-        m_pClearMetadataMenu = new QMenu(this);
+        m_pClearMetadataMenu = make_parented<QMenu>(this);
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Clear"));
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
-        m_pAnalyzeMenu = new QMenu(this);
+        m_pAnalyzeMenu = make_parented<QMenu>(this);
         m_pAnalyzeMenu->setTitle(tr("Analyze"));
     }
 
@@ -274,7 +280,7 @@ void WTrackMenu::createMenus() {
         // permanently delete files, put the action into a submenu for safety
         // reasons and display different messages in the delete dialogs.
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        m_pRemoveFromDiskMenu = new QMenu(this);
+        m_pRemoveFromDiskMenu = make_parented<QMenu>(this);
         m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
 #endif
     }
