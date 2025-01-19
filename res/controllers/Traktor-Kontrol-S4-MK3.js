@@ -1022,7 +1022,7 @@ class StemButton extends PushButton {
         if (!this.shifted && pressed && this.deck.mixer.firstPressedFxSelector !== null) {
             const presetNumber = this.deck.mixer.calculatePresetNumber();
             this.color = QuickEffectPresetColors[presetNumber - 1];
-            engine.setValue(quickFxChannel(stemChannel(this.group, this.number - 1)), "loaded_chain_preset", presetNumber + 1);
+            engine.setValue(quickFxChannel(stemChannel(this.group, this.number - 1)), "loaded_chain_preset", presetNumber);
             this.deck.mixer.firstPressedFxSelector = null;
             this.deck.mixer.secondPressedFxSelector = null;
             this.deck.mixer.resetFxSelectorColors();
@@ -1619,7 +1619,7 @@ class FXSelect extends Button {
 
             const data = engine.getSharedData() || {};
             if (!data.selectedQuickFX === undefined) { return; }
-            data.selectedQuickFX = this.mixer.calculatePresetNumber() + 1;
+            data.selectedQuickFX = this.mixer.calculatePresetNumber();
             engine.setSharedData(data);
         } else {
             this.mixer.secondPressedFxSelector = this.number;
@@ -1628,7 +1628,7 @@ class FXSelect extends Button {
 
             const data = engine.getSharedData() || {};
             if (!data.selectedQuickFX === undefined) { return; }
-            data.selectedQuickFX = this.mixer.calculatePresetNumber() + 1;
+            data.selectedQuickFX = this.mixer.calculatePresetNumber();
             engine.setSharedData(data);
         }
 
@@ -1649,7 +1649,7 @@ class FXSelect extends Button {
         if (this.mixer.firstPressedFxSelector !== null) {
             for (const deck of [1, 2, 3, 4]) {
                 const presetNumber = this.mixer.calculatePresetNumber();
-                engine.setValue(`[QuickEffectRack1_[Channel${deck}]]`, "loaded_chain_preset", presetNumber);
+                engine.setValue(quickFxChannel(`[Channel${deck}]`), "loaded_chain_preset", presetNumber);
             }
         }
         if (this.mixer.firstPressedFxSelector === this.number) {
@@ -3065,7 +3065,6 @@ class S4Mk3Deck extends Deck {
                         engine.setValue(this.group, "scratch2", this.speed);
                     } else {
                         engine.setValue(this.group, "jog", this.speed);
-                        console.log(this.speed)
                     }
                     break;
                 default:
