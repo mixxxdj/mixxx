@@ -45,26 +45,27 @@ bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
     m_pSlipModeControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), "slip_enabled"));
+            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled")));
 
     return true;
 }
 
 void WaveformRendererSlipMode::setup(const QDomNode& node, const SkinContext& skinContext) {
     const QString slipModeOutlineColorName =
-            skinContext.selectString(node, "SlipBorderOutlineColor");
+            skinContext.selectString(node, QStringLiteral("SlipBorderOutlineColor"));
+    ;
     if (!slipModeOutlineColorName.isNull()) {
         m_color = WSkinColor::getCorrectColor(QColor(slipModeOutlineColorName));
     } else {
         m_color = kDefaultColor;
     }
     const float slipBorderTopOutlineSize = skinContext.selectFloat(
-            node, "SlipBorderTopOutlineSize", m_slipBorderTopOutlineSize);
+            node, QStringLiteral("SlipBorderTopOutlineSize"), m_slipBorderTopOutlineSize);
     if (slipBorderTopOutlineSize >= 0) {
         m_slipBorderTopOutlineSize = slipBorderTopOutlineSize;
     }
     const float slipBorderBottomOutlineSize = skinContext.selectFloat(
-            node, "SlipBorderBottomOutlineSize", m_slipBorderBottomOutlineSize);
+            node, QStringLiteral("SlipBorderBottomOutlineSize"), m_slipBorderBottomOutlineSize);
     if (slipBorderBottomOutlineSize >= 0) {
         m_slipBorderBottomOutlineSize = slipBorderBottomOutlineSize;
     }
