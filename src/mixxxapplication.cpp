@@ -29,7 +29,11 @@
 Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
 #elif defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+Q_IMPORT_PLUGIN(QModernWindowsStylePlugin)
+#else
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#endif
 #elif defined(Q_OS_IOS)
 Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)

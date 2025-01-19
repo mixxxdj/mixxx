@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.21)
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
@@ -2899,8 +2900,16 @@ if(Qt_IS_STATIC)
   if(WIN32)
     target_link_libraries(mixxx-lib PRIVATE
       Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
-      Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
     )
+    if(QT_VERSION VERSION_LESS 6.7)
+      target_link_libraries(mixxx-lib PRIVATE
+        Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      )
+    else()
+      target_link_libraries(mixxx-lib PRIVATE
+        Qt${QT_VERSION_MAJOR}::QModernWindowsStylePlugin
+      )
+    endif()
   endif()
 
   if(APPLE)
@@ -3047,9 +3056,15 @@ else()
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
         COMPONENT applocal)
-      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
-        DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
-        COMPONENT applocal)
+      if(QT_VERSION VERSION_LESS 6.7)
+        install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+          DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
+          COMPONENT applocal)
+      else()
+        install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QModernWindowsStylePlugin
+          DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
+          COMPONENT applocal)
+      endif()
     endif()
     if(APPLE)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
