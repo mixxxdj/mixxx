@@ -89,7 +89,7 @@ bool WaveformRendererSlipMode::preprocessInner() {
                     2 * std::abs(elapsed - kBlinkingPeriodMillis / 2)) /
             kBlinkingPeriodMillis;
 
-    const float alpha = std::clamp(0.25 + 0.5 * blinkIntensity, 0.0, 1.0);
+    const float alpha = std::clamp(0.25f + 0.5f * blinkIntensity, 0.0f, 1.0f);
 
     const float posx1 = 0.f;
     const float posx2 = m_waveformRenderer->getLength();
