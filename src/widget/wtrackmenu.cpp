@@ -1570,7 +1570,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
 #endif
     }
     m_pCrateMenu->addSeparator();
-    QAction* newCrateAction = new QAction(tr("Add to New Crate"), m_pCrateMenu);
+    auto newCrateAction = make_parented<QAction>(tr("Add to New Crate"), m_pCrateMenu);
     m_pCrateMenu->addAction(newCrateAction);
     connect(newCrateAction, &QAction::triggered, this, &WTrackMenu::addSelectionToNewCrate);
     m_bCrateMenuLoaded = true;
@@ -2316,16 +2316,18 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
 
     {
+        QDialog dlgDelConfirm;
+
         // Prepare the delete confirmation dialog.
         // First, create the list view for the files to be deleted
         // NOTE(ronso0) We could also make this a table to allow showing
         // artist and title if file names don't suffice to identify tracks.
-        QListWidget* delListWidget = new QListWidget();
-        delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+        auto pDelListWidget = make_parented<QListWidget>(&dlgDelConfirm);
+        pDelListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::MinimumExpanding));
-        delListWidget->setFocusPolicy(Qt::ClickFocus);
-        delListWidget->addItems(locations);
-        mixxx::widgethelper::growListWidget(*delListWidget, *this);
+        pDelListWidget->setFocusPolicy(Qt::ClickFocus);
+        pDelListWidget->addItems(locations);
+        mixxx::widgethelper::growListWidget(*pDelListWidget, *this);
 
         QString delWarningText;
         if (m_pTrackModel) {
@@ -2359,17 +2361,17 @@ void WTrackMenu::slotRemoveFromDisk() {
         }
 
         // Setup the warning message and dialog buttons
-        QLabel* delWarning = new QLabel();
-        delWarning->setText(delWarningText);
-        delWarning->setTextFormat(Qt::RichText);
-        delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+        auto pDelWarning = make_parented<QLabel>(&dlgDelConfirm);
+        pDelWarning->setText(delWarningText);
+        pDelWarning->setTextFormat(Qt::RichText);
+        pDelWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::Minimum));
 
-        QDialogButtonBox* delButtons = new QDialogButtonBox();
-        QPushButton* cancelBtn = delButtons->addButton(
+        auto pDelButtons = make_parented<QDialogButtonBox>(&dlgDelConfirm);
+        QPushButton* cancelBtn = pDelButtons->addButton(
                 tr("Cancel"),
                 QDialogButtonBox::RejectRole);
-        QPushButton* deleteBtn = delButtons->addButton(
+        QPushButton* deleteBtn = pDelButtons->addButton(
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
                 tr("Delete Files"),
 #else
@@ -2379,13 +2381,11 @@ void WTrackMenu::slotRemoveFromDisk() {
         cancelBtn->setDefault(true);
 
         // Populate the main layout
-        QVBoxLayout* delLayout = new QVBoxLayout();
-        delLayout->addWidget(delListWidget);
-        delLayout->addWidget(delWarning);
-        delLayout->addWidget(delButtons);
+        auto pDelLayout = make_parented<QVBoxLayout>(&dlgDelConfirm);
+        pDelLayout->addWidget(pDelListWidget);
+        pDelLayout->addWidget(pDelWarning);
+        pDelLayout->addWidget(pDelButtons);
 
-        // Create and populate the dialog
-        QDialog dlgDelConfirm;
         dlgDelConfirm.setModal(true); // just to be sure
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         dlgDelConfirm.setWindowTitle(tr("Delete Track Files"));
@@ -2396,7 +2396,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         // would close the dialog.
         connect(cancelBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::reject);
         connect(deleteBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::accept);
-        dlgDelConfirm.setLayout(delLayout);
+        dlgDelConfirm.setLayout(pDelLayout);
 
         if (dlgDelConfirm.exec() == QDialog::Rejected) {
             return;
@@ -2490,8 +2490,11 @@ void WTrackMenu::slotRemoveFromDisk() {
         }
         return;
     }
+
+    QDialog dlgNotDeleted;
+
     // Else show a message with a list of tracks that could not be deleted.
-    QLabel* notDeletedLabel = new QLabel;
+    auto pNotDeletedLabel = make_parented<QLabel>(&dlgNotDeleted);
     QString msgText;
     if (m_pTrackModel) {
         msgText =
@@ -2509,28 +2512,27 @@ void WTrackMenu::slotRemoveFromDisk() {
         msgText = tr("This track file could not be deleted from disk");
 #endif
     }
-    notDeletedLabel->setText(msgText);
-    notDeletedLabel->setTextFormat(Qt::RichText);
+    pNotDeletedLabel->setText(msgText);
+    pNotDeletedLabel->setTextFormat(Qt::RichText);
 
-    QListWidget* notDeletedListWidget = new QListWidget;
-    notDeletedListWidget->setFocusPolicy(Qt::ClickFocus);
-    notDeletedListWidget->addItems(tracksToKeep);
-    mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
+    auto pNotDeletedListWidget = make_parented<QListWidget>(&dlgNotDeleted);
+    pNotDeletedListWidget->setFocusPolicy(Qt::ClickFocus);
+    pNotDeletedListWidget->addItems(tracksToKeep);
+    mixxx::widgethelper::growListWidget(*pNotDeletedListWidget, *this);
 
-    QDialogButtonBox* notDeletedButtons = new QDialogButtonBox();
-    QPushButton* closeBtn = notDeletedButtons->addButton(
+    auto pNotDeletedButtons = make_parented<QDialogButtonBox>(&dlgNotDeleted);
+    QPushButton* closeBtn = pNotDeletedButtons->addButton(
             tr("Close"),
             QDialogButtonBox::AcceptRole);
 
-    QVBoxLayout* notDeletedLayout = new QVBoxLayout;
-    notDeletedLayout->addWidget(notDeletedLabel);
-    notDeletedLayout->addWidget(notDeletedListWidget);
-    notDeletedLayout->addWidget(notDeletedButtons);
+    auto pNotDeletedLayout = make_parented<QVBoxLayout>(&dlgNotDeleted);
+    pNotDeletedLayout->addWidget(pNotDeletedLabel);
+    pNotDeletedLayout->addWidget(pNotDeletedListWidget);
+    pNotDeletedLayout->addWidget(pNotDeletedButtons);
 
-    QDialog dlgNotDeleted;
     dlgNotDeleted.setModal(true);
     dlgNotDeleted.setWindowTitle(tr("Remaining Track File(s)"));
-    dlgNotDeleted.setLayout(notDeletedLayout);
+    dlgNotDeleted.setLayout(pNotDeletedLayout);
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
     dlgNotDeleted.exec();
