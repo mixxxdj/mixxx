@@ -93,7 +93,7 @@ bool WaveformRendererStem::preprocessInner() {
     const int length = static_cast<int>(m_waveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
     const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5 / devicePixelRatio;
+    const float halfPixelSize = 0.5f / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
