@@ -26,7 +26,6 @@ case "$1" in
         # builddep mixxx`).
         sudo dnf install -y \
             appstream \
-            boost-devel \
             ccache \
             chrpath \
             cmake \
