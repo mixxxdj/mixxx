@@ -92,7 +92,7 @@ bool WaveformWidgetRenderer::init() {
     m_pGainControlObject = std::make_unique<ControlProxy>(
             m_group, QStringLiteral("total_gain"));
     m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
-            m_group, "track_samples");
+            m_group, QStringLiteral("track_samples"));
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
