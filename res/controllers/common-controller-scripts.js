@@ -178,6 +178,10 @@ const deepMerge = function(target, source) {
         target.push(...Object.values(objTarget));
     } else if (isSimpleObject(target) && isSimpleObject(source)) {
         Object.keys(source).forEach(key => {
+            // ensure the property is not read-only, if so skip it.
+            if (!Object.getOwnPropertyDescriptor(source, key).writable) {
+                return;
+            }
             if (
                 Array.isArray(target[key]) && Array.isArray(source[key]) ||
               isSimpleObject(target[key]) && isSimpleObject(source[key])
