@@ -90,7 +90,7 @@ bool WaveformWidgetRenderer::init() {
     m_pRateRatioCO = std::make_unique<ControlProxy>(
             m_group, QStringLiteral("rate_ratio"));
     m_pGainControlObject = std::make_unique<ControlProxy>(
-            m_group, "total_gain");
+            m_group, QStringLiteral("total_gain"));
     m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
             m_group, "track_samples");
 
