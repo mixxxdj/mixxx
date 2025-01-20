@@ -178,17 +178,21 @@ const deepMerge = function(target, source) {
         target.push(...Object.values(objTarget));
     } else if (isSimpleObject(target) && isSimpleObject(source)) {
         Object.keys(source).forEach(key => {
-            // ensure the property is not read-only, if so skip it.
-            if (!Object.getOwnPropertyDescriptor(source, key).writable) {
-                return;
-            }
             if (
                 Array.isArray(target[key]) && Array.isArray(source[key]) ||
               isSimpleObject(target[key]) && isSimpleObject(source[key])
             ) {
                 deepMerge(target[key], source[key]);
             } else if (source[key] !== undefined && source[key] !== null) {
-                Object.assign(target, {[key]: source[key]});
+                try {
+                    Object.assign(target, {[key]: source[key]});
+                } catch (e) {
+                    if (e instanceof TypeError) {
+                        console.warn(e.message);
+                    } else {
+                        throw e;
+                    }
+                }
             }
         });
     }
