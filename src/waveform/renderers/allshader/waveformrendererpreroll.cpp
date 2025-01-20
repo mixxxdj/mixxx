@@ -77,7 +77,7 @@ WaveformRendererPreroll::~WaveformRendererPreroll() = default;
 
 void WaveformRendererPreroll::setup(
         const QDomNode& node, const SkinContext& skinContext) {
-    m_color = QColor(skinContext.selectString(node, "SignalColor"));
+    m_color = QColor(skinContext.selectString(node, QStringLiteral("SignalColor")));
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
