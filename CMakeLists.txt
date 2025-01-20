@@ -2752,6 +2752,16 @@ if(QT_EXTRA_COMPONENTS)
 endif()
 
 if(QML)
+  if(QT_KNOWN_POLICY_QTP0004)
+      # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
+      # OLD (Qt < 6.8) requires to import qml modules with a folder e.g.:
+      # fragmentShader: "qrc:/shaders/rgbsignal_qml.frag.qsb"
+      # For using NEW, we need to back-port:
+      # https://github.com/qt/qtdeclarative/commit/6314d305ee0d9064ca848980ef2dab1793c191b8
+      # until Qt 6.8 lands in all supported distros
+      qt6_policy(SET QTP0004 OLD)
+  endif()
+
   add_subdirectory(res/shaders)
 
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
