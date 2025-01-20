@@ -962,7 +962,7 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     }
     //  EveOSC begin
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        oscChangedPlayState(m_pConfig, getGroup(), value);
+        oscChangedPlayState(m_pConfig, getGroup(), (float)value);
     }
     // EveOSC endc
 }
