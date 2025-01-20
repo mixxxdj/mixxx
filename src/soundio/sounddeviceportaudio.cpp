@@ -71,6 +71,10 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
+void paFinishedCallback(void* soundDevice) {
+    return ((SoundDevicePortAudio*)soundDevice)->finishedCallback();
+}
+
 const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
 
 const QString kAppGroup = QStringLiteral("[App]");
@@ -360,12 +364,14 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 #endif
 
-    // Start stream
+    // Set the finished callback, used when stopping the stream
+    m_bFinished = false;
+    Pa_SetStreamFinishedCallback(pStream, paFinishedCallback);
 
-    // Tell the callback that we are starting but not ready yet.
-    // The callback will return paContinue but not access m_pStream
-    // yet.
+    // Tell the callback to return paContinue, once running.
     m_callbackResult.store(paContinue, std::memory_order_release);
+
+    // Start stream
     err = Pa_StartStream(pStream);
     if (err != paNoError) {
         qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
@@ -407,12 +413,28 @@ bool SoundDevicePortAudio::isOpen() const {
     return m_pStream.load() != nullptr;
 }
 
+void SoundDevicePortAudio::finishedCallback() {
+    // This callback is called by PortAudio when the process callback returns
+    // paAbort to indicate the stream has to finish. This is triggered in the
+    // SoundDevicePortAudio::close() method.
+    std::unique_lock lock(m_finishedMutex);
+    m_bFinished = true;
+    m_finishedCV.notify_one();
+}
+
+void SoundDevicePortAudio::waitForFinished() {
+    // Wait until finishedCallback has been called. The timeout should never be
+    // reached, because when the process callback return paAbort, the stream
+    // will finish as soon as possible.
+    std::unique_lock lock(m_finishedMutex);
+    if (!m_finishedCV.wait_for(lock, std::chrono::seconds(1), [&] { return m_bFinished; })) {
+        qWarning() << "Timeout reached when waiting for PortAudio stream to finish";
+    }
+}
+
 SoundDeviceStatus SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
 
-    // Tell the callback to return paAbort. This stops the stream as soon as possible.
-    // After stopping the stream using this technique, Pa_StopStream() still has to be called.
-    m_callbackResult.store(paAbort, std::memory_order_release);
     PaStream* pStream = m_pStream.load(std::memory_order_relaxed);
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
@@ -430,26 +452,23 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
             return SoundDeviceStatus::Error;
         }
 
-        // Stop the stream. Since the start of this function we are returning
-        // paAbort from the callback. paAbort stops the stream as soon as possible.
-        // When stopping the stream using this technique, we still need to call
-        // Pa_StopStream() before starting the stream again.
+        // Tell the process callback to return paAbort, which will cause
+        // PortAudio to stop the stream as soon as possible. This has the
+        // advantage over calling Pa_StopStream that it will not wait until all
+        // the buffers have been flushed, which can take a few (annoying)
+        // seconds when you're doing soundcard input.
+        m_callbackResult.store(paAbort, std::memory_order_release);
 
+        // We wait until the callback set with Pa_SetStreamFinishedCallback has
+        // been called. Without this, there is the risk of a deadlock when we
+        // call Pa_StopStream and Pa_CloseStream below.
+        waitForFinished();
+
+        // Call Pa_StopStream() in case the above failed.
         err = Pa_StopStream(pStream);
+
         // We should now be able to safely set m_pStream to null
         m_pStream.store(nullptr, std::memory_order_release);
-
-        // Note: With the use of return value paAbort as described above,
-        // the comment below is not relevant anymore, but I am leaving it
-        // because of the BIG FAT WARNING, just in case.
-        //
-        // Trying Pa_AbortStream instead, because StopStream seems to wait
-        // until all the buffers have been flushed, which can take a
-        // few (annoying) seconds when you're doing soundcard input.
-        // (it flushes the input buffer, and then some, or something)
-        // BIG FAT WARNING: Pa_AbortStream() will kill threads while they're
-        // waiting on a mutex, which will leave the mutex in an screwy
-        // state. Don't use it!
 
         if (err != paNoError) {
             qWarning() << "PortAudio: Stop stream error:"
