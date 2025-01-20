@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5+" schemaVersion="1">
+  <info>
+    <name>Obinslab Anne Pro 2</name>
+    <author>Sam Whited</author>
+    <description>HID mapping for the Obinslab Anne Pro 2 computer keyboard.</description>
+    <devices>
+      <product protocol="hid" vendor_id="0x04d9" product_id="0x8008" />
+      <product protocol="hid" vendor_id="0x04d9" product_id="0x8009" />
+      <product protocol="hid" vendor_id="0x04d9" product_id="0xa292" />
+      <product protocol="hid" vendor_id="0x04d9" product_id="0xa293" interface_number="0x1" />
+    </devices>
+  </info>
+  <settings>
+    <group label="Colors">
+      <group label="Play Color">
+        <option variable="play_color_red" type="integer" min="0" max="255" default="255" label="Red">
+          <description>
+            The red channel of the color of keys related to playback.
+          </description>
+        </option>
+        <option variable="play_color_green" type="integer" min="0" max="255" default="255" label="Green">
+          <description>
+            The green channel of the color of keys related to playback.
+          </description>
+        </option>
+        <option variable="play_color_blue" type="integer" min="0" max="255" default="0" label="Blue">
+          <description>
+            The blue channel of the color of keys related to playback.
+          </description>
+        </option>
+      </group>
+      <group label="Kill Color">
+        <option variable="kill_color_red" type="integer" min="0" max="255" default="255" label="Red">
+          <description>
+            The red channel of the color of keys related to filter kill buttons.
+          </description>
+        </option>
+        <option variable="kill_color_green" type="integer" min="0" max="255" default="0" label="Green">
+          <description>
+            The green channel of the color of keys related to filter kill buttons.
+          </description>
+        </option>
+        <option variable="kill_color_blue" type="integer" min="0" max="255" default="0" label="Blue">
+          <description>
+            The blue channel of the color of keys related to filter kill buttons.
+          </description>
+        </option>
+      </group>
+      <group label="Track Ending Color">
+        <option variable="ending_color_red" type="integer" min="0" max="255" default="255" label="Red">
+          <description>
+            The red channel of the track ending color.
+          </description>
+        </option>
+        <option variable="ending_color_green" type="integer" min="0" max="255" default="0" label="Green">
+          <description>
+            The green channel of the track ending color.
+          </description>
+        </option>
+        <option variable="ending_color_blue" type="integer" min="0" max="255" default="255" label="Blue">
+          <description>
+            The blue channel of the track ending color.
+          </description>
+        </option>
+      </group>
+      <group label="Record Color">
+        <option variable="record_color_red" type="integer" min="0" max="255" default="255" label="Red">
+          <description>
+            The red channel of the record button color.
+          </description>
+        </option>
+        <option variable="record_color_green" type="integer" min="0" max="255" default="0" label="Green">
+          <description>
+            The green channel of the record button color.
+          </description>
+        </option>
+        <option variable="record_color_blue" type="integer" min="0" max="255" default="0" label="Blue">
+          <description>
+            The blue channel of the record button color.
+          </description>
+        </option>
+      </group>
+    </group>
+  </settings>
+  <controller id="AnnePro2HID">
+    <scriptfiles>
+      <file filename="Obinslab-AnnePro2-scripts.js" functionprefix="AnnePro2"/>
+    </scriptfiles>
+  </controller>
+</MixxxControllerPreset>
