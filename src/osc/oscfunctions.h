@@ -37,52 +37,52 @@ void sendOscMessage(const char* receiverIp,
     }
 }
 
-void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
-        const QString& OscGroup,
-        const QString& OscKey,
-        enum DefOscBodyType OscBodyType,
-        const QString& OscMessageBodyQString,
-        int OscMessageBodyInt,
-        double OscMessageBodyDouble,
-        float OscMessageBodyFloat) {
-    QString OscMessageHeader = "/" + OscGroup + "@" + OscKey;
-    OscMessageHeader.replace("[", "(");
-    OscMessageHeader.replace("]", ")");
+void oscFunctionsSendPtrType(UserSettingsPointer pConfig,
+        const QString& oscGroup,
+        const QString& oscKey,
+        enum DefOscBodyType oscBodyType,
+        const QString& oscMessageBodyQString,
+        int oscMessageBodyInt,
+        double oscMessageBodyDouble,
+        float oscMessageBodyFloat) {
+    QString oscMessageHeader = "/" + oscGroup + "@" + oscKey;
+    oscMessageHeader.replace("[", "(");
+    oscMessageHeader.replace("]", ")");
 
-    QByteArray OscMessageHeaderBa = OscMessageHeader.toLocal8Bit();
-    const char* OscMessageHeaderChar = OscMessageHeaderBa.data();
+    QByteArray oscMessageHeaderBa = oscMessageHeader.toLocal8Bit();
+    const char* oscMessageHeaderChar = oscMessageHeaderBa.data();
 
-    if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+    if (pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
         char buffer[IP_MTU_SIZE];
         osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
-        QString OscStatusTxtBody;
+        QString oscStatusTxtBody;
 
         // Creation of package
         p.Clear();
         p << osc::BeginBundle();
-        switch (OscBodyType) {
+        switch (oscBodyType) {
         case DefOscBodyType::STRINGBODY:
-            p << osc::BeginMessage(OscMessageHeaderChar)
-              << OscMessageBodyQString.toLocal8Bit().data() << osc::EndMessage;
-            OscStatusTxtBody = OscMessageBodyQString;
+            p << osc::BeginMessage(oscMessageHeaderChar)
+              << oscMessageBodyQString.toLocal8Bit().data() << osc::EndMessage;
+            oscStatusTxtBody = oscMessageBodyQString;
             break;
         case DefOscBodyType::INTBODY:
-            p << osc::BeginMessage(OscMessageHeaderChar) << OscMessageBodyInt << osc::EndMessage;
-            OscStatusTxtBody = QString::number(OscMessageBodyInt);
+            p << osc::BeginMessage(oscMessageHeaderChar) << oscMessageBodyInt << osc::EndMessage;
+            oscStatusTxtBody = QString::number(oscMessageBodyInt);
             break;
         case DefOscBodyType::DOUBLEBODY:
-            p << osc::BeginMessage(OscMessageHeaderChar) << OscMessageBodyDouble << osc::EndMessage;
-            OscStatusTxtBody = QString::number(OscMessageBodyDouble);
+            p << osc::BeginMessage(oscMessageHeaderChar) << oscMessageBodyDouble << osc::EndMessage;
+            oscStatusTxtBody = QString::number(oscMessageBodyDouble);
             break;
         case DefOscBodyType::FLOATBODY:
-            p << osc::BeginMessage(OscMessageHeaderChar) << OscMessageBodyFloat << osc::EndMessage;
-            OscStatusTxtBody = QString::number(OscMessageBodyFloat);
+            p << osc::BeginMessage(oscMessageHeaderChar) << oscMessageBodyFloat << osc::EndMessage;
+            oscStatusTxtBody = QString::number(oscMessageBodyFloat);
             break;
         }
         p << osc::EndBundle;
 
         // Retrieve output port
-        int CKOscPortOutInt = m_pConfig->getValue(ConfigKey("[OSC]", "OscPortOut")).toInt();
+        int ckOscPortOutInt = pConfig->getValue(ConfigKey("[OSC]", "OscPortOut")).toInt();
 
         // List of similar parts of receiver
         const QList<std::pair<QString, QString>> receivers = {
@@ -94,17 +94,17 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
 
         // Send to active receivers
         for (const auto& receiver : receivers) {
-            if (m_pConfig->getValue<bool>(ConfigKey(receiver.first, receiver.second + "Active"))) {
+            if (pConfig->getValue<bool>(ConfigKey(receiver.first, receiver.second + "Active"))) {
                 QByteArray receiverIpBa =
-                        m_pConfig
+                        pConfig
                                 ->getValue(ConfigKey(
                                         receiver.first, receiver.second + "Ip"))
                                 .toLocal8Bit();
                 sendOscMessage(receiverIpBa.data(),
-                        CKOscPortOutInt,
+                        ckOscPortOutInt,
                         p,
-                        OscMessageHeader,
-                        OscStatusTxtBody);
+                        oscMessageHeader,
+                        oscStatusTxtBody);
             }
         }
     } else {
@@ -112,41 +112,41 @@ void OscFunctionsSendPtrType(UserSettingsPointer m_pConfig,
     }
 }
 
-void OscNoTrackLoadedInGroup(UserSettingsPointer m_pConfig, const QString& OscGroup) {
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+void sendNoTrackLoadedToOscClients(UserSettingsPointer pConfig, const QString& oscGroup) {
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "TrackArtist",
             DefOscBodyType::STRINGBODY,
             "no track loaded",
             0,
             0,
             0);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "TrackTitle",
             DefOscBodyType::STRINGBODY,
             "no track loaded",
             0,
             0,
             0);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "duration",
             DefOscBodyType::FLOATBODY,
             "",
             0,
             0,
             0);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "track_loaded",
             DefOscBodyType::FLOATBODY,
             "",
             0,
             0,
             0);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "playposition",
             DefOscBodyType::FLOATBODY,
             "",
@@ -155,47 +155,47 @@ void OscNoTrackLoadedInGroup(UserSettingsPointer m_pConfig, const QString& OscGr
             0);
 }
 
-void OscTrackLoadedInGroup(UserSettingsPointer m_pConfig,
-        const QString& OscGroup,
-        const QString& TrackArtist,
-        const QString& TrackTitle,
+void sendTrackInfoToOscClients(UserSettingsPointer pConfig,
+        const QString& oscGroup,
+        const QString& trackArtist,
+        const QString& trackTitle,
         float track_loaded,
         float duration,
         float playposition) {
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "TrackArtist",
             DefOscBodyType::STRINGBODY,
-            TrackArtist,
+            trackArtist,
             0,
             0,
             0);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "TrackTitle",
             DefOscBodyType::STRINGBODY,
-            TrackTitle,
+            trackTitle,
             0,
             0,
             0);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "track_loaded",
             DefOscBodyType::FLOATBODY,
             "",
             0,
             0,
             track_loaded);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "duration",
             DefOscBodyType::FLOATBODY,
             "",
             0,
             0,
             duration);
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "playposition",
             DefOscBodyType::FLOATBODY,
             "",
@@ -204,11 +204,11 @@ void OscTrackLoadedInGroup(UserSettingsPointer m_pConfig,
             playposition);
 }
 
-void OscChangedPlayState(UserSettingsPointer m_pConfig,
-        const QString& OscGroup,
+void oscChangedPlayState(UserSettingsPointer pConfig,
+        const QString& oscGroup,
         float playstate) {
-    OscFunctionsSendPtrType(m_pConfig,
-            OscGroup,
+    oscFunctionsSendPtrType(pConfig,
+            oscGroup,
             "play",
             DefOscBodyType::FLOATBODY,
             "",
