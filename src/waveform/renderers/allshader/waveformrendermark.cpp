@@ -46,9 +46,12 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
         m_textureHeight = image.height();
     }
     void update(float x, float y, float devicePixelRatio) {
-        [[maybe_unused]] const float epsilon = 1e-6f;
-        DEBUG_ASSERT(std::abs(x - RoundToPixel(devicePixelRatio)(x)) < epsilon);
-        DEBUG_ASSERT(std::abs(y - RoundToPixel(devicePixelRatio)(y)) < epsilon);
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+        const float epsilon = 1e-6f;
+        auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
+        DEBUG_ASSERT(std::abs(x - roundToPixel(x)) < epsilon);
+        DEBUG_ASSERT(std::abs(y - roundToPixel(y)) < epsilon);
+#endif
         TexturedVertexUpdater vertexUpdater{
                 geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
         vertexUpdater.addRectangle({x, y},
