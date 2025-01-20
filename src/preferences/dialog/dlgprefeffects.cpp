@@ -402,8 +402,8 @@ void DlgPrefEffects::slotDeletePreset() {
     }
 }
 
-bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
-    if (event->type() == QEvent::FocusIn) {
+bool DlgPrefEffects::eventFilter(QObject* pObj, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::FocusIn) {
         // Allow selection only in either of the effects/chains lists at a time
         // to clarify which effect/chain the info below refers to.
         // The method to update the info box for the new selection is the same
@@ -411,11 +411,11 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
         // * clear selection in adjacent view
         // * restore previous selection (select first item if none was selected)
         //   which updates the info box via 'currentRowChanged' signals
-        auto* pChainList = qobject_cast<QListView*>(object);
-        auto* pEffectList = qobject_cast<QTableView*>(object);
+        auto* pChainList = qobject_cast<QListView*>(pObj);
+        auto* pEffectList = qobject_cast<QTableView*>(pObj);
         // Restore previous selection only if focus was changed with keyboard.
         // For mouse clicks, that procedure would select the wrong index.
-        QFocusEvent* focEv = static_cast<QFocusEvent*>(event);
+        QFocusEvent* focEv = static_cast<QFocusEvent*>(pEvent);
         bool keyboardFocusIn = false;
         if (focEv->reason() == Qt::TabFocusReason ||
                 focEv->reason() == Qt::BacktabFocusReason) {
@@ -447,8 +447,21 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
                 pEffectList->selectRow(currIndex.row());
             }
         }
+    } else if (pEvent->type() == QEvent::KeyPress &&
+            m_pFocusedEffectList &&
+            pObj == m_pFocusedEffectList) {
+        // Left/Right key in focused effect list trigger Hide/Unhide:
+        // only Right is allowed in the left view, only Left in the right view,
+        // matching the enabled state of the GUI buttons.
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(pEvent);
+        if ((pKE->key() == Qt::Key_Left &&
+                    m_pFocusedEffectList == hiddenEffectsTableView) ||
+                (pKE->key() == Qt::Key_Right &&
+                        m_pFocusedEffectList == visibleEffectsTableView)) {
+            slotHideUnhideEffect();
+        }
     }
-    return DlgPreferencePage::eventFilter(object, event);
+    return DlgPreferencePage::eventFilter(pObj, pEvent);
 }
 
 QListView* DlgPrefEffects::unfocusedChainList() {
