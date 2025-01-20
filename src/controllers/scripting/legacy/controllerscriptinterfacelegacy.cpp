@@ -31,7 +31,9 @@ constexpr double kBrakeRampToRate = 0.01;
 ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
         ControllerScriptEngineLegacy* m_pEngine, const RuntimeLoggingCategory& logger)
         : m_pScriptEngineLegacy(m_pEngine),
-          m_logger(logger) {
+          m_logger(logger),
+          m_pPlayerManagerProxy(mixxx::qml::QmlPlayerManagerProxy::create(m_pEngine->jsEngine().get(), m_pEngine))
+{
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
     m_lastMovement.resize(kDecks);
@@ -134,6 +136,13 @@ QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
                         .arg(name));
         return QJSValue::UndefinedValue;
     }
+}
+
+QObject* ControllerScriptInterfaceLegacy::getPlayer(const QString& deck) {
+#ifndef MIXXX_USE_QML
+    return nullptr;
+#endif
+    return new PlayerProxy((mixxx::qml::QmlPlayerProxy*)m_pPlayerManagerProxy->getPlayer(deck));
 }
 
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {

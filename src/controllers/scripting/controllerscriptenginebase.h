@@ -16,6 +16,7 @@ class Controller;
 class QJSEngine;
 #ifdef MIXXX_USE_QML
 class TrackCollectionManager;
+class PlayerManager;
 #endif
 
 /// ControllerScriptEngineBase manages the JavaScript engine for controller scripts.
@@ -88,12 +89,14 @@ class ControllerScriptEngineBase : public QObject {
 
 #ifdef MIXXX_USE_QML
     bool m_bQmlMode;
+
 #endif
     bool m_bTesting;
 
 #ifdef MIXXX_USE_QML
   private:
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
+    static inline std::shared_ptr<PlayerManager> s_pPlayerManager;
 
   protected:
     /// Pause the GUI main thread. Pause is required by rendering

@@ -12,6 +12,8 @@
 #include "moc_controllerscriptenginebase.cpp"
 #ifdef MIXXX_USE_QML
 #include "qml/asyncimageprovider.h"
+#include "mixer/playermanager.h"
+#include "qml/qmlplayerproxy.h"
 #endif
 #include "util/cmdlineargs.h"
 
@@ -171,30 +173,6 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
         scriptErrorDialog(errorText, key, bFatalError);
     }
 }
-
-#ifdef MIXXX_USE_QML
-void ControllerScriptEngineBase::showQMLExceptionDialog(
-        const QQmlError& error, bool bFatalError) {
-    VERIFY_OR_DEBUG_ASSERT(error.isValid()) {
-        return;
-    }
-
-    QString filename = error.url().isLocalFile() ? error.url().toLocalFile()
-                                                 : error.url().toString();
-
-    if (filename.isEmpty()) {
-        filename = QStringLiteral("<passed code>");
-    }
-    QString errorText = QStringLiteral("Uncaught exception: %1:%2: %3")
-                                .arg(filename, QString::number(error.line()), error.description());
-
-    qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
-
-    if (!m_bDisplayingExceptionDialog) {
-        scriptErrorDialog(errorText, errorText, bFatalError);
-    }
-}
-#endif
 
 void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
     if (m_bAbortOnWarning) {

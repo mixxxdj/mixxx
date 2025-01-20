@@ -60,7 +60,7 @@ void QmlPlayerManagerProxy::loadLocationToPlayer(
 }
 
 // static
-QmlPlayerManagerProxy* QmlPlayerManagerProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine) {
+QmlPlayerManagerProxy* QmlPlayerManagerProxy::create(QJSEngine* pJsEngine, QObject* parent) {
     // The implementation of this method is mostly taken from the code example
     // that shows the replacement for `qmlRegisterSingletonInstance()` when
     // using `QML_SINGLETON`.
@@ -71,7 +71,7 @@ QmlPlayerManagerProxy* QmlPlayerManagerProxy::create(QQmlEngine* pQmlEngine, QJS
         qWarning() << "PlayerManager hasn't been registered yet";
         return nullptr;
     }
-    return new QmlPlayerManagerProxy(s_pPlayerManager, pQmlEngine);
+    return new QmlPlayerManagerProxy(s_pPlayerManager, parent);
 }
 
 } // namespace qml
