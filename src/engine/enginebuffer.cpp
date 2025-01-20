@@ -581,7 +581,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                 pTrack->getArtist().toLatin1(),
                 pTrack->getTitle().toLatin1(),
                 1,
-                pTrack->getDuration(),
+                (float)pTrack->getDuration(),
                 0);
     }
     // EveOSC end
