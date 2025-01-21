@@ -51,7 +51,8 @@ bool WaveformRendererEndOfTrack::init() {
 
 void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& skinContext) {
     m_color = QColor(200, 25, 20);
-    const QString endOfTrackColorName = skinContext.selectString(node, QStringLiteral("EndOfTrackColor"));
+    const QString endOfTrackColorName =
+            skinContext.selectString(node, QStringLiteral("EndOfTrackColor"));
     if (!endOfTrackColorName.isNull()) {
         m_color = QColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
