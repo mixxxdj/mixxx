@@ -4,9 +4,11 @@
 constexpr int OUTPUT_BUFFER_SIZE = 1024;
 constexpr int IP_MTU_SIZE = 1536;
 
+#include <QChar>
 #include <QDataStream>
 #include <QFile>
 #include <QSharedPointer>
+#include <QString>
 #include <iostream>
 #include <memory>
 
@@ -21,6 +23,21 @@ enum class DefOscBodyType {
     DOUBLEBODY,
     FLOATBODY
 };
+
+// function to convert and carry special characters in TrackArtist & TrackTitle to ASCII
+QString escapeStringToJsonUnicode(const QString& input) {
+    QString escaped;
+    for (QChar c : input) {
+        if (c.isPrint() && c.unicode() < 128) {
+            // Keep printable ASCII characters as is
+            escaped += c;
+        } else {
+            // Escape non-ASCII and special characters
+            escaped += QString("\\u%1").arg(c.unicode(), 4, 16, QChar('0')).toUpper();
+        }
+    }
+    return escaped;
+}
 
 void sendOscMessage(const char* receiverIp,
         int port,
@@ -166,7 +183,7 @@ void sendTrackInfoToOscClients(UserSettingsPointer pConfig,
             oscGroup,
             "TrackArtist",
             DefOscBodyType::STRINGBODY,
-            trackArtist,
+            escapeStringToJsonUnicode(trackArtist),
             0,
             0,
             0);
@@ -174,7 +191,7 @@ void sendTrackInfoToOscClients(UserSettingsPointer pConfig,
             oscGroup,
             "TrackTitle",
             DefOscBodyType::STRINGBODY,
-            trackTitle,
+            escapeStringToJsonUnicode(trackTitle),
             0,
             0,
             0);

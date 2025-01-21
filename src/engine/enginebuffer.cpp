@@ -578,8 +578,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
         sendTrackInfoToOscClients(m_pConfig,
                 getGroup(),
-                pTrack->getArtist().toLatin1(),
-                pTrack->getTitle().toLatin1(),
+                pTrack->getArtist(),
+                pTrack->getTitle(),
                 1,
                 (float)pTrack->getDuration(),
                 0);
