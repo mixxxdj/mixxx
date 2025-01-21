@@ -1608,7 +1608,7 @@ void MixxxMainWindow::oscEnable() {
     UserSettingsPointer pConfig;
     if (m_pCoreServices->getSettings()->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
         qDebug() << "Mixxx OSC Service Enabled";
-        OscReceiverMain(m_pCoreServices->getSettings());
+        oscReceiverMain(m_pCoreServices->getSettings());
     } else {
         qDebug() << "Mixxx OSC Service NOT Enabled";
     }

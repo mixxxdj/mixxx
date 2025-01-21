@@ -14,7 +14,7 @@
 
 class ControlProxy;
 
-class oscResult {
+class OscResult {
   public:
     QString oscAddress;
     QString oscGroup;
@@ -22,12 +22,12 @@ class oscResult {
     float oscValue;
 };
 
-class oscReceiver {
+class OscReceiver {
   public:
     UserSettingsPointer m_pConfig;
 };
 
-void RunOscReceiver(int OscPortIn, UserSettingsPointer m_pConfig);
-void OscReceiverMain(UserSettingsPointer m_pConfig);
+void runOscReceiver(int oscPortIn, UserSettingsPointer pConfig);
+void oscReceiverMain(UserSettingsPointer pConfig);
 
 #endif /* INCLUDED_OSCRECEIVER_H */
