@@ -225,9 +225,9 @@ void sendTrackInfoToOscClients(UserSettingsPointer pConfig,
             0,
             playposition);
     QString oscKeyArtist = QString(oscGroup + "TrackArtist");
-    pConfig->set(ConfigKey("[OSC]", oscKeyArtist), escapeStringToJsonUnicode(trackArtist));
+    pConfig->set(ConfigKey("[OSC]", oscKeyArtist), trackArtist);
     QString oscKeyTitle = QString(oscGroup + "TrackTitle");
-    pConfig->set(ConfigKey("[OSC]", oscKeyTitle), escapeStringToJsonUnicode(trackTitle));
+    pConfig->set(ConfigKey("[OSC]", oscKeyTitle), trackTitle);
 }
 
 void oscChangedPlayState(UserSettingsPointer pConfig,

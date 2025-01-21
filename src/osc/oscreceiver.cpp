@@ -129,7 +129,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
                 oscIn.oscGroup,
                 oscIn.oscKey,
                 DefOscBodyType::STRINGBODY,
-                sendOscValue,
+                escapeStringToJsonUnicode(sendOscValue),
                 0,
                 0,
                 0);
