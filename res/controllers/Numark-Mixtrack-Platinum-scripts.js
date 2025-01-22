@@ -13,7 +13,7 @@
  ******************/
 
 // should wheel be enabled on startup?
-var EnableWheel = true;
+var EnableWheel = false;
 
 // should we use the manual loop buttons as hotcue buttons 5-8?
 var UseManualLoopAsCue = false;
