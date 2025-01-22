@@ -28,6 +28,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
+#include "library/trackset/playlist/groupedplaylistsfeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
@@ -72,6 +73,7 @@ Library::Library(
           m_pLibraryWidget(nullptr),
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
+          m_pGroupedPlaylistsFeature(nullptr),
           m_pCrateFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
@@ -100,8 +102,23 @@ Library::Library(
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
 
-    m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
-    addFeature(m_pPlaylistFeature);
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedPlaylistsEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedPlaylistsReplace"), false))) {
+        qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> GroupedPlaylistsEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedPlaylistsEnabled"));
+
+        qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> GroupedPlaylistsReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedPlaylistsReplace"));
+    } else {
+        m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
+        addFeature(m_pPlaylistFeature);
+    }
+
+    if (m_pConfig->getValue(ConfigKey("[Library]", "GroupedPlaylistsEnabled"), true)) {
+        m_pGroupedPlaylistsFeature = new GroupedPlaylistsFeature(
+                this, UserSettingsPointer(m_pConfig));
+        addFeature(m_pGroupedPlaylistsFeature);
+    }
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);

@@ -8,18 +8,20 @@
 #include "moc_playlisttablemodel.cpp"
 
 namespace {
-
+const bool sDebug = true;
 const QString kModelName = "playlist:";
 
 } // anonymous namespace
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
+        UserSettingsPointer pConfig,
         const char* settingsNamespace,
         bool keepHiddenTracks)
         : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(kInvalidPlaylistId),
-          m_keepHiddenTracks(keepHiddenTracks) {
+          m_keepHiddenTracks(keepHiddenTracks),
+          m_pConfig(pConfig) {
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
             &PlaylistDAO::tracksAdded,
             this,
@@ -129,6 +131,142 @@ void PlaylistTableModel::initSortColumnMapping() {
     }
 }
 
+QList<QVariantMap> PlaylistTableModel::getGroupedPlaylists() {
+    if (sDebug) {
+        qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Generating grouped playlists list.";
+    }
+
+    QList<QVariantMap> groupedPlaylists;
+
+    QSqlQuery query(m_database);
+    // QString queryString;
+
+    if (sDebug) {
+        qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] configvalue GroupedPlaylistsLength = "
+                 << m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedPlaylistsLength"));
+        qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] configvalue "
+                    "GroupedPlaylistsFixedLength = "
+                 << m_pConfig->getValue<int>(
+                            ConfigKey(
+                                    "[Library]", "GroupedPlaylistsFixedLength"),
+                            0);
+        qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] configvalue GroupedPlaylistsVarLengthMask = "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedPlaylistsVarLengthMask"));
+    }
+
+    // fixed prefix length
+    if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedPlaylistsLength")) == 0) {
+        QString queryString =
+                QStringLiteral(
+                        "SELECT DISTINCT "
+                        "  SUBSTR(name, 1, %1) AS group_name, "
+                        "  id AS playlist_id, "
+                        "  name AS playlist_name "
+                        "FROM Playlists "
+                        "WHERE hidden = 0 "
+                        "ORDER BY LOWER(name)")
+                        .arg(m_pConfig->getValue(
+                                ConfigKey("[Library]",
+                                        "GroupedPlaylistsFixedLength"),
+                                0));
+        if (sDebug) {
+            qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] queryString: " << queryString;
+        }
+        if (!query.exec(queryString)) {
+            qWarning() << "[GROUPEDPLAYLISTSTABLEMODEL] Failed to execute grouped "
+                          "playlists query:"
+                       << query.lastError();
+            return groupedPlaylists;
+        }
+
+        while (query.next()) {
+            QVariantMap playlistData;
+            // QString groupName = query.value("group_name").toString().trimmed();
+            QString groupName = query.value("group_name").toString();
+            playlistData["group_name"] = groupName;
+            playlistData["playlist_id"] = query.value("playlist_id");
+            playlistData["playlist_name"] = query.value("playlist_name");
+            groupedPlaylists.append(playlistData);
+            if (sDebug) {
+                qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Grouped playlists -> playlist "
+                            "added: "
+                         << playlistData;
+            }
+        }
+    } else {
+        // Variable prefix length with mask, multiple occurrences -> multilevel subgroups
+        QString queryString = QStringLiteral(
+                "SELECT DISTINCT "
+                "  id AS playlist_id, "
+                "  name AS playlist_name "
+                "FROM Playlists "
+                "WHERE hidden = 0 "
+                "ORDER BY LOWER(name)");
+        if (sDebug) {
+            qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] queryString: " << queryString;
+        }
+        if (!query.exec(queryString)) {
+            qWarning() << "[GROUPEDPLAYLISTSTABLEMODEL] Failed to execute grouped "
+                          "playlists query:"
+                       << query.lastError();
+            return groupedPlaylists;
+        }
+        const QString& searchDelimit = m_pConfig->getValue(
+                ConfigKey("[Library]", "GroupedPlaylistsVarLengthMask"));
+
+        while (query.next()) {
+            QString playlistName = query.value("playlist_name").toString();
+            if (playlistName.contains(searchDelimit)) {
+                // QStringList groupHierarchy =
+                // playlistName.split(searchDelimit, Qt::SkipEmptyParts);
+                QStringList groupHierarchy = playlistName.split(searchDelimit);
+                QString currentGroup;
+
+                for (int i = 0; i < groupHierarchy.size(); ++i) {
+                    // currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i].trimmed();
+                    currentGroup += (i > 0 ? searchDelimit : "") + groupHierarchy[i];
+
+                    QVariantMap playlistData;
+                    playlistData["group_name"] = currentGroup;
+                    playlistData["playlist_id"] = query.value("playlist_id");
+                    playlistData["playlist_name"] = playlistName;
+
+                    // Add only the full playlist record for the last level
+                    if (i == groupHierarchy.size() - 1) {
+                        groupedPlaylists.append(playlistData);
+                    }
+
+                    if (sDebug) {
+                        qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Grouped "
+                                    "playlists -> playlist added: "
+                                 << playlistData;
+                    }
+                }
+            } else {
+                // No delimiter in playlist name -> root-level
+                QVariantMap playlistData;
+                // playlistData["group_name"] = playlistName.trimmed();
+                playlistData["group_name"] = playlistName;
+                playlistData["playlist_id"] = query.value("playlist_id");
+                playlistData["playlist_name"] = playlistName;
+                groupedPlaylists.append(playlistData);
+
+                if (sDebug) {
+                    qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Grouped playlists -> "
+                                "playlist added at root level: "
+                             << playlistData;
+                }
+            }
+        }
+    }
+    if (sDebug) {
+        qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Grouped playlists list generated "
+                    "with"
+                 << groupedPlaylists.size() << "entries.";
+    }
+    return groupedPlaylists;
+}
+
 void PlaylistTableModel::selectPlaylist(int playlistId) {
     // qDebug() << "PlaylistTableModel::selectPlaylist" << playlistId;
     if (m_iPlaylistId == playlistId) {
@@ -195,6 +333,58 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
     setSearch(m_searchTexts.value(m_iPlaylistId));
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
+}
+
+void PlaylistTableModel::selectPlaylistGroup(const QString& groupName) {
+    if (sDebug) {
+        qDebug() << "[PlaylistTableModel] -> selectPlaylistGroup() -> Searching for "
+                    "tracks in groups starting with:"
+                 << groupName;
+    }
+    const QString& checkStamp = QDateTime::currentDateTime().toString("hhmmss");
+
+    const QString& tableName = QStringLiteral("playlist_%1").arg(checkStamp);
+
+    QStringList columns;
+    columns << LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+    QString queryString =
+            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 "
+                    "WHERE library.id IN(SELECT PlaylistTacks.track_id from "
+                    "PlaylistTracks "
+                    "WHERE PlaylistTracks.playlist_id IN(SELECT Playlists.id from "
+                    "Playlists WHERE playlists.name LIKE '%4%')) "
+                    "AND %5=0")
+                    .arg(tableName,
+                            columns.join(","),
+                            LIBRARY_TABLE,
+                            groupName,
+                            LIBRARYTABLE_MIXXXDELETED);
+
+    if (sDebug) {
+        qDebug() << "[PlaylistTableModel] -> Generated SQL Query:" << queryString;
+    }
+
+    // Execute the query
+    FwdSqlQuery(m_database, queryString).execPrepared();
+    columns[0] = LIBRARYTABLE_ID;
+    columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_COVERART;
+
+    // Update the table and view
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            columns,
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    if (sDebug) {
+        qDebug() << "[PlaylistTableModel] -> Group table successfully created "
+                    "with provided Playlist IDs.";
+    }
 }
 
 int PlaylistTableModel::addTracksWithTrackIds(const QModelIndex& insertionIndex,

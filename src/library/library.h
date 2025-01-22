@@ -26,6 +26,7 @@ class KeyboardEventFilter;
 class MixxxLibraryFeature;
 class PlayerManager;
 class PlaylistFeature;
+class GroupedPlaylistsFeature;
 class RecordingManager;
 class SidebarModel;
 class TrackCollectionManager;
@@ -185,6 +186,7 @@ class Library: public QObject {
     WLibrary* m_pLibraryWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
+    GroupedPlaylistsFeature* m_pGroupedPlaylistsFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;

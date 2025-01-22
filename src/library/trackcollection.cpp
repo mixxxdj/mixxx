@@ -2,6 +2,7 @@
 
 #include "library/basetrackcache.h"
 #include "library/trackset/crate/crate.h"
+#include "library/trackset/playlist/playlist.h"
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"

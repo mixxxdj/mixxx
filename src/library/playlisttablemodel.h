@@ -9,6 +9,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
   public:
     PlaylistTableModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
+            UserSettingsPointer pConfig,
             const char* settingsNamespace,
             bool keepHiddenTracks = false);
     ~PlaylistTableModel() final = default;
@@ -17,6 +18,14 @@ class PlaylistTableModel final : public TrackSetTableModel {
     int getPlaylist() const {
         return m_iPlaylistId;
     }
+    //    PlaylistId selectedPlaylist() const {
+    //        return m_selectedPlaylist;
+    //    }
+
+    //    void newselectPlaylist(PlaylistId playlistId);
+
+    void selectPlaylistGroup(const QString& groupName);
+    QList<QVariantMap> getGroupedPlaylists();
 
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
@@ -48,9 +57,11 @@ class PlaylistTableModel final : public TrackSetTableModel {
     void firstTrackChanged();
 
   private:
+    //    PlaylistId m_selectedPlaylist;
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
     bool m_keepHiddenTracks;
     QHash<int, QString> m_searchTexts;
+    UserSettingsPointer m_pConfig;
 };
