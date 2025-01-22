@@ -121,7 +121,7 @@ AutoDJProcessor::AutoDJProcessor(
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(
-            this, pTrackCollectionManager, "mixxx.db.model.autodj");
+            this, pTrackCollectionManager, pConfig, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
     m_pAutoDJTableModel->select();
 

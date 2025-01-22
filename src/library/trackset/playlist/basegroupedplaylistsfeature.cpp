@@ -904,6 +904,67 @@ void BaseGroupedPlaylistsFeature::slotResetSelectedTrack() {
 ////
 ///////////////////////////////////////////////////////////
 
+void BaseGroupedPlaylistsFeature::playlistSummmary(int id) {
+    QSqlDatabase database =
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
+
+    QString queryString = QStringLiteral(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
+            "AS SELECT "
+            "  Playlists.id AS id, "
+            "  Playlists.name AS name, "
+            "  LOWER(Playlists.name) AS sort_name, "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
+            "    AS count, "
+            "  SUM(case library.mixxx_deleted "
+            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks "
+            "  ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library "
+            "  ON PlaylistTracks.track_id = library.id "
+            "  WHERE Playlists.hidden = %2 "
+            "  GROUP BY Playlists.id")
+                                  .arg(m_countsDurationTableName,
+                                          QString::number(
+                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
+    queryString.append(
+            mixxx::DbConnection::collateLexicographically(
+                    " ORDER BY sort_name"));
+    QSqlQuery query(database);
+    //    if (!query.exec(queryString)) {
+    //        LOG_FAILED_QUERY(query);
+    //    }
+
+    // QSqlRecord record = playlistTableModel.record();
+    // int nameColumn = record.indexOf("name");
+    // int idColumn = record.indexOf("id");
+    // int countColumn = record.indexOf("count");
+    // int durationColumn = record.indexOf("durationSeconds");
+
+    // int id = playlistTableModel
+    //                  .data(playlistTableModel.index(idColumn))
+    //                  .toInt();
+    // QString name =
+    //         playlistTableModel
+    //                 .data(playlistTableModel.index(nameColumn))
+    //                 .toString();
+    // int count =
+    //         playlistTableModel
+    //                 .data(playlistTableModel.index(countColumn))
+    //                 .toInt();
+    // int duration =
+    //         playlistTableModel
+    //                 .data(playlistTableModel.index(durationColumn))
+    //                 .toInt();
+
+    // idAndLabel.id = id;
+    // idAndLabel.label = createPlaylistLabel(name, count, duration);
+    // playlistLabels.append(idAndLabel);
+    //}
+    // return playlistLabels;
+}
+
 std::unique_ptr<TreeItem> BaseGroupedPlaylistsFeature::newTreeItemForPlaylistSummary(
         const PlaylistSummary& playlistSummary) {
     auto pTreeItem = TreeItem::newRoot(this);
@@ -1001,12 +1062,13 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
             // &playlistSummary)) {
             //     qWarning() << "[GROUPEDPLAYLISTSFEATURE] -> Failed to fetch
             //     summary "
-            //                   "for playlist ID:"
-            //                << playlistId;
-            //     continue;
+            //                    "for playlist ID:"
+            //                 << playlistId;
+            //      continue;
             // }
 
-            const QString& playlistSummaryName = formatLabel(playlistSummary);
+            // const QString& playlistSummaryName = formatLabel(playlistSummary);
+            const QString& playlistSummaryName = groupName;
             // const QString& playlistSummaryName = QString("%1").arg(playlistId);
 
             if (groupCounts[groupName] > 1) {
@@ -1031,8 +1093,8 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                 TreeItem* pChildItem = pGroupItem->appendChild(
                         displayPlaylistName, playlistId);
                 pChildItem->setFullPath(groupName + delimiter + displayPlaylistName);
-                updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
-                // updateTreeItemForPlaylistSummary(pChildItem, "playlistSummary");
+                // updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
+                //  updateTreeItemForPlaylistSummary(pChildItem, "playlistSummary");
                 if (sDebug) {
                     qDebug() << "[GROUPEDPLAYLISTSFEATURE] Added PlaylistId to group:"
                              << playlistId << "Group:" << groupName;
@@ -1041,8 +1103,8 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                 auto newPlaylist = std::make_unique<TreeItem>(
                         playlistSummaryName, playlistId);
                 newPlaylist->setFullPath(playlistSummaryName);
-                updateTreeItemForPlaylistSummary(newPlaylist.get(), playlistSummary);
-                // updateTreeItemForPlaylistSummary(newPlaylist.get(), "playlistSummary");
+                // updateTreeItemForPlaylistSummary(newPlaylist.get(), playlistSummary);
+                //  updateTreeItemForPlaylistSummary(newPlaylist.get(), "playlistSummary");
 
                 modelRows.push_back(std::move(newPlaylist));
             }
@@ -1108,6 +1170,10 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                     }
                 } else {
                     int playlistId = playlistData["playlist_id"].toInt();
+
+                    // extra
+                    const QString& groupName = playlistData["group_name"].toString();
+
                     PlaylistSummary playlistSummary;
                     // if (!m_pTrackCollection->playlists().readPlaylistSummaryById(
                     //             playlistId, &playlistSummary)) {
@@ -1119,14 +1185,16 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                     //     continue;
                     // }
 
+                    //                    const QString& displayPlaylistName =
+                    //                            formatLabel(playlistSummary).mid(currentPath.length());
                     const QString& displayPlaylistName =
-                            formatLabel(playlistSummary).mid(currentPath.length());
-                    // const QString& displayPlaylistName = QString("%1").arg(playlistId);
+                            groupName.mid(currentPath.length());
 
                     TreeItem* pChildItem = pParentItem->appendChild(
                             displayPlaylistName.trimmed(), playlistId);
                     pChildItem->setFullPath(currentPath + delimiter + displayPlaylistName);
-                    updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
+                    // updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
+
                     if (sDebug) {
                         qDebug() << "[GROUPEDPLAYLISTSFEATURE] Added playlist to "
                                     "parent:"
@@ -1165,6 +1233,8 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                         // only one playlist -> directly under the parent, NO subgroup
                         const QVariantMap& playlistData = subgroupPlaylists.first();
                         int playlistId(playlistData["playlist_id"].toInt());
+                        // extra
+                        const QString& groupName = playlistData["group_name"].toString();
                         PlaylistSummary playlistSummary;
                         // if (!m_pTrackCollection->playlists().readPlaylistSummaryById(
                         //             playlistId, &playlistSummary)) {
@@ -1174,9 +1244,9 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                         //     continue;
                         // }
 
-                        const QString& displayPlaylistName =
-                                formatLabel(playlistSummary)
-                                        .mid(currentPath.length());
+                        // const QString& displayPlaylistName =
+                        // formatLabel(playlistSummary).mid(currentPath.length());
+                        const QString& displayPlaylistName = groupName.mid(currentPath.length());
 
                         // const QString& displayPlaylistName = QString("%1").arg(playlistId);
                         // TreeItem* pChildItem = pParentItem->appendChild(
@@ -1184,7 +1254,7 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                         TreeItem* pChildItem = pParentItem->appendChild(
                                 displayPlaylistName.trimmed(), playlistId);
                         pChildItem->setFullPath(currentPath + delimiter + displayPlaylistName);
-                        updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
+                        // updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
                         if (sDebug) {
                             qDebug() << "[GROUPEDPLAYLISTSFEATURE] Added single playlist to parent:"
                                      << displayPlaylistName
@@ -1211,6 +1281,9 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
             } else {
                 const QVariantMap& playlistData = playlists.first();
                 int playlistId(playlistData["playlist_id"].toInt());
+                // extra
+                const QString& groupName = playlistData["group_name"].toString();
+
                 PlaylistSummary playlistSummary;
 
                 // if
@@ -1223,12 +1296,13 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                 //     continue;
                 // }
 
-                const QString& displayPlaylistName = formatLabel(playlistSummary);
+                // const QString& displayPlaylistName = formatLabel(playlistSummary);
+                const QString& displayPlaylistName = groupName;
                 // TreeItem* pChildItem = pRootItem->appendChild(
                 //         displayPlaylistName.trimmed(), playlistId.toVariant());
                 TreeItem* pChildItem = pRootItem->appendChild(
                         displayPlaylistName.trimmed(), playlistId);
-                updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
+                // updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
                 if (sDebug) {
                     qDebug() << "[GROUPEDPLAYLISTSFEATURE] Added playlist to "
                                 "root:"

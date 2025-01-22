@@ -41,8 +41,11 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
+    void playlistSummmary(int id);
 
   public slots:
+    QModelIndex rebuildChildModel(int selectedPlaylistId);
+
     // void oldactivateChild(const QModelIndex& index) override;
     void oldactivateChild(const QModelIndex& index);
     void activateChild(const QModelIndex& index);
@@ -154,7 +157,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
             const PlaylistSummary& playlistSummary) const;
 
     TrackCollection* const m_pTrackCollection;
-    QModelIndex rebuildChildModel(int selectedPlaylistId);
+
     // QModelIndex rebuildChildModel(PlaylistId selectedPlaylistId);
 
     QString fullPathFromIndex(const QModelIndex& index) const;

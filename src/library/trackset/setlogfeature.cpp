@@ -34,6 +34,7 @@ SetlogFeature::SetlogFeature(
                   new PlaylistTableModel(
                           nullptr,
                           pLibrary->trackCollectionManager(),
+                          pConfig,
                           "mixxx.db.model.setlog",
                           /*keep hidden tracks*/ true),
                   QStringLiteral("SETLOGHOME"),
@@ -423,6 +424,7 @@ void SetlogFeature::slotJoinWithPrevious() {
     std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
             std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
+                    m_pConfig,
                     "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(previousPlaylistId);
 
@@ -471,6 +473,7 @@ void SetlogFeature::slotMarkAllTracksPlayed() {
     std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
             std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
+                    m_pConfig,
                     "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(clickedPlaylistId);
     // mark all the Tracks in the previous Playlist as played
