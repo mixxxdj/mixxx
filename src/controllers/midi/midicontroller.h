@@ -7,7 +7,7 @@
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/softtakeover.h"
-#include "util/compatibility/qmutex.h"
+#include "util/mutex.h"
 
 class MidiOutputHandler;
 class MidiController;
@@ -45,10 +45,10 @@ class MidiController : public Controller {
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
 
     bool isMappable() const override {
+        const auto locker = MMutexLockerDebug(&m_mappingMutex, "isMappable");
         if (!m_pMapping) {
             return false;
         }
-        const auto locker = lockMutex(&m_mappingMutex);
         return m_pMapping->isMappable();
     }
 
@@ -112,7 +112,7 @@ class MidiController : public Controller {
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    mutable QMutex m_mappingMutex;
+    mutable MMutex m_mappingMutex;
     std::unique_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
