@@ -1387,43 +1387,60 @@ MixtrackPlatinum.pflToggle = function(value, group, control) {
 };
 
 MixtrackPlatinum.vuCallback = function(value, group, control) {
-    // the top LED lights up at 81
-    var level = value * 80;
+    // level peaks must be detected and handled explicitly as defined at
+    // https://github.com/mixxxdj/mixxx/wiki/Contributing-Mappings#level-meter-leds
 
-    // if any channel pfl is active, show channel levels
-    if (engine.getValue('[Channel1]', 'pfl')
-        || engine.getValue('[Channel2]', 'pfl')
-        || engine.getValue('[Channel3]', 'pfl')
-        || engine.getValue('[Channel4]', 'pfl'))
-    {
-        if (engine.getValue(group, "peak_indicator")) {
-            level = 81;
-        }
+    var level = value * 80; // must be normalised below 81 to prevent false level peaks
 
-        if (group == '[Channel1]' && MixtrackPlatinum.decks[1].active) {
-            midi.sendShortMsg(0xBF, 0x44, level);
+    // check which pfls are toggled on
+    var pfl_left = engine.getValue('[Channel1]', 'pfl') || engine.getValue('[Channel3]', 'pfl');
+    var pfl_right = engine.getValue('[Channel2]', 'pfl') || engine.getValue('[Channel4]', 'pfl');
+
+    // this logic shows main (mix) channel's left and right vu meters when pfl is off
+    // you can toggle vu meter of each (deck) channel on by toggling its respective pfl on
+    if (pfl_left && pfl_right) {
+        if (activeChannel("left_deck")) {sendVuUpdate("left", group, level, "peak_indicator")}
+        if (activeChannel("right_deck")) {sendVuUpdate("right", group, level, "peak_indicator")}
+    }
+    else if (pfl_left) {
+        if (activeChannel("left_deck")) {sendVuUpdate("left", group, level, "peak_indicator")}
+        if (activeChannel("right_mix")) {sendVuUpdate("right", group, level, "peak_indicator_right")}
+    }
+    else if (pfl_right) {
+        if (activeChannel("left_mix")) {sendVuUpdate("left", group, level, "peak_indicator_left")}
+        if (activeChannel("right_deck")) {sendVuUpdate("right", group, level, "peak_indicator")}
+    }
+    else {
+        if (activeChannel("left_mix")) {sendVuUpdate("left", group, level, "peak_indicator_left")}
+        if (activeChannel("right_mix")) {sendVuUpdate("right", group, level, "peak_indicator_right")}
+    }
+
+    // verify which channel we are processing
+    // so a channel is updated with its data only and not also with data of other channels
+    function activeChannel(channel) {
+        if (channel === "left_deck") {
+            return (group === '[Channel1]' && MixtrackPlatinum.decks[1].active) ||
+                   (group === '[Channel3]' && MixtrackPlatinum.decks[3].active)
         }
-        else if (group == '[Channel3]' && MixtrackPlatinum.decks[3].active) {
-            midi.sendShortMsg(0xBF, 0x44, level);
+        if (channel === "right_deck") {
+            return (group === '[Channel2]' && MixtrackPlatinum.decks[2].active) ||
+                   (group === '[Channel4]' && MixtrackPlatinum.decks[4].active)
         }
-        else if (group == '[Channel2]' && MixtrackPlatinum.decks[2].active) {
-            midi.sendShortMsg(0xBF, 0x45, level);
+        if (channel === "left_mix") {
+            return (group === '[Main]' && control === 'vu_meter_left')
         }
-        else if (group == '[Channel4]' && MixtrackPlatinum.decks[4].active) {
-            midi.sendShortMsg(0xBF, 0x45, level);
+        if (channel === "right_mix") {
+            return (group === '[Main]' && control === 'vu_meter_right')
         }
     }
-    else if (group == '[Master]' && control == 'VuMeterL') {
-        if (engine.getValue(group, "peak_indicator_left")) {
-            level = 81;
-        }
-        midi.sendShortMsg(0xBF, 0x44, level);
-    }
-    else if (group == '[Master]' && control == 'VuMeterR') {
-        if (engine.getValue(group, "peak_indicator_right")) {
-            level = 81;
-        }
-        midi.sendShortMsg(0xBF, 0x45, level);
+
+    // send update to vu meter
+    function sendVuUpdate(side, group, level, peak_indicator_name) {
+        // line below detects peaks and handles them explicitly. 81 triggers red led
+        if (engine.getValue(group, peak_indicator_name)) {level = 81;}
+        if (side === "left") {side = 0x44}
+        if (side === "right") {side = 0x45}
+        midi.sendShortMsg(0xBF, side, level);
     }
 };
 
