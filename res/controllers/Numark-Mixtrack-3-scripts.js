@@ -971,7 +971,6 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         "hotcue_2_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "track_samples": "NumarkMixtrack3.OnTrackLoaded",
         "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
         "playposition": "NumarkMixtrack3.OnPlaypositionChange",
         "volume": "NumarkMixtrack3.OnVolumeChange",
@@ -1161,7 +1160,6 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
     if (value === DOWN) {
-        deck.LEDs["headphones"].onOff(ON);
         deck.faderstart = false;
 
         if (smartPFL) {
@@ -1174,7 +1172,6 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
         if (deck.shiftKey) {
             // SHIFT + Load = fader start activated
             deck.faderstart = true;
-            deck.LEDs["headphones"].flashOn(250, ON, 250);
 
             if (!deck.trackLoaded()) {
                 engine.setValue(deck.group, "LoadSelectedTrack", true);
@@ -1983,23 +1980,6 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
         }
     } else {
         deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
-    }
-};
-
-NumarkMixtrack3.OnTrackLoaded = function(value, group, control) {
-    var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value !== 0) {
-        if (!deck.faderstart) {
-            // Light up the PFL light indicating that a track is loaded
-            deck.LEDs["headphones"].onOff(ON);
-        } else {
-            // Flash up the PFL light button indicating that a track is loaded with fader start
-            deck.LEDs["headphones"].flashOn(300, ON, 300);
-        }
-    } else {
-        // Switch off the PFL light indicating that a track is ejected
-        deck.LEDs["headphones"].onOff(OFF);
     }
 };
 
