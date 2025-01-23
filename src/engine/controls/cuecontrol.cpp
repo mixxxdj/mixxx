@@ -142,7 +142,7 @@ void CueControl::process(const double rate,
     Q_UNUSED(rate);
     Q_UNUSED(bufferSize);
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
-        if (pControl->getCue() == nullptr ||
+        if (!pControl->getCue() ||
                 pControl->getStatus() != HotcueControl::Status::Active ||
                 pControl->getCue()->getType() != mixxx::CueType::Jump ||
                 !pControl->getEndPosition().isValid()) {
