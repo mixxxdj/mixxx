@@ -141,21 +141,21 @@ void CueControl::process(const double rate,
         const std::size_t bufferSize) {
     Q_UNUSED(rate);
     Q_UNUSED(bufferSize);
-    for (const auto& pCue : std::as_const(m_hotcueControls)) {
-        if (pCue->getStatus() != HotcueControl::Status::Active ||
-                pCue->getCue()->getType() != mixxx::CueType::Jump ||
-                !pCue->getEndPosition().isValid()) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        if (pControl->getStatus() != HotcueControl::Status::Active ||
+                pControl->getCue()->getType() != mixxx::CueType::Jump ||
+                !pControl->getEndPosition().isValid()) {
             continue;
         }
         // Saved jumps store the position to jump from as their end position
-        if (pCue->getEndPosition() > m_lastProcessedPosition &&
-                pCue->getEndPosition() <= currentPosition) {
-            auto delta = pCue->getEndPosition() - currentPosition;
-            seekAbs(pCue->getPosition() + delta);
-            if (pCue->getPosition() < pCue->getEndPosition()) {
+        if (pControl->getEndPosition() > m_lastProcessedPosition &&
+                pControl->getEndPosition() <= currentPosition) {
+            auto delta = pControl->getEndPosition() - currentPosition;
+            seekAbs(pControl->getPosition() + delta);
+            if (pControl->getPosition() < pControl->getEndPosition()) {
                 // If the saved jump is backward, we make the cue idle so it
                 // prevent creating a fake loop
-                pCue->setStatus(HotcueControl::Status::Set);
+                pControl->setStatus(HotcueControl::Status::Set);
             }
         }
     }
