@@ -1395,7 +1395,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Show/hide the sampler section"),
             pGuiMenu);
     addControl("[Skin]",
-            "show_microphone",
+            "show_microphones",
             tr("Microphone & Auxiliary Show/Hide"),
             tr("Show/hide the microphone & auxiliary section"),
             pGuiMenu);
