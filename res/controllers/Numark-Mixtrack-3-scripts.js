@@ -1091,7 +1091,7 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
     );
 
     if (value === ON) {
-        if (LibraryMode === libraryModes.classic) {
+        if (LibraryMode === libraryModes.focus) {
             if (shifted) {
                 // SHIFT + BROWSE push : maximize/minimize library view
                 script.toggleControl("[Skin]", "show_maximized_library");
