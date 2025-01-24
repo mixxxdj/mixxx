@@ -25,10 +25,12 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
   private:
     mixxx::TextureShader m_shader;
     OpenGLTexture2D m_texture;
+    int m_penWidth;
     float m_offset[13];
     float m_width[12];
     float m_fontPointSize{};
     float m_height{};
-    float m_adjustedForMaxHeight{};
+    float m_maxHeight{};
+    float m_adjustedFontPointSize{};
     DISALLOW_COPY_AND_ASSIGN(DigitsRenderer);
 };

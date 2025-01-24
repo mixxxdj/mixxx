@@ -69,6 +69,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
             "Gain for High Filter"));
     high->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     high->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    high->setNeutralPointOnScale(0.5);
     high->setRange(-12, 0, 12);
 
     return pManifest;

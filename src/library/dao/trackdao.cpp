@@ -3,6 +3,7 @@
 #include <QChar>
 #include <QDir>
 #include <QFileInfo>
+#include <QThread>
 #include <QtDebug>
 
 #ifdef __SQLITE3__
@@ -124,7 +125,7 @@ void TrackDAO::finish() {
     // Do housekeeping on the LibraryHashes/track_locations tables.
     qDebug() << "Cleaning LibraryHashes/track_locations tables.";
     SqlTransaction transaction(m_database);
-    QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
+    const QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
 
     // Delete any LibraryHashes directories that have been marked as deleted.
     m_libraryHashDao.removeDeletedDirectoryHashes();
@@ -132,7 +133,7 @@ void TrackDAO::finish() {
     // And mark the corresponding tracks in track_locations in the deleted
     // directories as deleted.
     // TODO(XXX) This doesn't handle sub-directories of deleted directories.
-    for (const auto& dir: deletedHashDirs) {
+    for (const auto& dir : deletedHashDirs) {
         markTrackLocationsAsDeleted(m_database, dir);
     }
     transaction.commit();
@@ -164,11 +165,35 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
 }
 
 QList<TrackId> TrackDAO::resolveTrackIds(
+        const QList<QUrl>& urls,
+        ResolveTrackIdFlags flags) {
+    QStringList pathList;
+    pathList.reserve(urls.size());
+    for (const auto& url : urls) {
+        const QString urlStr = url.isLocalFile() ? url.toLocalFile() : url.toString();
+        pathList << "(" + SqlStringFormatter::format(m_database, urlStr) + ")";
+    }
+
+    return resolveTrackIds(pathList, flags);
+}
+
+QList<TrackId> TrackDAO::resolveTrackIds(
         const QList<mixxx::FileInfo>& fileInfos,
         ResolveTrackIdFlags flags) {
-    QList<TrackId> trackIds;
-    trackIds.reserve(fileInfos.size());
+    QStringList pathList;
+    pathList.reserve(fileInfos.size());
+    for (const auto& fileInfo : fileInfos) {
+        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
+    }
 
+    return resolveTrackIds(pathList, flags);
+}
+
+QList<TrackId> TrackDAO::resolveTrackIds(
+        const QStringList& pathList,
+        ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds;
+    trackIds.reserve(pathList.size());
     // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
     query.prepare(
@@ -178,12 +203,6 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
         return trackIds;
-    }
-
-    QStringList pathList;
-    pathList.reserve(fileInfos.size());
-    for (const auto& fileInfo : fileInfos) {
-        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
     }
 
     // Add all the track paths temporary to this database.
@@ -238,12 +257,12 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
         }
-        DEBUG_ASSERT(trackIds.size() <= fileInfos.size());
-        if (trackIds.size() < fileInfos.size()) {
+        DEBUG_ASSERT(trackIds.size() <= pathList.size());
+        if (trackIds.size() < pathList.size()) {
             qDebug() << "TrackDAO::getTrackIds(): Found only"
                      << trackIds.size()
                      << "of"
-                     << fileInfos.size()
+                     << pathList.size()
                      << "tracks in library";
         }
     } else {
@@ -621,7 +640,7 @@ void bindTrackLibraryValues(
     QString keysVersion = keys.getVersion();
     QString keysSubVersion = keys.getSubVersion();
     mixxx::track::io::key::ChromaticKey key = keys.getGlobalKey();
-    QString keyText = KeyUtils::formatGlobalKey(keys);
+    QString keyText = keys.getGlobalKeyText();
     pTrackLibraryQuery->bindValue(":keys", keysBlob);
     pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
     pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
@@ -1196,7 +1215,11 @@ void setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Tr
     if (!value.isNull() && value.canConvert<quint64>()) {
         DEBUG_ASSERT(value.isValid());
         const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+        sourceSynchronizedAt.setTimeZone(QTimeZone::UTC);
+#else
         sourceSynchronizedAt.setTimeSpec(Qt::UTC);
+#endif
         sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
     }
     pTrack->setSourceSynchronizedAt(sourceSynchronizedAt);
@@ -1251,16 +1274,18 @@ void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
     QString keysVersion = record.value(column + 1).toString();
     QString keysSubVersion = record.value(column + 2).toString();
     QByteArray keysBlob = record.value(column + 3).toByteArray();
-    Keys keys = KeyFactory::loadKeysFromByteArray(
-            keysVersion, keysSubVersion, &keysBlob);
-
     if (!keysVersion.isEmpty()) {
-        pTrack->setKeys(keys);
+        pTrack->setKeys(KeyFactory::loadKeysFromByteArray(
+                keysVersion,
+                keysSubVersion,
+                &keysBlob));
     } else if (!keyText.isEmpty()) {
         // Typically this happens if we are upgrading from an older (<1.12.0)
         // version of Mixxx that didn't support Keys. We treat all legacy data
         // as user-generated because that way it will be treated sensitively.
-        pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+        pTrack->setKeys(KeyFactory::makeBasicKeysKeepText(
+                keyText,
+                mixxx::track::io::key::USER));
     }
 }
 
@@ -1368,7 +1393,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
     // will be locked again after the query has been executed (see below)
     // and potential race conditions will be resolved.
-    ScopedTimer t(u"TrackDAO::getTrackById");
+    ScopedTimer t(QStringLiteral("TrackDAO::getTrackById"));
 
     QSqlRecord queryRecord;
     {

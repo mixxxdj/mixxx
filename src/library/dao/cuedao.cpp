@@ -1,5 +1,6 @@
 #include "library/dao/cuedao.h"
 
+#include <QThread>
 #include <QVariant>
 #include <QtDebug>
 
@@ -41,7 +42,8 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     const auto position =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     row.value(row.indexOf("position")).toDouble());
-    double lengthFrames = row.value(row.indexOf("length")).toDouble() / mixxx::kEngineChannelCount;
+    double lengthFrames = row.value(row.indexOf("length")).toDouble() /
+            mixxx::kEngineChannelOutputCount;
     int hotcue = row.value(row.indexOf("hotcue")).toInt();
     QString label = labelFromQVariant(row.value(row.indexOf("label")));
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(row.value(row.indexOf("color")));
@@ -179,7 +181,7 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     query.bindValue(":track_id", trackId.toVariant());
     query.bindValue(":type", static_cast<int>(cue->getType()));
     query.bindValue(":position", cue->getPosition().toEngineSamplePosMaybeInvalid());
-    query.bindValue(":length", cue->getLengthFrames() * mixxx::kEngineChannelCount);
+    query.bindValue(":length", cue->getLengthFrames() * mixxx::kEngineChannelOutputCount);
     query.bindValue(":hotcue", cue->getHotCue());
     query.bindValue(":label", labelToQVariant(cue->getLabel()));
     query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));

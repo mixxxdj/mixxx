@@ -80,7 +80,7 @@ Hercules4Mx.userSettings = {
     // Setting this setting to true, the curve will change to scratch curve when the scratch mode is on (scratch button).
     // Setting it to false will not change it, so it will use the setting configured in the DJHercules Tray-icon configuration.
     'crossfaderScratchCurve': false,
-    // _Scratching_ Playback speed of the virtual vinyl that is being scratched. 45.00 and 33.33 are the common speeeds. (Lower number equals faster scratch)
+    // _Scratching_ Playback speed of the virtual vinyl that is being scratched. 45.00 and 33.33 are the common speeds. (Lower number equals faster scratch)
     'vinylSpeed': 45,
     // _Scratching_ You should configure this setting to the same value than in the DJHercules tray icon configuration. (Normal means 1/1).
     // If crossfaderScratchCurve is true, or the setting is changed while Mixxx is active, this value will be detected automatically.

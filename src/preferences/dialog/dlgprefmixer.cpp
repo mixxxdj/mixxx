@@ -29,6 +29,9 @@ const ConfigKey kEqsOnlyKey = ConfigKey(kMixerProfile, QStringLiteral("EQsOnly")
 const ConfigKey kSingleEqKey = ConfigKey(kMixerProfile, QStringLiteral("SingleEQEffect"));
 const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAutoReset"));
 const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
+#ifdef __STEM__
+const ConfigKey kStemAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("stem_auto_reset"));
+#endif
 const QString kDefaultMainEqId = QString();
 
 const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
@@ -92,9 +95,14 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqEffectsOnly(true),
           m_eqAutoReset(false),
           m_gainAutoReset(false),
+#ifdef __STEM__
+          m_stemAutoReset(true),
+#endif
           m_eqBypass(false),
           m_initializing(true),
-          m_updatingMainEQ(false) {
+          m_updatingMainEQ(false),
+          m_applyingDeckEQs(false),
+          m_applyingQuickEffects(false) {
     setupUi(this);
 
     // Update the crossfader curve graph and other settings when the
@@ -131,6 +139,14 @@ DlgPrefMixer::DlgPrefMixer(
             &QCheckBox::toggled,
             this,
             &DlgPrefMixer::slotGainAutoResetToggled);
+#ifdef __STEM__
+    connect(CheckBoxStemAutoReset,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefMixer::slotStemAutoResetToggled);
+#else
+    CheckBoxStemAutoReset->hide();
+#endif
     connect(CheckBoxBypass,
             &QCheckBox::toggled,
             this,
@@ -223,13 +239,12 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotEQEffectSelectionChanged);
-        // Update the combobox in case the effect was changed from anywhere else
+        // Update the combobox in case the effect was changed from anywhere else.
+        // This will wipe pending EQ effect changes.
         connect(pEqEffectSlot.data(),
                 &EffectSlot::effectChanged,
                 this,
-                [this]() {
-                    slotPopulateDeckEqSelectors();
-                });
+                &DlgPrefMixer::slotPopulateDeckEqSelectors);
 
         // Create the QuickEffect selector /////////////////////////////////////
         auto pQuickEffectComboBox = make_parented<QComboBox>(this);
@@ -240,20 +255,13 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 this,
                 &DlgPrefMixer::slotQuickEffectSelectionChanged);
         // Update the combobox when the effect was changed in WEffectChainPresetSelector
-        // or with controllers
+        // or with controllers. This will wipe pending QuickEffect changes.
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
         DEBUG_ASSERT(pChain);
-        // TODO(xxx) Connecting the signal to a lambda that capture the parented_ptr
-        // pQuickEffectComboBox and sets the combobox index causes a crash in
-        // applyQuickEffects() even though the signal hasn_t been emitted, yet.
-        // Hence we just capture the deck group and the new preset's name and set
-        // the index in a separate slot for now.
         connect(pChain.data(),
                 &EffectChain::chainPresetChanged,
                 this,
-                [this, deckGroup](const QString& name) {
-                    slotQuickEffectChangedOnDeck(deckGroup, name);
-                });
+                &DlgPrefMixer::slotPopulateQuickEffectSelectors);
 
         // Add the new widgets
         gridLayout_3->addWidget(pLabel, deckNo, 0);
@@ -277,6 +285,10 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
 }
 
 void DlgPrefMixer::slotPopulateDeckEqSelectors() {
+    if (m_applyingDeckEQs) {
+        return;
+    }
+
     m_ignoreEqQuickEffectBoxSignals = true; // prevents a recursive call
 
     const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
@@ -339,6 +351,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
 }
 
 void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
+    if (m_applyingQuickEffects) {
+        return;
+    }
     m_ignoreEqQuickEffectBoxSignals = true;
 
     QList<EffectChainPresetPointer> presetList =
@@ -424,12 +439,12 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
         for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
             auto* eqBox = m_deckEqEffectSelectors[deck];
             eqBox->setEnabled(!m_eqBypass);
-            slotPopulateDeckEqSelectors();
 
             auto* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setEnabled(true);
-            slotPopulateQuickEffectSelectors();
         }
+        slotPopulateDeckEqSelectors();
+        slotPopulateQuickEffectSelectors();
     }
 }
 
@@ -467,10 +482,12 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxSingleEqEffect->setChecked(true);
     CheckBoxEqAutoReset->setChecked(false);
     CheckBoxGainAutoReset->setChecked(false);
+#ifdef __STEM__
+    CheckBoxStemAutoReset->setChecked(true);
+#endif
 
     setDefaultShelves();
     comboBoxMainEq->setCurrentIndex(0); // '---' no EQ
-    slotApply();
 }
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
@@ -505,23 +522,8 @@ void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
     }
 }
 
-/// The Quick Effect was changed via the GUI or controls, update the combobox
-void DlgPrefMixer::slotQuickEffectChangedOnDeck(const QString& deckGroup,
-        const QString& presetName) {
-    int deck;
-    if (PlayerManager::isDeckGroup(deckGroup, &deck)) {
-        deck -= 1; // decks indices are 0-based
-        auto* pBox = m_deckQuickEffectSelectors[deck];
-        VERIFY_OR_DEBUG_ASSERT(pBox) {
-            return;
-        }
-        pBox->blockSignals(true);
-        pBox->setCurrentIndex(pBox->findText(presetName));
-        pBox->blockSignals(false);
-    }
-}
-
 void DlgPrefMixer::applyDeckEQs() {
+    m_applyingDeckEQs = true;
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
@@ -561,9 +563,11 @@ void DlgPrefMixer::applyDeckEQs() {
         }
     }
     m_ignoreEqQuickEffectBoxSignals = false;
+    m_applyingDeckEQs = false;
 }
 
 void DlgPrefMixer::applyQuickEffects() {
+    m_applyingQuickEffects = true;
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckQuickEffectSelectors.size(); deck++) {
@@ -594,6 +598,7 @@ void DlgPrefMixer::applyQuickEffects() {
         }
     }
     m_ignoreEqQuickEffectBoxSignals = false;
+    m_applyingQuickEffects = false;
 }
 
 void DlgPrefMixer::slotHiEqSliderChanged() {
@@ -703,6 +708,9 @@ void DlgPrefMixer::slotApply() {
     m_pConfig->set(kEqsOnlyKey, ConfigValue(m_eqEffectsOnly ? 1 : 0));
     m_pConfig->set(kEqAutoResetKey, ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(kGainAutoResetKey, ConfigValue(m_gainAutoReset ? 1 : 0));
+#ifdef __STEM__
+    m_pConfig->set(kStemAutoResetKey, ConfigValue(m_stemAutoReset ? 1 : 0));
+#endif
     applyDeckEQs();
     applyQuickEffects();
 
@@ -764,6 +772,11 @@ void DlgPrefMixer::slotUpdate() {
 
     m_gainAutoReset = m_pConfig->getValue<bool>(kGainAutoResetKey, false);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
+
+#ifdef __STEM__
+    m_stemAutoReset = m_pConfig->getValue(kStemAutoResetKey, true);
+    CheckBoxStemAutoReset->setChecked(m_stemAutoReset);
+#endif
 
     QString eqBaypassCfg = m_pConfig->getValueString(kEnableEqsKey);
     m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1" || eqBaypassCfg.isEmpty());
@@ -924,6 +937,12 @@ void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
 void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
     m_gainAutoReset = checked;
 }
+
+#ifdef __STEM__
+void DlgPrefMixer::slotStemAutoResetToggled(bool checked) {
+    m_stemAutoReset = checked;
+}
+#endif
 
 void DlgPrefMixer::slotBypassEqToggled(bool checked) {
     m_eqBypass = checked;

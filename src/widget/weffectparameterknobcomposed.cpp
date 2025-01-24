@@ -26,9 +26,10 @@ void WEffectParameterKnobComposed::setup(const QDomNode& node, const SkinContext
 
 void WEffectParameterKnobComposed::parameterUpdated() {
     if (m_pEffectParameterSlot->isLoaded()) {
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 m_pEffectParameterSlot->name(),
                 m_pEffectParameterSlot->description()));
+        setDefaultAngleFromParameterOrReset(m_pEffectParameterSlot->neutralPointOnScale());
     } else {
         // The knob should be hidden by the skin when the parameterX_loaded ControlObject
         // indicates no parameter is loaded, so this tooltip should never be shown.

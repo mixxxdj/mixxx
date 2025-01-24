@@ -134,8 +134,8 @@ qint64 EngineNetworkStream::getInputStreamTimeUs() {
 qint64 EngineNetworkStream::getNetworkTimeUs() {
     // This matches the GPL2 implementation found in
     // https://github.com/codders/libshout/blob/a17fb84671d3732317b0353d7281cc47e2df6cf6/src/timing/timing.c
-    // Instead of ms resolution we use a us resolution to allow low latency settings
-    // will overflow > 200,000 years
+    // Instead of ms resolution we use a us resolution to
+    // allow low latency settings will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;
     // no GetSystemTimePreciseAsFileTime available, fall

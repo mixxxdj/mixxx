@@ -496,21 +496,30 @@
               Text- Clock display
               **********************************************
               -->
-              <Time>
-                <TooltipId>time</TooltipId>
+              <WidgetGroup>
+                <Pos>101,14</Pos>
+                <Size>50f,14f</Size>
+                <Layout>horizontal</Layout>
                 <Style>
-                  QLabel {
-                    font-size: 10px;
-                    font-weight: bold;
-                    background-color: transparent;
-                    color: #191F24;
-                    text-align:center;
+                  WWidgetGroup {
+                    align: center;
                   }
                 </Style>
-                <Pos>113,14</Pos>
-                <CustomFormat>hh:mm</CustomFormat>
-                <ShowSeconds>false</ShowSeconds>
-              </Time>
+                <Children>
+                  <Time>
+                    <TooltipId>time</TooltipId>
+                    <Style>
+                      QLabel {
+                        font-size: 10px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        text-align:center;
+                      }
+                    </Style>
+                  </Time>
+                </Children>
+              </WidgetGroup>
 
               <StatusLight>
                 <Pos>113,27</Pos>

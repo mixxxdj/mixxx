@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import argparse
 import datetime
 import functools
@@ -40,7 +41,7 @@ def url_exists(url):
 
 
 def url_download_json(url):
-    """Returns the JSON object from the given URL or return None."""
+    """Returns the JSON object from the given URL or returns None."""
     resp = url_fetch(url)
     if resp.status != 200:
         raise IOError(f"Server responded with HTTP status {resp.status}")
@@ -118,8 +119,12 @@ def prepare_deployment(args):
     logger = logging.getLogger(__name__)
 
     # Get artifact and build metadata
-    file_stat = os.stat(args.file)
-    file_sha256 = sha256(args.file)
+    try:
+        file_stat = os.stat(args.file)
+        file_sha256 = sha256(args.file)
+    except Exception as e:
+        logger.error("Error accessing file: %s", e)
+        return 1
 
     try:
         commit_id = os.environ["GITHUB_SHA"]
@@ -194,16 +199,16 @@ def prepare_deployment(args):
     # Write metadata to GitHub Actions step output, so that it can be used for
     # manifest creation in the final job after all builds finished.
     if os.getenv("CI") == "true":
-        # Set GitHub Actions job output
-        print(
-            'echo "{artifact-'
-            + download_slug
-            + "-"
-            + package_slug
-            + "}={"
-            + json.dumps(metadata)
-            + '}" >> $GITHUB_OUTPUT'
-        )
+        # Set GitHub Actions job output using environment files
+        output_file = os.getenv("GITHUB_OUTPUT")
+        with open(output_file, "a") as f:
+            f.write(
+                "artifact-{}-{}={}\n".format(
+                    download_slug,
+                    package_slug,
+                    json.dumps(metadata),
+                )
+            )
     return 0
 
 
@@ -225,9 +230,15 @@ def collect_manifest_data(job_data):
         url = artifact_data["file_url"]
 
         # Make sure that the file actually exists on the download server
-        resp = url_fetch(url, method="HEAD")
-        if not resp.status == 200:
-            raise LookupError(f"Unable to find URL '{url}' on remote server")
+        try:
+            resp = url_fetch(url, method="HEAD")
+            if resp.status != 200:
+                raise LookupError(
+                    f"Unable to find URL '{url}' on remote server"
+                )
+        except Exception as e:
+            logger.error("Error checking URL: %s", e)
+            raise
 
         manifest_data[artifact_slug] = artifact_data
 
@@ -270,8 +281,8 @@ def generate_manifest(args):
 
         try:
             remote_manifest_data = url_download_json(manifest_url) or {}
-        except IOError:
-            logger.error("Fetching remote manifest failed!")
+        except IOError as e:
+            logger.error("Fetching remote manifest failed: %s", e)
 
     if args.update:
         for key, value in remote_manifest_data.items():
@@ -306,7 +317,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    parent_parser = argparse.ArgumentParser()
+    parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument(
         "-v",
         "--verbose",
@@ -314,12 +325,12 @@ def main(argv=None):
         dest="loglevel",
         const=logging.DEBUG,
         default=logging.INFO,
-        help="Fetch the remote manifest and update it ",
+        help="Increase output verbosity",
     )
 
     artifact_parser = subparsers.add_parser(
         "prepare-deployment",
-        help=" artifact metadata from file",
+        help="Prepare artifact metadata from file",
         parents=[parent_parser],
         add_help=False,
     )
@@ -378,7 +389,7 @@ def main(argv=None):
     manifest_parser.add_argument(
         "--update",
         action="store_true",
-        help="Fetch the remote manifest and update it ",
+        help="Fetch the remote manifest and update it",
     )
 
     args = parser.parse_args(argv)

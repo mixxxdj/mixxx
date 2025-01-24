@@ -27,17 +27,17 @@ const QUrl composeSoundcloudUrl(const QString& serviceSearchUrl,
 } // namespace
 
 FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
-        QMenu* pFindOnWebMenu, const Track& track) {
+        QMenu* pFindOnWebMenu, const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();
-    auto pSoundcloudMenu = make_parented<QMenu>(pFindOnWebMenu);
-    pSoundcloudMenu->setTitle(kServiceTitle);
-    pFindOnWebMenu->addMenu(pSoundcloudMenu);
-    pSoundcloudMenu->addSeparator();
+    setTitle(kServiceTitle);
+    pFindOnWebMenu->addMenu(this);
+    addSeparator();
     if (!artist.isEmpty()) {
         const QUrl SoundcloudUrlArtist = composeSoundcloudUrl(kSearchUrlArtist, artist);
-        addActionToServiceMenu(pSoundcloudMenu,
+        addActionToServiceMenu(
                 composeActionText(tr("Artist"), artist),
                 SoundcloudUrlArtist);
     }
@@ -46,13 +46,13 @@ FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
             const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl SoundcloudUrlArtistWithTrackTitle =
                     composeSoundcloudUrl(kSearchUrlTitle, artistWithTrackTitle);
-            addActionToServiceMenu(pSoundcloudMenu,
+            addActionToServiceMenu(
                     composeActionText(
                             tr("Artist + Title"), artistWithTrackTitle),
                     SoundcloudUrlArtistWithTrackTitle);
         }
         const QUrl SoundcloudUrlTrackTitle = composeSoundcloudUrl(kSearchUrlTitle, trackTitle);
-        addActionToServiceMenu(pSoundcloudMenu,
+        addActionToServiceMenu(
                 composeActionText(tr("Title"), trackTitle),
                 SoundcloudUrlTrackTitle);
     }
@@ -61,12 +61,12 @@ FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
             const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl SoundcloudUrlArtistWithAlbum =
                     composeSoundcloudUrl(kSearchUrlAlbum, artistWithAlbum);
-            addActionToServiceMenu(pSoundcloudMenu,
+            addActionToServiceMenu(
                     composeActionText(tr("Artist + Album"), artistWithAlbum),
                     SoundcloudUrlArtistWithAlbum);
         } else {
             const QUrl SoundcloudUrlAlbum = composeSoundcloudUrl(kSearchUrlAlbum, album);
-            addActionToServiceMenu(pSoundcloudMenu,
+            addActionToServiceMenu(
                     composeActionText(tr("Album"), album),
                     SoundcloudUrlAlbum);
         }

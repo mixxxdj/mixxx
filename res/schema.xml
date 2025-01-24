@@ -150,7 +150,7 @@ reapplying those migrations.
       Add file type column.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT "?";
+      ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT '?';
     </sql>
   </revision>
   <revision version="5">
@@ -176,15 +176,15 @@ reapplying those migrations.
     <sql>
       ALTER TABLE library ADD COLUMN timesplayed INTEGER DEFAULT 0;
       ALTER TABLE library ADD COLUMN rating INTEGER DEFAULT 0;
-      ALTER TABLE library ADD COLUMN key varchar(8) DEFAULT "";
+      ALTER TABLE library ADD COLUMN key varchar(8) DEFAULT '';
       UPDATE library SET timesplayed = played;
       UPDATE library SET played = 0;
 
-      DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
+      DELETE FROM settings WHERE name='mixxx.db.model.library.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.playlist.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.crate.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.prepare.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.missing.header_state';
     </sql>
   </revision>
   <revision version="8" min_compatible="3">
@@ -305,7 +305,7 @@ reapplying those migrations.
       Add composer column to library table.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT "";
+      ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT '';
     </sql>
   </revision>
   <revision version="15" min_compatible="3">
@@ -375,8 +375,8 @@ reapplying those migrations.
       Add grouping and album_artist column to library table.
     </description>
     <sql>
-      ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT "";
-      ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT "";
+      ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT '';
+      ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT '';
     </sql>
   </revision>
   <revision version="22" min_compatible="3">
@@ -384,8 +384,8 @@ reapplying those migrations.
       Add grouping and album_artist column to itunes_library table.
     </description>
     <sql>
-      ALTER TABLE itunes_library ADD COLUMN grouping TEXT DEFAULT "";
-      ALTER TABLE itunes_library ADD COLUMN album_artist TEXT DEFAULT "";
+      ALTER TABLE itunes_library ADD COLUMN grouping TEXT DEFAULT '';
+      ALTER TABLE itunes_library ADD COLUMN album_artist TEXT DEFAULT '';
     </sql>
   </revision>
   <revision version="23" min_compatible="3">
@@ -406,7 +406,7 @@ reapplying those migrations.
     <sql>
       ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
       ALTER TABLE library ADD COLUMN coverart_type INTEGER DEFAULT 0;
-      ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT "";
+      ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT '';
       ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
     </sql>
   </revision>

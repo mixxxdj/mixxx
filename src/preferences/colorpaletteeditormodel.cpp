@@ -173,7 +173,7 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
             }
         }
     }
-    // If we have a non consequitive list of hotcue indexes, indexes are shifted down
+    // If we have a non consecutive list of hotcue indexes, indexes are shifted down
     // due to the sorting nature of QMap. This is intended, this way we have a color for every hotcue.
     return ColorPalette(name, colors, hotcueColorIndices.values());
 }

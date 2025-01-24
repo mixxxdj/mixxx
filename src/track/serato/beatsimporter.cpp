@@ -23,10 +23,12 @@ bool SeratoBeatsImporter::isEmpty() const {
 };
 
 BeatsPointer SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
-        const QString& filePath, const audio::StreamInfo& streamInfo) {
+        const QString& filePath,
+        const QString& fileType,
+        const audio::StreamInfo& streamInfo) {
     const audio::SignalInfo& signalInfo = streamInfo.getSignalInfo();
     const double timingOffsetMillis = SeratoTags::guessTimingOffsetMillis(
-            filePath, signalInfo);
+            filePath, fileType, signalInfo);
 
     return importBeatsAndApplyTimingOffset(timingOffsetMillis, signalInfo);
 }

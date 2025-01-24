@@ -4,6 +4,7 @@
 #include <QMimeType>
 
 #include "sources/soundsourceproxy.h"
+#include "track/steminfoimporter.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -52,14 +53,29 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/mimetype.20sometimes.20wrong
         return fileSuffix;
     }
-
     QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
+#ifdef __STEM__
+    if (
+            // STEM files will be detected as normal MP4, so we check if the file
+            // is looking like a MP4
+            StemInfoImporter::maybeStemFile(fileInfo.filePath(), mimeType) &&
+            // If yes, we search a STEM atom and assume they are valid STEM file
+            // if they do contain one
+            StemInfoImporter::hasStemAtom(fileInfo.filePath())) {
+        return QLatin1String("stem.mp4");
+    }
+#endif
+
     // According to the documentation mimeTypeForFile always returns a valid
     // type, using the generic type application/octet-stream as a fallback.
     // This might also occur for missing files as seen on Qt 5.12.
     if (!mimeType.isValid() || mimeType.isDefault()) {
-        qInfo() << "Unable to detect MIME type from file" << fileInfo.filePath();
+        if (fileInfo.exists()) {
+            qInfo() << "Unable to detect MIME type from file" << fileInfo.filePath();
+        } else {
+            qInfo() << "Unable to detect MIME type from not existing file" << fileInfo.filePath();
+        }
         mimeType = QMimeDatabase().mimeTypeForFile(
                 fileInfo, QMimeDatabase::MatchExtension);
         if (!mimeType.isValid() || mimeType.isDefault()) {
@@ -83,7 +99,7 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
 
 SoundSource::SoundSource(const QUrl& url, const QString& type)
         : AudioSource(validateLocalFileUrl(url)),
-          MetadataSourceTagLib(getLocalFileName()),
+          MetadataSourceTagLib(getLocalFileName(), type),
           m_type(type) {
 }
 

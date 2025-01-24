@@ -20,6 +20,9 @@ ControlModel::ControlModel(QObject* pParent)
 
     QSet<ConfigKey> controlKeys;
 
+    // Reserve memory for m_controls, which will be used later in addControl
+    m_controls.reserve(controlsList.size());
+
     for (const QSharedPointer<ControlDoublePrivate>& pControl : controlsList) {
         if (!pControl) {
             continue;

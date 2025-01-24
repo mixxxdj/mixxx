@@ -48,7 +48,7 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
                         auto predicate) -> std::optional<std::size_t> {
             const auto it = std::find_if(std::begin(tokens_list), std::end(tokens_list), predicate);
             return (it != std::end(tokens_list))
-                    ? std::distance(std::begin(tokens_list), it)
+                    ? static_cast<std::size_t>(std::distance(std::begin(tokens_list), it))
                     : std::optional<std::size_t>{};
         };
         if (!tokens.isEmpty()) {
@@ -56,15 +56,33 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
                     tokens[0],
                     [&](auto i) { return i == QObject::tr("Location"); });
             if ((!locationColumnIndex.has_value()) && tokens.size() > 1) {
-                // Last resort, find column with path separators
-                // This happens in case of csv files in a different language
+                // Last resort, find column with valid path in first row
+                // This happens in case of csv files in a different language,
+                // where the column name is not "Location" If the first row
+                // contains a valid path separator, we assume this is the location column.
+                // - Linux & macOS: Only / is a valid path separator
+                // - Windows: / and \ are valid path separators
+                // This is independent of the existence of the file referred in
+                // the first row, as it's only used for the column detection,
+                // and other rows might contain paths to existing files
                 locationColumnIndex = detect_location_column(tokens[1],
-                        [&](auto i) { return i.contains(QDir::separator()); });
+                        [&](auto i) {
+#ifdef Q_OS_WIN
+                            return (i.contains(QChar('\\')) || i.contains(QChar('/')));
+                        });
+#else
+                            return i.contains(QChar('/'));
+                        });
+#endif
             }
             if (locationColumnIndex.has_value()) {
                 for (int row = 1; row < tokens.size(); ++row) {
-                    if (locationColumnIndex < tokens[row].size()) {
-                        locations.append(tokens[row][static_cast<int>(*locationColumnIndex)]);
+                    if (locationColumnIndex.has_value() &&
+                            locationColumnIndex.value() <
+                                    static_cast<std::size_t>(
+                                            tokens[row].size())) {
+                        locations.append(tokens[row][static_cast<int>(
+                                locationColumnIndex.value())]);
                     }
                 }
             } else {

@@ -39,7 +39,6 @@ void WStarRating::slotSetRating(int starCount) {
     }
     m_starCount = starCount;
     updateVisualRating(starCount);
-    emit ratingChangeRequest(starCount);
 }
 
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {

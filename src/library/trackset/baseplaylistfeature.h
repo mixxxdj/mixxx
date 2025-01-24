@@ -118,6 +118,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
     const QString m_countsDurationTableName;
+    TrackId m_selectedTrackId;
 
   private slots:
     void slotTrackSelected(TrackId trackId);
@@ -130,7 +131,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void markTreeItem(TreeItem* pTreeItem);
     QString fetchPlaylistLabel(int playlistId);
 
-    TrackId m_selectedTrackId;
 
     const bool m_keepHiddenTracks;
 };

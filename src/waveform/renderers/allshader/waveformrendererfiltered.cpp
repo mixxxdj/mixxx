@@ -14,12 +14,10 @@ WaveformRendererFiltered::WaveformRendererFiltered(
           m_bRgbStacked(bRgbStacked) {
 }
 
-void WaveformRendererFiltered::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererFiltered::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererFiltered::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
@@ -43,6 +41,13 @@ void WaveformRendererFiltered::paintGL() {
     if (data == nullptr) {
         return;
     }
+#ifdef __STEM__
+    auto stemInfo = pTrack->getStemInfo();
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+        return;
+    }
+#endif
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);

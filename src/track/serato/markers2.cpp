@@ -359,14 +359,14 @@ bool SeratoMarkers2::parse(
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers2, data);
     case taglib::FileType::MP4:
         return parseBase64Encoded(seratoMarkers2, data);
     case taglib::FileType::FLAC:
         return parseFLAC(seratoMarkers2, data);
-    case taglib::FileType::OGG:
+    case taglib::FileType::OggVorbis:
         return parseCommon(seratoMarkers2, data);
     default:
         return false;
@@ -494,14 +494,14 @@ bool SeratoMarkers2::parseFLAC(
 
 QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
         return dumpBase64Encoded();
     case taglib::FileType::FLAC:
         return dumpFLAC();
-    case taglib::FileType::OGG:
+    case taglib::FileType::OggVorbis:
         return dumpCommon();
     default:
         DEBUG_ASSERT(false);

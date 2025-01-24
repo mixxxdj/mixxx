@@ -42,6 +42,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
 
 bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
     if (frameLength <= 0) {
         return false;
@@ -86,6 +87,7 @@ bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
     m_sampleRate = sampleRate;
+    m_channelCount = channelCount;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysis) {
@@ -199,12 +201,46 @@ bool AnalyzerBeats::processSamples(const CSAMPLE* pIn, SINT count) {
         return false;
     }
 
-    m_currentFrame += count / mixxx::kAnalysisChannels;
+    SINT numFrames = count / m_channelCount;
+    const CSAMPLE* pBeatInput = pIn;
+    CSAMPLE* pDrumChannel = nullptr;
+
+    if (m_channelCount == mixxx::audio::ChannelCount::stem()) {
+        // We have an 8 channel soundsource. The only implemented soundsource with
+        // 8ch is the NI STEM file format.
+        // TODO: If we add other soundsources with 8ch, we need to rework this condition.
+        //
+        // For NI STEM we mix all the stems together except the first one,
+        // which contains drums or beats by convention.
+        count = numFrames * mixxx::audio::ChannelCount::stereo();
+        pDrumChannel = SampleUtil::alloc(count);
+
+        VERIFY_OR_DEBUG_ASSERT(pDrumChannel) {
+            return false;
+        }
+
+        if (m_bpmSettings.getStemStrategy() == BeatDetectionSettings::StemStrategy::Enforced) {
+            SampleUtil::copyOneStereoFromMulti(pDrumChannel, pIn, numFrames, m_channelCount, 0);
+        } else {
+            SampleUtil::mixMultichannelToStereo(pDrumChannel, pIn, numFrames, m_channelCount);
+        }
+
+        pBeatInput = pDrumChannel;
+    } else if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
+        DEBUG_ASSERT(!"Unsupported channel count");
+        return false;
+    }
+
+    m_currentFrame += numFrames;
     if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore all remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, count);
+    bool ret = m_pPlugin->processSamples(pBeatInput, count);
+    if (pDrumChannel) {
+        SampleUtil::free(pDrumChannel);
+    }
+    return ret;
 }
 
 void AnalyzerBeats::cleanup() {

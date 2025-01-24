@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
+# Copyright (C) 2001-2025 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -41,15 +41,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_path(FFTW_INCLUDE_DIR
-  NAMES fftw3.h
-  DOC "FFTW include directory")
+find_path(FFTW_INCLUDE_DIR NAMES fftw3.h DOC "FFTW include directory")
 mark_as_advanced(FFTW_INCLUDE_DIR)
 
-find_library(FFTW_LIBRARY
-  NAMES fftw fftw3 fftw-3.3
-  DOC "FFTW library"
-)
+find_library(FFTW_LIBRARY NAMES fftw fftw3 fftw-3.3 DOC "FFTW library")
 mark_as_advanced(FFTW_LIBRARY)
 
 include(FindPackageHandleStandardArgs)
@@ -66,7 +61,8 @@ if(FFTW_FOUND)
 
   if(NOT TARGET FFTW::FFTW)
     add_library(FFTW::FFTW UNKNOWN IMPORTED)
-    set_target_properties(FFTW::FFTW
+    set_target_properties(
+      FFTW::FFTW
       PROPERTIES
         IMPORTED_LOCATION "${FFTW_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${FFTW_INCLUDE_DIR}"

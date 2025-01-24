@@ -8,9 +8,11 @@
 #include <QUuid>
 #include <QtDebug>
 #include <cstdint>
+#include <memory>
 #include <variant>
 
 #include "preferences/usersettings.h"
+#include "util/always_false_v.h"
 #include "util/compatibility/qhash.h"
 
 // The second value of each OpCode will be the channel number the message
@@ -178,9 +180,6 @@ struct MidiKey {
         };
     };
 };
-
-template<class>
-inline constexpr bool always_false_v = false;
 
 struct MidiInputMapping {
     MidiInputMapping() {

@@ -18,12 +18,18 @@ class ColorPaletteSettings {
     ColorPalette getTrackColorPalette() const;
     void setTrackColorPalette(const ColorPalette& colorPalette);
 
+    ColorPalette getKeyColorPalette(const QString& name) const;
+    ColorPalette getConfigKeyColorPalette() const;
+    void setKeyColorPalette(const ColorPalette& colorPalette);
+
     ColorPalette getColorPalette(
             const QString& name,
             const ColorPalette& defaultPalette) const;
     void setColorPalette(const QString& name, const ColorPalette& colorPalette);
     void removePalette(const QString& name);
     QSet<QString> getColorPaletteNames() const;
+
+    DEFINE_PREFERENCE_HELPERS(KeyColorsEnabled, bool, "[Config]", "KeyColorsEnabled", true);
 
   private:
     UserSettingsPointer m_pConfig;

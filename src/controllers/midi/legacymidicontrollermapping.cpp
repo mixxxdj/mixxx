@@ -67,7 +67,18 @@ void LegacyMidiControllerMapping::setOutputMappings(
     }
 }
 void LegacyMidiControllerMapping::removeInputHandlerMappings() {
-    m_inputMappings.removeIf([](std::pair<const uint16_t&, MidiInputMapping&> it) {
-        return !std::holds_alternative<ConfigKey>(it.second.control);
-    });
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+    m_inputMappings.removeIf(
+            [](std::pair<const uint16_t&, MidiInputMapping&> it) {
+                return !std::holds_alternative<ConfigKey>(it.second.control);
+            });
+#else
+    for (auto it = m_inputMappings.begin(); it != m_inputMappings.end();) {
+        if (!std::holds_alternative<ConfigKey>(it.value().control)) {
+            it = m_inputMappings.erase(it);
+        } else {
+            ++it;
+        }
+    }
+#endif
 }

@@ -153,7 +153,15 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
     // iterations takes ~1 sec. In order to safely finish this test within
     // the timeout limit of 30 sec. we use 20 * 10_000 = 200_000 iterations.
-    for (int i = 0; i < 200000; ++i) {
+    //
+    // NOTE(2024-06-03, daschuer): Reduced to 100000 because the we hit a
+    // timeout on the macos-12 GitHub workflow runner
+    // With 200000 we had:
+    // ubuntu-22.04 0.73 sec
+    // windows-2019 9.86 sec
+    // macos-11 5.81 sec
+    // macos-12 timeout after 45.02 sec (24.55 sec with 100000)
+    for (int i = 0; i < 100000; ++i) {
         m_recentTrackPtr.reset();
 
         TrackId trackId;

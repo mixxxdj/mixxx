@@ -4,6 +4,7 @@
 #include <QList>
 #include <QString>
 #include <QtDebug>
+#include <span>
 
 #include "audio/types.h"
 #include "util/compatibility/qhash.h"
@@ -210,7 +211,7 @@ class AudioSource {
   public:
     virtual ~AudioSource() = default;
 
-    virtual const CSAMPLE* buffer(const AudioOutput& output) const = 0;
+    virtual std::span<const CSAMPLE> buffer(const AudioOutput& output) const = 0;
 
     /// This is called by SoundManager whenever an output is connected for this
     /// source. When this is called it is guaranteed that no callback is

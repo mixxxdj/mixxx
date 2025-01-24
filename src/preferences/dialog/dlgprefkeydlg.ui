@@ -14,7 +14,6 @@
    <string>Key Notation Format Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-
    <item>
     <widget class="QCheckBox" name="banalyzerenabled">
      <property name="toolTip">
@@ -26,7 +25,6 @@ and allows you to pitch adjust them for harmonic mixing.</string>
      </property>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupPlugin">
      <property name="title">
@@ -61,7 +59,6 @@ and allows you to pitch adjust them for harmonic mixing.</string>
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupOptions">
      <property name="title">
@@ -82,10 +79,40 @@ and allows you to pitch adjust them for harmonic mixing.</string>
         </property>
        </widget>
       </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="labelStemStrategy">
+          <property name="text">
+           <string>Exclude rhythmic channel when analysing stem file</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxStemStrategy">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>Disabled</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Enforced</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupNotation">
      <property name="minimumSize">
@@ -98,7 +125,6 @@ and allows you to pitch adjust them for harmonic mixing.</string>
       <string>Key Notation</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
-
       <item>
        <layout class="QHBoxLayout" name="notationChoice1">
         <item>
@@ -111,7 +137,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
         <item>
          <widget class="QRadioButton" name="radioNotationLancelotAndTraditional">
           <property name="text">
-            <string>Lancelot/Traditional</string>
+           <string>Lancelot/Traditional</string>
           </property>
          </widget>
         </item>
@@ -124,13 +150,12 @@ and allows you to pitch adjust them for harmonic mixing.</string>
         </item>
        </layout>
       </item>
-
       <item>
        <layout class="QHBoxLayout" name="notationChoice2">
         <item>
          <widget class="QRadioButton" name="radioNotationOpenKeyAndTraditional">
           <property name="text">
-            <string>OpenKey/Traditional</string>
+           <string>OpenKey/Traditional</string>
           </property>
          </widget>
         </item>
@@ -150,7 +175,6 @@ and allows you to pitch adjust them for harmonic mixing.</string>
         </item>
        </layout>
       </item>
-
       <item>
        <layout class="QGridLayout" name="customNotation">
         <item row="0" column="0">

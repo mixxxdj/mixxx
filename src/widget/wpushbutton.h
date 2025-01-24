@@ -5,7 +5,7 @@
 #include <QVector>
 #include <memory>
 
-#include "control/controlpushbutton.h"
+#include "control/controlbuttonmode.h"
 #include "util/fpclassify.h"
 #include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
@@ -19,8 +19,9 @@ class WPushButton : public WWidget {
   public:
     explicit WPushButton(QWidget* pParent = nullptr);
     // Used by WPushButtonTest.
-    WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
-                ControlPushButton::ButtonMode rightButtonMode);
+    WPushButton(QWidget* pParent,
+            mixxx::control::ButtonMode leftButtonMode,
+            mixxx::control::ButtonMode rightButtonMode);
 
     Q_PROPERTY(bool pressed READ isPressed);
 
@@ -71,7 +72,6 @@ class WPushButton : public WWidget {
     void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
-    void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
   protected:
@@ -97,6 +97,8 @@ class WPushButton : public WWidget {
     bool m_bPressed;
     // True, if the button is pointer is above button
     bool m_bHovered;
+    // Set true by WHotcueButton while it's being dragged
+    bool m_dragging;
 
     // Array of associated pixmaps
     int m_iNoStates;
@@ -109,8 +111,8 @@ class WPushButton : public WWidget {
     PaintablePointer m_pPixmapBack;
 
     // short click toggle button long click push button
-    ControlPushButton::ButtonMode m_leftButtonMode;
-    ControlPushButton::ButtonMode m_rightButtonMode;
+    mixxx::control::ButtonMode m_leftButtonMode;
+    mixxx::control::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
     QVector<int> m_align;
 

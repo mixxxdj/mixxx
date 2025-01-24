@@ -17,6 +17,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wtracktableview.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
@@ -37,6 +38,22 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             this,
             &LoadToGroupController::slotLoadToGroupAndPlay);
 
+#ifdef __STEM__
+    m_loadSelectedTrackStems =
+            std::make_unique<ControlPushButton>(ConfigKey(group, "load_selected_track_stems"));
+    connect(m_loadSelectedTrackStems.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value >= 0 && value <= 2 << mixxx::kMaxSupportedStems) {
+                    emit loadToGroup(m_group,
+                            mixxx::StemChannelSelection::fromInt(
+                                    static_cast<int>(value)),
+                            false);
+                }
+            });
+#endif
+
     connect(this,
             &LoadToGroupController::loadToGroup,
             pParent,
@@ -47,13 +64,24 @@ LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, false);
+        emit loadToGroup(m_group,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, true);
+#ifdef __STEM__
+        emit loadToGroup(m_group,
+                mixxx::StemChannelSelection(),
+                true);
+#else
+        emit loadToGroup(m_group,
+                true);
+#endif
     }
 }
 
@@ -166,6 +194,30 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &LibraryControl::slotMoveFocus);
     }
 
+    // Controls to move tracks on playlist
+    // Track move controls (emulate Alt+up/down button press)
+    m_pMoveTrackUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveTrackUp"));
+    m_pMoveTrackDown = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "MoveTrackDown"));
+    m_pMoveTrack = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveTrack"), false);
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        connect(m_pMoveTrackUp.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveTrackUp);
+        connect(m_pMoveTrackDown.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveTrackDown);
+        connect(m_pMoveTrack.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotMoveTrack);
+    }
+
     // Direct focus control, read/write
     m_pFocusedWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "focused_widget"));
@@ -196,7 +248,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // This CO is never actually set or read so the value just needs to be not 0
     m_pRefocusPrevWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "refocus_prev_widget"));
-    m_pRefocusPrevWidgetCO->setButtonMode(ControlPushButton::TRIGGER);
+    m_pRefocusPrevWidgetCO->setButtonMode(mixxx::control::ButtonMode::Trigger);
 #ifdef MIXXX_USE_QML
     if (!CmdlineArgs::Instance().isQml())
 #endif
@@ -218,7 +270,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     }
 
     // Auto DJ controls
-    m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
+    m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "AutoDjAddTop"));
     m_pAutoDjAddTop->addAlias(ConfigKey(
             QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddTop")));
 #ifdef MIXXX_USE_QML
@@ -231,7 +283,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &LibraryControl::slotAutoDjAddTop);
     }
 
-    m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
+    m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "AutoDjAddBottom"));
     m_pAutoDjAddBottom->addAlias(ConfigKey(
             QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddBottom")));
 #ifdef MIXXX_USE_QML
@@ -259,7 +312,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Sort controls
     m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
-    m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortOrder->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
     m_pSortFocusedColumn = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "sort_focused_column"));
@@ -418,7 +471,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &LibraryControl::slotSelectPrevTrack);
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectTrack = std::make_unique<ControlObject>(ConfigKey("[Playlist]","SelectTrackKnob"), false);
+    m_pSelectTrack = std::make_unique<ControlObject>(
+            ConfigKey("[Playlist]", "SelectTrackKnob"), false);
     connect(m_pSelectTrack.get(),
             &ControlObject::valueChanged,
             this,
@@ -449,7 +503,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotToggleSelectedSidebarItem);
 
-    m_pLoadSelectedIntoFirstStopped = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
+    m_pLoadSelectedIntoFirstStopped = std::make_unique<ControlPushButton>(
+            ConfigKey("[Playlist]", "LoadSelectedIntoFirstStopped"));
     connect(m_pLoadSelectedIntoFirstStopped.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -572,69 +627,67 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
     m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
+#ifdef __STEM__
+void LibraryControl::slotLoadSelectedTrackToGroup(
+        const QString& group, mixxx::StemChannelSelection stemMask, bool play) {
+#else
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
+#endif
     if (!m_pLibraryWidget) {
         return;
     }
 
-    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-    if (!pActiveView) {
-        return;
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+#ifdef __STEM__
+        pTrackTableView->loadSelectedTrackToGroup(group, stemMask, play);
+#else
+        pTrackTableView->loadSelectedTrackToGroup(group, play);
+#endif
     }
-    pActiveView->loadSelectedTrackToGroup(group, play);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->activateSelectedTrack();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->activateSelectedTrack();
     }
 }
 
 void LibraryControl::slotAutoDjAddTop(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->slotAddToAutoDJTop();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->addToAutoDJTop();
     }
 }
 
 void LibraryControl::slotAutoDjAddBottom(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->slotAddToAutoDJBottom();
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->addToAutoDJBottom();
     }
 }
 
 void LibraryControl::slotAutoDjAddReplace(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->slotAddToAutoDJReplace();
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->addToAutoDJReplace();
     }
 }
 
@@ -651,17 +704,15 @@ void LibraryControl::slotSelectPrevTrack(double v) {
 }
 
 void LibraryControl::slotSelectTrack(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v == 0) {
         return;
     }
 
-    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-    if (!pActiveView) {
-        return;
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        int i = (int)v;
+        pTrackTableView->moveSelection(i);
     }
-
-    int i = (int)v;
-    pActiveView->moveSelection(i);
 }
 
 void LibraryControl::slotMoveUp(double v) {
@@ -746,7 +797,7 @@ void LibraryControl::slotScrollDown(double v) {
 }
 
 void LibraryControl::slotScrollVertical(double v) {
-    const auto key = (v < 0) ? Qt::Key_PageUp: Qt::Key_PageDown;
+    const auto key = (v < 0) ? Qt::Key_PageUp : Qt::Key_PageDown;
     const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
@@ -764,7 +815,7 @@ void LibraryControl::slotMoveRight(double v) {
 }
 
 void LibraryControl::slotMoveHorizontal(double v) {
-    const auto key = (v < 0) ? Qt::Key_Left: Qt::Key_Right;
+    const auto key = (v < 0) ? Qt::Key_Left : Qt::Key_Right;
     const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
@@ -791,6 +842,37 @@ void LibraryControl::slotMoveFocus(double v) {
     const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{
             QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
+}
+
+void LibraryControl::slotMoveTrackUp(double v) {
+    if (v > 0) {
+        slotMoveTrack(-1);
+    }
+}
+
+void LibraryControl::slotMoveTrackDown(double v) {
+    if (v > 0) {
+        slotMoveTrack(1);
+    }
+}
+
+/// Move a selected track up or down a playlist by emulating Alt + Up/Down keypresses
+void LibraryControl::slotMoveTrack(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    auto* pTrackTableview = m_pLibraryWidget->getCurrentTrackTableView();
+    if (!pTrackTableview) {
+        // no track table view is currently visible
+        return;
+    }
+
+    const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
+    const auto times = static_cast<unsigned short>(std::abs(v));
+    QKeyEvent pEvent = QKeyEvent{
+            QEvent::KeyPress, key, Qt::AltModifier, QString(), false, times};
+    QApplication::sendEvent(pTrackTableview, &pEvent);
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
@@ -982,15 +1064,22 @@ void LibraryControl::slotGoToItem(double v) {
             m_pSidebarWidget->toggleSelectedItem();
         }
         return;
-    case FocusWidget::TracksTable:
-        m_pLibraryWidget->getActiveView()->activateSelectedTrack();
+    case FocusWidget::TracksTable: {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (pTrackTableView) {
+            pTrackTableView->activateSelectedTrack();
+        }
         return;
+    }
     case FocusWidget::Dialog: {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &pressSpace);
-        QApplication::sendEvent(QApplication::focusWindow(), &releaseSpace);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &pressSpace);
+            QApplication::sendEvent(pWindow, &releaseSpace);
+        }
         return;
     }
     case FocusWidget::ContextMenu:
@@ -1004,7 +1093,10 @@ void LibraryControl::slotGoToItem(double v) {
         // If Unknown is some other 'untrained' or unresponsive widget
         // GoToItem is inappropriate and we can't do much about that.
         QKeyEvent event = QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &event);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &event);
+        }
         return;
     }
     case FocusWidget::Searchbar:
@@ -1060,29 +1152,23 @@ void LibraryControl::slotDecrementFontSize(double v) {
 }
 
 void LibraryControl::slotTrackColorPrev(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->assignPreviousTrackColor();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->assignPreviousTrackColor();
     }
 }
 
 void LibraryControl::slotTrackColorNext(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibraryWidget || v <= 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->assignNextTrackColor();
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->assignNextTrackColor();
     }
 }

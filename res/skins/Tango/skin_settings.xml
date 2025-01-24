@@ -724,7 +724,7 @@ Description:
                 <MaximumSize>112,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <!-- translucent cover when Samlers are hidden -->
+                  <!-- translucent cover when Samplers are hidden -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <MinimumSize>112,13</MinimumSize>
@@ -785,6 +785,9 @@ Description:
             </Children>
           </WidgetGroup><!-- /Load/Save Sampler Bank -->
           <!-- /Misc -->
+
+          <!-- push the settings up, required with Qt6 -->
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- /SkinSettings -->

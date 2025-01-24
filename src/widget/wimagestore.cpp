@@ -6,11 +6,9 @@
 
 #include "skin/legacy/imgloader.h"
 
-
 // static
-QHash<QString, std::weak_ptr<QImage>> WImageStore::m_dictionary;
-QSharedPointer<ImgSource> WImageStore::m_loader
-        = QSharedPointer<ImgSource>(new ImgLoader());
+QHash<ImageKey, std::weak_ptr<QImage>> WImageStore::m_dictionary;
+std::shared_ptr<ImgSource> WImageStore::m_loader = std::make_shared<ImgLoader>();
 
 // static
 QImage* WImageStore::getImageNoCache(const QString& fileName, double scaleFactor) {
@@ -27,10 +25,12 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
     if (source.isEmpty()) {
         return nullptr;
     }
-    // Search for Image in list
-    QString key = source.getId() + QString::number(scaleFactor);
 
-    QHash<QString, std::weak_ptr<QImage>>::iterator it = m_dictionary.find(key);
+    // Generate key struct
+    ImageKey key{source.getPath(), scaleFactor};
+
+    // Attempt to find the cached Image using the generated key.
+    auto it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
         //qDebug() << "WImageStore returning cached Image for:" << source.getPath();
         return it.value().lock();
@@ -59,13 +59,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
     if (source.isSVG()) {
         QSvgRenderer renderer;
 
-        if (!source.getSvgSourceData().isEmpty()) {
-            // Call here the different overload for svg content
-            if (!renderer.load(source.getSvgSourceData())) {
-                // The above line already logs a warning
-                return nullptr;
-            }
-        } else if (!source.getPath().isEmpty()) {
+        if (!source.getPath().isEmpty()) {
             if (!renderer.load(source.getPath())) {
                 // The above line already logs a warning
                 return nullptr;
@@ -75,8 +69,8 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
         }
 
         auto* pImage = new QImage(renderer.defaultSize() * scaleFactor,
-                QImage::Format_ARGB32);
-        pImage->fill(0x00000000);  // Transparent black.
+                QImage::Format_ARGB32_Premultiplied);
+        pImage->fill(Qt::transparent);
         QPainter painter(pImage);
         renderer.render(&painter);
         return pImage;
@@ -87,7 +81,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
 
 // static
 void WImageStore::deleteImage(QImage* p) {
-    QMutableHashIterator<QString, std::weak_ptr<QImage>> it(m_dictionary);
+    QMutableHashIterator<ImageKey, std::weak_ptr<QImage>> it(m_dictionary);
     while (it.hasNext()) {
         if(it.next().value().expired()) {
             it.remove();
@@ -107,6 +101,6 @@ bool WImageStore::willCorrectColors() {
 };
 
 // static
-void WImageStore::setLoader(QSharedPointer<ImgSource> ld) {
+void WImageStore::setLoader(std::shared_ptr<ImgSource> ld) {
     m_loader = ld;
 }

@@ -9,7 +9,9 @@ class SoftwareWaveformWidget : public NonGLWaveformWidgetAbstract {
   public:
     virtual ~SoftwareWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::SoftwareWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Filtered;
+    }
 
     static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return false; }

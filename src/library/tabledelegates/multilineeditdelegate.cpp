@@ -32,6 +32,11 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent,
     // Add event filter to catch right-clicks and key presses, see eventFilter()
     installEventFilter(this);
 
+    // Explicitly set the font, otherwise the font might be reset
+    // after first edit.
+    const auto font = m_pTableView->font();
+    setFont(font);
+
     // Adjust size to fit content and maybe shift vertically to fit into the
     // library view. documentSizeChanged() is emitted when the layout has been
     // adjusted according to text changes, incl. initial fill.

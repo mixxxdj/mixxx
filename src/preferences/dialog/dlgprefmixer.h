@@ -33,11 +33,13 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotNumDecksChanged(double numDecks);
     void slotEQEffectSelectionChanged(int effectIndex);
     void slotQuickEffectSelectionChanged(int effectIndex);
-    void slotQuickEffectChangedOnDeck(const QString& group, const QString& presetName);
     void slotEqOnlyToggled(bool checked);
     void slotSingleEqToggled(bool checked);
     void slotEqAutoResetToggled(bool checked);
     void slotGainAutoResetToggled(bool checked);
+#ifdef __STEM__
+    void slotStemAutoResetToggled(bool checked);
+#endif
     void slotBypassEqToggled(bool checked);
     // Create, populate and show/hide EQ & QuickEffect selectors, considering the
     // number of decks and the 'Single EQ' checkbox
@@ -111,10 +113,13 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqEffectsOnly;
     bool m_eqAutoReset;
     bool m_gainAutoReset;
+    bool m_stemAutoReset;
     bool m_eqBypass;
 
     bool m_initializing;
     bool m_updatingMainEQ;
+    bool m_applyingDeckEQs;
+    bool m_applyingQuickEffects;
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;

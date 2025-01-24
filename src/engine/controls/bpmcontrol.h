@@ -65,7 +65,7 @@ class BpmControl : public EngineControl {
     /// override is used for seeks.
     double updateBeatDistance(mixxx::audio::FramePos playpos);
 
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    void collectFeatures(GroupFeatureState* pGroupFeatures, double speed) const;
 
     // Calculates contextual information about beats: the previous beat, the
     // next beat, the current beat length, and the beat ratio (how far dPosition
@@ -151,6 +151,7 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
     std::unique_ptr<ControlEncoder> m_pTranslateBeatsMove;
     std::unique_ptr<ControlPushButton> m_pBeatsUndo;
+    std::unique_ptr<ControlObject> m_pBeatsUndoPossible;
 
     std::unique_ptr<ControlPushButton> m_pBeatsHalve;
     std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;

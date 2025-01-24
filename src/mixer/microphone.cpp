@@ -16,14 +16,13 @@ Microphone::Microphone(PlayerManager* pParent,
         EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
-    EngineMicrophone* pMicrophone =
-            new EngineMicrophone(channelGroup, pEffectsManager);
-    pEngine->addChannel(pMicrophone);
+    auto pMicrophone = std::make_unique<EngineMicrophone>(channelGroup, pEffectsManager);
     AudioInput micInput = AudioInput(AudioPathType::Microphone,
             0,
             mixxx::audio::ChannelCount::stereo(),
             index);
-    pSoundManager->registerInput(micInput, pMicrophone);
+    pSoundManager->registerInput(micInput, pMicrophone.get());
+    pEngine->addChannel(std::move(pMicrophone));
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
     m_pTalkoverEnabled = make_parented<ControlProxy>(group, "talkover", this);

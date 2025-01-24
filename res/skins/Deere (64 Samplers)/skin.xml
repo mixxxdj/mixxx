@@ -212,7 +212,7 @@
 
                 <WidgetGroup><!-- Main section -->
                   <Layout>vertical</Layout>
-                  <SizePolicy>min,max</SizePolicy>
+                  <SizePolicy>min,min</SizePolicy>
                   <Children>
                     <Template src="skins:Deere/main_decks.xml"/>
                     <Template src="skins:Deere/effect_rack.xml"/>

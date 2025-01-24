@@ -15,6 +15,8 @@ const QString kColorPaletteHotcueIndicesConfigSeparator = QStringLiteral(" ");
 const QString kColorPaletteGroup = QStringLiteral("[ColorPalette %1]");
 const ConfigKey kHotcueColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("HotcueColorPalette"));
 const ConfigKey kTrackColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("TrackColorPalette"));
+const ConfigKey kKeyColorPaletteConfigKey(
+        kColorPaletteConfigGroup, QStringLiteral("KeyColorPalette"));
 
 int numberOfDecimalDigits(int number) {
     int numDigits = 1;
@@ -161,6 +163,28 @@ void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette
         return;
     }
     m_pConfig->setValue(kTrackColorPaletteConfigKey, name);
+    setColorPalette(name, colorPalette);
+}
+
+ColorPalette ColorPaletteSettings::getKeyColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette);
+}
+
+ColorPalette ColorPaletteSettings::getConfigKeyColorPalette() const {
+    QString name = m_pConfig->getValueString(kKeyColorPaletteConfigKey);
+    return getKeyColorPalette(name);
+}
+
+void ColorPaletteSettings::setKeyColorPalette(const ColorPalette& colorPalette) {
+    QString name = colorPalette.getName();
+    VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
+        qWarning() << "Palette name must not be empty!";
+        return;
+    }
+    m_pConfig->setValue(kKeyColorPaletteConfigKey, name);
     setColorPalette(name, colorPalette);
 }
 

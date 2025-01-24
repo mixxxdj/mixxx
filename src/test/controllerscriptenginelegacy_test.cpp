@@ -1,25 +1,48 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <QByteArrayView>
+#include <QMetaEnum>
 #include <QScopedPointer>
 #include <QTemporaryFile>
 #include <QThread>
 #include <QtDebug>
+#include <bit>
 #include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
+#ifdef MIXXX_USE_QML
+#include <QQuickItem>
+
+#include "controllers/controllerenginethreadcontrol.h"
+#include "controllers/rendering/controllerrenderingengine.h"
+#endif
 #include "controllers/softtakeover.h"
+#include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QML
+#include "qml/qmlmixxxcontrollerscreen.h"
+#endif
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
+
+using ::testing::_;
+using namespace std::chrono_literals;
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerScriptEngineLegacyTest : public MixxxTest {
+class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxTest {
   protected:
+    ControllerScriptEngineLegacyTest()
+            : ControllerScriptEngineLegacy(nullptr, logger) {
+    }
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
         QByteArray contentsBa = contents.toLocal8Bit();
         ScopedTemporaryFile pFile = std::make_unique<QTemporaryFile>();
@@ -31,23 +54,24 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
 
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngine->initialize();
+        initialize();
     }
 
     void TearDown() override {
-        delete cEngine;
         mixxx::Time::setTestMode(false);
+#ifdef MIXXX_USE_QML
+        m_rootItems.clear();
+#endif
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
-        return cEngine->evaluateScriptFile(scriptFile);
+        return ControllerScriptEngineLegacy::evaluateScriptFile(scriptFile);
     }
 
     QJSValue evaluate(const QString& code) {
-        return cEngine->jsEngine()->evaluate(code);
+        return jsEngine()->evaluate(code);
     }
 
     bool evaluateAndAssert(const QString& code) {
@@ -65,7 +89,24 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
         application()->processEvents();
     }
 
-    ControllerScriptEngineLegacy* cEngine;
+#ifdef MIXXX_USE_QML
+    QHash<QString, std::shared_ptr<ControllerRenderingEngine>>& renderingScreens() {
+        return m_renderingScreens;
+    }
+
+    std::unordered_map<QString,
+            std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>&
+    rootItems() {
+        return m_rootItems;
+    }
+
+    void testHandleScreen(
+            const LegacyControllerMapping::ScreenInfo& screeninfo,
+            const QImage& frame,
+            const QDateTime& timestamp) {
+        handleScreenFrame(screeninfo, frame, timestamp);
+    }
+#endif
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
@@ -171,7 +212,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
     // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -202,8 +243,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
-    // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -620,3 +660,190 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
+
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.Charset.Latin9, 'Hello!')");
+
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.Charset.Latin9, 'مايأ نامز')"));
+    char sub = '\x1A'; // ASCII/Latin9 SUB character
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray(
+                    {sub, sub, sub, sub, '\x20', sub, sub, sub, sub}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.Charset.UTF_16LE, 'مايأ نامز')"));
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray({'\x45',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x4A',
+                    '\x06',
+                    '\x23',
+                    '\x06',
+                    '\x20',
+                    '\x00',
+                    '\x46',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x45',
+                    '\x06',
+                    '\x32',
+                    '\x06'}));
+}
+
+#define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! 😊"
+
+static int convertedCharsetForString(ControllerScriptInterfaceLegacy::Charset charset) {
+    // the expected length after conversion of COMPLICATEDSTRINGLITERAL
+    using enum ControllerScriptInterfaceLegacy::Charset;
+    switch (charset) {
+    case UTF_8:
+        return 63;
+    case UTF_16LE:
+    case UTF_16BE:
+        return 66;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 128;
+    case ASCII:
+    case CentralEurope:
+    case Cyrillic:
+    case Latin1:
+    case Greek:
+    case Turkish:
+    case Hebrew:
+    case Arabic:
+    case Baltic:
+    case Vietnamese:
+    case Latin9:
+    case KOI8_U:
+        return 32;
+    case Shift_JIS:
+    case EUC_JP:
+    case EUC_KR:
+    case Big5_HKSCS:
+        return 49;
+    case UCS2:
+        return 68;
+    case SCSU:
+        return 51;
+    case BOCU_1:
+        return 53;
+    case CESU_8:
+        return 65;
+    }
+    // unreachable, but gtest does not offer a way to assert this here.
+    // returning 0 will almost certainly also result in a failure.
+    return 0;
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
+    QMetaEnum charsetEnumEntry = QMetaEnum::fromType<
+            ControllerScriptInterfaceLegacy::Charset>();
+
+    for (int i = 0; i < charsetEnumEntry.keyCount(); ++i) {
+        QString key = charsetEnumEntry.key(i);
+        auto enumValue =
+                static_cast<ControllerScriptInterfaceLegacy::Charset>(
+                        charsetEnumEntry.value(i));
+        QString source = QStringLiteral(
+                "engine.convertCharset(engine.Charset.%1, "
+                "'" COMPLICATEDSTRINGLITERAL "')")
+                                 .arg(key);
+        auto result = qjsvalue_cast<QByteArray>(evaluate(source));
+        EXPECT_EQ(result.size(), convertedCharsetForString(enumValue))
+                << "Unexpected length of converted string for encoding: '"
+                << key.toStdString() << "'";
+    }
+}
+
+#ifdef MIXXX_USE_QML
+class MockScreenRender : public ControllerRenderingEngine {
+  public:
+    MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
+    MOCK_METHOD(void,
+            requestSendingFrameData,
+            (Controller * controller, const QByteArray& frame),
+            (override));
+};
+
+TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
+    SETUP_LOG_CAPTURE();
+    LegacyControllerMapping::ScreenInfo dummyScreen{
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // rawData
+            false                                                  // reversedColor
+    };
+    QImage dummyFrame;
+    // Allocate screen on the heap as it need to outlive the this function,
+    // since the engine will take ownership of it
+    std::shared_ptr<MockScreenRender> pDummyRender =
+            std::make_shared<MockScreenRender>(dummyScreen);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, _)).Times(0);
+    EXPECT_LOG_MSG(QtWarningMsg,
+            "Could not find a valid transform function but the screen doesn't "
+            "accept raw data. Aborting screen rendering.");
+
+    renderingScreens().insert(dummyScreen.identifier, pDummyRender);
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+
+    testHandleScreen(
+            dummyScreen,
+            dummyFrame,
+            QDateTime::currentDateTime());
+
+    ASSERT_ALL_EXPECTED_MSG();
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
+    SETUP_LOG_CAPTURE();
+    LegacyControllerMapping::ScreenInfo dummyScreen{
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // reversedColor
+            true                                                   // rawData
+    };
+    QImage dummyFrame;
+    // Allocate screen on the heap as it need to outlive the this function,
+    // since the engine will take ownership of it
+    std::shared_ptr<MockScreenRender> pDummyRender =
+            std::make_shared<MockScreenRender>(dummyScreen);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
+
+    renderingScreens().insert(dummyScreen.identifier, pDummyRender);
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+
+    testHandleScreen(
+            dummyScreen,
+            dummyFrame,
+            QDateTime::currentDateTime());
+
+    ASSERT_ALL_EXPECTED_MSG();
+}
+#endif

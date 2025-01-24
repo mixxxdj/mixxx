@@ -1,11 +1,16 @@
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 
 #include "controllers/midi/midiutils.h"
+#include "util/logger.h"
 
 #define DEFAULT_OUTPUT_MAX 1.0
 #define DEFAULT_OUTPUT_MIN 0.0 // Anything above 0 is "on"
 #define DEFAULT_OUTPUT_ON 0x7F
 #define DEFAULT_OUTPUT_OFF 0x00
+
+namespace {
+const mixxx::Logger kLogger("LegacyMidiControllerMappingFileHandler");
+} // namespace
 
 std::shared_ptr<LegacyControllerMapping>
 LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
@@ -120,7 +125,7 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         control = control.nextSiblingElement("control");
     }
 
-    qDebug() << "LegacyMidiControllerMappingFileHandler: Input mapping parsing complete.";
+    kLogger.debug() << "Input mapping parsing complete.";
 
     // Parse static output mappings
 
@@ -212,7 +217,7 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         output = output.nextSiblingElement("output");
     }
 
-    qDebug() << "MidiMappingFileHandler: Output mapping parsing complete.";
+    kLogger.debug() << "Output mapping parsing complete.";
 
     return pMapping;
 }
@@ -236,7 +241,7 @@ void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
     // to remove duplicate keys or else we'll duplicate those values.
     auto sortedInputKeys = mapping.getInputMappings().uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
-    for (const auto& key : sortedInputKeys) {
+    for (const auto& key : std::as_const(sortedInputKeys)) {
         for (auto it = mapping.getInputMappings().constFind(key);
                 it != mapping.getInputMappings().constEnd() && it.key() == key;
                 ++it) {
@@ -250,7 +255,7 @@ void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
     QDomElement outputs = doc->createElement("outputs");
     auto sortedOutputKeys = mapping.getOutputMappings().uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
-    for (const auto& key : sortedOutputKeys) {
+    for (const auto& key : std::as_const(sortedOutputKeys)) {
         for (auto it = mapping.getOutputMappings().constFind(key);
                 it != mapping.getOutputMappings().constEnd() && it.key() == key;
                 ++it) {

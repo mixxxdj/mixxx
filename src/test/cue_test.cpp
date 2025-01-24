@@ -37,7 +37,7 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
     // in integer numbers.
     const auto cueInfo1 = CueInfo(
             CueType::HotCue,
-            std::make_optional(1.0 * 44100 * mixxx::kEngineChannelCount),
+            std::make_optional(1.0 * 44100 * mixxx::kEngineChannelOutputCount),
             std::nullopt,
             std::make_optional(3),
             QStringLiteral("label"),

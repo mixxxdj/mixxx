@@ -11,6 +11,10 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#ifdef __STEM__
+#include "track/steminfo.h"
+#include "track/steminfoimporter.h"
+#endif
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -107,7 +111,7 @@ class Track : public QObject {
     QString getType() const;
 
     // Get number of channels
-    int getChannels() const;
+    mixxx::audio::ChannelCount getChannels() const;
 
     mixxx::audio::SampleRate getSampleRate() const;
 
@@ -181,7 +185,7 @@ class Track : public QObject {
 
     // Returns the content of the year library column.
     // This was original only the four digit (gregorian) calendar year of the release date
-    // but allows to store any user string. Now it is altenatively used as
+    // but allows to store any user string. Now it is alternatively used as
     // recording date/time in the ISO 8601 yyyy-MM-ddTHH:mm:ss format tunkated at any point,
     // following the TDRC ID3v2.4 frame or if not exists, TYER + TDAT.
     QString getYear() const;
@@ -318,6 +322,7 @@ class Track : public QObject {
     }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
+    CuePointer findHotcueByIndex(int idx) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const {
@@ -325,8 +330,23 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_cuePoints;
     }
-
+    void swapHotcues(int a, int b);
     void setCuePoints(const QList<CuePointer>& cuePoints);
+
+#ifdef __STEM__
+    QList<StemInfo> getStemInfo() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return m_stemInfo;
+    }
+    // Setter is only available internally. See setStemPointsWhileLocked
+
+    bool hasStem() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return !m_stemInfo.isEmpty();
+    }
+#endif
 
     enum class ImportStatus {
         Pending,
@@ -416,6 +436,16 @@ class Track : public QObject {
     void setAudioProperties(
             const mixxx::audio::StreamInfo& streamInfo);
 
+    // Information about the actual properties of the
+    // audio stream is only available after opening the
+    // source at least once. On this occasion the metadata
+    // stream info of the track need to be updated to reflect
+    // these values.
+    bool hasStreamInfoFromSource() const {
+        const auto locked = lockMutex(&m_qMutex);
+        return m_record.hasStreamInfoFromSource();
+    }
+
   signals:
     void artistChanged(const QString&);
     void titleChanged(const QString&);
@@ -449,6 +479,9 @@ class Track : public QObject {
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void ratingUpdated(int rating);
     void cuesUpdated();
+#ifdef __STEM__
+    void stemsUpdated();
+#endif
     void loopRemove();
     void analyzed();
 
@@ -503,6 +536,17 @@ class Track : public QObject {
     /// caller guards this a lock.
     bool importPendingCueInfosWhileLocked();
 
+#ifdef __STEM__
+    /// Sets stem info and returns a boolean to indicate if stems were updated.
+    /// Only supposed to be called while the caller guards this a lock.
+    bool setStemInfosWhileLocked(QList<StemInfo> stemInfo);
+
+    /// Imports pending stem info from a stemInfoImporter and returns a boolean to
+    /// indicate if stems were updated. Only supposed to be called while the
+    /// caller guards this a lock.
+    bool importPendingStemInfosWhileLocked();
+#endif
+
     mixxx::Bpm getBpmWhileLocked() const;
     bool trySetBpmWhileLocked(mixxx::Bpm bpm);
     bool trySetBeatsWhileLocked(
@@ -535,16 +579,6 @@ class Track : public QObject {
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
             const SyncTrackMetadataParams& syncParams);
-
-    // Information about the actual properties of the
-    // audio stream is only available after opening the
-    // source at least once. On this occasion the metadata
-    // stream info of the track need to be updated to reflect
-    // these values.
-    bool hasStreamInfoFromSource() const {
-        const auto locked = lockMutex(&m_qMutex);
-        return m_record.hasStreamInfoFromSource();
-    }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 
@@ -566,6 +600,11 @@ class Track : public QObject {
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
+
+#ifdef __STEM__
+    // The list of stem info
+    QList<StemInfo> m_stemInfo;
+#endif
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;

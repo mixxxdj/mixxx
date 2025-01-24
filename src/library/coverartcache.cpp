@@ -2,7 +2,7 @@
 
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QtConcurrent>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include "moc_coverartcache.cpp"
