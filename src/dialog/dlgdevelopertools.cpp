@@ -47,6 +47,10 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
             &QPushButton::clicked,
             this,
             &DlgDeveloperTools::slotControlDump);
+    connect(oscQuerryDump,
+            &QPushButton::clicked,
+            this,
+            &DlgDeveloperTools::slotOscQuerryDump);
 
     // Set up the log search box
     connect(logSearch,
@@ -131,6 +135,12 @@ void DlgDeveloperTools::slotControlDump() {
             dumpFile.write(line.toLocal8Bit());
         }
     }
+}
+
+void DlgDeveloperTools::slotOscQuerryDump() {
+    QString oscQueryFileName = m_pConfig->getSettingsPath() +
+            "/oscquery.json";
+    ControlDoublePrivate::writeOscQueryDescription(oscQueryFileName);
 }
 
 void DlgDeveloperTools::slotLogSearch() {
