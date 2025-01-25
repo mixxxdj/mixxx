@@ -4,6 +4,7 @@
 
 class QString;
 class QVariant;
+class ConfigKey;
 
 class OscQueryDescription {
   public:
@@ -16,6 +17,9 @@ class OscQueryDescription {
             const QString& description);
 
     void removeAddress(const QString& address);
+
+    void insertControlKey(const ConfigKey& key);
+    void removeControlKey(const ConfigKey& key);
 
     QString toJsonString() const;
 

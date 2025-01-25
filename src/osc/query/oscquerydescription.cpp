@@ -5,6 +5,8 @@
 #include <QJsonDocument>
 #include <QJsonValue>
 
+#include "preferences/configobject.h"
+
 namespace {
 
 template<typename T>
@@ -12,6 +14,15 @@ T take_back(std::vector<T>* pVec) {
     T last_element = std::move(pVec->back());
     pVec->pop_back();
     return last_element;
+}
+
+QString toOscAddress(const ConfigKey& key) {
+    QString groupWithoutBrackets = key.group.mid(1, key.group.size() - 2);
+    QString oscAddress = groupWithoutBrackets + QChar('/') + key.item;
+    oscAddress.replace(QChar('['), QChar('('));
+    oscAddress.replace(QChar(']'), QChar(')'));
+    oscAddress.replace(QChar('_'), QChar('/'));
+    return oscAddress;
 }
 
 } // namespace
@@ -161,4 +172,20 @@ bool OscQueryDescription::saveToFile(const QString& filePath) const {
     file.write(toJsonString().toUtf8());
     file.close();
     return true;
+}
+
+void OscQueryDescription::insertControlKey(const ConfigKey& key) {
+    QString address = toOscAddress(key);
+    addAddress("/cop/" + address, "f", "3", "");
+    addAddress("/get/cop/" + address, "f", "3", "");
+    addAddress("/cov/" + address, "f", "3", "");
+    addAddress("/get/cov/" + address, "f", "3", "");
+}
+
+void OscQueryDescription::removeControlKey(const ConfigKey& key) {
+    QString address = toOscAddress(key);
+    removeAddress("/cop/" + address);
+    removeAddress("/get/cop/" + address);
+    removeAddress("/cov/" + address);
+    removeAddress("/get/cov/" + address);
 }

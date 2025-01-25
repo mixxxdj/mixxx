@@ -86,6 +86,7 @@ ControlDoublePrivate::ControlDoublePrivate(
 ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHashMutex.lock();
     //qDebug() << "ControlDoublePrivate::s_qCOHash.remove(" << m_key.group << "," << m_key.item << ")";
+    s_oscQueryDecription.removeControlKey(m_key);
     s_qCOHash.remove(m_key);
     s_qCOHashMutex.unlock();
 
@@ -191,6 +192,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const MMutexLocker locker(&s_qCOHashMutex);
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
         s_qCOHash.insert(key, pControl);
+        s_oscQueryDecription.insertControlKey(key);
         return pControl;
     }
 
