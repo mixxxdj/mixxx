@@ -5,7 +5,7 @@
 #include <QSet>
 #include <QString>
 
-#include "library/dao/playlistdao.h"
+#include "library/dao/groupedplaylistsdao.h"
 #include "library/trackset/basetracksetfeature.h"
 // #include "library/playlisttablemodel.h"
 #include "library/trackset/playlist/playlist.h"
@@ -13,7 +13,7 @@
 
 class WLibrary;
 class KeyboardEventFilter;
-class PlaylistTableModel;
+class GroupedPlaylistsTableModel;
 class TreeItem;
 class WLibrarySidebar;
 class QAction;
@@ -27,7 +27,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
   public:
     BaseGroupedPlaylistsFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
-            PlaylistTableModel* pModel,
+            GroupedPlaylistsTableModel* pModel,
             const QString& rootViewName,
             const QString& iconName,
             const QString& countsDurationTableName,
@@ -41,7 +41,6 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
-    void playlistSummmary(int id);
 
   public slots:
     QModelIndex rebuildChildModel(int selectedPlaylistId);
@@ -50,7 +49,6 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void oldactivateChild(const QModelIndex& index);
     void activateChild(const QModelIndex& index);
     virtual void activatePlaylist(int playlistId);
-    //    bool activatePlaylist(PlaylistId playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
@@ -90,15 +88,12 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
         QString label;
     };
 
-    // void updateChildModel(const QSet<int>& updatedPlaylistIds);
-    //  void updateChildModel(const QSet<PlaylistId>& updatedPlaylistIds);
-    virtual void oldupdateChildModel(const QSet<int>& playlistIds);
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
 
     /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
-    virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    virtual void addToAutoDJ(GroupedPlaylistsDAO::AutoDJSendLoc loc);
 
     int playlistIdFromIndex(const QModelIndex& index) const;
     // PlaylistId playlistIdFromIndex(const QModelIndex& index) const;
@@ -111,7 +106,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
 
     QString createPlaylistLabel(const QString& name, int count, int duration) const;
 
-    PlaylistDAO& m_playlistDao;
+    GroupedPlaylistsDAO& m_groupedPlaylistsDao;
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
@@ -131,8 +126,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     QAction* m_pDuplicatePlaylistAction;
     QAction* m_pAnalyzePlaylistAction;
 
-    PlaylistTableModel* m_pPlaylistTableModel;
-    //    PlaylistTableModel m_playlistTableModel;
+    GroupedPlaylistsTableModel* m_pGroupedPlaylistsTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
     const QString m_countsDurationTableName;
     TrackId m_selectedTrackId;
@@ -150,11 +144,13 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     int m_prevSiblingPlaylist;
     // PlaylistId m_prevSiblingPlaylist;
 
-    std::unique_ptr<TreeItem> newTreeItemForPlaylistSummary(
-            const PlaylistSummary& playlistSummary);
+    // std::unique_ptr<TreeItem> newTreeItemForPlaylistSummary(
+    //         const PlaylistSummary& playlistSummary);
     void updateTreeItemForPlaylistSummary(
-            TreeItem* pTreeItem,
-            const PlaylistSummary& playlistSummary) const;
+            TreeItem* pTreeItem, bool locked) const;
+    //    void updateTreeItemForPlaylistSummary(
+    //            TreeItem* pTreeItem,
+    //            const PlaylistSummary& playlistSummary) const;
 
     TrackCollection* const m_pTrackCollection;
 
@@ -165,7 +161,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
 
     void initActions();
-    void connectPlaylistDAO();
+    void connectGroupedPlaylistsDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
     // QString fetchPlaylistLabel(int playlistId);

@@ -80,7 +80,7 @@ class PlaylistSummaryQueryFields : public PlaylistQueryFields {
     uint getTrackCount(const FwdSqlQuery& query) const {
         QVariant varTrackCount = query.fieldValue(m_iTrackCount);
         if (varTrackCount.isNull()) {
-            return 0; // crate is empty
+            return 0; // playlist is empty
         } else {
             return varTrackCount.toUInt();
         }
@@ -88,7 +88,7 @@ class PlaylistSummaryQueryFields : public PlaylistQueryFields {
     double getTrackDuration(const FwdSqlQuery& query) const {
         QVariant varTrackDuration = query.fieldValue(m_iTrackDuration);
         if (varTrackDuration.isNull()) {
-            return 0.0; // crate is empty
+            return 0.0; // playlist is empty
         } else {
             return varTrackDuration.toDouble();
         }
@@ -137,7 +137,7 @@ class PlaylistTrackQueryFields {
     explicit PlaylistTrackQueryFields(const FwdSqlQuery& query);
     virtual ~PlaylistTrackQueryFields() = default;
 
-    PlaylistId crateId(const FwdSqlQuery& query) const {
+    PlaylistId playlistId(const FwdSqlQuery& query) const {
         return PlaylistId(query.fieldValue(m_iPlaylistId));
     }
     TrackId trackId(const FwdSqlQuery& query) const {
@@ -171,8 +171,8 @@ class PlaylistTrackSelectResult : public FwdSqlQuerySelectResult {
     }
     ~PlaylistTrackSelectResult() override = default;
 
-    PlaylistId crateId() const {
-        return m_queryFields.crateId(query());
+    PlaylistId playlistId() const {
+        return m_queryFields.playlistId(query());
     }
     TrackId trackId() const {
         return m_queryFields.trackId(query());
@@ -242,21 +242,21 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
     /////////////////////////////////////////////////////////////////////////
 
     bool onInsertingPlaylist(
-            const Playlist& crate,
+            const Playlist& playlist,
             PlaylistId* pPlaylistId = nullptr);
 
     bool onUpdatingPlaylist(
-            const Playlist& crate);
+            const Playlist& playlist);
 
     bool onDeletingPlaylist(
-            PlaylistId crateId);
+            PlaylistId playlistId);
 
     bool onAddingPlaylistTracks(
-            PlaylistId crateId,
+            PlaylistId playlistId,
             const QList<TrackId>& trackIds);
 
     bool onRemovingPlaylistTracks(
-            PlaylistId crateId,
+            PlaylistId playlistId,
             const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
@@ -268,7 +268,7 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
 
     uint countPlaylists() const;
 
-    // Omit the pPlaylist parameter for checking if the corresponding crate exists.
+    // Omit the pPlaylist parameter for checking if the corresponding playlist exists.
     bool readPlaylistById(
             PlaylistId id,
             Playlist* pPlaylist = nullptr) const;
@@ -276,7 +276,7 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
             const QString& name,
             Playlist* pPlaylist = nullptr) const;
 
-    // The following list results are ordered by crate name:
+    // The following list results are ordered by playlist name:
     //  - case-insensitive
     //  - locale-aware
     PlaylistSelectResult selectPlaylists() const; // all playlists
@@ -294,31 +294,31 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
     // before starting to code.
     PlaylistSelectResult selectAutoDjPlaylists(bool autoDjSource = true) const;
 
-    // Playlist content, i.e. the crate's tracks referenced by id
-    uint countPlaylistTracks(PlaylistId crateId) const;
+    // Playlist content, i.e. the playlist's tracks referenced by id
+    uint countPlaylistTracks(PlaylistId playlistId) const;
 
-    // Format a subselect query for the tracks contained in crate.
+    // Format a subselect query for the tracks contained in playlist.
     static QString formatSubselectQueryForPlaylistTrackIds(
-            PlaylistId crateId); // no db access
+            PlaylistId playlistId); // no db access
 
     QString formatQueryForTrackIdsByPlaylistNameLike(
-            const QString& crateNameLike) const;         // no db access
+            const QString& playlistNameLike) const;      // no db access
     static QString formatQueryForTrackIdsWithPlaylist(); // no db access
-    // Select the track ids of a crate or the crate ids of a track respectively.
+    // Select the track ids of a playlist or the playlist ids of a track respectively.
     // The results are sorted (ascending) by the target id, i.e. the id that is
     // not provided for filtering. This enables the caller to perform efficient
     // binary searches on the result set after storing it in a list or vector.
     PlaylistTrackSelectResult selectPlaylistTracksSorted(
-            PlaylistId crateId) const;
+            PlaylistId playlistId) const;
     PlaylistTrackSelectResult selectTrackPlaylistsSorted(
             TrackId trackId) const;
     PlaylistSummarySelectResult selectPlaylistsWithTrackCount(
             const QList<TrackId>& trackIds) const;
     PlaylistTrackSelectResult selectTracksSortedByPlaylistNameLike(
-            const QString& crateNameLike) const;
+            const QString& playlistNameLike) const;
     TrackSelectResult selectAllTracksSorted() const;
 
-    // Returns the set of crate ids for playlists that contain any of the
+    // Returns the set of playlist ids for playlists that contain any of the
     // provided track ids.
     QSet<PlaylistId> collectPlaylistIdsOfTracks(
             const QList<TrackId>& trackIds) const;
@@ -328,13 +328,13 @@ class PlaylistStorage : public virtual /*implements*/ SqlStorage {
     /////////////////////////////////////////////////////////////////////////
 
     // Track summaries of all playlists:
-    //  - Hidden tracks are excluded from the crate summary statistics
-    //  - The result list is ordered by crate name:
+    //  - Hidden tracks are excluded from the playlist summary statistics
+    //  - The result list is ordered by playlist name:
     //     - case-insensitive
     //     - locale-aware
     PlaylistSummarySelectResult selectPlaylistSummaries() const; // all playlists
 
-    // Omit the pPlaylist parameter for checking if the corresponding crate exists.
+    // Omit the pPlaylist parameter for checking if the corresponding playlist exists.
     bool readPlaylistSummaryById(PlaylistId id, PlaylistSummary* pPlaylistSummary = nullptr) const;
 
   private:

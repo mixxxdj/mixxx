@@ -1184,6 +1184,7 @@ add_library(
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
   src/library/dao/playlistdao.cpp
+  src/library/dao/groupedplaylistsdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
@@ -1266,6 +1267,7 @@ add_library(
   src/library/trackset/crate/cratetablemodel.cpp
   src/library/trackset/playlist/basegroupedplaylistsfeature.cpp
   src/library/trackset/playlist/groupedplaylistsfeature.cpp
+  src/library/trackset/playlist/groupedplayliststablemodel.cpp
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp

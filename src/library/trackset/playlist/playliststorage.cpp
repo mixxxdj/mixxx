@@ -159,91 +159,91 @@ void PlaylistStorage::repairDatabase(const QSqlDatabase& database) {
     // query.
 
     // Playlists
-    {
-        // Delete playlists with empty names
-        FwdSqlQuery query(database,
-                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL OR TRIM(%2)=''")
-                        .arg(PLAYLIST_TABLE, PLAYLISTTABLE_NAME));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Deleted" << query.numRowsAffected()
-                    << "playlists with empty names";
-        }
-    }
-    {
-        // Fix invalid values in the "locked" column
-        FwdSqlQuery query(database,
-                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
-                        .arg(PLAYLIST_TABLE, PLAYLISTTABLE_LOCKED));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Fixed boolean values in table" << PLAYLIST_TABLE
-                    << "column" << PLAYLISTTABLE_LOCKED
-                    << "for" << query.numRowsAffected() << "playlists";
-        }
-    }
-    {
-        // Fix invalid values in the "autodj_source" column
-        FwdSqlQuery query(database,
-                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
-                        .arg(PLAYLIST_TABLE, PLAYLISTTABLE_AUTODJ_SOURCE));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Fixed boolean values in table" << PLAYLIST_TABLE
-                    << "column" << PLAYLISTTABLE_AUTODJ_SOURCE
-                    << "for" << query.numRowsAffected() << "playlists";
-        }
-    }
-
-    // Playlist tracks
-    {
-        // Remove tracks from non-existent playlists
-        FwdSqlQuery query(database,
-                QStringLiteral(
-                        "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
-                        .arg(PLAYLIST_TRACKS_TABLE,
-                                PLAYLISTTRACKSTABLE_PLAYLISTID,
-                                PLAYLISTTABLE_ID,
-                                PLAYLIST_TABLE));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning() << "Removed" << query.numRowsAffected()
-                              << "playlist tracks from non-existent playlists";
-        }
-    }
-    {
-        // Remove library purged tracks from playlists
-        FwdSqlQuery query(database,
-                QStringLiteral(
-                        "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
-                        .arg(PLAYLIST_TRACKS_TABLE,
-                                PLAYLISTTRACKSTABLE_TRACKID,
-                                LIBRARYTABLE_ID,
-                                LIBRARY_TABLE));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning() << "Removed" << query.numRowsAffected()
-                              << "library purged tracks from playlists";
-        }
-    }
+    //    {
+    //        // Delete playlists with empty names
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("DELETE FROM %1 WHERE %2 IS NULL OR TRIM(%2)=''")
+    //                        .arg(PLAYLIST_TABLE, PLAYLISTTABLE_NAME));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Deleted" << query.numRowsAffected()
+    //                    << "playlists with empty names";
+    //        }
+    //    }
+    //    {
+    //        // Fix invalid values in the "locked" column
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
+    //                        .arg(PLAYLIST_TABLE, PLAYLISTTABLE_LOCKED));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Fixed boolean values in table" << PLAYLIST_TABLE
+    //                    << "column" << PLAYLISTTABLE_LOCKED
+    //                    << "for" << query.numRowsAffected() << "playlists";
+    //        }
+    //    }
+    //    {
+    //        // Fix invalid values in the "autodj_source" column
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral("UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)")
+    //                        .arg(PLAYLIST_TABLE, PLAYLISTTABLE_AUTODJ_SOURCE));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning()
+    //                    << "Fixed boolean values in table" << PLAYLIST_TABLE
+    //                    << "column" << PLAYLISTTABLE_AUTODJ_SOURCE
+    //                    << "for" << query.numRowsAffected() << "playlists";
+    //        }
+    //    }
+    //
+    //    // Playlist tracks
+    //    {
+    //        // Remove tracks from non-existent playlists
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral(
+    //                        "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
+    //                        .arg(PLAYLIST_TRACKS_TABLE,
+    //                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+    //                                PLAYLISTTABLE_ID,
+    //                                PLAYLIST_TABLE));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning() << "Removed" << query.numRowsAffected()
+    //                              << "playlist tracks from non-existent playlists";
+    //        }
+    //    }
+    //    {
+    //        // Remove library purged tracks from playlists
+    //        FwdSqlQuery query(database,
+    //                QStringLiteral(
+    //                        "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
+    //                        .arg(PLAYLIST_TRACKS_TABLE,
+    //                                PLAYLISTTRACKSTABLE_TRACKID,
+    //                                LIBRARYTABLE_ID,
+    //                                LIBRARY_TABLE));
+    //        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+    //            kLogger.warning() << "Removed" << query.numRowsAffected()
+    //                              << "library purged tracks from playlists";
+    //        }
+    //    }
 }
 
 void PlaylistStorage::connectDatabase(const QSqlDatabase& database) {
-    m_database = database;
-    createViews();
+    //    m_database = database;
+    //    createViews();
 }
 
 void PlaylistStorage::disconnectDatabase() {
-    // Ensure that we don't use the current database connection
-    // any longer.
-    m_database = QSqlDatabase();
+    //    // Ensure that we don't use the current database connection
+    //    // any longer.
+    //    m_database = QSqlDatabase();
 }
 
-void PlaylistStorage::createViews() {
-    VERIFY_OR_DEBUG_ASSERT(
-            FwdSqlQuery(m_database, kPlaylistSummaryViewQuery).execPrepared()) {
-        kLogger.critical()
-                << "Failed to create database view for playlist summaries!";
-    }
-}
+// void PlaylistStorage::createViews() {
+//     VERIFY_OR_DEBUG_ASSERT(
+//             FwdSqlQuery(m_database, kPlaylistSummaryViewQuery).execPrepared()) {
+//         kLogger.critical()
+//                 << "Failed to create database view for playlist summaries!";
+//     }
+// }
 
 uint PlaylistStorage::countPlaylists() const {
     FwdSqlQuery query(m_database,

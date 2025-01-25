@@ -77,12 +77,14 @@ QString locationPathPrefixFromRootDir(const QDir& rootDir) {
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        GroupedPlaylistsDAO& groupedPlaylistsDao,
+        AnalysisDao& analysisDao,
+        LibraryHashDAO& libraryHashDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
+          m_groupedPlaylistsDao(groupedPlaylistsDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
