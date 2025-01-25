@@ -47,7 +47,7 @@ void OscQueryDescription::addAddress(
 
     // Create a list of QJsonObjects.
     // Note: QJsonObject is only temporary helper class for writing a QJsonValue
-    for (const auto& pathPart : pathParts) {
+    for (const auto& pathPart : std::as_const(pathParts)) {
         if (pathPart.isEmpty()) {
             continue;
         }
@@ -96,7 +96,7 @@ void OscQueryDescription::removeAddress(const QString& address) {
 
     // Create a list of QJsonObjects.
     // Note: QJsonObject is only temporary helper class for writing a QJsonValue
-    for (const auto& pathPart : pathParts) {
+    for (const auto& pathPart : std::as_const(pathParts)) {
         if (pathPart.isEmpty()) {
             continue;
         }
