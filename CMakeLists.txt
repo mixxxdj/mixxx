@@ -2880,6 +2880,7 @@ if(Qt_IS_STATIC)
     Qt${QT_VERSION_MAJOR}::QICOPlugin
     Qt${QT_VERSION_MAJOR}::QJpegPlugin
     Qt${QT_VERSION_MAJOR}::QSvgPlugin
+    Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
 
     # sqldrivers
     Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
@@ -2953,6 +2954,11 @@ else()
     install(IMPORTED_RUNTIME_ARTIFACTS
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
+      COMPONENT applocal)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/tls"
       COMPONENT applocal)
 
     if(QML)
