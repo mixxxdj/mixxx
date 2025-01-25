@@ -50,9 +50,9 @@ QVariant GroupedPlaylistsFeature::title() {
 void GroupedPlaylistsFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
-    menu.addAction(m_pCreatePlaylistAction);
+    menu.addAction(m_pCreateGroupedPlaylistsAction);
     menu.addSeparator();
-    menu.addAction(m_pCreateImportPlaylistAction);
+    menu.addAction(m_pCreateImportGroupedPlaylistsAction);
     menu.exec(globalPos);
 }
 
@@ -63,31 +63,31 @@ void GroupedPlaylistsFeature::onRightClickChild(
     int playlistId = playlistIdFromIndex(index);
 
     bool locked = m_groupedPlaylistsDao.isPlaylistLocked(playlistId);
-    m_pDeletePlaylistAction->setEnabled(!locked);
-    m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pDeleteGroupedPlaylistsAction->setEnabled(!locked);
+    m_pRenameGroupedPlaylistsAction->setEnabled(!locked);
 
-    m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
+    m_pLockGroupedPlaylistsAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
-    menu.addAction(m_pCreatePlaylistAction);
+    menu.addAction(m_pCreateGroupedPlaylistsAction);
     menu.addSeparator();
     // TODO If playlist is selected and has more than one track selected
     // show "Shuffle selected tracks", else show "Shuffle playlist"?
     menu.addAction(m_pShufflePlaylistAction);
     menu.addSeparator();
-    menu.addAction(m_pRenamePlaylistAction);
-    menu.addAction(m_pDuplicatePlaylistAction);
-    menu.addAction(m_pDeletePlaylistAction);
-    menu.addAction(m_pLockPlaylistAction);
+    menu.addAction(m_pRenameGroupedPlaylistsAction);
+    menu.addAction(m_pDuplicateGroupedPlaylistsAction);
+    menu.addAction(m_pDeleteGroupedPlaylistsAction);
+    menu.addAction(m_pLockGroupedPlaylistsAction);
     menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
-    menu.addAction(m_pAnalyzePlaylistAction);
+    menu.addAction(m_pAnalyzeGroupedPlaylistsAction);
     menu.addSeparator();
-    menu.addAction(m_pImportPlaylistAction);
-    menu.addAction(m_pExportPlaylistAction);
+    menu.addAction(m_pImportGroupedPlaylistsAction);
+    menu.addAction(m_pExportGroupedPlaylistsAction);
     menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
@@ -121,6 +121,77 @@ bool GroupedPlaylistsFeature::dragMoveAcceptChild(const QModelIndex& index, cons
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
     return !locked && formatSupported;
 }
+
+// QList<BaseGroupedPlaylistsFeature::IdAndLabel> GroupedPlaylistsFeature::createPlaylistLabels() {
+//     QSqlDatabase database =
+//             m_pLibrary->trackCollectionManager()->internalCollection()->database();
+
+//    QList<BaseGroupedPlaylistsFeature::IdAndLabel> playlistLabels;
+//    QString queryString = QStringLiteral(
+//            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
+//            "AS SELECT "
+//            "  Playlists.id AS id, "
+//            "  Playlists.name AS name, "
+//            "  LOWER(Playlists.name) AS sort_name, "
+//            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
+//            "    AS count, "
+//            "  SUM(case library.mixxx_deleted "
+//            "    when 0 then library.duration else 0 end) AS durationSeconds "
+//            "FROM Playlists "
+//            "LEFT JOIN PlaylistTracks "
+//            "  ON PlaylistTracks.playlist_id = Playlists.id "
+//            "LEFT JOIN library "
+//            "  ON PlaylistTracks.track_id = library.id "
+//            "  WHERE Playlists.hidden = %2 "
+//            "  GROUP BY Playlists.id")
+//                                  .arg(m_countsDurationTableName,
+//                                          QString::number(
+//                                                  GroupedPlaylistsDAO::PLHT_NOT_HIDDEN));
+//    queryString.append(
+//            mixxx::DbConnection::collateLexicographically(
+//                    " ORDER BY sort_name"));
+//    QSqlQuery query(database);
+//    if (!query.exec(queryString)) {
+//        LOG_FAILED_QUERY(query);
+//    }
+
+//    // Setup the sidebar playlist model
+//    QSqlTableModel playlistTableModel(this, database);
+//    playlistTableModel.setTable("PlaylistsCountsDurations");
+//    playlistTableModel.select();
+//    while (playlistTableModel.canFetchMore()) {
+//        playlistTableModel.fetchMore();
+//    }
+//    QSqlRecord record = playlistTableModel.record();
+//    int nameColumn = record.indexOf("name");
+//    int idColumn = record.indexOf("id");
+//    int countColumn = record.indexOf("count");
+//    int durationColumn = record.indexOf("durationSeconds");
+
+//    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+//        int id =
+//                playlistTableModel
+//                        .data(playlistTableModel.index(row, idColumn))
+//                        .toInt();
+//        QString name =
+//                playlistTableModel
+//                        .data(playlistTableModel.index(row, nameColumn))
+//                        .toString();
+//        int count =
+//                playlistTableModel
+//                        .data(playlistTableModel.index(row, countColumn))
+//                        .toInt();
+//        int duration =
+//                playlistTableModel
+//                        .data(playlistTableModel.index(row, durationColumn))
+//                        .toInt();
+//        BaseGroupedPlaylistsFeature::IdAndLabel idAndLabel;
+//        idAndLabel.id = id;
+//        idAndLabel.label = createPlaylistLabel(name, count, duration);
+//        playlistLabels.append(idAndLabel);
+//    }
+//    return playlistLabels;
+//}
 
 void GroupedPlaylistsFeature::slotShufflePlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
@@ -165,6 +236,44 @@ void GroupedPlaylistsFeature::slotShufflePlaylist() {
         pGroupedPlaylistsTableModel->shuffleTracks(selection, QModelIndex());
     }
 }
+
+/// Purpose: When inserting or removing playlists,
+/// we require the sidebar model not to reset.
+/// This method queries the database and does dynamic insertion
+/// @param selectedId entry which should be selected
+// QModelIndex GroupedPlaylistsFeature::constructChildModel(int selectedId) {
+//  qDebug() << "GroupedPlaylistsFeature::constructChildModel() id:" << selectedId;
+//    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
+//    int selectedRow = -1;
+
+//    int row = 0;
+//    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+//    for (const auto& idAndLabel : playlistLabels) {
+//        int playlistId = idAndLabel.id;
+//        QString playlistLabel = idAndLabel.label;
+
+//        if (selectedId == playlistId) {
+//            // save index for selection
+//            selectedRow = row;
+//        }
+
+// Create the TreeItem whose parent is the invisible root item
+//        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+//        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+
+//        decorateChild(pItem.get(), playlistId);
+//        childrenToAdd.push_back(std::move(pItem));
+
+//        ++row;
+//    }
+
+// Append all the newly created TreeItems in a dynamic way to the childmodel
+//    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
+//    if (selectedRow == -1) {
+//        return QModelIndex();
+//    }
+//    return m_pSidebarModel->index(selectedRow, 0);
+//}
 
 void GroupedPlaylistsFeature::decorateChild(TreeItem* item, int playlistId) {
     if (m_groupedPlaylistsDao.isPlaylistLocked(playlistId)) {

@@ -39,8 +39,8 @@ class GroupedPlaylistsFeature : public BaseGroupedPlaylistsFeature {
 
   protected:
     void decorateChild(TreeItem* pChild, int playlistId) override;
-    //    QList<IdAndLabel> createPlaylistLabels();
-    //    QModelIndex constructChildModel(int selectedId);
+    QList<IdAndLabel> createPlaylistLabels();
+    QModelIndex constructChildModel(int selectedId);
 
   private:
     QString getRootViewHtml() const override;

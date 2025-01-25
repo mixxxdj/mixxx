@@ -112,19 +112,19 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     QPointer<WLibrarySidebar> m_pSidebarWidget;
     QPointer<WLibrary> m_pLibraryWidget;
 
-    QAction* m_pCreatePlaylistAction;
-    QAction* m_pDeletePlaylistAction;
+    QAction* m_pCreateGroupedPlaylistsAction;
+    QAction* m_pDeleteGroupedPlaylistsAction;
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pAddToAutoDJReplaceAction;
-    QAction* m_pRenamePlaylistAction;
-    QAction* m_pLockPlaylistAction;
-    QAction* m_pImportPlaylistAction;
-    QAction* m_pCreateImportPlaylistAction;
-    QAction* m_pExportPlaylistAction;
+    QAction* m_pRenameGroupedPlaylistsAction;
+    QAction* m_pLockGroupedPlaylistsAction;
+    QAction* m_pImportGroupedPlaylistsAction;
+    QAction* m_pCreateImportGroupedPlaylistsAction;
+    QAction* m_pExportGroupedPlaylistsAction;
     QAction* m_pExportTrackFilesAction;
-    QAction* m_pDuplicatePlaylistAction;
-    QAction* m_pAnalyzePlaylistAction;
+    QAction* m_pDuplicateGroupedPlaylistsAction;
+    QAction* m_pAnalyzeGroupedPlaylistsAction;
 
     GroupedPlaylistsTableModel* m_pGroupedPlaylistsTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;

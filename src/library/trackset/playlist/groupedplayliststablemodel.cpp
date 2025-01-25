@@ -223,8 +223,7 @@ QList<QVariantMap> GroupedPlaylistsTableModel::getGroupedPlaylists() {
                 "LEFT JOIN library "
                 "    ON PlaylistTracks.track_id = library.id "
                 "WHERE Playlists.hidden = 0 "
-                "GROUP BY Playlists.name "
-                //                "GROUP BY Playlists.id, Playlists.name "
+                "GROUP BY Playlists.id, Playlists.name "
                 "ORDER BY LOWER(Playlists.name)");
         if (sDebug) {
             qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] queryString: " << queryString;

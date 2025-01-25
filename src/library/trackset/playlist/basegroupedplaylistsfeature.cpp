@@ -82,35 +82,35 @@ BaseGroupedPlaylistsFeature::BaseGroupedPlaylistsFeature(
 }
 
 void BaseGroupedPlaylistsFeature::initActions() {
-    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
-    connect(m_pCreatePlaylistAction,
+    m_pCreateGroupedPlaylistsAction = new QAction(tr("Create New Playlist"), this);
+    connect(m_pCreateGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotCreatePlaylist);
 
-    m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
-    m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
-    connect(m_pRenamePlaylistAction,
+    m_pRenameGroupedPlaylistsAction = new QAction(tr("Rename"), this);
+    m_pRenameGroupedPlaylistsAction->setShortcut(kRenameSidebarItemShortcutKey);
+    connect(m_pRenameGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotRenamePlaylist);
-    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
-    connect(m_pDuplicatePlaylistAction,
+    m_pDuplicateGroupedPlaylistsAction = new QAction(tr("Duplicate"), this);
+    connect(m_pDuplicateGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotDuplicatePlaylist);
-    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
+    m_pDeleteGroupedPlaylistsAction = new QAction(tr("Remove"), this);
     const auto removeKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
             QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
                     kHideRemoveShortcutKey);
-    m_pDeletePlaylistAction->setShortcut(removeKeySequence);
-    connect(m_pDeletePlaylistAction,
+    m_pDeleteGroupedPlaylistsAction->setShortcut(removeKeySequence);
+    connect(m_pDeleteGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotDeletePlaylist);
-    m_pLockPlaylistAction = new QAction(tr("Lock"), this);
-    connect(m_pLockPlaylistAction,
+    m_pLockGroupedPlaylistsAction = new QAction(tr("Lock"), this);
+    connect(m_pLockGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotTogglePlaylistLock);
@@ -131,24 +131,24 @@ void BaseGroupedPlaylistsFeature::initActions() {
             this,
             &BaseGroupedPlaylistsFeature::slotAddToAutoDJReplace);
 
-    m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
-    connect(m_pAnalyzePlaylistAction,
+    m_pAnalyzeGroupedPlaylistsAction = new QAction(tr("Analyze entire Playlist"), this);
+    connect(m_pAnalyzeGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotAnalyzePlaylist);
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pImportPlaylistAction,
+    m_pImportGroupedPlaylistsAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pImportGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotImportPlaylist);
-    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pCreateImportPlaylistAction,
+    m_pCreateImportGroupedPlaylistsAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pCreateImportGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotCreateImportPlaylist);
-    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
-    connect(m_pExportPlaylistAction,
+    m_pExportGroupedPlaylistsAction = new QAction(tr("Export Playlist"), this);
+    connect(m_pExportGroupedPlaylistsAction,
             &QAction::triggered,
             this,
             &BaseGroupedPlaylistsFeature::slotExportPlaylist);
@@ -1000,6 +1000,32 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
     } else {
         // variable group prefix length with mask
         QMap<QString, QList<QVariantMap>> topLevelGroups;
+        // Sort groupedPlaylists by lower(group_name)
+        // std::sort(groupedPlaylists.begin(), groupedPlaylists.end(), [](const
+        // QVariantMap& a, const QVariantMap& b) {
+        //    return a["group_name"].toString().toLower() <
+        //    b["group_name"].toString().toLower();
+        //});
+        // Sort groupedPlaylists by lower(group_name), then by
+        // lower(playlist_name)
+        std::sort(groupedPlaylists.begin(),
+                groupedPlaylists.end(),
+                [](const QVariantMap& a, const QVariantMap& b) {
+                    QString groupNameA = a["group_name"].toString().toLower();
+                    QString groupNameB = b["group_name"].toString().toLower();
+
+                    if (groupNameA == groupNameB) {
+                        // If group_name is the same, sort by playlist_name
+                        QString playlistNameA =
+                                a["playlist_name"].toString().toLower();
+                        QString playlistNameB =
+                                b["playlist_name"].toString().toLower();
+                        return playlistNameA < playlistNameB;
+                    }
+
+                    // Otherwise, sort by group_name
+                    return groupNameA < groupNameB;
+                });
         for (int i = 0; i < groupedPlaylists.size(); ++i) {
             const auto& playlistData = groupedPlaylists[i];
             const QString& groupName = playlistData["group_name"].toString();
