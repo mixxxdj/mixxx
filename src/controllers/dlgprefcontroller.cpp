@@ -521,6 +521,10 @@ void DlgPrefController::slotUpdate() {
     m_GuiInitialized = true;
 }
 
+void DlgPrefController::slotHide() {
+    slotUpdate();
+}
+
 void DlgPrefController::slotResetToDefaults() {
     if (m_pMapping) {
         m_pMapping->resetSettings();
