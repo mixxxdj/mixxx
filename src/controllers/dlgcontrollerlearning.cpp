@@ -484,6 +484,22 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
 }
 
 void DlgControllerLearning::controlPicked(const ConfigKey& control) {
+    if (!ControlObject::exists(control)) {
+        QMessageBox msg(QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("The selected control does not exist.<br>"
+                   "This likely a bug. Please report it on the Mixxx bug "
+                   "tracker.<br>"
+                   "<a href='https://github.com/mixxxdj/mixxx/issues'>"
+                   "https://github.com/mixxxdj/mixxx/issues</a>"
+                   "<br><br>"
+                   "You tried to learn: %1,%2")
+                        .arg(control.group, control.item));
+        msg.setTextFormat(Qt::RichText);              // make the link clickable
+        msg.setWindowFlags(Qt::WindowStaysOnTopHint); // position it above the Learning dialog
+        msg.exec();
+        return;
+    }
     QString title = m_pControlPickerMenu->controlTitleForConfigKey(control);
     QString description = m_pControlPickerMenu->descriptionForConfigKey(control);
     loadControl(control, title, description);
