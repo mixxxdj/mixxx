@@ -29,6 +29,7 @@ void OscQueryDescription::addAddress(
         const QString& access,
         const QString& description) {
     QStringList pathParts = address.split('/');
+    QString fullPath;
 
     std::vector<QJsonObject> objects;
     objects.reserve(pathParts.size());
@@ -39,6 +40,7 @@ void OscQueryDescription::addAddress(
         if (pathPart.isEmpty()) {
             continue;
         }
+        fullPath += "/" + pathPart;
         if (objects.size()) {
             QJsonValueRef currentContent = objects.back()["CONTENTS"];
             if (currentContent.isObject()) {
@@ -54,7 +56,7 @@ void OscQueryDescription::addAddress(
         if (currentPart.isObject()) {
             objects.push_back(currentPart.toObject());
         } else {
-            objects.emplace_back(QJsonObject({{"ACCESS", "0"}}));
+            objects.emplace_back(QJsonObject({{"ACCESS", "0"}, {"FULL_PATH", fullPath}}));
         }
     }
 
