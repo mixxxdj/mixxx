@@ -77,6 +77,75 @@ void OscQueryDescription::addAddress(
     }
 }
 
+void OscQueryDescription::removeAddress(const QString& address) {
+    QStringList pathParts = address.split('/');
+
+    std::vector<QJsonObject> objects;
+    objects.reserve(pathParts.size());
+
+    // Create a list of QJsonObjects.
+    // Note: QJsonObject is only temporary helper class for writing a QJsonValue
+    for (const auto& pathPart : pathParts) {
+        if (pathPart.isEmpty()) {
+            continue;
+        }
+        if (objects.size()) {
+            QJsonValueRef currentContent = objects.back()["CONTENTS"];
+            if (currentContent.isObject()) {
+                objects.push_back(currentContent.toObject());
+            } else {
+                objects.back().remove("CONTENTS");
+                return;
+            }
+        } else {
+            objects.push_back(m_rootObject["CONTENTS"].toObject());
+        }
+
+        QJsonValueRef currentPart = objects.back()[pathPart];
+        if (currentPart.isObject()) {
+            objects.push_back(currentPart.toObject());
+        } else {
+            objects.back().remove(pathPart);
+            return;
+        }
+    }
+
+    if (objects.back().contains("CONTENTS")) {
+        objects.back().remove("TYPE");
+        objects.back().remove("DESCRIPTION");
+        objects.back()["ACCESS"] = "0";
+    } else {
+        objects.pop_back();
+        objects.back().remove(pathParts.takeLast());
+        if (objects.back().isEmpty()) {
+            objects.pop_back();
+            objects.back().remove("CONTENTS");
+        } else {
+            objects.back()["CONTENTS"] = take_back(&objects);
+        }
+    }
+
+    // recreate form the leaves
+    for (auto it = pathParts.crbegin(); it != pathParts.crend(); ++it) {
+        if (!objects.back().contains("CONTENTS") && !objects.back().contains("TYPE")) {
+            objects.pop_back();
+            objects.back().remove(*it);
+        } else {
+            objects.back()[*it] = take_back(&objects);
+        }
+        if (objects.size() == 1) {
+            m_rootObject["CONTENTS"] = take_back(&objects);
+            break;
+        }
+        if (objects.back().isEmpty()) {
+            objects.pop_back();
+            objects.back().remove("CONTENTS");
+        } else {
+            objects.back()["CONTENTS"] = take_back(&objects);
+        }
+    }
+}
+
 QString OscQueryDescription::toJsonString() const {
     QJsonDocument doc(m_rootObject);
     return doc.toJson(QJsonDocument::Indented);

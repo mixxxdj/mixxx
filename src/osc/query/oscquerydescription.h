@@ -15,6 +15,8 @@ class OscQueryDescription {
             const QString& access,
             const QString& description);
 
+    void removeAddress(const QString& address);
+
     QString toJsonString() const;
 
     bool saveToFile(const QString& filePath) const;
