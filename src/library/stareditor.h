@@ -19,14 +19,26 @@ class StarEditor : public QWidget {
             const QColor& focusBorderColor);
 
     QSize sizeHint() const override;
+
+    // Calculate the width/height of a single star rectangle from the
+    // used library font..
+    // Half the font height is roughly equal to the default size (15px) with
+    // Open Sans regular 11pt.
+    static int starBreadthFromFont(const QStyleOption& option) {
+        auto mf = option.fontMetrics;
+        return static_cast<int>((mf.capHeight() + mf.ascent()) / 2);
+    }
+
     void setStarRating(const StarRating& starRating) {
         m_starRating = starRating;
+        m_starRating.setStarBreadth(starBreadthFromFont(m_styleOption));
         int stars = m_starRating.starCount();
         VERIFY_OR_DEBUG_ASSERT(m_starRating.verifyStarCount(stars)) {
             return;
         }
         m_starCount = stars;
     }
+
     StarRating starRating() { return m_starRating; }
 
   signals:
