@@ -282,12 +282,12 @@
         isEnabled: function() { return this.id !== 0; },
         start: function() {
             this.reset();
-            this.id = engine.beginTimer(this.timeout, function() {
+            this.id = engine.beginTimer(this.timeout, () => {
                 if (this.oneShot) {
                     this.disable();
                 }
                 this.action.call(this.owner);
-            }.bind(this), this.oneShot); // .bind(this) is required instead of arrow function for Qt < 6.2.4 due to QTBUG-95677
+            }, this.oneShot);
         },
         reset: function() {
             if (this.isEnabled()) {
