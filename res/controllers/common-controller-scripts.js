@@ -140,57 +140,6 @@ var colorCodeToObject = function(colorCode) {
 var script = function() {
 };
 
-/**
- * Discriminates whether an object was created using the `{}` synthax.
- *
- * Returns true when was an object was created using the `{}` synthax.
- * False if the object is an instance of a class like Date or Proxy or an Array.
- *
- * isSimpleObject({}) // true
- * isSimpleObject(null) // false
- * isSimpleObject(undefined) // false
- * isSimpleObject(new Date) // false
- * isSimpleObject(new (class {})()) // false
- * @param {any} obj Object to test
- * @returns {boolean} true if obj was created using the `{}` or `new Object()` synthax, false otherwise
- */
-const isSimpleObject = function(obj) {
-    return obj !== null && typeof obj === "object" && obj.constructor.name === "Object";
-};
-
-/**
- * Deeply merges 2 objects (Arrays and Objects only, not Map for instance).
- * @param target {object | Array} Object to merge source into
- * @param source {object | Array} Object to merge into source
- * @deprecated Use {@link Object.assign} instead
- */
-script.deepMerge = function(target, source) {
-    console.warn("script.deepMerge is deprecated; use Object.assign instead");
-
-    if (target === source || target === undefined || target === null || source === undefined || source === null) {
-        return;
-    }
-
-    if (Array.isArray(target) && Array.isArray(source)) {
-        const objTarget = target.reduce((acc, val, idx) => Object.assign(acc, {[idx]: val}), {});
-        const objSource = source.reduce((acc, val, idx) => Object.assign(acc, {[idx]: val}), {});
-        deepMerge(objTarget, objSource);
-        target.length = 0;
-        target.push(...Object.values(objTarget));
-    } else if (isSimpleObject(target) && isSimpleObject(source)) {
-        Object.keys(source).forEach(key => {
-            if (
-                Array.isArray(target[key]) && Array.isArray(source[key]) ||
-              isSimpleObject(target[key]) && isSimpleObject(source[key])
-            ) {
-                deepMerge(target[key], source[key]);
-            } else if (source[key] !== undefined && source[key] !== null) {
-                Object.assign(target, {[key]: source[key]});
-            }
-        });
-    }
-};
-
 // ----------------- Mapping constants ---------------------
 
 // Library column value, which can be used to interact with the CO for "[Library] sort_column"
