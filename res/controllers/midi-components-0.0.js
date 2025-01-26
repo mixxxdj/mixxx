@@ -650,6 +650,10 @@
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
         },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         */
         applyLayer: function(newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
@@ -660,7 +664,7 @@
                 });
             }
 
-            script.deepMerge(this, newLayer);
+            Object.assign(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
