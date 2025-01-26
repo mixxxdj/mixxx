@@ -176,10 +176,10 @@ bool OscQueryDescription::saveToFile(const QString& filePath) const {
 
 void OscQueryDescription::insertControlKey(const ConfigKey& key) {
     QString address = toOscAddress(key);
-    addAddress("/cop/" + address, "f", "3", "");
-    addAddress("/get/cop/" + address, "f", "3", "");
-    addAddress("/cov/" + address, "f", "3", "");
-    addAddress("/get/cov/" + address, "f", "3", "");
+    addAddress("/cop/" + address, "d", "3", "");
+    addAddress("/get/cop/" + address, "d", "3", "");
+    addAddress("/cov/" + address, "d", "3", "");
+    addAddress("/get/cov/" + address, "d", "3", "");
 }
 
 void OscQueryDescription::removeControlKey(const ConfigKey& key) {
