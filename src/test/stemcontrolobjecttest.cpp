@@ -12,9 +12,9 @@ class StemControlTest : public BaseSignalPathTest {
   protected:
     QString getGroupForStem(const QString& deckGroup, int stemIdx) {
         DEBUG_ASSERT(deckGroup.endsWith("]"));
-        return QStringLiteral("%1Stem%2]")
-                .arg(deckGroup.left(deckGroup.size() - 1),
-                        QString::number(stemIdx));
+        QString groupForStem = deckGroup;
+        groupForStem[deckGroup.size() - 1] = QChar('_');
+        return groupForStem + QStringLiteral("Stem") + QString::number(stemIdx) + QChar(']');
     }
     QString getFxGroupForStem(const QString& deckGroup, int stemIdx) {
         return QStringLiteral("[QuickEffectRack1_%1]")
