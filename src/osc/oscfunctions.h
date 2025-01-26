@@ -7,6 +7,7 @@ constexpr int IP_MTU_SIZE = 1536;
 #include <QChar>
 #include <QDataStream>
 #include <QFile>
+#include <QRegularExpression>
 #include <QSharedPointer>
 #include <QString>
 #include <iostream>
@@ -62,9 +63,12 @@ void oscFunctionsSendPtrType(UserSettingsPointer pConfig,
         int oscMessageBodyInt,
         double oscMessageBodyDouble,
         float oscMessageBodyFloat) {
-    QString oscMessageHeader = "/" + oscGroup + "@" + oscKey;
-    oscMessageHeader.replace("[", "(");
-    oscMessageHeader.replace("]", ")");
+    // QString oscMessageHeader = "/" + oscGroup + "@" + oscKey;
+    QString oscMessageHeader = "/" + oscGroup + "/" + oscKey;
+    // oscMessageHeader.replace("[", "(");
+    oscMessageHeader.replace("[", "");
+    // oscMessageHeader.replace("]", ")");
+    oscMessageHeader.replace("]", "");
 
     QByteArray oscMessageHeaderBa = oscMessageHeader.toLocal8Bit();
     const char* oscMessageHeaderChar = oscMessageHeaderBa.data();
@@ -243,4 +247,108 @@ void oscChangedPlayState(UserSettingsPointer pConfig,
             playstate);
 }
 
+// function to convert url-style /tree/branch/leaf to Mixxx-CO's
+QString translatePath(const QString& inputPath) {
+    const QString& originalPath = inputPath;
+
+    // Static QRegularExpression objects to avoid recompilation
+    static QRegularExpression stemSpecificRegex(R"(/([^/]+)/Channel(\d+)Stem(\d+)/(.*))");
+    static QRegularExpression complexRackRegex(R"(/([^/]+)/([^/]+)/([^/]+)/([^/]+))");
+    static QRegularExpression nestedRackRegex(R"(/([^/]+)/([^/]+)/([^/]+))");
+    static QRegularExpression channelSpecificRegex(R"(/Channel(\d+)/(.*))");
+    static QRegularExpression generalRegex(R"(/([^/]+)/([^/]+))");
+    static QRegularExpression hotcueRegex(R"(/Channel(\d+)/hotcue/(activate|clear)/(\d+))");
+    static QRegularExpression loopRegex(R"(/Channel(\d+)/(reloop|loop|beatloop|beatjump)/(.*))");
+    static QRegularExpression autoDjRegex(R"(/AutoDJ/(.*))");
+    static QRegularExpression libraryRegex(R"(/Library/(.*))");
+
+    // Match paths with stems like /QuickEffectRack1/Channel2Stem1/super1
+    QRegularExpressionMatch match = stemSpecificRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString rack = match.captured(1);      // e.g., "QuickEffectRack1"
+        QString channel = match.captured(2);   // e.g., "2"
+        QString stem = match.captured(3);      // e.g., "1"
+        QString parameter = match.captured(4); // e.g., "super1"
+        return QString("[%1_[Channel%2Stem%3]],%4").arg(rack, channel, stem, parameter);
+    }
+
+    // Match deeply nested paths like /EqualizerRack1/Channel2/Effect1/parameter1
+    match = complexRackRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString rack = match.captured(1);          // e.g., "EqualizerRack1"
+        QString channelOrUnit = match.captured(2); // e.g., "Channel2"
+        QString effect = match.captured(3);        // e.g., "Effect1"
+        QString parameter = match.captured(4);     // e.g., "parameter1"
+        // Wrap the channelOrUnit in square brackets if it starts with "Channel"
+        if (channelOrUnit.startsWith("Channel")) {
+            channelOrUnit = "[" + channelOrUnit + "]";
+        }
+        return QString("[%1_%2_%3],%4").arg(rack, channelOrUnit, effect, parameter);
+    }
+
+    // Match nested paths like /EffectRack1/EffectUnit2/mix
+    match = nestedRackRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString rack = match.captured(1);      // e.g., "EffectRack1"
+        QString unit = match.captured(2);      // e.g., "EffectUnit2"
+        QString parameter = match.captured(3); // e.g., "mix"
+        return QString("[%1_%2],%3").arg(rack, unit, parameter);
+    }
+
+    // Handle specific Channel paths like /Channel1/track_loaded -> [Channel1],track_loaded
+    match = channelSpecificRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString channel = match.captured(1); // e.g., "1"
+        QString action = match.captured(2);  // e.g., "track_loaded"
+        return QString("[Channel%1],%2").arg(channel, action);
+    }
+
+    // Handle general cases like /Channel2Stem3/mute -> [Channel2Stem3],mute
+    match = generalRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString group = match.captured(1); // e.g., "Channel2Stem3"
+        QString item = match.captured(2);  // e.g., "mute"
+        return QString("[%1],%2").arg(group, item);
+    }
+
+    // Handle hotcue paths like /Channel1/hotcue/activate/2
+    match = hotcueRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString channel = match.captured(1); // e.g., "1"
+        QString action = match.captured(2);  // e.g., "activate"
+        QString cue = match.captured(3);     // e.g., "2"
+        return QString("[Channel%1],hotcue_%2_%3").arg(channel, cue, action);
+    }
+
+    // Handle loop paths like /Channel2/reloop/toggle
+    match = loopRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString channel = match.captured(1); // e.g., "2"
+        QString type = match.captured(2);    // e.g., "reloop"
+        QString action = match.captured(3);  // e.g., "toggle"
+        if (type == "beatjump" || type == "beatloop") {
+            return QString("[Channel%1],%2_%3_%4").arg(channel, type, action, match.captured(3));
+        }
+        return QString("[Channel%1],%2_%3").arg(channel, type, action);
+    }
+
+    // Handle AutoDJ paths like /AutoDJ/fade
+    match = autoDjRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString action = match.captured(1); // e.g., "fade"
+        return QString("[AutoDJ],%1").arg(action);
+    }
+
+    // Handle Library paths like /Library/MoveRight
+    match = libraryRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString action = match.captured(1); // e.g., "MoveRight"
+        return QString("[Library],%1").arg(action);
+    }
+
+    // Return the input path unchanged if no matches are found
+    qDebug() << "[OSC] OSCFUNCTIONS Original path:" << originalPath
+             << " Translated path:" << inputPath;
+    return inputPath;
+}
 #endif /* OSCFUNCTIONS_H */
