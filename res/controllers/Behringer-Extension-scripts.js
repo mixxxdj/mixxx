@@ -10,6 +10,49 @@
     var engine = global.engine;
 
     /**
+     * Determines the merge strategy for a value when merging a component container definition.
+     *
+     * @param value anything
+     * @returns {boolean} merge strategy for the value: true for 'assign', false for 'deep merge'
+     * @private
+     */
+    const doAssign = value => {
+        return typeof value !== "object"
+            || value === null
+            || value instanceof components.ComponentContainer
+            || value instanceof components.Component;
+    };
+
+    /**
+     * Merges a list of component container definitions into a target object.
+     *
+     * This is not a generic deep merge algorithm for JS objects. It does not handle circular references.
+     * If a definition contains a reference to an object instance of a component or component container
+     * (e.g. `ShiftButton.target`), the instance is taken over by reference, no deep copy is made.
+     *
+     * @param {object} targetObject Target object for the merged definitions
+     * @param {Array} sources Source definitions
+     * @returns {object} The target object
+     * @see `GenericMidiController` on component container definition
+     * @private
+     */
+    const mergeDefinitions = (targetObject, ...sources) => sources.reduce((target, source) => {
+        for (const [key, value] of Object.entries(source || {})) {
+            if (doAssign(value)) {
+                target[key] = value;
+            } else if (value !== undefined) {
+                if (Array.isArray(value) && !Array.isArray(target[key])) {
+                    target[key] = [];
+                } else if (typeof target[key] !== "object" || target[key] === null) {
+                    target[key] = {};
+                }
+                mergeDefinitions(target[key], value);
+            }
+        };
+        return target;
+    }, targetObject);
+
+    /**
      * Contains functions to print a message to the log.
      * `debug` output is suppressed unless the caller owns a truthy property `debug`.
      *
@@ -34,7 +77,7 @@
      * Determine an ID from a component's MIDI address
      *
      * @param {Array<number>} midiAddress MIDI address consisting of two integers
-     * @return {string} ID for the MIDI address; `undefined` on error
+     * @returns {string} ID for the MIDI address; `undefined` on error
      * @private
      */
     var findComponentId = function(midiAddress) {
@@ -51,7 +94,7 @@
      * Create a human-readable string to identify a component.
      *
      * @param {components.Component} component A component
-     * @return {string} A short string that describes the component; `undefined` on error
+     * @returns {string} A short string that describes the component; `undefined` on error
      * @private
      */
     var stringifyComponent = function(component) {
@@ -92,11 +135,11 @@
      *
      * @param {object} parent Constructor of parent whose prototype is used as base
      * @param {object} members Own members that are not inherited
-     * @return {object} A new prototype based on parent with the given members
+     * @returns {object} A new prototype based on parent with the given members
      * @private
      */
     var deriveFrom = function(parent, members) {
-        return _.merge(Object.create(parent.prototype), members || {});
+        return Object.assign(Object.create(parent.prototype), members);
     };
 
     /**
@@ -231,7 +274,7 @@
      * @see https://github.com/mixxxdj/mixxx/wiki/Script-Timers
      */
     var Timer = function(options) {
-        _.assign(this, options);
+        Object.assign(this, options);
         this.disable();
     };
     Timer.prototype = {
@@ -274,7 +317,7 @@
     var Throttler = function(options) {
         options = options || {};
         options.delay = options.delay || 0;
-        _.assign(this, options);
+        Object.assign(this, options);
         this.locked = false;
         this.jobs = [];
         this.unlockTimer = new Timer(
@@ -810,7 +853,7 @@
          * Create a new ComponentContainer within this registry.
          *
          * @param {string} name Name of the ComponentContainer
-         * @return {components.ComponentContainer} The ComponentContainer; `undefined` on error
+         * @returns {components.ComponentContainer} The ComponentContainer; `undefined` on error
          * @public
          */
         createContainer: function(name) {
@@ -827,7 +870,7 @@
          * Retrieve an existing ComponentContainer.
          *
          * @param {string} name Name of an existing ComponentContainer
-         * @return {components.ComponentContainer} The ComponentContainer; `undefined` on error
+         * @returns {components.ComponentContainer} The ComponentContainer; `undefined` on error
          * @public
          */
         getContainer: function(name) {
@@ -884,7 +927,7 @@
          *
          * @param {components.Component} component A component
          * @param {string} containerName Name of a ComponentContainer
-         * @return {string} ID of the stored component; `undefined` on error
+         * @returns {string} ID of the stored component; `undefined` on error
          * @public
          */
         register: function(component, containerName) {
@@ -926,7 +969,7 @@
          *
          * @param {components.Component} component A component
          * @param {string} containerName Name of an existing ComponentContainer
-         * @return {string} ID of the removed component; `undefined` on error
+         * @returns {string} ID of the removed component; `undefined` on error
          * @public
          */
         unregister: function(component, containerName) {
@@ -977,7 +1020,7 @@
         /**
          * Retrieve the Default layer.
          *
-         * @return {object} The Default layer
+         * @returns {object} The Default layer
          * @private
          */
         defaultLayer: function() {
@@ -992,7 +1035,7 @@
         /**
          * Retrieve the Shift layer.
          *
-         * @return {object} The Shift layer
+         * @returns {object} The Shift layer
          * @private
          */
         shiftLayer: function() {
@@ -1004,7 +1047,7 @@
          *
          * @param {number} status First byte of the component's MIDI address
          * @param {number} control Second byte of the component's MIDI address
-         * @return {components.Component} Component on the active layer matching the MIDI address;
+         * @returns {components.Component} Component on the active layer matching the MIDI address;
          *                                undefined on error. When the active layer does not contain
          *                                a matching component, the Default layer is used as
          *                                fallback.
@@ -1035,7 +1078,7 @@
          * @param {LayerManager~registryOperation} The operation to run
          * @param {components.Component} component A component
          * @param {boolean} shift Iff true, use Shift Layer, otherwise use Default Layer
-         * @return Result of the operation
+         * @returns Result of the operation
          * @private
          */
         onRegistry: function(operation, component, shift) {
@@ -1317,7 +1360,7 @@
          * @param {object} deckDefinitions Definition of decks
          * @param {object} effectUnitDefinitions Definition of effect units
          * @param {object} containerDefinitions Definition of additional component containers
-         * @return {object} Layer manager
+         * @returns {object} Layer manager
          * @see `LayerManager`
          * @private
          */
@@ -1388,8 +1431,8 @@
         createDeck: function(deckDefinition, componentStorage) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
-                var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
-                var definition = _.merge(componentDefinition, {options: options});
+                const options = Object.assign({group: deck.currentDeck}, componentDefinition.options);
+                const definition = Object.assign(componentDefinition, {options: options});
                 deck[index] = this.createComponent(definition);
             }, this);
             if (deckDefinition.equalizerUnit) {
@@ -1450,7 +1493,7 @@
          * @param {Array} publisherStorage Storage for publisher components
          * @param {Array<string>} rebindTriggers Names of functions that trigger rebinding a
          *                                       publisher to its source component
-         * @return {components.ComponentContainer} The given component container argument
+         * @returns {components.ComponentContainer} The given component container argument
          * @private
          */
         setupMidi: function(definition, implementation, publisherStorage, rebindTriggers) {
@@ -1540,8 +1583,7 @@
             var container = new containerType(containerDefinition.options);
             if (containerDefinition.components) {
                 containerDefinition.components.forEach(function(componentDefinition, index) {
-                    var definition = _.merge(
-                        {}, containerDefinition.defaultDefinition || {}, componentDefinition);
+                    const definition = mergeDefinitions({}, containerDefinition.defaultDefinition, componentDefinition);
                     container[index] = this.createComponent(definition);
                 }, this);
             }
@@ -1614,5 +1656,5 @@
     exports.Publisher = Publisher;
     exports.LayerManager = LayerManager;
     exports.GenericMidiController = GenericMidiController;
-    global.behringer = _.assign(global.behringer, {extension: exports});
+    global.behringer = Object.assign(global.behringer || {}, {extension: exports});
 })(this);
