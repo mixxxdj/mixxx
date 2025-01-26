@@ -91,10 +91,10 @@ if(rubberband_FOUND)
       set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
         ${SAMPLERATE_LIBRARY}
       )
-      find_package(FFTW)
+      find_package(FFTW3)
       if (FFTW_FOUND)
         set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          FFTW::FFTW
+          FFTW3::fftw3
         )
       endif()
       find_package(Sleef)
