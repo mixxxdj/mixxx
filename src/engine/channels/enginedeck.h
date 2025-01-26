@@ -14,6 +14,7 @@ class EngineBuffer;
 class EngineMixer;
 class ControlPushButton;
 class ControlPotmeter;
+class ControlProxy;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
@@ -80,6 +81,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassthroughToggle(double v);
     void slotPassthroughChangeRequest(double v);
+    void slotVcEnabledChanged(double v);
 #ifdef __STEM__
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer);
 #endif
@@ -108,6 +110,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Vinyl / passthrough controls
     std::unique_ptr<ControlObject> m_pInputConfigured;
     std::unique_ptr<ControlPushButton> m_pPassing;
+    parented_ptr<ControlProxy> m_pVCEnabled;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
 };

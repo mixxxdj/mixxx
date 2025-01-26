@@ -1,5 +1,6 @@
 #include "engine/channels/enginedeck.h"
 
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/controls/bpmcontrol.h"
@@ -38,7 +39,8 @@ EngineDeck::EngineDeck(
           m_pInputConfigured(std::make_unique<ControlObject>(
                   ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(std::make_unique<ControlPushButton>(
-                  ConfigKey(getGroup(), "passthrough"))) {
+                  ConfigKey(getGroup(), "passthrough"))),
+          m_pVCEnabled(nullptr) {
     m_pInputConfigured->setReadOnly();
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
@@ -71,6 +73,13 @@ EngineDeck::EngineDeck(
     }
 
     connect(m_pBuffer, &EngineBuffer::trackLoaded, this, &EngineDeck::slotTrackLoaded);
+
+#ifdef __VINYLCONTROL__
+    // Created by EngineBuffer -> VinylControl
+    m_pVCEnabled = make_parented<ControlProxy>(
+            getGroup(), QStringLiteral("vinylcontrol_enabled"), this);
+    m_pVCEnabled->connectValueChanged(this, &EngineDeck::slotVcEnabledChanged);
+#endif
 
     m_pStemCount = std::make_unique<ControlObject>(ConfigKey(getGroup(), "stem_count"));
     m_pStemCount->setReadOnly();
@@ -354,6 +363,9 @@ void EngineDeck::slotPassthroughToggle(double v) {
 
 void EngineDeck::slotPassthroughChangeRequest(double v) {
     if (v <= 0 || m_pInputConfigured->get() > 0) {
+        if (v > 0 && m_pVCEnabled && m_pVCEnabled->get() > 0) {
+            m_pVCEnabled->set(0);
+        }
         m_pPassing->setAndConfirm(v);
 
         // Pass confirmed value to slotPassthroughToggle. We cannot use the
@@ -362,5 +374,11 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
         slotPassthroughToggle(v);
     } else {
         emit noPassthroughInputConfigured();
+    }
+}
+
+void EngineDeck::slotVcEnabledChanged(double v) {
+    if (v > 0) {
+        slotPassthroughChangeRequest(0);
     }
 }
