@@ -4,10 +4,10 @@
 (function(global) {
 
     /** @private */
-    var components = global.components;
+    const components = global.components;
 
     /** @private */
-    var engine = global.engine;
+    const engine = global.engine;
 
     /**
      * Determines the merge strategy for a value when merging a component container definition.
@@ -59,7 +59,7 @@
      * @param {string} message Message
      * @private
      */
-    var log = {
+    const log = {
         debug: function(message) {
             if (this.debug) {
                 print("[DEBUG] " + message);
@@ -80,7 +80,7 @@
      * @returns {string} ID for the MIDI address; `undefined` on error
      * @private
      */
-    var findComponentId = function(midiAddress) {
+    const findComponentId = function(midiAddress) {
         if (Array.isArray(midiAddress) && midiAddress.length === 2
                 && typeof midiAddress[0] === "number"  && typeof midiAddress[1] === "number") {
             return "[" + midiAddress.map(function(x) {
@@ -97,14 +97,14 @@
      * @returns {string} A short string that describes the component; `undefined` on error
      * @private
      */
-    var stringifyComponent = function(component) {
+    const stringifyComponent = function(component) {
         if (!component) {
             return;
         }
-        var key = component.inKey || component.outKey;
-        var value = component.group + "," + key;
+        const key = component.inKey || component.outKey;
+        let value = `${component.group},${key}`;
         if (component.midi) {
-            var id = findComponentId(component.midi);
+            const id = findComponentId(component.midi);
             if (id !== undefined) {
                 value = id + ": " + value;
             }
@@ -118,7 +118,7 @@
      * @param {number} value A number between 0 and 1.
      * @private
      */
-    var convertToMidiValue = function(value) {
+    const convertToMidiValue = function(value) {
         /*
          * Math.round() is important to keep input and output in sync.
          * Example:
@@ -138,7 +138,7 @@
      * @returns {object} A new prototype based on parent with the given members
      * @private
      */
-    var deriveFrom = function(parent, members) {
+    const deriveFrom = function(parent, members) {
         return Object.assign(Object.create(parent.prototype), members);
     };
 
@@ -150,7 +150,7 @@
      * @private
      * @see `Throttler`
      */
-    var throttle = function(action, owner) {
+    const throttle = function(action, owner) {
         if (owner.throttler) {
             owner.throttler.schedule(action, owner);
         } else {
@@ -166,7 +166,7 @@
      * @param {object} options Options object
      * @public
      */
-    var ParameterComponent = function(options) {
+    const ParameterComponent = function(options) {
         components.Component.call(this, options);
     };
     ParameterComponent.prototype = deriveFrom(components.Component, {
@@ -188,7 +188,7 @@
      * @param {components.Component|components.ComponentContainer} options.target Target component
      * @public
      */
-    var ShiftButton = function(options) {
+    const ShiftButton = function(options) {
         components.Button.call(this, options);
     };
     ShiftButton.prototype = deriveFrom(components.Button, {
@@ -210,7 +210,7 @@
      * @param {object} options Options object
      * @public
      */
-    var Trigger = function(options) {
+    const Trigger = function(options) {
         components.Component.call(this, options);
     };
     Trigger.prototype = deriveFrom(components.Component, {
@@ -226,7 +226,7 @@
      * @param {number} options.offValue Value for `off`; optional, default: opposite of `onValue`
      * @public
      */
-    var CustomButton = function(options) {
+    const CustomButton = function(options) {
         options = options || {};
         if (options.onValue === undefined) { // do not use '||' to allow 0
             options.onValue = 1;
@@ -273,7 +273,7 @@
      * @public
      * @see https://github.com/mixxxdj/mixxx/wiki/Script-Timers
      */
-    var Timer = function(options) {
+    const Timer = function(options) {
         Object.assign(this, options);
         this.disable();
     };
@@ -314,7 +314,7 @@
      * @param {number} options.delay Minimal delay between two consecutive actions (in ms)
      * @public
      */
-    var Throttler = function(options) {
+    const Throttler = function(options) {
         options = options || {};
         options.delay = options.delay || 0;
         Object.assign(this, options);
@@ -331,14 +331,14 @@
 
         notify: function() {
             if (this.jobs.length > 0 && this.acquireLock()) {
-                var job = this.jobs.shift();
+                const job = this.jobs.shift();
                 job.action.call(job.owner);
                 this.unlockTimer.start();
             }
         },
 
         acquireLock: function() {
-            var unlocked = !this.locked;
+            const unlocked = !this.locked;
             if (unlocked) {
                 this.locked = true;
             }
@@ -359,9 +359,9 @@
      * @param {object} options Options object
      * @public
      */
-    var LongPressButton = function(options) {
+    const LongPressButton = function(options) {
         components.Button.call(this, options);
-        var action = function() {
+        const action = function() {
             this.isLongPressed = true;
             this.onLongPress();
         };
@@ -399,9 +399,9 @@
      * @param {number} options.blinkDuration Blink duration in ms; optional, default: 500
      * @public
      */
-    var BlinkingButton = function(options) {
+    const BlinkingButton = function(options) {
         options = options || {};
-        var blinkAction = function() {
+        const blinkAction = function() {
             this.send(components.Button.prototype.outValueScale.call(
                 this, this.flashing = !this.flashing));
         };
@@ -436,14 +436,14 @@
      * @param {object} options Options object
      * @public
      */
-    var DirectionEncoder = function(options) {
+    const DirectionEncoder = function(options) {
         components.Encoder.call(this, options);
         this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
     };
     DirectionEncoder.prototype = deriveFrom(components.Encoder, {
         min: 0,
         inValueScale: function(value) {
-            var direction = 0;
+            let direction = 0;
             if (!(this.relative && this.isShifted)) {
                 if (value > this.previousValue || value === this.max) {
                     direction = 1;
@@ -471,13 +471,13 @@
      * @param {number} options.bound A positive integer defining the range bounds
      * @public
      */
-    var RangeAwareEncoder = function(options) {
+    const RangeAwareEncoder = function(options) {
         components.Encoder.call(this, options);
     };
     RangeAwareEncoder.prototype = deriveFrom(components.Encoder, {
         outValueScale: function(value) {
             /* -bound..+bound => 0..1 */
-            var normalizedValue = (value + this.bound) / (2 * this.bound);
+            const normalizedValue = (value + this.bound) / (2 * this.bound);
             /* 0..1 => 0..127 */
             return convertToMidiValue.call(this, normalizedValue);
         },
@@ -492,7 +492,7 @@
      * @param {number} options.bound A positive integer defining the range bounds
      * @public
      */
-    var RangeAwarePot = function(options) {
+    const RangeAwarePot = function(options) {
         components.Pot.call(this, options);
     };
     RangeAwarePot.prototype = deriveFrom(components.Pot, {
@@ -512,7 +512,7 @@
      * @param {number} options.maxValue A positive integer defining the maximum enumeration value
      * @public
      */
-    var EnumToggleButton = function(options) {
+    const EnumToggleButton = function(options) {
         options = options || {};
         if (options.maxValue === undefined && options.values === undefined) {
             log.error("An EnumToggleButton requires either `values` or a `maxValue`.");
@@ -526,9 +526,9 @@
     EnumToggleButton.prototype = deriveFrom(components.Button, {
         input: function(channel, control, value, status, _group) {
             if (this.isPress(channel, control, value, status)) {
-                var newValue;
+                let newValue;
                 if (this.values) {
-                    var index = this.values.indexOf(this.inGetValue());
+                    const index = this.values.indexOf(this.inGetValue());
                     newValue = this.values[(index + 1) % this.values.length];
                 } else {
                     newValue = (this.inGetValue() + 1) % (this.maxValue + 1);
@@ -549,7 +549,7 @@
      * @public
      * @see https://github.com/mixxxdj/mixxx/wiki/Midi-Scripting#soft-takeover
      */
-    var EnumEncoder = function(options) {
+    const EnumEncoder = function(options) {
         options = options || {};
         if (options.values === undefined) {
             log.error("EnumEncoder constructor was called without specifying enum values.");
@@ -563,7 +563,7 @@
     };
     EnumEncoder.prototype = deriveFrom(components.Encoder, {
         input: function(_channel, _control, value, _status, _group) {
-            var scaledValue = this.inValueScale(value);
+            const scaledValue = this.inValueScale(value);
             if (!this.softTakeover
                 || this.previousValue === undefined
                 || this.previousValue === this.inGetValue()) {
@@ -572,14 +572,14 @@
             this.previousValue = scaledValue;
         },
         inValueScale: function(value) {
-            var normalizedValue = value / this.max;
-            var index = Math.round(normalizedValue * this.maxIndex);
+            const normalizedValue = value / this.max;
+            const index = Math.round(normalizedValue * this.maxIndex);
             return this.values[index];
         },
         outValueScale: function(value) {
-            var index = this.values.indexOf(value);
+            const index = this.values.indexOf(value);
             if (index !== -1) {
-                var normalizedValue = index / this.maxIndex;
+                const normalizedValue = index / this.maxIndex;
                 return convertToMidiValue.call(this, normalizedValue);
             } else {
                 log.warn("'" + value + "' is not in supported values " + "[" + this.values + "]");
@@ -595,7 +595,7 @@
      * @param {object} options Options object
      * @public
      */
-    var LoopEncoder = function(options) {
+    const LoopEncoder = function(options) {
         options = options || {};
         if (options.values === undefined) {
             /* taken from src/engine/controls/loopingcontrol.cpp */
@@ -620,7 +620,7 @@
      * @param {string} options.sizeControl (optional) Name of a control that contains `size`
      * @public
      */
-    var LoopMoveEncoder = function(options) {
+    const LoopMoveEncoder = function(options) {
         options = options || {};
         options.inKey = options.inKey || "loop_move";
         options.size = options.size || 0.5;
@@ -628,8 +628,8 @@
     };
     LoopMoveEncoder.prototype = deriveFrom(DirectionEncoder, {
         inValueScale: function(value) {
-            var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
-            var beats = this.sizeControl
+            const direction = DirectionEncoder.prototype.inValueScale.call(this, value);
+            const beats = this.sizeControl
                 ? engine.getValue(this.group, this.sizeControl)
                 : this.size;
             return direction * beats;
@@ -644,18 +644,18 @@
      * @param {object} options Options object
      * @public
      */
-    var BackLoopButton = function(options) {
+    const BackLoopButton = function(options) {
         options = options || {};
         options.key = options.key || "loop_enabled";
         components.Button.call(this, options);
     };
     BackLoopButton.prototype = deriveFrom(components.Button, {
         inSetValue: function(value) {
-            var script = global.script;
-            var group = this.group;
+            const script = global.script;
+            const group = this.group;
             if (value) {
-                var loopSize = engine.getValue(group, "beatloop_size");
-                var beatjumpSize = engine.getValue(group, "beatjump_size");
+                const loopSize = engine.getValue(group, "beatloop_size");
+                const beatjumpSize = engine.getValue(group, "beatjump_size");
                 engine.setValue(group, "beatjump_size", loopSize);
                 script.triggerControl(group, "beatjump_backward");
                 script.triggerControl(group, "beatloop_activate");
@@ -675,7 +675,7 @@
      *                              (`0`: additive, `1`: constant)
      * @public
      */
-    var CrossfaderCurvePot = function(options) {
+    const CrossfaderCurvePot = function(options) {
         options = options || {};
         options.group = options.group || "[Mixer Profile]";
         if (options.mode) {
@@ -717,7 +717,7 @@
      *                                              controller
      * @public
      */
-    var Publisher = function(options) {
+    const Publisher = function(options) {
         if (options.source === undefined) {
             log.error("Missing source component");
             return;
@@ -744,16 +744,16 @@
         },
     });
 
-    var EffectUnit = function(rack, deckGroup) {
+    const EffectUnit = function(rack, deckGroup) {
         components.ComponentContainer.call(this);
-        var effectGroup = "[" + rack + "_" + deckGroup + "_Effect1]";
-        var channelGroup = "[" + rack + "_" + deckGroup + "]";
+        const effectGroup = `[${rack}_${deckGroup}_Effect1]`;
+        const channelGroup = `[${rack}_${deckGroup}]`;
 
-        var ParameterKnob = function(parameterNumber) {
+        const ParameterKnob = function(parameterNumber) {
             components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
         };
         ParameterKnob.prototype = deriveFrom(components.Pot);
-        var ParameterButton = function(parameterNumber) {
+        const ParameterButton = function(parameterNumber) {
             components.Button.call(this, {group: effectGroup, key: "button_parameter" + parameterNumber});
         };
         ParameterButton.prototype = deriveFrom(
@@ -766,16 +766,14 @@
         this.mix = new components.Pot({group: channelGroup, key: "mix"});
 
         this.parameterKnobs = new components.ComponentContainer();
-        var parameterKnobCount = engine.getValue(effectGroup, "num_parameters");
-        for (var knobIndex = 1; knobIndex <= parameterKnobCount; knobIndex++) {
-            this.parameterKnobs[knobIndex] = new ParameterKnob(knobIndex);
-        }
+        const parameterKnobCount = engine.getValue(effectGroup, "num_parameters");
+        [...Array(parameterKnobCount)].map((x, i) => i+1).forEach(knobIndex =>
+            this.parameterKnobs[knobIndex] = new ParameterKnob(knobIndex));
 
         this.parameterButtons = new components.ComponentContainer();
-        var parameterButtonCount = engine.getValue(effectGroup, "num_button_parameters");
-        for (var buttonIndex = 1; buttonIndex <= parameterButtonCount; buttonIndex++) {
-            this.parameterButtons[buttonIndex] = new ParameterButton(buttonIndex);
-        }
+        const parameterButtonCount = engine.getValue(effectGroup, "num_button_parameters");
+        [...Array(parameterButtonCount)].map((x, i) => i+1).forEach(buttonIndex =>
+            this.parameterButtons[buttonIndex] = new ParameterButton(buttonIndex));
     };
     EffectUnit.prototype = deriveFrom(components.ComponentContainer);
 
@@ -800,7 +798,7 @@
      * @yields {EqualizerUnit}
      * @public
      */
-    var EqualizerUnit = function(deckGroup) {
+    const EqualizerUnit = function(deckGroup) {
         EffectUnit.call(this, "EqualizerRack1", deckGroup);
     };
     EqualizerUnit.prototype = deriveFrom(EffectUnit);
@@ -829,7 +827,7 @@
      * @yields {QuickEffectUnit}
      * @public
      */
-    var QuickEffectUnit = function(deckGroup) {
+    const QuickEffectUnit = function(deckGroup) {
         EffectUnit.call(this, "QuickEffectRack1", deckGroup);
     };
     QuickEffectUnit.prototype = deriveFrom(EffectUnit);
@@ -841,7 +839,7 @@
      * @param {Array<string>} initialContainers Initial container names
      * @public
      */
-    var ComponentRegistry = function(initialContainers) {
+    const ComponentRegistry = function(initialContainers) {
         this.containers = new components.ComponentContainer();
         if (Array.isArray(initialContainers)) {
             initialContainers.forEach(function(name) { this.createContainer(name); }, this);
@@ -940,14 +938,14 @@
                     + stringifyComponent(component) + " without MIDI address");
                 return;
             }
-            var id = findComponentId(component.midi);
+            const id = findComponentId(component.midi);
             if (!Object.prototype.hasOwnProperty.call(this.containers, containerName)) {
                 this.createContainer(containerName);
             }
-            var container = this.getContainer(containerName);
-            var store = true;
+            const container = this.getContainer(containerName);
+            let store = true;
             if (Object.prototype.hasOwnProperty.call(container, id)) {
-                var old = container[id];
+                const old = container[id];
                 if (old !== component) {
                     this.unregister(old, containerName);
                 } else {
@@ -974,8 +972,8 @@
          */
         unregister: function(component, containerName) {
             log.debug(containerName + ": unregister " + stringifyComponent(component));
-            var container = this.getContainer(containerName);
-            var id = findComponentId(component.midi);
+            const container = this.getContainer(containerName);
+            const id = findComponentId(component.midi);
             delete container[id];
             return id;
         },
@@ -1004,7 +1002,7 @@
      * @param {boolean} options.debug Optional flag to emit debug messages to the log
      * @public
      */
-    var LayerManager = function(options) {
+    const LayerManager = function(options) {
         this.componentRegistry = new ComponentRegistry([
             LayerManager.prototype.defaultContainerName,
             LayerManager.prototype.shiftContainerName]);
@@ -1024,7 +1022,7 @@
          * @private
          */
         defaultLayer: function() {
-            var defaultContainer = this.componentRegistry.getContainer(this.defaultContainerName);
+            const defaultContainer = this.componentRegistry.getContainer(this.defaultContainerName);
             return Object.keys(this.shiftLayer()).reduce(
                 function(shiftCounterparts, name) {
                     shiftCounterparts[name] = defaultContainer[name];
@@ -1054,13 +1052,13 @@
          * @private
          */
         findComponent: function(status, control) {
-            var id = findComponentId([status, control]);
+            const id = findComponentId([status, control]);
             if (id === undefined) {
                 return;
             }
-            var component = this.activeLayer[id];
+            let component = this.activeLayer[id];
             if (component === undefined) {
-                var defaultComponents
+                const defaultComponents
                     = this.componentRegistry.getContainer(this.defaultContainerName);
                 component = defaultComponents[id];
             }
@@ -1082,7 +1080,7 @@
          * @private
          */
         onRegistry: function(operation, component, shift) {
-            var layerName = shift === true ? this.shiftContainerName : this.defaultContainerName;
+            const layerName = shift === true ? this.shiftContainerName : this.defaultContainerName;
             return operation.call(this.componentRegistry, component, layerName);
         }
         /**
@@ -1113,7 +1111,7 @@
          * @public
          */
         unregister: function(component, shift) {
-            var id = this.onRegistry(this.componentRegistry.unregister, component, shift);
+            const id = this.onRegistry(this.componentRegistry.unregister, component, shift);
             delete this.activeLayer[id];
         },
 
@@ -1177,7 +1175,7 @@
          * @public
          */
         input: function(channel, control, value, status /* ignored: ,group */) {
-            var component = this.findComponent(status, control);
+            const component = this.findComponent(status, control);
             if (component === undefined) {
                 return;
             }
@@ -1275,7 +1273,7 @@
      * @param {function} components.configurationProvider Mapping configuration provider
      * @public
      */
-    var GenericMidiController = function(options) {
+    const GenericMidiController = function(options) {
         if (!options || typeof options.configurationProvider !== "function") {
             log.error("The required function 'configurationProvider' is missing.");
             return;
@@ -1297,7 +1295,7 @@
             this.controllerId = controllerId;
             this.debug = debug;
 
-            var delay = this.config.throttleDelay;
+            const delay = this.config.throttleDelay;
             if (delay > 0) {
                 log.debug("Component registration is throttled using a delay of " + delay + "ms");
                 this.throttler = new Throttler({delay: delay});
@@ -1367,9 +1365,9 @@
         createLayerManager: function(target,
             deckDefinitions, effectUnitDefinitions, containerDefinitions) {
 
-            var layerManager = new LayerManager({debug: this.debug});
-            var controller = this;
-            var registerComponents = function(definition, implementation) {
+            const layerManager = new LayerManager({debug: this.debug});
+            const controller = this;
+            const registerComponents = function(definition, implementation) {
                 controller.registerComponents(layerManager, definition, implementation);
             };
 
@@ -1405,7 +1403,7 @@
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
                         throttle(function() {
-                            var implementation = context.factory.call(this, definition, target);
+                            const implementation = context.factory.call(this, definition, target);
                             target.push(implementation);
                             context.register(definition, implementation);
                         }, this);
@@ -1429,7 +1427,7 @@
          * @private
          */
         createDeck: function(deckDefinition, componentStorage) {
-            var deck = new components.Deck(deckDefinition.deckNumbers);
+            const deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
                 const options = Object.assign({group: deck.currentDeck}, componentDefinition.options);
                 const definition = Object.assign(componentDefinition, {options: options});
@@ -1478,7 +1476,7 @@
          * @private
          */
         createPublisher: function(source, publisherStorage) {
-            var publisher = new Publisher({source: source});
+            const publisher = new Publisher({source: source});
             publisherStorage.push(publisher);
             return publisher;
         },
@@ -1506,14 +1504,14 @@
 
             /* Add publishers for pots */
             if (definition.feedback) {
-                var triggers = rebindTriggers || [];
-                var createPublisher = this.createPublisher; // `this` is bound to implementation
+                const triggers = rebindTriggers || [];
+                const createPublisher = this.createPublisher; // `this` is bound to implementation
                 implementation.forEachComponent(function(effectComponent) {
                     if (effectComponent instanceof components.Pot) {
-                        var publisher = createPublisher(effectComponent, publisherStorage);
-                        var prototype = Object.getPrototypeOf(effectComponent);
+                        const publisher = createPublisher(effectComponent, publisherStorage);
+                        const prototype = Object.getPrototypeOf(effectComponent);
                         triggers.forEach(function(functionName) {
-                            var delegate = prototype[functionName];
+                            const delegate = prototype[functionName];
                             if (typeof delegate === "function") {
                                 prototype[functionName] = function() {
                                     delegate.apply(this, arguments);
@@ -1549,12 +1547,12 @@
          * @private
          */
         createEffectUnit: function(effectUnitDefinition, componentStorage) {
-            var effectUnit = this.setupMidi(
+            const effectUnit = this.setupMidi(
                 effectUnitDefinition,
                 new components.EffectUnit(effectUnitDefinition.unitNumbers, true),
                 componentStorage,
                 ["onFocusChange", "shift", "unshift"]);
-            var shiftType = effectUnitDefinition.sendShiftedFor;
+            const shiftType = effectUnitDefinition.sendShiftedFor;
             /*
              * `shiftType` is expected to be a JS component (e.g. `c.Button` or `c.Component`)
              * which in terms of JS means that it is of type `function`. If something else is given
@@ -1579,8 +1577,8 @@
          * @private
          */
         createComponentContainer: function(containerDefinition) {
-            var containerType = containerDefinition.type || components.ComponentContainer;
-            var container = new containerType(containerDefinition.options);
+            const containerType = containerDefinition.type || components.ComponentContainer;
+            const container = new containerType(containerDefinition.options);
             if (containerDefinition.components) {
                 containerDefinition.components.forEach(function(componentDefinition, index) {
                     const definition = mergeDefinitions({}, containerDefinition.defaultDefinition, componentDefinition);
@@ -1601,7 +1599,7 @@
          * @private
          */
         createComponent: function(definition) {
-            var component = null;
+            let component = null;
             if (definition && definition.type) {
                 if (definition.type.prototype instanceof components.ComponentContainer) {
                     component = this.createComponentContainer(definition);
@@ -1628,14 +1626,14 @@
                 layerManager.register(implementation, definition && definition.shift === true);
             } else if (implementation instanceof components.ComponentContainer) {
                 Object.keys(implementation).forEach(function(name) {
-                    var definitionName = definition ? definition[name] : null;
+                    const definitionName = definition ? definition[name] : null;
                     this.registerComponents(layerManager, definitionName, implementation[name]);
                 }, this);
             }
         },
     });
 
-    var exports = {};
+    const exports = {};
     exports.deriveFrom = deriveFrom;
     exports.ParameterComponent = ParameterComponent;
     exports.ShiftButton = ShiftButton;

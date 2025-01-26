@@ -3,16 +3,17 @@
  */
 
 /* Globally available objects are declared as variables to avoid linter errors */
+// eslint-next-line-disable no-var
 var behringer = behringer, BCR2000Preset = BCR2000Preset;
 
-var BCR2000 = new behringer.extension.GenericMidiController({
+const BCR2000 = new behringer.extension.GenericMidiController({
     configurationProvider: function() {
 
         /* Shortcut variables */
-        var c = components;
-        var e = behringer.extension;
-        var p = BCR2000Preset;
-        var cc = p.STATUS_CONTROL_CHANGE;
+        const c = components;
+        const e = behringer.extension;
+        const p = BCR2000Preset;
+        const cc = p.STATUS_CONTROL_CHANGE;
 
         return {
             init: function() {
