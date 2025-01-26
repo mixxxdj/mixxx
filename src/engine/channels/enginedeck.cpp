@@ -35,8 +35,10 @@ EngineDeck::EngineDeck(
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
-          m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
-          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
+          m_pInputConfigured(std::make_unique<ControlObject>(
+                  ConfigKey(getGroup(), "input_configured"))),
+          m_pPassing(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
@@ -115,7 +117,6 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
 #endif
 
 EngineDeck::~EngineDeck() {
-    delete m_pPassing;
     delete m_pBuffer;
     delete m_pPregain;
 }

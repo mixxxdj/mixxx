@@ -17,42 +17,49 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_sampleBuffer(nullptr),
           m_bIsPrimaryDeck(isPrimaryDeck),
           m_active(false),
+          m_pMainMix(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("main_mix")))),
+          m_pPFL(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("pfl")))),
+          // crossfader assignment is persistent
+          m_pOrientation(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("orientation")),
+                  true,
+                  defaultOrientation)),
+          m_pOrientationLeft(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("orientation_left")))),
+          m_pOrientationRight(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("orientation_right")))),
+          m_pOrientationCenter(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("orientation_center")))),
+          m_pTalkover(std::make_unique<ControlPushButton>(
+                  ConfigKey(getGroup(), QStringLiteral("talkover")))),
           m_bIsTalkoverChannel(isTalkoverChannel),
           m_channelIndex(-1) {
-    m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(mixxx::control::ButtonMode::Toggle);
-    m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
     m_pMainMix->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
-    // crossfader assignment is persistent
-    m_pOrientation = new ControlPushButton(
-            ConfigKey(getGroup(), "orientation"), true, defaultOrientation);
     m_pOrientation->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
-    m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
-    connect(m_pOrientationLeft, &ControlObject::valueChanged,
-            this, &EngineChannel::slotOrientationLeft, Qt::DirectConnection);
-    m_pOrientationRight = new ControlPushButton(ConfigKey(getGroup(), "orientation_right"));
-    connect(m_pOrientationRight, &ControlObject::valueChanged,
-            this, &EngineChannel::slotOrientationRight, Qt::DirectConnection);
-    m_pOrientationCenter = new ControlPushButton(ConfigKey(getGroup(), "orientation_center"));
-    connect(m_pOrientationCenter, &ControlObject::valueChanged,
-            this, &EngineChannel::slotOrientationCenter, Qt::DirectConnection);
-    m_pTalkover = new ControlPushButton(ConfigKey(getGroup(), "talkover"));
+    connect(m_pOrientationLeft.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineChannel::slotOrientationLeft,
+            Qt::DirectConnection);
+    connect(m_pOrientationRight.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineChannel::slotOrientationRight,
+            Qt::DirectConnection);
+    connect(m_pOrientationCenter.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineChannel::slotOrientationCenter,
+            Qt::DirectConnection);
     m_pTalkover->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
 
     if (m_pEffectsManager != nullptr) {
         m_pEffectsManager->registerInputChannel(handleGroup);
     }
-}
-
-EngineChannel::~EngineChannel() {
-    delete m_pMainMix;
-    delete m_pPFL;
-    delete m_pOrientation;
-    delete m_pOrientationLeft;
-    delete m_pOrientationRight;
-    delete m_pOrientationCenter;
-    delete m_pTalkover;
 }
 
 void EngineChannel::setPfl(bool enabled) {

@@ -29,7 +29,6 @@ class EngineChannel : public EngineObject {
             EffectsManager* pEffectsManager,
             bool isTalkoverChannel,
             bool isPrimaryDeck);
-    ~EngineChannel() override;
 
     virtual ChannelOrientation getOrientation() const;
 
@@ -77,7 +76,7 @@ class EngineChannel : public EngineObject {
 
   protected:
     const ChannelHandleAndGroup m_group;
-    EffectsManager* m_pEffectsManager;
+    EffectsManager* m_pEffectsManager; // std::shared_ptr ??
 
     EngineVuMeter m_vuMeter;
     PollingControlProxy m_sampleRate;
@@ -94,13 +93,13 @@ class EngineChannel : public EngineObject {
     void slotOrientationCenter(double v);
 
   private:
-    ControlPushButton* m_pMainMix;
-    ControlPushButton* m_pPFL;
-    ControlPushButton* m_pOrientation;
-    ControlPushButton* m_pOrientationLeft;
-    ControlPushButton* m_pOrientationRight;
-    ControlPushButton* m_pOrientationCenter;
-    ControlPushButton* m_pTalkover;
+    std::unique_ptr<ControlPushButton> m_pMainMix;
+    std::unique_ptr<ControlPushButton> m_pPFL;
+    std::unique_ptr<ControlPushButton> m_pOrientation;
+    std::unique_ptr<ControlPushButton> m_pOrientationLeft;
+    std::unique_ptr<ControlPushButton> m_pOrientationRight;
+    std::unique_ptr<ControlPushButton> m_pOrientationCenter;
+    std::unique_ptr<ControlPushButton> m_pTalkover;
     bool m_bIsTalkoverChannel;
     int m_channelIndex;
 };

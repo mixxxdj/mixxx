@@ -6,6 +6,7 @@
 #include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 #include "util/samplebuffer.h"
 
 class EnginePregain;
@@ -104,9 +105,9 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     std::vector<std::unique_ptr<ControlPushButton>> m_stemMute;
 #endif
 
-    // Begin vinyl passthrough fields
-    QScopedPointer<ControlObject> m_pInputConfigured;
-    ControlPushButton* m_pPassing;
+    // Vinyl / passthrough controls
+    std::unique_ptr<ControlObject> m_pInputConfigured;
+    std::unique_ptr<ControlPushButton> m_pPassing;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
 };
