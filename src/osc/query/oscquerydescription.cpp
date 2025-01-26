@@ -17,10 +17,9 @@ T take_back(std::vector<T>* pVec) {
 }
 
 QString toOscAddress(const ConfigKey& key) {
-    QString groupWithoutBrackets = key.group.mid(1, key.group.size() - 2);
-    QString oscAddress = groupWithoutBrackets + QChar('/') + key.item;
-    oscAddress.replace(QChar('['), QChar('('));
-    oscAddress.replace(QChar(']'), QChar(')'));
+    QString oscAddress = key.group + key.item;
+    oscAddress.remove(QChar('['));
+    oscAddress.remove(QChar(']'));
     oscAddress.replace(QChar('_'), QChar('/'));
     return oscAddress;
 }
