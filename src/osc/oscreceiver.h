@@ -17,6 +17,7 @@ class ControlProxy;
 class OscResult {
   public:
     QString oscAddress;
+    QString oscAddressURL;
     QString oscGroup;
     QString oscKey;
     float oscValue;
