@@ -30,7 +30,7 @@
 
 namespace {
 
-constexpr int kInvalidSmartiesId = -1;
+// constexpr int kInvalidSmartiesId = -1;
 const bool sDebug = true;
 
 QString formatLabel(
