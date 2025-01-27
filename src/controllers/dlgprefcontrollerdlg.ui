@@ -114,7 +114,7 @@
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
-     <layout class="QGridLayout" name="gridLayoutDeviceInfo" rowstretch="0,0,0,0,0,0,0,0,0,0,0" rowminimumheight="1,1,1,1,1,1,1,1,1,1,0">
+     <layout class="QGridLayout" name="gridLayoutDeviceInfo" rowminimumheight="1,1,1,1,1,1,1,1,1,1,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
@@ -513,7 +513,7 @@
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
-     <layout class="QGridLayout" name="gridLayoutMappingInfo" rowstretch="0,0,0,0,0,0" rowminimumheight="1,1,1,1,1,0">
+     <layout class="QGridLayout" name="gridLayoutMappingInfo" rowminimumheight="1,1,1,1,1,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
