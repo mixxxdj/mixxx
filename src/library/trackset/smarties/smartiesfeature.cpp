@@ -725,6 +725,7 @@ void SmartiesFeature::slotEditSmarties() {
                                     "[UPDATE] -> END UPDATE smartiesId "
                                  << smartiesId;
                     }
+                    m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
                     emit updateSmartiesData(smartiesData);
                 });
 
@@ -910,6 +911,7 @@ void SmartiesFeature::slotEditSmarties() {
                          << smartiesId;
             }
             activateSmarties(smartiesId);
+            m_lastRightClickedIndex = indexFromSmartiesId(smartiesId);
             slotSmartiesTableChanged(smartiesId);
             if (sDebug) {
                 qDebug() << "[SMARTIESFEATURE] [SLOT EDIT SMARTIES] -> [CLOSE "

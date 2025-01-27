@@ -146,6 +146,9 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
         cleanedText.replace(";", ":");
         cleanedText.replace("::", ":");
         cleanedText.replace(":::", ":");
+        cleanedText.replace("~", "");
+        cleanedText.replace("=", "");
+
         // if the or-symbol | is in the text the combiners will be OR, else AND (default)
         bool orCombiner = cleanedText.indexOf("|", 0) > 1;
         cleanedText.replace("|", "");
@@ -180,7 +183,22 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                 if (stringTerms.contains(term)) {
                     operatorType = "contains";
                 } else if (numberTerms.contains(term) || dateTerms.contains(term)) {
-                    operatorType = "is";
+                    //                    if (term == "bpm") {
+                    //                        if ((value.startsWith("=")) &&
+                    //                        (!value.contains("-"))) {
+                    if (!value.contains("-")) {
+                        operatorType = "equal to";
+                        //                            value.replace("=", "");
+                    }
+                    // if ((value.startsWith("=")) && (value.contains("-"))) {
+                    if (value.contains("-")) {
+                        operatorType = "between";
+                        //                            value.replace("=", "");
+                        value.replace("-", "|");
+                    }
+                    //                    } else {
+                    //                        operatorType = "is";
+                    //                    }
                 }
 
                 // Assign to the appropriate condition field
