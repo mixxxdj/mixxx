@@ -182,23 +182,32 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                 QString operatorType;
                 if (stringTerms.contains(term)) {
                     operatorType = "contains";
-                } else if (numberTerms.contains(term) || dateTerms.contains(term)) {
-                    //                    if (term == "bpm") {
-                    //                        if ((value.startsWith("=")) &&
-                    //                        (!value.contains("-"))) {
-                    if (!value.contains("-")) {
-                        operatorType = "equal to";
-                        //                            value.replace("=", "");
-                    }
-                    // if ((value.startsWith("=")) && (value.contains("-"))) {
+                } else if (numberTerms.contains(term)) {
                     if (value.contains("-")) {
                         operatorType = "between";
-                        //                            value.replace("=", "");
                         value.replace("-", "|");
+                    } else if (value.startsWith("<")) {
+                        operatorType = "less than";
+                        value.replace("<", "");
+                    } else if (value.startsWith(">")) {
+                        operatorType = "greater than";
+                        value.replace(">", "");
+                    } else {
+                        operatorType = "equal to";
                     }
-                    //                    } else {
-                    //                        operatorType = "is";
-                    //                    }
+                } else if (dateTerms.contains(term)) {
+                    if (value.contains("-")) {
+                        operatorType = "between";
+                        value.replace("-", "|");
+                    } else if (value.startsWith("<")) {
+                        operatorType = "before";
+                        value.replace("<", "");
+                    } else if (value.startsWith(">")) {
+                        operatorType = "after";
+                        value.replace(">", "");
+                    } else {
+                        operatorType = "equal to";
+                    }
                 }
 
                 // Assign to the appropriate condition field

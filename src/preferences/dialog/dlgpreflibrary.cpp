@@ -274,6 +274,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_rekordbox->setChecked(true);
 
     checkBox_grouped_smarties_enable->setChecked(false);
+    checkBox_grouped_smarties_replace->setChecked(false);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -345,6 +346,8 @@ void DlgPrefLibrary::slotUpdate() {
 
     checkBox_grouped_smarties_enable->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "GroupedSmartiesEnabled"), true));
+    checkBox_grouped_smarties_replace->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedSmartiesReplace"), true));
     int GroupedSmartiesLength = m_pConfig->getValue<int>(
             ConfigKey("[Library]", "GroupedSmartiesLength"));
 
@@ -613,6 +616,8 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(ConfigKey("[Library]", "GroupedSmartiesEnabled"),
             ConfigValue((int)checkBox_grouped_smarties_enable->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "GroupedSmartiesReplace"),
+            ConfigValue((int)checkBox_grouped_smarties_replace->isChecked()));
 
     if (radioButton_grouped_smarties_fixed_length->isChecked()) {
         m_pConfig->set(ConfigKey("[Library]", "GroupedSmartiesLength"),

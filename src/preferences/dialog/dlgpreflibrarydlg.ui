@@ -405,7 +405,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>120</height>
+       <height>140</height>
       </size>
      </property>
      <property name="title">
@@ -496,6 +496,19 @@
       </property>
       <property name="text">
        <string>Every change in this section requires a restart of Mixxx to get processed</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_grouped_smarties_replace">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>350</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use Grouped Smarties instead of Smarties</string>
       </property>
      </widget>
     </widget>

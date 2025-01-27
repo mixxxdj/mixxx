@@ -8,7 +8,7 @@
 #include <QVariant>
 
 #include "library/trackset/basetracksetfeature.h"
-#include "library/trackset/smarties/dlgsmartiesinfo.h"
+#include "library/trackset/smarties/dlggroupedsmartiesinfo.h"
 #include "library/trackset/smarties/smarties.h"
 #include "library/trackset/smarties/smartiesstorage.h"
 #include "library/trackset/smarties/smartiestablemodel.h"
@@ -24,14 +24,14 @@ class QPoint;
 class SmartiesSummary;
 class dlgSmartiesInfo;
 
-class SmartiesFeature : public BaseTrackSetFeature {
+class GroupedSmartiesFeature : public BaseTrackSetFeature {
     Q_OBJECT
 
   public:
-    SmartiesFeature(
+    GroupedSmartiesFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig);
-    ~SmartiesFeature() override = default;
+    ~GroupedSmartiesFeature() override = default;
 
     QVariant title() override;
 
@@ -45,7 +45,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
-    //    QString fullPathFromIndex(const QModelIndex& index) const;
+    QString fullPathFromIndex(const QModelIndex& index) const;
 
   signals:
     void updateSmartiesData(const QVariantList& smartiesData);
@@ -53,7 +53,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
   public slots:
     void activate() override;
-    //    void oldactivateChild(const QModelIndex& index);
+    void oldactivateChild(const QModelIndex& index);
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
@@ -110,9 +110,9 @@ class SmartiesFeature : public BaseTrackSetFeature {
     void selectSmartiesForEdit(SmartiesId selectedSmartiesId = SmartiesId());
 
     QModelIndex rebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
-    //    QModelIndex oldrebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
+    QModelIndex oldrebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
     void updateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
-    //  void oldupdateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
+    void oldupdateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
 
     SmartiesId smartiesIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromSmartiesId(SmartiesId smartiesId) const;
@@ -163,6 +163,6 @@ class SmartiesFeature : public BaseTrackSetFeature {
 
     //    QList<QVariantList> m_smartiesList;
     QVariantList smartiesData;
-    //    QString groupNameFromIndex(const QModelIndex& index) const;
-    //    void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
+    QString groupNameFromIndex(const QModelIndex& index) const;
+    void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
 };

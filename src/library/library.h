@@ -24,6 +24,7 @@ class ControlObject;
 class CrateFeature;
 // EVE
 class SmartiesFeature;
+class GroupedSmartiesFeature;
 // EVE
 class LibraryControl;
 class LibraryFeature;
@@ -204,6 +205,7 @@ class Library: public QObject {
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     SmartiesFeature* m_pSmartiesFeature;
+    GroupedSmartiesFeature* m_pGroupedSmartiesFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;

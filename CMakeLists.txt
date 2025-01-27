@@ -1266,10 +1266,12 @@ add_library(
   src/library/trackset/crate/cratetablemodel.cpp
   #EVE
   src/library/trackset/smarties/smartiesfeature.cpp
+  src/library/trackset/smarties/groupedsmartiesfeature.cpp
   src/library/trackset/smarties/smartiesfeaturehelper.cpp
   src/library/trackset/smarties/smartiesstorage.cpp
   src/library/trackset/smarties/smartiestablemodel.cpp
   src/library/trackset/smarties/dlgsmartiesinfo.cpp
+  src/library/trackset/smarties/dlggroupedsmartiesinfo.cpp
   src/library/trackset/smarties/dlgsmartiesinfo.ui
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp

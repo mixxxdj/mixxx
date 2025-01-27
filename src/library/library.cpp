@@ -29,6 +29,7 @@
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
 // EVE
+#include "library/trackset/smarties/groupedsmartiesfeature.h"
 #include "library/trackset/smarties/smartiesfeature.h"
 // EVE
 #include "library/trackset/playlistfeature.h"
@@ -77,6 +78,7 @@ Library::Library(
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
           m_pSmartiesFeature(nullptr),
+          m_pGroupedSmartiesFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -109,10 +111,6 @@ Library::Library(
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
-    // EVE
-    m_pSmartiesFeature = new SmartiesFeature(this, m_pConfig);
-    addFeature(m_pSmartiesFeature);
-    // EVE
 
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
@@ -126,6 +124,24 @@ Library::Library(
             &Library::exportCrate, // signal-to-signal
             Qt::DirectConnection);
 #endif
+
+    // EVE
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), false))) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"));
+
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"));
+    } else {
+        m_pSmartiesFeature = new SmartiesFeature(this, m_pConfig);
+        addFeature(m_pSmartiesFeature);
+    }
+    if (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) {
+        m_pGroupedSmartiesFeature = new GroupedSmartiesFeature(this, m_pConfig);
+        addFeature(m_pGroupedSmartiesFeature);
+    }
+    // EVE
 
     m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -606,13 +622,32 @@ void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
+// EVE
 void Library::slotCreateSmartiesFromSearch(const QString& text) {
-    m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), true))) {
+        m_pGroupedSmartiesFeature->slotCreateSmartiesFromSearch(text);
+    } else {
+        m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
+    }
 }
 
+// void Library::slotCreateSmartiesFromSearch(const QString& text) {
+//     m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
+// }
+
 void Library::slotCreateSmarties() {
-    m_pSmartiesFeature->slotCreateSmarties();
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), true))) {
+        m_pGroupedSmartiesFeature->slotCreateSmarties();
+    } else {
+        m_pSmartiesFeature->slotCreateSmarties();
+    }
 }
+
+// void Library::slotCreateSmarties() {
+//     m_pSmartiesFeature->slotCreateSmarties();
+// }
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
