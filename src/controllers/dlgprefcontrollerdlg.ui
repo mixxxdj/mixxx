@@ -116,7 +116,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayoutDeviceInfo" rowminimumheight="1,1,1,1,1,1,1,1,1,1,0">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="labelPhysicalInterface">
@@ -515,7 +515,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayoutMappingInfo" columnstretch="0,1" rowminimumheight="1,1,1,1,1,0">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetMaximumSize</enum>
       </property>
       <property name="bottomMargin">
        <number>9</number>
