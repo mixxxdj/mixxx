@@ -311,6 +311,13 @@ DlgPrefController::DlgPrefController(
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
     m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
     m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
+
+#ifndef MIXXX_USE_QML
+    // Remove the screens tab
+    m_ui.controllerTabs->removeTab(m_screensTabIndex);
+    // Just to be save
+    m_screensTabIndex = -1;
+#endif
 }
 
 DlgPrefController::~DlgPrefController() {
