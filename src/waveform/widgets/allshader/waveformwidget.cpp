@@ -47,7 +47,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
             type, options, ::WaveformRendererAbstract::Play);
     m_pWaveformRendererSignal = pWaveformRendererSignal.get();
     if (pWaveformRendererSignal) {
-        auto pNode = dynamic_cast<rendergraph::BaseNode*>(pWaveformRendererSignal.release());
+        auto* pNode = dynamic_cast<rendergraph::BaseNode*>(pWaveformRendererSignal.release());
         DEBUG_ASSERT(pNode);
         pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
     }
@@ -69,7 +69,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
 #endif
         std::unique_ptr<WaveformRendererSignalBase> pSlipNode = addWaveformSignalRenderer(
                 type, options, ::WaveformRendererAbstract::Slip);
-        auto pNode = dynamic_cast<rendergraph::BaseNode*>(pSlipNode.release());
+        auto* pNode = dynamic_cast<rendergraph::BaseNode*>(pSlipNode.release());
         DEBUG_ASSERT(pNode);
         pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
         pOpacityNode->appendChildNode(
