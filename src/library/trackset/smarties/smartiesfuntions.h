@@ -3,7 +3,7 @@
 
 #include <QString>
 
-const bool sDebug = false;
+const bool sDebug = true;
 
 inline QString buildCondition(const QString& field, const QString& op, const QString& value) {
     // Check if field, operator, and value are not null

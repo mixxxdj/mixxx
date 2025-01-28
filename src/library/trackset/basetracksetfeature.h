@@ -18,6 +18,10 @@ class BaseTrackSetFeature : public LibraryFeature {
   signals:
     void analyzeTracks(const QList<AnalyzerScheduledTrack>&);
 
+    // Used in smarties to send signal to dlg
+    // New signal for updating smarties data
+    void updateSmartiesData(const QVariantList& data);
+
   public slots:
     void activate() override;
 

@@ -1270,6 +1270,7 @@ add_library(
   src/library/trackset/smarties/smartiesfeaturehelper.cpp
   src/library/trackset/smarties/smartiesstorage.cpp
   src/library/trackset/smarties/smartiestablemodel.cpp
+  src/library/trackset/smarties/dlgbasesmartiesinfo.cpp
   src/library/trackset/smarties/dlgsmartiesinfo.cpp
   src/library/trackset/smarties/dlggroupedsmartiesinfo.cpp
   src/library/trackset/smarties/dlgsmartiesinfo.ui
