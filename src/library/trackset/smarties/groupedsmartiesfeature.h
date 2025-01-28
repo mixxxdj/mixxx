@@ -35,11 +35,6 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
 
     QVariant title() override;
 
-    //    bool dropAcceptChild(const QModelIndex& index,
-    //            const QList<QUrl>& urls,
-    //            QObject* pSource) override;
-    //    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
-
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
@@ -53,7 +48,6 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
 
   public slots:
     void activate() override;
-    void oldactivateChild(const QModelIndex& index);
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
@@ -66,26 +60,12 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
     void renameItem(const QModelIndex& index) override;
     void SetActiveSmartiesToLastRightClicked(const QModelIndex& index) override;
 
-    // #ifdef __ENGINEPRIME__
-    //   signals:
-    //     void exportAllSmarties();
-    //     void exportSmarties(SmartiesId smartiesId);
-    // #endif
-
   private slots:
     void slotDeleteSmarties();
     void slotEditSmarties();
-
     void slotRenameSmarties();
     void slotDuplicateSmarties();
-    //    void slotAutoDjTrackSourceChanged();
     void slotToggleSmartiesLock();
-    //    void slotImportPlaylist();
-    //    void slotImportPlaylistFile(const QString& playlistFile, SmartiesId smartiesId);
-    //    void slotCreateImportSmarties();
-    //    void slotExportPlaylist();
-    // Copy all of the tracks in a smarties to a new directory (like a thumbdrive).
-    //    void slotExportTrackFiles();
     void slotAnalyzeSmarties();
     void slotSmartiesTableChanged(SmartiesId smartiesId);
     void slotSmartiesContentChanged(SmartiesId smartiesId);
@@ -110,9 +90,7 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
     void selectSmartiesForEdit(SmartiesId selectedSmartiesId = SmartiesId());
 
     QModelIndex rebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
-    QModelIndex oldrebuildChildModel(SmartiesId selectedSmartiesId = SmartiesId());
     void updateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
-    void oldupdateChildModel(const QSet<SmartiesId>& updatedSmartiesIds);
 
     SmartiesId smartiesIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromSmartiesId(SmartiesId smartiesId) const;
@@ -125,11 +103,7 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
     const QIcon m_lockedSmartiesIcon;
 
     TrackCollection* const m_pTrackCollection;
-
-    //    dlgSmartiesInfoHelper m_dlgSmartiesInfoHelper;
     SmartiesTableModel m_smartiesTableModel;
-    //    dlgSmartiesInfoHelper m_dlgSmartiesInfoHelper;
-    //    dlgSmartiesInfo m_dlgSmartiesInfo;
 
     // Stores the id of a smarties in the sidebar that is adjacent to the smarties(smartiesId).
     void storePrevSiblingSmartiesId(SmartiesId smartiesId);
@@ -148,20 +122,10 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pRenameSmartiesAction;
     parented_ptr<QAction> m_pLockSmartiesAction;
     parented_ptr<QAction> m_pDuplicateSmartiesAction;
-    //    parented_ptr<QAction> m_pAutoDjTrackSourceAction;
-    //    parented_ptr<QAction> m_pImportPlaylistAction;
-    //    parented_ptr<QAction> m_pCreateImportPlaylistAction;
-    //    parented_ptr<QAction> m_pExportPlaylistAction;
-    //    parented_ptr<QAction> m_pExportTrackFilesAction;
-    // #ifdef __ENGINEPRIME__
-    //    parented_ptr<QAction> m_pExportAllSmartiesAction;
-    //    parented_ptr<QAction> m_pExportSmartiesAction;
-    // #endif
     parented_ptr<QAction> m_pAnalyzeSmartiesAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
-    //    QList<QVariantList> m_smartiesList;
     QVariantList smartiesData;
     QString groupNameFromIndex(const QModelIndex& index) const;
     void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);

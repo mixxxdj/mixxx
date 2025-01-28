@@ -28,10 +28,8 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
-// EVE
 #include "library/trackset/smarties/groupedsmartiesfeature.h"
 #include "library/trackset/smarties/smartiesfeature.h"
-// EVE
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
@@ -125,7 +123,7 @@ Library::Library(
             Qt::DirectConnection);
 #endif
 
-    // EVE
+    // EVE -> SMARTIES
     if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
             (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), false))) {
         qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesEnabled "
@@ -141,7 +139,7 @@ Library::Library(
         m_pGroupedSmartiesFeature = new GroupedSmartiesFeature(this, m_pConfig);
         addFeature(m_pGroupedSmartiesFeature);
     }
-    // EVE
+    // EVE -> SMARTIES
 
     m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -172,12 +170,27 @@ Library::Library(
             &CrateFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
-    // EVE
-    connect(m_pSmartiesFeature,
-            &SmartiesFeature::analyzeTracks,
-            m_pAnalysisFeature,
-            &AnalysisFeature::analyzeTracks);
-    // EVE
+    // EVE -> SMARTIES
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), false))) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"));
+
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"));
+    } else {
+        connect(m_pSmartiesFeature,
+                &SmartiesFeature::analyzeTracks,
+                m_pAnalysisFeature,
+                &AnalysisFeature::analyzeTracks);
+    }
+    if (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) {
+        connect(m_pGroupedSmartiesFeature,
+                &GroupedSmartiesFeature::analyzeTracks,
+                m_pAnalysisFeature,
+                &AnalysisFeature::analyzeTracks);
+    }
+    // EVE -> SMARTIES
     connect(this,
             &Library::analyzeTracks,
             m_pAnalysisFeature,
@@ -622,7 +635,7 @@ void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
-// EVE
+// EVE -> SMARTIES
 void Library::slotCreateSmartiesFromSearch(const QString& text) {
     if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
             (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), true))) {
@@ -632,10 +645,6 @@ void Library::slotCreateSmartiesFromSearch(const QString& text) {
     }
 }
 
-// void Library::slotCreateSmartiesFromSearch(const QString& text) {
-//     m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
-// }
-
 void Library::slotCreateSmarties() {
     if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
             (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), true))) {
@@ -644,10 +653,6 @@ void Library::slotCreateSmarties() {
         m_pSmartiesFeature->slotCreateSmarties();
     }
 }
-
-// void Library::slotCreateSmarties() {
-//     m_pSmartiesFeature->slotCreateSmarties();
-// }
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.

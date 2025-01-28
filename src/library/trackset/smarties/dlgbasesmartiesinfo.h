@@ -36,7 +36,6 @@ class dlgBaseSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     void onNextButtonClicked();     // Slot for Next button
     void onOKButtonClicked();       // Slot for OK button
     void onCancelButtonClicked();   // Slot for Cancel button
-    // void initializeConditionState();
 
     // validation
     bool validationCheck();
@@ -60,8 +59,6 @@ class dlgBaseSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     void initConditionsTable(const QVariantList& smartiesData);
     void initPlaylistCrateTable(const QVariantList& playlistsCratesData);
     QString buildWhereClause();
-    // void populateUI(const QVariantList& smartiesData);
-
     QVariantList smartiesData;
     QVariantList collectUIChanges() const;
     //    void onApplyButtonClicked(); // Slot for Apply button

@@ -356,20 +356,6 @@ class SmartiesTrackQueryFields {
     DbFieldIndex m_iTrackId;
 };
 
-// class TrackQueryFields {
-//   public:
-//     TrackQueryFields() = default;
-//     explicit TrackQueryFields(const FwdSqlQuery& query);
-//     virtual ~TrackQueryFields() = default;
-
-//    TrackId trackId(const FwdSqlQuery& query) const {
-//        return TrackId(query.fieldValue(m_iTrackId));
-//    }
-
-//  private:
-//    DbFieldIndex m_iTrackId;
-//};
-
 class SmartiesTrackSelectResult : public FwdSqlQuerySelectResult {
   public:
     SmartiesTrackSelectResult(SmartiesTrackSelectResult&& other)
@@ -395,29 +381,6 @@ class SmartiesTrackSelectResult : public FwdSqlQuerySelectResult {
 
     SmartiesTrackQueryFields m_queryFields;
 };
-
-// class TrackSelectResult : public FwdSqlQuerySelectResult {
-//   public:
-//     TrackSelectResult(TrackSelectResult&& other)
-//             : FwdSqlQuerySelectResult(std::move(other)),
-//               m_queryFields(std::move(other.m_queryFields)) {
-//     }
-//     ~TrackSelectResult() override = default;
-
-//    TrackId trackId() const {
-//        return m_queryFields.trackId(query());
-//    }
-
-//  private:
-//    friend class SmartiesStorage;
-//    TrackSelectResult() = default;
-//    explicit TrackSelectResult(FwdSqlQuery&& query)
-//            : FwdSqlQuerySelectResult(std::move(query)),
-//              m_queryFields(FwdSqlQuerySelectResult::query()) {
-//    }
-
-//    TrackQueryFields m_queryFields;
-//};
 
 class SmartiesStorage : public virtual /*implements*/ SqlStorage {
   public:

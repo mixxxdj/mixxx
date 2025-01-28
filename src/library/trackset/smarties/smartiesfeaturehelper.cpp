@@ -62,7 +62,6 @@ QString SmartiesFeatureHelper::proposeNameForNewSmarties(
     return proposedName;
 }
 
-// EVE
 SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& text) {
     if (sDebug) {
         qDebug() << "[SMARTIES] [NEW SMARTIES FROM SEARCH]";
@@ -224,8 +223,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition2Value(value);
                     newSmarties.setCondition2Combiner(") END");
                     newSmarties.setCondition1Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition2Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 3:
                     newSmarties.setCondition3Field(term);
@@ -233,8 +230,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition3Value(value);
                     newSmarties.setCondition3Combiner(") END");
                     newSmarties.setCondition2Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition3Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 4:
                     newSmarties.setCondition4Field(term);
@@ -242,8 +237,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition4Value(value);
                     newSmarties.setCondition4Combiner(") END");
                     newSmarties.setCondition3Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition4Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 5:
                     newSmarties.setCondition5Field(term);
@@ -251,8 +244,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition5Value(value);
                     newSmarties.setCondition5Combiner(") END");
                     newSmarties.setCondition4Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition5Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 6:
                     newSmarties.setCondition6Field(term);
@@ -260,8 +251,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition6Value(value);
                     newSmarties.setCondition6Combiner(") END");
                     newSmarties.setCondition5Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition6Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 7:
                     newSmarties.setCondition7Field(term);
@@ -269,8 +258,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition7Value(value);
                     newSmarties.setCondition7Combiner(") END");
                     newSmarties.setCondition6Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition7Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 8:
                     newSmarties.setCondition8Field(term);
@@ -278,8 +265,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition8Value(value);
                     newSmarties.setCondition8Combiner(") END");
                     newSmarties.setCondition7Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition8Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 9:
                     newSmarties.setCondition9Field(term);
@@ -287,8 +272,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition9Value(value);
                     newSmarties.setCondition9Combiner(") END");
                     newSmarties.setCondition8Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition9Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 10:
                     newSmarties.setCondition10Field(term);
@@ -296,8 +279,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition10Value(value);
                     newSmarties.setCondition10Combiner(") END");
                     newSmarties.setCondition9Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition10Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 11:
                     newSmarties.setCondition11Field(term);
@@ -305,8 +286,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition11Value(value);
                     newSmarties.setCondition11Combiner(") END");
                     newSmarties.setCondition10Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition11Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 case 12:
                     newSmarties.setCondition12Field(term);
@@ -314,8 +293,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
                     newSmarties.setCondition12Value(value);
                     newSmarties.setCondition12Combiner(") END");
                     newSmarties.setCondition11Combiner(orCombiner ? ") OR (" : ") AND (");
-                    // newSmarties.setCondition12Combiner(orCombiner &&
-                    // conditionIndex > 1 ? ") OR (" : ") AND (");
                     break;
                 }
 
@@ -365,19 +342,14 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
             newSmarties.setCondition7Operator("contains");
             newSmarties.setCondition7Value(cleanedText);
             newSmarties.setCondition7Combiner(") END");
-            //  newSmarties.setSearchSql(std::move(text));
         }
 
         newSmarties.setName(std::move(newName));
         DEBUG_ASSERT(newSmarties.hasName());
-        // newSmarties.setSearchInput(std::move(newName));
         newSmarties.setSearchInput(text);
-        // newSmarties.setSearchSql(std::move(text));
         newSmarties.setSearchSql(text);
         break;
     }
-
-    // newSmarties.setSearchInput(std::move(text));
 
     SmartiesId newSmartiesId;
 
@@ -406,7 +378,6 @@ SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromSearch(const QString& t
     }
     return newSmartiesId;
 }
-// EVE
 
 SmartiesId SmartiesFeatureHelper::createEmptySmartiesFromUI() {
     if (sDebug) {

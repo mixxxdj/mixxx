@@ -26,10 +26,8 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
-// #include "library/trackset/smarties/dlgsmartiesinfo.h"
 
 namespace {
-
 // constexpr int kInvalidSmartiesId = -1;
 const bool sDebug = true;
 
@@ -80,7 +78,6 @@ void SmartiesFeature::initActions() {
             this,
             &SmartiesFeature::slotCreateSmarties);
     m_pEditSmartiesAction = make_parented<QAction>(tr("Edit Smarties"), this);
-    // m_pEditSmartiesAction->setShortcut(kEditSidebarItemShortcutKey);
     connect(m_pEditSmartiesAction.get(),
             &QAction::triggered,
             this,
@@ -111,57 +108,11 @@ void SmartiesFeature::initActions() {
             &QAction::triggered,
             this,
             &SmartiesFeature::slotToggleSmartiesLock);
-
-    //    m_pAutoDjTrackSourceAction = make_parented<QAction>(tr("Auto DJ Track Source"), this);
-    //    m_pAutoDjTrackSourceAction->setCheckable(true);
-    //    connect(m_pAutoDjTrackSourceAction.get(),
-    //            &QAction::changed,
-    //            this,
-    //            &SmartiesFeature::slotAutoDjTrackSourceChanged);
-
     m_pAnalyzeSmartiesAction = make_parented<QAction>(tr("Analyze entire Smarties"), this);
     connect(m_pAnalyzeSmartiesAction.get(),
             &QAction::triggered,
             this,
             &SmartiesFeature::slotAnalyzeSmarties);
-
-    //    m_pImportPlaylistAction = make_parented<QAction>(tr("Import Smarties"), this);
-    //    connect(m_pImportPlaylistAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            &SmartiesFeature::slotImportPlaylist);
-    //    m_pCreateImportPlaylistAction = make_parented<QAction>(tr("Import Smarties"), this);
-    //    connect(m_pCreateImportPlaylistAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            &SmartiesFeature::slotCreateImportSmarties);
-    //    m_pExportPlaylistAction = make_parented<QAction>(tr("Export Smarties as Playlist"), this);
-    //    connect(m_pExportPlaylistAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            &SmartiesFeature::slotExportPlaylist);
-    //    m_pExportTrackFilesAction = make_parented<QAction>(tr("Export Track Files"), this);
-    //    connect(m_pExportTrackFilesAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            &SmartiesFeature::slotExportTrackFiles);
-    // #ifdef __ENGINEPRIME__
-    //    m_pExportAllSmartiesAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
-    //    connect(m_pExportAllSmartiesAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            &SmartiesFeature::exportAllSmarties);
-    //    m_pExportSmartiesAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
-    //    connect(m_pExportSmartiesAction.get(),
-    //            &QAction::triggered,
-    //            this,
-    //            [this]() {
-    //                SmartiesId smartiesId = smartiesIdFromIndex(m_lastRightClickedIndex);
-    //                if (smartiesId.isValid()) {
-    //                    emit exportSmarties(smartiesId);
-    //                }
-    //            });
-    // #endif
 }
 
 void SmartiesFeature::connectLibrary(Library* pLibrary) {
@@ -255,41 +206,6 @@ void SmartiesFeature::updateTreeItemForSmartiesSummary(
     pTreeItem->setLabel(formatLabel(smartiesSummary));
     pTreeItem->setIcon(smartiesSummary.isLocked() ? m_lockedSmartiesIcon : QIcon());
 }
-
-// bool SmartiesFeature::dropAcceptChild(
-//         const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
-//     SmartiesId smartiesId(smartiesIdFromIndex(index));
-//     VERIFY_OR_DEBUG_ASSERT(smartiesId.isValid()) {
-//         return false;
-//     }
-//  If a track is dropped onto a smarties's name, but the track isn't in the
-//  library, then add the track to the library before adding it to the
-//  playlist.
-//  pSource != nullptr it is a drop from inside Mixxx and indicates all
-//  tracks already in the DB
-//    QList<TrackId> trackIds =
-//            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls, !pSource);
-//    if (trackIds.isEmpty()) {
-//        return false;
-//    }
-
-//    m_pTrackCollection->addSmartiesTracks(smartiesId, trackIds);
-//    return true;
-//}
-
-// bool SmartiesFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
-//     SmartiesId smartiesId(smartiesIdFromIndex(index));
-//     if (!smartiesId.isValid()) {
-//         return false;
-//     }
-//     Smarties smarties;
-//     if (!m_pTrackCollection->smarties().readSmartiesById(smartiesId, &smarties) ||
-//             smarties.isLocked()) {
-//         return false;
-//     }
-//     return SoundSourceProxy::isUrlSupported(url) ||
-//             Parser::isPlaylistFilenameSupported(url.toLocalFile());
-// }
 
 void SmartiesFeature::bindLibraryWidget(
         WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
@@ -389,11 +305,6 @@ void SmartiesFeature::onRightClick(const QPoint& globalPos) {
     menu.addSeparator();
     menu.addAction(m_pEditSmartiesAction.get());
     menu.addSeparator();
-    //    menu.addAction(m_pCreateImportPlaylistAction.get());
-    // #ifdef __ENGINEPRIME__
-    //    menu.addSeparator();
-    //    menu.addAction(m_pExportAllSmartiesAction.get());
-    // #endif
     menu.exec(globalPos);
 }
 
@@ -413,9 +324,6 @@ void SmartiesFeature::onRightClickChild(
 
     m_pDeleteSmartiesAction->setEnabled(!smarties.isLocked());
     m_pRenameSmartiesAction->setEnabled(!smarties.isLocked());
-
-    //    m_pAutoDjTrackSourceAction->setChecked(smarties.isAutoDjSource());
-
     m_pLockSmartiesAction->setText(smarties.isLocked() ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
@@ -428,18 +336,9 @@ void SmartiesFeature::onRightClickChild(
     menu.addAction(m_pDeleteSmartiesAction.get());
     menu.addAction(m_pLockSmartiesAction.get());
     menu.addSeparator();
-    //    menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
     menu.addAction(m_pAnalyzeSmartiesAction.get());
     menu.addSeparator();
-    //    if (!smarties.isLocked()) {
-    //        menu.addAction(m_pImportPlaylistAction.get());
-    //    }
-    //    menu.addAction(m_pExportPlaylistAction.get());
-    //    menu.addAction(m_pExportTrackFilesAction.get());
-    // #ifdef __ENGINEPRIME__
-    //    menu.addAction(m_pExportSmartiesAction.get());
-    // #endif
     menu.exec(globalPos);
 }
 
@@ -610,7 +509,6 @@ void SmartiesFeature::slotDuplicateSmarties() {
         SmartiesId newSmartiesId =
                 SmartiesFeatureHelper(m_pTrackCollection, m_pConfig)
                         .duplicateSmarties(smarties);
-        //        m_pUpdateDuplicateSmarties
         if (newSmartiesId.isValid()) {
             if (sDebug) {
                 qDebug() << "[SMARTIESFEATURE] [SLOT DUPLICATE SMARTIES] -> "
@@ -629,17 +527,6 @@ void SmartiesFeature::slotDuplicateSmarties() {
 void SmartiesFeature::SetActiveSmartiesToLastRightClicked(const QModelIndex& index) {
     m_lastRightClickedIndex = index;
 }
-
-// bool SmartiesFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
-//     SmartiesId smartiesId(smartiesIdFromIndex(index));
-//     if (!smartiesId.isValid()) {
-//         return false;
-//     }
-//     Smarties smarties;
-//     if (!m_pTrackCollection->smarties().readSmartiesById(smartiesId, &smarties) ||
-//             smarties.isLocked()) {
-//         return false;
-//     }
 
 void SmartiesFeature::selectSmartiesForEdit(SmartiesId selectedSmartiesId) {
     if (sDebug) {
@@ -942,16 +829,6 @@ void SmartiesFeature::slotToggleSmartiesLock() {
     }
 }
 
-// void SmartiesFeature::slotAutoDjTrackSourceChanged() {
-//     Smarties smarties;
-//     if (readLastRightClickedSmarties(&smarties)) {
-//         if (smarties.isAutoDjSource() != m_pAutoDjTrackSourceAction->isChecked()) {
-//             smarties.setAutoDjSource(m_pAutoDjTrackSourceAction->isChecked());
-//             m_pTrackCollection->updateSmarties(smarties);
-//         }
-//     }
-// }
-
 QModelIndex SmartiesFeature::rebuildChildModel(SmartiesId selectedSmartiesId) {
     if (sDebug) {
         qDebug() << "[SMARTIESFEATURE] [REBUILDCHILDMODEL] -> "
@@ -1051,114 +928,6 @@ QModelIndex SmartiesFeature::indexFromSmartiesId(SmartiesId smartiesId) const {
     return QModelIndex();
 }
 
-// void SmartiesFeature::slotImportPlaylist() {
-//     // qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
-//
-//     QString playlistFile = getPlaylistFile();
-//     if (playlistFile.isEmpty()) {
-//         return;
-//     }
-
-//    // Update the import/export smarties directory
-//    QString fileDirectory(playlistFile);
-//    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
-//    m_pConfig->set(kConfigKeyLastImportExportSmartiesDirectoryKey,
-//            ConfigValue(fileDirectory));
-
-//    SmartiesId smartiesId = smartiesIdFromIndex(m_lastRightClickedIndex);
-//    Smarties smarties;
-//    if (m_pTrackCollection->smarties().readSmartiesById(smartiesId, &smarties)) {
-//        qDebug() << "Importing playlist file" << playlistFile << "into smarties"
-//                 << smartiesId << smarties;
-//    } else {
-//        qDebug() << "Importing playlist file" << playlistFile << "into smarties"
-//                 << smartiesId << smarties << "failed!";
-//        return;
-//    }
-
-//    slotImportPlaylistFile(playlistFile, smartiesId);
-//    activateChild(m_lastRightClickedIndex);
-//}
-
-// void SmartiesFeature::slotImportPlaylistFile(const QString& playlistFile,
-// SmartiesId smartiesId) {
-//  The user has picked a new directory via a file dialog. This means the
-//  system sandboxer (if we are sandboxed) has granted us permission to this
-//  folder. We don't need access to this file on a regular basis so we do not
-//  register a security bookmark.
-//  TODO(XXX): Parsing a list of track locations from a playlist file
-//  is a general task and should be implemented separately.
-//    QList<QString> locations = Parser().parse(playlistFile);
-//    if (locations.empty()) {
-//        return;
-//    }
-
-//    if (smartiesId == m_smartiesTableModel.selectedSmarties()) {
-// Add tracks directly to the model
-//        m_smartiesTableModel.addTracks(QModelIndex(), locations);
-//    } else {
-// Create a temporary table model since the main one might have another
-// smarties selected which is not the smarties that received the right-click.
-//        std::unique_ptr<SmartiesTableModel> pSmartiesTableModel =
-//                std::make_unique<SmartiesTableModel>(this, m_pLibrary->trackCollectionManager());
-//        pSmartiesTableModel->selectSmarties(smartiesId);
-//        pSmartiesTableModel->select();
-//        pSmartiesTableModel->addTracks(QModelIndex(), locations);
-//    }
-//}
-
-// void SmartiesFeature::slotCreateImportSmarties() {
-//  Get file to read
-//    QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
-//    if (playlistFiles.isEmpty()) {
-//        return;
-//    }
-
-// Set last import directory
-//    QString fileDirectory(playlistFiles.first());
-//    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
-//    m_pConfig->set(kConfigKeyLastImportExportSmartiesDirectoryKey,
-//            ConfigValue(fileDirectory));
-
-//    SmartiesId lastSmartiesId;
-
-// For each selected file create a new smarties
-//    for (const QString& playlistFile : playlistFiles) {
-//        const QFileInfo fileInfo(playlistFile);
-
-//        Smarties smarties;
-
-// Get a valid name
-//        const QString baseName = fileInfo.baseName();
-//        for (int i = 0;; ++i) {
-//            auto name = baseName;
-//            if (i > 0) {
-//                name += QStringLiteral(" %1").arg(i);
-//            }
-//            name = name.trimmed();
-//            if (!name.isEmpty()) {
-//                if (!m_pTrackCollection->smarties().readSmartiesByName(name)) {
-// unused smarties name found
-//                    smarties.setName(std::move(name));
-//                    DEBUG_ASSERT(smarties.hasName());
-//                    break; // terminate loop
-//                }
-//            }
-//        }
-
-//        if (!m_pTrackCollection->insertSmarties(smarties, &lastSmartiesId)) {
-//            QMessageBox::warning(nullptr,
-//                    tr("Smarties Creation Failed"),
-//                    tr("An unknown error occurred while creating smarties: ") +
-//                            smarties.getName());
-//            return;
-//        }
-
-//        slotImportPlaylistFile(playlistFile, lastSmartiesId);
-//    }
-//    activateSmarties(lastSmartiesId);
-//}
-
 void SmartiesFeature::slotAnalyzeSmarties() {
     if (m_lastRightClickedIndex.isValid()) {
         SmartiesId smartiesId = smartiesIdFromIndex(m_lastRightClickedIndex);
@@ -1178,105 +947,6 @@ void SmartiesFeature::slotAnalyzeSmarties() {
         }
     }
 }
-
-// void SmartiesFeature::slotExportPlaylist() {
-//     SmartiesId smartiesId = smartiesIdFromIndex(m_lastRightClickedIndex);
-//     Smarties smarties;
-//     if (m_pTrackCollection->smarties().readSmartiesById(smartiesId, &smarties)) {
-//         qDebug() << "Exporting smarties" << smartiesId << smarties;
-//     } else {
-//         qDebug() << "Failed to export smarties" << smartiesId;
-//         return;
-//     }
-
-//    QString lastSmartiesDirectory = m_pConfig->getValue(
-//            kConfigKeyLastImportExportSmartiesDirectoryKey,
-//            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
-
-// Open a dialog to let the user choose the file location for smarties export.
-// The location is set to the last used directory for import/export and the file
-// name to the playlist name.
-//    const QString fileLocation = getFilePathWithVerifiedExtensionFromFileDialog(
-//            tr("Export Smarties"),
-//            lastSmartiesDirectory.append("/").append(smarties.getName()),
-//            tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist "
-//               "(*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"),
-//            tr("M3U Playlist (*.m3u)"));
-// Exit method if user cancelled the open dialog.
-//    if (fileLocation.isEmpty()) {
-//        return;
-//    }
-// Update the import/export smarties directory
-//    QString fileDirectory(fileLocation);
-//    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
-//    m_pConfig->set(kConfigKeyLastImportExportSmartiesDirectoryKey,
-//            ConfigValue(fileDirectory));
-
-// The user has picked a new directory via a file dialog. This means the
-// system sandboxer (if we are sandboxed) has granted us permission to this
-// folder. We don't need access to this file on a regular basis so we do not
-// register a security bookmark.
-
-// check config if relative paths are desired
-//   bool useRelativePath =
-//           m_pConfig->getValue<bool>(
-//                    kUseRelativePathOnExportConfigKey);
-
-// Create list of files of the smarties
-// Create a new table model since the main one might have an active search.
-//    std::unique_ptr<SmartiesTableModel> pSmartiesTableModel =
-//            std::make_unique<SmartiesTableModel>(this, m_pLibrary->trackCollectionManager());
-//    pSmartiesTableModel->selectSmarties(smartiesId);
-//    pSmartiesTableModel->select();
-
-//    if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-//        ParserCsv::writeCSVFile(fileLocation, pSmartiesTableModel.get(), useRelativePath);
-//    } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
-//        ParserCsv::writeReadableTextFile(fileLocation, pSmartiesTableModel.get(), false);
-//    } else {
-// populate a list of files of the smarties
-//        QList<QString> playlistItems;
-//        int rows = pSmartiesTableModel->rowCount();
-//        for (int i = 0; i < rows; ++i) {
-//            QModelIndex index = pSmartiesTableModel->index(i, 0);
-//            playlistItems << pSmartiesTableModel->getTrackLocation(index);
-//        }
-//        exportPlaylistItemsIntoFile(
-//                fileLocation,
-//                playlistItems,
-//                useRelativePath);
-//    }
-//}
-
-// void SmartiesFeature::slotExportTrackFiles() {
-//     SmartiesId smartiesId(smartiesIdFromIndex(m_lastRightClickedIndex));
-//     if (!smartiesId.isValid()) {
-//         return;
-//     }
-//  Create a new table model since the main one might have an active search.
-//    std::unique_ptr<SmartiesTableModel> pSmartiesTableModel =
-//            std::make_unique<SmartiesTableModel>(this, m_pLibrary->trackCollectionManager());
-//    pSmartiesTableModel->selectSmarties(smartiesId);
-//    pSmartiesTableModel->select();
-
-//    int rows = pSmartiesTableModel->rowCount();
-//    TrackPointerList trackpointers;
-//    for (int i = 0; i < rows; ++i) {
-//        QModelIndex index = pSmartiesTableModel->index(i, 0);
-//        auto pTrack = pSmartiesTableModel->getTrack(index);
-//        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-//            continue;
-//        }
-//        trackpointers.push_back(pTrack);
-//    }
-
-//    if (trackpointers.isEmpty()) {
-//        return;
-//    }
-
-//    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
-//    track_export.exportTracks();
-//}
 
 void SmartiesFeature::storePrevSiblingSmartiesId(SmartiesId smartiesId) {
     QModelIndex actIndex = indexFromSmartiesId(smartiesId);

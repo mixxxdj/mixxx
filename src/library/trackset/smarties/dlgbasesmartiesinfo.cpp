@@ -324,18 +324,6 @@ void dlgBaseSmartiesInfo::populateUI() {
             "playlist",
             "crate",
             "history"};
-    //    QStringList stringFieldOptions = {"", "artist", "title", "album",
-    //    "album_artist", "genre", "comment", "composer", "filetype", "key"};
-    //    QStringList dateFieldOptions = {"", "year", "datetime_added",
-    //    "last_played_at"}; QStringList numberFieldOptions = {"", "duration",
-    //    "bpm", "played", "timesplayed", "rating"}; QStringList
-    //    playlistCrateFieldOptions = {"", "playlist", "crate"}; QStringList
-    //    stringOperatorOptions = {"", "contains", "does not contain", "equal
-    //    to", "not equal to", "starts with", "ends with", "is not empty", "is
-    //    empty"}; QStringList dateOperatorOptions = {"", "before", "after", "last",
-    //    "equal to"}; QStringList numberOperatorOptions = {"", "smaller than",
-    //    "greater than", "equal to", "not equal to"}; QStringList
-    //    playlistCrateOperatorOptions = {"", "is", "is not"};
     QStringList operatorOptions = {"",
             "contains",
             "does not contain",
@@ -391,29 +379,15 @@ void dlgBaseSmartiesInfo::populateUI() {
         if (valueLineEdit && valueComboBox) {
             QSignalBlocker blocker(valueComboBox);
             if (conditionsTable[i][1] == "playlist") {
-                //                qDebug() << "[SMARTIES] [EDIT DLG] -->
-                //                POPULATE comboBoxValue ->
-                //                conditionsTable[i][1] " <<
-                //                conditionsTable[i][1];
                 valueLineEdit->setVisible(false);
                 valueComboBox->setVisible(true);
                 valueComboBox->clear();
                 for (auto it = playlistTable.constBegin(); it != playlistTable.constEnd(); ++it) {
-                    // const QString& subgroupName = it.key();
                     valueComboBox->addItem(it->second);
                 }
-
-                // for (const auto& playlist : playlistTable) {
-                //     valueComboBox->addItem(playlist.second);
-                //  valueComboBox->addItem(playlist.second, playlist.first);
-                //}
-                // valueLineEdit->setText(conditionsTable[i][3]);
-                // valueComboBox->setCurrentText(conditionsTable[i][3]);
                 if (conditionsTable[i][3].indexOf("|||", 0) > 0) {
                     int posBar = conditionsTable[i][3].indexOf("|||", 0);
                     QString playlistId = conditionsTable[i][3].mid(0, posBar);
-                    // QString playlistName = conditionsTable[i][3].mid(posBar +
-                    // 3, conditionsTable[i][3].length() - posBar + 3);
                     QString playlistName;
                     // playlist could be renamed, id stays -> get name
                     if (playlistIdHash.contains(playlistId)) {
@@ -422,14 +396,12 @@ void dlgBaseSmartiesInfo::populateUI() {
                             qDebug() << "name for playlist ID -> " << playlistId
                                      << " is " << playlistName;
                         }
-                        // conditionsTable[i][3] = playlistName;
                         valueComboBox->setCurrentText(playlistName);
                     } else {
                         if (sDebug) {
                             qDebug() << "Id not in playlistIdHash: " << playlistId;
                         }
                     }
-                    // conditionsTable[i][3] = playlistName;
                     if (sDebug) {
                         qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> playlistName "
@@ -443,30 +415,16 @@ void dlgBaseSmartiesInfo::populateUI() {
                 }
 
             } else if (conditionsTable[i][1] == "history") {
-                //                qDebug() << "[SMARTIES] [EDIT DLG] -->
-                //                POPULATE comboBoxValue ->
-                //                conditionsTable[i][1] " <<
-                //                conditionsTable[i][1];
                 valueLineEdit->setVisible(false);
                 valueComboBox->setVisible(true);
                 valueComboBox->clear();
                 for (auto it = historyTable.constBegin(); it != historyTable.constEnd(); ++it) {
-                    // const QString& subgroupName = it.key();
                     valueComboBox->addItem(it->second);
                 }
-
-                // for (const auto& historylist : historyTable) {
-                //     valueComboBox->addItem(historylist.second);
-                //  valueComboBox->addItem(cratelist.second, cratelist.first);
-                //}
-                // valueLineEdit->setText(conditionsTable[i][3]);
-                // valueComboBox->setCurrentText(conditionsTable[i][3]);
                 //  crate could be renamed, id stays -> get name
                 if (conditionsTable[i][3].indexOf("|||", 0) > 0) {
                     int posBar = conditionsTable[i][3].indexOf("|||", 0);
                     QString historyId = conditionsTable[i][3].mid(0, posBar);
-                    // QString crateName = conditionsTable[i][3].mid(posBar + 3,
-                    // conditionsTable[i][3].length() - posBar + 3);
                     QString historyName;
                     if (historyIdHash.contains(historyId)) {
                         historyName = historyIdHash.value(historyId);
@@ -474,14 +432,12 @@ void dlgBaseSmartiesInfo::populateUI() {
                             qDebug() << "name for history ID -> " << historyId
                                      << " is " << historyName;
                         }
-                        // conditionsTable[i][3] = crateName;
                         valueComboBox->setCurrentText(historyName);
                     } else {
                         if (sDebug) {
                             qDebug() << "Id not in historyIdHash: " << historyId;
                         }
                     }
-                    // conditionsTable[i][3] = crateName;
                     if (sDebug) {
                         qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> historyName "
@@ -495,43 +451,28 @@ void dlgBaseSmartiesInfo::populateUI() {
                 }
 
             } else if (conditionsTable[i][1] == "crate") {
-                //                qDebug() << "[SMARTIES] [EDIT DLG] -->
-                //                POPULATE comboBoxValue ->
-                //                conditionsTable[i][1] " <<
-                //                conditionsTable[i][1];
                 valueLineEdit->setVisible(false);
                 valueComboBox->setVisible(true);
                 valueComboBox->clear();
                 for (auto it = crateTable.constBegin(); it != crateTable.constEnd(); ++it) {
-                    // const QString& subgroupName = it.key();
                     valueComboBox->addItem(it->second);
                 }
-                // for (const auto& cratelist : crateTable) {
-                //     valueComboBox->addItem(cratelist.second);
-                //  valueComboBox->addItem(cratelist.second, cratelist.first);
-                //}
-                // valueLineEdit->setText(conditionsTable[i][3]);
-                // valueComboBox->setCurrentText(conditionsTable[i][3]);
                 //  crate could be renamed, id stays -> get name
                 if (conditionsTable[i][3].indexOf("|||", 0) > 0) {
                     int posBar = conditionsTable[i][3].indexOf("|||", 0);
                     QString crateId = conditionsTable[i][3].mid(0, posBar);
-                    // QString crateName = conditionsTable[i][3].mid(posBar + 3,
-                    // conditionsTable[i][3].length() - posBar + 3);
                     QString crateName;
                     if (crateIdHash.contains(crateId)) {
                         crateName = crateIdHash.value(crateId);
                         if (sDebug) {
                             qDebug() << "name for crate ID -> " << crateId << " is " << crateName;
                         }
-                        // conditionsTable[i][3] = crateName;
                         valueComboBox->setCurrentText(crateName);
                     } else {
                         if (sDebug) {
                             qDebug() << "Id not in crateIdHash: " << crateId;
                         }
                     }
-                    // conditionsTable[i][3] = crateName;
                     if (sDebug) {
                         qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> crateName "
@@ -596,10 +537,6 @@ void dlgBaseSmartiesInfo::populateUI() {
 
 // narrow possible operator selections based on field selection
 void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
-    // QStringList fieldOptions = {"artist", "title", "album", "album_artist",
-    // "genre", "comment", "composer", "filetype", "key", "year",
-    // "datetime_added", "last_played_at", "duration", "bpm", "played",
-    // "timesplayed", "rating"};
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",
@@ -648,7 +585,6 @@ void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
             "not equal to",
             "is",
             "is not"};
-    // QStringList combinerOptions = {"", ") END", "AND", "OR", ") AND (", ") OR ("};
 
     // Find the field combo box
     QComboBox* fieldComboBox = qobject_cast<QComboBox*>(sender());
@@ -706,7 +642,6 @@ void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
                                "history':"));
         operatorOptions = playlistCrateOperatorOptions;
     } else if (conditionsTable[conditionCounter][1] == "") {
-        // operatorOptions = operatorOptions; // default to all operators
         valueLineEdit->setVisible(true);
         valueComboBox->setVisible(false);
         labelValidation->setText(QStringLiteral("Information:"));
@@ -746,7 +681,6 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
             "composer",
             "filetype",
             "key"};
-    //    QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
 
@@ -763,7 +697,6 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
                                    .replace("Operator", "")
                                    .toInt();
     conditionsTable[conditionCounter][2] = operatorComboBox->currentText();
-    //    qDebug() << "conditionCounter operator: " << conditionCounter;
     auto* valueLineEdit = findChild<QLineEdit*>(
             QStringLiteral("lineEditCondition%1Value").arg(conditionCounter));
     auto* valueComboBox = findChild<QComboBox*>(
@@ -1143,13 +1076,10 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
         if (conditionsTable[conditionCounter][1] == "playlist") {
             valueLineEdit->setVisible(false);
             valueComboBox->setVisible(true);
-            //            valueComboBox->setEnabled(true);
             valueComboBox->clear();
 
             for (auto it = playlistTable.constBegin(); it != playlistTable.constEnd(); ++it) {
-                // for (const auto& playlist : playlistTable) {
                 valueComboBox->addItem(it->second);
-                //  valueComboBox->addItem(playlist.second, playlist.first);
                 if (sDebug) {
                     qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> playlist -> it->second "
@@ -1161,12 +1091,9 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
         } else if (conditionsTable[conditionCounter][1] == "history") {
             valueLineEdit->setVisible(false);
             valueComboBox->setVisible(true);
-            //            valueComboBox->setEnabled(true);
             valueComboBox->clear();
             for (auto it = historyTable.constBegin(); it != historyTable.constEnd(); ++it) {
-                // for (const auto& historylist : historyTable) {
                 valueComboBox->addItem(it->second);
-                // valueComboBox->addItem(historylist.second, historylist.first);
                 if (sDebug) {
                     qDebug()
                             << "[SMARTIES] [EDIT DLG] --> POPULATE "
@@ -1179,12 +1106,9 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
         } else if (conditionsTable[conditionCounter][1] == "crate") {
             valueLineEdit->setVisible(false);
             valueComboBox->setVisible(true);
-            //            valueComboBox->setEnabled(true);
             valueComboBox->clear();
             for (auto it = crateTable.constBegin(); it != crateTable.constEnd(); ++it) {
-                // for (const auto& cratelist : crateTable) {
                 valueComboBox->addItem(it->second);
-                // valueComboBox->addItem(cratelist.second, cratelist.first);
                 if (sDebug) {
                     qDebug()
                             << "[SMARTIES] [EDIT DLG] --> POPULATE "
@@ -1195,9 +1119,6 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
             }
             valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
         }
-        //    } else {
-        //        valueLineEdit->setVisible(true);
-        //        valueComboBox->setVisible(false);
     }
 }
 
@@ -1246,7 +1167,6 @@ void dlgBaseSmartiesInfo::storeUIIn2Table() {
                 QStringLiteral("comboBoxCondition%1Value").arg(i));
         auto* combinerComboBox = findChild<QComboBox*>(
                 QStringLiteral("comboBoxCondition%1Combiner").arg(i));
-        //        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> Condition: " << i << "----";
         if (fieldComboBox) {
             conditionsTable[i][1] = fieldComboBox->currentText();
         }
@@ -1254,9 +1174,6 @@ void dlgBaseSmartiesInfo::storeUIIn2Table() {
             conditionsTable[i][2] = operatorComboBox->currentText();
         }
         if ((valueLineEdit) && (valueComboBox)) {
-            //          if ((conditionsTable[i][1] == "playlist") ||
-            //          (conditionsTable[i][1] == "crate")) {
-            // conditionsTable[i][3] = valueComboBox->currentText();
             if (conditionsTable[i][1] == "playlist") {
                 if (playlistNameHash.contains(valueComboBox->currentText())) {
                     QString id = playlistNameHash.value(valueComboBox->currentText());
@@ -1313,7 +1230,6 @@ void dlgBaseSmartiesInfo::storeUIIn2Table() {
 // validatity check
 bool dlgBaseSmartiesInfo::validationCheck() {
     storeUIIn2Table();
-    // textEditValidation->setText(QStringLiteral(""));
     textEditValidation->setText(QString(""));
     QStringList stringFieldOptions = {"artist",
             "title",
@@ -1340,21 +1256,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
             "less than", "greater than", "equal to", "not equal to", "between"};
     QStringList playlistCrateOperatorOptions = {"", "is", "is not"};
 
-    //    for (int i = 0; i < 8; ++i) {
-    //        qDebug() << "VALIDATION ARRAY -> pos: "
-    //                 << i
-    //                 << "headerTable[" << i << "]" << conditionsTable[i];
-    //    }
-
-    //    for (int i = 1; i <= 12; ++i) {
-    //        qDebug() << "VALIDATION ARRAY -> pos: "
-    //                 << i
-    //                 << "Field = " << conditionsTable[i][1]
-    //                 << ", Operator = " << conditionsTable[i][2]
-    //                 << ", Value = " << conditionsTable[i][3]
-    //                 << ", Combiner = " << conditionsTable[i][4];
-    //    }
-
     bool conditionsAreValid = false;
     int endCounter = 0;
     bool endPlacedCorrect = false;
@@ -1362,26 +1263,10 @@ bool dlgBaseSmartiesInfo::validationCheck() {
     bool foundMatchError = false;
     bool checkFieldMatchesOperator = true;
     bool checkMatchBetweenFieldAndOperator = false;
-    //    bool operatorValueChecked = false;
-    //    bool checkOperatorMatchesValue = true;
-    //    bool checkMatchBetweenOperatorAndValue = false;
     labelValidation->setText(QStringLiteral("Validation:"));
 
     for (int i = 12; i >= 1; --i) {
         // check if condition is valid
-        // auto* fieldComboBox =
-        // findChild<QComboBox*>(QString("comboBoxCondition%1Field").arg(i));
-        // auto* operatorComboBox =
-        // findChild<QComboBox*>(QString("comboBoxCondition%1Operator").arg(i));
-        // auto* valueLineEdit =
-        // findChild<QLineEdit*>(QString("lineEditCondition%1Value").arg(i));
-        // auto* valueComboBox =
-        // findChild<QComboBox*>(QString("comboBoxCondition%1Value").arg(i));
-        // auto* combinerComboBox =
-        // findChild<QComboBox*>(QString("comboBoxCondition%1Combiner").arg(i));
-        // qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> Condition: " << i
-        // << "----";
-
         // check if field and operator are matching
         if (!foundMatchError) {
             if (stringFieldOptions.contains(conditionsTable[i][1])) {
@@ -1491,7 +1376,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                            "Smarties is NOT saved.")
                                     .arg(i));
                     checkFieldMatchesOperator = false;
-                    // checkOperatorMatchesValue = false;
                     foundMatchError = true;
                 } else if (conditionsTable[i][3].indexOf("|", 0) > 0) {
                     if (conditionsTable[i][3].contains("-")) {
@@ -1549,7 +1433,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                         "Smarties is NOT saved.")
                                                 .arg(i));
                                 checkFieldMatchesOperator = false;
-                                // checkOperatorMatchesValue = false;
                                 foundMatchError = true;
                             }
                         } else {
@@ -1575,7 +1458,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                     "Smarties is NOT saved.")
                                             .arg(i));
                             checkFieldMatchesOperator = false;
-                            // checkOperatorMatchesValue = false;
                             foundMatchError = true;
                         }
 
@@ -1608,7 +1490,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                     "Smarties is NOT saved.")
                                             .arg(i));
                             checkFieldMatchesOperator = false;
-                            // checkOperatorMatchesValue = false;
                             foundMatchError = true;
                         } else if ((From.toInt() / From.toInt() != 1) ||
                                 (To.toInt() / To.toInt() != 1)) {
@@ -1633,7 +1514,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                     "Smarties is NOT saved.")
                                             .arg(i));
                             checkFieldMatchesOperator = false;
-                            // checkOperatorMatchesValue = false;
                             foundMatchError = true;
                         }
                     }
@@ -1643,9 +1523,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
 
         // check if latest condition has end-combiner
         if (latestCombinerChecked == false) {
-            // if (fieldComboBox->currentText() != "") {
             if (conditionsTable[i][1] != "") {
-                // if (combinerComboBox->currentText() == ") END") {
                 if (conditionsTable[i][4] == ") END") {
                     endPlacedCorrect = true;
                 }
@@ -1653,7 +1531,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
             }
         }
         // count end-combiners
-        // if (combinerComboBox->currentText() == ") END") {
         if (conditionsTable[i][4] == ") END") {
             endCounter = endCounter + 1;
         }
@@ -1673,7 +1550,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                 textEditValidation->setText(QStringLiteral(
                         "Your conditions contain errors: You didn't place an ') "
                         "END' in the last combiner. Smarties is NOT saved."));
-                // return false;
                 conditionsAreValid = false;
             } else {
                 // no conditions created -> std conditions
@@ -1688,7 +1564,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                    "be used at the end of your conditions, you have "
                                    "%1 occurrences. Smarties is NOT saved.")
                             .arg(endCounter));
-            // return false;
             conditionsAreValid = false;
         }
     } else {
@@ -1696,7 +1571,6 @@ bool dlgBaseSmartiesInfo::validationCheck() {
         textEditValidation->setText(QStringLiteral(
                 "Your conditions contain errors: You didn't place an ') END' "
                 "in the last combiner. Smarties is NOT saved."));
-        // return false;
         conditionsAreValid = false;
     }
     //
@@ -1705,35 +1579,27 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     "checkMatchBetweenFieldAndOperator "
                  << checkMatchBetweenFieldAndOperator;
     }
-    // if (checkMatchBetweenFieldAndOperator && checkOperatorMatchesValue) {
     if (checkMatchBetweenFieldAndOperator) {
         if (sDebug) {
             qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
                         "checkMatchBetweenFieldAndOperator "
                      << checkMatchBetweenFieldAndOperator
                      << " checkFieldMatchesOperator "
-                     //                     << checkMatchBetweenOperatorAndValue
-                     //                     << "
-                     //                     checkMatchBetweenOperatorAndValue"
                      << checkFieldMatchesOperator << " foundMatchError ";
         }
-        // if (!checkFieldMatchesOperator) {
         if (foundMatchError) {
             if (sDebug) {
                 qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> ERROR -> NO SAVE ";
             }
-            // return false;
             conditionsAreValid = false;
         } else {
             if (sDebug) {
                 qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> OK -> SAVE ";
             }
             textEditValidation->setStyleSheet("color: rgb(155,0,0)");
-            //            textEditValidation->setStyleSheet("textcolor: rgb(255,255,255)");
             textEditValidation->setStyleSheet("background-color: rgb(0,155,0)");
             textEditValidation->setText(QStringLiteral(
                     "Your conditions are valid, the smarties will be saved"));
-            // return true;
             conditionsAreValid = true;
         }
     }
@@ -1755,7 +1621,6 @@ QVariantList dlgBaseSmartiesInfo::collectUIChanges() const {
     }
     QVariantList updatedData;
     updatedData.append(lineEditID->text());
-    // updatedData.append(lineEditName->text());
     updatedData.append(headerTable[1]);
     updatedData.append(spinBoxCount->value());
     updatedData.append(checkBoxShow->isChecked());
@@ -1957,8 +1822,6 @@ void dlgBaseSmartiesInfo::updateConditionState() {
 
         // enable next field only if previous is selected -> narrowing operator
         // + check to have everything filled in
-        //        if (fieldComboBox && operatorComboBox && valueLineEdit &&
-        //        combinerComboBox) {
         if (fieldComboBox && operatorComboBox && valueLineEdit &&
                 valueComboBox && combinerComboBox) {
             bool fieldSelected = !fieldComboBox->currentText().isEmpty();
@@ -2068,7 +1931,6 @@ void dlgBaseSmartiesInfo::insertCondition(int index) {
     //    }
 
     // Shift all conditions after this index down
-    //    for (int i = 11; i >= index; --i) {
     if (sDebug) {
         qDebug() << "[SMARTIES] [EDIT DLG] --> Insert button clicked on "
                     "condition #"
@@ -2205,13 +2067,9 @@ QString dlgBaseSmartiesInfo::buildWhereClause() {
     bool hasConditions = false;
     QStringList combinerOptions = {") END", "AND", "OR", ") AND (", ") OR ("};
     for (int i = 1; i <= 12; ++i) {
-        //        int baseIndex = 8 + (i - 1) * 4; // Adjusting for the correct
-        //        index in smartiesData
-
         const QString& field = conditionsTable[i][1];
         const QString& op = conditionsTable[i][2];
         const QString& value = conditionsTable[i][3];
-        //        QString combiner = conditionsTable[i][4];
 
         //  begin build condition
         //  function moved to smartiesfunctions.h to share it with dlgsmartiesinfo to create preview
@@ -2222,10 +2080,6 @@ QString dlgBaseSmartiesInfo::buildWhereClause() {
             hasConditions = true;
             whereClause += condition;
             // Add combiner if not the last condition
-            //            if (i < 12 && combinerOptions.contains(combiner)) {
-            //                whereClause += " " + combiner.replace(") END", "") +
-            //                        " "; // Adding spaces around the combiner
-            //            }
             // Adding combiner + spaces around the combiner
             if (i < 12 && combinerOptions.contains(conditionsTable[i][4])) {
                 if (conditionsTable[i][4] == ") END") {
