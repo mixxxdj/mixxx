@@ -62,7 +62,6 @@ class SmartiesFeature : public BaseTrackSetFeature {
   private slots:
     void slotDeleteSmarties();
     void slotEditSmarties();
-
     void slotRenameSmarties();
     void slotDuplicateSmarties();
     void slotToggleSmartiesLock();

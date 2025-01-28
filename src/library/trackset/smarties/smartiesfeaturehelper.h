@@ -2,11 +2,14 @@
 
 #include <QObject>
 
+#include "library/trackset/smarties/dlggroupedsmartiesinfo.h"
+#include "library/trackset/smarties/dlgsmartiesinfo.h"
 #include "library/trackset/smarties/smartiesid.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
 class Smarties;
+class BaseTrackSetFeature;
 
 class SmartiesFeatureHelper : public QObject {
     Q_OBJECT

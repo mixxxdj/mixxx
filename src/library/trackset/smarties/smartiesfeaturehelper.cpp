@@ -7,6 +7,7 @@
 #include <QStringList>
 
 #include "library/trackcollection.h"
+#include "library/trackset/basetracksetfeature.h"
 #include "library/trackset/smarties/smarties.h"
 #include "library/trackset/smarties/smartiessummary.h"
 #include "moc_smartiesfeaturehelper.cpp"

@@ -1,6 +1,8 @@
 #include "library/trackset/basetracksetfeature.h"
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "library/trackset/smarties/dlggroupedsmartiesinfo.h"
+#include "library/trackset/smarties/dlgsmartiesinfo.h"
 #include "moc_basetracksetfeature.cpp"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
