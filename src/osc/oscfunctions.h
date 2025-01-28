@@ -256,18 +256,20 @@ QString translatePath(const QString& inputPath) {
     QRegularExpression nestedRackRegex(R"(/([^/]+)/([^/]+)/([^/]+))");
     QRegularExpression generalRegex(R"(/([^/]+)/([^/]+))");
     QRegularExpression channelSpecificRegex(R"(/Channel(\d+)/(.*))");
-    QRegularExpression stemSpecificRegex(
-            R"(/([^/]+)/Channel(\d+)Stem(\d+)/(.*))"); // Updated regex for stem
-                                                       // paths
+    QRegularExpression stemSpecificRegex(R"(/([^/]+)/Channel(\d+)Stem(\d+)/(.*))");
+    QRegularExpression hotcueRegex(R"(/Channel(\d+)/hotcue/(activate|clear)/(\d+))");
+    QRegularExpression loopRegex(R"(/Channel(\d+)/(reloop|loop|beatloop|beatjump)/(.*))");
+    QRegularExpression autoDjRegex(R"(/AutoDJ/(.*))");
+    QRegularExpression libraryRegex(R"(/Library/(.*))");
 
-    // Match deeply nested paths like /QuickEffectRack1/Channel2Stem1/super1
+    // Match deeply nested paths like /EqualizerRack1/Channel1/Effect1/parameter1
     QRegularExpressionMatch match = complexRackRegex.match(inputPath);
     if (match.hasMatch()) {
-        QString rack = match.captured(1);      // e.g., "EffectRack1"
-        QString unit = match.captured(2);      // e.g., "EffectUnit2"
-        QString effect = match.captured(3);    // e.g., "Effect1"
-        QString parameter = match.captured(4); // e.g., "enabled"
-        return QString("[%1_[%2]_%3],%4").arg(rack, unit, effect, parameter);
+        QString rack = match.captured(1);          // e.g., "EqualizerRack1"
+        QString channelOrUnit = match.captured(2); // e.g., "Channel1" or "EffectUnit1"
+        QString effect = match.captured(3);        // e.g., "Effect1"
+        QString parameter = match.captured(4);     // e.g., "parameter1"
+        return QString("[%1_[%2]_%3],%4").arg(rack, channelOrUnit, effect, parameter);
     }
 
     // Match nested paths like /EffectRack1/EffectUnit1/Effect1
@@ -276,34 +278,67 @@ QString translatePath(const QString& inputPath) {
         QString rack = match.captured(1);   // e.g., "EffectRack1"
         QString unit = match.captured(2);   // e.g., "EffectUnit1"
         QString effect = match.captured(3); // e.g., "Effect1"
-        return QString("[%1_%2_%3],%4").arg(rack, unit, effect);
+        return QString("[%1_%2_%3]").arg(rack, unit, effect);
     }
 
-    // Match paths with stems like /QuickEffectRack1/Channel2Stem1/super1
+    // Match paths with stems like /QuickEffectRack1/Channel1Stem1/super1
     match = stemSpecificRegex.match(inputPath);
     if (match.hasMatch()) {
         QString rack = match.captured(1);      // e.g., "QuickEffectRack1"
-        QString channel = match.captured(2);   // e.g., "2"
+        QString channel = match.captured(2);   // e.g., "1"
         QString stem = match.captured(3);      // e.g., "1"
         QString parameter = match.captured(4); // e.g., "super1"
-
-        // Correctly format ChannelXStemX inside square brackets with underscores
         return QString("[%1_[Channel%2Stem%3]],%4").arg(rack, channel, stem, parameter);
     }
 
-    // Handle general cases like /Library/MoveDown -> [Library],MoveDown
+    // Handle hotcue paths like /Channel1/hotcue/activate/2
+    match = hotcueRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString channel = match.captured(1); // e.g., "1"
+        QString action = match.captured(2);  // e.g., "activate"
+        QString cue = match.captured(3);     // e.g., "2"
+        return QString("[Channel%1],hotcue_%2_%3").arg(channel, cue, action);
+    }
+
+    // Handle loop paths like /Channel2/reloop/toggle
+    match = loopRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString channel = match.captured(1); // e.g., "2"
+        QString type = match.captured(2);    // e.g., "reloop"
+        QString action = match.captured(3);  // e.g., "toggle"
+        if (type == "beatjump" || type == "beatloop") {
+            return QString("[Channel%1],%2_%3_%4").arg(channel, type, action, match.captured(3));
+        }
+        return QString("[Channel%1],%2_%3").arg(channel, type, action);
+    }
+
+    // Handle AutoDJ paths like /AutoDJ/fade
+    match = autoDjRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString action = match.captured(1); // e.g., "fade"
+        return QString("[AutoDJ],%1").arg(action);
+    }
+
+    // Handle Library paths like /Library/MoveRight
+    match = libraryRegex.match(inputPath);
+    if (match.hasMatch()) {
+        QString action = match.captured(1); // e.g., "MoveRight"
+        return QString("[Library],%1").arg(action);
+    }
+
+    // Handle general cases like /Master/balance -> [Master],balance
     match = generalRegex.match(inputPath);
     if (match.hasMatch()) {
-        QString group = match.captured(1); // e.g., "Library"
-        QString item = match.captured(2);  // e.g., "MoveDown"
+        QString group = match.captured(1); // e.g., "Master"
+        QString item = match.captured(2);  // e.g., "balance"
         return QString("[%1],%2").arg(group, item);
     }
 
-    // Handle specific Channel paths like /Channel1/keylock -> [Channel1],keylock
+    // Handle specific Channel paths like /Channel1/track_loaded -> [Channel1],track_loaded
     match = channelSpecificRegex.match(inputPath);
     if (match.hasMatch()) {
-        QString channel = match.captured(1); // e.g., "1" from Channel1
-        QString action = match.captured(2);  // e.g., "keylock"
+        QString channel = match.captured(1); // e.g., "1"
+        QString action = match.captured(2);  // e.g., "track_loaded"
         return QString("[Channel%1],%2").arg(channel, action);
     }
 
@@ -312,5 +347,4 @@ QString translatePath(const QString& inputPath) {
              << " Translated path:" << inputPath;
     return inputPath;
 }
-
 #endif /* OSCFUNCTIONS_H */
