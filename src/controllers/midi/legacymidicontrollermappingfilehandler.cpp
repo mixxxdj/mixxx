@@ -224,7 +224,7 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
 
 bool LegacyMidiControllerMappingFileHandler::save(const LegacyMidiControllerMapping& mapping,
         const QString& fileName) const {
-    qDebug() << "Saving mapping" << mapping.name() << "to" << fileName;
+    qDebug() << "  *** Saving mappingggggg" << mapping.name() << "to" << fileName;
     QDomDocument doc = buildRootWithScripts(mapping);
     addControlsToDocument(mapping, &doc);
     return writeDocument(doc, fileName);
