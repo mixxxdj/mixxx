@@ -1,5 +1,5 @@
 #pragma once
-#include "dlgBaseSmartiesInfo.h"
+#include "dlgbasesmartiesinfo.h"
 
 class SmartiesFeature;
 
