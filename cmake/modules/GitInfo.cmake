@@ -62,7 +62,7 @@ endif()
 # Get the current commit date
 if(NOT GIT_COMMIT_DATE)
   execute_process(
-    COMMAND git show --quiet --format=%cI --date=short
+    COMMAND git show --quiet --format=%cI --date=short --no-show-signature
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_VARIABLE GIT_COMMIT_DATE
     OUTPUT_STRIP_TRAILING_WHITESPACE

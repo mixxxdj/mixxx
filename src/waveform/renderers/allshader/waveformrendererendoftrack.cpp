@@ -47,7 +47,6 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
 }
 
 void WaveformRendererEndOfTrack::initializeGL() {
-    WaveformRenderer::initializeGL();
     m_shader.init();
 }
 

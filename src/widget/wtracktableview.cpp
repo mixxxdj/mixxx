@@ -1116,21 +1116,28 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         break;
     }
     TrackModel* pTrackModel = getTrackModel();
-    if (pTrackModel && !pTrackModel->isLocked()) {
-        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
-            removeSelectedTracks();
-            return;
+    if (pTrackModel) {
+        if (!pTrackModel->isLocked()) {
+            if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+                removeSelectedTracks();
+                return;
+            }
+            if (event->matches(QKeySequence::Cut)) {
+                cutSelectedTracks();
+                return;
+            }
+            if (event->matches(QKeySequence::Paste)) {
+                pasteTracks(currentIndex());
+                return;
+            }
+            if (event->key() == Qt::Key_Escape) {
+                clearSelection();
+                setCurrentIndex(QModelIndex());
+            }
         }
-        if (event->matches(QKeySequence::Cut)) {
-            cutSelectedTracks();
-            return;
-        }
+
         if (event->matches(QKeySequence::Copy)) {
             copySelectedTracks();
-            return;
-        }
-        if (event->matches(QKeySequence::Paste)) {
-            pasteTracks(currentIndex());
             return;
         }
         if (event->modifiers().testFlag(Qt::AltModifier) &&
@@ -1144,9 +1151,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             moveSelectedTracks(event);
             return;
         }
-        if (event->key() == Qt::Key_Escape) {
-            clearSelection();
-            setCurrentIndex(QModelIndex());
+        if (event->modifiers().testFlag(Qt::ControlModifier) &&
+                event->modifiers().testFlag(Qt::ShiftModifier) &&
+                event->key() == Qt::Key_C) {
+            // copy the cell content as native QKeySequence::Copy would
+            QKeyEvent ke =
+                    QKeyEvent{QEvent::KeyPress, Qt::Key_C, Qt::ControlModifier};
+            QTableView::keyPressEvent(&ke);
+            return;
         }
     }
     QTableView::keyPressEvent(event);
