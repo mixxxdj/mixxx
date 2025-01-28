@@ -2438,6 +2438,7 @@ add_executable(
   src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
+  src/test/hotcueorderbyposition_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/itunesxmlimportertest.cpp
