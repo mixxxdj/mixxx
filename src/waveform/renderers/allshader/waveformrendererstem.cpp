@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QOpenGLTexture>
 
+#include "engine/channels/enginedeck.h"
 #include "engine/engine.h"
 #include "track/track.h"
 #include "util/math.h"
@@ -28,10 +29,8 @@ void WaveformRendererStem::initializeGL() {
     m_shader.init();
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;
-    DEBUG_ASSERT(group.endsWith("]"));
-    group[group.size() - 1] = QChar('_');
-    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
-        QString stemGroup = group + QStringLiteral("Stem") + QString::number(stemIdx) + QChar(']');
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = EngineDeck::getGroupForStem(group, stemIdx);
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(stemGroup,
                         QStringLiteral("volume")));

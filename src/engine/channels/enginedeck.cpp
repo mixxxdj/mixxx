@@ -1,5 +1,7 @@
 #include "engine/channels/enginedeck.h"
 
+#include <QStringView>
+
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/controls/bpmcontrol.h"
@@ -355,10 +357,8 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
 
 #ifdef __STEM__
 // static
-QString EngineDeck::getGroupForStem(const QString& deckGroup, int stemIdx) {
-    DEBUG_ASSERT(deckGroup.endsWith("]"));
-    QString groupForStem = deckGroup;
-    groupForStem[deckGroup.size() - 1] = QChar('_');
-    return groupForStem + QStringLiteral("Stem") + QString::number(stemIdx + 1) + QChar(']');
+QString EngineDeck::getGroupForStem(QStringView deckGroup, int stemIdx) {
+    DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx < 4);
+    return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
 }
 #endif

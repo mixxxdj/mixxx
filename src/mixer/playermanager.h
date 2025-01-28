@@ -155,11 +155,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     }
 
 #ifdef __STEM__
-    // Returns the group for the ith deck and jth stem where i and j is zero indexed
-    static QString groupForDeckStem(int i, int j) {
-        DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Channel") + QString::number(i + 1) +
-                QStringLiteral("_Stem") + QString::number(j + 1) + QChar(']');
+    // Returns the group for the deck and stem where deckIndex and stemInde are zero based
+    static QString groupForDeckStem(int deckIdx, int stemIdx) {
+        DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 4);
+        return QStringLiteral("[Channel") + QString::number(deckIdx + 1) +
+                QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
     }
 #endif
 

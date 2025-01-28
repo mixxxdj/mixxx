@@ -10,15 +10,13 @@
 
 class StemControlTest : public BaseSignalPathTest {
   protected:
-    QString getGroupForStem(const QString& deckGroup, int stemIdx) {
-        DEBUG_ASSERT(deckGroup.endsWith("]"));
-        QString groupForStem = deckGroup;
-        groupForStem[deckGroup.size() - 1] = QChar('_');
-        return groupForStem + QStringLiteral("Stem") + QString::number(stemIdx) + QChar(']');
+    QString getGroupForStem(QStringView deckGroup, int stemNr) {
+        DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemNr <= 4);
+        return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('0' + stemNr) + QChar(']');
     }
-    QString getFxGroupForStem(const QString& deckGroup, int stemIdx) {
+    QString getFxGroupForStem(const QString& deckGroup, int stemNr) {
         return QStringLiteral("[QuickEffectRack1_%1]")
-                .arg(getGroupForStem(deckGroup, stemIdx));
+                .arg(getGroupForStem(deckGroup, stemNr));
     }
 
     void SetUp() override {
