@@ -7,13 +7,12 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/smarties/smarties.h"
-#include "moc_smartiestablemodel.cpp"
-#include "track/track.h"
-#include "util/db/fwdsqlquery.h"
-
 #include "library/trackset/smarties/smartiesfuntions.h"
 #include "library/trackset/smarties/smartiesschema.h"
 #include "library/trackset/smarties/smartiesstorage.h"
+#include "moc_smartiestablemodel.cpp"
+#include "track/track.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
 
 // const bool sDebug = false;
