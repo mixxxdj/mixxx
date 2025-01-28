@@ -43,7 +43,7 @@ class GroupedSmartiesFeature : public BaseTrackSetFeature {
     QString fullPathFromIndex(const QModelIndex& index) const;
 
   signals:
-    void updateSmartiesData(const QVariantList& smartiesData);
+    //    void updateSmartiesData(const QVariantList& smartiesData);
     void setBlockerOff(QString signal);
 
   public slots:

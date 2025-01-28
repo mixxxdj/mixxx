@@ -42,7 +42,7 @@ class SmartiesFeature : public BaseTrackSetFeature {
     TreeItemModel* sidebarModel() const override;
 
   signals:
-    void updateSmartiesData(const QVariantList& smartiesData);
+    //    void updateSmartiesData(const QVariantList& smartiesData);
     void setBlockerOff(QString signal);
 
   public slots:
