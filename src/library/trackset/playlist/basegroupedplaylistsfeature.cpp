@@ -248,12 +248,14 @@ void BaseGroupedPlaylistsFeature::activatePlaylist(int playlistId) {
 }
 
 void BaseGroupedPlaylistsFeature::renameItem(const QModelIndex& index) {
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of renameItem " << index;
     m_lastRightClickedIndex = index;
     slotRenamePlaylist();
 }
 
 void BaseGroupedPlaylistsFeature::slotRenamePlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotRenamePlaylist " << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -301,6 +303,7 @@ void BaseGroupedPlaylistsFeature::slotRenamePlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotDuplicatePlaylist() {
     int oldPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotDuplicatePlaylist " << oldPlaylistId;
     if (oldPlaylistId == kInvalidPlaylistId) {
         return;
     }
@@ -347,7 +350,12 @@ void BaseGroupedPlaylistsFeature::slotDuplicatePlaylist() {
 }
 
 void BaseGroupedPlaylistsFeature::slotTogglePlaylistLock() {
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotTogglePlaylistLock";
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotTogglePlaylistLock " << playlistId;
+    //    int playlistId(playlistIdFromIndex(index));
+
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotTogglePlaylistLock " << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -359,6 +367,7 @@ void BaseGroupedPlaylistsFeature::slotTogglePlaylistLock() {
 }
 
 void BaseGroupedPlaylistsFeature::slotCreatePlaylist() {
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotCreatePlaylist ";
     QString name;
     bool validNameGiven = false;
 
@@ -419,6 +428,7 @@ int BaseGroupedPlaylistsFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
 
 void BaseGroupedPlaylistsFeature::deleteItem(const QModelIndex& index) {
     m_lastRightClickedIndex = index;
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of deleteItem " << index;
     slotDeletePlaylist();
 }
 
@@ -429,6 +439,7 @@ void BaseGroupedPlaylistsFeature::slotDeletePlaylist() {
     }
 
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotDeletePlaylist " << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -459,6 +470,7 @@ void BaseGroupedPlaylistsFeature::slotImportPlaylist() {
         return;
     }
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotImportPlaylist " << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -474,6 +486,7 @@ void BaseGroupedPlaylistsFeature::slotImportPlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotImportPlaylistFile(const QString& playlistFile,
         int playlistId) {
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotImportPlaylistFile " << playlistId;
     if (playlistFile.isEmpty()) {
         return;
     }
@@ -505,6 +518,7 @@ void BaseGroupedPlaylistsFeature::slotImportPlaylistFile(const QString& playlist
 }
 
 void BaseGroupedPlaylistsFeature::slotCreateImportPlaylist() {
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotCreateImportPlaylist ";
     // Get file to read
     const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
@@ -548,6 +562,7 @@ void BaseGroupedPlaylistsFeature::slotCreateImportPlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotExportPlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotExportPlaylist " << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -633,6 +648,7 @@ void BaseGroupedPlaylistsFeature::slotExportPlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotExportTrackFiles() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotExportTrackFiles " << playlistId;
     if (playlistId == kInvalidPlaylistId) {
         return;
     }

@@ -61,7 +61,7 @@ void GroupedPlaylistsFeature::onRightClickChild(
     // Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
-
+    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of RightClickChild " << playlistId;
     bool locked = m_groupedPlaylistsDao.isPlaylistLocked(playlistId);
     m_pDeleteGroupedPlaylistsAction->setEnabled(!locked);
     m_pRenameGroupedPlaylistsAction->setEnabled(!locked);
