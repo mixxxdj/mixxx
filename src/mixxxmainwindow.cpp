@@ -99,6 +99,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
 #endif
+          m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
@@ -1159,6 +1160,7 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
 
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
+    m_inRebootMixxxView = true;
 
     ScopedWaitCursor cursor;
     // safe geometry for later restoration
@@ -1192,6 +1194,7 @@ void MixxxMainWindow::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
+        m_inRebootMixxxView = false;
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
@@ -1220,6 +1223,7 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
 
+    m_inRebootMixxxView = false;
     qDebug() << "rebootMixxxView DONE";
 }
 
@@ -1310,7 +1314,9 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             if (!m_supportsGlobalMenuBar || isFullScreenNow)
 #endif
             {
-                alwaysHideMenuBarDlg();
+                if (!m_inRebootMixxxView) {
+                    alwaysHideMenuBarDlg();
+                }
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif

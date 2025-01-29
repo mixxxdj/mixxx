@@ -660,7 +660,7 @@
                 });
             }
 
-            script.deepMerge(this, newLayer);
+            Object.assign(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {

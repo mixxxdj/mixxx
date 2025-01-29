@@ -2877,6 +2877,9 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
 class S4MK3 {
     constructor() {
+        if (engine.getValue("[App]", "num_decks") < 4) {
+            engine.setValue("[App]", "num_decks", 4);
+        }
         if (engine.getValue("[App]", "num_samplers") < 16) {
             engine.setValue("[App]", "num_samplers", 16);
         }

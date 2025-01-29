@@ -137,6 +137,7 @@ class MixxxMainWindow : public QMainWindow {
 #ifdef __LINUX__
     const bool m_supportsGlobalMenuBar;
 #endif
+    bool m_inRebootMixxxView;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
