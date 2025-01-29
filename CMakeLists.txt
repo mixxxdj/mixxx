@@ -2880,7 +2880,7 @@ if(KEYFINDER)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
     # If KeyFinder is built statically, we need FFTW
-    find_package(FFTW REQUIRED)
+    find_package(FFTW3 REQUIRED)
     set(
       KeyFinder_INSTALL_DIR
       "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install"
@@ -2959,7 +2959,7 @@ if(KEYFINDER)
       PROPERTIES
         IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}"
     )
-    target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
+    target_link_libraries(mixxx-keyfinder INTERFACE FFTW3::fftw3)
     target_include_directories(
       mixxx-keyfinder
       INTERFACE "${KeyFinder_INSTALL_DIR}/include"
@@ -3344,6 +3344,8 @@ if(Qt_IS_STATIC)
       Qt${QT_VERSION_MAJOR}::QSvgPlugin
       # sqldrivers
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
+      # network plugins
+      Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
   )
 
   if(EMSCRIPTEN)
@@ -3364,10 +3366,19 @@ if(Qt_IS_STATIC)
   if(WIN32)
     target_link_libraries(
       mixxx-lib
-      PRIVATE
-        Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
-        Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      PRIVATE Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
     )
+    if(QT_VERSION VERSION_LESS 6.7)
+      target_link_libraries(
+        mixxx-lib
+        PRIVATE Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      )
+    else()
+      target_link_libraries(
+        mixxx-lib
+        PRIVATE Qt${QT_VERSION_MAJOR}::QModernWindowsStylePlugin
+      )
+    endif()
   endif()
 
   if(APPLE)
@@ -3428,6 +3439,15 @@ else()
         Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
         DESTINATION
         "${MIXXX_INSTALL_DATADIR}/sqldrivers"
+        COMPONENT
+        applocal
+    )
+
+    install(
+      IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+        DESTINATION
+        "${MIXXX_INSTALL_DATADIR}/tls"
         COMPONENT
         applocal
     )
@@ -3587,14 +3607,25 @@ else()
           COMPONENT
           applocal
       )
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}/styles"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}/styles"
+            COMPONENT
+            applocal
+        )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QModernWindowsStylePlugin
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}/styles"
+            COMPONENT
+            applocal
+        )
+      endif()
     endif()
     if(APPLE)
       install(
@@ -4645,6 +4676,11 @@ set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+if(QT6)
+  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-translations-l10n")
+else()
+  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qttranslations5-l10n")
+endif()
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 if(QT6)
