@@ -150,17 +150,16 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
 void DlgControllerLearning::populateComboBox() {
     // Sort all of the controls and add them to the combo box
     comboBoxChosenControl->clear();
+    // Add a blank item so the lineedit is initially empty
     comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
     QList<NamedControl> sorted_controls;
-    foreach (ConfigKey key, m_pControlPickerMenu->controlsAvailable()) {
-        sorted_controls.push_back(
-                NamedControl(m_pControlPickerMenu->controlTitleForConfigKey(key),
-                        key));
+    for (const ConfigKey& key : m_pControlPickerMenu->controlsAvailable()) {
+        sorted_controls.push_back(NamedControl(
+                m_pControlPickerMenu->controlTitleForConfigKey(key),
+                key));
     }
-    std::sort(sorted_controls.begin(), sorted_controls.end(),
-          namedControlComparator);
-    foreach(NamedControl control, sorted_controls)
-    {
+    std::sort(sorted_controls.begin(), sorted_controls.end(), namedControlComparator);
+    for (const NamedControl& control : std::as_const(sorted_controls)) {
         comboBoxChosenControl->addItem(control.first,
                                        QVariant::fromValue(control.second));
     }
