@@ -2385,144 +2385,179 @@ endif()
 # Tests
 #
 
-add_executable(
-  mixxx-test
-  src/test/analyserwaveformtest.cpp
-  src/test/analyzersilence_test.cpp
-  src/test/audiotaperpot_test.cpp
-  src/test/autodjprocessor_test.cpp
-  src/test/beatgridtest.cpp
-  src/test/beatmaptest.cpp
-  src/test/beatstest.cpp
-  src/test/beatstranslatetest.cpp
-  src/test/bpmtest.cpp
-  src/test/bpmcontrol_test.cpp
-  src/test/broadcastprofile_test.cpp
-  src/test/broadcastsettings_test.cpp
-  src/test/cache_test.cpp
-  src/test/channelhandle_test.cpp
-  src/test/chrono_clock_resolution_test.cpp
-  src/test/colorconfig_test.cpp
-  src/test/colormapperjsproxy_test.cpp
-  src/test/colorpalette_test.cpp
-  src/test/configobject_test.cpp
-  src/test/controller_mapping_validation_test.cpp
-  src/test/controller_mapping_settings_test.cpp
-  src/test/controllers/controller_columnid_regression_test.cpp
-  src/test/controllerscriptenginelegacy_test.cpp
-  src/test/controlobjecttest.cpp
-  src/test/controlobjectaliastest.cpp
-  src/test/controlobjectscripttest.cpp
-  src/test/controlpotmetertest.cpp
-  src/test/coreservicestest.cpp
-  src/test/coverartcache_test.cpp
-  src/test/coverartutils_test.cpp
-  src/test/cratestorage_test.cpp
-  src/test/cue_test.cpp
-  src/test/cuecontrol_test.cpp
-  src/test/dbconnectionpool_test.cpp
-  src/test/dbidtest.cpp
-  src/test/directorydaotest.cpp
-  src/test/duration_test.cpp
-  src/test/durationutiltest.cpp
-  #TODO: write useful tests for refactored effects system
-  #src/test/effectchainslottest.cpp
-  src/test/enginebufferscalelineartest.cpp
-  src/test/enginebuffertest.cpp
-  src/test/engineeffectsdelay_test.cpp
-  src/test/enginefilterbiquadtest.cpp
-  src/test/enginemixertest.cpp
-  src/test/enginemicrophonetest.cpp
-  src/test/enginesynctest.cpp
-  src/test/fileinfo_test.cpp
-  src/test/frametest.cpp
-  src/test/globaltrackcache_test.cpp
-  src/test/hotcuecontrol_test.cpp
-  src/test/imageutils_test.cpp
-  src/test/indexrange_test.cpp
-  src/test/itunesxmlimportertest.cpp
-  src/test/keyfactorytest.cpp
-  src/test/keyutilstest.cpp
-  src/test/lcstest.cpp
-  src/test/learningutilstest.cpp
-  src/test/libraryscannertest.cpp
-  src/test/librarytest.cpp
-  src/test/looping_control_test.cpp
-  src/test/main.cpp
-  src/test/mathutiltest.cpp
-  src/test/metadatatest.cpp
-  #TODO: make this build again
-  #src/test/metaknob_link_test.cpp
-  src/test/midicontrollertest.cpp
-  src/test/mixxxtest.cpp
-  src/test/mock_networkaccessmanager.cpp
-  src/test/movinginterquartilemean_test.cpp
-  src/test/musicbrainzrecordingstasktest.cpp
-  src/test/nativeeffects_test.cpp
-  src/test/performancetimer_test.cpp
-  src/test/playcountertest.cpp
-  src/test/playermanagertest.cpp
-  src/test/playlisttest.cpp
-  src/test/portmidicontroller_test.cpp
-  src/test/portmidienumeratortest.cpp
-  src/test/queryutiltest.cpp
-  src/test/rangelist_test.cpp
-  src/test/readaheadmanager_test.cpp
-  src/test/replaygaintest.cpp
-  src/test/rescalertest.cpp
-  src/test/rgbcolor_test.cpp
-  src/test/rotary_test.cpp
-  src/test/ringdelaybuffer_test.cpp
-  src/test/samplebuffertest.cpp
-  src/test/sampleutiltest.cpp
-  src/test/schemamanager_test.cpp
-  src/test/searchqueryparsertest.cpp
-  src/test/seratobeatgridtest.cpp
-  src/test/seratomarkerstest.cpp
-  src/test/seratomarkers2test.cpp
-  src/test/seratotagstest.cpp
-  src/test/signalpathtest.cpp
-  src/test/skincontext_test.cpp
-  src/test/softtakeover_test.cpp
-  src/test/soundproxy_test.cpp
-  src/test/soundsourceproviderregistrytest.cpp
-  src/test/sqliteliketest.cpp
-  src/test/synccontroltest.cpp
-  src/test/synctrackmetadatatest.cpp
-  src/test/tableview_test.cpp
-  src/test/taglibtest.cpp
-  src/test/trackdao_test.cpp
-  src/test/trackexport_test.cpp
-  src/test/trackmetadata_test.cpp
-  src/test/trackmetadataexport_test.cpp
-  src/test/tracknumberstest.cpp
-  src/test/trackreftest.cpp
-  src/test/trackupdate_test.cpp
-  src/test/uuid_test.cpp
-  src/test/wbatterytest.cpp
-  src/test/wpushbutton_test.cpp
-  src/test/wwidgetstack_test.cpp
-  src/test/waveform_upgrade_test.cpp
-  src/util/moc_included_test.cpp
-  src/test/helpers/log_test.cpp
-)
-if(QML)
-  target_sources(
-    mixxx-test
-    PRIVATE
-      src/test/controller_mapping_file_handler_test.cpp
-      src/test/controllerrenderingengine_test.cpp
-  )
+find_package(GTest CONFIG)
+default_option(BUILD_TESTING "Build with Unittests" "GTest_FOUND")
+if(BUILD_TESTING)
+  if(GTest_FOUND)
+    message(STATUS "Found GTest: Unittests enabled")
+  else()
+    message(FATAL_ERROR "GTest: not found")
+  endif()
 endif()
-find_package(GTest CONFIG REQUIRED)
-set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(
-  mixxx-test
-  PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
-)
 
 find_package(benchmark)
-target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
+default_option(BUILD_BENCH "Build mixxx-benchmark" "benchmark_FOUND")
+if(BUILD_BENCH AND BUILD_TESTING)
+  if(benchmark_FOUND)
+    message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
+  else()
+    message(FATAL_ERROR "google-benchmark: not found")
+  endif()
+elseif(BUILD_BENCH AND NOT BUILD_TESTING)
+  message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
+endif()
+
+if(BUILD_TESTING)
+  set(
+    src-mixxx-test
+    src/test/analyserwaveformtest.cpp
+    src/test/analyzersilence_test.cpp
+    src/test/audiotaperpot_test.cpp
+    src/test/autodjprocessor_test.cpp
+    src/test/beatgridtest.cpp
+    src/test/beatmaptest.cpp
+    src/test/beatstest.cpp
+    src/test/beatstranslatetest.cpp
+    src/test/bpmtest.cpp
+    src/test/bpmcontrol_test.cpp
+    src/test/broadcastprofile_test.cpp
+    src/test/broadcastsettings_test.cpp
+    src/test/cache_test.cpp
+    src/test/channelhandle_test.cpp
+    src/test/chrono_clock_resolution_test.cpp
+    src/test/colorconfig_test.cpp
+    src/test/colormapperjsproxy_test.cpp
+    src/test/colorpalette_test.cpp
+    src/test/configobject_test.cpp
+    src/test/controller_mapping_validation_test.cpp
+    src/test/controller_mapping_settings_test.cpp
+    src/test/controllers/controller_columnid_regression_test.cpp
+    src/test/controllerscriptenginelegacy_test.cpp
+    src/test/controlobjecttest.cpp
+    src/test/controlobjectaliastest.cpp
+    src/test/controlobjectscripttest.cpp
+    src/test/controlpotmetertest.cpp
+    src/test/coreservicestest.cpp
+    src/test/coverartcache_test.cpp
+    src/test/coverartutils_test.cpp
+    src/test/cratestorage_test.cpp
+    src/test/cue_test.cpp
+    src/test/cuecontrol_test.cpp
+    src/test/dbconnectionpool_test.cpp
+    src/test/dbidtest.cpp
+    src/test/directorydaotest.cpp
+    src/test/duration_test.cpp
+    src/test/durationutiltest.cpp
+    #TODO: write useful tests for refactored effects system
+    #src/test/effectchainslottest.cpp
+    src/test/enginebufferscalelineartest.cpp
+    src/test/enginebuffertest.cpp
+    src/test/enginefilterbiquadtest.cpp
+    src/test/enginemixertest.cpp
+    src/test/enginemicrophonetest.cpp
+    src/test/enginesynctest.cpp
+    src/test/fileinfo_test.cpp
+    src/test/frametest.cpp
+    src/test/globaltrackcache_test.cpp
+    src/test/hotcuecontrol_test.cpp
+    src/test/imageutils_test.cpp
+    src/test/indexrange_test.cpp
+    src/test/itunesxmlimportertest.cpp
+    src/test/keyfactorytest.cpp
+    src/test/keyutilstest.cpp
+    src/test/lcstest.cpp
+    src/test/learningutilstest.cpp
+    src/test/libraryscannertest.cpp
+    src/test/librarytest.cpp
+    src/test/looping_control_test.cpp
+    src/test/main.cpp
+    src/test/mathutiltest.cpp
+    src/test/metadatatest.cpp
+    #TODO: make this build again
+    #src/test/metaknob_link_test.cpp
+    src/test/midicontrollertest.cpp
+    src/test/mixxxtest.cpp
+    src/test/mock_networkaccessmanager.cpp
+    src/test/musicbrainzrecordingstasktest.cpp
+    src/test/performancetimer_test.cpp
+    src/test/playcountertest.cpp
+    src/test/playermanagertest.cpp
+    src/test/playlisttest.cpp
+    src/test/portmidicontroller_test.cpp
+    src/test/portmidienumeratortest.cpp
+    src/test/queryutiltest.cpp
+    src/test/rangelist_test.cpp
+    src/test/readaheadmanager_test.cpp
+    src/test/replaygaintest.cpp
+    src/test/rescalertest.cpp
+    src/test/rgbcolor_test.cpp
+    src/test/rotary_test.cpp
+    src/test/samplebuffertest.cpp
+    src/test/schemamanager_test.cpp
+    src/test/searchqueryparsertest.cpp
+    src/test/seratobeatgridtest.cpp
+    src/test/seratomarkerstest.cpp
+    src/test/seratomarkers2test.cpp
+    src/test/seratotagstest.cpp
+    src/test/signalpathtest.cpp
+    src/test/skincontext_test.cpp
+    src/test/softtakeover_test.cpp
+    src/test/soundproxy_test.cpp
+    src/test/soundsourceproviderregistrytest.cpp
+    src/test/sqliteliketest.cpp
+    src/test/synccontroltest.cpp
+    src/test/synctrackmetadatatest.cpp
+    src/test/tableview_test.cpp
+    src/test/taglibtest.cpp
+    src/test/trackdao_test.cpp
+    src/test/trackexport_test.cpp
+    src/test/trackmetadata_test.cpp
+    src/test/trackmetadataexport_test.cpp
+    src/test/tracknumberstest.cpp
+    src/test/trackreftest.cpp
+    src/test/trackupdate_test.cpp
+    src/test/uuid_test.cpp
+    src/test/wbatterytest.cpp
+    src/test/wpushbutton_test.cpp
+    src/test/wwidgetstack_test.cpp
+    src/util/moc_included_test.cpp
+    src/test/helpers/log_test.cpp
+  )
+  if(BUILD_BENCH)
+    set(
+      src-mixxx-test
+      ${src-mixxx-test}
+      src/test/engineeffectsdelay_test.cpp
+      src/test/movinginterquartilemean_test.cpp
+      src/test/nativeeffects_test.cpp
+      src/test/ringdelaybuffer_test.cpp
+      src/test/sampleutiltest.cpp
+      src/test/waveform_upgrade_test.cpp
+    )
+  endif()
+
+  add_executable(mixxx-test ${src-mixxx-test})
+
+  if(QML)
+    target_sources(
+      mixxx-test
+      PRIVATE
+        src/test/controller_mapping_file_handler_test.cpp
+        src/test/controllerrenderingengine_test.cpp
+    )
+  endif()
+
+  set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+  target_link_libraries(
+    mixxx-test
+    PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
+  )
+
+  if(BUILD_BENCH)
+    add_compile_definitions(USE_BENCH)
+    target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
+  endif()
+endif() # BUILD_TESTING
 
 #
 # Resources
@@ -2569,8 +2604,10 @@ endif()
 
 target_sources(mixxx PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx PROPERTIES AUTORCC ON)
-target_sources(mixxx-test PRIVATE res/mixxx.qrc)
-set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
+if(BUILD_TESTING)
+  target_sources(mixxx-test PRIVATE res/mixxx.qrc)
+  set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
+endif()
 
 if(MIXXX_VERSION_PRERELEASE STREQUAL "")
   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}")
@@ -4198,14 +4235,16 @@ if(STEM)
     message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-  target_compile_definitions(mixxx-test PUBLIC __STEM__)
-  target_sources(
-    mixxx-test
-    PUBLIC
-      src/test/stemtest.cpp
-      src/test/steminfotest.cpp
-      src/test/stemcontrolobjecttest.cpp
-  )
+  if(BUILD_TESTING)
+    target_compile_definitions(mixxx-test PUBLIC __STEM__)
+    target_sources(
+      mixxx-test
+      PUBLIC
+        src/test/stemtest.cpp
+        src/test/steminfotest.cpp
+        src/test/stemcontrolobjecttest.cpp
+    )
+  endif()
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
   target_sources(
     mixxx-lib
@@ -4228,16 +4267,19 @@ if(STEM)
   endif()
 endif()
 
-# Test Suite
-include(CTest)
-include(GoogleTest)
-enable_testing()
-gtest_add_tests(
-  TARGET mixxx-test
-  EXTRA_ARGS --logLevel info
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  TEST_LIST testsuite
-)
+if(BUILD_TESTING)
+  # Test Suite
+  include(CTest)
+  include(GoogleTest)
+  enable_testing()
+  gtest_add_tests(
+    TARGET mixxx-test
+    EXTRA_ARGS --logLevel info
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    TEST_LIST testsuite
+  )
+endif()
+
 if(NOT WIN32)
   # Default to offscreen rendering during tests.
   # This is required if the build system like Fedora koji/mock does not
@@ -4248,20 +4290,22 @@ if(NOT WIN32)
   )
 endif()
 
-# Benchmarking
-add_custom_target(
-  mixxx-benchmark
-  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMENT "Mixxx Benchmarks"
-  VERBATIM
-)
-add_dependencies(mixxx-benchmark mixxx-test)
+if(BUILD_BENCH)
+  # Benchmarking
+  add_custom_target(
+    mixxx-benchmark
+    COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMENT "Mixxx Benchmarks"
+    VERBATIM
+  )
+  add_dependencies(mixxx-benchmark mixxx-test)
+endif()
 
 # Google PerfTools
 option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
-if(GPERFTOOLS OR GPERFTOOLSPROFILER)
+if((BUILD_BENCH) AND (GPERFTOOLS OR GPERFTOOLSPROFILER))
   find_package(GPerfTools REQUIRED)
   if(GPERFTOOLS)
     target_link_libraries(mixxx-lib PRIVATE GPerfTools::tcmalloc)
@@ -4323,7 +4367,9 @@ if(LILV)
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
   target_link_libraries(mixxx-lib PRIVATE lilv::lilv)
-  target_link_libraries(mixxx-test PRIVATE lilv::lilv)
+  if(BUILD_TESTING)
+    target_link_libraries(mixxx-test PRIVATE lilv::lilv)
+  endif()
 endif()
 
 # Live Broadcasting (Shoutcast)
@@ -4408,7 +4454,9 @@ if(OPUS)
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
-  target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+  if(BUILD_TESTING)
+    target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+  endif()
 endif()
 
 # MAD MP3 Decoder
@@ -4627,7 +4675,9 @@ target_precompile_headers(
   mixxx-lib
   PUBLIC ${MIXXX_LIB_PRECOMPILED_HEADER} ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
-target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+if(BUILD_TESTING)
+  target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+endif()
 
 # Configure file with build options
 file(
