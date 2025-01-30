@@ -236,31 +236,31 @@ void DlgPrefController::slotStopLearning() {
         emit mappingEnded();
         return;
     }
-    qWarning() << "     x";
-    qWarning() << "     x stop learning";
-    qWarning() << "     x";
-    qWarning() << "     x apply";
+    debugLog() << "     x";
+    debugLog() << "     x stop learning";
+    debugLog() << "     x";
+    debugLog() << "     x apply";
 
     applyMappingChanges();
 
     if (m_pMapping->filePath().isEmpty()) {
-        qWarning() << "     x path empty";
+        debugLog() << "     x path empty";
         // This mapping was created when the learning wizard was started
         if (m_pMapping->isDirty()) {
-            qWarning() << "     x map dirty, ask for name";
+            debugLog() << "     x map dirty, ask for name";
             QString mappingName = askForMappingName();
             QString mappingPath = mappingNameToPath(m_pUserDir, mappingName);
             m_pMapping->setName(mappingName);
             if (m_pMapping->saveMapping(mappingPath)) {
-                qDebug() << "     x Mapping saved as____" << mappingPath;
+                debugLog() << "     x Mapping saved as____" << mappingPath;
                 m_pMapping->setFilePath(mappingPath);
-                qDebug() << "     x check path:" << m_pMapping->filePath();
+                debugLog() << "     x check path:" << m_pMapping->filePath();
                 m_pMapping->setDirty(false);
-                qDebug() << "     x applyMap, enum";
+                debugLog() << "     x applyMap, enum";
                 emit applyMapping(m_pController, m_pMapping, true);
                 enumerateMappings(mappingPath);
             } else {
-                qWarning() << "     x map NOT saved";
+                debugLog() << "     x map NOT saved";
                 // Discard the new mapping and disable the controller
                 m_pMapping.reset();
                 emit applyMapping(m_pController, m_pMapping, false);
@@ -273,7 +273,7 @@ void DlgPrefController::slotStopLearning() {
         }
     }
 
-    qWarning() << "     x mapping ended";
+    debugLog() << "     x mapping ended";
     // This will show() -> slotUpdate() -> enumerateMappings() etc.
     emit mappingEnded();
 }
@@ -420,8 +420,8 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     m_ui.comboBoxMapping->blockSignals(true);
     QString currentMappingFilePath = mappingFilePathFromIndex(m_ui.comboBoxMapping->currentIndex());
     m_ui.comboBoxMapping->clear();
-    qWarning() << "  --";
-    qWarning() << "  -- enum mappings" << selectedMappingPath;
+    debugLog() << "  --";
+    debugLog() << "  -- enum mappings" << selectedMappingPath;
 
     // qDebug() << "Enumerating mappings for controller" << m_pController->getName();
 
@@ -474,21 +474,21 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     }
     QString newMappingFilePath = mappingFilePathFromIndex(index);
     if (index == -1) {
-        qWarning() << "  --> path not found";
+        debugLog() << "  --> path not found";
         m_ui.chkEnabledDevice->setEnabled(false);
         m_ui.groupBoxSettings->setVisible(false);
     } else {
-        qWarning() << "  --> path FOUND" << index;
+        debugLog() << "  --> path FOUND" << index;
         m_ui.comboBoxMapping->setCurrentIndex(index);
         m_ui.chkEnabledDevice->setEnabled(true);
     }
     m_ui.comboBoxMapping->blockSignals(false);
     if (newMappingFilePath != currentMappingFilePath) {
-        qWarning() << "  --> current != new" << newMappingFilePath;
-        qWarning() << "  --> select";
+        debugLog() << "  --> current != new" << newMappingFilePath;
+        debugLog() << "  --> select";
         slotMappingSelected(index);
     } else {
-        qWarning() << "  --> current != new" << newMappingFilePath << ", return";
+        debugLog() << "  --> current != new" << newMappingFilePath << ", return";
     }
 }
 
@@ -517,9 +517,9 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 }
 
 void DlgPrefController::slotUpdate() {
-    qWarning() << "  *";
-    qWarning() << "  * slotUpdate";
-    qWarning() << "  *";
+    debugLog() << "  *";
+    debugLog() << "  * slotUpdate";
+    debugLog() << "  *";
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
     // Force updating the controller settings
@@ -562,6 +562,8 @@ void DlgPrefController::applyMappingChanges() {
 }
 
 void DlgPrefController::slotApply() {
+    debugLog() << "  #";
+    debugLog() << "  # slotApply";
     applyMappingChanges();
 
     // If no changes were made, do nothing
@@ -574,10 +576,14 @@ void DlgPrefController::slotApply() {
         bEnabled = m_ui.chkEnabledDevice->isChecked();
 
         if (m_pMapping->isDirty()) {
+            debugLog() << "  # map dirty, save";
             if (saveMapping()) {
+                debugLog() << "  # -> saved, enum";
                 // We might have saved the previous mapping with a new name,
                 // so update the mapping combobox.
                 enumerateMappings(m_pMapping->filePath());
+            } else {
+                debugLog() << "  # -> not saved";
             }
         }
     }
@@ -586,6 +592,7 @@ void DlgPrefController::slotApply() {
     // The shouldn't be dirty at this point because we already tried to save
     // it. If that failed, don't apply the mapping.
     if (m_pMapping && m_pMapping->isDirty()) {
+        debugLog() << "  # still dirty, return";
         return;
     }
 
@@ -644,10 +651,10 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     // would wipe those so we need to make sure to return before
     // LegacyControllerMappingFileHandler::loadMapping()
     QString mappingFilePath = mappingFilePathFromIndex(chosenIndex);
-    qWarning() << "     **";
-    qWarning() << "     ** slot map selected" << chosenIndex << mappingFilePath;
+    debugLog() << "     **";
+    debugLog() << "     ** slot map selected" << chosenIndex << mappingFilePath;
     if (mappingFilePath.isEmpty()) { // User picked "No Mapping" item
-        qWarning() << "     ** path empty";
+        debugLog() << "     ** path empty";
         m_ui.chkEnabledDevice->setEnabled(false);
 
         if (m_ui.chkEnabledDevice->isChecked()) {
@@ -660,7 +667,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
 
         m_ui.groupBoxSettings->setVisible(false);
     } else { // User picked a mapping
-        qWarning() << "     ** path" << mappingFilePath;
+        debugLog() << "     ** path" << mappingFilePath;
         m_ui.chkEnabledDevice->setEnabled(true);
 
         if (!m_ui.chkEnabledDevice->isChecked()) {
@@ -675,9 +682,9 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     if (m_GuiInitialized) {
         if (m_pControllerManager->getConfiguredMappingFileForDevice(
                     m_pController->getName()) == mappingFilePath) {
-            qWarning() << "     ** conf path == new path";
+            debugLog() << "     ** conf path == new path";
         } else {
-            qWarning() << "     ** conf path != new path, setDirty";
+            debugLog() << "     ** conf path != new path, setDirty";
         }
         if (m_pControllerManager->getConfiguredMappingFileForDevice(
                     m_pController->getName()) != mappingFilePath) {
@@ -690,11 +697,11 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         }
     }
 
-    qWarning() << "     ** apply changes";
+    debugLog() << "     ** apply changes";
     applyMappingChanges();
     bool previousMappingSaved = false;
     if (m_pMapping && m_pMapping->isDirty()) {
-        qWarning() << "     ** map dirty, save?";
+        debugLog() << "     ** map dirty, save?";
         if (QMessageBox::question(this,
                     tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
@@ -713,12 +720,12 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     }
 
     if (previousMappingSaved) {
-        qWarning() << "     ** prev saved -> enum";
+        debugLog() << "     ** prev saved -> enum";
         // We might have saved the previous preset with a new name, so update
         // the preset combobox.
         enumerateMappings(mappingFilePath);
     } else {
-        qWarning() << "     ** prev NOT saved";
+        debugLog() << "     ** prev NOT saved";
     }
     slotShowMapping(pMapping);
 }
@@ -727,7 +734,7 @@ bool DlgPrefController::saveMapping() {
     VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
         return false;
     }
-    qWarning() << "         * saveMapping";
+    debugLog() << "         * saveMapping";
 
     if (!m_pMapping->isDirty()) {
         qDebug() << "Mapping is not dirty, no need to save it.";
@@ -749,7 +756,7 @@ bool DlgPrefController::saveMapping() {
     // If this is a user mapping, ask whether to overwrite or save with new name.
     // Optionally, tick checkbox to always overwrite this mapping in the current session.
     if (isUserMapping && saveAsNew) {
-        qWarning() << "         * -> overwrite?";
+        debugLog() << "         * -> overwrite?";
         QString overwriteTitle = tr("Mapping already exists.");
         QString overwriteLabel = tr(
                 "<b>%1</b> already exists in user mapping folder.<br>"
@@ -780,13 +787,21 @@ bool DlgPrefController::saveMapping() {
         overwriteMsgBox.setDefaultButton(pSaveAsNew);
         overwriteMsgBox.exec();
 
+        if (overwriteMsgBox.clickedButton()) {
+            debugLog() << "             -> clicked btn:" << overwriteMsgBox.clickedButton()->text();
+        } else {
+            debugLog() << "             -> clicked btn: none/unknown";
+        }
+
         if (overwriteMsgBox.clickedButton() == pOverwrite) {
+            debugLog() << "             -> clicked Overwrite";
             saveAsNew = false;
             if (overwriteCheckBox.checkState() == Qt::Checked) {
                 m_pOverwriteMappings.insert(m_pMapping->filePath(), true);
             }
         } else if (overwriteMsgBox.clickedButton() != pSaveAsNew) {
             // Dialog was closed without clicking one of our buttons
+            debugLog() << "             -> closed, return false";
             return false;
         }
     }
@@ -796,27 +811,27 @@ bool DlgPrefController::saveMapping() {
     // * saving a user mapping with a new name.
     // The name will be used as display name and file name.
     if (!saveAsNew) {
-        qWarning() << "         * not 'new' / overwrite";
+        debugLog() << "         * not 'new' / overwrite";
         newFilePath = oldFilePath;
     } else {
-        qWarning() << "         * ask for name";
+        debugLog() << "         * ask for name";
         mappingName = askForMappingName(mappingName);
         newFilePath = mappingNameToPath(m_pUserDir, mappingName);
         if (mappingName.isEmpty()) {
             // QInputDialog was closed
-            qDebug() << "Mapping not saved, new name is empty";
+            debugLog() << "Mapping not saved, new name is empty";
             return false;
         }
         m_pMapping->setName(mappingName);
-        qDebug() << "Mapping renamed to" << m_pMapping->name();
+        debugLog() << "Mapping renamed to" << m_pMapping->name();
     }
 
     if (!m_pMapping->saveMapping(newFilePath)) {
-        qWarning() << "         * Failed to save mapping as" << newFilePath;
-        qDebug() << "Failed to save mapping as" << newFilePath;
+        debugLog() << "         * Failed to save mapping as" << newFilePath;
+        debugLog() << "Failed to save mapping as" << newFilePath;
         return false;
     } else {
-        qWarning() << "         * Mapping saved assss" << newFilePath;
+        debugLog() << "         * Mapping saved assss" << newFilePath;
     }
 
     m_pMapping->setFilePath(newFilePath);
@@ -1088,4 +1103,11 @@ void DlgPrefController::clearAllOutputMappings() {
     if (m_pOutputTableModel) {
         m_pOutputTableModel->clear();
     }
+}
+
+QDebug DlgPrefController::debugLog() const {
+    if (m_pController->isOpen()) {
+        return qWarning();
+    }
+    return qInfo();
 }

@@ -119,6 +119,8 @@ class DlgPrefController : public DlgPreferencePage {
     void enableDevice();
     void disableDevice();
 
+    QDebug debugLog() const;
+
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
     const QString m_pUserDir;
