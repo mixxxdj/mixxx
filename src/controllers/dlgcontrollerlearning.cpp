@@ -74,6 +74,9 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
 
     comboBoxChosenControl->completer()->setCompletionMode(
         QCompleter::PopupCompletion);
+    comboBoxChosenControl->completer()->setCaseSensitivity(Qt::CaseInsensitive);
+    comboBoxChosenControl->completer()->setFilterMode(Qt::MatchContains);
+
     populateComboBox();
     connect(comboBoxChosenControl,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -152,6 +155,7 @@ void DlgControllerLearning::populateComboBox() {
     comboBoxChosenControl->clear();
     // Add a blank item so the lineedit is initially empty
     comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
+    // Note: changes here might break the completer, so remember to test that
     QList<NamedControl> sorted_controls;
     for (const ConfigKey& key : m_pControlPickerMenu->controlsAvailable()) {
         sorted_controls.push_back(NamedControl(
