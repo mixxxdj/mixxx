@@ -10,6 +10,8 @@
 #include "soundio/soundmanagerconfig.h"
 #include "util/duration.h"
 #include "util/fifo.h"
+#include "util/hosttimefilter.h"
+#include "util/movinginterquartilemean.h"
 #include "util/performancetimer.h"
 
 class SoundManager;
@@ -85,4 +87,8 @@ class SoundDevicePortAudio : public SoundDevice {
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
     std::atomic<int> m_callbackResult;
+
+    HostTimeFilter m_hostTimeFilter;
+    double m_cummulatedBufferTime;
+    MovingInterquartileMean m_meanOutputLatency;
 };
