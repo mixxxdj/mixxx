@@ -2109,6 +2109,7 @@ add_executable(mixxx-test
   src/test/enginemixertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
+  src/test/fifotest.cpp
   src/test/fileinfo_test.cpp
   src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
