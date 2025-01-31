@@ -347,6 +347,15 @@ class SampleUtil {
     static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numFrames);
 
+    // Scales, adds and doubles the mono samples in pSrc to dual mono samples
+    // to pDest
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be added to pDest
+    static void addMonoToStereoWithGain(CSAMPLE_GAIN gain,
+            CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames);
+
     // Adds and doubles the mono samples in pSrc to dual mono samples
     // to pDest.
     // (numFrames) samples will be read from pSrc
@@ -366,15 +375,41 @@ class SampleUtil {
 
     // Copies and strips interleaved multi-channel sample data in pSrc with
     // numChannels >= 2 down to stereo samples into pDest. Samples from
-    // the selected two consecutive channels will be read and written. Samples from all other
-    // channels will be ignored.
-    // pSrc must contain (numFrames * numChannels) samples
-    // (numFrames * 2) samples will be written into pDest
+    // the selected two consecutive channels will be read and written. Samples
+    // from all other channels will be ignored. pSrc must contain (numFrames *
+    // numChannels) samples (numFrames * 2) samples will be written into pDest
+    // src buffer is expected to interleave each stereo channel one by one, for
+    // example with 4 stereo channels:
+    //   1L1R2L2R3L3R4L4R
+    // With sourceChannel=0, dst will take the value of
+    //    1L1R
+    // With sourceChannel=3, dst will take the value of
+    //    4L4R
     static void copyOneStereoFromMulti(CSAMPLE* pDest,
             const CSAMPLE* pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,
             int sourceChannel = 0);
+
+    // Copies and strips interleaved stereo sample data in pSrc with
+    // down to multi-channel samples into pDest. Samples will be written at the
+    // channel pointed by channelOffset. Samples from all other channels will be
+    // ignored. pDst must contain (numFrames * numChannels) samples (numFrames *
+    // 2) samples will be written into pDest
+    // Consider the following dst buffer, with 4 stereo channels (numChannels=8)
+    // and a single frame (numFrames=1) (SSSSSSSS, structured in
+    // 1L1R2L2R3L3R4L4R) Inserting a first stereo buffer (LR) dst (1L1R) at the
+    // start (channelOffset=0) will yield the following result
+    //    11SSSSSS
+    // Meaning that the second, third and forth channel will remain untouched
+    // (..SSSSSS). Now assuming we are inserting a second stereo buffer (LR) dst
+    // (2L2R) at the end (channelOffset=3), it will yield the following result
+    //    11SSSS22
+    static void insertStereoToMulti(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels,
+            int channelOffset);
 
     // reverses stereo sample in place
     static void reverse(CSAMPLE* pBuffer, SINT numSamples);
@@ -385,9 +420,52 @@ class SampleUtil {
             SINT numSamples,
             int channelCount);
 
-    // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
-    // etc.)
-#include "util/sample_autogen.h"
+    static void copy1WithGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0,
+            int iNumSamples);
+    static void copy1WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0in,
+            CSAMPLE_GAIN gain0out,
+            int iNumSamples);
+
+    static void copy2WithGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1,
+            int iNumSamples);
+
+    static void copy2WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0in,
+            CSAMPLE_GAIN gain0out,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1in,
+            CSAMPLE_GAIN gain1out,
+            int iNumSamples);
+
+    static void copy3WithGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1,
+            const CSAMPLE* M_RESTRICT pSrc2,
+            CSAMPLE_GAIN gain2,
+            int iNumSamples);
+
+    static void copy3WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0in,
+            CSAMPLE_GAIN gain0out,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1in,
+            CSAMPLE_GAIN gain1out,
+            const CSAMPLE* M_RESTRICT pSrc2,
+            CSAMPLE_GAIN gain2in,
+            CSAMPLE_GAIN gain2out,
+            int iNumSamples);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);

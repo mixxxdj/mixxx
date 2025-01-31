@@ -205,7 +205,11 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 }
 
 // Invoked from the UI thread!!
+#ifdef __STEM__
+void CachingReader::newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask) {
+#else
 void CachingReader::newTrack(TrackPointer pTrack) {
+#endif
     auto newState = pTrack ? STATE_TRACK_LOADING : STATE_TRACK_UNLOADING;
     auto oldState = m_state.fetchAndStoreAcquire(newState);
 
@@ -220,7 +224,11 @@ void CachingReader::newTrack(TrackPointer pTrack) {
         kLogger.warning()
                 << "Loading a new track while loading a track may lead to inconsistent states";
     }
+#ifdef __STEM__
+    m_worker.newTrack(std::move(pTrack), stemMask);
+#else
     m_worker.newTrack(std::move(pTrack));
+#endif
 }
 
 // Called from the engine thread

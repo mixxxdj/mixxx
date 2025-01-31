@@ -1,0 +1,15 @@
+#version 120
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+struct buf
+{
+    mat4 matrix;
+    vec4 color;
+};
+
+uniform buf ubuf;
+
+void main()
+{
+    gl_FragData[0] = vec4(ubuf.color.xyz * ubuf.color.w, ubuf.color.w);
+}

@@ -9,7 +9,6 @@
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
 #include "preferences/usersettings.h"
-#include "util/mutex.h"
 
 class ControlObject;
 
@@ -34,6 +33,9 @@ class ControlDoublePrivate : public QObject {
   public:
     ~ControlDoublePrivate() override;
 
+    // TODO: don't expose this implementation detail
+    constexpr static double kDefaultValue = 0.0;
+
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
@@ -54,7 +56,7 @@ class ControlDoublePrivate : public QObject {
             bool bIgnoreNops = true,
             bool bTrack = false,
             bool bPersist = false,
-            double defaultValue = 0.0);
+            double defaultValue = kDefaultValue);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
     // Returns a list of all existing instances.
@@ -172,7 +174,8 @@ class ControlDoublePrivate : public QObject {
             bool bIgnoreNops,
             bool bTrack,
             bool bPersist,
-            double defaultValue);
+            double defaultValue,
+            bool confirmRequired);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;
@@ -198,14 +201,12 @@ class ControlDoublePrivate : public QObject {
 
     QAtomicPointer<ControlObject> m_pCreatorCO;
 
-    QString m_trackKey;
+    // name of the key to track using stats framework, unless the m_trackingKey isNull().
+    QString m_trackingKey;
 
     // Note: keep the order of the members below to not introduce gaps due to
-    // memory alignment in this often used class. Whether to track value changes
-    // with the stats framework.
-    int m_trackType;
-    int m_trackFlags;
-    bool m_bTrack;
+    // memory alignment in this often used class.
+
     bool m_confirmRequired;
 
     // Whether the control should persist in the Mixxx user configuration. The
@@ -229,14 +230,8 @@ class ControlDoublePrivateConst : public ControlDoublePrivate {
   public:
     ~ControlDoublePrivateConst() override = default;
 
-    void setInner(double value, QObject* pSender) override {
-        Q_UNUSED(value)
-        Q_UNUSED(pSender)
+  private:
+    void setInner(double, QObject*) override {
         DEBUG_ASSERT(!"Trying to modify a default constructed (const) control object");
     };
-
-  protected:
-    ControlDoublePrivateConst() = default;
-
-    friend ControlDoublePrivate;
 };

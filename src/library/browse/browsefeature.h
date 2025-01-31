@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QSortFilterProxyModel>
 #include <QObject>
-#include <QVariant>
+#include <QPointer>
+#include <QSortFilterProxyModel>
 #include <QString>
+#include <QStringListModel>
+#include <QVariant>
 
-#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
+#include "preferences/usersettings.h"
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"

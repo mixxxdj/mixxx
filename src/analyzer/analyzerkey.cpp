@@ -14,7 +14,7 @@
 
 namespace {
 constexpr int excludeFirstChannelMask = 0x1;
-}
+} // namespace
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {

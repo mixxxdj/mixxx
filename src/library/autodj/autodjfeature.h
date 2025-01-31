@@ -81,7 +81,10 @@ class AutoDJFeature : public LibraryFeature {
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
 
+    parented_ptr<QAction> m_pEnableAutoDJAction;
+    parented_ptr<QAction> m_pDisableAutoDJAction;
     parented_ptr<QAction> m_pClearQueueAction;
+
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
     parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
@@ -89,7 +92,10 @@ class AutoDJFeature : public LibraryFeature {
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:
+    void slotEnableAutoDJ();
+    void slotDisableAutoDJ();
     void slotClearQueue();
+
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(CrateId crateId);
     // Implements the context-menu item.

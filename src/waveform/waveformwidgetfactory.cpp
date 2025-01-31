@@ -102,6 +102,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextPointSize(24),
+          m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(0)),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -421,6 +422,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setUntilMarkTextPointSize(
             m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
                     m_untilMarkTextPointSize));
+    setUntilMarkTextHeightLimit(toUntilMarkTextHeightLimit(
+            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
+                    toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
 
     return true;
 }
@@ -674,6 +678,9 @@ void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
     }
+    if (!m_overviewNormalized && index == FilterIndex::All) {
+        emit overallVisualGainChanged();
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
@@ -685,6 +692,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
+    emit overviewNormalizeChanged();
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
@@ -1323,11 +1331,20 @@ void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
                 toUntilMarkAlignIndex(m_untilMarkAlign));
     }
 }
+
 void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
     m_untilMarkTextPointSize = value;
     if (m_config) {
         m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
                 m_untilMarkTextPointSize);
+    }
+}
+
+void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
+    m_untilMarkTextHeightLimit = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
+                toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit));
     }
 }
 
@@ -1358,4 +1375,26 @@ int WaveformWidgetFactory::toUntilMarkAlignIndex(Qt::Alignment align) {
     }
     assert(false);
     return 1;
+}
+// static
+float WaveformWidgetFactory::toUntilMarkTextHeightLimit(int index) {
+    switch (index) {
+    case 0:
+        return 0.333f;
+    case 1:
+        return 1.f;
+    }
+    assert(false);
+    return 0.33f;
+}
+// static
+int WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(float value) {
+    if (value == 0.333f) {
+        return 0;
+    }
+    if (value == 1.f) {
+        return 1;
+    }
+    assert(false);
+    return 0;
 }

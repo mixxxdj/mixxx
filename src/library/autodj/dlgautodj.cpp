@@ -146,7 +146,11 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "Skip Silence:\n"
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
-            "last sound.");
+            "last sound.\n"
+            "\n"
+            "Skip Silence Start Full Volume:\n"
+            "The same as Skip Silence, but starting transitions with a centered\n"
+            "crossfader, so that the intro starts at full volume.\n");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
@@ -179,6 +183,8 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
     fadeModeCombobox->addItem(tr("Skip Silence"),
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
+    fadeModeCombobox->addItem(tr("Skip Silence Start Full Volume"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedStartCenterSkipSilence));
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
     connect(fadeModeCombobox,
@@ -285,10 +291,10 @@ void DlgAutoDJ::autoDJError(AutoDJProcessor::AutoDJError error) {
                 tr("One deck must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
-    case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+    case AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING:
         QMessageBox::warning(nullptr,
                 tr("Auto DJ"),
-                tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
+                tr("Decks not used for Auto DJ must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
     case AutoDJProcessor::ADJ_OK:

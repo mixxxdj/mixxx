@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlField>
 #include <QtDebug>
-#include <QtSql>
 
 
 #define LOG_FAILED_QUERY(query) qWarning() << __FILE__ << __LINE__ << "FAILED QUERY [" \

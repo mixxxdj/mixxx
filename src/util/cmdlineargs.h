@@ -33,6 +33,9 @@ class CmdlineArgs final {
     bool getStartAutoDJ() const {
         return m_startAutoDJ;
     }
+    bool getRescanLibrary() const {
+        return m_rescanLibrary;
+    }
     bool getControllerDebug() const {
         return m_controllerDebug;
     }
@@ -62,6 +65,9 @@ class CmdlineArgs final {
     bool getSettingsPathSet() const { return m_settingsPathSet; }
     mixxx::LogLevel getLogLevel() const { return m_logLevel; }
     mixxx::LogLevel getLogFlushLevel() const { return m_logFlushLevel; }
+    qint64 getLogMaxFileSize() const {
+        return m_logMaxFileSize;
+    }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
@@ -89,6 +95,7 @@ class CmdlineArgs final {
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_startAutoDJ;
+    bool m_rescanLibrary;
     bool m_controllerDebug;
     bool m_controllerPreviewScreens;
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
@@ -106,6 +113,7 @@ class CmdlineArgs final {
     bool m_parseForUserFeedbackRequired;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
+    qint64 m_logMaxFileSize;
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;

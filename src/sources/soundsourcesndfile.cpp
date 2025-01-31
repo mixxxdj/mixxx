@@ -16,7 +16,7 @@ const QStringList kSupportedFileTypes = {
         // ALAC/CAF has been added in version 1.0.26
         // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
         // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
-        QStringLiteral("caf"),
+        QStringLiteral("caf"), // Core Audio Format / Apple Lossless
         QStringLiteral("flac"),
         QStringLiteral("ogg"),
         QStringLiteral("wav"),

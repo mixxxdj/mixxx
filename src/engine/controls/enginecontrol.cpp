@@ -19,12 +19,12 @@ EngineControl::EngineControl(const QString& group,
 EngineControl::~EngineControl() {
 }
 
-void EngineControl::process(const double dRate,
+void EngineControl::process(const double rate,
         mixxx::audio::FramePos currentPosition,
-        const int iBufferSize) {
-    Q_UNUSED(dRate);
+        const std::size_t bufferSize) {
+    Q_UNUSED(rate);
     Q_UNUSED(currentPosition);
-    Q_UNUSED(iBufferSize);
+    Q_UNUSED(bufferSize);
 }
 
 void EngineControl::trackLoaded(TrackPointer pNewTrack) {

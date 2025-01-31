@@ -5,10 +5,10 @@
 #include "util/make_const_iterator.h"
 
 EffectsMessenger::EffectsMessenger(
-        std::unique_ptr<EffectsRequestPipe> pRequestPipe)
-        : m_bShuttingDown(false),
-          m_pRequestPipe(std::move(pRequestPipe)),
-          m_nextRequestId(0) {
+        EffectsRequestPipe&& requestPipe)
+        : m_requestPipe(std::move(requestPipe)),
+          m_nextRequestId(0),
+          m_bShuttingDown(false) {
 }
 
 EffectsMessenger::~EffectsMessenger() {
@@ -28,18 +28,13 @@ bool EffectsMessenger::writeRequest(EffectsRequest* request) {
         collectGarbage(request);
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_pRequestPipe) {
-        delete request;
-        return false;
-    }
-
     // This is effectively only garbage collection at this point so only deal
     // with responses when writing new requests.
     processEffectsResponses();
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessage(request)) {
+    if (m_requestPipe.writeMessage(request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
@@ -48,12 +43,8 @@ bool EffectsMessenger::writeRequest(EffectsRequest* request) {
 }
 
 void EffectsMessenger::processEffectsResponses() {
-    VERIFY_OR_DEBUG_ASSERT(m_pRequestPipe) {
-        return;
-    }
-
     EffectsResponse response;
-    while (m_pRequestPipe->readMessage(&response)) {
+    while (m_requestPipe.readMessage(&response)) {
         auto it = m_activeRequests.constFind(response.request_id);
 
         VERIFY_OR_DEBUG_ASSERT(it != m_activeRequests.constEnd()) {

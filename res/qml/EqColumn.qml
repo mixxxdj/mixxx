@@ -18,17 +18,24 @@ Column {
         key: "stem_count"
     }
 
+    function stemGroup(group, index) {
+        return `${group.substr(0, group.length-1)}_Stem${index + 1}]`
+    }
+
     Row {
         Column {
             id: stem
             spacing: 4
+            width: 10
             visible: opacity != 0
             Repeater {
                 model: root.player.stemsModel
 
                 Skin.StemKnob {
+                    required property int index
+
                     id: stem
-                    group: root.group
+                    stemGroup: root.stemGroup(root.group, index)
                     property alias color: stem.stemColor
                 }
             }
@@ -59,11 +66,8 @@ Column {
                 knob.color: Theme.eqLowColor
             }
 
-            Skin.EqKnob {
-                knob.group: "[QuickEffectRack1_" + root.group + "]"
-                knob.key: "super1"
-                statusGroup: "[QuickEffectRack1_" + root.group + "_Effect1]"
-                statusKey: "enabled"
+            Skin.QuickFxKnob {
+                group: "[QuickEffectRack1_" + root.group + "]"
                 knob.arcStyle: ShapePath.DashLine
                 knob.arcStylePattern: [2, 2]
                 knob.color: Theme.eqFxColor

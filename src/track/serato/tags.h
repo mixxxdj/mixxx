@@ -28,7 +28,9 @@ class SeratoTags final {
     }
 
     static double guessTimingOffsetMillis(
-            const QString& filePath, const audio::SignalInfo& signalInfo);
+            const QString& filePath,
+            const QString& fileType,
+            const audio::SignalInfo& signalInfo);
 
     bool isEmpty() const {
         return m_seratoBeatGrid.isEmpty() && m_seratoMarkers.isEmpty() &&
@@ -125,12 +127,12 @@ class SeratoTags final {
 
 inline bool operator==(const SeratoTags& lhs, const SeratoTags& rhs) {
     // FIXME: Find a more efficient way to do this
-    return (lhs.dumpBeatGrid(taglib::FileType::MP3) ==
-                    rhs.dumpBeatGrid(taglib::FileType::MP3) &&
-            lhs.dumpMarkers(taglib::FileType::MP3) ==
-                    rhs.dumpMarkers(taglib::FileType::MP3) &&
-            lhs.dumpMarkers2(taglib::FileType::MP3) ==
-                    rhs.dumpMarkers2(taglib::FileType::MP3));
+    return (lhs.dumpBeatGrid(taglib::FileType::MPEG) ==
+                    rhs.dumpBeatGrid(taglib::FileType::MPEG) &&
+            lhs.dumpMarkers(taglib::FileType::MPEG) ==
+                    rhs.dumpMarkers(taglib::FileType::MPEG) &&
+            lhs.dumpMarkers2(taglib::FileType::MPEG) ==
+                    rhs.dumpMarkers2(taglib::FileType::MPEG));
 }
 
 inline bool operator!=(const SeratoTags& lhs, const SeratoTags& rhs) {

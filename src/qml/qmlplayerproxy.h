@@ -2,9 +2,9 @@
 #include <QColor>
 #include <QObject>
 #include <QPointer>
+#include <QQmlEngine>
 #include <QString>
 #include <QUrl>
-#include <QtQml>
 
 #include "mixer/basetrackplayer.h"
 #include "qml/qmlbeatsmodel.h"
@@ -12,6 +12,7 @@
 #include "qml/qmlstemsmodel.h"
 #include "track/cueinfo.h"
 #include "track/track.h"
+#include "waveform/waveform.h"
 
 namespace mixxx {
 namespace qml {
@@ -151,6 +152,7 @@ class QmlPlayerProxy : public QObject {
     void waveformTextureStrideChanged();
 
   private:
+    std::vector<WaveformFilteredData> m_waveformData;
     QImage m_waveformTexture;
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;

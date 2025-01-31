@@ -81,32 +81,32 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderMp3::bufferOutGrow(int size) {
-    if (m_bufferOutSize >= size) {
+int EncoderMp3::bufferOutGrow(std::size_t bufferSize) {
+    if (m_bufferOutSize >= bufferSize) {
         return 0;
     }
 
-    m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
+    m_bufferOut = (unsigned char*)realloc(m_bufferOut, bufferSize);
     if (m_bufferOut == nullptr) {
         return -1;
     }
 
-    m_bufferOutSize = size;
+    m_bufferOutSize = bufferSize;
     return 0;
 }
 
-int EncoderMp3::bufferInGrow(int size) {
-    if (m_bufferInSize >= size) {
+int EncoderMp3::bufferInGrow(std::size_t bufferSize) {
+    if (m_bufferInSize >= bufferSize) {
         return 0;
     }
 
-    m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
-    m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
+    m_bufferIn[0] = (float*)realloc(m_bufferIn[0], bufferSize * sizeof(float));
+    m_bufferIn[1] = (float*)realloc(m_bufferIn[1], bufferSize * sizeof(float));
     if ((m_bufferIn[0] == nullptr) || (m_bufferIn[1] == nullptr)) {
         return -1;
     }
 
-    m_bufferInSize = size;
+    m_bufferInSize = bufferSize;
     return 0;
 }
 
@@ -117,7 +117,7 @@ void EncoderMp3::flush() {
         return;
     }
     // Flush also writes ID3 tags.
-    int rc = lame_encode_flush(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    int rc = lame_encode_flush(m_lameFlags, m_bufferOut, static_cast<int>(m_bufferOutSize));
     if (rc < 0) {
         return;
     }
@@ -127,39 +127,42 @@ void EncoderMp3::flush() {
     // `lame_get_lametag_frame` returns the number of bytes copied into buffer,
     // or the required buffer size, if the provided buffer is too small.
     // Function failed, if the return value is larger than `m_bufferOutSize`!
-    int numBytes = static_cast<int>(
-            lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize));
+    std::size_t numBytes =
+            lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
     if (numBytes > m_bufferOutSize) {
         bufferOutGrow(numBytes);
-        numBytes = static_cast<int>(lame_get_lametag_frame(
-                m_lameFlags, m_bufferOut, m_bufferOutSize));
+        numBytes = lame_get_lametag_frame(
+                m_lameFlags, m_bufferOut, m_bufferOutSize);
     }
     // Write the lame/xing header.
     m_pCallback->seek(0);
-    m_pCallback->write(nullptr, m_bufferOut, 0, numBytes);
+    m_pCallback->write(nullptr, m_bufferOut, 0, static_cast<int>(numBytes));
 }
 
-void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
+void EncoderMp3::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
     if (m_lameFlags == nullptr) {
         return;
     }
-    int outsize = 0;
+    std::size_t outsize = 0;
     int rc = 0;
 
-    outsize = (int)((1.25 * size + 7200) + 1);
+    outsize = (int)((1.25 * bufferSize + 7200) + 1);
     bufferOutGrow(outsize);
 
-    bufferInGrow(size);
+    bufferInGrow(bufferSize);
 
     // Deinterleave samples. We use normalized floats in the engine [-1.0, 1.0]
     // but LAME expects samples in the range [SHRT_MIN, SHRT_MAX].
-    for (int i = 0; i < size/2; ++i) {
+    for (std::size_t i = 0; i < bufferSize / 2; ++i) {
         m_bufferIn[0][i] = samples[i*2] * SHRT_MAX;
         m_bufferIn[1][i] = samples[i*2+1] * SHRT_MAX;
     }
-
-    rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1],
-                                  size/2, m_bufferOut, m_bufferOutSize);
+    rc = lame_encode_buffer_float(m_lameFlags,
+            m_bufferIn[0],
+            m_bufferIn[1],
+            static_cast<int>(bufferSize / 2),
+            m_bufferOut,
+            static_cast<int>(m_bufferOutSize));
     if (rc < 0) {
         return;
     }
@@ -168,7 +171,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
 }
 
 void EncoderMp3::initStream() {
-    m_bufferOutSize = (int)((1.25 * 20000 + 7200) + 1);
+    m_bufferOutSize = (size_t)((1.25 * 20000 + 7200) + 1);
     m_bufferOut = (unsigned char *)malloc(m_bufferOutSize);
 
     m_bufferIn[0] = (float *)malloc(m_bufferOutSize * sizeof(float));

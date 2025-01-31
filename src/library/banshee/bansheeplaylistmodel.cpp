@@ -1,9 +1,11 @@
 #include "library/banshee/bansheeplaylistmodel.h"
 
+#include <QSqlQuery>
 #include <QtDebug>
 
 #include "library/banshee/bansheedbconnection.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"

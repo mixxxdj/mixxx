@@ -14,12 +14,10 @@ WaveformRendererFiltered::WaveformRendererFiltered(
           m_bRgbStacked(bRgbStacked) {
 }
 
-void WaveformRendererFiltered::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererFiltered::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererFiltered::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 

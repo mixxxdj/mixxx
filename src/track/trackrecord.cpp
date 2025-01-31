@@ -23,28 +23,18 @@ TrackRecord::TrackRecord(TrackId id)
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
-    refMetadata().refTrackInfo().setKeyText(KeyUtils::formatGlobalKey(keys));
+    refMetadata().refTrackInfo().setKeyText(keys.getGlobalKeyText());
     m_keys = std::move(keys);
-}
-
-bool TrackRecord::updateGlobalKey(
-        track::io::key::ChromaticKey key,
-        track::io::key::Source keySource) {
-    if (key == track::io::key::INVALID) {
-        return false;
-    } else {
-        Keys keys = KeyFactory::makeBasicKeys(key, keySource);
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
-    }
-    return false;
 }
 
 UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         const QString& keyText,
         track::io::key::Source keySource) {
+    if (keyText.isEmpty()) {
+        // User tries to delete the key
+        setKeys(Keys());
+        return UpdateResult::Updated;
+    }
     // Try to parse the input as a key.
     mixxx::track::io::key::ChromaticKey newKey =
             KeyUtils::guessKeyFromText(keyText);
@@ -160,6 +150,12 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
         // Existing tracks that have been imported before database version
         // 37 don't have a synchronization time stamp.
         return SourceSyncStatus::Unknown;
+    }
+    if (!fileInfo.exists()) {
+        kLogger.warning()
+                << "Failed to obtain synchronization time stamp for not existing file"
+                << mixxx::FileInfo(fileInfo);
+        return SourceSyncStatus::Undefined;
     }
     const QDateTime fileSourceSynchronizedAt =
             MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());

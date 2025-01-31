@@ -33,7 +33,7 @@ class ShoutConnection
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
-    void process(const CSAMPLE* pBuffer, const int iBufferSize) override;
+    void process(const CSAMPLE* pBuffer, const std::size_t bufferSize) override;
 
     void shutdown() override {
     }

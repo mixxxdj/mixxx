@@ -8,8 +8,9 @@
 #include <QProcess>
 
 #ifdef Q_OS_LINUX
+#include <QDBusConnection>
+#include <QDBusMessage>
 #include <QFileInfo>
-#include <QtDBus>
 #endif
 
 namespace {

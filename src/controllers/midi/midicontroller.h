@@ -41,6 +41,10 @@ class MidiController : public Controller {
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
 
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
+
     bool isMappable() const override {
         if (!m_pMapping) {
             return false;

@@ -79,6 +79,7 @@ class HidIoThread : public QThread {
     unsigned char m_pPollData[kNumBuffers][kBufferSize];
     int m_lastPollSize;
     int m_pollingBufferIndex;
+    bool m_hidReadErrorLogged;
 
     /// Must be locked when a operation changes the size of the m_outputReports map,
     /// or when modify the m_outputReportIterator
