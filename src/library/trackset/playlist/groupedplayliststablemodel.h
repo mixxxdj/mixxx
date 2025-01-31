@@ -57,7 +57,7 @@ class GroupedPlaylistsTableModel final : public TrackSetTableModel {
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
-    bool m_keepHiddenTracks;
+    // bool m_keepHiddenTracks;
     QHash<int, QString> m_searchTexts;
     UserSettingsPointer m_pConfig;
     int m_selectedPlaylist;
