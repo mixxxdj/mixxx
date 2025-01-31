@@ -14,15 +14,11 @@ class GroupedPlaylistsTableModel final : public TrackSetTableModel {
             bool keepHiddenTracks = false);
     ~GroupedPlaylistsTableModel() final = default;
 
+    void oldselectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
-    //    PlaylistId selectedPlaylist() const {
-    //        return m_selectedPlaylist;
-    //    }
-
-    //    void newselectPlaylist(PlaylistId playlistId);
 
     void selectPlaylistGroup(const QString& groupName);
     QList<QVariantMap> getGroupedPlaylists();
@@ -57,11 +53,11 @@ class GroupedPlaylistsTableModel final : public TrackSetTableModel {
     void firstTrackChanged();
 
   private:
-    //    PlaylistId m_selectedPlaylist;
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
     bool m_keepHiddenTracks;
     QHash<int, QString> m_searchTexts;
     UserSettingsPointer m_pConfig;
+    int m_selectedPlaylist;
 };

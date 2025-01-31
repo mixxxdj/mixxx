@@ -19,6 +19,11 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
+namespace {
+constexpr bool sDebug = true;
+
+} // anonymous namespace
+
 GroupedPlaylistsFeature::GroupedPlaylistsFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseGroupedPlaylistsFeature(pLibrary,
@@ -26,14 +31,14 @@ GroupedPlaylistsFeature::GroupedPlaylistsFeature(Library* pLibrary,
                   new GroupedPlaylistsTableModel(nullptr,
                           pLibrary->trackCollectionManager(),
                           pConfig,
-                          "mixxx.db.model.playlist"),
+                          "mixxx.db.model.groupedplaylists"),
                   QStringLiteral("GROUPEDPLAYLISTSHOME"),
                   QStringLiteral("playlist"),
                   QStringLiteral("PlaylistsCountsDurations")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
-    //    constructChildModel(kInvalidPlaylistId);
+    // constructChildModel(kInvalidPlaylistId);
     rebuildChildModel(kInvalidPlaylistId);
 
     m_pShufflePlaylistAction = new QAction(tr("Shuffle Playlist"), this);
@@ -61,7 +66,9 @@ void GroupedPlaylistsFeature::onRightClickChild(
     // Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of RightClickChild " << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of RightClickChild " << playlistId;
+    }
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeleteGroupedPlaylistsAction->setEnabled(!locked);
     m_pRenameGroupedPlaylistsAction->setEnabled(!locked);
@@ -122,77 +129,6 @@ bool GroupedPlaylistsFeature::dragMoveAcceptChild(const QModelIndex& index, cons
     return !locked && formatSupported;
 }
 
-// QList<BaseGroupedPlaylistsFeature::IdAndLabel> GroupedPlaylistsFeature::createPlaylistLabels() {
-//     QSqlDatabase database =
-//             m_pLibrary->trackCollectionManager()->internalCollection()->database();
-
-//    QList<BaseGroupedPlaylistsFeature::IdAndLabel> playlistLabels;
-//    QString queryString = QStringLiteral(
-//            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
-//            "AS SELECT "
-//            "  Playlists.id AS id, "
-//            "  Playlists.name AS name, "
-//            "  LOWER(Playlists.name) AS sort_name, "
-//            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-//            "    AS count, "
-//            "  SUM(case library.mixxx_deleted "
-//            "    when 0 then library.duration else 0 end) AS durationSeconds "
-//            "FROM Playlists "
-//            "LEFT JOIN PlaylistTracks "
-//            "  ON PlaylistTracks.playlist_id = Playlists.id "
-//            "LEFT JOIN library "
-//            "  ON PlaylistTracks.track_id = library.id "
-//            "  WHERE Playlists.hidden = %2 "
-//            "  GROUP BY Playlists.id")
-//                                  .arg(m_countsDurationTableName,
-//                                          QString::number(
-//                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
-//    queryString.append(
-//            mixxx::DbConnection::collateLexicographically(
-//                    " ORDER BY sort_name"));
-//    QSqlQuery query(database);
-//    if (!query.exec(queryString)) {
-//        LOG_FAILED_QUERY(query);
-//    }
-
-//    // Setup the sidebar playlist model
-//    QSqlTableModel playlistTableModel(this, database);
-//    playlistTableModel.setTable("PlaylistsCountsDurations");
-//    playlistTableModel.select();
-//    while (playlistTableModel.canFetchMore()) {
-//        playlistTableModel.fetchMore();
-//    }
-//    QSqlRecord record = playlistTableModel.record();
-//    int nameColumn = record.indexOf("name");
-//    int idColumn = record.indexOf("id");
-//    int countColumn = record.indexOf("count");
-//    int durationColumn = record.indexOf("durationSeconds");
-
-//    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-//        int id =
-//                playlistTableModel
-//                        .data(playlistTableModel.index(row, idColumn))
-//                        .toInt();
-//        QString name =
-//                playlistTableModel
-//                        .data(playlistTableModel.index(row, nameColumn))
-//                        .toString();
-//        int count =
-//                playlistTableModel
-//                        .data(playlistTableModel.index(row, countColumn))
-//                        .toInt();
-//        int duration =
-//                playlistTableModel
-//                        .data(playlistTableModel.index(row, durationColumn))
-//                        .toInt();
-//        BaseGroupedPlaylistsFeature::IdAndLabel idAndLabel;
-//        idAndLabel.id = id;
-//        idAndLabel.label = createPlaylistLabel(name, count, duration);
-//        playlistLabels.append(idAndLabel);
-//    }
-//    return playlistLabels;
-//}
-
 void GroupedPlaylistsFeature::slotShufflePlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (playlistId == kInvalidPlaylistId) {
@@ -200,8 +136,11 @@ void GroupedPlaylistsFeature::slotShufflePlaylist() {
     }
 
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        qDebug() << "Can't shuffle locked playlist" << playlistId
-                 << m_playlistDao.getPlaylistName(playlistId);
+        if (sDebug) {
+            qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> Can't shuffle locked playlist"
+                     << playlistId << " - "
+                     << m_playlistDao.getPlaylistName(playlistId);
+        }
         return;
     }
 
@@ -237,44 +176,6 @@ void GroupedPlaylistsFeature::slotShufflePlaylist() {
     }
 }
 
-/// Purpose: When inserting or removing playlists,
-/// we require the sidebar model not to reset.
-/// This method queries the database and does dynamic insertion
-/// @param selectedId entry which should be selected
-// QModelIndex GroupedPlaylistsFeature::constructChildModel(int selectedId) {
-//  qDebug() << "GroupedPlaylistsFeature::constructChildModel() id:" << selectedId;
-//    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
-//    int selectedRow = -1;
-
-//    int row = 0;
-//    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
-//    for (const auto& idAndLabel : playlistLabels) {
-//        int playlistId = idAndLabel.id;
-//        QString playlistLabel = idAndLabel.label;
-
-//        if (selectedId == playlistId) {
-//            // save index for selection
-//            selectedRow = row;
-//        }
-
-// Create the TreeItem whose parent is the invisible root item
-//        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
-//        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
-
-//        decorateChild(pItem.get(), playlistId);
-//        childrenToAdd.push_back(std::move(pItem));
-
-//        ++row;
-//    }
-
-// Append all the newly created TreeItems in a dynamic way to the childmodel
-//    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
-//    if (selectedRow == -1) {
-//        return QModelIndex();
-//    }
-//    return m_pSidebarModel->index(selectedRow, 0);
-//}
-
 void GroupedPlaylistsFeature::decorateChild(TreeItem* item, int playlistId) {
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(
@@ -285,7 +186,10 @@ void GroupedPlaylistsFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void GroupedPlaylistsFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "GroupedPlaylistsFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
+    if (sDebug) {
+        qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> slotPlaylistTableChanged() playlistId:"
+                 << playlistId;
+    }
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
             type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist

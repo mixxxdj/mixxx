@@ -44,8 +44,6 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
   public slots:
     QModelIndex rebuildChildModel(int selectedPlaylistId);
 
-    // void oldactivateChild(const QModelIndex& index) override;
-    void oldactivateChild(const QModelIndex& index);
     void activateChild(const QModelIndex& index);
     virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);

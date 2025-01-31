@@ -420,6 +420,12 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
       <property name="text">
        <string>Enable Grouped Playlists</string>
       </property>
@@ -436,7 +442,7 @@
       <property name="minimumSize">
        <size>
         <width>400</width>
-        <height>0</height>
+        <height>20</height>
        </size>
       </property>
       <property name="text">
@@ -455,7 +461,7 @@
       <property name="minimumSize">
        <size>
         <width>400</width>
-        <height>0</height>
+        <height>20</height>
        </size>
       </property>
       <property name="text">
@@ -467,9 +473,15 @@
        <rect>
         <x>460</x>
         <y>60</y>
-        <width>42</width>
+        <width>40</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
       </property>
       <property name="maximum">
        <number>20</number>
@@ -480,9 +492,15 @@
        <rect>
         <x>460</x>
         <y>90</y>
-        <width>113</width>
+        <width>100</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
       </property>
      </widget>
      <widget class="QLabel" name="label_grouped_playlists_restart_remark">
@@ -493,6 +511,12 @@
         <width>400</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
       </property>
       <property name="text">
        <string>Every change in this section requires a restart of Mixxx to get processed</string>
@@ -506,6 +530,12 @@
         <width>350</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
       </property>
       <property name="text">
        <string>Use Grouped Playlists instead of Playlists</string>

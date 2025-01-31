@@ -28,7 +28,7 @@
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
-constexpr bool sDebug = false;
+constexpr bool sDebug = true;
 constexpr QChar kUnsafeFilenameReplacement = '-';
 const ConfigKey kConfigKeyLastImportExportPlaylistDirectory(
         "[Library]", "LastImportExportPlaylistDirectory");
@@ -211,31 +211,14 @@ void BaseGroupedPlaylistsFeature::selectPlaylistInSidebar(int playlistId, bool s
     }
 }
 
-void BaseGroupedPlaylistsFeature::oldactivateChild(const QModelIndex& index) {
-    // qDebug() << "BaseGroupedPlaylistsFeature::activateChild()" << index;
-    int playlistId = playlistIdFromIndex(index);
-    if (playlistId == kInvalidPlaylistId) {
-        // may happen during initialization
-        return;
-    }
-    m_lastClickedIndex = index;
-    m_lastRightClickedIndex = QModelIndex();
-    emit saveModelState();
-    QList<QVariantMap> groupedPlaylists = m_pGroupedPlaylistsTableModel->getGroupedPlaylists();
-    m_pGroupedPlaylistsTableModel->selectPlaylist(playlistId);
-    emit showTrackModel(m_pGroupedPlaylistsTableModel);
-    emit enableCoverArtDisplay(true);
-}
-
 void BaseGroupedPlaylistsFeature::activatePlaylist(int playlistId) {
-    // qDebug() << "BaseGroupedPlaylistsFeature::activatePlaylist()" << playlistId << index;
-    // VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
-    //    return;
-    // }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    // VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
-    //    return;
-    // }
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] -> activatePlaylist() "
+                 << "playlistId: " << playlistId
+                 << "index: " << index;
+    }
+    QModelIndex index = indexFromPlaylistId(playlistId);
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
@@ -247,25 +230,27 @@ void BaseGroupedPlaylistsFeature::activatePlaylist(int playlistId) {
 }
 
 void BaseGroupedPlaylistsFeature::renameItem(const QModelIndex& index) {
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of renameItem " << index;
     m_lastRightClickedIndex = index;
-    // m_lastRightClickedIndex = QModelIndex();
-    qDebug() << "[BaseGroupedPlaylistsFeature] renameItem : "
-                "m_lastRightClickedIndex "
-             << m_lastRightClickedIndex;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of renameItem "
+                 << index;
+        qDebug() << "[BaseGroupedPlaylistsFeature] renameItem : "
+                    "m_lastRightClickedIndex "
+                 << m_lastRightClickedIndex;
+    }
     slotRenamePlaylist();
 }
 
 void BaseGroupedPlaylistsFeature::slotRenamePlaylist() {
-    // m_lastRightClickedIndex = QModelIndex();
-    // int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    qDebug() << "[BaseGroupedPlaylistsFeature] renameItem : "
-                "m_lastRightClickedIndex "
-             << m_lastRightClickedIndex;
     int playlistId(playlistIdFromIndex(m_lastRightClickedIndex));
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotRenamePlaylist "
-                "playlistId "
-             << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] renameItem : "
+                    "m_lastRightClickedIndex "
+                 << m_lastRightClickedIndex;
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotRenamePlaylist "
+                    "playlistId "
+                 << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -273,8 +258,11 @@ void BaseGroupedPlaylistsFeature::slotRenamePlaylist() {
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
-        qDebug() << "Skipping playlist rename because playlist" << playlistId
-                 << oldName << "is locked.";
+        if (sDebug) {
+            qDebug() << "Skipping playlist rename because playlist"
+                     << playlistId
+                     << oldName << "is locked.";
+        }
         return;
     }
     QString newName;
@@ -310,17 +298,19 @@ void BaseGroupedPlaylistsFeature::slotRenamePlaylist() {
 
     m_playlistDao.renamePlaylist(playlistId, newName);
     slotPlaylistTableChanged(playlistId);
+    activatePlaylist(playlistId);
 }
 
 void BaseGroupedPlaylistsFeature::slotDuplicatePlaylist() {
     int oldPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotDuplicatePlaylist " << oldPlaylistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotDuplicatePlaylist "
+                 << oldPlaylistId;
+    }
     if (oldPlaylistId == kInvalidPlaylistId) {
         return;
     }
-
     QString oldName = m_playlistDao.getPlaylistName(oldPlaylistId);
-
     QString name;
     bool validNameGiven = false;
 
@@ -337,9 +327,7 @@ void BaseGroupedPlaylistsFeature::slotDuplicatePlaylist() {
         if (!ok || oldName == name) {
             return;
         }
-
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
         if (existingId != kInvalidPlaylistId) {
             QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
@@ -358,33 +346,39 @@ void BaseGroupedPlaylistsFeature::slotDuplicatePlaylist() {
     if (newPlaylistId != kInvalidPlaylistId) {
         m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
         slotPlaylistTableChanged(newPlaylistId);
+        activatePlaylist(newPlaylistId);
     }
 }
 
 void BaseGroupedPlaylistsFeature::slotTogglePlaylistLock() {
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of "
-                "slotTogglePlaylistLock m_lastRightClickedIndex "
-             << m_lastRightClickedIndex;
-    // int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     int playlistId(playlistIdFromIndex(m_lastRightClickedIndex));
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotTogglePlaylistLock " << playlistId;
-    //    int playlistId(playlistIdFromIndex(index));
-
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotTogglePlaylistLock " << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of "
+                    "slotTogglePlaylistLock m_lastRightClickedIndex "
+                 << m_lastRightClickedIndex;
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of "
+                    "slotTogglePlaylistLock "
+                 << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
 
     if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
-        qDebug() << "Failed to toggle lock of playlistId " << playlistId;
+        if (sDebug) {
+            qDebug() << "Failed to toggle lock of playlistId "
+                     << playlistId;
+        }
     }
     slotPlaylistTableChanged(playlistId);
-    activateChild(indexFromPlaylistId(playlistId));
+    activatePlaylist(playlistId);
 }
 
 void BaseGroupedPlaylistsFeature::slotCreatePlaylist() {
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotCreatePlaylist ";
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotCreatePlaylist ";
+    }
     QString name;
     bool validNameGiven = false;
 
@@ -424,6 +418,7 @@ void BaseGroupedPlaylistsFeature::slotCreatePlaylist() {
                 tr("An unknown error occurred while creating playlist: ") + name);
     }
     slotPlaylistTableChanged(playlistId);
+    activatePlaylist(playlistId);
 }
 
 /// Returns a playlist that is a sibling inside the same parent
@@ -446,25 +441,36 @@ int BaseGroupedPlaylistsFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
 
 void BaseGroupedPlaylistsFeature::deleteItem(const QModelIndex& index) {
     m_lastRightClickedIndex = index;
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of deleteItem " << index;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of deleteItem "
+                 << index;
+    }
     slotDeletePlaylist();
 }
 
 void BaseGroupedPlaylistsFeature::slotDeletePlaylist() {
-    // qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] -> slotDeletePlaylist() row:"
+                 << m_lastRightClickedIndex.data();
+    }
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
 
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotDeletePlaylist " << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotDeletePlaylist "
+                 << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
-
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     if (locked) {
-        qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
+        if (sDebug) {
+            qDebug() << "Skipping playlist deletion because playlist"
+                     << playlistId << "is locked.";
+        }
         return;
     }
 
@@ -506,7 +512,10 @@ void BaseGroupedPlaylistsFeature::slotImportPlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotImportPlaylistFile(const QString& playlistFile,
         int playlistId) {
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotImportPlaylistFile " << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotImportPlaylistFile "
+                 << playlistId;
+    }
     if (playlistFile.isEmpty()) {
         return;
     }
@@ -538,7 +547,9 @@ void BaseGroupedPlaylistsFeature::slotImportPlaylistFile(const QString& playlist
 }
 
 void BaseGroupedPlaylistsFeature::slotCreateImportPlaylist() {
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotCreateImportPlaylist ";
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotCreateImportPlaylist ";
+    }
     // Get file to read
     const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
@@ -583,14 +594,19 @@ void BaseGroupedPlaylistsFeature::slotCreateImportPlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotExportPlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotExportPlaylist " << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotExportPlaylist "
+                 << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);
     // replace separator character with something generic
     playlistName = playlistName.replace(QDir::separator(), kUnsafeFilenameReplacement);
-    qDebug() << "Export playlist" << playlistName;
+    if (sDebug) {
+        qDebug() << "Export playlist" << playlistName;
+    }
 
     QString lastPlaylistDirectory = m_pConfig->getValue(
             kConfigKeyLastImportExportPlaylistDirectory,
@@ -669,7 +685,10 @@ void BaseGroupedPlaylistsFeature::slotExportPlaylist() {
 
 void BaseGroupedPlaylistsFeature::slotExportTrackFiles() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotExportTrackFiles " << playlistId;
+    if (sDebug) {
+        qDebug() << "[BaseGroupedPlaylistsFeature] toggle of slotExportTrackFiles "
+                 << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -773,7 +792,10 @@ void BaseGroupedPlaylistsFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreatePlaylist();
     } else {
-        qDebug() << "Unknown playlist link clicked" << link.path();
+        if (sDebug) {
+            qDebug() << "[BaseGroupedPlaylistsFeature] Unknown playlist link clicked"
+                     << link.path();
+        }
     }
 }
 
@@ -783,8 +805,10 @@ QString BaseGroupedPlaylistsFeature::fetchPlaylistLabel(int playlistId) {
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
     VERIFY_OR_DEBUG_ASSERT(database.tables(QSql::Views).contains(m_countsDurationTableName)) {
-        qWarning() << "BaseGroupedPlaylistsFeature: view" << m_countsDurationTableName
-                   << "does not exist! Can't fetch label for playlist" << playlistId;
+        qWarning() << "[BaseGroupedPlaylistsFeature] view"
+                   << m_countsDurationTableName
+                   << "does not exist! Can't fetch label for playlist"
+                   << playlistId;
         return QString();
     }
     QSqlTableModel groupedPlaylistsTableModel(this, database);
@@ -974,23 +998,16 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
         for (int i = 0; i < groupedPlaylists.size(); ++i) {
             const auto& playlistData = groupedPlaylists[i];
             const QString& groupName = playlistData["group_name"].toString();
+            const QString& playlistName = playlistData["playlist_name"].toString();
             int playlistId(playlistData["playlist_id"].toInt());
-            bool playlistLocked = (playlistData["playlist_locked"].toInt() == 1);
+            bool playlistLocked = (playlistData["playlist_locked"] = 1).toBool();
+            int playlistCount = playlistData["playlist_count"].toInt();
+            int playlistDurationSeconds = playlistData["playlist_durationSeconds"].toInt();
 
-            // PlaylistSummary playlistSummary;
-            //  if
-            //  (!m_pTrackCollection->playlists().readPlaylistSummaryById(playlistId,
-            //  &playlistSummary)) {
-            //      qWarning() << "[GROUPEDPLAYLISTSFEATURE] -> Failed to fetch
-            //      summary "
-            //                     "for playlist ID:"
-            //                  << playlistId;
-            //       continue;
-            //  }
-
-            // const QString& playlistSummaryName = formatLabel(playlistSummary);
-            const QString& playlistSummaryName = groupName;
-            // const QString& playlistSummaryName = QString("%1").arg(playlistId);
+            const QString& displayPlaylistName =
+                    formatLabel(playlistName,
+                            playlistCount,
+                            playlistDurationSeconds);
 
             if (groupCounts[groupName] > 1) {
                 TreeItem* pGroupItem = groupItems.value(groupName, nullptr);
@@ -1002,30 +1019,27 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                 }
 
                 const QString& displayPlaylistName =
-                        playlistSummaryName.mid(groupName.length()).trimmed();
+                        formatLabel(playlistName.mid(groupName.length()),
+                                playlistCount,
+                                playlistDurationSeconds);
+
                 if (sDebug) {
                     qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> playlistSummaryName - "
                                 "displayPlaylistName = "
-                             << playlistSummaryName << " - " << displayPlaylistName;
+                             << displayPlaylistName;
                 }
 
-                // TreeItem* pChildItem = pGroupItem->appendChild(
-                //         displayPlaylistName, playlistId.toVariant().toInt());
                 TreeItem* pChildItem = pGroupItem->appendChild(
                         displayPlaylistName, playlistId);
                 pChildItem->setFullPath(groupName + delimiter + displayPlaylistName);
-                // updateTreeItemForPlaylistSummary(pChildItem, playlistSummary);
-                //  updateTreeItemForPlaylistSummary(pChildItem, "playlistSummary");
                 if (sDebug) {
                     qDebug() << "[GROUPEDPLAYLISTSFEATURE] Added PlaylistId to group:"
                              << playlistId << "Group:" << groupName;
                 }
             } else {
                 auto newPlaylist = std::make_unique<TreeItem>(
-                        playlistSummaryName, playlistId);
-                newPlaylist->setFullPath(playlistSummaryName);
-                // updateTreeItemForPlaylistSummary(newPlaylist.get(), playlistSummary);
-                //  updateTreeItemForPlaylistSummary(newPlaylist.get(), "playlistSummary");
+                        displayPlaylistName, playlistId);
+                newPlaylist->setFullPath(displayPlaylistName);
 
                 modelRows.push_back(std::move(newPlaylist));
             }
@@ -1038,13 +1052,6 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
         // variable group prefix length with mask
         QMap<QString, QList<QVariantMap>> topLevelGroups;
         // Sort groupedPlaylists by lower(group_name)
-        // std::sort(groupedPlaylists.begin(), groupedPlaylists.end(), [](const
-        // QVariantMap& a, const QVariantMap& b) {
-        //    return a["group_name"].toString().toLower() <
-        //    b["group_name"].toString().toLower();
-        //});
-        // Sort groupedPlaylists by lower(group_name), then by
-        // lower(playlist_name)
         std::sort(groupedPlaylists.begin(),
                 groupedPlaylists.end(),
                 [](const QVariantMap& a, const QVariantMap& b) {
@@ -1133,7 +1140,6 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
 
                     TreeItem* pChildItem = pParentItem->appendChild(
                             displayPlaylistName.trimmed(), playlistId);
-                    // updateTreeItemForPlaylistSummary(pChildItem, playlistLocked);
                     decorateChild(pChildItem, playlistId);
                     pChildItem->setFullPath(currentPath + delimiter + displayPlaylistName);
 
@@ -1195,7 +1201,6 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
 
                         TreeItem* pChildItem = pParentItem->appendChild(
                                 displayPlaylistName.trimmed(), playlistId);
-                        // updateTreeItemForPlaylistSummary(pChildItem, playlistLocked);
                         decorateChild(pChildItem, playlistId);
                         pChildItem->setFullPath(currentPath + delimiter + displayPlaylistName);
                         if (sDebug) {
@@ -1239,7 +1244,6 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
 
                 TreeItem* pChildItem = pRootItem->appendChild(
                         displayPlaylistName.trimmed(), playlistId);
-                // updateTreeItemForPlaylistSummary(pChildItem, playlistLocked);
                 decorateChild(pChildItem, playlistId);
 
                 if (sDebug) {
@@ -1301,8 +1305,10 @@ void BaseGroupedPlaylistsFeature::updateChildModel(const QSet<int>& updatedPlayl
         }
     }
 
-    // Update full paths recursively for all items starting from the root
-    updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+    if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedPlaylistsLength")) == 1) {
+        // Update full paths recursively for all items starting from the root
+        updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+    }
 
     // Update or rebuild items
     for (const int& playlistId : updatedPlaylistIds) {
@@ -1311,7 +1317,6 @@ void BaseGroupedPlaylistsFeature::updateChildModel(const QSet<int>& updatedPlayl
                 groupedPlaylists.begin(),
                 groupedPlaylists.end(),
                 [&playlistId](const QVariantMap& playlistData) {
-                    // return playlistData["playlist_id"].toInt() == playlistId.toVariant().toInt();
                     return playlistData["playlist_id"].toInt() == playlistId;
                 });
 
@@ -1327,8 +1332,11 @@ void BaseGroupedPlaylistsFeature::updateChildModel(const QSet<int>& updatedPlayl
 
                 decorateChild(pItem, playlistId);
 
-                // Update fullPath for the entire tree under this item
-                updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+                if (m_pConfig->getValue<int>(ConfigKey(
+                            "[Library]", "GroupedPlaylistsLength")) == 1) {
+                    // Update fullPath for the entire tree under this item
+                    updateFullPathRecursive(m_pSidebarModel->getRootItem(), QString());
+                }
 
                 m_pSidebarModel->triggerRepaint(index);
             } else {
@@ -1346,39 +1354,48 @@ void BaseGroupedPlaylistsFeature::activateChild(const QModelIndex& index) {
     if (sDebug) {
         qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> activateChild() -> index" << index;
     }
-    // m_lastClickedIndex = index;
-    // m_lastRightClickedIndex = QModelIndex();
-    // m_lastRightClickedIndex = index;
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = index;
     int playlistId(playlistIdFromIndex(index));
 
-    // if (playlistId.toString() == "-1") {
     if (playlistId == -1) {
         // Group activated
         if (sDebug) {
             qDebug() << "[BaseGroupedPlaylistsFeature] -> activateChild() -> Group activated";
         }
-        const QString& fullPath = fullPathFromIndex(index);
-        if (fullPath.isEmpty()) {
-            qWarning() << "[GROUPEDPLAYLISTSFEATURE] -> activateChild() -> Group "
-                          "activated: No valid full path for index: "
-                       << index;
-            return;
-        }
-        if (sDebug) {
-            qDebug() << "[BaseGroupedPlaylistsFeature] -> activateChild() -> Group "
-                        "activated -> fullPath:"
-                     << fullPath;
-        }
 
-        // m_lastClickedIndex = index;
-        // m_lastRightClickedIndex = QModelIndex();
-        // m_lastRightClickedIndex = index;
-        //  m_prevSiblingPlaylist = playlistId();
         m_prevSiblingPlaylist = playlistId;
         emit saveModelState();
         emit disableSearch();
         emit enableCoverArtDisplay(false);
-        m_pGroupedPlaylistsTableModel->selectPlaylistGroup(fullPath);
+
+        if (m_pConfig->getValue<int>(ConfigKey("[Library]", "GroupedPlaylistsLength")) == 0) {
+            // Fixed prefix length
+            if (sDebug) {
+                qDebug() << "[BaseGroupedPlaylistsFeature] -> activateChild() -> Group "
+                            "activated -> groupNameFromIndex(index):"
+                         << groupNameFromIndex(index);
+            }
+            m_pGroupedPlaylistsTableModel->selectPlaylistGroup(groupNameFromIndex(index));
+
+        } else if (m_pConfig->getValue<int>(ConfigKey(
+                           "[Library]", "GroupedPlaylistsLength")) == 1) {
+            // variable group prefix length with mask
+            const QString& fullPath = fullPathFromIndex(index);
+            if (fullPath.isEmpty()) {
+                qWarning() << "[GROUPEDPLAYLISTSFEATURE] -> activateChild() -> Group "
+                              "activated: No valid full path for index: "
+                           << index;
+                return;
+            }
+            if (sDebug) {
+                qDebug() << "[BaseGroupedPlaylistsFeature] -> activateChild() -> Group "
+                            "activated -> fullPath:"
+                         << fullPath;
+            }
+            m_pGroupedPlaylistsTableModel->selectPlaylistGroup(fullPath);
+        }
+
         emit featureSelect(this, m_lastClickedIndex);
         emit showTrackModel(m_pGroupedPlaylistsTableModel);
     } else {
@@ -1387,16 +1404,9 @@ void BaseGroupedPlaylistsFeature::activateChild(const QModelIndex& index) {
             qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> activateChild() -> Child "
                         "playlist activated -> playlistId: "
                      << playlistId;
+            qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> m_lastRightClickedIndex: "
+                     << m_lastRightClickedIndex;
         }
-        // VERIFY_OR_DEBUG_ASSERT(playlistId.isValid()) {
-        //    return;
-        // }
-        // m_lastClickedIndex = index;
-        // m_lastRightClickedIndex = QModelIndex();
-        // m_lastRightClickedIndex = index;
-        qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> m_lastRightClickedIndex: "
-                 << m_lastRightClickedIndex;
-        // m_prevSiblingPlaylist = PlaylistId();
         m_prevSiblingPlaylist = playlistId;
         emit saveModelState();
         m_pGroupedPlaylistsTableModel->selectPlaylist(playlistId);

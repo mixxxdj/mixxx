@@ -2,7 +2,6 @@
 
 #include "library/basetrackcache.h"
 #include "library/trackset/crate/crate.h"
-// #include "library/trackset/playlist/playlist.h"
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
@@ -82,7 +81,6 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
-    m_groupedPlaylistsDao.initialize(database);
     m_cueDao.initialize(database);
     m_directoryDao.initialize(database);
     m_analysisDao.initialize(database);

@@ -18,14 +18,6 @@ class PlaylistTableModel final : public TrackSetTableModel {
     int getPlaylist() const {
         return m_iPlaylistId;
     }
-    //    PlaylistId selectedPlaylist() const {
-    //        return m_selectedPlaylist;
-    //    }
-
-    //    void newselectPlaylist(PlaylistId playlistId);
-
-    void selectPlaylistGroup(const QString& groupName);
-    QList<QVariantMap> getGroupedPlaylists();
 
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
@@ -57,7 +49,6 @@ class PlaylistTableModel final : public TrackSetTableModel {
     void firstTrackChanged();
 
   private:
-    //    PlaylistId m_selectedPlaylist;
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
