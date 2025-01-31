@@ -155,6 +155,7 @@ void WMainMenuBar::initialize() {
     connect(this, &WMainMenuBar::internalLibraryScanActive, pLibraryRescan, &QAction::setDisabled);
     pLibraryMenu->addAction(pLibraryRescan);
 
+    //: "Engine DJ" must not be translated
 #ifdef __ENGINEPRIME__
     QString exportTitle = tr("E&xport Library to Engine DJ");
     QString exportText = tr("Export the library to the Engine DJ format");
