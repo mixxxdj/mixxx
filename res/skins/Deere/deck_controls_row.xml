@@ -38,7 +38,7 @@
             <Layout>stacked</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <Template src="skin:left_right_display_2state_button.xml">
+              <Template src="skin:left_right_display_play_2state_button.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ObjectName">PlayToggle</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
