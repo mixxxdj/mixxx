@@ -13,7 +13,8 @@ const QString kModelName = "playlist:";
 
 } // anonymous namespace
 
-GroupedPlaylistsTableModel::GroupedPlaylistsTableModel(QObject* parent,
+GroupedPlaylistsTableModel::GroupedPlaylistsTableModel(
+        QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         UserSettingsPointer pConfig,
         const char* settingsNamespace,
@@ -660,7 +661,7 @@ TrackModel::Capabilities GroupedPlaylistsTableModel::getCapabilities() const {
     }
     if (m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
-                    .getHiddenType(m_iPlaylistId) == GroupedPlaylistsDAO::PLHT_SET_LOG) {
+                    .getHiddenType(m_iPlaylistId) == PlaylistsDAO::PLHT_SET_LOG) {
         // Disallow reordering and hiding tracks, as well as adding tracks via
         // drag'n'drop for history playlists
         caps &= ~(Capability::ReceiveDrops | Capability::Reorder | Capability::Hide);

@@ -7,14 +7,15 @@ class GroupedPlaylistsTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:
-    GroupedPlaylistsTableModel(QObject* parent,
+    GroupedPlaylistsTableModel(
+            QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
             UserSettingsPointer pConfig,
             const char* settingsNamespace,
             bool keepHiddenTracks = false);
     ~GroupedPlaylistsTableModel() final = default;
 
-    void oldselectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
+    // void oldselectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;

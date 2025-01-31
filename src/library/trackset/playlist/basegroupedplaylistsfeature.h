@@ -44,7 +44,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
   public slots:
     QModelIndex rebuildChildModel(int selectedPlaylistId);
 
-    void activateChild(const QModelIndex& index);
+    void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
 
@@ -80,6 +80,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void slotAnalyzePlaylist();
 
   protected:
+    const QIcon m_lockedPlaylistIcon;
     struct IdAndLabel {
         int id;
         QString label;
@@ -131,7 +132,6 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void slotResetSelectedTrack();
 
   private:
-    const QIcon m_lockedPlaylistIcon;
     // Stores the id of a playlist in the sidebar that is adjacent to the playlist(playlistId).
     void storePrevSiblingPlaylistId(int playlistId);
     // void storePrevSiblingPlaylistId(PlaylistId playlistId);
@@ -141,8 +141,8 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
 
     // std::unique_ptr<TreeItem> newTreeItemForPlaylistSummary(
     //         const PlaylistSummary& playlistSummary);
-    void updateTreeItemForPlaylistSummary(
-            TreeItem* pTreeItem, bool locked) const;
+    // void updateTreeItemForPlaylistSummary(
+    //        TreeItem* pTreeItem, bool locked) const;
     //    void updateTreeItemForPlaylistSummary(
     //            TreeItem* pTreeItem,
     //            const PlaylistSummary& playlistSummary) const;

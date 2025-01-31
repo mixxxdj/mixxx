@@ -24,7 +24,8 @@ constexpr bool sDebug = true;
 
 } // anonymous namespace
 
-GroupedPlaylistsFeature::GroupedPlaylistsFeature(Library* pLibrary,
+GroupedPlaylistsFeature::GroupedPlaylistsFeature(
+        Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseGroupedPlaylistsFeature(pLibrary,
                   pConfig,
