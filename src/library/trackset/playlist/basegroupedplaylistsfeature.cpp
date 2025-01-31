@@ -840,7 +840,6 @@ QString BaseGroupedPlaylistsFeature::fetchPlaylistLabel(int playlistId) {
     return QString();
 }
 
-
 /// Clears the child model dynamically, but the invisible root item remains
 void BaseGroupedPlaylistsFeature::clearChildModel() {
     m_lastClickedIndex = QModelIndex();
@@ -928,7 +927,6 @@ void BaseGroupedPlaylistsFeature::slotResetSelectedTrack() {
 //// appended grouped-logic
 ////
 ///////////////////////////////////////////////////////////
-
 
 void BaseGroupedPlaylistsFeature::storePrevSiblingPlaylistId(int playlistId) {
     QModelIndex actIndex = indexFromPlaylistId(playlistId);
