@@ -312,6 +312,16 @@ void GroupedPlaylistsTableModel::selectPlaylist(int playlistId) {
         }
     }
 
+    if (!m_keepHiddenTracks) {
+        // From Mixxx 2.1 we drop tracks that have been explicitly deleted
+        // in the library (mixxx_deleted = 0) from playlists.
+        // These invisible tracks, consuming a playlist position number were
+        // a source user of confusion in the past.
+        m_pTrackCollectionManager->internalCollection()
+                ->getPlaylistDAO()
+                .removeHiddenTracks(m_iPlaylistId);
+    }
+
     m_selectedPlaylist = playlistId;
     FieldEscaper escaper(m_database);
 
