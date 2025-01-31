@@ -62,7 +62,7 @@ void GroupedPlaylistsFeature::onRightClickChild(
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
     qDebug() << "[BaseGroupedPlaylistsFeature] toggle of RightClickChild " << playlistId;
-    bool locked = m_groupedPlaylistsDao.isPlaylistLocked(playlistId);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeleteGroupedPlaylistsAction->setEnabled(!locked);
     m_pRenameGroupedPlaylistsAction->setEnabled(!locked);
 
@@ -110,12 +110,12 @@ bool GroupedPlaylistsFeature::dropAcceptChild(
     }
 
     // Return whether appendTracksToPlaylist succeeded.
-    return m_groupedPlaylistsDao.appendTracksToPlaylist(trackIds, playlistId);
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool GroupedPlaylistsFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     int playlistId = playlistIdFromIndex(index);
-    bool locked = m_groupedPlaylistsDao.isPlaylistLocked(playlistId);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
@@ -146,7 +146,7 @@ bool GroupedPlaylistsFeature::dragMoveAcceptChild(const QModelIndex& index, cons
 //            "  GROUP BY Playlists.id")
 //                                  .arg(m_countsDurationTableName,
 //                                          QString::number(
-//                                                  GroupedPlaylistsDAO::PLHT_NOT_HIDDEN));
+//                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
 //    queryString.append(
 //            mixxx::DbConnection::collateLexicographically(
 //                    " ORDER BY sort_name"));
@@ -199,9 +199,9 @@ void GroupedPlaylistsFeature::slotShufflePlaylist() {
         return;
     }
 
-    if (m_groupedPlaylistsDao.isPlaylistLocked(playlistId)) {
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
         qDebug() << "Can't shuffle locked playlist" << playlistId
-                 << m_groupedPlaylistsDao.getPlaylistName(playlistId);
+                 << m_playlistDao.getPlaylistName(playlistId);
         return;
     }
 
@@ -276,7 +276,7 @@ void GroupedPlaylistsFeature::slotShufflePlaylist() {
 //}
 
 void GroupedPlaylistsFeature::decorateChild(TreeItem* item, int playlistId) {
-    if (m_groupedPlaylistsDao.isPlaylistLocked(playlistId)) {
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(
                 QIcon(":/images/library/ic_library_locked_tracklist.svg"));
     } else {
@@ -286,9 +286,9 @@ void GroupedPlaylistsFeature::decorateChild(TreeItem* item, int playlistId) {
 
 void GroupedPlaylistsFeature::slotPlaylistTableChanged(int playlistId) {
     // qDebug() << "GroupedPlaylistsFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
-    enum GroupedPlaylistsDAO::HiddenType type = m_groupedPlaylistsDao.getHiddenType(playlistId);
-    if (type != GroupedPlaylistsDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
-            type != GroupedPlaylistsDAO::PLHT_UNKNOWN) { // not a deleted playlist
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
+            type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
         return;
     }
 
@@ -296,7 +296,7 @@ void GroupedPlaylistsFeature::slotPlaylistTableChanged(int playlistId) {
     int selectedPlaylistId = kInvalidPlaylistId;
     if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
         if (playlistId == playlistIdFromIndex(m_lastClickedIndex) &&
-                type == GroupedPlaylistsDAO::PLHT_UNKNOWN) {
+                type == PlaylistDAO::PLHT_UNKNOWN) {
             // if the selected playlist was deleted, find a sibling to select
             selectedPlaylistId = getSiblingPlaylistIdOf(m_lastClickedIndex);
         } else {
@@ -314,14 +314,14 @@ void GroupedPlaylistsFeature::slotPlaylistContentOrLockChanged(const QSet<int>& 
     // playlistId:" << playlistIds;
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
-        if (m_groupedPlaylistsDao.getHiddenType(playlistId) ==
-                GroupedPlaylistsDAO::PLHT_NOT_HIDDEN) {
+        if (m_playlistDao.getHiddenType(playlistId) ==
+                PlaylistDAO::PLHT_NOT_HIDDEN) {
             idsToBeUpdated.insert(playlistId);
         }
     }
     // Update the playlists set to allow toggling bold correctly after
     // tracks have been dropped on sidebar items
-    m_groupedPlaylistsDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
+    m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
     // oldupdateChildModel(idsToBeUpdated);
     updateChildModel(idsToBeUpdated);
 }
@@ -329,7 +329,7 @@ void GroupedPlaylistsFeature::slotPlaylistContentOrLockChanged(const QSet<int>& 
 void GroupedPlaylistsFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     // qDebug() << "GroupedPlaylistsFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
-    if (m_groupedPlaylistsDao.getHiddenType(playlistId) == GroupedPlaylistsDAO::PLHT_NOT_HIDDEN) {
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
         // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()
         // in order to rebuild the model, not just updateChildModel()
         slotPlaylistTableChanged(playlistId);

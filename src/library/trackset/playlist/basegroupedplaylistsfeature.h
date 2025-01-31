@@ -5,10 +5,9 @@
 #include <QSet>
 #include <QString>
 
-#include "library/dao/groupedplaylistsdao.h"
+#include "library/dao/playlistdao.h"
+#include "library/playlisttablemodel.h"
 #include "library/trackset/basetracksetfeature.h"
-// #include "library/playlisttablemodel.h"
-#include "library/trackset/playlist/playlist.h"
 #include "track/trackid.h"
 
 class WLibrary;
@@ -93,20 +92,18 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
 
     /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
-    virtual void addToAutoDJ(GroupedPlaylistsDAO::AutoDJSendLoc loc);
+    virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     int playlistIdFromIndex(const QModelIndex& index) const;
     // PlaylistId playlistIdFromIndex(const QModelIndex& index) const;
     //  Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     //  on failure.
-    // QModelIndex indexFromPlaylistId(int playlistId);
     QModelIndex indexFromPlaylistId(int playlistId);
-    // QModelIndex indexFromPlaylistId(PlaylistId playlistId) const;
     bool isChildIndexSelectedInSidebar(const QModelIndex& index);
 
     QString createPlaylistLabel(const QString& name, int count, int duration) const;
 
-    GroupedPlaylistsDAO& m_groupedPlaylistsDao;
+    PlaylistDAO& m_playlistDao;
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
@@ -161,7 +158,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void updateFullPathRecursive(TreeItem* pItem, const QString& parentPath);
 
     void initActions();
-    void connectGroupedPlaylistsDAO();
+    void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
     // QString fetchPlaylistLabel(int playlistId);

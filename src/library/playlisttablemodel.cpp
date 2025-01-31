@@ -8,7 +8,7 @@
 #include "moc_playlisttablemodel.cpp"
 
 namespace {
-const bool sDebug = true;
+constexpr bool sDebug = false;
 const QString kModelName = "playlist:";
 
 } // anonymous namespace
@@ -132,6 +132,9 @@ void PlaylistTableModel::initSortColumnMapping() {
 }
 
 QList<QVariantMap> PlaylistTableModel::getGroupedPlaylists() {
+    qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Generating grouped playlists "
+                "list. -------------------------------------- sDebug"
+             << sDebug;
     if (sDebug) {
         qDebug() << "[GROUPEDPLAYLISTSTABLEMODEL] Generating grouped playlists list.";
     }
