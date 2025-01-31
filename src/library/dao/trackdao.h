@@ -14,7 +14,6 @@
 
 class SqlTransaction;
 class PlaylistDAO;
-class GroupedPlaylistsDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
@@ -41,7 +40,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackDAO(
             CueDAO& cueDao,
             PlaylistDAO& playlistDao,
-            GroupedPlaylistsDAO& groupedPlaylistsDao,
             AnalysisDao& analysisDao,
             LibraryHashDAO& libraryHashDao,
             UserSettingsPointer pConfig);
@@ -205,7 +203,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
-    GroupedPlaylistsDAO& m_groupedPlaylistsDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
 
