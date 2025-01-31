@@ -362,6 +362,10 @@ bool WTrackPropertyEditor::eventFilter(QObject* pObj, QEvent* pEvent) {
             ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
             return true;
         default:
+            // Hide mouse cursor while typing
+            // TODO Test if this now works on Windows, see comment in
+            // widget/knobeventhandler.h
+            setCursor(Qt::BlankCursor);
             break;
         }
     } else if (pEvent->type() == QEvent::FocusOut) {
@@ -375,6 +379,16 @@ bool WTrackPropertyEditor::eventFilter(QObject* pObj, QEvent* pEvent) {
                 emit commitEditorData(text());
             }
         }
+    } else if (pEvent->type() == QEvent::MouseMove ||
+            pEvent->type() == QEvent::MouseButtonPress ||
+            pEvent->type() == QEvent::Show ||
+            pEvent->type() == QEvent::Enter) {
+        // Some desktop environments show the I cursor initially
+        // but fall back to regular pointer on mouse move.
+        // Enforce I cursor while editing.
+        setCursor(Qt::IBeamCursor);
+    } else if (pEvent->type() == QEvent::Leave) {
+        unsetCursor();
     }
     return QLineEdit::eventFilter(pObj, pEvent);
 }
