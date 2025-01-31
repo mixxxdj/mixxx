@@ -218,7 +218,6 @@ void BaseGroupedPlaylistsFeature::activatePlaylist(int playlistId) {
                  << "playlistId: " << playlistId
                  << "index: " << index;
     }
-    QModelIndex index = indexFromPlaylistId(playlistId);
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
@@ -1027,6 +1026,7 @@ QModelIndex BaseGroupedPlaylistsFeature::rebuildChildModel(int selectedPlaylistI
                     qDebug() << "[GROUPEDPLAYLISTSFEATURE] -> playlistSummaryName - "
                                 "displayPlaylistName = "
                              << displayPlaylistName;
+                    qDebug() << "[GROUPEDPLAYLISTSFEATURE] LOCKED = " << playlistLocked;
                 }
 
                 TreeItem* pChildItem = pGroupItem->appendChild(
