@@ -622,7 +622,7 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
         return QJSValue();
     }
 
-    if (status <= 0 || midino <= 0) {
+    if (status <= 0 || midino < 0) {
         auto mStatusError = QStringLiteral(
                 "Invalid status or midino passed to midi.makeInputHandler. "
                 "Please pass a strictly positive integer. status=%1,midino=%2")
