@@ -124,6 +124,7 @@ DlgLibraryExport::DlgLibraryExport(
     pLayout->addLayout(pFormLayout, 0, 1, 3, 1);
     pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
 
+    //: "Engine DJ" must not be translated            
     setLayout(pLayout);
     setWindowTitle(tr("Export Library to Engine DJ"));
 
