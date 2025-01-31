@@ -61,6 +61,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
     connectTrackCollection();
 }
 
+//: "Engine DJ" must not be translated
 void CrateFeature::initActions() {
     m_pCreateCrateAction = make_parented<QAction>(tr("Create New Crate"), this);
     connect(m_pCreateCrateAction.get(),
