@@ -22,8 +22,9 @@ bool SeratoCueInfoImporter::hasCueOfType(CueType cueType) const {
 /// the SeratoTags for the time being.
 double SeratoCueInfoImporter::guessTimingOffsetMillis(
         const QString& filePath,
+        const QString& fileType,
         const audio::SignalInfo& signalInfo) const {
-    return SeratoTags::guessTimingOffsetMillis(filePath, signalInfo);
+    return SeratoTags::guessTimingOffsetMillis(filePath, fileType, signalInfo);
 }
 
 } // namespace mixxx

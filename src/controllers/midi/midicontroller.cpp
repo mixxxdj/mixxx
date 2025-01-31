@@ -33,7 +33,6 @@ bool MidiInputHandleJSProxy::disconnect() {
 
 MidiController::MidiController(const QString& deviceName)
         : Controller(deviceName) {
-    setDeviceCategory(tr("MIDI Controller"));
 }
 
 void MidiController::slotBeforeEngineShutdown() {
@@ -174,7 +173,8 @@ void MidiController::createOutputHandlers() {
                 " Visit the manual for a complete list: ");
         detailsText += MIXXX_MANUAL_CONTROLS_URL + QStringLiteral("\n\n");
         detailsText += failures.join("\n");
-        props->setDetails(detailsText);
+        props->setDetails(detailsText,
+                true /* use monospace font / expand Details box */);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
 }

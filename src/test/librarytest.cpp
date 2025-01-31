@@ -36,6 +36,7 @@ LibraryTest::LibraryTest()
           m_keyNotationCO(mixxx::library::prefs::kKeyNotationConfigKey) {
     CoverArtCache::createInstance();
 }
+
 LibraryTest::~LibraryTest() {
     CoverArtCache::destroy();
 }

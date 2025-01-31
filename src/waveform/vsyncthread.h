@@ -71,8 +71,8 @@ class VSyncThread : public QThread {
     // phase locked loop
     std::mutex m_pllMutex;
     PerformanceTimer m_pllTimer;
-    int m_pllInitCnt;
-    bool m_pllPendingUpdate;
+    std::atomic<int> m_pllInitCnt;
+    std::atomic<bool> m_pllPendingUpdate;
     double m_pllInitSum;
     double m_pllInitAvg;
     double m_pllPhaseOut;

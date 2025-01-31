@@ -511,3 +511,38 @@ TEST_F(LegacyControllerMappingSettingsTest, discardDuplicateSettings) {
     ASSERT_EQ(settings.at(1)->value().toNumber(), 50);
     ASSERT_EQ(settings.at(2)->value().toString(), "myOptionValue1");
 }
+
+TEST_F(LegacyControllerMappingSettingsTest, handleNumberWithNegativeRange) {
+    QDomDocument doc;
+    QString dom;
+    QTextStream(&dom)
+            << QString(kValidInteger).arg("0", "-500", "0", "1");
+    doc.setContent(
+            QString("<?xml version=\"1.0\" "
+                    "encoding=\"utf-8\"?><MixxxControllerPreset><settings>%1</"
+                    "settings></MixxxControllerPreset>")
+                    .arg(dom));
+
+    auto pMapping = LegacyDummyMappingFileHandler::loadDummyMapping(
+            doc.documentElement(), "/fake/path");
+
+    ASSERT_EQ(pMapping->getSettings().size(), 1);
+    ASSERT_EQ(pMapping->getSettings().at(0)->variableName(), "myInteger1");
+    ASSERT_EQ(pMapping->getSettings().at(0)->value().toNumber(), 0);
+
+    dom.clear();
+    QTextStream(&dom)
+            << QString(kValidInteger).arg("20", "-100", "100", "50");
+    doc.setContent(
+            QString("<?xml version=\"1.0\" "
+                    "encoding=\"utf-8\"?><MixxxControllerPreset><settings>%1</"
+                    "settings></MixxxControllerPreset>")
+                    .arg(dom));
+
+    pMapping = LegacyDummyMappingFileHandler::loadDummyMapping(
+            doc.documentElement(), "/fake/path");
+
+    ASSERT_EQ(pMapping->getSettings().size(), 1);
+    ASSERT_EQ(pMapping->getSettings().at(0)->variableName(), "myInteger1");
+    ASSERT_EQ(pMapping->getSettings().at(0)->value().toNumber(), 20);
+}

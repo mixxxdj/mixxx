@@ -81,7 +81,7 @@ void GlitchEffect::processChannel(
 
     int delay_frames;
     double min_delay;
-    if (groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.beat_length.has_value()) {
         if (m_pQuantizeParameter->toBool()) {
             period = roundToFraction(period, 8);
             if (m_pTripletParameter->toBool()) {
@@ -89,9 +89,8 @@ void GlitchEffect::processChannel(
             }
         }
         period = std::max(period, 1 / 8.0);
-        delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
-                engineParameters.sampleRate());
-        min_delay = 1 / 8.0 * groupFeatures.beat_length_sec * engineParameters.sampleRate();
+        delay_frames = static_cast<int>(period * groupFeatures.beat_length->frames);
+        min_delay = 1 / 8.0 * groupFeatures.beat_length->frames;
     } else {
         delay_frames = static_cast<int>(period * engineParameters.sampleRate());
         min_delay = 1 / 8.0 * engineParameters.sampleRate();

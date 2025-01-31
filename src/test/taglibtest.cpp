@@ -36,7 +36,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     trackMetadata.refTrackInfo().setTitle(QStringLiteral("title"));
     const auto exported =
             mixxx::MetadataSourceTagLib(
-                    tmpFileName, mixxx::taglib::FileType::MP3)
+                    tmpFileName, "mp3")
                     .exportTrackMetadata(trackMetadata);
     ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded, exported.first);
     ASSERT_FALSE(exported.second.isNull());
@@ -56,7 +56,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     trackMetadata.refTrackInfo().setTitle(QStringLiteral("title2"));
     const auto exported2 =
             mixxx::MetadataSourceTagLib(
-                    tmpFileName, mixxx::taglib::FileType::MP3)
+                    tmpFileName, "mp3")
                     .exportTrackMetadata(trackMetadata);
     ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded, exported.first);
     ASSERT_FALSE(exported.second.isNull());

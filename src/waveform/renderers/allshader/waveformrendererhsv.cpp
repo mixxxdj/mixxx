@@ -14,12 +14,10 @@ WaveformRendererHSV::WaveformRendererHSV(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-void WaveformRendererHSV::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererHSV::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererHSV::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
@@ -138,8 +136,6 @@ void WaveformRendererHSV::paintGL() {
             maxMid[chn] = static_cast<float>(u8maxMid);
             maxHigh[chn] = static_cast<float>(u8maxHigh);
             maxAll[chn] = static_cast<float>(u8maxAll);
-            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
-            // maxAll[chn] = unscale(u8maxAll);
         }
 
         float total{};

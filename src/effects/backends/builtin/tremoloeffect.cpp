@@ -138,9 +138,9 @@ void TremoloEffect::processChannel(
     bool tripletDisabling = pState->tripletEnabled && !m_pTripletParameter->toBool();
 
     if (enableState == EffectEnableState::Enabling || quantizeEnabling || tripletDisabling) {
-        if (gf.has_beat_length_sec && gf.has_beat_fraction) {
-            currentFrame = static_cast<unsigned int>(gf.beat_fraction *
-                    gf.beat_length_sec * engineParameters.sampleRate());
+        if (gf.beat_length.has_value() && gf.beat_fraction_buffer_end.has_value()) {
+            currentFrame = static_cast<unsigned int>(*gf.beat_fraction_buffer_end *
+                    gf.beat_length->frames);
         } else {
             currentFrame = 0;
         }
@@ -149,7 +149,7 @@ void TremoloEffect::processChannel(
 
     int framePerPeriod;
     double rate = m_pRateParameter->value();
-    if (gf.has_beat_length_sec && gf.has_beat_fraction) {
+    if (gf.beat_length.has_value() && gf.beat_fraction_buffer_end.has_value()) {
         if (m_pQuantizeParameter->toBool()) {
             const auto divider = static_cast<int>(log2(rate));
             rate = pow(2, divider);
@@ -158,8 +158,7 @@ void TremoloEffect::processChannel(
                 rate *= 3.0;
             }
         }
-        const auto framePerBeat = static_cast<int>(
-                gf.beat_length_sec * engineParameters.sampleRate());
+        const auto framePerBeat = static_cast<int>(gf.beat_length->frames);
         framePerPeriod = static_cast<int>(framePerBeat / rate);
     } else {
         framePerPeriod = static_cast<int>(engineParameters.sampleRate() / rate);

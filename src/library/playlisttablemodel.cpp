@@ -263,6 +263,10 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTracksFromPlaylist(
             m_iPlaylistId,
             std::move(trackPositions));
+
+    if (trackPositions.contains(1)) {
+        emit firstTrackChanged();
+    }
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -288,6 +292,10 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     }
 
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
+
+    if (oldPosition == 1 || newPosition == 1) {
+        emit firstTrackChanged();
+    }
 }
 
 bool PlaylistTableModel::isLocked() {
@@ -329,6 +337,19 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         allIds.insert(position, trackId);
     }
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
+}
+
+const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {
+    if (indices.isEmpty()) {
+        return {};
+    }
+    QList<int> positions;
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (auto idx : indices) {
+        int pos = idx.siblingAtColumn(positionColumn).data().toInt();
+        positions.append(pos);
+    }
+    return positions;
 }
 
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {

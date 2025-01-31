@@ -4,16 +4,14 @@
 #include <QImage>
 #include <QOpenGLTexture>
 
+#include "engine/channels/enginedeck.h"
+#include "engine/engine.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbdata.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-
-namespace {
-constexpr int kMaxSupportedStems = 4;
-} // anonymous namespace
 
 namespace allshader {
 
@@ -24,25 +22,21 @@ WaveformRendererStem::WaveformRendererStem(
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
-void WaveformRendererStem::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererStem::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;
-    for (int stemIdx = 1; stemIdx <= kMaxSupportedStems; stemIdx++) {
-        DEBUG_ASSERT(group.endsWith("]"));
-        QString stemGroup = QStringLiteral("%1Stem%2]")
-                                    .arg(group.left(group.size() - 1),
-                                            QString::number(stemIdx));
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = EngineDeck::getGroupForStem(group, stemIdx);
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(stemGroup,
-                        QStringLiteral("volume").arg(stemIdx)));
-        m_pStemMute.emplace_back(std::make_unique<ControlProxy>(
-                stemGroup, QStringLiteral("mute").arg(stemIdx)));
+                        QStringLiteral("volume")));
+        m_pStemMute.emplace_back(
+                std::make_unique<ControlProxy>(stemGroup,
+                        QStringLiteral("mute")));
     }
 }
 
@@ -78,6 +72,8 @@ void WaveformRendererStem::paintGL() {
     if (!waveform->hasStem()) {
         return;
     }
+
+    uint selectedStems = m_waveformRenderer->getSelectedStems();
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
@@ -125,7 +121,7 @@ void WaveformRendererStem::paintGL() {
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
     for (int visualIdx = 0; visualIdx < length; ++visualIdx) {
-        for (int stemIdx = 0; stemIdx < 4; stemIdx++) {
+        for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             // Stem is drawn twice with different opacity level, this allow to
             // see the maximum signal by transparency
             for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
@@ -160,7 +156,9 @@ void WaveformRendererStem::paintGL() {
 
                 // Apply the gains
                 if (layerIdx) {
-                    max *= m_pStemMute[stemIdx]->toBool()
+                    max *= m_pStemMute[stemIdx]->toBool() ||
+                                    (selectedStems &&
+                                            !(selectedStems & 1 << stemIdx))
                             ? 0.f
                             : static_cast<float>(m_pStemGain[stemIdx]->get());
                 }

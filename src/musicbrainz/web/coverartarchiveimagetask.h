@@ -22,7 +22,7 @@ class CoverArtArchiveImageTask : public network::WebTask {
             const QByteArray& coverArtImageBytes);
 
     void failed(
-            const network::WebResponse& response,
+            const mixxx::network::WebResponse& response,
             int errorCode,
             const QString& errorMessage);
 

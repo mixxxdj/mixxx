@@ -48,7 +48,7 @@ public:
           double baserate,
           double speed,
           bool paused,
-          int iSamplesPerBuffer,
+          std::size_t samplesPerBuffer,
           bool* pReportScratching,
           bool* pReportReverse);
 
@@ -90,7 +90,7 @@ public slots:
   void slotControlFastBack(double);
 
 private:
-  void processTempRate(const int bufferSamples);
+  void processTempRate(const size_t bufferSamples);
   double getJogFactor() const;
   double getWheelFactor() const;
   SyncMode getSyncMode() const;

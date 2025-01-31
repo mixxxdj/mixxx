@@ -40,6 +40,9 @@ class DlgPrefController : public DlgPreferencePage {
     void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
     void slotApply() override;
+    /// Called when the preferences are hidden, e.g. when closing the window
+    /// with the [X] button or keyboard shortcut
+    void slotHide() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
 
@@ -124,9 +127,6 @@ class DlgPrefController : public DlgPreferencePage {
     MappingInfo enumerateMappingsFromEnumerator(
             QSharedPointer<MappingInfoEnumerator> pMappingEnumerator,
             const QIcon& icon = QIcon());
-
-    void enableDevice();
-    void disableDevice();
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;

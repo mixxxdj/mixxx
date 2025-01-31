@@ -3,6 +3,7 @@
 #include <QColor>
 #include <memory>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/endoftrackshader.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
@@ -16,12 +17,14 @@ namespace allshader {
 class WaveformRendererEndOfTrack;
 }
 
-class allshader::WaveformRendererEndOfTrack final : public allshader::WaveformRenderer {
+class allshader::WaveformRendererEndOfTrack final
+        : public allshader::WaveformRenderer,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidget);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     bool init() override;
 

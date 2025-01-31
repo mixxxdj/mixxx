@@ -55,7 +55,7 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
             const GroupFeatureState& groupFeatures) override;
 
   private:
-    AudioUnitManager m_manager;
+    AudioUnitManagerPointer m_pManager;
 
     QList<EngineEffectParameterPointer> m_parameters;
     QList<AudioUnitParameterValue> m_lastValues;

@@ -323,6 +323,12 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
 
     AVStream* firstAudioStream = nullptr;
     int stemCount = 0;
+    uint selectedStemMask = params.stemMask();
+    VERIFY_OR_DEBUG_ASSERT(selectedStemMask <= 2 << mixxx::kMaxSupportedStems) {
+        kLogger.warning().noquote()
+                << "Invalid selected stem mask" << selectedStemMask;
+        return OpenResult::Failed;
+    }
     OpenParams stemParam = params;
     stemParam.setChannelCount(mixxx::audio::ChannelCount::stereo());
     for (unsigned int streamIdx = 0; streamIdx < pavInputFormatContext->nb_streams; streamIdx++) {
@@ -365,6 +371,11 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
             stemCount++;
         }
 
+        // StemIdx is equal to StreamIdx -1 (the main mix)
+        if (selectedStemMask && !(selectedStemMask & 1 << (streamIdx - 1))) {
+            continue;
+        }
+
         m_pStereoStreams.emplace_back(std::make_unique<SoundSourceSingleSTEM>(getUrl(), streamIdx));
         if (m_pStereoStreams.back()->open(OpenMode::Strict /*Unused*/,
                     stemParam) != OpenResult::Succeeded) {
@@ -380,7 +391,16 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         return OpenResult::Failed;
     }
 
-    if (params.getSignalInfo().getChannelCount() == mixxx::audio::ChannelCount::stereo()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pStereoStreams.empty()) {
+        kLogger.warning().noquote()
+                << "no stem track were selected";
+        close();
+        return OpenResult::Failed;
+    }
+
+    if (params.getSignalInfo().getChannelCount() ==
+                    mixxx::audio::ChannelCount::stereo() ||
+            selectedStemMask) {
         // Requesting a stereo stream (used for samples and preview decks)
         m_requestedChannelCount = mixxx::audio::ChannelCount::stereo();
         initChannelCountOnce(mixxx::audio::ChannelCount::stereo());
@@ -388,8 +408,8 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         // No special channel format request
         m_requestedChannelCount = mixxx::audio::ChannelCount::stem();
         initChannelCountOnce(
-                mixxx::audio::ChannelCount::stereo() *
-                m_pStereoStreams.size());
+                static_cast<int>(mixxx::audio::ChannelCount::stereo() *
+                        m_pStereoStreams.size()));
     }
 
     initSampleRateOnce(m_pStereoStreams.front()->getSignalInfo().getSampleRate());
@@ -431,16 +451,22 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     globalSampleFrames.writableData(),
                     globalSampleFrames.writableLength()));
-    int stemCount = m_pStereoStreams.size();
+    std::size_t stemCount = m_pStereoStreams.size();
     CSAMPLE* pBuffer = globalSampleFrames.writableData();
 
-    if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo()) {
+    if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo() && stemCount != 1) {
         SampleUtil::clear(pBuffer, globalSampleFrames.writableLength());
     } else {
-        DEBUG_ASSERT(stemSampleLength * stemCount == globalSampleFrames.writableLength());
+        DEBUG_ASSERT(stemSampleLength * static_cast<SINT>(stemCount) ==
+                globalSampleFrames.writableLength());
     }
 
-    for (int streamIdx = 0; streamIdx < stemCount; streamIdx++) {
+    if (stemCount == 1) {
+        m_pStereoStreams[0]->readSampleFrames(globalSampleFrames);
+        return read;
+    }
+
+    for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
         WritableSampleFrames currentStemFrame = WritableSampleFrames(
                 globalSampleFrames.frameIndexRange(),
                 SampleBuffer::WritableSlice(

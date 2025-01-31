@@ -3,6 +3,7 @@
 #include <QColor>
 #include <vector>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/unicolorshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/waveformrenderer.h"
@@ -15,11 +16,13 @@ namespace allshader {
 class WaveformRenderMarkRange;
 }
 
-class allshader::WaveformRenderMarkRange final : public allshader::WaveformRenderer {
+class allshader::WaveformRenderMarkRange final
+        : public allshader::WaveformRenderer,
+          public rendergraph::OpenGLNode {
   public:
     explicit WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     void initializeGL() override;
     void paintGL() override;

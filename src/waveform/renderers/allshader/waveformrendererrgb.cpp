@@ -22,12 +22,10 @@ WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
           m_options(options) {
 }
 
-void WaveformRendererRGB::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererRGB::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererRGB::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
@@ -168,8 +166,6 @@ void WaveformRendererRGB::paintGL() {
             float maxLow = static_cast<float>(u8maxLow[chn]);
             float maxMid = static_cast<float>(u8maxMid[chn]);
             float maxHigh = static_cast<float>(u8maxHigh[chn]);
-            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
-            // float maxAllChn[2]{unscale(u8maxAllChn[0]), unscale(u8maxAllChn[1])};
 
             // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
             // We take the square root to get the magnitude below.

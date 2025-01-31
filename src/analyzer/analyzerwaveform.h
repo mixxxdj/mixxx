@@ -18,27 +18,6 @@ class QImage;
 class EngineFilterIIRBase;
 class QSqlDatabase;
 
-inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
-    if (invalue == 0.0) {
-        return 0;
-    } else if (index == Low || index == Mid) {
-        //return std::pow(invalue, 2 * 0.5);
-        return invalue;
-    } else {
-        return std::pow(invalue, 2.0f * 0.316f);
-    }
-
-    // According to this discussion
-    // https://github.com/mixxxdj/mixxx/issues/6352
-    // it looks like this scaling is done to accentuate
-    // low level information.
-
-    // This scaling can be undone with a function in
-    //  waveform/renderers/waveformrenderersignalbase.h
-    // but arguable it would be better not to do this scaling here at all
-    // and do it (or not) at the waveform renderer side.
-}
-
 struct WaveformStride {
     WaveformStride(double samples, double averageSamples, int stemCount)
             : m_position(0),
@@ -67,16 +46,16 @@ struct WaveformStride {
     inline void store(WaveformData* data) {
         for (int i = 0; i < ChannelCount; ++i) {
             WaveformData& datum = *(data + i);
-            datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
-                    m_postScaleConversion * scaleSignal(m_overallData[i]) + 0.5));
-            datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
-                    m_postScaleConversion * scaleSignal(m_filteredData[i][Low], Low) + 0.5));
-            datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
-                    m_postScaleConversion * scaleSignal(m_filteredData[i][Mid], Mid) + 0.5));
-            datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
-                    m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
+            datum.filtered.all = static_cast<unsigned char>(std::min(255.0,
+                    m_postScaleConversion * m_overallData[i] + 0.5));
+            datum.filtered.low = static_cast<unsigned char>(std::min(255.0,
+                    m_postScaleConversion * m_filteredData[i][Low] + 0.5));
+            datum.filtered.mid = static_cast<unsigned char>(std::min(255.0,
+                    m_postScaleConversion * m_filteredData[i][Mid] + 0.5));
+            datum.filtered.high = static_cast<unsigned char>(std::min(255.0,
+                    m_postScaleConversion * m_filteredData[i][High] + 0.5));
             for (int stemIdx = 0; stemIdx < m_stemCount; stemIdx++) {
-                datum.stems[stemIdx] = static_cast<unsigned char>(math_min(255.0,
+                datum.stems[stemIdx] = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_stemData[i][stemIdx] + 0.5));
             }
         }
@@ -99,27 +78,33 @@ struct WaveformStride {
         if (m_averageDivisor) {
             for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
-                datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_averageOverallData[i] / m_averageDivisor) + 0.5));
-                datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Low] / m_averageDivisor, Low) + 0.5));
-                datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Mid] / m_averageDivisor, Mid) + 0.5));
-                datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_averageFilteredData[i][High] / m_averageDivisor, High) + 0.5));
+                datum.filtered.all = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_averageOverallData[i] / m_averageDivisor + 0.5));
+                datum.filtered.low = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_averageFilteredData[i][Low] /
+                                        m_averageDivisor +
+                                0.5));
+                datum.filtered.mid = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_averageFilteredData[i][Mid] /
+                                        m_averageDivisor +
+                                0.5));
+                datum.filtered.high = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_averageFilteredData[i][High] /
+                                        m_averageDivisor +
+                                0.5));
             }
         } else {
             // This is the case if The Overview Waveform has more samples than the detailed waveform
             for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
-                datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_overallData[i]) + 0.5));
-                datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_filteredData[i][Low], Low) + 0.5));
-                datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_filteredData[i][Mid], Mid) + 0.5));
-                datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
-                        m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
+                datum.filtered.all = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_overallData[i] + 0.5));
+                datum.filtered.low = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_filteredData[i][Low] + 0.5));
+                datum.filtered.mid = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_filteredData[i][Mid] + 0.5));
+                datum.filtered.high = static_cast<unsigned char>(std::min(255.0,
+                        m_postScaleConversion * m_filteredData[i][High] + 0.5));
             }
         }
 

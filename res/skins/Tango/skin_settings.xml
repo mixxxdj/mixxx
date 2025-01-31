@@ -786,6 +786,9 @@ Description:
           </WidgetGroup><!-- /Load/Save Sampler Bank -->
           <!-- /Misc -->
 
+          <!-- push the settings up, required with Qt6 -->
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>

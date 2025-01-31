@@ -8,18 +8,18 @@ var behringer = behringer;
 var DDM4000 = new behringer.extension.GenericMidiController({
     configurationProvider: function() {
 
-        var DEFAULT_LONGPRESS_DURATION = 500;
-        var DEFAULT_BLINK_DURATION = 425;
-        var THROTTLE_DELAY = 40;
+        const DEFAULT_LONGPRESS_DURATION = 500;
+        const DEFAULT_BLINK_DURATION = 425;
+        const THROTTLE_DELAY = 40;
 
         /* Shortcut variables */
-        var c    = components;
-        var e    = behringer.extension;
-        var cc   = 0xB0;
-        var note = 0x90;
-        var toggle = c.Button.prototype.types.toggle;
+        const c    = components;
+        const e    = behringer.extension;
+        const cc   = 0xB0;
+        const note = 0x90;
+        const toggle = c.Button.prototype.types.toggle;
 
-        var CrossfaderAssignLED = function(options) {
+        const CrossfaderAssignLED = function(options) {
             options = options || {};
             options.outKey = options.outKey || "orientation";
             e.CustomButton.call(this, options);
@@ -31,16 +31,16 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 right: 2
             }
         });
-        var left = CrossfaderAssignLED.prototype.position.left;
-        var center = CrossfaderAssignLED.prototype.position.center;
-        var right = CrossfaderAssignLED.prototype.position.right;
+        const left = CrossfaderAssignLED.prototype.position.left;
+        const center = CrossfaderAssignLED.prototype.position.center;
+        const right = CrossfaderAssignLED.prototype.position.right;
 
-        var CrossfaderUnit = function(options) {
-            var unitOptions = options || {};
+        const CrossfaderUnit = function(options) {
+            const unitOptions = options || {};
             unitOptions.group = unitOptions.group || "[Master]";
             c.ComponentContainer.call(this, unitOptions);
 
-            var Crossfader = function(options) {
+            const Crossfader = function(options) {
                 options = options || {};
                 options.inKey = options.inKey || options.key || "crossfader";
                 options.group = options.group || unitOptions.group;
@@ -56,9 +56,9 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                     engine.setValue("[Master]", "crossfader_set_default", 1);
                 },
             });
-            var crossfader = new Crossfader(options.crossfader);
+            const crossfader = new Crossfader(options.crossfader);
 
-            var CrossfaderToggleButton = function(options) {
+            const CrossfaderToggleButton = function(options) {
                 options = options || {};
                 if (options.type === undefined) {
                     options.type = c.Button.prototype.types.toggle;
@@ -96,7 +96,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
          * @param {number} options Options object
          * @public
          */
-        var CrossfaderReverseTapButton = function(options) {
+        const CrossfaderReverseTapButton = function(options) {
             options = options || {};
             options.inKey = options.inKey || "xFaderReverse";
             c.Button.call(this, options);
@@ -108,7 +108,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             },
         });
 
-        var Blinker = function(target, blinkDuration, outValueScale) {
+        const Blinker = function(target, blinkDuration, outValueScale) {
             this.target = target;
             this.outValueScale = outValueScale || components.Component.prototype.outValueScale;
 
@@ -125,11 +125,11 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             },
         };
 
-        var SamplerBank = function(bankOptions) {
+        const SamplerBank = function(bankOptions) {
             c.ComponentContainer.call(this);
-            var bank = this;
+            const bank = this;
 
-            var PlayButton = function(options) {
+            const PlayButton = function(options) {
                 options = options || {};
                 options.inKey = options.inKey || "cue_gotoandplay";
                 options.outKey = options.outKey || "track_loaded";
@@ -151,7 +151,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 group: bankOptions.group,
             });
 
-            var PlayIndicatorLED = function(options) {
+            const PlayIndicatorLED = function(options) {
                 options = options || {};
                 options.outKey = options.outKey || "play_indicator";
                 this.blinker = new Blinker(this, options.blinkDuration);
@@ -171,7 +171,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 blinkDuration: DEFAULT_BLINK_DURATION,
             });
 
-            var ReverseMode = function(options) {
+            const ReverseMode = function(options) {
                 options = options || {};
                 options.key = options.key || "reverse";
                 c.Button.call(this, options);
@@ -179,7 +179,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             ReverseMode.prototype = e.deriveFrom(c.Button);
             this.reverseMode = new ReverseMode({midi: bankOptions.reverse, group: bankOptions.group});
 
-            var LoopMode = function(options) {
+            const LoopMode = function(options) {
                 options = options || {};
                 options.key = options.inKey || "beatloop_activate";
                 c.Button.call(this, options);
@@ -187,11 +187,11 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             };
             LoopMode.prototype = e.deriveFrom(c.Button, {
                 outValueScale: function(value) {
-                    var button = c.Button.prototype;
+                    const button = c.Button.prototype;
                     bank.playButton.type = value ? button.types.toggle : button.types.push;
                     if (!value) {
-                        var beatloopSize = engine.getValue(this.group, "beatloop_size");
-                        var key = "beatloop_" + beatloopSize;
+                        const beatloopSize = engine.getValue(this.group, "beatloop_size");
+                        const key = `beatloop_${beatloopSize}`;
                         engine.setValue(this.group, key, 0);
                     }
                     return button.outValueScale(value);
@@ -199,7 +199,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             });
             this.loopMode = new LoopMode({midi: bankOptions.loop, group: bankOptions.group});
 
-            var ModeButton = function(options) {
+            const ModeButton = function(options) {
                 options = options || {};
                 options.key = options.key || "mode";
                 options.longPressTimeout = options.longPressTimeout || DEFAULT_LONGPRESS_DURATION;

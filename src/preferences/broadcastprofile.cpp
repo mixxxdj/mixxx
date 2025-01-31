@@ -1,3 +1,8 @@
+#include "preferences/broadcastprofile.h"
+
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
@@ -16,7 +21,6 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
-#include "broadcastprofile.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "moc_broadcastprofile.cpp"
