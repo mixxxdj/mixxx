@@ -94,13 +94,13 @@ void updateQueryPlannerStatisticsForDatabase(const QSqlDatabase& database) {
 
 } // anonymous namespace
 
-LibraryScanner::LibraryScanner(mixxx::DbConnectionPoolPtr pDbConnectionPool,
+LibraryScanner::LibraryScanner(
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao,
                   m_playlistDao,
-                  m_groupedPlaylistsDao,
                   m_analysisDao,
                   m_libraryHashDao,
                   pConfig),
@@ -173,7 +173,6 @@ void LibraryScanner::run() {
         m_cueDao.initialize(dbConnection);
         m_trackDao.initialize(dbConnection);
         m_playlistDao.initialize(dbConnection);
-        m_groupedPlaylistsDao.initialize(dbConnection);
         m_analysisDao.initialize(dbConnection);
         m_directoryDao.initialize(dbConnection);
 

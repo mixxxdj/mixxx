@@ -60,10 +60,6 @@ class TrackCollection : public QObject,
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_playlistDao;
     }
-    GroupedPlaylistsDAO& getGroupedPlaylistsDAO() {
-        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-        return m_groupedPlaylistsDao;
-    }
     const DirectoryDAO& getDirectoryDAO() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_directoryDao;
@@ -175,7 +171,6 @@ class TrackCollection : public QObject,
     QSqlDatabase m_database;
 
     PlaylistDAO m_playlistDao;
-    GroupedPlaylistsDAO m_groupedPlaylistsDao;
     CrateStorage m_crates;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
