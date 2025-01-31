@@ -45,6 +45,7 @@ class DlgLibraryExport : public QDialog {
 
   signals:
     /// The startEnginePrimeExport signal is emitted when sufficient information
+    //: "Engine DJ" must not be translated
     /// has been gathered from the user to kick off an Engine DJ export, and
     /// details of the request are provided as part of the signal.
     void startEnginePrimeExport(QSharedPointer<mixxx::EnginePrimeExportRequest>);
