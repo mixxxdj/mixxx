@@ -67,6 +67,7 @@ void LibraryExporter::beginEnginePrimeExport(
                 QMessageBox::critical(nullptr, tr("Export Failed"), message);
             });
 
+    //: "Engine DJ" must not be translated   
     // Construct a dialog to monitor job progress and offer cancellation.
     auto pProgressDlg = make_parented<QProgressDialog>(this);
     pProgressDlg->setLabelText(tr("Exporting to Engine DJ..."));
