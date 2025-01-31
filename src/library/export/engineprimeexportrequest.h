@@ -8,6 +8,7 @@
 
 namespace mixxx {
 
+//: "Engine DJ" must not be translated
 /// A request to export the Mixxx library to an external Engine DJ database.
 struct EnginePrimeExportRequest {
     /// Directory path, ending in "Engine Library", where database files will
@@ -17,6 +18,7 @@ struct EnginePrimeExportRequest {
     /// Directory in which to write the exported music files.
     QDir musicFilesDir;
 
+    //: "Engine DJ" must not be translated
     /// Version of Engine DJ database to use when exporting.
     djinterop::engine::engine_version exportVersion;
 
