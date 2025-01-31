@@ -134,7 +134,9 @@ void PlaylistTableModel::initSortColumnMapping() {
 void PlaylistTableModel::selectPlaylist(int playlistId) {
     // qDebug() << "PlaylistTableModel::selectPlaylist" << playlistId;
     if (m_iPlaylistId == playlistId) {
-        qDebug() << "Already focused on playlist " << playlistId;
+        if (sDebug) {
+            qDebug() << "Already focused on playlist " << playlistId;
+        }
         return;
     }
     // Store search text
@@ -225,9 +227,11 @@ int PlaylistTableModel::addTracksWithTrackIds(const QModelIndex& insertionIndex,
         QString playlistName = m_pTrackCollectionManager->internalCollection()
                                        ->getPlaylistDAO()
                                        .getPlaylistName(m_iPlaylistId);
-        qDebug() << "PlaylistTableModel::addTracks could not add"
-                 << trackIds.size() - tracksAdded
-                 << "to playlist id" << m_iPlaylistId << "name" << playlistName;
+        if (sDebug) {
+            qDebug() << "PlaylistTableModel::addTracks could not add"
+                     << trackIds.size() - tracksAdded
+                     << "to playlist id" << m_iPlaylistId << "name" << playlistName;
+        }
     }
     return tracksAdded;
 }

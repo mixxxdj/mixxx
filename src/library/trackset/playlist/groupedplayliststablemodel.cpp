@@ -661,7 +661,7 @@ TrackModel::Capabilities GroupedPlaylistsTableModel::getCapabilities() const {
     }
     if (m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
-                    .getHiddenType(m_iPlaylistId) == PlaylistsDAO::PLHT_SET_LOG) {
+                    .getHiddenType(m_iPlaylistId) == PlaylistDAO::PLHT_SET_LOG) {
         // Disallow reordering and hiding tracks, as well as adding tracks via
         // drag'n'drop for history playlists
         caps &= ~(Capability::ReceiveDrops | Capability::Reorder | Capability::Hide);
