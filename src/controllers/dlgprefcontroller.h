@@ -91,9 +91,6 @@ class DlgPrefController : public DlgPreferencePage {
 
   private:
     QString mappingShortName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingAuthor(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFilePathFromIndex(int index) const;
@@ -101,6 +98,8 @@ class DlgPrefController : public DlgPreferencePage {
     void applyMappingChanges();
     bool saveMapping();
     void initTableView(QTableView* pTable);
+    unsigned int getNumberOfVisibleTabs();
+    int getIndexOfFirstVisibleTab();
 
     /// Set dirty state (i.e. changes have been made).
     ///
@@ -143,4 +142,8 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
+    int m_inputMappingsTabIndex;  // Index of the input mappings tab
+    int m_outputMappingsTabIndex; // Index of the output mappings tab
+    int m_settingsTabIndex;       // Index of the settings tab
+    int m_screensTabIndex;        // Index of the screens tab
 };
