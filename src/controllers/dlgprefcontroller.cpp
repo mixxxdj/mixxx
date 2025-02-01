@@ -311,6 +311,13 @@ DlgPrefController::DlgPrefController(
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
     m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
     m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
+
+#ifndef MIXXX_USE_QML
+    // Remove the screens tab
+    m_ui.controllerTabs->removeTab(m_screensTabIndex);
+    // Just to be save
+    m_screensTabIndex = -1;
+#endif
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -798,7 +805,7 @@ unsigned int DlgPrefController::getNumberOfVisibleTabs() {
     return visibleTabsCount;
 }
 
-int DlgPrefController::getIndexOfFirstVisibleTabs() {
+int DlgPrefController::getIndexOfFirstVisibleTab() {
     for (int tabIdx = 0; tabIdx < m_ui.controllerTabs->count(); ++tabIdx) {
         if (m_ui.controllerTabs->isTabVisible(tabIdx)) {
             return tabIdx;
@@ -1052,7 +1059,6 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     }
 
     // Show or hide the settings tab based on the presence of settings
-
     m_ui.controllerTabs->setTabVisible(
             m_settingsTabIndex, pMapping && !pMapping->getSettings().isEmpty());
 
@@ -1141,7 +1147,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
 
     // Set the first visible tab as the current tab
-    int firstVisibleTabIndex = getIndexOfFirstVisibleTabs();
+    int firstVisibleTabIndex = getIndexOfFirstVisibleTab();
     if (firstVisibleTabIndex >= 0) {
         m_ui.controllerTabs->setCurrentIndex(firstVisibleTabIndex);
     }

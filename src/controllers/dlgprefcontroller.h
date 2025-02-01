@@ -96,7 +96,7 @@ class DlgPrefController : public DlgPreferencePage {
     bool saveMapping();
     void initTableView(QTableView* pTable);
     unsigned int getNumberOfVisibleTabs();
-    int getIndexOfFirstVisibleTabs();
+    int getIndexOfFirstVisibleTab();
 
     /// Set dirty state (i.e. changes have been made).
     ///

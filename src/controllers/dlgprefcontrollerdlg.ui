@@ -114,14 +114,14 @@
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
-     <layout class="QGridLayout" name="gridLayoutDeviceInfo" rowstretch="0,0,0,0,0,0,0,0,0,0,0" rowminimumheight="1,1,1,1,1,1,1,1,1,1,0">
+     <layout class="QGridLayout" name="gridLayoutDeviceInfo" rowminimumheight="1,1,1,1,1,1,1,1,1,1,0">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="labelPhysicalInterface">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -162,7 +162,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Data handling protocol:</string>
+         <string>Data protocol:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -477,7 +477,7 @@
       <item row="10" column="0" colspan="2">
        <widget class="QWidget" name="spacerDeviceInfo" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="Ignored" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -513,9 +513,9 @@
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
-     <layout class="QGridLayout" name="gridLayoutMappingInfo" rowstretch="0,0,0,0,0,0" rowminimumheight="1,1,1,1,1,0">
+     <layout class="QGridLayout" name="gridLayoutMappingInfo" columnstretch="0,1" rowminimumheight="1,1,1,1,1,0">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetMaximumSize</enum>
       </property>
       <property name="bottomMargin">
        <number>9</number>
@@ -526,7 +526,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="labelMappingName">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -622,12 +622,6 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
@@ -752,7 +746,7 @@
       <item row="5" column="0" colspan="2">
        <widget class="QWidget" name="spacerMappingInfo" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="Ignored" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
