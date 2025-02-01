@@ -110,6 +110,13 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
+    m_pTranslateBeatsHalf = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_half"), false);
+    connect(m_pTranslateBeatsHalf.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsHalf,
+            Qt::DirectConnection);
     m_pTranslateBeatsMove = std::make_unique<ControlEncoder>(
             ConfigKey(group, "beats_translate_move"), false);
     connect(m_pTranslateBeatsMove.get(),
@@ -315,8 +322,20 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     slotTranslateBeatsMove(1);
 }
 
+void BpmControl::slotTranslateBeatsHalf(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const double bpm = pTrack->getBpm();
+    const double halfBeat = 3000.0 / bpm;
+    slotTranslateBeatsMove(halfBeat);
+}
+
 void BpmControl::slotTranslateBeatsMove(double v) {
-    v = std::round(v);
     if (v == 0) {
         return;
     }
@@ -327,9 +346,7 @@ void BpmControl::slotTranslateBeatsMove(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
-        const double sampleOffset = frameInfo().sampleRate * v * 0.01;
-        const mixxx::audio::FrameDiff_t frameOffset =
-                sampleOffset / mixxx::kEngineChannelOutputCount;
+        const double frameOffset = frameInfo().sampleRate * v * 0.01;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);

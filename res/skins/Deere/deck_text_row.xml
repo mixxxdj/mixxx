@@ -146,6 +146,7 @@
                         <SetVariable name="state_0_pressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                        <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_half</SetVariable>
                       </Template>
 
                       <Template src="skin:left_right_1state_button_optional.xml">
@@ -154,6 +155,7 @@
                         <SetVariable name="state_0_pressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
+                        <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_half</SetVariable>
                       </Template>
 
                       <Template src="skin:left_right_1state_button_optional.xml">

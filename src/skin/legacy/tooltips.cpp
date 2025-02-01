@@ -437,11 +437,13 @@ void Tooltips::addStandardTooltips() {
 
     add("beats_translate_earlier")
             << tr("Adjust Beats Earlier")
-            << tr("When tapped, moves the beatgrid left by a small amount.");
+            << QString("%1: %2").arg(leftClick, tr("When tapped, moves the beatgrid left by a small amount."))
+            << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid by exactly one half beat."));
 
     add("beats_translate_later")
             << tr("Adjust Beats Later")
-            << tr("When tapped, moves the beatgrid right by a small amount.");
+            << QString("%1: %2").arg(leftClick, tr("When tapped, moves the beatgrid right by a small amount."))
+            << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid by exactly one half beat."));
 
     add("beats_translate_curpos")
             << tr("Adjust Beatgrid")
