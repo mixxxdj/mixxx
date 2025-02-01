@@ -75,10 +75,6 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
-    m_pRenamePlaylistAction->setShortcuts(QList<QKeySequence>{
-            QKeySequence(kRenameSidebarItemShortcutKey),
-            QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
-    ActionUtils::updateMultiShortcutActionText(m_pRenamePlaylistAction);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
@@ -689,7 +685,6 @@ TreeItemModel* BasePlaylistFeature::sidebarModel() const {
 
 void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
         KeyboardEventFilter* pKeyboard) {
-    Q_UNUSED(pKeyboard);
     WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryWidget);
     pEdit->setHtml(getRootViewHtml());
     pEdit->setOpenLinks(false);
@@ -699,6 +694,19 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &BasePlaylistFeature::htmlLinkClicked);
     m_pLibraryWidget = QPointer(pLibraryWidget);
     m_pLibraryWidget->registerView(m_rootViewName, pEdit);
+
+    // Update shortcuts displayed in the context menu
+    if (pKeyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
+        QKeySequence editItemShortcut = QKeySequence(
+                keyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
+                QKeySequence::PortableText);
+        m_pRenamePlaylistAction->setShortcut(editItemShortcut);
+    } else {
+        m_pRenamePlaylistAction->setShortcuts(QList<QKeySequence>{
+                QKeySequence(kRenameSidebarItemShortcutKey),
+                QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
+    }
+    ActionUtils::updateMultiShortcutActionText(m_pRenamePlaylistAction);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
