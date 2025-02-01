@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QOpenGLTexture>
 
+#include "engine/channels/enginedeck.h"
 #include "engine/engine.h"
 #include "track/track.h"
 #include "util/math.h"
@@ -21,25 +22,21 @@ WaveformRendererStem::WaveformRendererStem(
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
-void WaveformRendererStem::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererStem::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
     m_textureShader.init();
     auto group = m_pEQEnabled->getKey().group;
-    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
-        DEBUG_ASSERT(group.endsWith("]"));
-        QString stemGroup = QStringLiteral("%1Stem%2]")
-                                    .arg(group.left(group.size() - 1),
-                                            QString::number(stemIdx));
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = EngineDeck::getGroupForStem(group, stemIdx);
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(stemGroup,
                         QStringLiteral("volume")));
-        m_pStemMute.emplace_back(std::make_unique<ControlProxy>(
-                stemGroup, QStringLiteral("mute")));
+        m_pStemMute.emplace_back(
+                std::make_unique<ControlProxy>(stemGroup,
+                        QStringLiteral("mute")));
     }
 }
 

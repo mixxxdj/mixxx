@@ -79,8 +79,11 @@ bool allshader::WaveformRenderMark::init() {
     return true;
 }
 
+void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
+    DEBUG_ASSERT(false);
+}
+
 void allshader::WaveformRenderMark::initializeGL() {
-    allshader::WaveformRendererAbstract::initializeGL();
     m_digitsRenderer.init();
     m_rgbaShader.init();
     m_textureShader.init();
@@ -391,9 +394,14 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const float lineX = 5.5f;
 
-    QImage image(static_cast<int>(imgWidth * devicePixelRatio),
-            static_cast<int>(imgHeight * devicePixelRatio),
-            QImage::Format_ARGB32_Premultiplied);
+    const QSize size{static_cast<int>(std::lround(imgWidth * devicePixelRatio)),
+            static_cast<int>(std::lround(imgHeight * devicePixelRatio))};
+
+    if (size.width() <= 0 || size.height() <= 0) {
+        return;
+    }
+
+    QImage image(size, QImage::Format_ARGB32_Premultiplied);
     VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
         return;
     }

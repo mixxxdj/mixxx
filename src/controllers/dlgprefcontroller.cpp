@@ -642,6 +642,10 @@ void DlgPrefController::slotUpdate() {
     m_GuiInitialized = true;
 }
 
+void DlgPrefController::slotHide() {
+    slotUpdate();
+}
+
 void DlgPrefController::slotResetToDefaults() {
     if (m_pMapping) {
         m_pMapping->resetSettings();
@@ -842,6 +846,14 @@ bool DlgPrefController::saveMapping() {
                 tr("Save As"), QMessageBox::AcceptRole);
         QPushButton* pOverwrite = overwriteMsgBox.addButton(
                 tr("Overwrite"), QMessageBox::AcceptRole);
+        // QMessageBox handles Esc or pressing the X window button only if there
+        // is a button with either RejectRole or NoRole, so let's add one.
+        // https://doc.qt.io/qt-6/qmessagebox.html#escapeButton
+        QPushButton* pCancel = overwriteMsgBox.addButton(QMessageBox::Cancel);
+        // Hide Cancel since we don't really need it (we have the X button),
+        // furthermore it'll likely be auto-positioned in between Save and Overwrite
+        // which is not optimal (rules for order depend on OS).
+        pCancel->hide();
         overwriteMsgBox.setDefaultButton(pSaveAsNew);
         overwriteMsgBox.exec();
 
