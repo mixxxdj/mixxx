@@ -30,6 +30,8 @@
 #include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
+#include "library/trackset/smarties/groupedsmartiesfeature.h"
+#include "library/trackset/smarties/smartiesfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "moc_library.cpp"
@@ -73,6 +75,8 @@ Library::Library(
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
+          m_pSmartiesFeature(nullptr),
+          m_pGroupedSmartiesFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -105,6 +109,7 @@ Library::Library(
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
@@ -117,6 +122,24 @@ Library::Library(
             &Library::exportCrate, // signal-to-signal
             Qt::DirectConnection);
 #endif
+
+    // EVE -> SMARTIES
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), false))) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"));
+
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"));
+    } else {
+        m_pSmartiesFeature = new SmartiesFeature(this, m_pConfig);
+        addFeature(m_pSmartiesFeature);
+    }
+    if (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) {
+        m_pGroupedSmartiesFeature = new GroupedSmartiesFeature(this, m_pConfig);
+        addFeature(m_pGroupedSmartiesFeature);
+    }
+    // EVE -> SMARTIES
 
     m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -147,6 +170,27 @@ Library::Library(
             &CrateFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
+    // EVE -> SMARTIES
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), false))) {
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"));
+
+        qDebug() << "[GROUPEDSMARTIESFEATURE] -> GroupedSmartiesReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"));
+    } else {
+        connect(m_pSmartiesFeature,
+                &SmartiesFeature::analyzeTracks,
+                m_pAnalysisFeature,
+                &AnalysisFeature::analyzeTracks);
+    }
+    if (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) {
+        connect(m_pGroupedSmartiesFeature,
+                &GroupedSmartiesFeature::analyzeTracks,
+                m_pAnalysisFeature,
+                &AnalysisFeature::analyzeTracks);
+    }
+    // EVE -> SMARTIES
     connect(this,
             &Library::analyzeTracks,
             m_pAnalysisFeature,
@@ -304,6 +348,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::search,
             this,
             &Library::search);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::newSmarties,
+            this,
+            &Library::slotCreateSmartiesFromSearch);
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
@@ -585,6 +633,25 @@ void Library::slotCreatePlaylist() {
 
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
+}
+
+// EVE -> SMARTIES
+void Library::slotCreateSmartiesFromSearch(const QString& text) {
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), true))) {
+        m_pGroupedSmartiesFeature->slotCreateSmartiesFromSearch(text);
+    } else {
+        m_pSmartiesFeature->slotCreateSmartiesFromSearch(text);
+    }
+}
+
+void Library::slotCreateSmarties() {
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedSmartiesReplace"), true))) {
+        m_pGroupedSmartiesFeature->slotCreateSmarties();
+    } else {
+        m_pSmartiesFeature->slotCreateSmarties();
+    }
 }
 
 void Library::onSkinLoadFinished() {

@@ -13,6 +13,9 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackset/crate/cratestorage.h"
+// Eve
+#include "library/trackset/smarties/smartiesstorage.h"
+// Eve
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
 
@@ -52,6 +55,11 @@ class TrackCollection : public QObject,
         return m_crates;
     }
 
+    const SmartiesStorage& smarties() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_smarties;
+    }
+
     TrackDAO& getTrackDAO() {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_trackDao;
@@ -83,6 +91,13 @@ class TrackCollection : public QObject,
     bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
     bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
 
+    bool insertSmarties(const Smarties& smarties, SmartiesId* pSmartiesId = nullptr);
+    bool updateSmarties(const Smarties& smarties);
+    bool deleteSmarties(SmartiesId smartiesId);
+    bool addSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
+    //    bool removeSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
+    // EVE
+
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
     TrackId getTrackIdByRef(
@@ -110,6 +125,19 @@ class TrackCollection : public QObject,
             const QList<TrackId>& tracksRemoved);
     void crateSummaryChanged(
             const QSet<CrateId>& crates);
+
+    // Eve
+    void smartiesInserted(SmartiesId id);
+    void smartiesUpdated(SmartiesId id);
+    void smartiesDeleted(SmartiesId id);
+
+    void smartiesTracksChanged(
+            SmartiesId smarties,
+            const QList<TrackId>& tracksAdded,
+            const QList<TrackId>& tracksRemoved);
+    void smartiesSummaryChanged(
+            const QSet<SmartiesId>& smarties);
+    // Eve
 
   private:
     friend class TrackCollectionManager;
@@ -172,6 +200,9 @@ class TrackCollection : public QObject,
 
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;
+    // Eve
+    SmartiesStorage m_smarties;
+    // Eve
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
