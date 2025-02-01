@@ -69,10 +69,6 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
-    m_pRenameCrateAction->setShortcuts(QList<QKeySequence>{
-            QKeySequence(kRenameSidebarItemShortcutKey),
-            QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
-    ActionUtils::updateMultiShortcutActionText(m_pRenameCrateAction);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,
@@ -285,6 +281,19 @@ void CrateFeature::bindLibraryWidget(
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
+
+    // Update shortcuts displayed in the context menu
+    if (pKeyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
+        QKeySequence editItemShortcut = QKeySequence(
+                keyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
+                QKeySequence::PortableText);
+        m_pRenameCrateAction->setShortcut(editItemShortcut);
+    } else {
+        m_pRenameCrateAction->setShortcuts(QList<QKeySequence>{
+                QKeySequence(kRenameSidebarItemShortcutKey),
+                QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
+    }
+    ActionUtils::updateMultiShortcutActionText(m_pRenameCrateAction);
 }
 
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
