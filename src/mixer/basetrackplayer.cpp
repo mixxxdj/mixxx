@@ -6,6 +6,7 @@
 
 #include "control/controlencoder.h"
 #include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/engine.h"
@@ -198,32 +199,25 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &BaseTrackPlayerImpl::slotLoadTrackFromPreviewDeck);
 
     // Waveform controls
-    // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
-    // do not work properly with this CO.
-    m_pWaveformZoom =
-            std::make_unique<ControlObject>(ConfigKey(getGroup(), "waveform_zoom"));
-    m_pWaveformZoom->connectValueChangeRequest(this,
-            &BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest,
-            Qt::DirectConnection);
-    m_pWaveformZoom->set(1.0);
-    m_pWaveformZoomUp = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "waveform_zoom_up"));
-    connect(m_pWaveformZoomUp.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &BaseTrackPlayerImpl::slotWaveformZoomUp);
-    m_pWaveformZoomDown = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "waveform_zoom_down"));
-    connect(m_pWaveformZoomDown.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &BaseTrackPlayerImpl::slotWaveformZoomDown);
-    m_pWaveformZoomSetDefault = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "waveform_zoom_set_default"));
-    connect(m_pWaveformZoomSetDefault.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &BaseTrackPlayerImpl::slotWaveformZoomSetDefault);
+    // Unfortunately there's no WaveformWidgetFactory instance, yet, so we can't
+    // use WaveformWidgetFactory::instance()->getDefaultZoom()
+    // Read from config ourselves instead.
+    double defaultZoom = m_pConfig->getValue(
+            ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("DefaultZoom")),
+            WaveformWidgetRenderer::s_waveformDefaultZoom);
+    m_pWaveformZoom = std::make_unique<ControlPotmeter>(
+            ConfigKey(getGroup(), QStringLiteral("waveform_zoom")),
+            WaveformWidgetRenderer::s_waveformMinZoom,
+            WaveformWidgetRenderer::s_waveformMaxZoom,
+            false, // allow out of bounds
+            false, // ignore no-ops
+            false, // track
+            false, // persist
+            defaultZoom);
+    const int stepCount = static_cast<int>(WaveformWidgetRenderer::s_waveformMaxZoom -
+            WaveformWidgetRenderer::s_waveformMinZoom);
+    m_pWaveformZoom->setStepCount(stepCount);
+    m_pWaveformZoom->setSmallStepCount(stepCount * 10);
 
     m_pPreGain = make_parented<ControlProxy>(getGroup(), "pregain", this);
 
@@ -992,39 +986,6 @@ void BaseTrackPlayerImpl::setupEqControls() {
             group, QStringLiteral("button_parameter2"), this);
     m_pHighFilterKill = make_parented<ControlProxy>(
             group, QStringLiteral("button_parameter3"), this);
-}
-
-void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
-            && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
-        m_pWaveformZoom->setAndConfirm(v);
-    }
-}
-
-void BaseTrackPlayerImpl::slotWaveformZoomUp(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-
-    m_pWaveformZoom->set(m_pWaveformZoom->get() + 1.0);
-}
-
-void BaseTrackPlayerImpl::slotWaveformZoomDown(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-
-    m_pWaveformZoom->set(m_pWaveformZoom->get() - 1.0);
-}
-
-void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-
-    double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]", "DefaultZoom"),
-            WaveformWidgetRenderer::s_waveformDefaultZoom);
-    m_pWaveformZoom->set(defaultZoom);
 }
 
 void BaseTrackPlayerImpl::slotShiftCuesMillis(double milliseconds) {
