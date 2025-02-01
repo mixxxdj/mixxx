@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "analyzer/analyzerscheduledtrack.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
