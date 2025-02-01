@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "analyzer/analyzerscheduledtrack.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -272,7 +273,6 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url
 
 void CrateFeature::bindLibraryWidget(
         WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
@@ -283,7 +283,7 @@ void CrateFeature::bindLibraryWidget(
     libraryWidget->registerView(m_rootViewName, edit);
 
     // Update shortcuts displayed in the context menu
-    if (pKeyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
+    if (keyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
         QKeySequence editItemShortcut = QKeySequence(
                 keyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
                 QKeySequence::PortableText);
