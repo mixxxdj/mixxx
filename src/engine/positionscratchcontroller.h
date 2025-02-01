@@ -58,6 +58,7 @@ class PositionScratchController : public QObject {
 
     double m_dt;
     double m_callsPerDt;
+    double m_callsToStop;
 
     double m_p;
     double m_d;
