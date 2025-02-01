@@ -321,6 +321,7 @@ void dlgBaseSmartiesInfo::populateUI() {
             "played",
             "timesplayed",
             "rating",
+            "track",
             "playlist",
             "crate",
             "history"};
@@ -343,6 +344,8 @@ void dlgBaseSmartiesInfo::populateUI() {
             "equal to",
             "not equal to",
             "between",
+            "is a member of",
+            "is not a member of",
             "is",
             "is not"};
     QStringList combinerOptions = {"", ") END", "AND", "OR", ") AND (", ") OR ("};
@@ -484,6 +487,23 @@ void dlgBaseSmartiesInfo::populateUI() {
                                 "comboBoxValue -> conditionsTable[i][3] "
                              << conditionsTable[i][3];
                 }
+                // track in all crates / playlists / historylists
+            } else if (conditionsTable[i][1] == "track") {
+                valueLineEdit->setVisible(false);
+                valueComboBox->setVisible(true);
+                valueComboBox->clear();
+                for (auto it = crateTable.constBegin(); it != crateTable.constEnd(); ++it) {
+                    valueComboBox->addItem(it->second);
+                }
+                valueComboBox->addItem("all playlists");
+                valueComboBox->addItem("all crates");
+                valueComboBox->addItem("all historylists");
+                valueComboBox->setCurrentText(conditionsTable[i][3]);
+                if (sDebug) {
+                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                                "comboBoxValue -> conditionsTable[i][3] "
+                             << conditionsTable[i][3];
+                }
             } else {
                 if (sDebug) {
                     qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
@@ -549,6 +569,7 @@ void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
     QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
+    QStringList trackFieldOptions = {"track"};
     QStringList stringOperatorOptions = {"",
             "contains",
             "does not contain",
@@ -566,6 +587,10 @@ void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
             "not equal to",
             "between"};
     QStringList playlistCrateOperatorOptions = {"", "is", "is not"};
+    QStringList trackOperatorOptions = {
+            "",
+            "is a member of",
+            "is not a member of"};
     QStringList operatorOptions = {"",
             "contains",
             "does not contain",
@@ -634,6 +659,13 @@ void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
         textEditValidation->setText(QStringLiteral(
                 "You have different search options for 'number'-like fields:"));
         operatorOptions = numberOperatorOptions;
+        // track in all crates / playlists / historylists
+    } else if (trackFieldOptions.contains(conditionsTable[conditionCounter][1])) {
+        labelValidation->setText(QStringLiteral("Information:"));
+        textEditValidation->setStyleSheet("font: 10pt");
+        textEditValidation->setText(
+                QStringLiteral("You have different search options for 'track':"));
+        operatorOptions = trackOperatorOptions;
     } else if (playlistCrateFieldOptions.contains(conditionsTable[conditionCounter][1])) {
         labelValidation->setText(QStringLiteral("Information:"));
         textEditValidation->setStyleSheet("font: 10pt");
@@ -683,6 +715,7 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
             "key"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
+    QStringList trackFieldOptions = {"track"};
 
     // Find the field combo box
     QComboBox* operatorComboBox = qobject_cast<QComboBox*>(sender());
@@ -1050,6 +1083,47 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
                             .arg(conditionsTable[conditionCounter][1]));
             valueLineEdit->setPlaceholderText("e.g. 200|50 (X|Y = integer)");
         }
+        // track in all crates / playlists / historylists
+    } else if (trackFieldOptions.contains(
+                       conditionsTable[conditionCounter][1])) {
+        valueLineEdit->setVisible(false);
+        valueComboBox->setVisible(true);
+        if (conditionsTable[conditionCounter][2] == "is a member of") {
+            textEditValidation->setText(
+                    QStringLiteral("'is a member of' -> select the %1 in the dropdown. \n"
+                                   "-> With 'is a member of' you can search for tracks that are "
+                                   "member of ALL playlists, ALL crates or ALL historylist "
+                                   "the type can be selected in the dropdown.\n")
+                            .arg(conditionsTable[conditionCounter][1]));
+            valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
+            valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
+        } else if (conditionsTable[conditionCounter][2] == "is not a member of") {
+            textEditValidation->setText(QStringLiteral(
+                    "'is not a member of' -> select the %1 in the dropdown. \n"
+                    "-> With 'is not a member of' you can search for tracks "
+                    "that are "
+                    "not a member of ALL playlists, ALL crates or ALL "
+                    "historylist "
+                    "the type can be selected in the dropdown.\n")
+                            .arg(conditionsTable[conditionCounter][1]));
+            valueLineEdit->setPlaceholderText("e.g. 200 (X = integer)");
+            valueLineEdit->setValidator(new QIntValidator(valueLineEdit)); // Integer validation
+        }
+        if (conditionsTable[conditionCounter][1] == "track") {
+            valueLineEdit->setVisible(false);
+            valueComboBox->setVisible(true);
+            valueComboBox->clear();
+
+            // for (auto it = playlistTable.constBegin(); it != playlistTable.constEnd(); ++it) {
+            valueComboBox->addItem("all playlists");
+            valueComboBox->addItem("all crates");
+            valueComboBox->addItem("all historylists");
+            if (sDebug) {
+                qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                            "comboBoxValue -> track -> all p/c/h ";
+            }
+        }
+        valueComboBox->setCurrentText(conditionsTable[conditionCounter][3]);
     } else if (playlistCrateFieldOptions.contains(
                        conditionsTable[conditionCounter][1])) {
         valueLineEdit->setVisible(false);
@@ -1217,6 +1291,25 @@ void dlgBaseSmartiesInfo::storeUIIn2Table() {
                         qDebug() << "Name not in crateNameHash: " << valueComboBox->currentText();
                     }
                 }
+            } else if (conditionsTable[i][1] == "track") {
+                // track in all crates / playlists / historylists
+                QStringList trackOperatorOptions = {
+                        "",
+                        "is a member of",
+                        "is not a member of"};
+                if (trackOperatorOptions.contains(operatorComboBox->currentText())) {
+                    conditionsTable[i][3] = valueComboBox->currentText();
+                    if (sDebug) {
+                        qDebug() << "Track -> "
+                                 << operatorComboBox->currentText()
+                                 << " "
+                                 << valueComboBox->currentText();
+                    }
+                } else {
+                    if (sDebug) {
+                        qDebug() << "Track function not found ";
+                    }
+                }
             } else {
                 conditionsTable[i][3] = valueLineEdit->text();
             }
@@ -1242,6 +1335,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
             "key"};
     QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    QStringList trackFieldOptions = {"track"};
     QStringList playlistCrateFieldOptions = {"", "playlist", "crate", "history"};
     QStringList stringOperatorOptions = {"contains",
             "does not contain",
@@ -1255,6 +1349,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
     QStringList numberOperatorOptions = {
             "less than", "greater than", "equal to", "not equal to", "between"};
     QStringList playlistCrateOperatorOptions = {"", "is", "is not"};
+    QStringList trackOperatorOptions = {"", "is a member of", "is not a member of"};
 
     bool conditionsAreValid = false;
     int endCounter = 0;
@@ -1308,6 +1403,23 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     if (sDebug) {
                         qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror Number in condition "
+                                 << i;
+                    }
+                    textEditValidation->setStyleSheet("color: rgb(255,0,0)");
+                    textEditValidation->setText(
+                            QStringLiteral("Your conditions contain errors: the "
+                                           "chosen field and operator don't match in "
+                                           "condition %1 \n. Smarties is NOT saved.")
+                                    .arg(i));
+                }
+                // track in all crates / playlists / historylists
+            } else if (trackFieldOptions.contains(conditionsTable[i][1])) {
+                if (!trackOperatorOptions.contains(conditionsTable[i][2])) {
+                    checkFieldMatchesOperator = false;
+                    foundMatchError = true;
+                    if (sDebug) {
+                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                                    "Matcherror Track in condition "
                                  << i;
                     }
                     textEditValidation->setStyleSheet("color: rgb(255,0,0)");
@@ -1842,7 +1954,8 @@ void dlgBaseSmartiesInfo::updateConditionState() {
             if (operatorSelected) {
                 if ((fieldComboBox->currentText() == "playlist") ||
                         (fieldComboBox->currentText() == "crate") ||
-                        (fieldComboBox->currentText() == "history")) {
+                        (fieldComboBox->currentText() == "history") ||
+                        (fieldComboBox->currentText() == "track")) {
                     valueComboBox->setEnabled(operatorSelected || valueSelected);
                     combinerComboBox->setEnabled(operatorSelected || combinerSelected);
                 } else if ((operatorComboBox->currentText() == "is empty") ||

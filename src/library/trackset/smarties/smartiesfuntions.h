@@ -19,6 +19,7 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             "filetype",
             "key"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    QStringList trackFieldOptions = {"track"};
 
     // QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     // QStringList playlistCrateOperatorOptions = {"is", "is not"};
@@ -392,6 +393,77 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                                         .arg(crateId);
                 } else {
                     // continue; // Skip unrecognized operators
+                }
+            }
+        }
+
+        if (field == "track") {
+            //                value = "5";
+            if (value == "all crates") {
+                if (op == "is a member of") {
+                    if (sDebug) {
+                        qDebug() << "Track -> is a member of: " << value;
+                    }
+                    condition = QStringLiteral(
+                            "library.id IN (SELECT crate_tracks.track_id from "
+                            "crate_tracks)");
+                }
+                if (op == "is not a member of") {
+                    if (sDebug) {
+                        qDebug() << "Track -> is NOT a member of: " << value;
+                    }
+                    condition = QStringLiteral(
+                            "library.id IN (SELECT crate_tracks.track_id from "
+                            "crate_tracks)");
+                }
+            }
+            if (value == "all playlists") {
+                if (op == "is a member of") {
+                    if (sDebug) {
+                        qDebug() << "Track -> is a member of: " << value;
+                    }
+                    condition = QStringLiteral(
+                            "library.id IN (SELECT PlaylistTracks.track_id "
+                            "FROM PlaylistTracks "
+                            "JOIN Playlists "
+                            "ON PlaylistTracks.playlist_id = Playlists.id "
+                            "WHERE Playlists.hidden = 0)");
+                }
+                if (op == "is not a member of") {
+                    if (sDebug) {
+                        qDebug() << "Track -> is NOT a member of: " << value;
+                    }
+                    condition = QStringLiteral(
+                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
+                            "FROM PlaylistTracks "
+                            "JOIN Playlists "
+                            "ON PlaylistTracks.playlist_id = Playlists.id "
+                            "WHERE Playlists.hidden = 0)");
+                }
+            }
+            if (value == "all historylists") {
+                if (op == "is a member of") {
+                    if (sDebug) {
+                        qDebug() << "Track -> is a member of: " << value;
+                    }
+                    condition = QStringLiteral(
+                            "library.id IN (SELECT PlaylistTracks.track_id "
+                            "FROM PlaylistTracks "
+                            "JOIN Playlists "
+                            "ON PlaylistTracks.playlist_id = Playlists.id "
+                            "WHERE Playlists.hidden = 2)");
+                }
+                if (op == "is not a member of") {
+                    if (sDebug) {
+                        qDebug() << "Track -> is NOT a member of: " << value;
+                    }
+
+                    condition = QStringLiteral(
+                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
+                            "FROM PlaylistTracks "
+                            "JOIN Playlists "
+                            "ON PlaylistTracks.playlist_id = Playlists.id "
+                            "WHERE Playlists.hidden = 2)");
                 }
             }
         }
