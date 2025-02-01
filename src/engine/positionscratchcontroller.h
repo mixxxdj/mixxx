@@ -34,6 +34,9 @@ class PositionScratchController : public QObject {
     }
     void notifySeek(mixxx::audio::FramePos position);
 
+  private slots:
+    void slotUpdateFilterParameters(double sampleRate);
+
   private:
     const QString m_group;
 
@@ -52,4 +55,14 @@ class PositionScratchController : public QObject {
     double m_rate;
     double m_moveDelay;
     double m_mouseSampleTime;
+
+    int m_bufferSize;
+
+    double m_dt;
+    double m_callsPerDt;
+    double m_callsToStop;
+
+    double m_p;
+    double m_d;
+    double m_f;
 };
