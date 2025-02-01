@@ -19,7 +19,7 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
             "filetype",
             "key"};
     QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
-    QStringList trackFieldOptions = {"track"};
+    // QStringList trackFieldOptions = {"track"};
 
     // QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     // QStringList playlistCrateOperatorOptions = {"is", "is not"};
