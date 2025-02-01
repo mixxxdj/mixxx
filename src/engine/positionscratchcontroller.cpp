@@ -1,6 +1,7 @@
 #include "engine/positionscratchcontroller.h"
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
 #include "moc_positionscratchcontroller.cpp"
 #include "preferences/configobject.h" // for ConfigKey
@@ -9,11 +10,10 @@
 class VelocityController {
   public:
     VelocityController()
-        : m_last_error(0.0),
-          m_p(0.0),
-          m_d(0.0) {
+            : m_last_error(0.0),
+              m_p(0.0),
+              m_d(0.0) {
     }
-
     void setPD(double p, double d) {
         m_p = p;
         m_d = d;
@@ -37,8 +37,8 @@ class VelocityController {
 class RateIIFilter {
   public:
     RateIIFilter()
-        : m_factor(1.0),
-          m_last_rate(0.0) {
+            : m_factor(1.0),
+              m_last_rate(0.0) {
     }
 
     void setFactor(double factor) {
@@ -52,7 +52,7 @@ class RateIIFilter {
     double filter(double rate) {
         if (fabs(rate) - fabs(m_last_rate) > -0.1) {
             m_last_rate = m_last_rate * (1 - m_factor) + rate * m_factor;
-        }  else {
+        } else {
             // do not filter strong decelerations to avoid overshooting
             m_last_rate = rate;
         }
@@ -66,6 +66,14 @@ class RateIIFilter {
 
 PositionScratchController::PositionScratchController(const QString& group)
         : m_group(group),
+          m_pScratchEnable(std::make_unique<ControlObject>(
+                  ConfigKey(group, QStringLiteral("scratch_position_enable")))),
+          m_pScratchPos(std::make_unique<ControlObject>(
+                  ConfigKey(group, QStringLiteral("scratch_position")))),
+          m_pMainSampleRate(std::make_unique<ControlProxy>(
+                  ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")))),
+          m_pVelocityController(std::make_unique<VelocityController>()),
+          m_pRateIIFilter(std::make_unique<RateIIFilter>()),
           m_isScratching(false),
           m_inertiaEnabled(false),
           m_prevSamplePos(0),
@@ -73,21 +81,10 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_scratchTargetDelta(0),
           m_scratchStartPos(0),
           m_rate(0),
-          m_moveDelay(0),
-          m_mouseSampleTime(0) {
-    m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
-    m_pScratchPos = new ControlObject(ConfigKey(group, "scratch_position"));
-    m_pMainSampleRate = ControlObject::getControl(
-            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")));
-    m_pVelocityController = new VelocityController();
-    m_pRateIIFilter = new RateIIFilter;
+          m_moveDelay(0) {
 }
 
 PositionScratchController::~PositionScratchController() {
-    delete m_pRateIIFilter;
-    delete m_pVelocityController;
-    delete m_pScratchPos;
-    delete m_pScratchEnable;
 }
 
 void PositionScratchController::process(double currentSamplePos,
@@ -138,8 +135,9 @@ void PositionScratchController::process(double currentSamplePos,
             // mode. Take the previous rate that was set and apply a
             // deceleration.
 
-            // If we're playing, then do not decay rate below 1. If we're not playing,
-            // then we want to decay all the way down to below 0.01
+            // If we're playing, then do not decay rate below 1.
+            // If we're not playing, then we want to decay all the way down
+            // to below 0.01.
             double decayThreshold = fabs(releaseRate);
             if (decayThreshold < MIN_SEEK_SPEED) {
                 decayThreshold = MIN_SEEK_SPEED;
@@ -163,6 +161,12 @@ void PositionScratchController::process(double currentSamplePos,
 
             // If the rate has decayed below the threshold, or scratching is
             // re-enabled then leave inertia mode.
+            //
+            // TODO add bool m_rampBack
+            // ramp back to desired engine rate
+            // If the rate has decayed below the threshold, leave inertia mode
+            // and enable ramping ack to engine rate.
+            // Else, if scratching is re-enabled just leave inertia mode.
             if (fabs(m_rate) < decayThreshold || scratchEnable) {
                 m_inertiaEnabled = false;
                 m_isScratching = false;
@@ -286,16 +290,8 @@ void PositionScratchController::process(double currentSamplePos,
         m_scratchStartPos = scratchPosition;
         // qDebug() << "scratchEnable()" << currentSamplePos;
     }
+
     m_prevSamplePos = currentSamplePos;
-}
-
-bool PositionScratchController::isEnabled() {
-    // return true only if m_rate is valid.
-    return m_isScratching;
-}
-
-double PositionScratchController::getRate() {
-    return m_rate;
 }
 
 void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
