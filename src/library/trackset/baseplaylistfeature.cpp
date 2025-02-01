@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QList>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -698,7 +699,7 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
     // Update shortcuts displayed in the context menu
     if (pKeyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
         QKeySequence editItemShortcut = QKeySequence(
-                keyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
+                pKeyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
                 QKeySequence::PortableText);
         m_pRenamePlaylistAction->setShortcut(editItemShortcut);
     } else {
