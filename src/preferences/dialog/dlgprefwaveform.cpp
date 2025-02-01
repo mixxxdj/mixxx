@@ -490,6 +490,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
 
     useAccelerationCheckBox->blockSignals(false);
 }
+
 void DlgPrefWaveform::updateWaveformOption(bool useWaveform,
         WaveformWidgetBackend backend,
         allshader::WaveformRendererSignalBase::Options currentOptions) {
@@ -561,9 +562,19 @@ void DlgPrefWaveform::slotSetWaveformOverviewType() {
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
     WaveformWidgetFactory::instance()->setDefaultZoom(index + 1);
-    for (int i = 1; i <= PlayerManager::numDecks(); i++) {
+    QStringList groups;
+    for (unsigned int i = 1; i <= PlayerManager::numDecks(); i++) {
+        groups.append(QStringLiteral("[Channel%1]").arg(i));
+    }
+    for (unsigned int i = 1; i <= PlayerManager::numSamplers(); i++) {
+        groups.append(QStringLiteral("[Sampler%1]").arg(i));
+    }
+    for (unsigned int i = 1; i <= PlayerManager::numPreviewDecks()(); i++) {
+        groups.append(QStringLiteral("[PreviewDeck%1]").arg(i));
+    }
+    for (const QString& group : std::as_const(groups)) {
         ControlObject* pControl = ControlObject::getControl(
-                QStringLiteral("[Channel%1]").arg(i), QStringLiteral("waveform_zoom"));
+                group, QStringLiteral("waveform_zoom"));
         DEBUG_ASSERT(pControl);
         pControl->setDefaultValue(index + 1);
     }
