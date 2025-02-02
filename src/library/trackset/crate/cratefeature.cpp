@@ -94,6 +94,11 @@ void CrateFeature::initActions() {
             &QAction::triggered,
             this,
             &CrateFeature::slotToggleCrateLock);
+    m_pArchiveCrateAction = make_parented<QAction>(tr("Archive"), this);
+    connect(m_pArchiveCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotToggleCrateArchived);
 
     m_pAutoDjTrackSourceAction = make_parented<QAction>(tr("Auto DJ Track Source"), this);
     m_pAutoDjTrackSourceAction->setCheckable(true);
@@ -205,9 +210,9 @@ QString CrateFeature::formatRootViewHtml() const {
     html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary));
     html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary2));
     html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary3));
-    //Colorize links in lighter blue, instead of QT default dark blue.
-    //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://github.com/mixxxdj/mixxx/issues/9103
+    // Colorize links in lighter blue, instead of QT default dark blue.
+    // Links are still different from regular text, but readable on dark/light backgrounds.
+    // https://github.com/mixxxdj/mixxx/issues/9103
     html.append(
             QStringLiteral("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                     .arg(createCrateLink));
@@ -301,7 +306,8 @@ void CrateFeature::activate() {
 void CrateFeature::activateChild(const QModelIndex& index) {
     qDebug() << "   CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
-    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+    if (!crateId.isValid()) {
+        // happens when clicking the 'Archived' item
         return;
     }
     m_lastClickedIndex = index;
@@ -390,6 +396,7 @@ void CrateFeature::onRightClickChild(
     m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
+    m_pArchiveCrateAction->setText(crate.isArchived() ? tr("Unarchive") : tr("Archive"));
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
@@ -398,6 +405,7 @@ void CrateFeature::onRightClickChild(
     menu.addAction(m_pDuplicateCrateAction.get());
     menu.addAction(m_pDeleteCrateAction.get());
     menu.addAction(m_pLockCrateAction.get());
+    menu.addAction(m_pArchiveCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
@@ -536,6 +544,33 @@ void CrateFeature::slotToggleCrateLock() {
     }
 }
 
+void CrateFeature::slotToggleCrateArchived() {
+    Crate crate;
+    if (readLastRightClickedCrate(&crate)) {
+        bool archiving = !crate.isArchived();
+        // If we are archiving the crate, select the crate below rather than following
+        // the crate into the archive subtree.
+        int reselectRow = 0;
+        if (archiving) {
+            const auto index = indexFromCrateId(crate.getId());
+            // Constrain reselection between first and last valid crate positions.
+            reselectRow = std::min(std::max(index.row(), 0), m_pSidebarModel->rowCount() - 3);
+        }
+        crate.setArchived(archiving);
+        if (!m_pTrackCollection->updateCrate(crate)) {
+            qDebug() << "Failed to toggle archive status of crate" << crate;
+        } else if (archiving) {
+            const auto reselectIndex = m_pSidebarModel->index(reselectRow, 0);
+            const auto crateId = crateIdFromIndex(reselectIndex);
+            if (crateId.isValid()) {
+                activateCrate(crateId);
+            }
+        }
+    } else {
+        qDebug() << "Failed to toggle archive status of selected crate";
+    }
+}
+
 void CrateFeature::slotAutoDjTrackSourceChanged() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
@@ -558,20 +593,34 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     m_pSidebarModel->removeRows(0, pRootItem->childRows());
 
     std::vector<std::unique_ptr<TreeItem>> modelRows;
-    modelRows.reserve(m_pTrackCollection->crates().countCrates());
+    modelRows.reserve(m_pTrackCollection->crates().countCrates(true) + 1);
+
+    auto archiveItem = std::make_unique<TreeItem>(tr("Archived"), -1);
+    bool selectedIsArchived = false;
 
     int selectedRow = -1;
     CrateSummarySelectResult crateSummaries(
             m_pTrackCollection->crates().selectCrateSummaries());
     CrateSummary crateSummary;
     while (crateSummaries.populateNext(&crateSummary)) {
-        modelRows.push_back(newTreeItemForCrateSummary(crateSummary));
+        if (crateSummary.isArchived()) {
+            archiveItem->appendChild(formatLabel(crateSummary), crateSummary.getId().toVariant());
+        } else {
+            modelRows.push_back(newTreeItemForCrateSummary(crateSummary));
+        }
         if (selectedCrateId == crateSummary.getId()) {
-            // save index for selection
-            selectedRow = static_cast<int>(modelRows.size()) - 1;
+            if (crateSummary.isArchived()) {
+                selectedIsArchived = true;
+                selectedRow = archiveItem->childRows() - 1;
+            } else {
+                selectedRow = static_cast<int>(modelRows.size()) - 1;
+            }
         }
     }
-
+    modelRows.push_back(std::move(archiveItem));
+    // Save the size of the model now because it gets cleared when the items are inserted
+    // into the model.
+    const int rowCount = modelRows.size();
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_pSidebarModel->insertTreeItemRows(std::move(modelRows), 0);
 
@@ -579,7 +628,13 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     slotTrackSelected(m_selectedTrackId);
 
     if (selectedRow >= 0) {
-        return m_pSidebarModel->index(selectedRow, 0);
+        if (selectedIsArchived) {
+            QModelIndex archiveIndex = m_pSidebarModel->index(rowCount - 1, 0);
+            m_pSidebarWidget->setExpanded(archiveIndex, true);
+            return m_pSidebarModel->index(selectedRow, 0, archiveIndex);
+        } else {
+            return m_pSidebarModel->index(selectedRow, 0);
+        }
     } else {
         return QModelIndex();
     }
@@ -631,6 +686,16 @@ QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
         if (!pTreeItem->hasChildren() && // leaf node
                 (CrateId(pTreeItem->getData()) == crateId)) {
             return index;
+        }
+        // Assume single sublevel of tree.
+        if (pTreeItem->hasChildren()) {
+            for (int childRow = 0; childRow < pTreeItem->childRows(); childRow++) {
+                TreeItem* pChild = pTreeItem->child(childRow);
+                if (!pChild->hasChildren() && CrateId(pChild->getData()) == crateId) {
+                    QModelIndex childIndex = m_pSidebarModel->index(childRow, 0, index);
+                    return childIndex;
+                }
+            }
         }
     }
     qDebug() << "Tree item for crate not found:" << crateId;
@@ -936,13 +1001,26 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
     // clear all the bolding).
     for (TreeItem* pTreeItem : pRootItem->children()) {
         DEBUG_ASSERT(pTreeItem != nullptr);
-        bool crateContainsSelectedTrack =
-                m_selectedTrackId.isValid() &&
-                std::binary_search(
-                        sortedTrackCrates.begin(),
-                        sortedTrackCrates.end(),
-                        CrateId(pTreeItem->getData()));
-        pTreeItem->setBold(crateContainsSelectedTrack);
+        if (pTreeItem->hasChildren()) {
+            for (auto subItem : pTreeItem->children()) {
+                DEBUG_ASSERT(subItem != nullptr);
+                bool crateContainsSelectedTrack =
+                        m_selectedTrackId.isValid() &&
+                        std::binary_search(
+                                sortedTrackCrates.begin(),
+                                sortedTrackCrates.end(),
+                                CrateId(subItem->getData()));
+                subItem->setBold(crateContainsSelectedTrack);
+            }
+        } else {
+            bool crateContainsSelectedTrack =
+                    m_selectedTrackId.isValid() &&
+                    std::binary_search(
+                            sortedTrackCrates.begin(),
+                            sortedTrackCrates.end(),
+                            CrateId(pTreeItem->getData()));
+            pTreeItem->setBold(crateContainsSelectedTrack);
+        }
     }
 
     m_pSidebarModel->triggerRepaint();

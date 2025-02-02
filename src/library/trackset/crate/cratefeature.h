@@ -62,6 +62,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotDuplicateCrate();
     void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
+    void slotToggleCrateArchived();
     void slotImportPlaylist();
     void slotImportPlaylistFile(const QString& playlistFile, CrateId crateId);
     void slotCreateImportCrate();
@@ -119,6 +120,7 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pDeleteCrateAction;
     parented_ptr<QAction> m_pRenameCrateAction;
     parented_ptr<QAction> m_pLockCrateAction;
+    parented_ptr<QAction> m_pArchiveCrateAction;
     parented_ptr<QAction> m_pDuplicateCrateAction;
     parented_ptr<QAction> m_pAutoDjTrackSourceAction;
     parented_ptr<QAction> m_pImportPlaylistAction;
