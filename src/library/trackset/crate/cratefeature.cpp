@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -23,6 +24,7 @@
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/file.h"
+#include "widget/actionutils.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -69,7 +71,6 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
-    m_pRenameCrateAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,
@@ -273,7 +274,6 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url
 
 void CrateFeature::bindLibraryWidget(
         WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
@@ -282,6 +282,19 @@ void CrateFeature::bindLibraryWidget(
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
+
+    // Update shortcuts displayed in the context menu
+    if (keyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
+        QKeySequence editItemShortcut = QKeySequence(
+                keyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
+                QKeySequence::PortableText);
+        m_pRenameCrateAction->setShortcut(editItemShortcut);
+    } else {
+        m_pRenameCrateAction->setShortcuts(QList<QKeySequence>{
+                QKeySequence(kRenameSidebarItemShortcutKey),
+                QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
+    }
+    ActionUtils::updateMultiShortcutActionText(m_pRenameCrateAction);
 }
 
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

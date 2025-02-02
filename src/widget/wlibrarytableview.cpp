@@ -218,6 +218,17 @@ bool WLibraryTableView::restoreCurrentViewState() {
     return restoreTrackModelState(currentModel, key);
 }
 
+void WLibraryTableView::keyPressEvent(QKeyEvent* event) {
+    QTableView::keyPressEvent(event);
+    switch (event->key()) {
+    case Qt::Key_R: {
+        if (!edit(currentIndex(), EditKeyPressed, event)) {
+            event->ignore();
+        }
+    }
+    }
+}
+
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {
     QTableView::focusInEvent(event);
 

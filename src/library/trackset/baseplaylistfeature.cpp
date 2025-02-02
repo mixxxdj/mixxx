@@ -7,6 +7,7 @@
 #include <QSqlTableModel>
 #include <QStandardPaths>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -23,6 +24,7 @@
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/file.h"
+#include "widget/actionutils.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -76,7 +78,6 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
-    m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
@@ -695,7 +696,6 @@ TreeItemModel* BasePlaylistFeature::sidebarModel() const {
 
 void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
         KeyboardEventFilter* pKeyboard) {
-    Q_UNUSED(pKeyboard);
     WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryWidget);
     pEdit->setHtml(getRootViewHtml());
     pEdit->setOpenLinks(false);
@@ -705,6 +705,19 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &BasePlaylistFeature::htmlLinkClicked);
     m_pLibraryWidget = QPointer(pLibraryWidget);
     m_pLibraryWidget->registerView(m_rootViewName, pEdit);
+
+    // Update shortcuts displayed in the context menu
+    if (pKeyboard->getKeyboardConfig()->exists(ConfigKey("[Library]", "EditItem"))) {
+        QKeySequence editItemShortcut = QKeySequence(
+                pKeyboard->getKeyboardConfig()->getValueString(ConfigKey("[Library]", "EditItem")),
+                QKeySequence::PortableText);
+        m_pRenamePlaylistAction->setShortcut(editItemShortcut);
+    } else {
+        m_pRenamePlaylistAction->setShortcuts(QList<QKeySequence>{
+                QKeySequence(kRenameSidebarItemShortcutKey),
+                QKeySequence(kRenameSidebarItemAlternativeShortcutKey)});
+    }
+    ActionUtils::updateMultiShortcutActionText(m_pRenamePlaylistAction);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
