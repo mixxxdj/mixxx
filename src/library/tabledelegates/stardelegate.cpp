@@ -1,16 +1,32 @@
 #include "library/tabledelegates/stardelegate.h"
 
 #include <QTableView>
+#include <QTimer>
 
 #include "library/starrating.h"
 #include "library/tabledelegates/stareditor.h"
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "moc_stardelegate.cpp"
+#include "widget/wtracktableview.h"
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
-          m_isOneCellInEditMode(false) {
+          m_persistentEditorState(PersistentEditor_NotOpen) {
+    connect(this, &QAbstractItemDelegate::closeEditor, this, &StarDelegate::closingEditor);
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
+    connect(pTableView, &QTableView::viewportEntered, this, &StarDelegate::cursorNotOverAnyCell);
+
+    auto* pTrackTableView = qobject_cast<WTrackTableView*>(pTableView);
+    if (pTrackTableView) {
+        connect(pTrackTableView,
+                &WTrackTableView::viewportLeaving,
+                this,
+                &StarDelegate::cursorNotOverAnyCell);
+        connect(pTrackTableView,
+                &WTrackTableView::editRequested,
+                this,
+                &StarDelegate::editRequested);
+    }
 }
 
 void StarDelegate::paintItem(
@@ -43,8 +59,15 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    StarEditor* editor =
-            new StarEditor(parent, m_pTableView, index, newOption, m_focusBorderColor);
+    StarEditor* editor = new StarEditor(parent,
+            m_pTableView,
+            index,
+            newOption,
+            m_persistentEditorState != PersistentEditor_Opening);
+
+    editor->setObjectName("LibraryStarEditor");
+    editor->ensurePolished();
+
     connect(editor,
             &StarEditor::editingFinished,
             this,
@@ -68,7 +91,36 @@ void StarDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
 void StarDelegate::commitAndCloseEditor() {
     StarEditor* editor = qobject_cast<StarEditor*>(sender());
     emit commitData(editor);
-    emit closeEditor(editor);
+    emit closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
+}
+
+void StarDelegate::closingEditor(QWidget* widget, QAbstractItemDelegate::EndEditHint hint) {
+    Q_UNUSED(hint);
+
+    auto* editor = qobject_cast<StarEditor*>(widget);
+    VERIFY_OR_DEBUG_ASSERT(editor) {
+        return;
+    }
+
+    restorePersistentRatingEditor(editor->getModelIndex());
+}
+
+void StarDelegate::editRequested(const QModelIndex& index,
+        QAbstractItemView::EditTrigger trigger,
+        QEvent* event) {
+    Q_UNUSED(event);
+
+    // This slot is called when an edit is requested for ANY cell on the
+    // QTableView but the code should only be executed on a column with a
+    // StarRating.
+    if (trigger == QAbstractItemView::EditTrigger::EditKeyPressed &&
+            m_persistentEditorState == PersistentEditor_Open &&
+            index.data().canConvert<StarRating>() &&
+            m_currentEditedCellIndex == index) {
+        // Close the (implicit) persistent editor for the current cell,
+        // so that a new explicit editor can be opened instead.
+        closeCurrentPersistentRatingEditor(true);
+    }
 }
 
 void StarDelegate::cellEntered(const QModelIndex& index) {
@@ -76,16 +128,74 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // QTableView but the code should only be executed on a column with a
     // StarRating.
     if (index.data().canConvert<StarRating>()) {
-        if (m_isOneCellInEditMode) {
-            // Don't close other editors when hovering the stars cell!
-            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        }
-        m_pTableView->openPersistentEditor(index);
-        m_isOneCellInEditMode = true;
-        m_currentEditedCellIndex = index;
-    } else if (m_isOneCellInEditMode) {
-        m_isOneCellInEditMode = false;
+        openPersistentRatingEditor(index);
+    } else {
+        closeCurrentPersistentRatingEditor(false);
+    }
+}
+
+void StarDelegate::cursorNotOverAnyCell() {
+    // Invoked when the mouse cursor is not over any specific cell,
+    // or when the mouse cursor has left the table area
+    closeCurrentPersistentRatingEditor(false);
+}
+
+void StarDelegate::openPersistentRatingEditor(const QModelIndex& index) {
+    // Qt6: Check whether a non-persistent editor exists at index.
+    // QTableView::closePersistentEditor() would also close
+    // a non-persistent editor, so we have to make sure to
+    // not call it if an editor already exists.
+    if (m_pTableView->indexWidget(index)) {
+        return;
+    }
+
+    // Close the previously open persistent rating editor
+    if (m_persistentEditorState == PersistentEditor_Open) {
+        // Don't close other editors when hovering the stars cell!
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        m_currentEditedCellIndex = QModelIndex();
+    }
+
+    m_persistentEditorState = PersistentEditor_NotOpen;
+    m_persistentEditorState = PersistentEditor_Opening;
+    m_pTableView->openPersistentEditor(index);
+    m_persistentEditorState = PersistentEditor_Open;
+    m_currentEditedCellIndex = index;
+}
+
+void StarDelegate::closeCurrentPersistentRatingEditor(bool rememberForRestore) {
+    if (m_persistentEditorState == PersistentEditor_Open) {
+        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+    }
+
+    if (rememberForRestore &&
+            (m_persistentEditorState == PersistentEditor_Open ||
+                    m_persistentEditorState == PersistentEditor_ShouldRestore)) {
+        // Keep m_currentEditedCellIndex so the persistent editor
+        // can be restored when the currently active explicit editor
+        // is closed.
+        m_persistentEditorState = PersistentEditor_ShouldRestore;
+    } else {
+        m_persistentEditorState = PersistentEditor_NotOpen;
+        m_currentEditedCellIndex = QPersistentModelIndex();
+    }
+}
+
+void StarDelegate::restorePersistentRatingEditor(const QModelIndex& index) {
+    if (m_persistentEditorState == PersistentEditor_ShouldRestore &&
+            index.isValid() && m_currentEditedCellIndex == index) {
+        // Avoid race conditions by deferring the restore until
+        // we have returned to the event loop, and the closing of
+        // the current editor has been finished. Otherwise,
+        // the internal state of QAbstractItemView may become
+        // inconsistent.
+        m_persistentEditorState = PersistentEditor_InDeferredRestore;
+        QTimer::singleShot(0, this, &StarDelegate::restorePersistentRatingEditorNow);
+    }
+}
+
+void StarDelegate::restorePersistentRatingEditorNow() {
+    if (m_persistentEditorState == PersistentEditor_InDeferredRestore &&
+            m_currentEditedCellIndex.isValid()) {
+        openPersistentRatingEditor(m_currentEditedCellIndex);
     }
 }

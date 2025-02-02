@@ -114,6 +114,12 @@ class WTrackTableView : public WLibraryTableView {
     void trackPlayedColorChanged(QColor col);
     void trackMissingColorChanged(QColor col);
 
+    // Invoked when the mouse leaves this widget.
+    void viewportLeaving();
+    void editRequested(const QModelIndex& index,
+            QAbstractItemView::EditTrigger trigger,
+            QEvent* event);
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -157,6 +163,7 @@ class WTrackTableView : public WLibraryTableView {
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected) override;
 
+    void leaveEvent(QEvent* pEvent) override;
     void mousePressEvent(QMouseEvent* pEvent) override;
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
@@ -173,6 +180,8 @@ class WTrackTableView : public WLibraryTableView {
     void initTrackMenu();
 
     void hideOrRemoveSelectedTracks();
+
+    bool edit(const QModelIndex& index, EditTrigger trigger, QEvent* event) override;
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
