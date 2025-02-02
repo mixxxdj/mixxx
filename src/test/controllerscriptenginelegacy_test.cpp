@@ -661,22 +661,47 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0) // Latin9 is available form Qt 6.5
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
     const auto result = evaluate(
-            "engine.convertCharset(engine.Charset.Latin9, 'Hello!')");
+            "engine.convertCharset(engine.Charset.Latin9, 'Hello! €')");
 
     EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
-            QByteArrayView::fromArray({'\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x21'}));
+            QByteArrayView::fromArray({'\x48',
+                    '\x65',
+                    '\x6c',
+                    '\x6c',
+                    '\x6f',
+                    '\x21',
+                    '\x20',
+                    '\xA4'}));
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
     auto result = qjsvalue_cast<QByteArray>(
-            evaluate("engine.convertCharset(engine.Charset.Latin9, 'مايأ نامز')"));
+            evaluate("engine.convertCharset(engine.Charset.Latin9, 'مايأ نامز ™')"));
     char sub = '\x1A'; // ASCII/Latin9 SUB character
     EXPECT_EQ(result,
             QByteArrayView::fromArray(
-                    {sub, sub, sub, sub, '\x20', sub, sub, sub, sub}));
+                    {sub, sub, sub, sub, '\x20', sub, sub, sub, sub, '\x20', sub}));
+}
+#endif
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetLatin1Eur) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.Charset.Latin1, 'Hello! ¤€')");
+
+    char sub = '?'; // used by Qt for substitution
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            QByteArrayView::fromArray({'\x48',
+                    '\x65',
+                    '\x6c',
+                    '\x6c',
+                    '\x6f',
+                    '\x21',
+                    '\x20',
+                    '\xA4',
+                    sub}));
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
@@ -703,24 +728,26 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
                     '\x06'}));
 }
 
-#define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! 😊"
+#define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! ™ 😊"
 
 static int convertedCharsetForString(ControllerScriptInterfaceLegacy::Charset charset) {
     // the expected length after conversion of COMPLICATEDSTRINGLITERAL
     using enum ControllerScriptInterfaceLegacy::Charset;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
     switch (charset) {
     case UTF_8:
-        return 63;
+        return 67;
     case UTF_16LE:
     case UTF_16BE:
-        return 66;
+        return 70;
     case UTF_32LE:
     case UTF_32BE:
-        return 128;
+        return 136;
     case ASCII:
     case CentralEurope:
     case Cyrillic:
-    case Latin1:
+    case WesternEurope:
     case Greek:
     case Turkish:
     case Hebrew:
@@ -729,21 +756,43 @@ static int convertedCharsetForString(ControllerScriptInterfaceLegacy::Charset ch
     case Vietnamese:
     case Latin9:
     case KOI8_U:
-        return 32;
-    case Shift_JIS:
+        return 34;
+    case Latin1:
+        // Latin1 is handled by Qt internally and 😊 becomes "??"
+        return 35;
     case EUC_JP:
+        return 53;
+    case Shift_JIS:
     case EUC_KR:
     case Big5_HKSCS:
-        return 49;
+        return 52;
     case UCS2:
-        return 68;
+        return 72;
     case SCSU:
-        return 51;
+        return 55;
     case BOCU_1:
-        return 53;
+        return 56;
     case CESU_8:
-        return 65;
+        return 69;
     }
+#else
+    // Qt < 6.4 only supports these conversions
+    switch (charset) {
+    case UTF_8:
+        return 67;
+    case UTF_16LE:
+    case UTF_16BE:
+        return 70;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 136;
+    case Latin1:
+        return 35;
+    default:
+        return 0;
+    }
+#endif
+
     // unreachable, but gtest does not offer a way to assert this here.
     // returning 0 will almost certainly also result in a failure.
     return 0;
@@ -763,6 +812,7 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
                 "'" COMPLICATEDSTRINGLITERAL "')")
                                  .arg(key);
         auto result = qjsvalue_cast<QByteArray>(evaluate(source));
+        qDebug() << result;
         EXPECT_EQ(result.size(), convertedCharsetForString(enumValue))
                 << "Unexpected length of converted string for encoding: '"
                 << key.toStdString() << "'";
