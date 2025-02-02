@@ -179,7 +179,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
         return;
     }
     QSurfaceFormat format;
-    format.setSamples(m_screenInfo.msaa);
+    // format.setSamples(m_screenInfo.msaa);
     format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
 
