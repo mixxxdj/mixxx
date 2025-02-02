@@ -1,56 +1,69 @@
 #include "waveform/renderers/allshader/waveformrendererhsv.h"
 
+#include "rendergraph/material/rgbmaterial.h"
+#include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
 #include "util/math.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
+using namespace rendergraph;
+
 namespace allshader {
 
-WaveformRendererHSV::WaveformRendererHSV(
-        WaveformWidgetRenderer* waveformWidget)
+WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget)
         : WaveformRendererSignalBase(waveformWidget) {
+    initForRectangles<RGBMaterial>(0);
+    setUsePreprocess(true);
 }
 
 void WaveformRendererHSV::onSetup(const QDomNode&) {
 }
 
-void WaveformRendererHSV::initializeGL() {
-    m_shader.init();
+void WaveformRendererHSV::preprocess() {
+    if (!preprocessInner()) {
+        if (geometry().vertexCount() != 0) {
+            geometry().allocate(0);
+            markDirtyGeometry();
+        }
+    }
 }
 
-void WaveformRendererHSV::paintGL() {
+bool WaveformRendererHSV::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+
     if (!pTrack) {
-        return;
+        return false;
     }
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
-        return;
+        return false;
     }
 
     const int dataSize = waveform->getDataSize();
     if (dataSize <= 1) {
-        return;
+        return false;
     }
 
     const WaveformData* data = waveform->data();
     if (data == nullptr) {
-        return;
+        return false;
     }
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
     if (!stemInfo.isEmpty() && waveform->hasStem()) {
-        return;
+        return false;
     }
 #endif
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const int length = static_cast<int>(m_waveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const float invDevicePixelRatio = 1.f / devicePixelRatio;
+    const float halfPixelSize = 0.5f / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -61,7 +74,7 @@ void WaveformRendererHSV::paintGL() {
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
     float allGain(1.0);
     getGains(&allGain, false, nullptr, nullptr, nullptr);
@@ -70,7 +83,7 @@ void WaveformRendererHSV::paintGL() {
     float h, s, v;
     getHsvF(m_pColors->getLowColor(), &h, &s, &v);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
+    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
@@ -81,25 +94,24 @@ void WaveformRendererHSV::paintGL() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    const int reserved = numVerticesPerLine * (length + 1);
+    const int reserved = numVerticesPerLine * (pixelLength + 1);
 
-    m_vertices.clear();
-    m_vertices.reserve(reserved);
-    m_colors.clear();
-    m_colors.reserve(reserved);
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+    geometry().allocate(reserved);
+    markDirtyGeometry();
 
-    m_vertices.addRectangle(0.f,
-            halfBreadth - 0.5f * devicePixelRatio,
-            static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio);
-    m_colors.addForRectangle(
-            static_cast<float>(m_axesColor_r),
-            static_cast<float>(m_axesColor_g),
-            static_cast<float>(m_axesColor_b));
+    RGBVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBColoredPoint2D>()};
+    vertexUpdater.addRectangle({0.f,
+                                       halfBreadth - 0.5f},
+            {static_cast<float>(length),
+                    halfBreadth + 0.5f},
+            {static_cast<float>(m_axesColor_r),
+                    static_cast<float>(m_axesColor_g),
+                    static_cast<float>(m_axesColor_b)});
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
-    for (int pos = 0; pos < length; ++pos) {
+    for (int pos = 0; pos < pixelLength; ++pos) {
         const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
         const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
@@ -107,7 +119,7 @@ void WaveformRendererHSV::paintGL() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos);
+        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
         // per channel
         float maxLow[2]{};
@@ -161,45 +173,24 @@ void WaveformRendererHSV::paintGL() {
         QColor color;
         color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
-        // lines are thin rectangles
+        // Lines are thin rectangles
         // maxAll[0] is for left channel, maxAll[1] is for right channel
-        m_vertices.addRectangle(fpos - 0.5f,
-                halfBreadth - heightFactor * maxAll[0],
-                fpos + 0.5f,
-                halfBreadth + heightFactor * maxAll[1]);
-        m_colors.addForRectangle(
-                static_cast<float>(color.redF()),
-                static_cast<float>(color.greenF()),
-                static_cast<float>(color.blueF()));
+        vertexUpdater.addRectangle({fpos - halfPixelSize,
+                                           halfBreadth - heightFactor * maxAll[0]},
+                {fpos + halfPixelSize,
+                        halfBreadth + heightFactor * maxAll[1]},
+                {static_cast<float>(color.redF()),
+                        static_cast<float>(color.greenF()),
+                        static_cast<float>(color.blueF())});
 
         xVisualFrame += visualIncrementPerPixel;
     }
 
-    DEBUG_ASSERT(reserved == m_vertices.size());
-    DEBUG_ASSERT(reserved == m_colors.size());
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
+    markDirtyMaterial();
 
-    const int matrixLocation = m_shader.matrixLocation();
-    const int positionLocation = m_shader.positionLocation();
-    const int colorLocation = m_shader.colorLocation();
-
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-    m_shader.enableAttributeArray(colorLocation);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-    m_shader.setAttributeArray(
-            colorLocation, GL_FLOAT, m_colors.constData(), 3);
-
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.disableAttributeArray(colorLocation);
-    m_shader.release();
+    return true;
 }
 
 } // namespace allshader
