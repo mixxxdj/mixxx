@@ -878,7 +878,8 @@ bool DlgPrefController::saveMapping() {
             if (overwriteCheckBox.checkState() == Qt::Checked) {
                 m_pOverwriteMappings.insert(m_pMapping->filePath(), true);
             }
-        } else if (overwriteMsgBox.close()) {
+        } else if (overwriteMsgBox.clickedButton() != pSaveAsNew) {
+            // Dialog was closed without clicking one of our buttons
             return false;
         }
     }

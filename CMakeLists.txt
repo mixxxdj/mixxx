@@ -2557,6 +2557,39 @@ if(BUILD_TESTING)
     add_compile_definitions(USE_BENCH)
     target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
   endif()
+
+  # Test Suite
+  include(CTest)
+  include(GoogleTest)
+  enable_testing()
+  gtest_add_tests(
+    TARGET mixxx-test
+    EXTRA_ARGS --logLevel info
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    TEST_LIST testsuite
+  )
+
+  if(NOT WIN32)
+    # Default to offscreen rendering during tests.
+    # This is required if the build system like Fedora koji/mock does not
+    # allow to pass environment variables into the ctest macro expansion.
+    set_tests_properties(
+      ${testsuite}
+      PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+    )
+  endif()
+
+  if(BUILD_BENCH)
+    # Benchmarking
+    add_custom_target(
+      mixxx-benchmark
+      COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+      COMMENT "Mixxx Benchmarks"
+      VERBATIM
+    )
+    add_dependencies(mixxx-benchmark mixxx-test)
+  endif()
 endif() # BUILD_TESTING
 
 #
@@ -4265,41 +4298,6 @@ if(STEM)
     target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
     target_sources(mixxx-qml-lib PRIVATE src/qml/qmlstemsmodel.cpp)
   endif()
-endif()
-
-if(BUILD_TESTING)
-  # Test Suite
-  include(CTest)
-  include(GoogleTest)
-  enable_testing()
-  gtest_add_tests(
-    TARGET mixxx-test
-    EXTRA_ARGS --logLevel info
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    TEST_LIST testsuite
-  )
-endif()
-
-if(NOT WIN32)
-  # Default to offscreen rendering during tests.
-  # This is required if the build system like Fedora koji/mock does not
-  # allow to pass environment variables into the ctest macro expansion.
-  set_tests_properties(
-    ${testsuite}
-    PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-  )
-endif()
-
-if(BUILD_BENCH)
-  # Benchmarking
-  add_custom_target(
-    mixxx-benchmark
-    COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    COMMENT "Mixxx Benchmarks"
-    VERBATIM
-  )
-  add_dependencies(mixxx-benchmark mixxx-test)
 endif()
 
 # Google PerfTools
