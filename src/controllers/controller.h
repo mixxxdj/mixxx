@@ -131,6 +131,9 @@ class Controller : public QObject {
         m_bIsInputDevice = inputDevice;
     }
     inline void setOpen(bool open) {
+        qWarning() << "----------------";
+        qWarning() << "---------------- setOpen:" << QString(open ? "open" : "closed");
+        qWarning() << "----------------";
         m_bIsOpen = open;
         emit openChanged(m_bIsOpen);
     }

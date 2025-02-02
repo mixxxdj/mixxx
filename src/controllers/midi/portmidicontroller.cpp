@@ -85,6 +85,9 @@ int PortMidiController::open() {
 }
 
 int PortMidiController::close() {
+    qWarning() << "-------------";
+    qWarning() << "------------- close";
+    qWarning() << "-------------";
     if (!isOpen()) {
         qCWarning(m_logBase) << "PortMIDI device" << getName() << "already closed";
         return -1;

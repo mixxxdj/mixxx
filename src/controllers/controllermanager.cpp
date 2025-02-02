@@ -429,6 +429,12 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         return;
     }
 
+    qWarning() << "     .";
+    qWarning() << "     .";
+    qWarning() << "  x  ConMan slotApplyMapping" << pMapping->filePath();
+    qWarning() << "     .";
+    qWarning() << "     .";
+
     VERIFY_OR_DEBUG_ASSERT(!pMapping->isDirty()) {
         qWarning() << "Mapping is dirty, changes might be lost on restart!";
     }

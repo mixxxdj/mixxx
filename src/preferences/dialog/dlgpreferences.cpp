@@ -403,6 +403,9 @@ void DlgPreferences::onShow() {
     // Move is also needed on linux.
     move(newX, newY);
 
+    qWarning() << "     x";
+    qWarning() << "     x x x x x  SHOW => emit showDlg";
+    qWarning() << "     x";
     // Notify children that we are about to show.
     emit showDlg();
 }
