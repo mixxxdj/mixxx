@@ -147,6 +147,7 @@ void WaveformWidget::paintGL() {
     m_pOpacityNode->setOpacity(shouldOnlyDrawBackground() ? 0.f : 1.f);
 
     m_pWaveformRenderMarkRange->update();
+    m_pWaveformRenderMark->update();
 
     m_pEngine->preprocess();
     m_pEngine->render();
