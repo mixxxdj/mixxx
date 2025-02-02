@@ -55,8 +55,6 @@ class LegacyControllerMapping {
     }
     virtual ~LegacyControllerMapping() = default;
 
-    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
-
     struct ScriptFileInfo {
         enum class Type {
             Javascript,

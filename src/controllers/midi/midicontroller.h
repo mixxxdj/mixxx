@@ -6,19 +6,21 @@
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/softtakeover.h"
+#include "util/mutex.h"
 
 class MidiOutputHandler;
+class MidiController;
 
 class MidiInputHandleJSProxy final : public QObject {
     Q_OBJECT
   public:
     MidiInputHandleJSProxy(
-            const std::shared_ptr<LegacyMidiControllerMapping> mapping,
+            MidiController* pMidiController,
             const MidiInputMapping& inputMapping);
     Q_INVOKABLE bool disconnect();
 
   protected:
-    std::shared_ptr<LegacyMidiControllerMapping> m_mapping;
+    MidiController* m_pMidiController;
     MidiInputMapping m_inputMapping;
 };
 
@@ -46,6 +48,7 @@ class MidiController : public Controller {
     }
 
     bool isMappable() const override {
+        const auto locker = MMutexLockerDebug(&m_mappingMutex, "isMappable");
         if (!m_pMapping) {
             return false;
         }
@@ -53,6 +56,7 @@ class MidiController : public Controller {
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
+    bool removeInputMapping(uint16_t key, const MidiInputMapping& mapping);
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
@@ -109,7 +113,8 @@ class MidiController : public Controller {
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
+    mutable MMutex m_mappingMutex;
+    std::unique_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
 

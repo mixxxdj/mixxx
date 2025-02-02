@@ -396,10 +396,6 @@ class LegacyDummyMapping : public LegacyControllerMapping {
     LegacyDummyMapping() {
     }
 
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        return std::make_shared<LegacyDummyMapping>(*this);
-    }
-
     bool saveMapping(const QString&) const override {
         return false;
     }
