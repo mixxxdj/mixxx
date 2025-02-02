@@ -82,6 +82,7 @@ Item {
 
         Mixxx.WaveformRendererEndOfTrack {
             color: 'blue'
+            endOfTrackWarningTime: 30
         }
 
         Mixxx.WaveformRendererPreroll {
@@ -124,9 +125,16 @@ Item {
             lowColor: 'red'
             midColor: 'green'
             highColor: 'blue'
+
+            gainAll: 1.5
+            gainLow: 1.0
+            gainMid: 1.0
+            gainHigh: 1.0
         }
 
-        Mixxx.WaveformRendererStem { }
+        Mixxx.WaveformRendererStem {
+            gainAll: 1.5
+        }
 
         Mixxx.WaveformRendererBeat {
             color: '#cfcfcf'
