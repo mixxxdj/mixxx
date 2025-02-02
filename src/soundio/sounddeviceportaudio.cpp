@@ -461,7 +461,6 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
         if (err < 0) {
             qWarning() << "PortAudio: Pa_IsStreamStopped returned error:"
                        << Pa_GetErrorText(err) << m_deviceId;
-            return SoundDeviceStatus::Error;
         }
         if (err == 1) {
             qWarning() << "PortAudio: Stream already stopped";
@@ -472,16 +471,12 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
 
             // We can now safely call Pa_StopStream, which should not block as the
             // stream has become inactive.
-            err = Pa_StopStream(m_pStream);
+            err = Pa_StopStream(pStream);
             if (err != paNoError) {
                 qWarning() << "PortAudio: Stop stream error:"
                            << Pa_GetErrorText(err) << m_deviceId;
-                return SoundDeviceStatus::Error;
             }
         }
-
-        // We can now safely set m_pStream to null
-        m_pStream.store(nullptr, std::memory_order_release);
 
         // Close stream
         err = Pa_CloseStream(pStream);
@@ -490,6 +485,9 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
                        << Pa_GetErrorText(err) << m_deviceId;
             return SoundDeviceStatus::Error;
         }
+
+        // We can now safely set m_pStream to null
+        m_pStream.store(nullptr, std::memory_order_release);
     }
 
     m_outputFifo.reset();
