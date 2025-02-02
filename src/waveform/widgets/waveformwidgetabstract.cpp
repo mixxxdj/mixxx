@@ -3,6 +3,7 @@
 #include <QWidget>
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/vsyncthread.h"
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
         : WaveformWidgetRenderer(group),

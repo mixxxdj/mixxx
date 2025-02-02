@@ -27,7 +27,8 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
 
     static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};
 
-    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget,
+            const IVisualGainProvider* visualGainProvider);
 
     virtual bool supportsSlip() const {
         return false;

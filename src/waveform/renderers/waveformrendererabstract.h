@@ -6,6 +6,10 @@ QT_FORWARD_DECLARE_CLASS(QDomNode)
 QT_FORWARD_DECLARE_CLASS(QPaintEvent)
 QT_FORWARD_DECLARE_CLASS(QPainter)
 
+namespace rendergraph {
+class Node;
+}
+
 class SkinContext;
 class WaveformWidgetRenderer;
 
