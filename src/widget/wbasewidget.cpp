@@ -150,7 +150,7 @@ void WBaseWidget::updateTooltip() {
         if (!base.isEmpty()) {
             debug.append(QStringLiteral("Tooltip: \"%1\"").arg(base));
         }
-        m_pWidget->setToolTip(debug.join(QStringLiteral("\n")));
+        m_pWidget->setToolTip(debug.join(QChar('\n')));
     } else {
         m_pWidget->setToolTip(base);
     }
