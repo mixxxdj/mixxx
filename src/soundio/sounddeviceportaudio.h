@@ -62,8 +62,7 @@ class SoundDevicePortAudio : public SoundDevice {
             SINT framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo);
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
 
-    // Wait until finishedCallback has been called.
-    void waitForFinished();
+    void makeStreamInactiveAndWait();
 
     // PortAudio stream for this device.
     std::atomic<PaStream*> m_pStream;
