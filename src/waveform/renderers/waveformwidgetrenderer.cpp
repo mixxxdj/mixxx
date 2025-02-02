@@ -46,6 +46,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_trackSamples(0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
+          m_pContext(nullptr),
           m_passthroughEnabled(false) {
     //qDebug() << "WaveformWidgetRenderer";
     for (int type = ::WaveformRendererAbstract::Play;
