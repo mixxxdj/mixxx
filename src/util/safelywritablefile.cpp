@@ -58,8 +58,10 @@ SafelyWritableFile::SafelyWritableFile(QString origFileName,
     }
     switch (safetyMode) {
     case SafetyMode::Edit: {
-        QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
-        QFile origFile(origFileName);
+        QString origFilePath = QFileInfo(origFileName).canonicalFilePath();
+        QString tempFileName = origFilePath + kSafelyWritableTempFileSuffix;
+        QFile origFile(origFilePath);
+
         if (!origFile.copy(tempFileName)) {
             kLogger.warning()
                     << origFile.errorString()
@@ -135,7 +137,8 @@ bool SafelyWritableFile::commit() {
         return true; // nothing to do
     }
 
-    QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
+    QString origFilePath = QFileInfo(m_origFileName).canonicalFilePath();
+    QString backupFileName = origFilePath + kSafelyWritableOrigFileSuffix;
 #ifdef __WINDOWS__
     // After Mixxx has closed the track file, the indexer or virus scanner
     // might kick in and fail ReplaceFileW() with a sharing violation when
@@ -143,7 +146,7 @@ bool SafelyWritableFile::commit() {
     int i = 0;
     for (; i < kWindowsSharingViolationMaxRetries; ++i) {
         if (ReplaceFileW(
-                    reinterpret_cast<LPCWSTR>(m_origFileName.utf16()),
+                    reinterpret_cast<LPCWSTR>(origFilePath.utf16()),
                     reinterpret_cast<LPCWSTR>(m_tempFileName.utf16()),
                     reinterpret_cast<LPCWSTR>(backupFileName.utf16()),
                     REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS,
@@ -238,7 +241,7 @@ bool SafelyWritableFile::commit() {
                 << newFile.fileName();
         return false;
     }
-    QFile oldFile(m_origFileName);
+    QFile oldFile(origFilePath);
     if (oldFile.exists()) {
         DEBUG_ASSERT(!QFile::exists(backupFileName)); // very unlikely, otherwise renaming fails
         if (!oldFile.rename(backupFileName)) {
@@ -251,8 +254,8 @@ bool SafelyWritableFile::commit() {
             return false;
         }
     }
-    DEBUG_ASSERT(!QFile::exists(m_origFileName));
-    if (!newFile.rename(m_origFileName)) {
+    DEBUG_ASSERT(!QFile::exists(origFilePath));
+    if (!newFile.rename(origFilePath)) {
         kLogger.critical()
                 << newFile.errorString()
                 << "- Failed to rename temporary file after writing:"
@@ -261,7 +264,7 @@ bool SafelyWritableFile::commit() {
                 << m_origFileName;
         if (oldFile.exists()) {
             // Try to restore the original file
-            if (!oldFile.rename(m_origFileName)) {
+            if (!oldFile.rename(origFilePath)) {
                 // Undo operation failed
                 kLogger.warning()
                         << oldFile.errorString()
