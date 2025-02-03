@@ -1094,7 +1094,7 @@
         ,
 
         /**
-         * Add a component to a layer.
+         * Add a component to a layer, and provide an input connection for its MIDI address.
          *
          * @param {components.Component} component A component
          * @param {boolean} shift Target layer: Shift iff true, otherwise Default
@@ -1112,7 +1112,8 @@
         },
 
         /**
-         * Remove a component from a layer.
+         * Remove a component from a layer,
+         * and disconnect the MIDI input if not used by another component.
          *
          * @param {components.Component} component A component
          * @param {boolean} shift Source layer: Shift iff true, otherwise Default
