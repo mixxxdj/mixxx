@@ -13,7 +13,7 @@
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
 class LegacyControllerMapping {
-  public:
+  protected:
     LegacyControllerMapping()
             : m_bDirty(false),
               m_deviceDirection(DeviceDirection::Bidirectionnal) {
@@ -38,8 +38,10 @@ class LegacyControllerMapping {
               m_scripts(other.m_scripts),
               m_deviceDirection(other.m_deviceDirection) {
     }
+    LegacyControllerMapping& operator=(const LegacyControllerMapping&) = delete;
     virtual ~LegacyControllerMapping() = default;
 
+  public:
     struct ScriptFileInfo {
         ScriptFileInfo()
                 : builtin(false) {

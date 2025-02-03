@@ -79,6 +79,7 @@ class Controller : public QObject {
 
   protected:
     template<typename SpecificMappingType>
+        requires(std::is_final_v<SpecificMappingType> == true)
     std::unique_ptr<SpecificMappingType> downcastAndClone(const LegacyControllerMapping* pMapping) {
         // When unsetting a mapping (select 'No mapping') we receive a nullptr
         auto* pSpecifiedMapping = dynamic_cast<const SpecificMappingType*>(pMapping);

@@ -7,7 +7,7 @@
 
 /// Represents a MIDI controller mapping, containing the data elements that make
 /// it up.
-class LegacyMidiControllerMapping : public LegacyControllerMapping {
+class LegacyMidiControllerMapping final : public LegacyControllerMapping {
   public:
     LegacyMidiControllerMapping(){};
     virtual ~LegacyMidiControllerMapping(){};
