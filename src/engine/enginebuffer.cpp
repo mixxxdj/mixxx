@@ -1360,7 +1360,7 @@ void EngineBuffer::processSeek(bool paused) {
             position = pOtherChannel->getEngineBuffer()->getExactPlayPos();
         } break;
         default:
-            DEBUG_ASSERT(!"Unhandled seek request type");
+            DEBUG_ASSERT_UNREACHABLE(!"Unhandled seek request type");
             m_queuedSeek.setValue(kNoQueuedSeek);
             return;
     }
