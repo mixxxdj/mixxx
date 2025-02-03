@@ -315,6 +315,22 @@ void WMainMenuBar::initialize() {
             ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")));
     pViewMenu->addAction(pViewShowCoverArt);
 
+    //: menu title
+    QString keywheelTitle = tr("Show Keywheel");
+    //: tooltip text
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                    tr("F12", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
+    pViewMenu->addAction(m_pViewKeywheel);
+
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
             " " + mayNotBeSupported;
@@ -607,22 +623,6 @@ void WMainMenuBar::initialize() {
     // https://developer.apple.com/design/human-interface-guidelines/macos/menus/menu-anatomy/
     externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
 #endif
-
-    //: menu title
-    QString keywheelTitle = tr("Show Keywheel");
-    //: tooltip text
-    QString keywheelText = tr("Show keywheel");
-    m_pViewKeywheel = new QAction(keywheelTitle, this);
-    m_pViewKeywheel->setCheckable(true);
-    m_pViewKeywheel->setShortcut(
-            QKeySequence(m_pKbdConfig->getValue(
-                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
-                    tr("F12", "Menubar|View|Show Keywheel"))));
-    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
-    m_pViewKeywheel->setStatusTip(keywheelText);
-    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
-    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
-    pHelpMenu->addAction(m_pViewKeywheel);
 
     // Community Support
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;

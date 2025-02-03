@@ -611,7 +611,9 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                          << MidiUtils::formatSysexMessage(getName(), data, timestamp);
 }
 
-QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue& scriptCode) {
+QJSValue MidiController::makeInputHandler(unsigned char status,
+        unsigned char control,
+        const QJSValue& scriptCode) {
     auto pJsEngine = getScriptEngine()->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
@@ -626,28 +628,28 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
         return QJSValue();
     }
 
-    if (status <= 0 || midino <= 0) {
+    if (status < 0x80 || control > 0x7F) {
         auto mStatusError = QStringLiteral(
-                "Invalid status or midino passed to midi.makeInputHandler. "
-                "Please pass a strictly positive integer. status=%1,midino=%2")
+                "Invalid status or control passed to midi.makeInputHandler. "
+                "Please pass status >= 0x80 and control <= 0x7F. status=%1,control=%2")
                                     .arg(status)
-                                    .arg(midino);
+                                    .arg(control);
 
         getScriptEngine()->throwJSError(mStatusError);
         return QJSValue();
     }
 
-    const auto midiKey = MidiKey(status, midino);
+    const auto midiKey = MidiKey(status, control);
 
     auto it = m_pMapping->getInputMappings().constFind(midiKey.key);
     if (it != m_pMapping->getInputMappings().constEnd() &&
             it.value().options.testFlag(MidiOption::Script) &&
             std::holds_alternative<ConfigKey>(it.value().control)) {
         qCWarning(m_logBase) << QStringLiteral(
-                "Ignoring anonymous JS function for status=%1,midino=%2 "
+                "Ignoring anonymous JS function for status=%1,control=%2 "
                 "because a previous XML binding exists")
                                         .arg(status)
-                                        .arg(midino);
+                                        .arg(control);
         return QJSValue();
     }
 
