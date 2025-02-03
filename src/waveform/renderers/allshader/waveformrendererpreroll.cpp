@@ -21,7 +21,7 @@ QImage drawPrerollImage(float markerLength,
     const float imageW = static_cast<float>(imagePixelW) / devicePixelRatio;
     const float imageH = static_cast<float>(imagePixelH) / devicePixelRatio;
 
-    QImage image(imagePixelW, imagePixelH, QImage::Format_RGBA8888_Premultiplied);
+    QImage image(imagePixelW, imagePixelH, QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
 
     const float penWidth = 1.5f;
@@ -123,9 +123,6 @@ bool WaveformRendererPreroll::preprocessInner() {
         return false;
     }
 
-    const int reserved = (preRollVisible ? numVerticesPerRectangle : 0) +
-            (postRollVisible ? numVerticesPerRectangle : 0);
-
     const double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
     const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
@@ -159,7 +156,10 @@ bool WaveformRendererPreroll::preprocessInner() {
                                 m_color)));
     }
 
-    geometry().allocate(reserved);
+    const int reservedVertexCount = (preRollVisible ? numVerticesPerRectangle : 0) +
+            (postRollVisible ? numVerticesPerRectangle : 0);
+
+    geometry().allocate(reservedVertexCount);
 
     const float end = m_waveformRenderer->getLength();
 
@@ -212,7 +212,7 @@ bool WaveformRendererPreroll::preprocessInner() {
                 {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
     }
 
-    DEBUG_ASSERT(reserved == vertexUpdater.index());
+    DEBUG_ASSERT(reservedVertexCount == vertexUpdater.index());
 
     return true;
 }
