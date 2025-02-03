@@ -136,7 +136,7 @@
      * @param {object} parent Constructor of parent whose prototype is used as base
      * @param {object} members Own members that are not inherited
      * @returns {object} A new prototype based on parent with the given members
-     * @private
+     * @public
      */
     const deriveFrom = function(parent, members) {
         return Object.assign(Object.create(parent.prototype), members);
@@ -1007,6 +1007,7 @@
             LayerManager.prototype.defaultContainerName,
             LayerManager.prototype.shiftContainerName]);
         this.activeLayer = new components.ComponentContainer();
+        this.inputConnections = {};
         components.Component.call(this, options);
     };
     LayerManager.prototype = deriveFrom(components.Component, {
@@ -1093,7 +1094,7 @@
         ,
 
         /**
-         * Add a component to a layer.
+         * Add a component to a layer, and provide an input connection for its MIDI address.
          *
          * @param {components.Component} component A component
          * @param {boolean} shift Target layer: Shift iff true, otherwise Default
@@ -1101,10 +1102,18 @@
          */
         register: function(component, shift) {
             this.onRegistry(this.componentRegistry.register, component, shift);
+            if (component.midi) {
+                const id = findComponentId(component.midi);
+                if (this.inputConnections[id] === undefined) {
+                    this.inputConnections[id] = midi.makeInputHandler(
+                        component.midi[0], component.midi[1], this.input.bind(this));
+                }
+            }
         },
 
         /**
-         * Remove a component from a layer.
+         * Remove a component from a layer,
+         * and disconnect the MIDI input if not used by another component.
          *
          * @param {components.Component} component A component
          * @param {boolean} shift Source layer: Shift iff true, otherwise Default
@@ -1113,6 +1122,10 @@
         unregister: function(component, shift) {
             const id = this.onRegistry(this.componentRegistry.unregister, component, shift);
             delete this.activeLayer[id];
+            if (!this.findComponent(id)) {
+                this.inputConnections[id].disconnect();
+                delete this.inputConnections[id];
+            }
         },
 
         /**
