@@ -20,8 +20,9 @@ namespace mixxx {
 
 struct EnginePrimeExportRequest;
 
-/// The Engine Prime export job performs the work of exporting the Mixxx
-/// library to an external Engine Prime (also known as "Engine Library")
+//: "Engine DJ" must not be translated
+/// The Engine DJ export job performs the work of exporting the Mixxx
+/// library to an external Engine DJ (also known as "Engine Library")
 /// database, using the libdjinterop library, in accordance with the export
 /// request with which it is constructed.
 class EnginePrimeExportJob : public QThread {

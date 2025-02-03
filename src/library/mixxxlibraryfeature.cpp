@@ -120,8 +120,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     m_pSidebarModel->setRootItem(std::move(pRootItem));
 
+    //: "Engine DJ" must not be translated                
 #ifdef __ENGINEPRIME__
-    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportLibraryAction.get(),
             &QAction::triggered,
             this,

@@ -61,6 +61,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
     connectTrackCollection();
 }
 
+//: "Engine DJ" must not be translated
 void CrateFeature::initActions() {
     m_pCreateCrateAction = make_parented<QAction>(tr("Create New Crate"), this);
     connect(m_pCreateCrateAction.get(),
@@ -129,12 +130,12 @@ void CrateFeature::initActions() {
             this,
             &CrateFeature::slotExportTrackFiles);
 #ifdef __ENGINEPRIME__
-    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportAllCratesAction.get(),
             &QAction::triggered,
             this,
             &CrateFeature::exportAllCrates);
-    m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportCrateAction.get(),
             &QAction::triggered,
             this,
