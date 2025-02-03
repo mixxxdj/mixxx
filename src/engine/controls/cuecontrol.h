@@ -196,6 +196,12 @@ class CueControl : public EngineControl {
             UserSettingsPointer pConfig);
     ~CueControl() override;
 
+    void process(const double dRate,
+            mixxx::audio::FramePos currentPosition,
+            const std::size_t bufferSize) override;
+
+    void notifySeek(mixxx::audio::FramePos position) override;
+
     void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
@@ -363,6 +369,9 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pPassthrough;
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
+    QAtomicPointer<HotcueControl> m_pCurrentSavedJumpControl;
+
+    mixxx::audio::FramePos m_lastProcessedPosition;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
