@@ -31,9 +31,8 @@ void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 bool WaveformRendererStem::init() {
-    auto group = m_pEQEnabled->getKey().group;
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
-        QString stemGroup = EngineDeck::getGroupForStem(group, stemIdx);
+        QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
                 std::make_unique<PollingControlProxy>(stemGroup,
                         QStringLiteral("volume")));
