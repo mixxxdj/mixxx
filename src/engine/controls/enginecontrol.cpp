@@ -77,6 +77,7 @@ void EngineControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabl
 void EngineControl::setLoop(mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
         bool enabled) {
+    qWarning() << "     > EngineControl::setLoop" << startPosition << endPosition << enabled;
     if (m_pEngineBuffer) {
         m_pEngineBuffer->setLoop(startPosition, endPosition, enabled);
     }
