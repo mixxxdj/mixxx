@@ -6,6 +6,7 @@
 #include "library/coverartutils.h"
 #include "util/cmdlineargs.h"
 #include "util/logging.h"
+#include "util/undostack.h"
 
 namespace {
 
@@ -43,6 +44,8 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // due to timing issues.
     disableConcurrentGuessingOfTrackCoverInfoDuringTests();
 
+    UndoStack::createInstance();
+
     DEBUG_ASSERT(s_pApplication.isNull());
     s_pApplication.reset(new MixxxApplication(argc, argv));
 }
@@ -51,6 +54,8 @@ MixxxTest::ApplicationScope::~ApplicationScope() {
     DEBUG_ASSERT(!s_pApplication.isNull());
     s_pApplication.reset();
     mixxx::Logging::shutdown();
+
+    UndoStack::destroy();
 }
 
 MixxxTest::MixxxTest() {
