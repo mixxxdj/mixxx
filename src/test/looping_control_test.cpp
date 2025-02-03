@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <qstringliteral.h>
 
 #include <QScopedPointer>
 #include <QtDebug>
@@ -7,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixxxtest.h"
 #include "test/mockedenginebackendtest.h"
@@ -24,66 +26,86 @@ class LoopingControlTest : public MockedEngineBackendTest {
   protected:
     void SetUp() override {
         MockedEngineBackendTest::SetUp();
-        m_pQuantizeEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "quantize");
+        m_pQuantizeEnabled = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("quantize")});
         m_pQuantizeEnabled->set(1.0);
-        m_pSlipEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "slip_enabled");
-        m_pNextBeat = std::make_unique<PollingControlProxy>(m_sGroup1, "beat_next");
+        m_pSlipEnabled = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("slip_enabled")});
+        m_pNextBeat = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("beat_next")});
 
         m_pNextBeat->set(-1);
-        m_pClosestBeat = std::make_unique<PollingControlProxy>(m_sGroup1, "beat_closest");
+        m_pClosestBeat = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("beat_closest")});
         m_pClosestBeat->set(-1);
-        m_pTrackSamples = std::make_unique<PollingControlProxy>(m_sGroup1, "track_samples");
+        m_pTrackSamples = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("track_samples")});
         m_pTrackSamples->set(kTrackEndPosition.toEngineSamplePos());
-        m_pButtonLoopIn = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_in");
-        m_pButtonLoopOut = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_out");
-        m_pButtonLoopExit = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_exit");
-        m_pButtonReloopToggle = std::make_unique<PollingControlProxy>(m_sGroup1, "reloop_toggle");
-        m_pButtonReloopAndStop = std::make_unique<PollingControlProxy>(m_sGroup1, "reloop_andstop");
-        m_pButtonLoopDouble = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_double");
-        m_pButtonLoopHalve = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_halve");
-        m_pLoopEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_enabled");
-        m_pLoopStartPoint = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_start_position");
-        m_pLoopEndPoint = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_end_position");
-        m_pLoopScale = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_scale");
-        m_pButtonPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
-        m_pPlayPosition = std::make_unique<PollingControlProxy>(m_sGroup1, "playposition");
+        m_pButtonLoopIn = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_in")});
+        m_pButtonLoopOut = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_out")});
+        m_pButtonLoopExit = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_exit")});
+        m_pButtonReloopToggle = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("reloop_toggle")});
+        m_pButtonReloopAndStop = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("reloop_andstop")});
+        m_pButtonLoopDouble = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_double")});
+        m_pButtonLoopHalve = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_halve")});
+        m_pLoopEnabled = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_enabled")});
+        m_pLoopStartPoint = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_start_position")});
+        m_pLoopEndPoint = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_end_position")});
+        m_pLoopScale = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("loop_scale")});
+        m_pButtonPlay = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("play")});
+        m_pPlayPosition = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, QStringLiteral("playposition")});
         m_pButtonBeatMoveForward = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "loop_move_1_forward");
+                ConfigKey{m_sGroup1, "loop_move_1_forward"});
         m_pButtonBeatMoveBackward = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "loop_move_1_backward");
+                ConfigKey{m_sGroup1, "loop_move_1_backward"});
         m_pButtonBeatLoop2Activate = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_2_activate");
+                ConfigKey{m_sGroup1, "beatloop_2_activate"});
         m_pButtonBeatLoop4Activate = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_4_activate");
+                ConfigKey{m_sGroup1, "beatloop_4_activate"});
         m_pBeatLoop1Enabled = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_1_enabled");
+                ConfigKey{m_sGroup1, "beatloop_1_enabled"});
         m_pBeatLoop2Enabled = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_2_enabled");
+                ConfigKey{m_sGroup1, "beatloop_2_enabled"});
         m_pBeatLoop4Enabled = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_4_enabled");
+                ConfigKey{m_sGroup1, "beatloop_4_enabled"});
         m_pBeatLoop64Enabled = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_64_enabled");
-        m_pBeatLoop = std::make_unique<PollingControlProxy>(m_sGroup1, "beatloop");
-        m_pBeatLoopSize = std::make_unique<PollingControlProxy>(m_sGroup1, "beatloop_size");
+                ConfigKey{m_sGroup1, "beatloop_64_enabled"});
+        m_pBeatLoop = std::make_unique<PollingControlProxy>(ConfigKey{m_sGroup1, "beatloop"});
+        m_pBeatLoopSize = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, "beatloop_size"});
         m_pButtonBeatLoopActivate = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatloop_activate");
-        m_pBeatJumpSize = std::make_unique<PollingControlProxy>(m_sGroup1, "beatjump_size");
+                ConfigKey{m_sGroup1, "beatloop_activate"});
+        m_pBeatJumpSize = std::make_unique<PollingControlProxy>(
+                ConfigKey{m_sGroup1, "beatjump_size"});
         m_pButtonBeatJumpSizeDouble = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatjump_size_double");
+                ConfigKey{m_sGroup1, "beatjump_size_double"});
         m_pButtonBeatJumpSizeHalve = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatjump_size_halve");
+                ConfigKey{m_sGroup1, "beatjump_size_halve"});
         m_pButtonBeatJumpForward = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatjump_forward");
+                ConfigKey{m_sGroup1, "beatjump_forward"});
         m_pButtonBeatJumpBackward = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatjump_backward");
+                ConfigKey{m_sGroup1, "beatjump_backward"});
         m_pButtonBeatLoopRoll1Activate = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatlooproll_1_activate");
+                ConfigKey{m_sGroup1, "beatlooproll_1_activate"});
         m_pButtonBeatLoopRoll2Activate = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatlooproll_2_activate");
+                ConfigKey{m_sGroup1, "beatlooproll_2_activate"});
         m_pButtonBeatLoopRoll4Activate = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "beatlooproll_4_activate");
+                ConfigKey{m_sGroup1, "beatlooproll_4_activate"});
         m_pButtonBeatLoopAnchor = std::make_unique<PollingControlProxy>(
-                m_sGroup1, "loop_anchor");
+                ConfigKey{m_sGroup1, "loop_anchor"});
 
         ProcessBuffer();
     }

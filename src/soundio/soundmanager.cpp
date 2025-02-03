@@ -55,8 +55,8 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
-          m_audioLatencyOverloadCount(kAppGroup, QStringLiteral("audio_latency_overload_count")),
-          m_audioLatencyOverload(kAppGroup, QStringLiteral("audio_latency_overload")) {
+          m_audioLatencyOverloadCount({kAppGroup, QStringLiteral("audio_latency_overload_count")}),
+          m_audioLatencyOverload({kAppGroup, QStringLiteral("audio_latency_overload")}) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(

@@ -39,41 +39,37 @@ QHash<ConfigKey, ConfigKey> s_qCOAliasHash
 
 /// is used instead of a nullptr, helps to omit null checks everywhere
 QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
+
+double maybeLoadDefaultValueFromConfig(const ConfigKey& key, bool persist, double defaultValue) {
+    if (!persist) {
+        return defaultValue;
+    }
+    if (!s_pUserConfig) {
+        DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
+        return defaultValue;
+    }
+    return s_pUserConfig->getValue(key, defaultValue);
+}
+
 } // namespace
 
 // TODO: re-evaluate whether this is needed.
 ControlDoublePrivate::ControlDoublePrivate()
-        : ControlDoublePrivate({}, nullptr, true, false, false, kDefaultValue, true){};
+        : ControlDoublePrivate({{}, true}){};
 
-ControlDoublePrivate::ControlDoublePrivate(
-        const ConfigKey& key,
-        ControlObject* pCreatorCO,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
-        double defaultValue,
-        bool confirmRequired = false)
-        : m_key(key),
-          m_pBehavior(nullptr),
-          m_name(QString()),
-          m_description(QString()),
-          m_value(defaultValue),
-          m_defaultValue(defaultValue),
-          m_pCreatorCO(pCreatorCO),
-          m_trackingKey(bTrack ? statTrackingKey.arg(key.group, key.item) : QString()),
-          m_confirmRequired(confirmRequired),
-          m_bPersistInConfiguration(bPersist),
-          m_bIgnoreNops(bIgnoreNops),
-          m_kbdRepeatable(false) {
-    if (bPersist) {
-        UserSettingsPointer pConfig = s_pUserConfig;
-        if (pConfig) {
-            m_value.setValue(pConfig->getValue(m_key, defaultValue));
-        } else {
-            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
-        }
-    }
-
+ControlDoublePrivate::ControlDoublePrivate(const ParametersWithConfirm& params)
+        : m_key(params.key),
+          m_pBehavior(params.behavior),
+          m_name(params.name),
+          m_description(params.description),
+          m_value(maybeLoadDefaultValueFromConfig(params.key, params.persist, params.defaultValue)),
+          m_defaultValue(params.defaultValue),
+          m_pCreatorCO(params.pCreatorCO),
+          m_trackingKey(params.track ? statTrackingKey.arg(m_key.group, m_key.item) : QString()),
+          m_confirmRequired(params.confirmRequired),
+          m_bPersistInConfiguration(params.persist),
+          m_bIgnoreNops(params.ignoreNops),
+          m_kbdRepeatable(params.keyboardRepeatable) {
     if (!m_trackingKey.isNull()) {
         Stat::track(m_trackingKey, kStatType, kComputeFlags, m_value.getValue());
     }
@@ -126,17 +122,11 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 
 // static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
-        const ConfigKey& key,
-        ControlFlags flags,
-        ControlObject* pCreatorCO,
-        bool bIgnoreNops,
-        bool bTrack,
-        bool bPersist,
-        double defaultValue) {
-    if (!key.isValid()) {
-        if (!flags.testFlag(ControlFlag::AllowInvalidKey)) {
+        const ParametersWithFlags& params) {
+    if (!params.key.isValid()) {
+        if (!params.flags.testFlag(ControlFlag::AllowInvalidKey)) {
             qWarning() << "ControlDoublePrivate::getControl returning nullptr"
-                       << "for invalid ConfigKey" << key;
+                       << "for invalid ConfigKey" << params.key;
             DEBUG_ASSERT(!"Unexpected invalid key");
         }
         return nullptr;
@@ -145,25 +135,25 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     // Scope for MMutexLocker.
     {
         const MMutexLocker locker(&s_qCOHashMutex);
-        const auto it = s_qCOHash.constFind(key);
+        const auto it = s_qCOHash.constFind(params.key);
         if (it != s_qCOHash.constEnd()) {
             auto pControl = it.value().lock();
             if (pControl) {
                 auto actualKey = pControl->getKey();
-                if (actualKey != key) {
+                if (actualKey != params.key) {
                     qWarning()
                             << "ControlObject accessed via deprecated key"
-                            << key.group << key.item
+                            << params.key.group << params.key.item
                             << "- use"
                             << actualKey.group << actualKey.item
                             << "instead";
                 }
 
                 // Control object already exists
-                if (pCreatorCO) {
+                if (params.pCreatorCO) {
                     qWarning()
                             << "ControlObject"
-                            << key.group << key.item
+                            << params.key.group << params.key.item
                             << "already created";
                     DEBUG_ASSERT(!"pCreatorCO != nullptr, ControlObject already created");
                     return nullptr;
@@ -176,24 +166,19 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         }
     }
 
-    if (pCreatorCO) {
+    if (params.pCreatorCO) {
         auto pControl = QSharedPointer<ControlDoublePrivate>(
-                new ControlDoublePrivate(key,
-                        pCreatorCO,
-                        bIgnoreNops,
-                        bTrack,
-                        bPersist,
-                        defaultValue));
+                new ControlDoublePrivate({params}));
         const MMutexLocker locker(&s_qCOHashMutex);
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
-        s_qCOHash.insert(key, pControl);
+        s_qCOHash.insert(params.key, pControl);
         return pControl;
     }
 
-    if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
+    if (!params.flags.testFlag(ControlFlag::NoWarnIfMissing)) {
         qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                   << key.group << "," << key.item << ")";
-        DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
+                   << params.key.group << "," << params.key.item << ")";
+        DEBUG_ASSERT(params.flags.testFlag(ControlFlag::NoAssertIfMissing));
     }
     return nullptr;
 }

@@ -146,8 +146,8 @@ void BiquadFullKillEQEffectGroupState::setFilters(
 }
 
 BiquadFullKillEQEffect::BiquadFullKillEQEffect()
-        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
-          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
+        : m_pLoFreqCorner({kMixerProfile, kLowEqFrequency}),
+          m_pHiFreqCorner({kMixerProfile, kHighEqFrequency}) {
 }
 
 void BiquadFullKillEQEffect::loadEngineEffectParameters(

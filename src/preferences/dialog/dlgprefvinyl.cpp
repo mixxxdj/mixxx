@@ -115,7 +115,7 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_COSpeeds.length(); i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_COSpeeds.push_back(new PollingControlProxy(group, "vinylcontrol_speed_type"));
+        m_COSpeeds.push_back(new PollingControlProxy({group, "vinylcontrol_speed_type"}));
         setDeckWidgetsVisible(i, true);
     }
 }

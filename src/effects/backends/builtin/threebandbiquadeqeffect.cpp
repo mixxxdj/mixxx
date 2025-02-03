@@ -119,8 +119,8 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
 }
 
 ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect()
-        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
-          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
+        : m_pLoFreqCorner({kMixerProfile, kLowEqFrequency}),
+          m_pHiFreqCorner({kMixerProfile, kHighEqFrequency}) {
 }
 
 void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
