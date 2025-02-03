@@ -1,0 +1,559 @@
+  <!--
+  LateNight, Resizable skin for Mixxx 2.3.x
+  www.mixxx.org
+  Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>,
+  2019-2021 ronso0 <ronso0@mixxx.org>
+  "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+  http://creativecommons.org/licenses/by-sa/3.0/
+
+  With every copy of the work, you are required to either provide a copy of the license it self
+  or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+
+  You are free:
+  to Share - to copy, distribute and transmit the work
+  to Remix - to adapt the work
+
+  Under the following conditions:
+  Attribution - You must attribute the work in the manner specified by the author or licensor
+  (but not in any way that suggests that they endorse you or your use of the work).
+  A attribution should include the following: The name of the author and/or licensor,
+  the title of the work, the URL that is associated with the work.
+
+  Share Alike - If you alter, transform, or build upon this work, you may distribute
+  the resulting work only under the same or similar license to this one.
+
+  TODO: Remove "persist" attributes throughout the skin and confirm that declaring
+  them in the attributes section instead works.
+  -->
+
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>LateNight</title>
+    <author>owilliams, ronso0</author>
+    <version>2.4.0.01</version>
+    <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 16 samplers.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+    <!-- Set skin defaults -->
+      <attribute config_key="[App],num_decks">4</attribute>
+      <attribute config_key="[App],num_samplers">16</attribute>
+      <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
+
+    <!-- Decks -->
+      <!-- general -->
+      <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatjump_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Skin],select_big_spinny_or_cover">0</attribute>
+      <!-- ToDo: deck-independent vinyl controls? -->
+      <attribute persist="true" config_key="[Skin],show_vinylcontrol">0</attribute>
+      <!-- Deck variant that is shown as soon as the mixer is hidden.
+          See deck.xml and /helpers/skin_helper_deck_size.xml for documentation.
+          0=mini 1=compact(default) 2=full deck -->
+      <attribute persist="true" config_key="[LateNight],deck_size_without_mixer">1</attribute>
+      <!-- Full deck -->
+      <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
+      <!-- Compact deck -->
+      <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_beatjump_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_key_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_vumeters_compact">1</attribute>
+
+    <!-- Mixer -->
+      <attribute persist="true" config_key="[Skin],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_main_head_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
+      <attribute persist="true" config_key="[LateNight],show_vumeters_compact">1</attribute>
+    <!-- Effects -->
+      <attribute persist="true" config_key="[Skin],show_effectrack">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
+    <!-- Samplers -->
+      <attribute persist="true" config_key="[Skin],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[LateNight],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
+    <!-- Mic / Aux -->
+      <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
+    <!-- Library -->
+      <attribute config_key="[Skin],show_maximized_library">0</attribute>
+      <attribute config_key="[Skin],show_preparation_windows">0</attribute>
+      <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_preview_decks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_library_coverart">1</attribute>
+
+    <!-- Disable hidden effect routing Buttons -->
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
+    </attributes>
+  </manifest>
+
+  <Schemes>
+    <Scheme>
+      <Name>PaleMoon</Name>
+      <!-- Mix any of the existing button, knob, slider or style theme subsets.
+        The button templates for example link to skins:LateNight/BtnTheme/buttons/btn_...
+
+        BtnScheme     borders / background images for pushbuttons, spinboxes,
+                      effect selector, AutoDJ fade mode selector.
+                      If 'BtnSize' variable is undefined it links to transparent
+                      dummy icons like btn_embedded__active.svg
+              Note:   Icons for buttons that have images set in xml already are set
+                      in the respective style-[theme].qss
+        KnobScheme    guess what
+        SliderScheme  ...exactly!
+        StyleScheme   icons & backgrounds for library, splitters, spinnies,
+                      VU meter, default cover art etc. -->
+      <LaunchImageStyle>
+        LaunchImage {
+          background-color: #0f0f0f;
+        }
+        QLabel {
+          image: url(skins:LateNight/palemoon/style/mixxx_logo.svg);
+          padding: 0;
+          margin: 0px 2px 0px 2px;
+          border: none;
+          min-width: 160px;
+          max-width: 160px;
+          min-height: 40px;
+          max-height: 40px;
+        }
+        QProgressBar {
+          background: url(skins:LateNight/palemoon/style/progressbar_bg.svg);
+          border: none;
+          min-width: 164px;
+          max-width: 164px;
+          min-height: 5px;
+          max-height: 5px;
+        }
+        QProgressBar::chunk {
+          background: url(skins:LateNight/palemoon/style/progressbar.svg);
+        }
+      </LaunchImageStyle>
+
+      <Style src="skins:LateNight/style_palemoon.qss"/>
+
+      <SetVariable name="BtnScheme">palemoon</SetVariable>
+      <SetVariable name="KnobScheme">palemoon</SetVariable>
+      <SetVariable name="SliderScheme">palemoon</SetVariable>
+      <SetVariable name="StyleScheme">palemoon</SetVariable>
+
+      <!-- Waveform & Overview colors -->
+      <!-- This is a hack to have a grey background in empty decks.
+          When a track is loaded the bg gets darker for better contrast -->
+      <SetVariable name="BgColorOverview_12">#19191a</SetVariable>
+      <SetVariable name="BgColorOverview_34">#001b23</SetVariable>
+      <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
+      <SetVariable name="BgColorWaveform_12">#0f0f0e</SetVariable>
+      <SetVariable name="BgColorWaveform_34">#001b23</SetVariable>
+      <SetVariable name="SignalColor_12">#d9b28c</SetVariable>
+      <SetVariable name="SignalColor_34">#7bc6c3</SetVariable>
+
+      <!-- Only named colors are accepted, see w3 color chart
+          https://www.w3.org/wiki/CSS/Properties/color/keywords -->
+      <SetVariable name="SignalHighColor">mediumblue</SetVariable><!-- #0000cd -->
+      <SetVariable name="SignalMidColor">darkgreen</SetVariable><!-- #006400 -->
+      <SetVariable name="SignalLowColor">orangered</SetVariable><!-- #ff4500 -->
+
+      <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
+      <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
+      <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
+      <!-- When dragging a hotcue button in order to swap hotcues, the entire
+           widget rect is used for the dnd cursor but the margin is not considered.
+           '1' cuts off the colored overlap. -->
+      <SetVariable name="DndRectMarginHotcueBtn">1</SetVariable>
+
+      <SetVariable name="AxesColor">#999</SetVariable>
+      <SetVariable name="BeatColor">#999</SetVariable>
+      <SetVariable name="PlayPosColor">#00c6ff</SetVariable>
+      <SetVariable name="CueColor">#ff7a01</SetVariable>
+      <SetVariable name="LoopColor">#00b400</SetVariable>
+      <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
+      <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="SlipBorderOutlineColor">#f08c00</SetVariable>
+      <SetVariable name="PassthroughLabelColor">#b24c12</SetVariable>
+      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
+      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
+      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
+      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
+
+      <!-- Set the button icons used by templates in LateNight/controls/button...xml
+           There, those border icons are stacked on top of the additional icons set in css.
+           Other buttons that use text (like vinyl controls and Fx assign button) are styled
+           in css via
+              border-width: 2px;
+              border-image: url(skins:LateNight/path/to/btn_icon.svg) 2 2 2 2;
+        Example themes: (in PaleMoon only the embedded style is used)
+        * elevated: domed buttons that stand out, with a 3D border and a drop shadow
+        * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
+       -->
+      <!-- Buttons in top-level containers like mixer, rate controls, collapsed FxUnits etc. -->
+      <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
+      <!-- Buttons in subregions like transport row, mic/aux units etc. -->
+      <SetVariable name="SubRegion_BtnType">embedded</SetVariable>
+
+      <!-- Knob settings -->
+      <SetVariable name="PotiMinAngle">-130</SetVariable>
+      <SetVariable name="PotiMaxAngle">130</SetVariable>
+      <!-- Arc Settings -->
+      <SetVariable name="ArcRadiusBig">14.5</SetVariable>
+      <SetVariable name="ArcRadiusCompact">12.5</SetVariable>
+      <SetVariable name="ArcRadiusSmall">12.0</SetVariable>
+      <SetVariable name="ArcThicknessBig">2</SetVariable>
+      <SetVariable name="ArcRoundCaps">true</SetVariable>
+      <!-- Arc Colors -->
+      <SetVariable name="ArcColorEq">#858585</SetVariable>
+      <SetVariable name="ArcColorGain">#b96300</SetVariable>
+      <SetVariable name="ArcColorFx12Quick">#518f00</SetVariable>
+      <SetVariable name="ArcColorFx34">#028392</SetVariable>
+      <SetVariable name="ArcColorFxParameter">#6d6d6d</SetVariable>
+      <SetVariable name="ArcColorGainLow">#8d3b11</SetVariable>
+      <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
+      <SetVariable name="ArcColorFxMix">#a00000</SetVariable>
+      <!-- Knob pointers = suffix for indicator image url -->
+      <SetVariable name="KnobColorEq">grey</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
+      <SetVariable name="KnobColorFx12">green</SetVariable>
+      <SetVariable name="KnobColorFx34">blue</SetVariable>
+      <SetVariable name="KnobColorFxParameter">grey</SetVariable>
+      <!-- Size of the small EQ kill indicators:
+          svg is 6x6 px, set size to '0f,0f' to hide them -->
+      <SetVariable name="EqKillDotSize">9f,9f</SetVariable>
+
+      <!-- Slider bar settings -->
+      <SetVariable name="BarBgColor">#020202</SetVariable>
+      <SetVariable name="BarColorVolume">#257b82</SetVariable>
+      <SetVariable name="BarColorCrossfader">#257b82</SetVariable>
+      <SetVariable name="BarColorPitch">#888</SetVariable>
+      <SetVariable name="BarWidth">2</SetVariable>
+      <SetVariable name="BarMarginVolume">8,8</SetVariable>
+      <SetVariable name="BarMarginPitch">7,8</SetVariable>
+      <SetVariable name="BarMarginPitchSampler">5,5</SetVariable>
+      <SetVariable name="BarMarginCrossfader">7,7</SetVariable>
+    </Scheme><!-- PaleMoon -->
+
+    <Scheme>
+      <Name>Classic</Name>
+      <!-- Classic theme. Bulky containers, hatched backgrounds, no knob arcs -->
+      <LaunchImageStyle>
+        LaunchImage {
+          background-color: #1e1e1e;
+        }
+        QLabel {
+          image: url(skins:LateNight/classic/style/mixxx_logo.svg);
+          padding: 0;
+          margin: 0px 2px 0px 2px;
+          border: none;
+          min-width: 162px;
+          max-width: 162px;
+          min-height: 42px;
+          max-height: 42px;
+        }
+        QProgressBar {
+          background: url(skins:LateNight/classic/style/progressbar_bg.svg);
+          border: none;
+          min-width: 160px;
+          max-width: 160px;
+          min-height: 5px;
+          max-height: 5px;
+        }
+        QProgressBar::chunk {
+          background: url(skins:LateNight/classic/style/progressbar.svg);
+        }
+      </LaunchImageStyle>
+
+      <Style src="skins:LateNight/style_classic.qss"/>
+
+      <SetVariable name="BtnScheme">classic</SetVariable>
+      <SetVariable name="KnobScheme">classic</SetVariable>
+      <SetVariable name="SliderScheme">classic</SetVariable>
+      <SetVariable name="StyleScheme">classic</SetVariable>
+
+      <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
+      <SetVariable name="SubRegion_BtnType">elevated</SetVariable>
+
+      <!-- Knob settings -->
+      <SetVariable name="PotiMinAngle">-135</SetVariable>
+      <SetVariable name="PotiMaxAngle">135</SetVariable>
+      <SetVariable name="KnobColorEq">red</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
+      <SetVariable name="KnobColorFx12">green</SetVariable>
+      <SetVariable name="KnobColorFx34">blue</SetVariable>
+      <SetVariable name="KnobColorFxParameter">white</SetVariable>
+      <!-- EQ kill dots conflict with arcs in Classic knob backgrounds.
+        Leaving it blank could cause users to accidentally click it
+        without having a 'kill' indicator, so we 'remove' it. -->
+      <SetVariable name="EqKillDotSize">0f,0f</SetVariable>
+
+      <!-- Waveform & Overview colors -->
+      <SetVariable name="BgColorOverview_12">rgba(15, 15, 15, 20)</SetVariable>
+      <SetVariable name="BgColorOverview_34">rgba(0, 27, 35, 120)</SetVariable>
+      <SetVariable name="BgColorOverview_SamPre">#0f0f0f</SetVariable>
+      <SetVariable name="BgColorWaveform_12">#0f0f0e</SetVariable>
+      <SetVariable name="BgColorWaveform_34">#001b23</SetVariable>
+      <SetVariable name="SignalColor_12">#e7c413</SetVariable>
+      <SetVariable name="SignalColor_34">#09b2ae</SetVariable>
+      <!-- default colors -->
+      <SetVariable name="SignalHighColor">blue</SetVariable>
+      <SetVariable name="SignalMidColor">green</SetVariable>
+      <SetVariable name="SignalLowColor">red</SetVariable>
+      <SetVariable name="AxesColor">#ffffff</SetVariable>
+      <SetVariable name="BeatColor">#ffffff</SetVariable>
+      <SetVariable name="PlayPosColor">#00c8ff</SetVariable>
+      <SetVariable name="CueColor">#ff001c</SetVariable>
+      <SetVariable name="LoopColor">#00ff00</SetVariable>
+      <SetVariable name="IntroOutroColor">#0000ff</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
+      <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="SlipBorderOutlineColor">#1af000</SetVariable>
+      <SetVariable name="PassthroughLabelColor">#d09300</SetVariable>
+      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
+      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
+      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
+      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
+    </Scheme><!-- Classic -->
+  </Schemes>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skins:LateNight/style.qss"
+         src-linux="skins:default-menu-styles-linux.qss"
+         src-windows="skins:default-menu-styles-windows.qss"/>
+  <!-- MinimumSize should not be an exact monitor resolution. There needs
+  to be space for the title bar or other chrome at full screen.
+  https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
+  <MinimumSize>1280,668</MinimumSize>
+  <SizePolicy>me,me</SizePolicy>
+  <Layout>vertical</Layout>
+  <Children>
+
+    <SetVariable name="Align">center</SetVariable>
+
+    <!-- Define singletons as early in the skin as possible.
+    Note that Singletons don't actually appear here, they are just instantiated
+    and configured. -->
+    <SingletonDefinition>
+      <ObjectName>Deck1_Src</ObjectName>
+      <Children>
+      <Template src="skins:LateNight/decks/deck.xml">
+        <SetVariable name="ChanNum">1</SetVariable>
+        <SetVariable name="DeckGroup">12</SetVariable>
+        <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
+      </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Deck2_Src</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/deck.xml">
+          <SetVariable name="ChanNum">2</SetVariable>
+          <SetVariable name="DeckGroup">12</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Deck3_Src</ObjectName>
+      <Children>
+      <Template src="skins:LateNight/decks/deck.xml">
+        <SetVariable name="ChanNum">3</SetVariable>
+        <SetVariable name="DeckGroup">34</SetVariable>
+        <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        <SetVariable name="BgColor"><Variable name="BgColorOverview_34"/></SetVariable>
+      </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Deck4_Src</ObjectName>
+      <Children>
+      <Template src="skins:LateNight/decks/deck.xml">
+        <SetVariable name="ChanNum">4</SetVariable>
+        <SetVariable name="DeckGroup">34</SetVariable>
+        <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        <SetVariable name="BgColor"><Variable name="BgColorOverview_34"/></SetVariable>
+      </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <Template src="skins:LateNight/mixer/singletons.xml"/>
+
+    <SingletonDefinition>
+      <ObjectName>LibrarySingleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/helpers/skin_settings_samplers.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <WidgetGroup>
+      <ObjectName>SkinContainer</ObjectName>
+      <Layout>vertical</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <Children>
+
+        <Template src="skins:LateNight/toolbar.xml"/>
+
+        <!-- regular/maximized library  |  skin settings menu -->
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+
+            <!-- regular or maximized library -->
+            <WidgetStack currentpage="[Skin],show_maximized_library">
+              <Children>
+
+                <!-- Waveforms, Decks, Effects... /  Library
+                This view needs to be set up first because it instantiates
+                the mini deck Singletons we need in maximized library view. -->
+                <Splitter>
+                  <ObjectName>WaveformSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SizePolicy>me,min</SizePolicy>
+                  <SplitSizes>100,550</SplitSizes>
+                  <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
+                  <Collapsible>0,0</Collapsible>
+                  <Children>
+
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,me</SizePolicy>
+                      <Children>
+                        <Template src="skins:LateNight/waveforms_container.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                      <ObjectName>DecksMixerContainer</ObjectName>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,me</SizePolicy>
+                      <Children>
+                        <WidgetGroup><!-- Top spacer when waveforms are hidden -->
+                          <ObjectName>ToolbarDeckSpacer</ObjectName>
+                          <Connection>
+                            <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup><!-- ToolbarDeckSpacer -->
+
+                        <WidgetGroup>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>me,max</SizePolicy>
+                          <Children>
+                            <Template src="skins:LateNight/decks/decks_left.xml"/>
+                            <Template src="skins:LateNight/mixer.xml"/>
+                            <Template src="skins:LateNight/decks/decks_right.xml"/>
+                          </Children>
+                        </WidgetGroup>
+
+                        <Template src="skins:LateNight/fx_rack.xml"/>
+                        <Template src="skins:LateNight/samplers_rack.xml"/>
+                        <Template src="skins:LateNight/mic_aux_rack.xml"/>
+
+                        <SingletonContainer>
+                          <ObjectName>LibrarySingleton</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                    </WidgetGroup>
+
+                  </Children>
+                </Splitter>
+                <!-- Decks, Effects, Samplers, Mic/Aux, Library -->
+
+                <!-- Maximized Library & mini decks only -->
+                <WidgetGroup trigger="[Skin],show_maximized_library" on_hide_select="0">
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <!-- Adjusted for PrepWin -->
+                  <SplitSizes>3,6,3</SplitSizes>
+                  <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+                  <Collapsible>1,0,1</Collapsible>
+                  <!-- Allow hiding the PrepWin -->
+
+                  <Children>
+
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skins:LateNight/decks/decks_left_mini.xml"/>
+                        <Template src="skins:LateNight/decks/decks_right_mini.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey persist="true">[LateNight],max_lib_show_decks</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <SingletonContainer>
+                      <ObjectName>LibrarySingleton</ObjectName>
+                    </SingletonContainer>
+
+                    <!--WidgetGroup trigger="[Skin],show_preparation_window">
+                      <ObjectName>LibraryPreparationWindow</ObjectName>
+                    </WidgetGroup-->
+
+                  </Children>
+                </WidgetGroup><!-- Maximized Library & mini decks only -->
+
+              </Children>
+            </WidgetStack>
+            <Template src="skins:LateNight/skin_settings.xml"/>
+
+          </Children>
+        </WidgetGroup><!-- regular/maximized library + skin settings menu -->
+
+      </Children>
+    </WidgetGroup>
+  </Children>
+</skin>

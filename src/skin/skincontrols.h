@@ -15,6 +15,7 @@ class SkinControls {
     ControlPushButton m_show4EffectUnits;
     ControlPushButton m_showCoverArt;
     ControlPushButton m_showMaximizedLibrary;
+    ControlPushButton m_showPreparationWindow;
     ControlPushButton m_showMixer;
     ControlPushButton m_showSettings;
     ControlPushButton m_showSpinnies;

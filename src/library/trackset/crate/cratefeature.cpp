@@ -24,6 +24,7 @@
 #include "util/defs.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -281,6 +282,19 @@ void CrateFeature::bindLibraryWidget(
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
+}
+
+void CrateFeature::bindLibraryPreparationWindowWidget(
+        WLibrary* libraryPreparationWindowWidget, KeyboardEventFilter* keyboard) {
+    Q_UNUSED(keyboard);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryPreparationWindowWidget);
+    edit->setHtml(formatRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &CrateFeature::htmlLinkClicked);
+    libraryPreparationWindowWidget->registerView(m_rootViewName, edit);
 }
 
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

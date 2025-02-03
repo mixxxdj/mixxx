@@ -19,6 +19,7 @@
 class KeyboardEventFilter;
 class Library;
 class WLibrary;
+class WLibraryPreparationWindow;
 class WLibrarySidebar;
 class QAbstractItemModel;
 
@@ -81,6 +82,9 @@ class LibraryFeature : public QObject {
     // Reimplement this to register custom views with the library widget.
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
+    virtual void bindLibraryPreparationWindowWidget(WLibrary* /* library Widget */,
+            KeyboardEventFilter* /* keyboard */) {
+    }
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
     virtual TreeItemModel* sidebarModel() const = 0;
 

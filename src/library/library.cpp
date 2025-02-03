@@ -37,7 +37,9 @@
 #include "util/logger.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wpreparationwindowtracktableview.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
@@ -70,6 +72,7 @@ Library::Library(
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
+          m_pLibraryPreparationWindowWidget(nullptr),
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
@@ -457,6 +460,98 @@ void Library::bindLibraryWidget(
 
     for (const auto& feature : std::as_const(m_features)) {
         feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
+    }
+
+    // Set the current font and row height on all the WTrackTableViews that were
+    // just connected to us.
+    emit setTrackTableFont(m_trackTableFont);
+    emit setTrackTableRowHeight(m_iTrackTableRowHeight);
+    emit setSelectedClick(m_editMetadataSelectedClick);
+}
+
+void Library::bindLibraryPreparationWindowWidget(
+        WLibrary* pLibraryPreparationWindowWidget, KeyboardEventFilter* pKeyboard) {
+    m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
+    WPreparationWindowTrackTableView* pPreparationWindowTrackTableView =
+            new WPreparationWindowTrackTableView(
+                    m_pLibraryPreparationWindowWidget,
+                    m_pConfig,
+                    this,
+                    m_pLibraryPreparationWindowWidget
+                            ->getTrackTableBackgroundColorOpacity(),
+                    true);
+    pPreparationWindowTrackTableView->installEventFilter(pKeyboard);
+    connect(this,
+            &Library::showTrackModel,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::loadTrackModel);
+    // connect(this,
+    //         &Library::pasteFromSidebar,
+    //         m_pLibraryPreparationWindowWidget,
+    //         &WLibrary::pasteFromSidebar);
+    connect(pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::loadTrack,
+            this,
+            &Library::slotLoadTrack);
+    connect(pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::loadTrackToPlayer,
+            this,
+            &Library::slotLoadTrackToPlayer);
+    m_pLibraryPreparationWindowWidget->registerView(
+            m_sTrackViewName, pPreparationWindowTrackTableView);
+
+    connect(m_pLibraryPreparationWindowWidget,
+            &WLibrary::setLibraryFocus,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
+    // connect(this,
+    //         &Library::switchToView,
+    //         m_pLibraryPreparationWindowWidget,
+    //         &WLibrary::switchToView);
+    connect(this,
+            &Library::saveModelState,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::slotSaveCurrentViewState);
+    connect(this,
+            &Library::restoreModelState,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::slotRestoreCurrentViewState);
+    connect(this,
+            &Library::selectTrack,
+            m_pLibraryPreparationWindowWidget,
+            &WLibrary::slotSelectTrackInActiveTrackView);
+    connect(pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::trackSelected,
+            this,
+            &Library::trackSelected);
+
+    connect(this,
+            &Library::setTrackTableFont,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::setTrackTableFont);
+    connect(this,
+            &Library::setTrackTableRowHeight,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::setTrackTableRowHeight);
+    connect(this,
+            &Library::setSelectedClick,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::setSelectedClick);
+
+    m_pLibraryControl->bindLibraryWidget(m_pLibraryPreparationWindowWidget, pKeyboard);
+
+    connect(m_pLibraryControl,
+            &LibraryControl::showHideTrackMenu,
+            pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::slotShowHideTrackMenu);
+    connect(pPreparationWindowTrackTableView,
+            &WPreparationWindowTrackTableView::trackMenuVisible,
+            m_pLibraryControl,
+            &LibraryControl::slotUpdateTrackMenuControl);
+
+    for (const auto& feature : std::as_const(m_features)) {
+        //    feature->bindLibraryPreparationWindowWidget(m_pLibraryPreparationWindowWidget,
+        //    pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were

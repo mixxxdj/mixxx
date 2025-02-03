@@ -37,6 +37,8 @@ class CrateFeature : public BaseTrackSetFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
+    void bindLibraryPreparationWindowWidget(WLibrary* libraryPreparationWindowWidget,
+            KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;

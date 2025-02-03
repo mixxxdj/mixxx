@@ -57,6 +57,7 @@
 #include "widget/wknobcomposed.h"
 #include "widget/wlabel.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
@@ -633,6 +634,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebar") {
         result = wrapWidget(parseLibrarySidebar(node));
+    } else if (nodeName == "LibraryPreparationWindow") {
+        result = wrapWidget(parseLibraryPreparationWindow(node));
     } else if (nodeName == "Library") {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
@@ -1692,6 +1695,46 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     return pLibraryWidget;
 }
 
+// Eve Preparation Window
+QWidget* LegacySkinParser::parseLibraryPreparationWindow(const QDomElement& node) {
+    WLibrary* pLibraryPreparationWindowWidget = new WLibrary(m_pParent);
+    pLibraryPreparationWindowWidget->installEventFilter(m_pKeyboard);
+    pLibraryPreparationWindowWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pLibraryPreparationWindowWidget->setup(node, *m_pContext);
+    // commonWidgetSetup(node, pLibraryPreparationWindowWidget, false);
+
+    const auto bpmColumnPrecision =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
+                    BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
+
+    const auto keyColorsEnabled =
+            m_pConfig->getValue(
+                    ConfigKey("[Config]", "key_colors_enabled"),
+                    BaseTrackTableModel::kKeyColorsEnabledDefault);
+    BaseTrackTableModel::setKeyColorsEnabled(keyColorsEnabled);
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    BaseTrackTableModel::setKeyColorPalette(colorPaletteSettings.getConfigKeyColorPalette());
+
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    BaseTrackTableModel::setApplyPlayedTrackColor(applyPlayedTrackColor);
+
+    m_pLibrary->bindLibraryPreparationWindowWidget(pLibraryPreparationWindowWidget, m_pKeyboard);
+
+    // This must come after the bindLibraryWidget or we will not style any of the
+    // LibraryView's because they have not been added yet.
+    commonWidgetSetup(node, pLibraryPreparationWindowWidget, false);
+
+    return pLibraryPreparationWindowWidget;
+}
+
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
@@ -1727,6 +1770,7 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
 
     m_pParent = pSplitter;
     QWidget* pLibraryWidget = parseLibrary(node);
+    QWidget* pLibraryPreparationWindowWidget = parseLibraryPreparationWindow(node);
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
     m_pParent = pLibrarySidebarPage;
@@ -1745,6 +1789,7 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
 
     pSplitter->addWidget(pLibrarySidebarPage);
     pSplitter->addWidget(pLibraryWidget);
+    pSplitter->addWidget(pLibraryPreparationWindowWidget);
 
     // TODO(rryan) can we make this more elegant?
     QList<int> splitterSizes;

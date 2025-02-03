@@ -31,7 +31,9 @@ class SidebarModel;
 class TrackCollectionManager;
 class WSearchLineEdit;
 class WLibrarySidebar;
+class WLibraryPreparationWindowSidebar;
 class WLibrary;
+class WPreparationWindow;
 class QAbstractItemModel;
 
 #ifdef __ENGINEPRIME__
@@ -70,6 +72,8 @@ class Library: public QObject {
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
+    void bindLibraryPreparationWindowWidget(WLibrary* libraryPreparationWindowWidget,
+            KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
 
@@ -191,6 +195,7 @@ class Library: public QObject {
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
     WLibrary* m_pLibraryWidget;
+    WLibrary* m_pLibraryPreparationWindowWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;

@@ -4,7 +4,6 @@
     <Layout>horizontal</Layout>
     <SizePolicy>e,min</SizePolicy>
     <Children>
-
       <Template src="skins:LateNight/controls/button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -19,7 +18,8 @@
         <Size>12f,9min</Size>
       </WidgetGroup>
 
-      <WidgetGroup><!-- GUI toggles with regular library -->
+      <WidgetGroup>
+        <!-- GUI toggles with regular library -->
         <ObjectName>ToolBarSection</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
@@ -79,15 +79,28 @@
             <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
           </Template>
 
+          <Template src="skins:LateNight/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_preparation_window</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">80f,20f</SetVariable>
+            <SetVariable name="state_0_text">PREP WIN</SetVariable>
+            <SetVariable name="state_1_text">PREP WIN</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_preparation_window</SetVariable>
+          </Template>
+
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_maximized_library</ConfigKey>
-          <Transform><Not/></Transform>
+          <Transform>
+            <Not/>
+          </Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- GUI toggles with regular library -->
+      </WidgetGroup>
+      <!-- GUI toggles with regular library -->
 
-      <WidgetGroup><!-- GUI toggles with maximized library -->
+      <WidgetGroup>
+        <!-- GUI toggles with maximized library -->
         <ObjectName>ToolBarSection</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
@@ -111,23 +124,41 @@
             <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
           </Template>
 
+          <Template src="skins:LateNight/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_preparation_window</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">80f,20f</SetVariable>
+            <SetVariable name="state_0_text">PREP WIN</SetVariable>
+            <SetVariable name="state_1_text">PREP WIN</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_preparation_window</SetVariable>
+          </Template>
+
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_maximized_library</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- GUI toggles with maximized library -->
+      </WidgetGroup>
+      <!-- GUI toggles with maximized library -->
 
-      <WidgetGroup><Size>me,min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>me,min</Size>
+      </WidgetGroup>
 
       <StatusLight>
         <TooltipId>autodj_status</TooltipId>
         <ObjectName>AutoDjStatus</ObjectName>
         <Size>30f,22f</Size>
         <NumberPos>3</NumberPos>
-        <PathStatusLight1>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
-        <PathStatusLight2>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
-        <PathStatusLight3>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
+        <PathStatusLight1>
+          skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg
+        </PathStatusLight1>
+        <PathStatusLight2>
+          skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg
+        </PathStatusLight2>
+        <PathStatusLight3>
+          skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg
+        </PathStatusLight3>
         <Connection>
           <ConfigKey>[AutoDJ],enabled</ConfigKey>
         </Connection>
@@ -148,7 +179,9 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>7f,1min</Size>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>LatencyBatteryContainer</ObjectName>
@@ -160,7 +193,9 @@
             <ObjectName></ObjectName>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><Size>,0min</Size></WidgetGroup>
+              <WidgetGroup>
+                <Size>,0min</Size>
+              </WidgetGroup>
               <WidgetGroup>
                 <ObjectName>LatencyMeterBox</ObjectName>
                 <Size>61f,7f</Size>
@@ -169,8 +204,12 @@
                   <VuMeter>
                     <TooltipId>audio_latency_usage</TooltipId>
                     <Size>59f,5f</Size>
-                    <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/latency_bg.png</PathBack>
-                    <PathVu>skins:LateNight/<Variable name="StyleScheme"/>/style/latency_over.png</PathVu>
+                    <PathBack>
+                      skins:LateNight/<Variable name="StyleScheme"/>/style/latency_bg.png
+                    </PathBack>
+                    <PathVu>
+                      skins:LateNight/<Variable name="StyleScheme"/>/style/latency_over.png
+                    </PathVu>
                     <Horizontal>true</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>1000</PeakHoldTime>
@@ -185,7 +224,8 @@
                   <ConfigKey>[App],audio_latency_overload</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- LatencyMeterBox -->
+              </WidgetGroup>
+              <!-- LatencyMeterBox -->
               <Label>
                 <ObjectName>LatencyLabel</ObjectName>
                 <TooltipId>audio_latency_usage</TooltipId>
@@ -194,11 +234,15 @@
                 <Text>CPU Load</Text>
               </Label>
             </Children>
-          </WidgetGroup><!-- LatencyMeterBox -->
+          </WidgetGroup>
+          <!-- LatencyMeterBox -->
         </Children>
-      </WidgetGroup><!-- LatencyBatteryContainer -->
+      </WidgetGroup>
+      <!-- LatencyBatteryContainer -->
 
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>7f,1min</Size>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>BatteryBox</ObjectName>
@@ -208,17 +252,27 @@
             <ObjectName>Battery</ObjectName>
             <Size>24,24</Size>
             <SizePolicy>f,f</SizePolicy>
-            <PixmapCharged scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
+            <PixmapCharged scalemode="STRETCH_ASPECT">
+              skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg
+            </PixmapCharged>
             <NumberStates>8</NumberStates>
-            <PixmapsCharging scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
-            <PixmapsDischarging scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">
+              skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg
+            </PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">
+              skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg
+            </PixmapsDischarging>
           </Battery>
         </Children>
-      </WidgetGroup><!-- BatteryBox -->
+      </WidgetGroup>
+      <!-- BatteryBox -->
 
-      <WidgetGroup><Size>9f,min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>9f,min</Size>
+      </WidgetGroup>
 
-      <WidgetGroup><!-- Recording button & recording duration label -->
+      <WidgetGroup>
+        <!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
         <Size>72f,20f</Size>
@@ -233,7 +287,8 @@
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Rec dot + RecDuration -->
+          <WidgetGroup>
+            <!-- Rec dot + RecDuration -->
             <Layout>horizontal</Layout>
             <Size>68f,20f</Size>
             <Children>
@@ -257,7 +312,8 @@
                 </Connection>
               </RecordingDuration>
             </Children>
-          </WidgetGroup><!-- /Rec dot + RecDuration -->
+          </WidgetGroup>
+          <!-- /Rec dot + RecDuration -->
 
           <!-- Rec feedback color -->
           <Template src="skins:LateNight/controls/button_3state_display.xml">
@@ -267,7 +323,8 @@
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup><!-- /Recording button & recording duration label -->
+      </WidgetGroup>
+      <!-- /Recording button & recording duration label -->
 
       <Template src="skins:LateNight/controls/button_4state_display.xml">
         <SetVariable name="ObjectName">BroadcastButton</SetVariable>
@@ -304,14 +361,18 @@
         </Connection>
       </PushButton>
 
-      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>7f,min</Size>
+      </WidgetGroup>
 
       <Label>
         <ObjectName>ToolbarLogo</ObjectName>
         <Size>74f,24f</Size>
       </Label>
 
-      <WidgetGroup><Size>2f,min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>2f,min</Size>
+      </WidgetGroup>
 
     </Children>
     <Connection>
