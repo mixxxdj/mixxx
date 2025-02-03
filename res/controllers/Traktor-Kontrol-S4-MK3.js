@@ -2523,8 +2523,25 @@ class S4Mk3Deck extends Deck {
         this.wheelLED = new Component({
             deck: this,
             lastPos: 0,
-            outKey: "playposition",
-            output: function(fractionOfTrack) {
+            outConnect: function() {
+                if (this.group !== undefined) {
+                    const connection0 = engine.makeConnection(this.group, "playposition", (position) => this.output.bind(this)(position, true));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection0) {
+                        this.outConnections[0] = connection0;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.playposition' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection1 = engine.makeConnection(this.group, "play", (play) => this.output.bind(this)(engine.getValue(this.group, "playposition"), play));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection1) {
+                        this.outConnections[0] = connection1;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
+                    }
+                }
+            },
+            output: function(fractionOfTrack, playstate) {
                 if (this.deck.wheelMode > wheelModes.motor) {
                     return;
                 }
@@ -2568,7 +2585,7 @@ class S4Mk3Deck extends Deck {
                 const wheelOutput = new Uint8Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
 
-                if (engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
+                if (playstate && fractionOfTrack < 1 && engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
                     wheelOutput[1] = wheelLEDmodes.ringFlash;
                 } else {
                     wheelOutput[1] = wheelLEDmodes.spot;
@@ -2578,7 +2595,6 @@ class S4Mk3Deck extends Deck {
                 wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
                 controller.sendOutputReport(50, wheelOutput.buffer, true);
-
             }
         });
 
