@@ -114,8 +114,6 @@ public:
     QSet<TrackId> getCachedTrackIds() const;
 
   private:
-    friend class GlobalTrackCache;
-
     void lockCache();
 
 protected:
@@ -136,6 +134,7 @@ public:
           mixxx::FileAccess fileAccess,
           TrackId trackId);
   GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
+  GlobalTrackCacheResolver() = delete;
   GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 
   GlobalTrackCacheLookupResult getLookupResult() const {
@@ -157,7 +156,6 @@ public:
 
 private:
     friend class GlobalTrackCache;
-    GlobalTrackCacheResolver();
 
     void initLookupResult(
             GlobalTrackCacheLookupResult lookupResult,
@@ -240,10 +238,9 @@ class GlobalTrackCache : public QObject {
     TrackPointer lookupByCanonicalLocation(
             const QString& canonicalLocation);
 
-    /// Lookup the track either by id (primary) or by
-    /// canonical location (secondary). The id of the
-    /// returned track might differ from the requested
-    /// id due to file system aliasing!!
+    /// Lookup the track either first by id primary or afterwards by canonical
+    /// location. If a track with a different ID and the same canonical
+    /// location is already cached, a nullptr is returned.
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
 
