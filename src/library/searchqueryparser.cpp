@@ -82,6 +82,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                   << "comment"
                   << "location"
                   << "crate"
+                  << "itunes"
                   << "type";
     m_numericFilters << "track"
                      << "played"
@@ -201,6 +202,9 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 if (field == "crate") {
                     pNode = std::make_unique<CrateFilterNode>(
                             &m_pTrackCollection->crates(), argument);
+                } else if (field == "itunes") {
+                    pNode = std::make_unique<ITunesFilterNode>(
+                            m_pTrackCollection->database(), argument);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
                             m_pTrackCollection->database(),
