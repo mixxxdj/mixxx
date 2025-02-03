@@ -27,6 +27,10 @@ class allshader::WaveformRenderBeat final
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
+    void setup(const QColor& color) {
+        m_color = color;
+    }
+
     // Virtuals for rendergraph::Node
     void preprocess() override;
 

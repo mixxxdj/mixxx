@@ -2,21 +2,32 @@
 
 #include "skin/legacy/skincontext.h"
 #include "util/span.h"
+#include "waveform/ivisualgainprovider.h"
+#include "waveform/waveform.h"
 #include "waveformrendererabstract.h"
 
 class ControlProxy;
 class WaveformSignalColors;
+class IVisualGainProvider;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
 public:
-    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidgetRenderer);
-    virtual ~WaveformRendererSignalBase();
+  explicit WaveformRendererSignalBase(
+          WaveformWidgetRenderer* waveformWidgetRenderer,
+          const IVisualGainProvider* visualGainProvider = nullptr);
+  virtual ~WaveformRendererSignalBase();
 
-    virtual bool init();
-    virtual void setup(const QDomNode& node, const SkinContext& context);
+  virtual bool init();
+  virtual void setup(const QDomNode& node, const SkinContext& context);
 
-    virtual bool onInit() {return true;}
+  virtual bool onInit() {
+      return true;
+  }
     virtual void onSetup(const QDomNode &node) = 0;
+
+    void setVisualGainProvider(IVisualGainProvider* provider) {
+        m_visualGainProvider = provider;
+    }
 
   protected:
     void deleteControls();
@@ -51,4 +62,6 @@ public:
     float m_rgbLowFilteredColor_r, m_rgbLowFilteredColor_g, m_rgbLowFilteredColor_b;
     float m_rgbMidFilteredColor_r, m_rgbMidFilteredColor_g, m_rgbMidFilteredColor_b;
     float m_rgbHighFilteredColor_r, m_rgbHighFilteredColor_g, m_rgbHighFilteredColor_b;
+
+    const IVisualGainProvider* m_visualGainProvider;
 };
