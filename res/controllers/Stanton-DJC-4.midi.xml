@@ -2655,6 +2655,26 @@
           <normal />
         </options>
       </control>
+      <control>
+        <group>[AutoDJ]</group>
+        <key>enabled</key>
+        <description>Toggle AutoDJ enable</description>
+        <status>0x90</status>
+        <midino>0x5A</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+    <control>
+      <group>[AutoDJ]</group>
+      <key>fade_now</key>
+      <description>AutoDJ fade to next track</description>
+      <status>0x90</status>
+      <midino>0x28</midino>
+      <options>
+        <normal/>
+      </options>
+    </control>
     </controls>
     <outputs>
       <output>
