@@ -2493,6 +2493,9 @@ if(ENGINEPRIME)
       IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
     )
     add_dependencies(mixxx-libdjinterop libdjinterop)
+    # Add the local include directory explicitly before linking the library
+    # to make sure not the system provided headers are used
+    target_include_directories(mixxx-lib BEFORE PRIVATE "${DJINTEROP_INSTALL_DIR}/include")
     target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
   endif()
 
