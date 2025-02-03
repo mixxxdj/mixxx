@@ -4,7 +4,7 @@
 
 /// This class represents a HID or Bulk controller mapping, containing the data
 /// elements that make it up.
-class LegacyHidControllerMapping : public LegacyControllerMapping {
+class LegacyHidControllerMapping final : public LegacyControllerMapping {
   public:
     LegacyHidControllerMapping() {
     }
