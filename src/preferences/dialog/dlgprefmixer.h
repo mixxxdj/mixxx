@@ -13,6 +13,7 @@
 class QComboBox;
 class QWidget;
 class EffectsManager;
+class QTimer;
 
 class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT
@@ -26,10 +27,12 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
   public slots:
     void slotApply() override;
+    /// Update the widgets with values from config / EffectsManager
     void slotUpdate() override;
     void slotResetToDefaults() override;
 
   private slots:
+    /// Create EQ & QuickEffect selectors and deck label for each added deck
     void slotNumDecksChanged(double numDecks);
     void slotEQEffectSelectionChanged(int effectIndex);
     void slotQuickEffectSelectionChanged(int effectIndex);
@@ -41,16 +44,20 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotStemAutoResetToggled(bool checked);
 #endif
     void slotBypassEqToggled(bool checked);
-    // Create, populate and show/hide EQ & QuickEffect selectors, considering the
-    // number of decks and the 'Single EQ' checkbox
+    /// Create, populate and show/hide EQ & QuickEffect selectors, considering the
+    /// number of decks and the 'Single EQ' checkbox
     void slotPopulateDeckEqSelectors();
     void slotPopulateQuickEffectSelectors();
 
-    void slotUpdateXFader();
+    void slotUpdateXFaderFromConfigOrControls();
+    void slotXFaderReverseBoxToggled();
+    void slotXFaderControlChanged();
+    void slotXFaderWidgetsChanged();
+
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
 
-    // Update the Main EQ
+    /// Update the Main EQ
     void slotMainEQParameterSliderChanged(int value);
     void slotMainEQToDefault();
     void slotMainEqEffectChanged(int effectIndex);
@@ -62,6 +69,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validateEQShelves();
+
+    void applyXFader();
 
     void applyDeckEQs();
     void applyQuickEffects();
@@ -79,12 +88,12 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     // X-fader values
     int m_xFaderMode;
-    double m_transform, m_cal;
+    double m_xFaderTransform, m_xFaderCal;
 
-    PollingControlProxy m_mode;
-    PollingControlProxy m_curve;
-    PollingControlProxy m_calibration;
-    PollingControlProxy m_reverse;
+    parented_ptr<ControlProxy> m_xfModeCO;
+    parented_ptr<ControlProxy> m_xfCurveCO;
+    parented_ptr<ControlProxy> m_xfReverseCO;
+    PollingControlProxy m_xfCalibrationCO;
     PollingControlProxy m_crossfader;
 
     bool m_xFaderReverse;
@@ -123,4 +132,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;
+
+    QTimer m_xfaderControlUpdateTimer;
 };
