@@ -6,6 +6,7 @@
 
 #include "controllers/softtakeover.h"
 #include "effects/backends/effectmanifest.h"
+#include "effects/dlgeffect.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
@@ -141,6 +142,8 @@ class EffectSlot : public QObject {
 
   private slots:
     void updateEngineState();
+    void updateEffectUI();
+    void updateControlOnEffectUIClose();
     void visibleEffectsListChanged();
 
   private:
@@ -182,12 +185,16 @@ class EffectSlot : public QObject {
     QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameters;
     QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameterSlots;
     std::unique_ptr<ControlPushButton> m_pControlEnabled;
+    std::unique_ptr<ControlPushButton> m_pControlUIShown;
+    std::unique_ptr<ControlObject> m_pControlUIButtonShown;
     std::unique_ptr<ControlObject> m_pControlNextEffect;
     std::unique_ptr<ControlObject> m_pControlPrevEffect;
     std::unique_ptr<ControlObject> m_pControlLoadedEffect;
     std::unique_ptr<ControlEncoder> m_pControlEffectSelector;
     std::unique_ptr<ControlObject> m_pControlClear;
     std::unique_ptr<ControlPotmeter> m_pControlMetaParameter;
+
+    std::unique_ptr<DlgEffect> m_pEffectUI;
 
     SoftTakeover m_metaknobSoftTakeover;
 

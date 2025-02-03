@@ -2,10 +2,14 @@
 
 #include <QDebug>
 #include <QHash>
+#include <QLabel>
 #include <QPair>
 #include <QString>
+#include <QVBoxLayout>
+#include <memory>
 
 #include "effects/defs.h"
+#include "effects/dlgeffect.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
@@ -110,6 +114,9 @@ class EffectProcessor {
     /// the dry signal is delayed to overlap with the output wet signal
     /// after processing all effects in the effects chain.
     virtual SINT getGroupDelayFrames() = 0;
+
+    /// Creates a dialog hosting effect-specific UI, if supported.
+    virtual std::unique_ptr<DlgEffect> createUI() = 0;
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
@@ -146,6 +153,19 @@ class EffectProcessorImpl : public EffectProcessor {
     /// can override this method and set actual number of frames for the effect delay.
     virtual SINT getGroupDelayFrames() override {
         return 0;
+    }
+
+    std::unique_ptr<DlgEffect> createUI() override {
+        QLabel* label = new QLabel();
+        label->setText("This effect has no UI");
+
+        QVBoxLayout* layout = new QVBoxLayout();
+        layout->addWidget(label);
+
+        std::unique_ptr<DlgEffect> dialog = std::make_unique<DlgEffect>();
+        dialog->setLayout(layout);
+
+        return dialog;
     }
 
     void process(const ChannelHandle& inputHandle,
