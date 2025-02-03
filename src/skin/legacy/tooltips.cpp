@@ -48,6 +48,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Waveform Overview")
             << tr("Shows information about the track currently loaded in this deck.") << "\n"
             << tr("Left click to jump around in the track.")
+            << tr("Left click and hold allows to preview the position where the play head "
+                  "will jump to on release. Dragging can be aborted with right click.")
             << tr("Right click hotcues to edit their labels and colors.")
             << tr("Right click anywhere else to show the time at that point.")
             << dropTracksHere;
@@ -542,7 +544,7 @@ void Tooltips::addStandardTooltips() {
     QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
     QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
             "OR preview from it (Denon mode).");
-    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Decks.");
     QString latchingPlay = tr("Is latching the playing state.");
 
     // Currently used for decks
@@ -697,7 +699,12 @@ void Tooltips::addStandardTooltips() {
                   << QString("%1 + %2: %3")
                              .arg(rightClick,
                                      shift,
-                                     tr("Delete selected hotcue."));
+                                     tr("Delete selected hotcue."))
+                  << tr("Drag this button onto another Hotcue button to move it "
+                        "there (change its index). If the other hotcue is set, "
+                        "the two are swapped.")
+                  << tr("Dragging with Shift key pressed will not start previewing "
+                        "the hotcue");
 
     // Status displays and toggle buttons
     add("toggle_recording")

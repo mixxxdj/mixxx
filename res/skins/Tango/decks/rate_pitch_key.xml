@@ -180,6 +180,7 @@ Variables:
 
               <!-- Pitch range indicators: prefix / spacer / range number -->
               <WidgetGroup>
+                <ObjectName>RateDisplayBox</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>vertical</Layout>
                 <Size>50f,-1me</Size>
@@ -195,8 +196,9 @@ Variables:
                         <Channel><Variable name="chanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>prefix</Display>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
+                      <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
                         <ObjectName>RateDisplayTopRate</ObjectName>
@@ -222,8 +224,9 @@ Variables:
                         <Position>Bottom</Position>
                         <Align>Bottom</Align>
                         <Display>prefix</Display>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
+                      <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
                         <ObjectName>RateDisplayBottomRate</ObjectName>

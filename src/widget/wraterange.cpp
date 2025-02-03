@@ -31,6 +31,7 @@ void WRateRange::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         m_nodeDisplay = DisplayType::Default;
     }
+    setAlignment(Qt::AlignCenter);
 
     // Initialize the widget (overrides the base class initial value).
     const double range = m_pRateRangeControl->get();

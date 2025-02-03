@@ -3,7 +3,7 @@
 #include <QSortFilterProxyModel>
 #include <QString>
 #ifdef MIXXX_USE_QML
-#include <QtQml>
+#include <QQmlEngine>
 #else
 #define QML_ELEMENT
 #endif

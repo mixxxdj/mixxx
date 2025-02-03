@@ -1,3 +1,15 @@
+mixxx (2.4.2-1~focal) focal; urgency=medium
+
+  * Build of 2.4.2
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 26 Nov 2024 23:29:32 +0000
+
+mixxx (2.4.1-1~focal) focal; urgency=medium
+
+  * Build of 2.4.1
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Wed, 08 May 2024 21:39:18 +0000
+
 mixxx (2.4.0-1~focal) focal; urgency=medium
 
   * Build of 2.4.0

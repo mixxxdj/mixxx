@@ -96,8 +96,7 @@ class BaseTrackCache : public QObject {
     void updateTrackInIndex(TrackId trackId);
     bool updateTrackInIndex(const TrackPointer& pTrack);
     void updateTracksInIndex(const QSet<TrackId>& trackIds);
-    void getTrackValueForColumn(TrackPointer pTrack, int column,
-                                QVariant& trackValue) const;
+    QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
 
     int findSortInsertionPoint(TrackPointer pTrack,
                                const QList<SortColumn>& sortColumns,

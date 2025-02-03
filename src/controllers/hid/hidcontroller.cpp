@@ -11,9 +11,8 @@ HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
         : Controller(deviceInfo.formatName()),
           m_deviceInfo(std::move(deviceInfo)) {
-    setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
-
-    // All HID devices are full-duplex
+    // We assume, that all HID controllers are full-duplex,
+    // but a HID can also be input only (e.g. a USB HID mouse)
     setInputDevice(true);
     setOutputDevice(true);
 }
@@ -69,11 +68,11 @@ int HidController::open() {
     // If that fails, try to open device with vendor/product/serial #
     if (!pHidDevice) {
         qCWarning(m_logBase) << "Failed. Trying to open with make, model & serial no:"
-                             << m_deviceInfo.vendorId() << m_deviceInfo.productId()
-                             << m_deviceInfo.serialNumber();
+                             << m_deviceInfo.getVendorId() << m_deviceInfo.getProductId()
+                             << m_deviceInfo.getSerialNumber();
         pHidDevice = hid_open(
-                m_deviceInfo.vendorId(),
-                m_deviceInfo.productId(),
+                m_deviceInfo.getVendorId(),
+                m_deviceInfo.getProductId(),
                 m_deviceInfo.serialNumberRaw());
     }
 
@@ -83,8 +82,8 @@ int HidController::open() {
         qCWarning(m_logBase) << "Unable to open specific HID device" << getName()
                              << "Trying now with just make and model."
                              << "(This may only open the first of multiple identical devices.)";
-        pHidDevice = hid_open(m_deviceInfo.vendorId(),
-                m_deviceInfo.productId(),
+        pHidDevice = hid_open(m_deviceInfo.getVendorId(),
+                m_deviceInfo.getProductId(),
                 nullptr);
     }
 
@@ -198,10 +197,11 @@ int HidController::close() {
 /// This function is only for class compatibility with the (midi)controller
 /// and will not do the same as for MIDI devices,
 /// because sending of raw bytes is not a supported HIDAPI feature.
-void HidController::sendBytes(const QByteArray& data) {
+bool HidController::sendBytes(const QByteArray& data) {
     // Some HIDAPI backends will fail if the device uses ReportIDs (as practical all DJ controllers),
     // because 0 is no valid ReportID for these devices.
     m_pHidIoThread->updateCachedOutputReportData(0, data, false);
+    return true;
 }
 
 ControllerJSProxy* HidController::jsProxy() {
