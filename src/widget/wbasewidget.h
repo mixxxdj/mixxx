@@ -21,7 +21,7 @@ class WBaseWidget {
 
     virtual void Init();
 
-    QWidget* toQWidget() {
+    QWidget* toQWidget() const {
         return m_pWidget;
     }
 
