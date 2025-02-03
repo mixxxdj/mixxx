@@ -95,7 +95,7 @@ void EngineEffectsManager::onCallbackStart() {
 void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
-        unsigned int numSamples,
+        std::size_t numSamples,
         mixxx::audio::SampleRate sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer effects do not make use of it.
@@ -114,7 +114,7 @@ void EngineEffectsManager::processPostFaderInPlace(
         const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
-        unsigned int numSamples,
+        std::size_t numSamples,
         mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
@@ -138,7 +138,7 @@ void EngineEffectsManager::processPostFaderAndMix(
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        unsigned int numSamples,
+        std::size_t numSamples,
         mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
@@ -163,7 +163,7 @@ void EngineEffectsManager::processInner(
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        unsigned int numSamples,
+        std::size_t numSamples,
         mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,

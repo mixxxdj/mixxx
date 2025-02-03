@@ -1,0 +1,1274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4+">
+  <info>
+    <name>Reloop Mixage</name>
+    <author>HorstBaerbel &amp; gqzomer</author>
+    <description>Mapping for the Reloop Mixage Interface Edition MK1, Interface Edition MK2 and Controller Edition.</description>
+    <forums>https://mixxx.discourse.group/t/reloop-mixage-mapping/14779</forums>
+    <wiki>https://github.com/mixxxdj/mixxx/wiki/Reloop%20Mixage</wiki>
+    <manual>reloop_mixage</manual>
+  </info>
+  <controller id="Reloop Mixage">
+    <scriptfiles>
+      <file functionprefix="Mixage" filename="Reloop-Mixage.scripts.js" />
+    </scriptfiles>
+    <!-- The comments reference the buttons on the controller The T prefixes are taken from the controller overview of the manual -->
+    <!-- link to the manual from reloop https://www.reloop.com/media/catalog/product/pdf/2/2/4/224964_Reloop_IM.pdf -->
+    <controls>
+      <!-- T1 = Pitch Bend Minus Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T1_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pitch_down</key>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T2 = Pitch Bend Plus Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T2_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pitch_up</key>
+        <status>0x90</status>
+        <midino>0x41</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T3 = Shift Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleShift</key>
+        <status>0x90</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T4 = Autoloop -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleLoop</key>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T4_SHIFT = Loop in -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleLoopIn</key>
+        <status>0x90</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_TURN = Loop Length -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleLoopLength</key>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_TURN_SHIFT = Beat Move -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleBeatMove</key>
+        <status>0xB0</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_PRESS = Activate/Deactivate Loop -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleLoopLengthPress</key>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_PRESS_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleBeatLoopPress</key>
+        <status>0x90</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T6 = Gain Dial -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T6_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x72</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T7 = Pitch Fader -->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xE0</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T7_SHIFT = Pitch Fader -->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xE2</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T8 = Reloop -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleReloop</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T8_SHIFT = Loop Out -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleLoopOut</key>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T9 = FX Select Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.nextEffect</key>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T9_SHIFT = Master Deck Assignment -->
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_leader</key>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T10_TURN = FX Dry/Wet Dial -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleEffectDryWet</key>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T10_TURN_SHIFT = Pan Balance Dial -->
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>chain_preset_selector</key>
+        <status>0xB0</status>
+        <midino>0x60</midino>
+        <options>
+          <SelectKnob />
+        </options>
+      </control>
+      <!-- T10_PRESS = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleDryWetPressed</key>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T10_PRESS_SHIFT = ? -->
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x60</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T11_TURN = FX Amount Dail -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleFxAmount</key>
+        <status>0xB0</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T11_TURN_SHIFT = Filter Dial -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleFilter</key>
+        <status>0xB0</status>
+        <midino>0x73</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T11_CENTER = ? -->
+      <!-- <control>
+        <group>[Channel1]</group>
+        <key></key>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <options>
+          <normal />
+        </options>
+      </control> -->
+      <!-- T11_CENTER_SHIFT = ? -->
+      <!-- <control>
+        <group>[Channel1]</group>
+        <key></key>
+        <status>0x90</status>
+        <midino>0x73</midino>
+        <options>
+          <normal />
+        </options>
+      </control> -->
+      <!-- T12 = FX On Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleFxPress</key>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T12_SHIFT = Keylock Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T13 = Search Mode Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T13_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T14 = Scratch Mode Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T14_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_PRESS = Jog Wheel -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_PRESS_SHIFT  = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_TURN = Jog Wheel -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_TURN_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T16 = Sync Button-->
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T16_SHIFT = Cue 1 -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T17 = Cup Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_play</key>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T17_SHIFT = Cue 2 -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x90</status>
+        <midino>0x49</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T18 = Cue Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T18_SHIFT = Cue 3 -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T19 = Play/Pause -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handlePlay</key>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T19_SHIFT = Cue 4 -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T21 = Track Load Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleTrackLoading</key>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T21_SHIFT = Open folder -->
+      <control>
+        <group>[Library]</group>
+        <key>MoveLeft</key>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T22 = High EQ Dial -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x35</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T22_SHIFT = ? -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x74</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T23 = Mids EQ Dial -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x36</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T23_SHIFT = ? -->
+      <control>
+       <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x75</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T24 = Low EQ Dial -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x37</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T24_SHIFT = ? -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x76</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T25 = PFL Button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T25_SHIFT = Track Pre-Listen Play -->
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>LoadSelectedTrackAndPlay</key>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T26  = Line Fader -->
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x38</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T26_SHIFT = ? -->
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x77</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T1 = Pitch Bend Minus Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T1_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>pitch_down</key>
+        <status>0x90</status>
+        <midino>0x4E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T2 = Pitch Bend Plus Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T2_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>pitch_up</key>
+        <status>0x90</status>
+        <midino>0x4F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T3 = Shift Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleShift</key>
+        <status>0x90</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T4 = Autoloop -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleLoop</key>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T4_SHIFT = Loop in -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleLoopIn</key>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_TURN = Loop Length -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleLoopLength</key>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_TURN_SHIFT = Beat Move -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleBeatMove</key>
+        <status>0xB0</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_PRESS = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleLoopLengthPress</key>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T5_PRESS_SHIFT = Activate/Deactivate Loop -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleBeatLoopPress</key>
+        <status>0x90</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T6 = Gain Dial -->
+      <control>
+        <group>[Channel2]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x39</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T6_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x78</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T7 = Pitch Fader -->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xE1</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T7_SHIFT = Pitch Fader -->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xE3</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T8 = Reloop -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleReloop</key>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T8_SHIFT = Loop Out -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleLoopOut</key>
+        <status>0x90</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T9 = FX Select Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.nextEffect</key>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T9_SHIFT = Master Deck Assignment -->
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_leader</key>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T10_TURN = FX Dry/Wet Dial -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleEffectDryWet</key>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T10_TURN_SHIFT = Pan Balance Dial -->
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>chain_preset_selector</key>
+        <status>0xB0</status>
+        <midino>0x62</midino>
+        <options>
+          <SelectKnob />
+        </options>
+      </control>
+      <!-- T10_PRESS = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleDryWetPressed</key>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T10_PRESS_SHIFT = ? -->
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x62</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T11_TURN = FX Amount Dail -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleFxAmount</key>
+        <status>0xB0</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T11_TURN_SHIFT = Filter Dial -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleFilter</key>
+        <status>0xB0</status>
+        <midino>0x79</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T11_CENTER = ? -->
+      <!-- <control>
+        <group>[Channel2]</group>
+        <key></key>
+        <status>0x90</status>
+        <midino>0x3A</midino>
+        <options>
+          <normal />
+        </options>
+      </control> -->
+      <!-- T11_CENTER_SHIFT = ? -->
+      <!-- <control>
+        <group>[Channel2]</group>
+        <key></key>
+        <status>0x90</status>
+        <midino>0x79</midino>
+        <options>
+          <normal />
+        </options>
+      </control> -->
+      <!-- T12 = FX On Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleFxPress</key>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T12_SHIFT = Keylock Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x55</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T13 = Search Mode Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T13_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T14 = Scratch Mode Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T14_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_PRESS = Jog Wheel -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_PRESS_SHIFT  = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x64</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_TURN = Jog Wheel -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T15_TURN_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x64</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T16 = Sync Button-->
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T16_SHIFT = Cue 1 -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T17 = Cup Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_play</key>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T17_SHIFT = Cue 2 -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x90</status>
+        <midino>0x57</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T18 = Cue Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T18_SHIFT = Cue 3 -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T19 = Play/Pause -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handlePlay</key>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T19_SHIFT = Cue 4 -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x90</status>
+        <midino>0x59</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T21 = Track Load Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleTrackLoading</key>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T21_SHIFT = Close folder -->
+      <control>
+        <group>[Library]</group>
+        <key>MoveRight</key>
+        <status>0x90</status>
+        <midino>0x5A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T22 = High EQ Dial -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x3B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T22_SHIFT = ? -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x7A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T23 = Mids EQ Dial -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x3C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T23_SHIFT = ? -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x7B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T24 = Low EQ Dial -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x3D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T24_SHIFT = ? -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x7C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T25 = PFL Button -->
+      <control>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T25_SHIFT = Track Pre-Listen Stop -->
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>stop</key>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T26  = Line Fader -->
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x3E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T26_SHIFT = ? -->
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x7D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T20_PRESS = Maximize Song Browser -->
+      <control>
+        <group>[Master]</group>
+        <key>Mixage.handleTraxPress</key>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T20_PRESS_SHIFT = ? -->
+      <control>
+        <group>[Master]</group>
+        <key>Mixage.handleTraxPress</key>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T20_TURN = Trax Encoder -->
+      <control>
+        <group>[Playlist]</group>
+        <key>Mixage.selectTrack</key>
+        <status>0xB0</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T20_TURN_SHIFT = Folder Navigation -->
+      <control>
+        <group>[Playlist]</group>
+        <key>Mixage.selectPlaylist</key>
+        <status>0xB0</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- T29 = Cue Mix Fader -->
+      <control>
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xB0</status>
+        <midino>0x32</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T33 = Crossfader -->
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <status>0xB0</status>
+        <midino>0x31</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+    </controls>
+    <outputs>
+      <output>
+        <group>[Channel1]</group>
+        <key>pitch_down</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>pitch_up</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>pitch_down</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>pitch_up</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <minimum>0.5</minimum>
+      </output>
+    </outputs>
+  </controller>
+</MixxxControllerPreset>

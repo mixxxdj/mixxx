@@ -934,7 +934,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="146"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="155"/>
         <source>Deck %1</source>
-        <translation>Deck %1</translation>
+        <translation>Plato %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
@@ -944,7 +944,7 @@ rastrear    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
         <source>Preview Deck %1</source>
-        <translation>Deck de preescucha %1</translation>
+        <translation>Plato de preescucha %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="27"/>
@@ -10033,7 +10033,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="45"/>
         <source>Switch</source>
-        <translation>Switch</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="47"/>
@@ -12995,7 +12995,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="171"/>
         <source>Main Channel L Volume Meter</source>
-        <translation type="unfinished"/>
+        <translation>Medidor de volumen del canal principal L</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="172"/>
@@ -13499,12 +13499,12 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="973"/>
         <source>Intro End Marker</source>
-        <translation type="unfinished"/>
+        <translation>Marcador Final de Entrada</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="980"/>
         <source>Outro Start Marker</source>
-        <translation type="unfinished"/>
+        <translation>Marcador Inicial de Salida</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="987"/>

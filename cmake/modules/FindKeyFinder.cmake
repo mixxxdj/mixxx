@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
+# Copyright (C) 2001-2025 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -50,13 +50,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_KeyFinder QUIET libKeyFinder>=2.0)
 endif()
 
-find_path(KeyFinder_INCLUDE_DIR
+find_path(
+  KeyFinder_INCLUDE_DIR
   NAMES keyfinder/keyfinder.h
   HINTS ${PC_KeyFinder_INCLUDE_DIRS}
-  DOC "KeyFinder include directory")
+  DOC "KeyFinder include directory"
+)
 mark_as_advanced(KeyFinder_INCLUDE_DIR)
 
-find_library(KeyFinder_LIBRARY
+find_library(
+  KeyFinder_LIBRARY
   NAMES keyfinder
   HINTS ${PC_KeyFinder_LIBRARY_DIRS}
   DOC "KeyFinder library"
@@ -81,7 +84,8 @@ if(KeyFinder_FOUND)
 
   if(NOT TARGET KeyFinder::KeyFinder)
     add_library(KeyFinder::KeyFinder UNKNOWN IMPORTED)
-    set_target_properties(KeyFinder::KeyFinder
+    set_target_properties(
+      KeyFinder::KeyFinder
       PROPERTIES
         IMPORTED_LOCATION "${KeyFinder_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_KeyFinder_CFLAGS_OTHER}"
@@ -89,9 +93,11 @@ if(KeyFinder_FOUND)
     )
     is_static_library(KeyFinder_IS_STATIC KeyFinder::KeyFinder)
     if(KeyFinder_IS_STATIC)
-      find_package(FFTW REQUIRED)
-      set_property(TARGET KeyFinder::KeyFinder APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        FFTW::FFTW
+      find_package(FFTW3 REQUIRED)
+      set_property(
+        TARGET KeyFinder::KeyFinder
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES FFTW3::fftw3
       )
     endif()
   endif()

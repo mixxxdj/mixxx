@@ -291,10 +291,10 @@ void DlgAutoDJ::autoDJError(AutoDJProcessor::AutoDJError error) {
                 tr("One deck must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
-    case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+    case AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING:
         QMessageBox::warning(nullptr,
                 tr("Auto DJ"),
-                tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
+                tr("Decks not used for Auto DJ must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
     case AutoDJProcessor::ADJ_OK:

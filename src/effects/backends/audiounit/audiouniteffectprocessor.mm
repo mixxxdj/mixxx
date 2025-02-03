@@ -142,7 +142,7 @@ void AudioUnitEffectGroupState::render(AudioUnit _Nonnull audioUnit,
 
 AudioUnitEffectProcessor::AudioUnitEffectProcessor(
         AVAudioUnitComponent* _Nullable component)
-        : m_manager(component) {
+        : m_pManager(AudioUnitManager::create(component)) {
 }
 
 void AudioUnitEffectProcessor::loadEngineEffectParameters(
@@ -157,7 +157,7 @@ void AudioUnitEffectProcessor::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState,
         const GroupFeatureState&) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     if (!audioUnit) {
         qWarning()
                 << "Cannot process channel before Audio Unit is instantiated";
@@ -175,7 +175,7 @@ void AudioUnitEffectProcessor::processChannel(
 }
 
 void AudioUnitEffectProcessor::syncParameters() {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     DEBUG_ASSERT(audioUnit != nil);
 
     m_lastValues.reserve(m_parameters.size());
@@ -210,7 +210,7 @@ void AudioUnitEffectProcessor::syncParameters() {
 
 void AudioUnitEffectProcessor::syncStreamFormat(
         const mixxx::EngineParameters& parameters) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     DEBUG_ASSERT(audioUnit != nil);
 
     if (parameters.sampleRate() != m_lastSampleRate ||

@@ -210,13 +210,13 @@ void InternalClock::updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx:
     updateLeaderBeatDistance(oldBeatDistance);
 }
 
-void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
-void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     updateBeatLength(sampleRate, getBpm());
 
     // stereo samples, so divide by 2

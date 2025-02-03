@@ -4,46 +4,45 @@
 #include <QString>
 #include <QVersionNumber>
 
-class VersionStore {
-  public:
-    /// Returns the current Mixxx version string (e.g. 1.12.0-alpha)
-    static QString version();
+namespace VersionStore {
+/// Returns the current Mixxx version string (e.g. 1.12.0-alpha)
+QString version();
 
-    /// Returns the current Mixxx version number (e.g. 1.12.0)
-    static QVersionNumber versionNumber();
+/// Returns the current Mixxx version number (e.g. 1.12.0)
+QVersionNumber versionNumber();
 
-    /// Returns the current Mixxx version suffix (e.g. "beta")
-    static QString versionSuffix();
+/// Returns the current Mixxx version suffix (e.g. "beta")
+QString versionSuffix();
 
-    /// Returns the application name. (e.g. "Mixxx")
-    static QString applicationName();
+/// Returns the application name. (e.g. "Mixxx")
+QString applicationName();
 
-    /// Returns the last change date
-    static QDateTime date();
+/// Returns the last change date
+QDateTime date();
 
-    /// Returns the platform (e.g. "Windows x86_64")
-    static QString platform();
+/// Returns the platform (e.g. "Windows x86_64")
+QString platform();
 
-    /// Returns the git branch (e.g. features_key) or the null
-    /// string if the branch is unknown.
-    static QString gitBranch();
+/// Returns the git branch (e.g. features_key) or the null
+/// string if the branch is unknown.
+QString gitBranch();
 
-    /// Returns the output of "git describe"
-    static QString gitDescribe();
+/// Returns the output of "git describe"
+QString gitDescribe();
 
-    /// Returns the output of "git describe" and the branch name (if available)
-    static QString gitVersion();
+/// Returns the output of "git describe" and the branch name (if available)
+QString gitVersion();
 
-    /// Returns the version of Qt used to build Mixxx.
-    static QString qtVersion();
+/// Returns the version of Qt used to build Mixxx.
+QString qtVersion();
 
-    /// Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
-    /// the null string if the flags are unknown.
-    static QString buildFlags();
+/// Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
+/// the null string if the flags are unknown.
+QString buildFlags();
 
-    /// Returns a list of the version of each dependency:
-    static QStringList dependencyVersions();
+/// Returns a list of the version of each dependency:
+QStringList dependencyVersions();
 
-    /// Prints out diagnostic information about this build.
-    static void logBuildDetails();
-};
+/// Prints out diagnostic information about this build.
+void logBuildDetails();
+} // namespace VersionStore

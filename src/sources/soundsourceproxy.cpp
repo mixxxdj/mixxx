@@ -673,6 +673,13 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     mixxx::TrackMetadata trackMetadata =
             m_pTrack->getMetadata(&sourceSyncStatus);
 
+    if (sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Undefined) {
+        kLogger.warning()
+                << "Unable to update track from missing or inaccessible file"
+                << getUrl().toString();
+        return UpdateTrackFromSourceResult::NotUpdated;
+    }
+
     // Save for later to replace the unreliable and imprecise audio
     // properties imported from file tags (see below).
     const auto preciseStreamInfo = trackMetadata.getStreamInfo();

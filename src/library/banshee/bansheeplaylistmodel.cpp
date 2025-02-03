@@ -1,5 +1,6 @@
 #include "library/banshee/bansheeplaylistmodel.h"
 
+#include <QSqlQuery>
 #include <QtDebug>
 
 #include "library/banshee/bansheedbconnection.h"

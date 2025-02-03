@@ -2,9 +2,9 @@
 #include <QColor>
 #include <QObject>
 #include <QPointer>
+#include <QQmlEngine>
 #include <QString>
 #include <QUrl>
-#include <QtQml>
 
 #include "mixer/basetrackplayer.h"
 #include "qml/qmlbeatsmodel.h"

@@ -40,7 +40,11 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void slotReplaceCueColorClicked();
     void slotEditTrackPaletteClicked();
     void slotEditHotcuePaletteClicked();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotKeyColorsEnabled(Qt::CheckState state);
+#else
     void slotKeyColorsEnabled(int i);
+#endif
 
   private:
     void openColorPaletteEditor(

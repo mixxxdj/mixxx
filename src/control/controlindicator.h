@@ -35,7 +35,7 @@ class ControlIndicator : public ControlObject {
     };
 
   private:
-    enum BlinkValue m_blinkValue;
+    std::atomic<BlinkValue> m_blinkValue;
     parented_ptr<ControlProxy> m_pCOIndicator250millis;
     parented_ptr<ControlProxy> m_pCOIndicator500millis;
 };

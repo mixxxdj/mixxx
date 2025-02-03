@@ -585,11 +585,11 @@ void EngineSync::addSyncableDeck(Syncable* pSyncable) {
     m_syncables.append(pSyncable);
 }
 
-void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
 }
 
-void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
 }
 

@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
+#include <QStandardPaths>
 #include <algorithm>
 #include <vector>
 
@@ -693,7 +694,7 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
 
 void CrateFeature::slotCreateImportCrate() {
     // Get file to read
-    QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
+    const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
         return;
     }

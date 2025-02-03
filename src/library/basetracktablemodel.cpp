@@ -1,6 +1,8 @@
 #include "library/basetracktablemodel.h"
 
+#include <QBuffer>
 #include <QGuiApplication>
+#include <QMimeData>
 #include <QScreen>
 #include <QtGlobal>
 
@@ -891,29 +893,12 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
         }
-        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
-            // If we know the semantic key via the LIBRARYTABLE_KEY_ID
-            // column (as opposed to the string representation of the key
-            // currently stored in the DB) then lookup the key and render it
-            // using the user's selected notation.
-            const QVariant keyCodeValue = rawSiblingValue(
-                    index,
-                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-            if (keyCodeValue.isNull()) {
-                // Otherwise, just use the column value as is
-                return rawValue;
-            }
-            bool ok;
-            const auto keyCode = keyCodeValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok) {
-                return QVariant();
-            }
-            const auto key = KeyUtils::keyFromNumericValue(keyCode);
-            if (key == mixxx::track::io::key::INVALID) {
-                return QVariant();
-            }
-            return QVariant::fromValue(KeyUtils::keyToString(key));
-        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
+            // The Key value is determined by either the KEY_ID or KEY column
+            return KeyUtils::keyFromKeyTextAndIdFields(
+                    rawValue,
+                    rawSiblingValue(
+                            index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID));
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
                 return QVariant();
@@ -1011,10 +996,16 @@ QVariant BaseTrackTableModel::roleValue(
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
-        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER: {
             // We need to cast to int due to a bug similar to
             // https://bugreports.qt.io/browse/QTBUG-67582
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
+            return static_cast<int>(Qt::AlignVCenter | Qt::AlignHCenter);
         }
         default:
             return QVariant(); // default AlignLeft for all other columns

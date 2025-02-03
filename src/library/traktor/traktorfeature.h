@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QStringListModel>
-#include <QtSql>
 #include <QXmlStreamReader>
 #include <QFuture>
 #include <QtConcurrentRun>

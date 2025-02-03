@@ -2,9 +2,9 @@
 
 #include <QPainter>
 #include <QPointer>
+#include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
-#include <QtQml>
 
 #include "qml/qmlplayerproxy.h"
 #include "track/track.h"

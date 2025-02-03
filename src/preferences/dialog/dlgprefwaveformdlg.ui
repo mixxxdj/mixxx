@@ -16,22 +16,118 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="10" column="1" colspan="3">
-      <widget class="QComboBox" name="defaultZoomComboBox"/>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="BeatgridWaveform">
-       <property name="toolTip">
-        <string/>
+     <item row="0" column="0">
+      <widget class="QLabel" name="waveformTypeLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="midLineWidth">
-        <number>6</number>
+       <property name="toolTip">
+        <string extracomment="The big waveform summary shows the waveform envelope of the track near the current playback position."/>
        </property>
        <property name="text">
-        <string>Beat grid opacity</string>
+        <string>Waveform</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>waveformTypeComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QCheckBox" name="useWaveformCheckBox">
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="3">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QComboBox" name="waveformTypeComboBox">
+         <property name="toolTip">
+          <string>The waveform shows the waveform envelope of the track near the current playback position.
+Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="waveformSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Maximum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="useAccelerationCheckBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Use acceleration</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="2">
+      <widget class="QCheckBox" name="highDetailCheckBox">
+       <property name="text">
+        <string>High details</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="splitLeftRightCheckBox">
+       <property name="text">
+        <string>Stereo coloration</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="waveformOverviewLabel">
+       <property name="toolTip">
+        <string extracomment="The smaller, zoomed-out version of the waveform shows the various markers within the track as well as the waveform envelope of the entire track."/>
+       </property>
+       <property name="text">
+        <string>Waveform overview type</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="3">
+      <widget class="QComboBox" name="waveformOverviewComboBox">
+       <property name="toolTip">
+        <string>The waveform overview shows the waveform envelope of the entire track.
+Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="frameRateLabel">
+       <property name="text">
+        <string>Frame rate</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>frameRateSlider</cstring>
        </property>
       </widget>
      </item>
@@ -63,141 +159,22 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="defaultZoomLabel">
-       <property name="text">
-        <string extracomment="Waveform zoom">Default zoom level</string>
+     <item row="6" column="3">
+      <widget class="QSpinBox" name="frameRateSpinBox">
+       <property name="toolTip">
+        <string/>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       <property name="suffix">
+        <string> fps</string>
        </property>
-       <property name="buddy">
-        <cstring>defaultZoomComboBox</cstring>
+       <property name="minimum">
+        <number>10</number>
        </property>
-      </widget>
-     </item>
-     <item row="20" column="1" colspan="3">
-      <layout class="QGridLayout" name="cachingGridLayout">
-       <item row="4" column="0">
-        <widget class="QPushButton" name="clearCachedWaveforms">
-         <property name="text">
-          <string>Clear Cached Waveforms</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="waveformCachingInfo">
-         <property name="text">
-          <string>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="waveformDiskUsage">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string notr="true">PLACEHOLDER FOR DISK USAGE</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QCheckBox" name="enableWaveformCaching">
-         <property name="text">
-          <string>Enable waveform caching</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QCheckBox" name="enableWaveformGenerationWithAnalysis">
-         <property name="text">
-          <string>Generate waveforms when analyzing library</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="16" column="0">
-      <widget class="QLabel" name="untilMarkLabel">
-       <property name="text">
-        <string>Play marker hints</string>
+       <property name="maximum">
+        <number>60</number>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="22" column="0" colspan="4">
-      <widget class="QGroupBox" name="openGLStatus">
-       <property name="title">
-        <string>OpenGL status</string>
-       </property>
-       <layout class="QGridLayout" name="GridLayout1">
-        <item row="0" column="0" colspan="3">
-         <widget class="QLabel" name="openGlStatusData">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Displays which OpenGL version is supported by the current platform.</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="openGlStatusLabel_2">
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Average frame rate</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QLabel" name="frameRateAverage">
-          <property name="toolTip">
-           <string>Displays the actual frame rate.</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="20" column="0">
-      <widget class="QLabel" name="cachedWaveforms">
-       <property name="text">
-        <string>Caching</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <property name="value">
+        <number>30</number>
        </property>
       </widget>
      </item>
@@ -211,59 +188,6 @@
        </property>
        <property name="buddy">
         <cstring>endOfTrackWarningTimeSlider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Play marker position</string>
-       </property>
-      </widget>
-     </item>
-     <item row="15" column="0">
-      <widget class="QLabel" name="visualGainLabel">
-       <property name="text">
-        <string>Visual gain</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-       <property name="buddy">
-        <cstring>allVisualGain</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="19" column="1" colspan="2">
-      <widget class="QLabel" name="requiresGLSLLabel">
-       <property name="text">
-        <string>This functionality requires waveform acceleration.</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="21" column="1">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="11" column="1" colspan="3">
-      <widget class="QCheckBox" name="synchronizeZoomCheckBox">
-       <property name="toolTip">
-        <string>Synchronize zoom level across all waveform displays.</string>
-       </property>
-       <property name="text">
-        <string>Synchronize zoom level across all waveforms</string>
        </property>
       </widget>
      </item>
@@ -295,47 +219,6 @@
        </property>
       </widget>
      </item>
-     <item row="16" column="3">
-      <widget class="QLabel" name="untilMarkTextPointSizeLabel">
-       <property name="text">
-        <string>Font size</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-       <property name="buddy">
-        <cstring>untilMarkTextPointSizeSpinBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1" colspan="3">
-      <widget class="QComboBox" name="waveformOverviewComboBox">
-       <property name="toolTip">
-        <string>The waveform overview shows the waveform envelope of the entire track.
-Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="frameRateLabel">
-       <property name="text">
-        <string>Frame rate</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-       <property name="buddy">
-        <cstring>frameRateSlider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="17" column="1">
-      <widget class="QCheckBox" name="untilMarkShowTimeCheckBox">
-       <property name="text">
-        <string>Time until next marker</string>
-       </property>
-      </widget>
-     </item>
      <item row="7" column="3">
       <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
        <property name="toolTip">
@@ -355,10 +238,139 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="16" column="1">
-      <widget class="QCheckBox" name="untilMarkShowBeatsCheckBox">
+     <item row="8" column="0">
+      <widget class="QLabel" name="BeatgridWaveform">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="midLineWidth">
+        <number>6</number>
+       </property>
        <property name="text">
-        <string>Beats until next marker</string>
+        <string>Beat grid opacity</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QSlider" name="beatGridAlphaSlider">
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>90</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="3">
+      <widget class="QSpinBox" name="beatGridAlphaSpinBox">
+       <property name="toolTip">
+        <string>Set amount of opacity on beat grid lines.</string>
+       </property>
+       <property name="suffix">
+        <string>%</string>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>90</number>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Play marker position</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1" colspan="3">
+      <widget class="QSlider" name="playMarkerPositionSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Moves the play marker position on the waveforms to the left, right or center (default).</string>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>50</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="defaultZoomLabel">
+       <property name="text">
+        <string extracomment="Waveform zoom">Default zoom level</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>defaultZoomComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="3">
+      <widget class="QComboBox" name="defaultZoomComboBox"/>
+     </item>
+     <item row="11" column="1" colspan="3">
+      <widget class="QCheckBox" name="synchronizeZoomCheckBox">
+       <property name="toolTip">
+        <string>Synchronize zoom level across all waveform displays.</string>
+       </property>
+       <property name="text">
+        <string>Synchronize zoom level across all waveforms</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1" colspan="3">
+      <widget class="QCheckBox" name="normalizeOverviewCheckBox">
+       <property name="text">
+        <string>Normalize waveform overview</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1" colspan="3">
+      <widget class="QCheckBox" name="overviewMinuteMarkersCheckBox">
+       <property name="text">
+        <string>Show minute markers on waveform overview</string>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="0">
+      <widget class="QLabel" name="visualGainLabel">
+       <property name="text">
+        <string>Visual gain</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="buddy">
+        <cstring>allVisualGain</cstring>
        </property>
       </widget>
      </item>
@@ -494,226 +506,234 @@ Select from different types of displays for the waveform overview, which differ 
        </item>
       </layout>
      </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="splitLeftRightCheckBox">
+     <item row="16" column="0">
+      <widget class="QLabel" name="untilMarkLabel">
        <property name="text">
-        <string>Stereo coloration</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1" colspan="2">
-      <widget class="QSlider" name="beatGridAlphaSlider">
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="value">
-        <number>90</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="3">
-      <widget class="QSpinBox" name="beatGridAlphaSpinBox">
-       <property name="toolTip">
-        <string>Set amount of opacity on beat grid lines.</string>
-       </property>
-       <property name="suffix">
-        <string>%</string>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="value">
-        <number>90</number>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="3">
-      <widget class="QSpinBox" name="frameRateSpinBox">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="suffix">
-        <string> fps</string>
-       </property>
-       <property name="minimum">
-        <number>10</number>
-       </property>
-       <property name="maximum">
-        <number>60</number>
-       </property>
-       <property name="value">
-        <number>30</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="waveformTypeLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string extracomment="The big waveform summary shows the waveform envelope of the track near the current playback position."/>
-       </property>
-       <property name="text">
-        <string>Waveform</string>
+        <string>Play marker hints</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
-       <property name="buddy">
-        <cstring>waveformTypeComboBox</cstring>
-       </property>
       </widget>
      </item>
-     <item row="13" column="1">
-      <widget class="QCheckBox" name="normalizeOverviewCheckBox">
-       <property name="text">
-        <string>Normalize waveform overview</string>
-       </property>
-      </widget>
-     </item>
-     <item row="14" column="1">
-      <widget class="QCheckBox" name="overviewMinuteMarkersCheckBox">
-       <property name="text">
-        <string>Show minute markers on waveform overview</string>
-       </property>
-      </widget>
-     </item>
-     <item row="16" column="2">
-      <widget class="QLabel" name="untilMarkAlignLabel">
-       <property name="text">
-        <string>Placement</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-       <property name="buddy">
-        <cstring>untilMarkAlignComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="17" column="3">
-      <widget class="QSpinBox" name="untilMarkTextPointSizeSpinBox">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="suffix">
-        <string> pt</string>
-       </property>
-       <property name="minimum">
-        <number>10</number>
-       </property>
-       <property name="maximum">
-        <number>50</number>
-       </property>
-       <property name="value">
-        <number>30</number>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="waveformOverviewLabel">
-       <property name="toolTip">
-        <string extracomment="The smaller, zoomed-out version of the waveform shows the various markers within the track as well as the waveform envelope of the entire track."/>
-       </property>
-       <property name="text">
-        <string>Waveform overview type</string>
-       </property>
-      </widget>
-     </item>
-     <item row="17" column="2">
-      <widget class="QComboBox" name="untilMarkAlignComboBox"/>
-     </item>
-     <item row="9" column="1" colspan="3">
-      <widget class="QSlider" name="playMarkerPositionSlider">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Moves the play marker position on the waveforms to the left, right or center (default).</string>
-       </property>
-       <property name="minimum">
-        <number>0</number>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="value">
-        <number>50</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="useWaveformCheckBox">
-       <property name="text">
-        <string>Enabled</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1" colspan="3">
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QComboBox" name="waveformTypeComboBox">
-         <property name="toolTip">
-          <string>The waveform shows the waveform envelope of the track near the current playback position.
-Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+     <item row="16" column="1" colspan="3">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="untilMarkShowBeatsCheckBox">
+         <property name="text">
+          <string>Beats until next marker</string>
          </property>
         </widget>
        </item>
-       <item>
-        <spacer name="waveformSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="0" column="1">
+        <widget class="QLabel" name="untilMarkAlignLabel">
+         <property name="text">
+          <string>Placement</string>
          </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Maximum</enum>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
+         <property name="buddy">
+          <cstring>untilMarkAlignComboBox</cstring>
          </property>
-        </spacer>
+        </widget>
        </item>
-       <item>
-        <widget class="QCheckBox" name="useAccelerationCheckBox">
+       <item row="0" column="2">
+        <widget class="QLabel" name="untilMarkTextPointSizeLabel">
+         <property name="text">
+          <string>Preferred font size</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>untilMarkTextPointSizeSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="untilMarkTextHeightLimitLabel">
+         <property name="text">
+          <string>Text height limit</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>untilMarkTextHeightLimitComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+        <item row="1" column="0">
+        <widget class="QCheckBox" name="untilMarkShowTimeCheckBox">
+         <property name="text">
+          <string>Time until next marker</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="untilMarkAlignComboBox"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QSpinBox" name="untilMarkTextPointSizeSpinBox">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="suffix">
+          <string> pt</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>30</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QComboBox" name="untilMarkTextHeightLimitComboBox"/>
+       </item>
+      </layout>
+     </item>
+     <item row="19" column="1" colspan="2">
+      <widget class="QLabel" name="requiresGLSLLabel">
+       <property name="text">
+        <string>This functionality requires waveform acceleration.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="20" column="0">
+      <widget class="QLabel" name="cachedWaveforms">
+       <property name="text">
+        <string>Caching</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="20" column="1" colspan="3">
+      <layout class="QGridLayout" name="cachingGridLayout">
+       <item row="4" column="0">
+        <widget class="QPushButton" name="clearCachedWaveforms">
+         <property name="text">
+          <string>Clear Cached Waveforms</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="waveformCachingInfo">
+         <property name="text">
+          <string>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="waveformDiskUsage">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Use acceleration</string>
+          <string notr="true">PLACEHOLDER FOR DISK USAGE</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QCheckBox" name="enableWaveformCaching">
+         <property name="text">
+          <string>Enable waveform caching</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QCheckBox" name="enableWaveformGenerationWithAnalysis">
+         <property name="text">
+          <string>Generate waveforms when analyzing library</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
-     <item row="3" column="2">
-      <widget class="QCheckBox" name="highDetailCheckBox">
-       <property name="text">
-        <string>High details</string>
+     <item row="21" column="1">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="22" column="0" colspan="4">
+      <widget class="QGroupBox" name="openGLStatus">
+       <property name="title">
+        <string>OpenGL status</string>
+       </property>
+       <layout class="QGridLayout" name="GridLayout1">
+        <item row="0" column="0" colspan="3">
+         <widget class="QLabel" name="openGlStatusData">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Displays which OpenGL version is supported by the current platform.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="openGlStatusLabel_2">
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Average frame rate</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="2">
+         <widget class="QLabel" name="frameRateAverage">
+          <property name="toolTip">
+           <string>Displays the actual frame rate.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -737,6 +757,10 @@ Select from different types of displays for the waveform, which differ primarily
   <tabstop>lowVisualGain</tabstop>
   <tabstop>midVisualGain</tabstop>
   <tabstop>highVisualGain</tabstop>
+  <tabstop>untilMarkShowBeatsCheckBox</tabstop>
+  <tabstop>untilMarkShowTimeCheckBox</tabstop>
+  <tabstop>untilMarkAlignComboBox</tabstop>
+  <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
   <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
   <tabstop>clearCachedWaveforms</tabstop>
