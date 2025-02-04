@@ -39,6 +39,8 @@ class LegacyControllerMapping {
               m_deviceDirection(other.m_deviceDirection) {
     }
     LegacyControllerMapping& operator=(const LegacyControllerMapping&) = delete;
+    LegacyControllerMapping(LegacyControllerMapping&&) = delete;
+    LegacyControllerMapping& operator=(LegacyControllerMapping&&) = delete;
     virtual ~LegacyControllerMapping() = default;
 
   public:
