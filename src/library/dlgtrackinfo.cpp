@@ -14,6 +14,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
+#include "track/keyfactory.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/datetime.h"
@@ -808,6 +809,19 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             sourceSynchronizedAt);
     trackRecord.setCoverInfo(
             std::move(guessedCoverInfo));
+
+    QString importedKeyText = trackRecord.getMetadata().getTrackInfo().getKeyText();
+    {
+        Keys newKeys = KeyFactory::makeBasicKeysKeepText(
+                importedKeyText, mixxx::track::io::key::FILE_METADATA);
+        if (newKeys.getGlobalKey() != mixxx::track::io::key::INVALID &&
+                trackRecord.getKeys().getGlobalKeyText() != importedKeyText) {
+            // Only replace the keys with a single new key if valid and different.
+            // Otherwise preserve existing array of keys for different positions.
+            trackRecord.setKeys(std::move(newKeys));
+        }
+    }
+
     replaceTrackRecord(
             std::move(trackRecord),
             fileInfo.location());
