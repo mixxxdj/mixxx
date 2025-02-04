@@ -20,8 +20,13 @@ void LegacyMidiControllerMapping::addInputMapping(uint16_t key, const MidiInputM
 }
 
 void LegacyMidiControllerMapping::removeInputMapping(uint16_t key) {
+    for (auto [it, end] = m_inputMappings.equal_range(key); it != end; ++it) {
+        const MidiInputMapping& mapping = it.value();
+        if (!std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+            setDirty(true);
+        }
+    }
     m_inputMappings.remove(key);
-    setDirty(true);
 }
 
 bool LegacyMidiControllerMapping::removeInputMapping(
