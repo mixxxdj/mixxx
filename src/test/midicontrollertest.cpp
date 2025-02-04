@@ -667,10 +667,26 @@ TEST_F(MidiControllerTest, JSInputHandler_ControllerShutdownSlot) {
     m_pController->setMapping(m_pMapping->clone());
     EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
     evaluateAndAssert(
-            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {"
-            "engine.setParameter('[Channel1]', 'test_pot', value);"
-            "})");
+            "midi.makeInputHandler(0x90, 0x00, (channel, control, value, status) => {})");
     EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 1);
     shutdownController();
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ErrorWhenControlIsTooLarge) {
+    m_pController->setMapping(m_pMapping->clone());
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    bool isError = evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x80, (channel, control, value, status) => {})");
+    ASSERT_TRUE(isError);
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ErrorWhenStatusIsTooSmall) {
+    m_pController->setMapping(m_pMapping->clone());
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    bool isError = evaluateAndAssert(
+            "midi.makeInputHandler(0x7F, 0x00, (channel, control, value, status) => {})");
+    ASSERT_TRUE(isError);
     EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
 }

@@ -70,7 +70,9 @@ class MidiController : public Controller {
         send(data);
     }
 
-    QJSValue makeInputHandler(int status, int midino, const QJSValue& scriptCode);
+    QJSValue makeInputHandler(unsigned char status,
+            unsigned char control,
+            const QJSValue& scriptCode);
 
   protected slots:
     virtual void receivedShortMessage(
@@ -140,8 +142,10 @@ class MidiControllerJSProxy : public ControllerJSProxy {
         m_pMidiController->sendSysexMsg(data, length);
     }
 
-    Q_INVOKABLE QJSValue makeInputHandler(int status, int midino, const QJSValue& scriptCode) {
-        return m_pMidiController->makeInputHandler(status, midino, scriptCode);
+    Q_INVOKABLE QJSValue makeInputHandler(unsigned char status,
+            unsigned char control,
+            const QJSValue& scriptCode) {
+        return m_pMidiController->makeInputHandler(status, control, scriptCode);
     }
 
   private:

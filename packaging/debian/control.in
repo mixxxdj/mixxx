@@ -72,6 +72,7 @@ Package: mixxx
 Section: @CPACK_DEBIAN_PACKAGE_SECTION@
 Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, @CPACK_DEBIAN_PACKAGE_DEPENDS@
+Recommends: @CPACK_DEBIAN_PACKAGE_RECOMMENDS@
 Suggests: @CPACK_DEBIAN_PACKAGE_SUGGESTS@
 Replaces: mixxx-data
 Description: @CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED@

@@ -2,12 +2,9 @@
 
 #include <vector>
 
-#include "rendergraph/openglnode.h"
-#include "shaders/rgbashader.h"
-#include "shaders/textureshader.h"
+#include "control/pollingcontrolproxy.h"
+#include "rendergraph/geometrynode.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/rgbadata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 class QOpenGLTexture;
@@ -18,30 +15,31 @@ class WaveformRendererStem;
 
 class allshader::WaveformRendererStem final
         : public allshader::WaveformRendererSignalBase,
-          public rendergraph::OpenGLNode {
+          public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererStem(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
-    // override ::WaveformRendererSignalBase
+    // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
 
-    void initializeGL() override;
-    void paintGL() override;
+    bool init() override;
+
+    bool supportsSlip() const override {
+        return true;
+    }
+
+    // Virtuals for rendergraph::Node
+    void preprocess() override;
 
   private:
-    mixxx::RGBAShader m_shader;
-    mixxx::TextureShader m_textureShader;
-    VertexData m_vertices;
-    RGBAData m_colors;
-
     bool m_isSlipRenderer;
 
-    std::vector<std::unique_ptr<ControlProxy>> m_pStemGain;
-    std::vector<std::unique_ptr<ControlProxy>> m_pStemMute;
+    std::vector<std::unique_ptr<PollingControlProxy>> m_pStemGain;
+    std::vector<std::unique_ptr<PollingControlProxy>> m_pStemMute;
 
-    void drawTexture(float x, float y, QOpenGLTexture* texture);
+    bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererStem);
 };

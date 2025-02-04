@@ -1395,8 +1395,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Show/hide the sampler section"),
             pGuiMenu);
     addControl("[Skin]",
-            "show_microphone",
-            tr("Microphone & Auxiliary Show/Hide"),
+            "show_microphones",
+            // && prevents auto-detecting mnemonic /keyboard accelerator which
+            // would render to underlined whitespace here.
+            //: keep double & to prevent creation of keyboard accelerator
+            tr("Microphone && Auxiliary Show/Hide"),
             tr("Show/hide the microphone & auxiliary section"),
             pGuiMenu);
     addControl("[Skin]",
