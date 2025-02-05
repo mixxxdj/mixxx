@@ -298,6 +298,10 @@ class CueControl : public EngineControl {
     int getHotcueFocusIndex() const;
     mixxx::RgbColor colorFromConfig(const ConfigKey& configKey);
 
+    void jumpTo(mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos source,
+            mixxx::audio::FramePos target);
+
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     QAtomicInt m_currentlyPreviewingIndex;
@@ -372,6 +376,7 @@ class CueControl : public EngineControl {
     QAtomicPointer<HotcueControl> m_pCurrentSavedJumpControl;
 
     mixxx::audio::FramePos m_lastProcessedPosition;
+    mixxx::audio::FramePos m_jumpCueSeekRequest;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
