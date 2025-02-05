@@ -484,7 +484,7 @@ void Library::bindLibraryPreparationWindowWidget(
     connect(this,
             &Library::showTrackModelInPreparationWindow,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::loadTrackModel);
+            &WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow);
     // connect(this,
     //         &Library::pasteFromSidebar,
     //         m_pLibraryPreparationWindowWidget,

@@ -63,6 +63,12 @@ CrateFeature::CrateFeature(Library* pLibrary,
 }
 
 void CrateFeature::initActions() {
+    m_pShowTrackModelInPreparationWindowAction =
+            make_parented<QAction>(tr("Show in Preparation Window"), this);
+    connect(m_pShowTrackModelInPreparationWindowAction,
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotShowInPreparationWindow);
     m_pCreateCrateAction = make_parented<QAction>(tr("Create New Crate"), this);
     connect(m_pCreateCrateAction.get(),
             &QAction::triggered,
@@ -285,7 +291,7 @@ void CrateFeature::bindLibraryWidget(
 }
 
 void CrateFeature::bindLibraryPreparationWindowWidget(
-        WLibrary* libraryPreparationWindowWidget, KeyboardEventFilter* keyboard) {
+        WLibraryPreparationWindow* libraryPreparationWindowWidget, KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryPreparationWindowWidget);
     edit->setHtml(formatRootViewHtml());
@@ -405,6 +411,8 @@ void CrateFeature::onRightClickChild(
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pShowTrackModelInPreparationWindowAction);
+    menu.addSeparator();
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction.get());
@@ -473,6 +481,17 @@ void CrateFeature::slotDeleteCrate() {
         }
     }
     qWarning() << "Failed to delete selected crate";
+}
+
+void CrateFeature::slotShowInPreparationWindow() {
+    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "   CrateFeature::slotShowInPreparationWindow()" << crateId;
+
+    // emit saveModelState();
+    m_crateTableModel.selectCrate(crateId);
+    // emit showTrackModel(&m_crateTableModel);
+    emit showTrackModelInPreparationWindow(&m_crateTableModel);
+    // emit enableCoverArtDisplay(true);
 }
 
 void CrateFeature::renameItem(const QModelIndex& index) {

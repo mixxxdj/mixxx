@@ -11,6 +11,7 @@
 #include "util/parented_ptr.h"
 
 class WLibrary;
+class WLibraryPreparationWindow;
 class KeyboardEventFilter;
 class PlaylistTableModel;
 class TreeItem;
@@ -34,6 +35,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
+            KeyboardEventFilter* keyboard) override;
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void selectPlaylistInSidebar(int playlistId, bool select = true);
@@ -102,6 +106,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
     QPointer<WLibrary> m_pLibraryWidget;
+    QPointer<WLibraryPreparationWindow> m_pLibraryPreparationWindowWidget;
 
     parented_ptr<QAction> m_pCreatePlaylistAction;
     parented_ptr<QAction> m_pDeletePlaylistAction;

@@ -82,7 +82,7 @@ class LibraryFeature : public QObject {
     // Reimplement this to register custom views with the library widget.
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
-    virtual void bindLibraryPreparationWindowWidget(WLibrary* /* library Widget */,
+    virtual void bindLibraryPreparationWindowWidget(WLibraryPreparationWindow* /* library Widget */,
             KeyboardEventFilter* /* keyboard */) {
     }
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}

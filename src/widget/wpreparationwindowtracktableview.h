@@ -115,7 +115,7 @@ class WPreparationWindowTrackTableView : public WLibraryTableView {
     void trackMissingColorChanged(QColor col);
 
   public slots:
-    void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
+    void loadTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex&);
     void slotUnhide();
     void slotPurge();

@@ -170,9 +170,9 @@ void WPreparationWindowTrackTableView::pasteFromSidebar() {
 }
 
 // slot
-void WPreparationWindowTrackTableView::loadTrackModel(
+void WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
         QAbstractItemModel* model, bool restoreState) {
-    qDebug() << "WPreparationWindowTrackTableView::loadTrackModel()" << model;
+    qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] -> loadTrackModel()" << model;
 
     VERIFY_OR_DEBUG_ASSERT(model) {
         return;
@@ -204,34 +204,8 @@ void WPreparationWindowTrackTableView::loadTrackModel(
     if (oldHeader) {
         oldHeader->saveHeaderState();
     }
-
-    // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
-    // different columns than the old model, we have to create a new horizontal
-    // header. Also, for some reason the WPreparationWindowTrackTableView has to be hidden or
-    // else problems occur. Since we parent the WtrackTableViewHeader's to the
-    // WPreparationWindowTrackTableView, they are automatically deleted.
     auto* header = new WTrackTableViewHeader(Qt::Horizontal, this);
-
-    // WTF(rryan) The following saves on unnecessary work on the part of
-    // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
-    // current horizontal header. If this happens on the old
-    // WTrackTableViewHeader, then it will save its old state, AND do the work
-    // of initializing its menus on the new model. We create a new
-    // WTrackTableViewHeader, so this is wasteful. Setting a temporary
-    // QHeaderView here saves on setModel() calls. Since we parent the
-    // QHeaderView to the WPreparationWindowTrackTableView, it is automatically deleted.
     auto* tempHeader = new QHeaderView(Qt::Horizontal, this);
-    /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
-     * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
-     * For some reason this will cause 4 select statements in series
-     * from which 3 are redundant --> expensive at all
-     *
-     * Sorting columns, however, is possible because we
-     * enable clickable sorting indicators some lines below.
-     * Furthermore, we connect signal 'sortIndicatorChanged'.
-     *
-     * Fixes Bug #672762
-     */
 
     setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
@@ -240,11 +214,6 @@ void WPreparationWindowTrackTableView::loadTrackModel(
     setHorizontalHeader(header);
     header->setSectionsMovable(true);
     header->setSectionsClickable(true);
-    // Setting this to true would render all column labels BOLD as soon as the
-    // tableview is focused -- and would not restore the previous style when
-    // it's unfocused. This can not be overwritten with qss, so it can screw up
-    // the skin design. Also, due to selectionModel()->selectedRows() it is not
-    // even useful to indicate the focused column because all columns are highlighted.
     header->setHighlightSections(false);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
@@ -266,11 +235,6 @@ void WPreparationWindowTrackTableView::loadTrackModel(
             // qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
-        /* If Mixxx starts the first time or the header states have been cleared
-         * due to database schema evolution we gonna hide all columns that may
-         * contain a potential large number of NULL values.  This will hide the
-         * key column by default unless the user brings it to front
-         */
         if (pTrackModel->isColumnHiddenByDefault(i) &&
                 !header->hasPersistedHeaderState()) {
             // qDebug() << "Hiding column" << i;
@@ -279,10 +243,6 @@ void WPreparationWindowTrackTableView::loadTrackModel(
     }
 
     if (m_sorting) {
-        // NOTE: Should be a UniqueConnection but that requires Qt 4.6
-        // But Qt::UniqueConnections do not work for lambdas, non-member functions
-        // and functors; they only apply to connecting to member functions.
-        // https://doc.qt.io/qt-5/qobject.html#connect
         connect(horizontalHeader(),
                 &QHeaderView::sortIndicatorChanged,
                 this,
@@ -324,17 +284,19 @@ void WPreparationWindowTrackTableView::loadTrackModel(
 
     // Defaults
     setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragOnly);
+    // setDragDropMode(QAbstractItemView::DragOnly);
+    setDragDropMode(QAbstractItemView::DragDrop);
+
     // Always enable drag for now (until we have a model that doesn't support
     // this.)
     setDragEnabled(true);
 
-    if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-        setDragDropMode(QAbstractItemView::DragDrop);
-        setDropIndicatorShown(true);
-        setAcceptDrops(true);
-        // viewport()->setAcceptDrops(true);
-    }
+    // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+    setDragDropMode(QAbstractItemView::DragDrop);
+    setDropIndicatorShown(true);
+    setAcceptDrops(true);
+    // viewport()->setAcceptDrops(true);
+    //}
 
     // Possible giant fuckup alert - It looks like Qt has something like these
     // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and

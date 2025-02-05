@@ -8,6 +8,10 @@
 #include "widget/wlibrary.h"
 #include "widget/wpreparationwindowtracktableview.h"
 
+namespace {
+const bool sDebug = true;
+}
+
 WLibraryPreparationWindow::WLibraryPreparationWindow(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
@@ -80,7 +84,28 @@ void WLibraryPreparationWindow::switchToViewInPreparationWindow(const QString& n
     }
 }
 
-void WLibraryPreparationWindow::pasteFromSidebar() {
+bool WLibraryPreparationWindow::dropAccept(
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+    if (sDebug) {
+        qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
+    }
+    // bool result = false;
+    bool result = true;
+    //    if (index.isValid()) {
+    //        if (index.internalPointer() == this) {
+    //            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
+    //        } else {
+    //            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+    //            if (pTreeItem) {
+    //                LibraryFeature* pFeature = pTreeItem->feature();
+    //                result = pFeature->dropAcceptChild(index, urls, pSource);
+    //            }
+    //        }
+    //    }
+    return result;
+}
+
+void WLibraryPreparationWindow::pasteFromSidebarInPreparationWindow() {
     QWidget* pCurrent = currentWidget();
     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
     if (pView) {
@@ -103,19 +128,25 @@ void WLibraryPreparationWindow::search(const QString& name) {
     //    pView->onSearch(name);
 }
 
-LibraryView* WLibraryPreparationWindow::getActiveView() const {
-    return dynamic_cast<LibraryView*>(currentWidget());
-}
+// LibraryView* WLibraryPreparationWindow::getActiveView() const {
+//     return dynamic_cast<LibraryView*>(currentWidget());
+// }
 
-WPreparationWindowTrackTableView* WLibraryPreparationWindow::getCurrentTrackTableView() const {
+WPreparationWindowTrackTableView*
+WLibraryPreparationWindow::getCurrentTrackTableViewInPreparationWindow() const {
     QWidget* pCurrent = currentWidget();
     WPreparationWindowTrackTableView* pTracksView =
             qobject_cast<WPreparationWindowTrackTableView*>(pCurrent);
+    qDebug() << "WLibraryPreparationWindow pCurrent " << pCurrent;
+    qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
+
     if (!pTracksView) {
         // This view is not a tracks view, but possibly a special library view
         // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
         pTracksView = pCurrent->findChild<WPreparationWindowTrackTableView*>();
+        qDebug() << "WLibraryPreparationWindow pCurrent->findChild pTracksView " << pTracksView;
     }
+    qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
     return pTracksView; // might still be nullptr
 }
 
@@ -124,11 +155,16 @@ bool WLibraryPreparationWindow::isTrackInCurrentView(const TrackId& trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return false;
     }
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableView();
+    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return false;
     }
-
+    qDebug() << "WLibraryPreparationWindow "
+                "getCurrentTrackTableViewInPreparationWindow() "
+             << pTracksView;
+    qDebug() << "WLibraryPreparationWindow "
+                "pTracksView->isTrackInCurrentView(trackId) "
+             << pTracksView->isTrackInCurrentView(trackId);
     return pTracksView->isTrackInCurrentView(trackId);
 }
 
@@ -137,7 +173,7 @@ void WLibraryPreparationWindow::slotSelectTrackInActiveTrackView(const TrackId& 
     if (!trackId.isValid()) {
         return;
     }
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableView();
+    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return;
     }
@@ -145,7 +181,7 @@ void WLibraryPreparationWindow::slotSelectTrackInActiveTrackView(const TrackId& 
 }
 
 void WLibraryPreparationWindow::saveCurrentViewState() const {
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableView();
+    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return;
     }
@@ -153,7 +189,7 @@ void WLibraryPreparationWindow::saveCurrentViewState() const {
 }
 
 void WLibraryPreparationWindow::restoreCurrentViewState() const {
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableView();
+    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return;
     }

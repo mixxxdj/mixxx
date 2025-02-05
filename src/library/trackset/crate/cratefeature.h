@@ -37,7 +37,8 @@ class CrateFeature : public BaseTrackSetFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
-    void bindLibraryPreparationWindowWidget(WLibrary* libraryPreparationWindowWidget,
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
@@ -77,6 +78,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
+    void slotShowInPreparationWindow();
 
   private:
     void initActions();
@@ -132,6 +134,7 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pExportCrateAction;
 #endif
     parented_ptr<QAction> m_pAnalyzeCrateAction;
+    parented_ptr<QAction> m_pShowTrackModelInPreparationWindowAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
