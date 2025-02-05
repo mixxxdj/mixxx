@@ -74,6 +74,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
     void slotAnalyzePlaylist();
+    void slotShowInPreparationWindow();
 
   protected:
     struct IdAndLabel {
@@ -115,6 +116,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pDuplicatePlaylistAction;
     parented_ptr<QAction> m_pAnalyzePlaylistAction;
+    parented_ptr<QAction> m_pShowTrackModelInPreparationWindowAction;
 
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;

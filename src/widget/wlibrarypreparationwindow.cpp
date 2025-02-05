@@ -49,16 +49,16 @@ bool WLibraryPreparationWindow::registerView(const QString& name, QWidget* pView
     return true;
 }
 
-void WLibraryPreparationWindow::switchToView(const QString& name) {
-    name == "Auto DJ";
+void WLibraryPreparationWindow::switchToViewInPreparationWindow(const QString& name) {
+    // const QString name = "Auto DJ";
     const auto lock = lockMutex(&m_mutex);
     // qDebug() << "WLibraryPreparationWindow::switchToView" << name;
 
     LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
             currentWidget());
 
-    // QWidget* pWidget = m_viewMap.value(name, nullptr);
-    QWidget* pWidget = m_viewMap.value("Auto DJ", nullptr);
+    QWidget* pWidget = m_viewMap.value(name, nullptr);
+    // QWidget* pWidget = m_viewMap.value("Auto DJ", nullptr);
     if (pWidget != nullptr) {
         LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
         if (pLibraryView == nullptr) {

@@ -70,6 +70,12 @@ BasePlaylistFeature::BasePlaylistFeature(
 
 void BasePlaylistFeature::initActions() {
     m_pCreatePlaylistAction = make_parented<QAction>(tr("Create New Playlist"), this);
+    m_pShowTrackModelInPreparationWindowAction =
+            make_parented<QAction>(tr("Show in Preparation Window"), this);
+    connect(m_pShowTrackModelInPreparationWindowAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotShowInPreparationWindow);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
             this,
@@ -211,6 +217,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     emit saveModelState();
     m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
+    //    emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
 }
 
@@ -231,6 +238,20 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     emit enableCoverArtDisplay(true);
     // Update selection
     emit featureSelect(this, m_lastClickedIndex);
+}
+
+void BasePlaylistFeature::slotShowInPreparationWindow() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+
+    if (playlistId == kInvalidPlaylistId) {
+        // may happen during initialization
+        return;
+    }
+    emit saveModelState();
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
+    //    emit showTrackModel(m_pPlaylistTableModel);
+    emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
+    // emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::renameItem(const QModelIndex& index) {

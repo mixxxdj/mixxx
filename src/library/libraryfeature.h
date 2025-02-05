@@ -144,6 +144,7 @@ class LibraryFeature : public QObject {
     }
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
+    void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
 #ifdef __STEM__

@@ -482,7 +482,7 @@ void Library::bindLibraryPreparationWindowWidget(
                     true);
     pPreparationWindowTrackTableView->installEventFilter(pKeyboard);
     connect(this,
-            &Library::showTrackModel,
+            &Library::showTrackModelInPreparationWindow,
             pPreparationWindowTrackTableView,
             &WPreparationWindowTrackTableView::loadTrackModel);
     // connect(this,
@@ -576,6 +576,10 @@ void Library::addFeature(LibraryFeature* feature) {
             this,
             &Library::slotShowTrackModel);
     connect(feature,
+            &LibraryFeature::showTrackModelInPreparationWindow,
+            this,
+            &Library::slotShowTrackModelInPreparationWindow);
+    connect(feature,
             &LibraryFeature::switchToView,
             this,
             &Library::slotSwitchToView);
@@ -633,6 +637,17 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
         return;
     }
     emit showTrackModel(model);
+    emit switchToView(m_sTrackViewName);
+    emit restoreSearch(trackModel->currentSearch());
+}
+
+void Library::slotShowTrackModelInPreparationWindow(QAbstractItemModel* model) {
+    // qDebug() << "Library::slotShowTrackModel" << model;
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return;
+    }
+    emit showTrackModelInPreparationWindow(model);
     emit switchToView(m_sTrackViewName);
     emit restoreSearch(trackModel->currentSearch());
 }
