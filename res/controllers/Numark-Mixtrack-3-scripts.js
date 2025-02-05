@@ -318,7 +318,9 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(this.relight), true);
+        if (flashCount > 0) {
+            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(this.relight), true);
+        }
     }
 };
 
