@@ -1,0 +1,21 @@
+name: "nix-shell-build"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+      with:
+        nix_path: nixpkgs=channel:nixos-stable
+    - uses: workflow/nix-shell-action@v1
+      with:
+        script: |
+          configure || exit 1
+          build || exit 1
