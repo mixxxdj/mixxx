@@ -431,12 +431,14 @@ void BaseSqlTableModel::setSearch(const QString& searchText,
     }
 
     bool searchIsDifferent;
-    if (targetWindow == "library") {
-        searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
-    } else if (targetWindow == "preparation") {
+    if (targetWindow == "preparation") {
         searchIsDifferent = m_currentSearchInPreparationWindow.isNull() ||
                 m_currentSearchInPreparationWindow != searchText;
+    } else {
+        // targetWindow == "library"
+        searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     }
+
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
 
