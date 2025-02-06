@@ -1,4 +1,4 @@
-#include "widget/wpreparationwindowtracktableview.h"
+#include "widget/wlibrarypreparationwindowtracktableview.h"
 
 #include <QDrag>
 #include <QModelIndex>
@@ -15,7 +15,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
-#include "moc_wpreparationwindowtracktableview.cpp"
+#include "moc_wlibrarypreparationwindowtracktableview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgpreflibrary.h"
@@ -40,12 +40,12 @@ const ConfigKey kVScrollBarPosConfigKey{
 
 } // anonymous namespace
 
-WPreparationWindowTrackTableView::WPreparationWindowTrackTableView(QWidget* parent,
+WLibraryPreparationWindowTrackTableView::WLibraryPreparationWindowTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         double backgroundColorOpacity,
         bool sorting)
-        : WLibraryTableView(parent, pConfig),
+        : WLibraryPreparationWindowTableView(parent, pConfig),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
@@ -58,32 +58,33 @@ WPreparationWindowTrackTableView::WPreparationWindowTrackTableView(QWidget* pare
           m_loadCachedOnly(false) {
     // Connect slots and signals to make the world go 'round.
     connect(this,
-            &WPreparationWindowTrackTableView::doubleClicked,
+            &WLibraryPreparationWindowTrackTableView::doubleClicked,
             this,
-            &WPreparationWindowTrackTableView::slotMouseDoubleClicked);
+            &WLibraryPreparationWindowTrackTableView::slotMouseDoubleClicked);
 
     m_pCOTGuiTick = new ControlProxy(
             QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
-    m_pCOTGuiTick->connectValueChanged(this, &WPreparationWindowTrackTableView::slotGuiTick50ms);
+    m_pCOTGuiTick->connectValueChanged(
+            this, &WLibraryPreparationWindowTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotation->connectValueChanged(
-            this, &WPreparationWindowTrackTableView::keyNotationChanged);
+            this, &WLibraryPreparationWindowTrackTableView::keyNotationChanged);
 
     m_pSortColumn = new ControlProxy("[Library]", "sort_column", this);
     m_pSortColumn->connectValueChanged(
-            this, &WPreparationWindowTrackTableView::applySortingIfVisible);
+            this, &WLibraryPreparationWindowTrackTableView::applySortingIfVisible);
     m_pSortOrder = new ControlProxy("[Library]", "sort_order", this);
     m_pSortOrder->connectValueChanged(
-            this, &WPreparationWindowTrackTableView::applySortingIfVisible);
+            this, &WLibraryPreparationWindowTrackTableView::applySortingIfVisible);
 
     connect(this,
-            &WPreparationWindowTrackTableView::scrollValueChanged,
+            &WLibraryPreparationWindowTrackTableView::scrollValueChanged,
             this,
-            &WPreparationWindowTrackTableView::slotScrollValueChanged);
+            &WLibraryPreparationWindowTrackTableView::slotScrollValueChanged);
 }
 
-WPreparationWindowTrackTableView::~WPreparationWindowTrackTableView() {
+WLibraryPreparationWindowTrackTableView::~WLibraryPreparationWindowTrackTableView() {
     WTrackTableViewHeader* pHeader =
             qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
@@ -91,7 +92,7 @@ WPreparationWindowTrackTableView::~WPreparationWindowTrackTableView() {
     }
 }
 
-void WPreparationWindowTrackTableView::enableCachedOnly() {
+void WLibraryPreparationWindowTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
@@ -101,11 +102,11 @@ void WPreparationWindowTrackTableView::enableCachedOnly() {
     m_lastUserAction = mixxx::Time::elapsed();
 }
 
-void WPreparationWindowTrackTableView::slotScrollValueChanged(int /*unused*/) {
+void WLibraryPreparationWindowTrackTableView::slotScrollValueChanged(int /*unused*/) {
     enableCachedOnly();
 }
 
-void WPreparationWindowTrackTableView::selectionChanged(
+void WLibraryPreparationWindowTrackTableView::selectionChanged(
         const QItemSelection& selected, const QItemSelection& deselected) {
     m_selectionChangedSinceLastGuiTick = true;
     enableCachedOnly();
@@ -125,7 +126,7 @@ void WPreparationWindowTrackTableView::selectionChanged(
     QTableView::selectionChanged(selected, deselected);
 }
 
-void WPreparationWindowTrackTableView::slotGuiTick50ms(double /*unused*/) {
+void WLibraryPreparationWindowTrackTableView::slotGuiTick50ms(double /*unused*/) {
     if (!isVisible()) {
         // Don't proceed if this isn't visible.
         return;
@@ -165,12 +166,12 @@ void WPreparationWindowTrackTableView::slotGuiTick50ms(double /*unused*/) {
 }
 
 // slot
-void WPreparationWindowTrackTableView::pasteFromSidebar() {
+void WLibraryPreparationWindowTrackTableView::pasteFromSidebar() {
     pasteTracks(QModelIndex());
 }
 
 // slot
-void WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
+void WLibraryPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
         QAbstractItemModel* model, bool restoreState) {
     qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] -> loadTrackModel()" << model;
 
@@ -246,7 +247,7 @@ void WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
         connect(horizontalHeader(),
                 &QHeaderView::sortIndicatorChanged,
                 this,
-                &WPreparationWindowTrackTableView::slotSortingChanged,
+                &WLibraryPreparationWindowTrackTableView::slotSortingChanged,
                 Qt::AutoConnection);
 
         Qt::SortOrder sortOrder;
@@ -291,12 +292,12 @@ void WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
     // this.)
     setDragEnabled(true);
 
-    // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-    setDragDropMode(QAbstractItemView::DragDrop);
-    setDropIndicatorShown(true);
-    setAcceptDrops(true);
-    // viewport()->setAcceptDrops(true);
-    //}
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        setDragDropMode(QAbstractItemView::DragDrop);
+        setDropIndicatorShown(true);
+        setAcceptDrops(true);
+        viewport()->setAcceptDrops(true);
+    }
 
     // Possible giant fuckup alert - It looks like Qt has something like these
     // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
@@ -313,8 +314,9 @@ void WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
     initTrackMenu();
 }
 
-void WPreparationWindowTrackTableView::initTrackMenu() {
+void WLibraryPreparationWindowTrackTableView::initTrackMenu() {
     auto* pTrackModel = getTrackModel();
+    qDebug() << "initTrackMenu()" << getTrackModel();
     DEBUG_ASSERT(pTrackModel);
 
     if (m_pTrackMenu) {
@@ -329,7 +331,7 @@ void WPreparationWindowTrackTableView::initTrackMenu() {
     connect(m_pTrackMenu.get(),
             &WTrackMenu::loadTrackToPlayer,
             this,
-            &WLibraryTableView::loadTrackToPlayer);
+            &WLibraryPreparationWindowTableView::loadTrackToPlayer);
 
     connect(m_pTrackMenu,
             &WTrackMenu::trackMenuVisible,
@@ -342,11 +344,11 @@ void WPreparationWindowTrackTableView::initTrackMenu() {
     connect(m_pTrackMenu,
             &WTrackMenu::restoreCurrentViewStateOrIndex,
             this,
-            &WPreparationWindowTrackTableView::slotrestoreCurrentIndex);
+            &WLibraryPreparationWindowTrackTableView::slotrestoreCurrentIndex);
 }
 
 // slot
-void WPreparationWindowTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
+void WLibraryPreparationWindowTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackDoubleClickAction setting
     // TODO simplify this casting madness
     int doubleClickActionConfigValue =
@@ -383,7 +385,7 @@ void WPreparationWindowTrackTableView::slotMouseDoubleClicked(const QModelIndex&
     }
 }
 
-TrackModel::SortColumnId WPreparationWindowTrackTableView::getColumnIdFromCurrentIndex() {
+TrackModel::SortColumnId WLibraryPreparationWindowTrackTableView::getColumnIdFromCurrentIndex() {
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return TrackModel::SortColumnId::Invalid;
@@ -391,7 +393,7 @@ TrackModel::SortColumnId WPreparationWindowTrackTableView::getColumnIdFromCurren
     return pTrackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
-void WPreparationWindowTrackTableView::assignPreviousTrackColor() {
+void WLibraryPreparationWindowTrackTableView::assignPreviousTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -411,7 +413,7 @@ void WPreparationWindowTrackTableView::assignPreviousTrackColor() {
     }
 }
 
-void WPreparationWindowTrackTableView::assignNextTrackColor() {
+void WLibraryPreparationWindowTrackTableView::assignNextTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -431,7 +433,7 @@ void WPreparationWindowTrackTableView::assignNextTrackColor() {
     }
 }
 
-void WPreparationWindowTrackTableView::slotPurge() {
+void WLibraryPreparationWindowTrackTableView::slotPurge() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -445,7 +447,7 @@ void WPreparationWindowTrackTableView::slotPurge() {
     restoreCurrentIndex();
 }
 
-void WPreparationWindowTrackTableView::slotDeleteTracksFromDisk() {
+void WLibraryPreparationWindowTrackTableView::slotDeleteTracksFromDisk() {
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
@@ -456,7 +458,7 @@ void WPreparationWindowTrackTableView::slotDeleteTracksFromDisk() {
     // WTrackmenu emits restoreCurrentViewStateOrIndex()
 }
 
-void WPreparationWindowTrackTableView::slotUnhide() {
+void WLibraryPreparationWindowTrackTableView::slotUnhide() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -470,7 +472,7 @@ void WPreparationWindowTrackTableView::slotUnhide() {
     restoreCurrentIndex();
 }
 
-void WPreparationWindowTrackTableView::slotShowHideTrackMenu(bool show) {
+void WLibraryPreparationWindowTrackTableView::slotShowHideTrackMenu(bool show) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         return;
     }
@@ -488,7 +490,7 @@ void WPreparationWindowTrackTableView::slotShowHideTrackMenu(bool show) {
     }
 }
 
-void WPreparationWindowTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
+void WLibraryPreparationWindowTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         initTrackMenu();
     }
@@ -510,7 +512,7 @@ void WPreparationWindowTrackTableView::contextMenuEvent(QContextMenuEvent* event
     // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
 }
 
-QString WPreparationWindowTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
+QString WLibraryPreparationWindowTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
     if (!index.isValid()) {
         return {};
     }
@@ -524,7 +526,7 @@ QString WPreparationWindowTrackTableView::columnNameOfIndex(const QModelIndex& i
             .toString();
 }
 
-void WPreparationWindowTrackTableView::onSearch(const QString& text) {
+void WLibraryPreparationWindowTrackTableView::onSearch(const QString& text) {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -558,15 +560,15 @@ void WPreparationWindowTrackTableView::onSearch(const QString& text) {
     }
 }
 
-void WPreparationWindowTrackTableView::onShow() {
+void WLibraryPreparationWindowTrackTableView::onShow() {
 }
 
-void WPreparationWindowTrackTableView::mousePressEvent(QMouseEvent* pEvent) {
+void WLibraryPreparationWindowTrackTableView::mousePressEvent(QMouseEvent* pEvent) {
     DragAndDropHelper::mousePressed(pEvent);
-    WLibraryTableView::mousePressEvent(pEvent);
+    WLibraryPreparationWindowTableView::mousePressEvent(pEvent);
 }
 
-void WPreparationWindowTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
+void WLibraryPreparationWindowTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // Only use this for drag and drop if the LeftButton is pressed we need to
     // check for this because mousetracking is activated and this function is
     // called every time the mouse is moved -- kain88 May 2012
@@ -574,7 +576,7 @@ void WPreparationWindowTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         // Needed for mouse-tracking to fire entered() events. If we call this
         // outside of this if statement then we get 'ghost' drags. See issue
         // #6507
-        WLibraryTableView::mouseMoveEvent(pEvent);
+        WLibraryPreparationWindowTableView::mouseMoveEvent(pEvent);
         return;
     }
 
@@ -588,6 +590,8 @@ void WPreparationWindowTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         // Iterate over selected rows and append each item's location url to a list.
         QList<QString> locations;
         const QModelIndexList indices = getSelectedRows();
+        qDebug() << "---------------------- DragDrop indices " << indices;
+        qDebug() << "---------------------- DragDrop getSelectedRows() " << getSelectedRows();
 
         for (const QModelIndex& index : indices) {
             if (!index.isValid()) {
@@ -595,12 +599,12 @@ void WPreparationWindowTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
             }
             locations.append(pTrackModel->getTrackLocation(index));
         }
-        DragAndDropHelper::dragTrackLocations(locations, this, "library");
+        DragAndDropHelper::dragTrackLocations(locations, this, "preparationwindow");
     }
 }
 
 // Drag enter event, happens when a dragged item hovers over the track table view
-void WPreparationWindowTrackTableView::dragEnterEvent(QDragEnterEvent* event) {
+void WLibraryPreparationWindowTrackTableView::dragEnterEvent(QDragEnterEvent* event) {
     auto* pTrackModel = getTrackModel();
     if (!pTrackModel || !event->mimeData()->hasUrls()) {
         event->ignore();
@@ -608,11 +612,12 @@ void WPreparationWindowTrackTableView::dragEnterEvent(QDragEnterEvent* event) {
     }
     // qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->source() == this) {
-        if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+        // if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
             event->acceptProposedAction();
         }
     } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                       "library",
+                       "preparationwindow",
                        true,
                        true)) {
         event->acceptProposedAction();
@@ -622,13 +627,13 @@ void WPreparationWindowTrackTableView::dragEnterEvent(QDragEnterEvent* event) {
 // Drag move event, happens when a dragged item hovers over the track table view...
 // It changes the drop handle to a "+" when the drag content is acceptable.
 // Without it, the following drop is ignored.
-void WPreparationWindowTrackTableView::dragMoveEvent(QDragMoveEvent* event) {
+void WLibraryPreparationWindowTrackTableView::dragMoveEvent(QDragMoveEvent* event) {
     auto* pTrackModel = getTrackModel();
     if (!pTrackModel) {
-        return;
+        //        return;
     }
     // Needed to allow auto-scrolling
-    WLibraryTableView::dragMoveEvent(event);
+    WLibraryPreparationWindowTableView::dragMoveEvent(event);
 
     // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (pTrackModel && event->mimeData()->hasUrls()) {
@@ -647,24 +652,24 @@ void WPreparationWindowTrackTableView::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
-void WPreparationWindowTrackTableView::dropEvent(QDropEvent* event) {
+void WLibraryPreparationWindowTrackTableView::dropEvent(QDropEvent* event) {
     TrackModel* pTrackModel = getTrackModel();
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
     if (!pTrackModel) {
-        event->ignore();
+        //        event->ignore();
         return;
     }
 
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model available";
-        event->ignore();
+        //        event->ignore();
         return;
     }
 
     if (!event->mimeData()->hasUrls() || pTrackModel->isLocked()) {
-        event->ignore();
+        //        event->ignore();
         return;
     }
 
@@ -765,7 +770,7 @@ void WPreparationWindowTrackTableView::dropEvent(QDropEvent* event) {
     verticalScrollBar()->setValue(vScrollBarPos);
 }
 
-QModelIndexList WPreparationWindowTrackTableView::getSelectedRows() const {
+QModelIndexList WLibraryPreparationWindowTrackTableView::getSelectedRows() const {
     if (getTrackModel() == nullptr) {
         return {};
     }
@@ -777,7 +782,7 @@ QModelIndexList WPreparationWindowTrackTableView::getSelectedRows() const {
     return pSelectionModel->selectedRows();
 }
 
-QList<int> WPreparationWindowTrackTableView::getSelectedRowNumbers() const {
+QList<int> WLibraryPreparationWindowTrackTableView::getSelectedRowNumbers() const {
     const QModelIndexList indices = getSelectedRows();
     QList<int> selectedRows;
     for (const QModelIndex& idx : indices) {
@@ -787,7 +792,7 @@ QList<int> WPreparationWindowTrackTableView::getSelectedRowNumbers() const {
     return selectedRows;
 }
 
-TrackModel* WPreparationWindowTrackTableView::getTrackModel() const {
+TrackModel* WLibraryPreparationWindowTrackTableView::getTrackModel() const {
     TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model());
     return pTrackModel;
 }
@@ -809,26 +814,26 @@ QModelIndex calculateCutIndex(const QModelIndex& currentIndex,
 }
 } // namespace
 
-void WPreparationWindowTrackTableView::removeSelectedTracks() {
+void WLibraryPreparationWindowTrackTableView::removeSelectedTracks() {
     const QModelIndexList indices = getSelectedRows();
     const QModelIndex newIndex = calculateCutIndex(currentIndex(), indices);
     getTrackModel()->removeTracks(indices);
     setCurrentIndex(newIndex);
 }
 
-void WPreparationWindowTrackTableView::cutSelectedTracks() {
+void WLibraryPreparationWindowTrackTableView::cutSelectedTracks() {
     const QModelIndexList indices = getSelectedRows();
     const QModelIndex newIndex = calculateCutIndex(currentIndex(), indices);
     getTrackModel()->cutTracks(indices);
     setCurrentIndex(newIndex);
 }
 
-void WPreparationWindowTrackTableView::copySelectedTracks() {
+void WLibraryPreparationWindowTrackTableView::copySelectedTracks() {
     const QModelIndexList indices = getSelectedRows();
     getTrackModel()->copyTracks(indices);
 }
 
-void WPreparationWindowTrackTableView::pasteTracks(const QModelIndex& index) {
+void WLibraryPreparationWindowTrackTableView::pasteTracks(const QModelIndex& index) {
     TrackModel* trackModel = getTrackModel();
     if (!trackModel) {
         return;
@@ -867,7 +872,7 @@ void WPreparationWindowTrackTableView::pasteTracks(const QModelIndex& index) {
     }
 }
 
-void WPreparationWindowTrackTableView::moveRows(QList<int> selectedRowsIn, int destRow) {
+void WLibraryPreparationWindowTrackTableView::moveRows(QList<int> selectedRowsIn, int destRow) {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -982,7 +987,7 @@ void WPreparationWindowTrackTableView::moveRows(QList<int> selectedRowsIn, int d
     }
 }
 
-void WPreparationWindowTrackTableView::moveSelectedTracks(QKeyEvent* event) {
+void WLibraryPreparationWindowTrackTableView::moveSelectedTracks(QKeyEvent* event) {
     QList<int> selectedRows = getSelectedRowNumbers();
     if (selectedRows.isEmpty()) {
         return;
@@ -1038,7 +1043,7 @@ void WPreparationWindowTrackTableView::moveSelectedTracks(QKeyEvent* event) {
     moveRows(selectedRows, destRow);
 }
 
-void WPreparationWindowTrackTableView::keyPressEvent(QKeyEvent* event) {
+void WLibraryPreparationWindowTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
         // Return invokes the double-click action.
@@ -1132,7 +1137,7 @@ void WPreparationWindowTrackTableView::keyPressEvent(QKeyEvent* event) {
     QTableView::keyPressEvent(event);
 }
 
-void WPreparationWindowTrackTableView::resizeEvent(QResizeEvent* event) {
+void WLibraryPreparationWindowTrackTableView::resizeEvent(QResizeEvent* event) {
     // When the tracks view shrinks in height, e.g. when other skin regions expand,
     // and if the row was visible before resizing, scroll to it afterwards.
 
@@ -1173,7 +1178,7 @@ void WPreparationWindowTrackTableView::resizeEvent(QResizeEvent* event) {
     }
 }
 
-void WPreparationWindowTrackTableView::hideOrRemoveSelectedTracks() {
+void WLibraryPreparationWindowTrackTableView::hideOrRemoveSelectedTracks() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -1267,7 +1272,7 @@ void WPreparationWindowTrackTableView::hideOrRemoveSelectedTracks() {
     restoreCurrentIndex();
 }
 
-void WPreparationWindowTrackTableView::activateSelectedTrack() {
+void WLibraryPreparationWindowTrackTableView::activateSelectedTrack() {
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
@@ -1276,11 +1281,11 @@ void WPreparationWindowTrackTableView::activateSelectedTrack() {
 }
 
 #ifdef __STEM__
-void WPreparationWindowTrackTableView::loadSelectedTrackToGroup(const QString& group,
+void WLibraryPreparationWindowTrackTableView::loadSelectedTrackToGroup(const QString& group,
         mixxx::StemChannelSelection stemMask,
         bool play) {
 #else
-void WPreparationWindowTrackTableView::loadSelectedTrackToGroup(const QString& group,
+void WLibraryPreparationWindowTrackTableView::loadSelectedTrackToGroup(const QString& group,
         bool play) {
 #endif
     const QModelIndexList indices = getSelectedRows();
@@ -1325,7 +1330,7 @@ void WPreparationWindowTrackTableView::loadSelectedTrackToGroup(const QString& g
     }
 }
 
-QList<TrackId> WPreparationWindowTrackTableView::getSelectedTrackIds() const {
+QList<TrackId> WLibraryPreparationWindowTrackTableView::getSelectedTrackIds() const {
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model available";
@@ -1349,7 +1354,7 @@ QList<TrackId> WPreparationWindowTrackTableView::getSelectedTrackIds() const {
     return trackIds;
 }
 
-TrackId WPreparationWindowTrackTableView::getCurrentTrackId() const {
+TrackId WLibraryPreparationWindowTrackTableView::getCurrentTrackId() const {
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model available";
@@ -1369,11 +1374,11 @@ TrackId WPreparationWindowTrackTableView::getCurrentTrackId() const {
     return {};
 }
 
-bool WPreparationWindowTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
+bool WLibraryPreparationWindowTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return false;
     }
-    // qDebug() << "WPreparationWindowTrackTableView::isTrackInCurrentView" << trackId;
+    // qDebug() << "WLibraryPreparationWindowTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
@@ -1384,7 +1389,7 @@ bool WPreparationWindowTrackTableView::isTrackInCurrentView(const TrackId& track
     return !trackRows.empty();
 }
 
-void WPreparationWindowTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
+void WLibraryPreparationWindowTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
@@ -1407,7 +1412,7 @@ void WPreparationWindowTrackTableView::setSelectedTracks(const QList<TrackId>& t
     }
 }
 
-bool WPreparationWindowTrackTableView::setCurrentTrackId(
+bool WLibraryPreparationWindowTrackTableView::setCurrentTrackId(
         const TrackId& trackId, int column, bool scrollToTrack) {
     if (!trackId.isValid()) {
         return false;
@@ -1426,7 +1431,7 @@ bool WPreparationWindowTrackTableView::setCurrentTrackId(
 
     const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
     if (trackRows.empty()) {
-        qDebug() << "WPreparationWindowTrackTableView: track" << trackId
+        qDebug() << "WLibraryPreparationWindowTrackTableView: track" << trackId
                  << "is not in current view";
         return false;
     }
@@ -1447,7 +1452,7 @@ bool WPreparationWindowTrackTableView::setCurrentTrackId(
     return true;
 }
 
-void WPreparationWindowTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
+void WLibraryPreparationWindowTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     auto* pTrackModel = getTrackModel();
     if (!pTrackModel || !pTrackModel->hasCapabilities(TrackModel::Capability::AddToAutoDJ)) {
         return;
@@ -1468,19 +1473,19 @@ void WPreparationWindowTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc lo
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
-void WPreparationWindowTrackTableView::addToAutoDJBottom() {
+void WLibraryPreparationWindowTrackTableView::addToAutoDJBottom() {
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
-void WPreparationWindowTrackTableView::addToAutoDJTop() {
+void WLibraryPreparationWindowTrackTableView::addToAutoDJTop() {
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void WPreparationWindowTrackTableView::addToAutoDJReplace() {
+void WLibraryPreparationWindowTrackTableView::addToAutoDJReplace() {
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
-void WPreparationWindowTrackTableView::selectTrack(const TrackId& trackId) {
+void WLibraryPreparationWindowTrackTableView::selectTrack(const TrackId& trackId) {
     if (trackId.isValid() && setCurrentTrackId(trackId, 0, true)) {
         setSelectedTracks({trackId});
     } else {
@@ -1488,7 +1493,7 @@ void WPreparationWindowTrackTableView::selectTrack(const TrackId& trackId) {
     }
 }
 
-void WPreparationWindowTrackTableView::moveSelection(int delta) {
+void WLibraryPreparationWindowTrackTableView::moveSelection(int delta) {
     QAbstractItemModel* pModel = model();
 
     if (pModel == nullptr) {
@@ -1534,7 +1539,8 @@ void WPreparationWindowTrackTableView::moveSelection(int delta) {
     }
 }
 
-void WPreparationWindowTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {
+void WLibraryPreparationWindowTrackTableView::doSortByColumn(
+        int headerSection, Qt::SortOrder sortOrder) {
     TrackModel* pTrackModel = getTrackModel();
     QAbstractItemModel* pItemModel = model();
     if (!pTrackModel || !pItemModel || !m_sorting) {
@@ -1578,7 +1584,7 @@ void WPreparationWindowTrackTableView::doSortByColumn(int headerSection, Qt::Sor
     horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
-void WPreparationWindowTrackTableView::selectTracksByPosition(
+void WLibraryPreparationWindowTrackTableView::selectTracksByPosition(
         const QList<int>& positions, int prevColumn) {
     if (positions.isEmpty()) {
         return;
@@ -1618,7 +1624,7 @@ void WPreparationWindowTrackTableView::selectTracksByPosition(
 
 // Don't use this on playlists since they may contain a TrackId multiple times.
 // See doSortByColumn.
-void WPreparationWindowTrackTableView::selectTracksById(
+void WLibraryPreparationWindowTrackTableView::selectTracksById(
         const QList<TrackId>& trackIds, int prevColum) {
     TrackModel* pTrackModel = getTrackModel();
     QAbstractItemModel* pItemModel = model();
@@ -1665,8 +1671,8 @@ void WPreparationWindowTrackTableView::selectTracksById(
     }
 }
 
-void WPreparationWindowTrackTableView::applySortingIfVisible() {
-    // There are multiple instances of WPreparationWindowTrackTableView, but we only want to
+void WLibraryPreparationWindowTrackTableView::applySortingIfVisible() {
+    // There are multiple instances of WLibraryPreparationWindowTrackTableView, but we only want to
     // apply the sorting to the currently visible instance
     if (!isVisible()) {
         return;
@@ -1675,7 +1681,7 @@ void WPreparationWindowTrackTableView::applySortingIfVisible() {
     applySorting();
 }
 
-void WPreparationWindowTrackTableView::applySorting() {
+void WLibraryPreparationWindowTrackTableView::applySorting() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -1706,7 +1712,8 @@ void WPreparationWindowTrackTableView::applySorting() {
     doSortByColumn(sortColumn, sortOrder);
 }
 
-void WPreparationWindowTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
+void WLibraryPreparationWindowTrackTableView::slotSortingChanged(
+        int headerSection, Qt::SortOrder order) {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -1734,15 +1741,15 @@ void WPreparationWindowTrackTableView::slotSortingChanged(int headerSection, Qt:
     }
 }
 
-bool WPreparationWindowTrackTableView::hasFocus() const {
+bool WLibraryPreparationWindowTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
 
-void WPreparationWindowTrackTableView::setFocus() {
+void WLibraryPreparationWindowTrackTableView::setFocus() {
     QWidget::setFocus(Qt::OtherFocusReason);
 }
 
-QString WPreparationWindowTrackTableView::getModelStateKey() const {
+QString WLibraryPreparationWindowTrackTableView::getModelStateKey() const {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return {};
@@ -1751,6 +1758,6 @@ QString WPreparationWindowTrackTableView::getModelStateKey() const {
     return pTrackModel->modelKey(noSearch);
 }
 
-void WPreparationWindowTrackTableView::keyNotationChanged() {
+void WLibraryPreparationWindowTrackTableView::keyNotationChanged() {
     QWidget::update();
 }

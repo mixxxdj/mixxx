@@ -38,8 +38,8 @@
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarypreparationwindow.h"
+#include "widget/wlibrarypreparationwindowtracktableview.h"
 #include "widget/wlibrarysidebar.h"
-#include "widget/wpreparationwindowtracktableview.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
@@ -472,8 +472,8 @@ void Library::bindLibraryWidget(
 void Library::bindLibraryPreparationWindowWidget(
         WLibrary* pLibraryPreparationWindowWidget, KeyboardEventFilter* pKeyboard) {
     m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
-    WPreparationWindowTrackTableView* pPreparationWindowTrackTableView =
-            new WPreparationWindowTrackTableView(
+    WLibraryPreparationWindowTrackTableView* pPreparationWindowTrackTableView =
+            new WLibraryPreparationWindowTrackTableView(
                     m_pLibraryPreparationWindowWidget,
                     m_pConfig,
                     this,
@@ -484,17 +484,17 @@ void Library::bindLibraryPreparationWindowWidget(
     connect(this,
             &Library::showTrackModelInPreparationWindow,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::loadTrackModelInPreparationWindow);
+            &WLibraryPreparationWindowTrackTableView::loadTrackModelInPreparationWindow);
     // connect(this,
     //         &Library::pasteFromSidebar,
     //         m_pLibraryPreparationWindowWidget,
     //         &WLibrary::pasteFromSidebar);
     connect(pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::loadTrack,
+            &WLibraryPreparationWindowTrackTableView::loadTrack,
             this,
             &Library::slotLoadTrack);
     connect(pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::loadTrackToPlayer,
+            &WLibraryPreparationWindowTrackTableView::loadTrackToPlayer,
             this,
             &Library::slotLoadTrackToPlayer);
     m_pLibraryPreparationWindowWidget->registerView(
@@ -511,41 +511,41 @@ void Library::bindLibraryPreparationWindowWidget(
     connect(this,
             &Library::saveModelState,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::slotSaveCurrentViewState);
+            &WLibraryPreparationWindowTrackTableView::slotSaveCurrentViewState);
     connect(this,
             &Library::restoreModelState,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::slotRestoreCurrentViewState);
+            &WLibraryPreparationWindowTrackTableView::slotRestoreCurrentViewState);
     connect(this,
             &Library::selectTrack,
             m_pLibraryPreparationWindowWidget,
             &WLibrary::slotSelectTrackInActiveTrackView);
     connect(pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::trackSelected,
+            &WLibraryPreparationWindowTrackTableView::trackSelected,
             this,
             &Library::trackSelected);
 
     connect(this,
             &Library::setTrackTableFont,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::setTrackTableFont);
+            &WLibraryPreparationWindowTrackTableView::setTrackTableFont);
     connect(this,
             &Library::setTrackTableRowHeight,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::setTrackTableRowHeight);
+            &WLibraryPreparationWindowTrackTableView::setTrackTableRowHeight);
     connect(this,
             &Library::setSelectedClick,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::setSelectedClick);
+            &WLibraryPreparationWindowTrackTableView::setSelectedClick);
 
     m_pLibraryControl->bindLibraryWidget(m_pLibraryPreparationWindowWidget, pKeyboard);
 
     connect(m_pLibraryControl,
             &LibraryControl::showHideTrackMenu,
             pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::slotShowHideTrackMenu);
+            &WLibraryPreparationWindowTrackTableView::slotShowHideTrackMenu);
     connect(pPreparationWindowTrackTableView,
-            &WPreparationWindowTrackTableView::trackMenuVisible,
+            &WLibraryPreparationWindowTrackTableView::trackMenuVisible,
             m_pLibraryControl,
             &LibraryControl::slotUpdateTrackMenuControl);
 

@@ -1825,6 +1825,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+        styleHack.append(
+                QString("WLibraryPreparationWindowTableView { color: %1; }\n ")
+                        .arg(color.name()));
         styleHack.append(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
@@ -1838,8 +1841,11 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color = QColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
         styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(
+                QString("WLibraryPreparationWindowTableView {  "
+                        "background-color: %1; }\n ")
+                        .arg(color.name()));
         styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
-
         styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QSpinBox {  background-color: %1; }\n ").arg(color.name()));
@@ -1851,6 +1857,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
+        styleHack.append(QString(
+                "WLibraryPreparationWindowTableView { background: %1; }\n ")
+                        .arg(color.name()));
     }
 
     QString bgColorRowUneven;
@@ -1859,6 +1868,10 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(
+                QString("WLibraryPreparationWindowTableView { "
+                        "alternate-background-color: %1; }\n ")
+                        .arg(color.name()));
     }
     style.prepend(styleHack);
     return style;

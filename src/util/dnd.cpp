@@ -251,6 +251,11 @@ QDrag* DragAndDropHelper::dragTrackLocations(
     foreach (QString location, locations) {
         trackUrls.append(mixxx::FileInfo(location).toQUrl());
     }
+    qDebug() << "---------------------- DragAndDropHelper: "
+             << "trackUrls " << trackUrls
+             << "pDragSource " << pDragSource
+             << "sourceIdentifier " << sourceIdentifier;
+
     return dragUrls(trackUrls, pDragSource, sourceIdentifier);
 }
 

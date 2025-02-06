@@ -1594,6 +1594,8 @@ add_library(
   src/widget/wlabel.cpp
   src/widget/wlibrary.cpp
   src/widget/wlibrarypreparationwindow.cpp
+  src/widget/wlibrarypreparationwindowtableview.cpp
+  src/widget/wlibrarypreparationwindowtracktableview.cpp
   src/widget/wlibrarysidebar.cpp
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp

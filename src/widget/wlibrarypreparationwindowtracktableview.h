@@ -10,7 +10,7 @@
 #include "preferences/usersettings.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
-#include "widget/wlibrarytableview.h"
+#include "widget/wlibrarypreparationwindowtableview.h"
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
@@ -22,16 +22,16 @@ class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
 
-class WPreparationWindowTrackTableView : public WLibraryTableView {
+class WLibraryPreparationWindowTrackTableView : public WLibraryPreparationWindowTableView {
     Q_OBJECT
   public:
-    WPreparationWindowTrackTableView(
+    WLibraryPreparationWindowTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
             double backgroundColorOpacity,
             bool sorting);
-    ~WPreparationWindowTrackTableView() override;
+    ~WLibraryPreparationWindowTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent* event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;

@@ -419,12 +419,24 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
+const QString BaseSqlTableModel::currentSearchInPreparationWindow() {
+    return m_currentSearchInPreparationWindow;
+}
+
+void BaseSqlTableModel::setSearch(const QString& searchText,
+        const QString& extraFilter,
+        const QString& targetWindow) {
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
 
-    bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
+    bool searchIsDifferent;
+    if (targetWindow == "library") {
+        searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
+    } else if (targetWindow == "preparation") {
+        searchIsDifferent = m_currentSearchInPreparationWindow.isNull() ||
+                m_currentSearchInPreparationWindow != searchText;
+    }
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
 
@@ -433,15 +445,31 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
         return;
     }
 
-    m_currentSearch = searchText;
-    m_currentSearchFilter = extraFilter;
+    if (targetWindow == "preparation") {
+        m_currentSearchInPreparationWindow = searchText;
+        m_currentSearchFilterInPreparationWindow = extraFilter;
+    } else {
+        // targetWindow == "library"
+        m_currentSearch = searchText;
+        m_currentSearchFilter = extraFilter;
+    }
 }
 
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
-    setSearch(searchText, extraFilter);
+    setSearch(searchText, extraFilter, "library");
+    select();
+}
+
+void BaseSqlTableModel::searchToWindow(const QString& searchText,
+        const QString& extraFilter,
+        QString targetWindow) {
+    if (sDebug) {
+        qDebug() << this << "search" << searchText;
+    }
+    setSearch(searchText, extraFilter, targetWindow);
     select();
 }
 

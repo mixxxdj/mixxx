@@ -6,7 +6,7 @@
 #include "skin/legacy/skincontext.h"
 #include "util/math.h"
 #include "widget/wlibrary.h"
-#include "widget/wpreparationwindowtracktableview.h"
+#include "widget/wlibrarypreparationwindowtracktableview.h"
 
 namespace {
 const bool sDebug = true;
@@ -84,26 +84,26 @@ void WLibraryPreparationWindow::switchToViewInPreparationWindow(const QString& n
     }
 }
 
-bool WLibraryPreparationWindow::dropAccept(
-        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
-    if (sDebug) {
-        qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
-    }
-    // bool result = false;
-    bool result = true;
-    //    if (index.isValid()) {
-    //        if (index.internalPointer() == this) {
-    //            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
-    //        } else {
-    //            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-    //            if (pTreeItem) {
-    //                LibraryFeature* pFeature = pTreeItem->feature();
-    //                result = pFeature->dropAcceptChild(index, urls, pSource);
-    //            }
-    //        }
-    //    }
-    return result;
-}
+// bool WLibraryPreparationWindow::dropAccept(
+//    const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+// if (sDebug) {
+//    qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
+//}
+// bool result = false;
+// bool result = true;
+//    if (index.isValid()) {
+//        if (index.internalPointer() == this) {
+//            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
+//        } else {
+//            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+//            if (pTreeItem) {
+//                LibraryFeature* pFeature = pTreeItem->feature();
+//                result = pFeature->dropAcceptChild(index, urls, pSource);
+//            }
+//        }
+//    }
+// return result;
+//}
 
 void WLibraryPreparationWindow::pasteFromSidebarInPreparationWindow() {
     QWidget* pCurrent = currentWidget();
@@ -132,18 +132,18 @@ void WLibraryPreparationWindow::search(const QString& name) {
 //     return dynamic_cast<LibraryView*>(currentWidget());
 // }
 
-WPreparationWindowTrackTableView*
+WLibraryPreparationWindowTrackTableView*
 WLibraryPreparationWindow::getCurrentTrackTableViewInPreparationWindow() const {
     QWidget* pCurrent = currentWidget();
-    WPreparationWindowTrackTableView* pTracksView =
-            qobject_cast<WPreparationWindowTrackTableView*>(pCurrent);
+    WLibraryPreparationWindowTrackTableView* pTracksView =
+            qobject_cast<WLibraryPreparationWindowTrackTableView*>(pCurrent);
     qDebug() << "WLibraryPreparationWindow pCurrent " << pCurrent;
     qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
 
     if (!pTracksView) {
         // This view is not a tracks view, but possibly a special library view
         // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
-        pTracksView = pCurrent->findChild<WPreparationWindowTrackTableView*>();
+        pTracksView = pCurrent->findChild<WLibraryPreparationWindowTrackTableView*>();
         qDebug() << "WLibraryPreparationWindow pCurrent->findChild pTracksView " << pTracksView;
     }
     qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
@@ -155,7 +155,8 @@ bool WLibraryPreparationWindow::isTrackInCurrentView(const TrackId& trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return false;
     }
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
+    WLibraryPreparationWindowTrackTableView* pTracksView =
+            getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return false;
     }
@@ -173,7 +174,8 @@ void WLibraryPreparationWindow::slotSelectTrackInActiveTrackView(const TrackId& 
     if (!trackId.isValid()) {
         return;
     }
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
+    WLibraryPreparationWindowTrackTableView* pTracksView =
+            getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return;
     }
@@ -181,7 +183,8 @@ void WLibraryPreparationWindow::slotSelectTrackInActiveTrackView(const TrackId& 
 }
 
 void WLibraryPreparationWindow::saveCurrentViewState() const {
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
+    WLibraryPreparationWindowTrackTableView* pTracksView =
+            getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return;
     }
@@ -189,7 +192,8 @@ void WLibraryPreparationWindow::saveCurrentViewState() const {
 }
 
 void WLibraryPreparationWindow::restoreCurrentViewState() const {
-    WPreparationWindowTrackTableView* pTracksView = getCurrentTrackTableViewInPreparationWindow();
+    WLibraryPreparationWindowTrackTableView* pTracksView =
+            getCurrentTrackTableViewInPreparationWindow();
     if (!pTracksView) {
         return;
     }

@@ -192,7 +192,7 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
 
     // Restore search text
-    setSearch(m_searchTexts.value(m_iPlaylistId));
+    setSearch(m_searchTexts.value(m_iPlaylistId), "", "library");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 }

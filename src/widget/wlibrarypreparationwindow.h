@@ -11,7 +11,7 @@
 #include "widget/wbasewidget.h"
 
 class LibraryView;
-class WPreparationWindowTrackTableView;
+class WLibraryPreparationWindowTrackTableView;
 class TrackId;
 class QDomNode;
 class SkinContext;
@@ -32,7 +32,7 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     bool registerView(const QString& name, QWidget* view);
 
     // LibraryView* getActiveView() const;
-    WPreparationWindowTrackTableView* getCurrentTrackTableViewInPreparationWindow() const;
+    WLibraryPreparationWindowTrackTableView* getCurrentTrackTableViewInPreparationWindow() const;
     // This returns true if the current view is or has a WTracksTableView and
     // contains trackId, otherwise false.
     // This is primarily used to disable the "Select track in library" track menu action
@@ -54,7 +54,7 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     bool getShowButtonText() const {
         return m_bShowButtonText;
     }
-    bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
+    // bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
   signals:
     FocusWidget setLibraryFocus(FocusWidget newFocus);
 
