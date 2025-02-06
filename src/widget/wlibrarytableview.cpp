@@ -1,25 +1,30 @@
 #include "widget/wlibrarytableview.h"
 
+#include <QApplication>
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
-#include <QPalette>
+#include <QHelpEvent>
 #include <QScrollBar>
+#include <QToolTip>
 
-#include "library/trackmodel.h"
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+class QFocusEvent;
+
+namespace {
+// number of entries in the model cache
+constexpr int kModelCacheSize = 1000;
+} // namespace
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-        UserSettingsPointer pConfig,
-        const ConfigKey& vScrollBarPosKey)
+        UserSettingsPointer pConfig)
         : QTableView(parent),
+          m_prevRow(-1),
+          m_prevColumn(-1),
           m_pConfig(pConfig),
-          m_vScrollBarPosKey(vScrollBarPosKey) {
-    loadVScrollBarPosState();
-
+          m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
@@ -55,79 +60,114 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 WLibraryTableView::~WLibraryTableView() {
 }
 
-void WLibraryTableView::loadVScrollBarPosState() {
-    // TODO(rryan) I'm not sure I understand the value in saving the v-scrollbar
-    // position across restarts of Mixxx. Now that we have different views for
-    // each mode, the views should just maintain their scrollbar position when
-    // you switch views. We should discuss this.
-    m_noSearchVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
+void WLibraryTableView::saveTrackModelState(
+        const QAbstractItemModel* model, const QString& key) {
+    //qDebug() << "saveTrackModelState:" << model << key;
+    VERIFY_OR_DEBUG_ASSERT(model) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
+        return;
+    }
+    ModelState* state = m_modelStateCache.take(key);
+    if (!state) {
+        state = new ModelState();
+    }
+
+    state->verticalScrollPosition = verticalScrollBar()->value();
+    state->horizontalScrollPosition = horizontalScrollBar()->value();
+
+    state->selectedRows = selectionModel()->selectedRows();
+
+    const QModelIndex currIndex = selectionModel()->currentIndex();
+    if (currIndex.isValid()) {
+        state->currentIndex = currIndex;
+    } else {
+        state->currentIndex = QModelIndex();
+    }
+
+    m_modelStateCache.insert(key, state, 1);
 }
 
-void WLibraryTableView::restoreNoSearchVScrollBarPos() {
-    // Restore the scrollbar's position (scroll to that spot)
-    // when the search has been cleared
-    //qDebug() << "restoreNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
-    updateGeometries();
-    verticalScrollBar()->setValue(m_noSearchVScrollBarPos);
+bool WLibraryTableView::restoreTrackModelState(
+        const QAbstractItemModel* model, const QString& key) {
+    //qDebug() << "restoreTrackModelState:" << model << key;
+    //qDebug() << m_modelStateCache.keys();
+    if (model == nullptr) {
+        return false;
+    }
+
+    ModelState* state = m_modelStateCache.take(key);
+    if (!state) {
+        // No previous state for model key,
+        // reset scroll bars and current index
+        verticalScrollBar()->setValue(0);
+        horizontalScrollBar()->setValue(0);
+        setCurrentIndex(QModelIndex());
+        return false;
+    }
+
+    verticalScrollBar()->setValue(state->verticalScrollPosition);
+    horizontalScrollBar()->setValue(state->horizontalScrollPosition);
+
+    auto* pSelection = selectionModel();
+    pSelection->clearSelection();
+    QModelIndexList selectedRows = state->selectedRows;
+    if (!selectedRows.isEmpty()) {
+        for (auto index : std::as_const(selectedRows)) {
+            pSelection->select(index,
+                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        }
+    }
+
+    QModelIndex currIndex = state->currentIndex;
+    restoreCurrentIndex(currIndex);
+
+    // reinsert the state into the cache
+    m_modelStateCache.insert(key, state, 1);
+    return true;
 }
 
-void WLibraryTableView::saveNoSearchVScrollBarPos() {
-    // Save the scrollbar's position so we can return here after
-    // a search is cleared.
-    //qDebug() << "saveNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
-    m_noSearchVScrollBarPos = verticalScrollBar()->value();
-}
-
-
-void WLibraryTableView::saveVScrollBarPosState() {
-    //Save the vertical scrollbar position.
-    int scrollbarPosition = verticalScrollBar()->value();
-    m_pConfig->set(m_vScrollBarPosKey, ConfigValue(scrollbarPosition));
-}
-
-void WLibraryTableView::moveSelection(int delta) {
-    QAbstractItemModel* pModel = model();
-
-    if (pModel == nullptr) {
+void WLibraryTableView::saveCurrentIndex() {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
+    }
+    QModelIndexList indices = pSelectionModel->selectedRows();
+    if (indices.isEmpty()) {
         return;
     }
 
-    while(delta != 0) {
-        // TODO(rryan) what happens if there is nothing selected?
-        QModelIndex current = currentIndex();
-        if(delta > 0) {
-            // i is positive, so we want to move the highlight down
-            int row = current.row();
-            if (row + 1 < pModel->rowCount()) {
-                selectRow(row + 1);
-            }
-
-            delta--;
-        } else {
-            // i is negative, so we want to move the highlight up
-            int row = current.row();
-            if (row - 1 >= 0) {
-                selectRow(row - 1);
-            }
-
-            delta++;
-        }
-    }
+    m_prevRow = indices.first().row();
+    m_prevColumn = currentIndex().isValid() ? currentIndex().column() : columnAt(0);
 }
 
-void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
-    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
-}
-
-void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
-    updateGeometries();
-
-    if (m_vScrollBarPosValues.contains(key)){
-        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
-    }else{
-        m_vScrollBarPosValues[key] = 0;
-        verticalScrollBar()->setValue(0);
+void WLibraryTableView::restoreCurrentIndex(const QModelIndex& index) {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (!pSelectionModel) {
+        return;
     }
+    int row = index.isValid() ? index.row() : m_prevRow;
+    int col = index.isValid() ? index.column() : m_prevColumn;
+    if (model()->rowCount() == 0 || row < 0 || col < 0) {
+        // nothing to select
+        return;
+    }
+    if (model()->rowCount() < row + 1) {
+        // select last row
+        row = model()->rowCount() - 1;
+    }
+    if (isColumnHidden(col)) {
+        // select first column
+        col = columnAt(0);
+    }
+    QModelIndex idx = model()->index(row, col);
+    if (idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);
+        scrollTo(idx);
+    }
+    m_prevRow = -1;
+    m_prevColumn = -1;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -160,17 +200,36 @@ void WLibraryTableView::setSelectedClick(bool enable) {
     }
 }
 
+void WLibraryTableView::saveCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getModelStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return;
+    }
+    saveTrackModelState(currentModel, key);
+}
+
+bool WLibraryTableView::restoreCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getModelStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return false;
+    }
+    return restoreTrackModelState(currentModel, key);
+}
+
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {
     QTableView::focusInEvent(event);
 
     if (event->reason() == Qt::TabFocusReason ||
-            event->reason() == Qt::BacktabFocusReason) {
+            event->reason() == Qt::BacktabFocusReason ||
+            event->reason() == Qt::OtherFocusReason) {
         // On FocusIn caused by a tab action with no focused item, select the
         // current or first track which can then instantly be loaded to a deck.
         // This is especially helpful if the table has only one track, which can
         // not be selected with up/down buttons, either physical or emulated via
-        // [Library],MoveVertical controls. See lp:1808632
-        if (model()->rowCount() > 0) {
+        // [Library],MoveVertical controls. See #9548
+        if (model() && model()->rowCount() > 0) {
             if (selectionModel()->hasSelection()) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
                 if (!currentIndex().isValid() ||
@@ -183,14 +242,17 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
                     // Select the first row if no row is focused
                     selectRow(0);
                     DEBUG_ASSERT(currentIndex().row() == 0);
-                } else {
-                    // Select the row of the currently focused index.
-                    // For some reason selectRow(currentIndex().row()) would not
-                    // select for the first Qt::BacktabFocusReason in a session
-                    // even though currentIndex() is valid.
-                    selectionModel()->select(currentIndex(),
-                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                    // Unfortunately, even though we now have a valid currentIndex(),
+                    // that would still not be selected by now if we're here because of
+                    // the first Qt::BacktabFocusReason to tracks in this session. (Qt 5.12.8)
+                    // So let's use the currentIndex below.
                 }
+                // Select the row of the currently focused index.
+                // For some reason selectRow(currentIndex().row()) would not
+                // select for the first Qt::BacktabFocusReason in a session
+                // even though currentIndex() is valid.
+                selectionModel()->select(currentIndex(),
+                        QItemSelectionModel::Select | QItemSelectionModel::Rows);
             }
             DEBUG_ASSERT(currentIndex().isValid());
             DEBUG_ASSERT(selectionModel()->isSelected(currentIndex()));
@@ -199,3 +261,122 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
         }
     }
 }
+
+QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
+        Qt::KeyboardModifiers modifiers) {
+    QAbstractItemModel* pModel = model();
+    if (pModel) {
+        switch (cursorAction) {
+        // The up and down cursor keys should wrap the list around. This
+        // behavior also applies to the `[Library],MoveVertical` action that is
+        // usually bound to the library browse encoder on controllers. Otherwise
+        // browsing a key-sorted library list requires either a serious workout
+        // or the user needs to reach for the mouse or keyboard when moving
+        // between 12/C#m/E and 1/G#m/B. This is very similar to
+        // WTrackTableView::moveSelection(), except that it doesn't actually
+        // modify the selection. It simply returns a new cursor that the
+        // keyboard event handler in `QAbstractItemView` uses to either move the
+        // cursor, move the selection, or extend the selection depending on
+        // which modifier keys are held down.
+        // Note: Shift modifier prevents wrap-around.
+        case QAbstractItemView::MoveUp:
+        case QAbstractItemView::MoveDown: {
+            const QModelIndex current = currentIndex();
+            if (current.isValid()) {
+                const int row = currentIndex().row();
+                const int column = currentIndex().column();
+                if (cursorAction == QAbstractItemView::MoveDown) {
+                    if (row + 1 < pModel->rowCount()) {
+                        return pModel->index(row + 1, column);
+                    } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
+                        return pModel->index(0, column);
+                    }
+                } else {
+                    if (row - 1 >= 0) {
+                        return pModel->index(row - 1, column);
+                    } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
+                        return pModel->index(pModel->rowCount() - 1, column);
+                    }
+                }
+            } else {
+                // If the cursor does not yet exist (because the view has not
+                // yet been interacted with) then this selects the first or last
+                // row
+                const int row = cursorAction == QAbstractItemView::MoveUp
+                        ? pModel->rowCount() - 1
+                        : 0;
+
+                // Selecting a hidden column doesn't work, so we'll need to find
+                // the first non-hidden column here
+                int column = 0;
+                while (isColumnHidden(column) && column < pModel->columnCount()) {
+                    column++;
+                }
+
+                return pModel->index(row, column);
+            }
+        } break;
+        // Make the home and end keys move to the first and last row rather than
+        // the first and last column (QAbstractItemView default)
+        case QAbstractItemView::MoveHome:
+        case QAbstractItemView::MoveEnd: {
+            const QModelIndex current = currentIndex();
+
+            // We don't want to change the selected column if a column has
+            // already been selected
+            int column = current.column();
+            if (!current.isValid()) {
+                // Selecting a hidden column doesn't work, so we'll need to find
+                // the first non-hidden column here
+                int column = 0;
+                while (isColumnHidden(column) && column < pModel->columnCount()) {
+                    column++;
+                }
+            }
+
+            if (cursorAction == QAbstractItemView::MoveHome) {
+                return pModel->index(0, column);
+            } else {
+                return pModel->index(pModel->rowCount() - 1, column);
+            }
+        } break;
+        case QAbstractItemView::MoveLeft:
+        case QAbstractItemView::MoveRight:
+            if (modifiers & Qt::ControlModifier) {
+                // Ignore, so it can be handled by WLibrary::keyEvent
+                // to navigate to the sidebar
+                return currentIndex();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    return QTableView::moveCursor(cursorAction, modifiers);
+}
+
+void WLibraryTableView::dataChanged(
+        const QModelIndex& topLeft,
+        const QModelIndex& bottomRight,
+        const QVector<int>& roles) {
+    for (const auto& role : roles) {
+        // Note: At this point the tooltip is already showing
+        // "Fetching image ..." or still in an effect progress.
+        // QToolTip::isVisible() is false for the later.
+        if (role == Qt::ToolTipRole) {
+            QPoint globalPos = QCursor::pos();
+            QWidget* pViewPort = QApplication::widgetAt(globalPos);
+            if (pViewPort) {
+                QPoint viewPortPos = pViewPort->mapFromGlobal(globalPos);
+                if (indexAt(viewPortPos) == topLeft) {
+                    QHelpEvent toolTipEvent(QEvent::ToolTip,
+                            pViewPort->mapFromGlobal(globalPos),
+                            globalPos);
+                    viewportEvent(&toolTipEvent);
+                }
+            }
+        }
+    }
+    QAbstractItemView::dataChanged(topLeft, bottomRight, roles);
+};

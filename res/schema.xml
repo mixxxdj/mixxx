@@ -42,28 +42,28 @@ reapplying those migrations.
         needs_verification INTEGER);
 
       CREATE TABLE IF NOT EXISTS LibraryHashes (
-        directory_path VARCHAR(256) primary key,
+        directory_path VARCHAR(256) PRIMARY KEY,
         hash INTEGER,
         directory_deleted INTEGER);
 
       CREATE TABLE IF NOT EXISTS library (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         artist varchar(48), title varchar(48),
         album varchar(48), year varchar(16),
         genre varchar(32), tracknumber varchar(3),
         location varchar(512) REFERENCES track_locations(location),
         comment varchar(20), url varchar(256),
-        duration float,
-        bitrate integer, samplerate integer,
-        cuepoint integer, bpm float,
-        wavesummaryhex blob,
-        channels integer,
+        duration FLOAT,
+        bitrate INTEGER, samplerate INTEGER,
+        cuepoint INTEGER, bpm FLOAT,
+        wavesummaryhex BLOB,
+        channels INTEGER,
         datetime_added DEFAULT CURRENT_TIMESTAMP,
-        mixxx_deleted integer,
-        played integer);
+        mixxx_deleted INTEGER,
+        played INTEGER);
 
       CREATE TABLE Playlists (
-        id INTEGER primary key,
+        id INTEGER PRIMARY KEY,
         name varchar(48),
         position INTEGER,
         hidden INTEGER DEFAULT 0 NOT NULL,
@@ -71,29 +71,31 @@ reapplying those migrations.
         date_modified datetime);
 
       CREATE TABLE PlaylistTracks (
-        id INTEGER primary key,
+        id INTEGER PRIMARY KEY,
         playlist_id INTEGER REFERENCES Playlists(id),
         track_id INTEGER REFERENCES library(id),
         position INTEGER);
 
       CREATE TABLE IF NOT EXISTS cues (
-        id integer PRIMARY KEY AUTOINCREMENT,
-        track_id integer NOT NULL REFERENCES library(id),
-        type integer DEFAULT 0 NOT NULL,
-        position integer DEFAULT -1 NOT NULL,
-        length integer DEFAULT 0 NOT NULL,
-        hotcue integer DEFAULT -1 NOT NULL,
-        label text DEFAULT '' NOT NULL);
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        track_id INTEGER NOT NULL REFERENCES library(id),
+        type INTEGER DEFAULT 0 NOT NULL,
+        <!-- Positions and lengths are actually stored as SQLite REAL (double) frame values.
+        This allows for bpm-accurate sub-sample accuracy positions and lengths. -->
+        position INTEGER DEFAULT -1 NOT NULL,
+        length INTEGER DEFAULT 0 NOT NULL,
+        hotcue INTEGER DEFAULT -1 NOT NULL,
+        label TEXT DEFAULT '' NOT NULL);
 
       CREATE TABLE IF NOT EXISTS crates (
-        id integer PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name varchar(48) UNIQUE NOT NULL,
-        count integer DEFAULT 0,
-        show integer DEFAULT 1);
+        count INTEGER DEFAULT 0,
+        show INTEGER DEFAULT 1);
 
       CREATE TABLE IF NOT EXISTS crate_tracks (
-        crate_id integer NOT NULL REFERENCES crates(id),
-        track_id integer NOT NULL REFERENCES library(id),
+        crate_id INTEGER NOT NULL REFERENCES crates(id),
+        track_id INTEGER NOT NULL REFERENCES library(id),
         UNIQUE (crate_id, track_id));
 
     </sql>
@@ -104,7 +106,7 @@ reapplying those migrations.
       track's tags have been parsed.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN header_parsed integer DEFAULT 0;
+      ALTER TABLE library ADD COLUMN header_parsed INTEGER DEFAULT 0;
     </sql>
   </revision>
   <revision version="3">
@@ -116,27 +118,27 @@ reapplying those migrations.
       ALTER TABLE library RENAME TO library_old;
 
       CREATE TABLE IF NOT EXISTS library (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         artist varchar(64),
         title varchar(64),
         album varchar(64),
         year varchar(16),
         genre varchar(64),
         tracknumber varchar(3),
-        location integer REFERENCES track_locations(location),
+        location INTEGER REFERENCES track_locations(location),
         comment varchar(256),
         url varchar(256),
-        duration float,
-        bitrate integer,
-        samplerate integer,
-        cuepoint integer,
-        bpm float,
-        wavesummaryhex blob,
-        channels integer,
+        duration FLOAT,
+        bitrate INTEGER,
+        samplerate INTEGER,
+        cuepoint INTEGER,
+        bpm FLOAT,
+        wavesummaryhex BLOB,
+        channels INTEGER,
         datetime_added DEFAULT CURRENT_TIMESTAMP,
-        mixxx_deleted integer,
-        played integer,
-        header_parsed integer DEFAULT 0);
+        mixxx_deleted INTEGER,
+        played INTEGER,
+        header_parsed INTEGER DEFAULT 0);
 
       INSERT INTO library (id, artist, title, album, year, genre, tracknumber, location, comment, url, duration, bitrate, samplerate, bpm, cuepoint, bpm, wavesummaryhex, channels, datetime_added, mixxx_deleted, played, header_parsed) SELECT id, artist, title, album, year, genre, tracknumber, location, comment, url, duration, bitrate, samplerate, bpm, cuepoint, bpm, wavesummaryhex, channels, datetime_added, mixxx_deleted, played, header_parsed from library_old;
 
@@ -148,7 +150,7 @@ reapplying those migrations.
       Add file type column.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT "?";
+      ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT '?';
     </sql>
   </revision>
   <revision version="5">
@@ -161,10 +163,10 @@ reapplying those migrations.
   </revision>
   <revision version="6">
     <description>
-                    Added a ReplayGain Column.
+      Added a ReplayGain Column.
     </description>
     <sql>
-        ALTER TABLE library ADD COLUMN replaygain float DEFAULT 0;
+        ALTER TABLE library ADD COLUMN replaygain FLOAT DEFAULT 0;
     </sql>
   </revision>
   <revision version="7" min_compatible="3">
@@ -172,17 +174,17 @@ reapplying those migrations.
       Add timesplayed and rating column. Reset header state.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN timesplayed integer DEFAULT 0;
-      ALTER TABLE library ADD COLUMN rating integer DEFAULT 0;
-      ALTER TABLE library ADD COLUMN key varchar(8) DEFAULT "";
+      ALTER TABLE library ADD COLUMN timesplayed INTEGER DEFAULT 0;
+      ALTER TABLE library ADD COLUMN rating INTEGER DEFAULT 0;
+      ALTER TABLE library ADD COLUMN key varchar(8) DEFAULT '';
       UPDATE library SET timesplayed = played;
       UPDATE library SET played = 0;
 
-      DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
+      DELETE FROM settings WHERE name='mixxx.db.model.library.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.playlist.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.crate.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.prepare.header_state';
+      DELETE FROM settings WHERE name='mixxx.db.model.missing.header_state';
     </sql>
   </revision>
   <revision version="8" min_compatible="3">
@@ -191,23 +193,23 @@ reapplying those migrations.
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS itunes_library (
-        id INTEGER primary key,
+        id INTEGER PRIMARY KEY,
         artist varchar(48), title varchar(48),
         album varchar(48), year varchar(16),
         genre varchar(32), tracknumber varchar(3),
         location varchar(512),
         comment varchar(60),
-        duration integer,
-        bitrate integer,
-        bpm integer,
-        rating integer);
+        duration INTEGER,
+        bitrate INTEGER,
+        bpm INTEGER,
+        rating INTEGER);
 
        CREATE TABLE IF NOT EXISTS itunes_playlists (
-        id INTEGER primary key,
+        id INTEGER PRIMARY KEY,
         name varchar(100) UNIQUE);
 
       CREATE TABLE IF NOT EXISTS itunes_playlist_tracks (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         playlist_id INTEGER REFERENCES itunes_playlist(id),
         track_id INTEGER REFERENCES itunes_library(id));
     </sql>
@@ -218,24 +220,24 @@ reapplying those migrations.
     </description>
     <sql>
      CREATE TABLE IF NOT EXISTS traktor_library (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         artist varchar(48), title varchar(48),
         album varchar(48), year varchar(16),
         genre varchar(32), tracknumber varchar(3),
         location varchar(512) UNIQUE,
         comment varchar(60),
-        duration integer,
-        bitrate integer,
-        bpm float,
+        duration INTEGER,
+        bitrate INTEGER,
+        bpm FLOAT,
         key varchar(6),
-        rating integer
+        rating INTEGER
         );
       CREATE TABLE IF NOT EXISTS traktor_playlists (
-        id INTEGER primary key,
+        id INTEGER PRIMARY KEY,
         name varchar(100) UNIQUE
         );
       CREATE TABLE IF NOT EXISTS traktor_playlist_tracks (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         playlist_id INTEGER REFERENCES traktor_playlist(id),
         track_id INTEGER REFERENCES traktor_library(id)
         );
@@ -246,8 +248,8 @@ reapplying those migrations.
       Playlist and crate locks
     </description>
     <sql>
-      ALTER TABLE crates ADD COLUMN locked integer DEFAULT 0;
-      ALTER TABLE playlists ADD COLUMN locked integer DEFAULT 0;
+      ALTER TABLE crates ADD COLUMN locked INTEGER DEFAULT 0;
+      ALTER TABLE playlists ADD COLUMN locked INTEGER DEFAULT 0;
     </sql>
   </revision>
   <revision version="11" min_compatible="3">
@@ -256,24 +258,24 @@ reapplying those migrations.
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS rhythmbox_library (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         artist varchar(48), title varchar(48),
         album varchar(48), year varchar(16),
         genre varchar(32), tracknumber varchar(3),
         location varchar(512) UNIQUE,
         comment varchar(60),
-        duration integer,
-        bitrate integer,
-        bpm float,
+        duration INTEGER,
+        bitrate INTEGER,
+        bpm FLOAT,
         key varchar(6),
-        rating integer
+        rating INTEGER
         );
       CREATE TABLE IF NOT EXISTS rhythmbox_playlists (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name varchar(100) UNIQUE
         );
       CREATE TABLE IF NOT EXISTS rhythmbox_playlist_tracks (
-        id INTEGER primary key AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         playlist_id INTEGER REFERENCES rhythmbox_playlist(id),
         track_id INTEGER REFERENCES rhythmbox_library(id)
         );
@@ -303,7 +305,7 @@ reapplying those migrations.
       Add composer column to library table.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT "";
+      ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT '';
     </sql>
   </revision>
   <revision version="15" min_compatible="3">
@@ -320,7 +322,7 @@ reapplying those migrations.
     </description>
     <sql>
     CREATE TABLE IF NOT EXISTS track_analysis (
-      id INTEGER primary key AUTOINCREMENT,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       track_id INTEGER NOT NULL REFERENCES track_locations(id),
       type varchar(512),
       description varchar(1024),
@@ -365,7 +367,7 @@ reapplying those migrations.
       Crates in AutoDJ queue (for automated random-track selection).
     </description>
     <sql>
-      ALTER TABLE crates ADD COLUMN autodj_source integer DEFAULT 0;
+      ALTER TABLE crates ADD COLUMN autodj_source INTEGER DEFAULT 0;
     </sql>
   </revision>
   <revision version="21" min_compatible="3">
@@ -373,8 +375,8 @@ reapplying those migrations.
       Add grouping and album_artist column to library table.
     </description>
     <sql>
-      ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT "";
-      ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT "";
+      ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT '';
+      ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT '';
     </sql>
   </revision>
   <revision version="22" min_compatible="3">
@@ -382,8 +384,8 @@ reapplying those migrations.
       Add grouping and album_artist column to itunes_library table.
     </description>
     <sql>
-      ALTER TABLE itunes_library ADD COLUMN grouping TEXT DEFAULT "";
-      ALTER TABLE itunes_library ADD COLUMN album_artist TEXT DEFAULT "";
+      ALTER TABLE itunes_library ADD COLUMN grouping TEXT DEFAULT '';
+      ALTER TABLE itunes_library ADD COLUMN album_artist TEXT DEFAULT '';
     </sql>
   </revision>
   <revision version="23" min_compatible="3">
@@ -404,7 +406,7 @@ reapplying those migrations.
     <sql>
       ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
       ALTER TABLE library ADD COLUMN coverart_type INTEGER DEFAULT 0;
-      ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT "";
+      ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT '';
       ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
     </sql>
   </revision>
@@ -444,7 +446,7 @@ reapplying those migrations.
       Reset replay gain info for all FLAC files after fixing a decoding bug in version 2.1.0.
       <!-- The value of 'replaygain_peak' is not yet calculated by any Mixxx analyzer, -->
       <!-- so we should leave it untouched and don't need to reset it here!            -->
-      <!-- See also: https://bugs.launchpad.net/mixxx/+bug/1766042                     -->
+      <!-- See also: https://github.com/mixxxdj/mixxx/issues/9255                     -->
     </description>
     <sql>
       <!-- Reset replay gain to default value -->
@@ -455,7 +457,7 @@ reapplying those migrations.
     <description>
       This was used in the development of 2.3 to track whether cues were placed
       manually or automatically. However, this turned out to be unnecessary.
-      This version is left as a placeholder so users who were using the master
+      This version is left as a placeholder so users who were using the main
       branch will have their database updated correctly for the subsequent
       schema change.
     </description>
@@ -503,9 +505,83 @@ reapplying those migrations.
       <!-- White -->
       UPDATE cues SET color=0xF2F2FF WHERE color=8;
       <!-- Remove alpha channel from cues that were updated by
-           previous, in-development schema migrations
-        -->
+           previous, in-development schema migrations -->
       UPDATE cues SET color = (color &amp; 0xFFFFFF) WHERE color > 0xFFFFFF;
+    </sql>
+  </revision>
+  <revision version="33" min_compatible="3">
+    <description>
+      Add cover art image digest and (background) color
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN coverart_color INTEGER;
+      ALTER TABLE library ADD COLUMN coverart_digest BLOB;
+    </sql>
+  </revision>
+  <revision version="34" min_compatible="3">
+    <description>
+      Add indexes for tracks in playlists and crates
+    </description>
+    <sql>
+      CREATE INDEX IF NOT EXISTS idx_PlaylistTracks_playlist_id_track_id ON PlaylistTracks (
+          playlist_id,
+          track_id
+      );
+      CREATE INDEX IF NOT EXISTS idx_PlaylistTracks_track_id ON PlaylistTracks (
+          track_id
+      );
+      CREATE INDEX IF NOT EXISTS idx_crate_tracks_track_id ON crate_tracks (
+          track_id
+      );
+    </sql>
+  </revision>
+  <revision version="35" min_compatible="3">
+    <description>
+      Add last_played_at column to library table
+    </description>
+    <sql>
+      -- Add new column
+      ALTER TABLE library ADD COLUMN last_played_at DATETIME DEFAULT NULL;
+    </sql>
+  </revision>
+  <revision version="36" min_compatible="3">
+    <description>
+      Populate last_played_at column in library table from play history
+    </description>
+    <sql>
+      -- Populate new column from history playlists
+      UPDATE library SET last_played_at=(
+        SELECT MAX(PlaylistTracks.pl_datetime_added)
+          FROM PlaylistTracks
+          JOIN Playlists ON PlaylistTracks.playlist_id=Playlists.id
+          WHERE PlaylistTracks.track_id=library.id
+          AND Playlists.hidden=2
+          GROUP BY PlaylistTracks.track_id);
+    </sql>
+  </revision>
+  <revision version="37" min_compatible="3">
+    <description>
+      Add source_synchronized_ms column to library table
+    </description>
+    <!-- source_synchronized_ms: in milliseconds since 1970-01-01T00:00:00.000 UTC -->
+    <sql>
+      ALTER TABLE library ADD COLUMN source_synchronized_ms INTEGER DEFAULT NULL;
+    </sql>
+  </revision>
+  <revision version="38" min_compatible="3">
+    <description>
+      Fix 0/NULL issue after upgrade to schema version 37.
+    </description>
+    <sql>
+      UPDATE library SET source_synchronized_ms=NULL WHERE source_synchronized_ms=0;
+    </sql>
+  </revision>
+  <revision version="39" min_compatible="3">
+    <description>
+      Replace file type "aif" with "aiff".
+    </description>
+    <sql>
+      UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
 </schema>

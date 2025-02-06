@@ -20,6 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#endif
+
 /*
  * This takes the command line strings starting at optind and concatenate them in order
  * to build a long string. Then this string will be compared with the actual key (codename).

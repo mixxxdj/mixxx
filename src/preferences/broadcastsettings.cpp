@@ -2,14 +2,13 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <QFileInfoList>
 #include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
-#include "defs_urls.h"
 #include "moc_broadcastsettings.cpp"
+#include "preferences/broadcastsettingsmodel.h"
 #include "util/logger.h"
-#include "util/memory.h"
+#include "util/make_const_iterator.h"
 
 namespace {
 const char* kProfilesSubfolder = "broadcast_profiles";
@@ -33,7 +32,7 @@ void BroadcastSettings::loadProfiles() {
     }
 
     QStringList nameFilters("*.bcp.xml");
-    QFileInfoList files =
+    const QFileInfoList files =
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
     // If *.bcp.xml files exist in the profiles subfolder, those will be loaded
@@ -160,7 +159,7 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for (const auto& pProfile : qAsConst(m_profiles)) {
+    for (const auto& pProfile : std::as_const(m_profiles)) {
         DEBUG_ASSERT(pProfile);
         saveProfile(&*pProfile);
     }
@@ -202,7 +201,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for (auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+    for (auto profileIter = m_profiles.constBegin(); profileIter != m_profiles.constEnd();) {
         QString profileName = (*profileIter)->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
@@ -210,7 +209,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
             const auto removedProfile = *profileIter;
             DEBUG_ASSERT(removedProfile);
             deleteFileForProfile(*removedProfile);
-            profileIter = m_profiles.erase(profileIter);
+            profileIter = constErase(&m_profiles, profileIter);
             emit profileRemoved(removedProfile);
         } else {
             ++profileIter;

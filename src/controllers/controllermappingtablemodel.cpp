@@ -1,42 +1,38 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include "controllers/midi/legacymidicontrollermapping.h"
+#include "library/searchqueryparser.h"
 #include "moc_controllermappingtablemodel.cpp"
 
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent,
-        ControlPickerMenu* pControlPickerMenu)
+        ControlPickerMenu* pControlPickerMenu,
+        QTableView* pTableView)
         : QAbstractTableModel(pParent),
           m_pControlPickerMenu(pControlPickerMenu),
-          m_pMidiPreset(nullptr),
-          m_pHidPreset(nullptr) {
+          m_pTableView(pTableView),
+          m_pMidiMapping(nullptr) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {
 
 }
 
-void ControllerMappingTableModel::setPreset(ControllerPresetPointer pPreset) {
-    m_pPreset = pPreset;
-    if (m_pPreset) {
-        // This immediately calls one of the two visit() methods below.
-        m_pPreset->accept(this);
+void ControllerMappingTableModel::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
+    // Only legacy MIDI mappings are supported
+    // TODO: prevent calling this code for unsupported mapping types?
+    if (!m_pMidiMapping) {
+        return;
     }
 
-    // Notify the child class a preset was loaded.
-    onPresetLoaded();
+    // Notify the child class a mapping was loaded.
+    onMappingLoaded();
 }
 
 void ControllerMappingTableModel::cancel() {
-    // Apply mutates the preset so to revert to the time just before the last
-    // apply, simply call setPreset again.
-    setPreset(m_pPreset);
-}
-
-void ControllerMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
-    m_pMidiPreset = pMidiPreset;
-}
-
-void ControllerMappingTableModel::visit(HidControllerPreset* pHidPreset) {
-    m_pHidPreset = pHidPreset;
+    // Apply mutates the mapping so to revert to the time just before the last
+    // apply, simply reload the mapping.
+    onMappingLoaded();
 }
 
 bool ControllerMappingTableModel::setHeaderData(int section,
@@ -86,4 +82,64 @@ Qt::ItemFlags ControllerMappingTableModel::flags(const QModelIndex& index) const
 
     Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
     return defaultFlags | Qt::ItemIsEditable;
+}
+
+ControllerMappingTableProxyModel::ControllerMappingTableProxyModel(
+        ControllerMappingTableModel* sourceModel)
+        : m_currentSearch("") {
+    VERIFY_OR_DEBUG_ASSERT(sourceModel) {
+        return;
+    }
+    setSourceModel(sourceModel);
+    m_pModel = sourceModel;
+    setSortRole(Qt::UserRole);
+}
+
+ControllerMappingTableProxyModel::~ControllerMappingTableProxyModel() {
+}
+
+void ControllerMappingTableProxyModel::search(const QString& searchText) {
+    m_currentSearch = searchText;
+    // This triggers the search, i.e. iterate over all rows with filterAcceptsRow(),
+    // no matter if the fxedFilterString was changed.
+    setFilterFixedString(searchText);
+}
+
+bool ControllerMappingTableProxyModel::filterAcceptsRow(int sourceRow,
+        const QModelIndex& sourceParent) const {
+    if (!m_pModel) {
+        return false;
+    }
+
+    const QString currSearch = m_currentSearch.trimmed();
+    if (currSearch.isEmpty()) {
+        return true;
+    }
+
+    QStringList tokens = SearchQueryParser::splitQueryIntoWords(currSearch);
+    tokens.removeDuplicates();
+
+    for (const auto& token : std::as_const(tokens)) {
+        bool tokenMatch = false;
+        for (int column = 0; column < columnCount(); column++) {
+            QModelIndex index = m_pModel->index(sourceRow, column, sourceParent);
+            QString strData = m_pModel->getDisplayString(index);
+            if (!strData.isEmpty()) {
+                QString tokNoQuotes = token;
+                tokNoQuotes.remove('\"');
+                if (strData.contains(tokNoQuotes, Qt::CaseInsensitive)) {
+                    tokenMatch = true;
+                    tokens.removeOne(token);
+                }
+            }
+            if (tokenMatch) {
+                break;
+            }
+        }
+    }
+
+    if (tokens.length() > 0) {
+        return false;
+    }
+    return true;
 }

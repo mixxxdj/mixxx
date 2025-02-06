@@ -1,19 +1,12 @@
-/*
- * vinylcontrolsignalwidget.h
- *
- *  Created on: 5-Jul-2008
- *      Author: asantoni
- */
-
 #pragma once
 
 #include <QImage>
-#include <QPaintEvent>
-#include <QPainter>
-#include <QTimerEvent>
 #include <QWidget>
+#include <vector>
 
 #include "vinylcontrol/vinylsignalquality.h"
+
+class QPaintEvent;
 
 class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListener {
     Q_OBJECT
@@ -36,7 +29,7 @@ class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListen
     int m_iSize;
 
     QImage m_qImage;
-    unsigned char * m_imageData;
+    std::vector<uchar> m_imageData;
     int m_iAngle;
     float m_fSignalQuality;
     bool m_bVinylActive;

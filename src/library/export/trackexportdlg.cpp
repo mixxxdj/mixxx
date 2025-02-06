@@ -1,7 +1,5 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QDesktopServices>
-#include <QFileInfo>
 #include <QMessageBox>
 
 #include "moc_trackexportdlg.cpp"
@@ -70,29 +68,30 @@ void TrackExportDlg::slotAskOverwriteMode(
             QMessageBox::Warning,
             tr("Overwrite Existing File?"),
             tr("\"%1\" already exists, overwrite?").arg(filename),
-            QMessageBox::Cancel | QMessageBox::No | QMessageBox::NoToAll
-            | QMessageBox::Yes | QMessageBox::YesToAll);
-    question_box.setDefaultButton(QMessageBox::No);
-    question_box.setButtonText(QMessageBox::Yes, tr("&Overwrite"));
-    question_box.setButtonText(QMessageBox::YesToAll, tr("Over&write All"));
-    question_box.setButtonText(QMessageBox::No, tr("&Skip"));
-    question_box.setButtonText(QMessageBox::NoToAll, tr("Skip &All"));
+            QMessageBox::Cancel);
 
-    switch (question_box.exec()) {
-    case QMessageBox::No:
+    QPushButton* pSkip = question_box.addButton(
+            tr("&Skip"), QMessageBox::NoRole);
+    QPushButton* pSkipAll = question_box.addButton(
+            tr("Skip &All"), QMessageBox::NoRole);
+    QPushButton* pOverwrite = question_box.addButton(
+            tr("&Overwrite"), QMessageBox::YesRole);
+    QPushButton* pOverwriteAll = question_box.addButton(
+            tr("Over&write All"), QMessageBox::YesRole);
+    question_box.setDefaultButton(pSkip);
+
+    question_box.exec();
+    auto* pBtn = question_box.clickedButton();
+    if (pBtn == pSkip) {
         promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP);
-        return;
-    case QMessageBox::NoToAll:
+    } else if (pBtn == pSkipAll) {
         promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP_ALL);
-        return;
-    case QMessageBox::Yes:
+    } else if (pBtn == pOverwrite) {
         promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE);
-        return;
-    case QMessageBox::YesToAll:
+    } else if (pBtn == pOverwriteAll) {
         promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
-        return;
-    case QMessageBox::Cancel:
-    default:
+    } else {
+        // Cancel
         promise->set_value(TrackExportWorker::OverwriteAnswer::CANCEL);
     }
 }
@@ -104,7 +103,7 @@ void TrackExportDlg::cancelButtonClicked() {
 void TrackExportDlg::finish() {
     m_worker->stop();
     m_worker->wait();
-    if (m_worker->errorMessage().length()) {
+    if (!m_worker->errorMessage().isEmpty()) {
         QMessageBox::warning(
                 nullptr,
                 tr("Export Error"),

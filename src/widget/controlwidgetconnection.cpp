@@ -5,7 +5,6 @@
 #include "control/controlproxy.h"
 #include "moc_controlwidgetconnection.cpp"
 #include "util/assert.h"
-#include "util/debug.h"
 #include "util/valuetransformer.h"
 #include "widget/wbasewidget.h"
 
@@ -143,12 +142,20 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
 void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     const double parameter = getControlParameterForValue(v);
     QVariant vParameter;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (m_property.metaType().id() == QMetaType::Bool) {
+#else
     if (m_property.type() == QVariant::Bool) {
+#endif
         vParameter = (parameter > 0);
     } else {
         vParameter = parameter;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    bool success = vParameter.convert(m_property.metaType());
+#else
     bool success = vParameter.convert(m_property.type());
+#endif
     VERIFY_OR_DEBUG_ASSERT(success) {
         return;
     }
@@ -171,9 +178,6 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
 
     m_propertyValue = vParameter;
 
-    // According to http://stackoverflow.com/a/3822243 this is the least
-    // expensive way to restyle just this widget.
-    pWidget->style()->unpolish(pWidget);
     pWidget->style()->polish(pWidget);
 
     // These calls don't always trigger the repaint, so call it explicitly.

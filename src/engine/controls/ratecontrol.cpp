@@ -34,6 +34,9 @@ RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pBpmControl(nullptr),
+          m_wrapAroundCount(0),
+          m_jumpPos(mixxx::audio::FramePos()),
+          m_targetPos(mixxx::audio::FramePos()),
           m_bTempStarted(false),
           m_tempRateRatio(0.0),
           m_dRateTempRampChange(0.0) {
@@ -57,7 +60,7 @@ RateControl::RateControl(const QString& group,
             this, &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
 
-    // Allow rate slider to go out of bounds so that master sync rate
+    // Allow rate slider to go out of bounds so that sync lock rate
     // adjustments are not capped.
     m_pRateSlider = new ControlPotmeter(
             ConfigKey(group, "rate"), -1.0, 1.0, true);
@@ -104,24 +107,28 @@ RateControl::RateControl(const QString& group,
     connect(m_pButtonRatePermDown, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermDown,
             Qt::DirectConnection);
+    m_pButtonRatePermDown->setKbdRepeatable(true);
 
     m_pButtonRatePermDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
     connect(m_pButtonRatePermDownSmall, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermDownSmall,
             Qt::DirectConnection);
+    m_pButtonRatePermDownSmall->setKbdRepeatable(true);
 
     m_pButtonRatePermUp =
         new ControlPushButton(ConfigKey(group,"rate_perm_up"));
     connect(m_pButtonRatePermUp, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermUp,
             Qt::DirectConnection);
+    m_pButtonRatePermUp->setKbdRepeatable(true);
 
     m_pButtonRatePermUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
     connect(m_pButtonRatePermUpSmall, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermUpSmall,
             Qt::DirectConnection);
+    m_pButtonRatePermUpSmall->setKbdRepeatable(true);
 
     // Temporary rate-change buttons
     m_pButtonRateTempDown =
@@ -135,7 +142,8 @@ RateControl::RateControl(const QString& group,
 
     // We need the sample rate so we can guesstimate something close
     // what latency is.
-    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pSampleRate = ControlObject::getControl(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")));
 
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(group, "wheel"));
@@ -364,7 +372,7 @@ double RateControl::getWheelFactor() const {
 
 double RateControl::getJogFactor() const {
     // FIXME: Sensitivity should be configurable separately?
-    const double jogSensitivity = 0.1;  // Nudges during playback
+    constexpr double jogSensitivity = 0.1; // Nudges during playback
     double jogValue = m_pJog->get();
 
     // Since m_pJog is an accumulator, reset it since we've used its value.
@@ -436,10 +444,10 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                 // The buffer is playing, so calculate the buffer rate.
 
                 // There are four rate effects we apply: wheel, scratch, jog and temp.
-                // Wheel: a linear additive effect (no spring-back)
+                // Wheel:   a linear additive effect (no spring-back)
                 // Scratch: a rate multiplier
-                // Jog: a linear additive effect whose value is filtered (springs back)
-                // Temp: pitch bend
+                // Jog:     a linear additive effect whose value is filtered (springs back)
+                // Temp:    pitch bend
 
                 // New scratch behavior - overrides playback speed (and old behavior)
                 if (useScratch2Value) {
@@ -453,19 +461,29 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
         }
 
-        double currentSample = getSampleOfTrack().current;
-        m_pScratchController->process(currentSample, rate, iSamplesPerBuffer, baserate);
+        double currentSample = frameInfo().currentPosition.toEngineSamplePos();
+        // Let PositionScratchController also know if the play pos wrapped around
+        // (beatloop or track repeat) so it can correctly interpret the sample position delta.
+        m_pScratchController->process(currentSample,
+                rate,
+                iSamplesPerBuffer,
+                baserate,
+                m_wrapAroundCount,
+                m_jumpPos,
+                m_targetPos);
+        // Reset count after use.
+        m_wrapAroundCount = 0;
 
         // If waveform scratch is enabled, override all other controls
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
             *pReportScratching = true;
         } else {
-            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
-            if (getSyncMode() == SYNC_FOLLOWER && !paused &&
+            // If sync lock is on, respond to it -- but vinyl and scratch mode always override.
+            if (toSynchronized(getSyncMode()) && !paused &&
                     !bVinylControlEnabled && !useScratch2Value) {
                 if (m_pBpmControl == nullptr) {
-                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during sync lock";
                     return 1.0;
                 }
 
@@ -592,14 +610,21 @@ void RateControl::resetRateTemp(void)
     setRateTemp(0.0);
 }
 
-void RateControl::notifySeek(double playPos) {
-    m_pScratchController->notifySeek(playPos);
-    EngineControl::notifySeek(playPos);
-}
-
 bool RateControl::isReverseButtonPressed() {
     if (m_pReverseButton) {
         return m_pReverseButton->toBool();
     }
     return false;
+}
+
+void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
+        mixxx::audio::FramePos targetPos) {
+    VERIFY_OR_DEBUG_ASSERT(triggerPos.isValid() && targetPos.isValid()) {
+        m_wrapAroundCount = 0;
+        // no need to reset the position, they're not used if count is 0.
+        return;
+    }
+    m_wrapAroundCount++;
+    m_jumpPos = triggerPos;
+    m_targetPos = targetPos;
 }

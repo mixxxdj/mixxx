@@ -295,13 +295,13 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x91</status>
             <midino>0x0D</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x81</status>
             <midino>0x0D</midino>
          </control>
@@ -1000,13 +1000,13 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x91</status>
             <midino>0x2F</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x81</status>
             <midino>0x2F</midino>
          </control>

@@ -120,7 +120,7 @@ static void parse_headers(http_parser_t *parser, char **line, int lines)
         whitespace = 0;
         name = line[l];
         value = NULL;
-        slen = strlen(line[l]);
+        slen = (int)strlen(line[l]);
         for (i = 0; i < slen; i++) {
             if (line[l][i] == ':') {
                 whitespace = 1;
@@ -168,7 +168,7 @@ int httpp_parse_response(http_parser_t *parser, const char *http_data, unsigned 
     /* In this case, the first line contains:
      * VERSION RESPONSE_CODE MESSAGE, such as HTTP/1.0 200 OK
      */
-    slen = strlen(line[0]);
+    slen = (int)strlen(line[0]);
     version = line[0];
     for(i=0; i < slen; i++) {
         if(line[0][i] == ' ') {
@@ -221,7 +221,7 @@ static int hex(char c)
 
 static char *url_escape(const char *src)
 {
-    int len = strlen(src);
+    int len = (int)strlen(src);
     unsigned char *decoded;
     int i;
     char *dst;
@@ -280,7 +280,7 @@ static void parse_query(http_parser_t *parser, char *query)
     if(!query || !*query)
         return;
 
-    len = strlen(query);
+    len = (int)strlen(query);
 
     while(i<len) {
         switch(query[i]) {
@@ -333,7 +333,7 @@ int httpp_parse(http_parser_t *parser, const char *http_data, unsigned long len)
     */
     where = 0;
     whitespace = 0;
-    slen = strlen(line[0]);
+    slen = (int)strlen(line[0]);
     req_type = line[0];
     for (i = 0; i < slen; i++) {
         if (line[0][i] == ' ') {

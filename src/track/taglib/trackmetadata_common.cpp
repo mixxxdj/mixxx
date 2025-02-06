@@ -1,15 +1,8 @@
 #include "track/taglib/trackmetadata_common.h"
 
-#include <taglib/tmap.h>
-
 #include "track/tracknumbers.h"
 #include "util/assert.h"
-#include "util/duration.h"
 #include "util/logger.h"
-
-// TagLib has support for length in milliseconds since version 1.10
-#define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
 namespace mixxx {
 
@@ -18,13 +11,16 @@ namespace {
 Logger kLogger("TagLib");
 
 bool parseReplayGainGain(
-        ReplayGain* pReplayGain,
-        const QString& dbGain) {
-    DEBUG_ASSERT(pReplayGain);
-
-    bool isRatioValid = false;
-    double ratio = ReplayGain::ratioFromString(dbGain, &isRatioValid);
-    if (isRatioValid) {
+        gsl::not_null<ReplayGain*> pReplayGain,
+        const QString& dbGain,
+        bool resetIfEmpty) {
+    if (resetIfEmpty && dbGain.trimmed().isEmpty()) {
+        pReplayGain->resetRatio();
+        return true;
+    }
+    bool isValid = false;
+    double ratio = ReplayGain::ratioFromString(dbGain, &isValid);
+    if (isValid) {
         // Some applications (e.g. Rapid Evolution 3) write a replay gain
         // of 0 dB even if the replay gain is undefined. To be safe we
         // ignore this special value and instead prefer to recalculate
@@ -36,20 +32,23 @@ bool parseReplayGainGain(
         }
         pReplayGain->setRatio(ratio);
     }
-    return isRatioValid;
+    return isValid;
 }
 
 bool parseReplayGainPeak(
-        ReplayGain* pReplayGain,
-        const QString& strPeak) {
-    DEBUG_ASSERT(pReplayGain);
-
-    bool isPeakValid = false;
-    const CSAMPLE peak = ReplayGain::peakFromString(strPeak, &isPeakValid);
-    if (isPeakValid) {
+        gsl::not_null<ReplayGain*> pReplayGain,
+        const QString& strPeak,
+        bool resetIfEmpty) {
+    if (resetIfEmpty && strPeak.trimmed().isEmpty()) {
+        pReplayGain->resetPeak();
+        return true;
+    }
+    bool isValid = false;
+    const CSAMPLE peak = ReplayGain::peakFromString(strPeak, &isValid);
+    if (isValid) {
         pReplayGain->setPeak(peak);
     }
-    return isPeakValid;
+    return isValid;
 }
 
 } // anonymous namespace
@@ -89,8 +88,13 @@ TagLib::String firstNonEmptyStringListItem(
 
 bool parseBpm(
         TrackMetadata* pTrackMetadata,
-        const QString& sBpm) {
+        const QString& sBpm,
+        bool resetIfEmpty) {
     DEBUG_ASSERT(pTrackMetadata);
+    if (resetIfEmpty && sBpm.trimmed().isEmpty()) {
+        pTrackMetadata->refTrackInfo().setBpm(Bpm{});
+        return true;
+    }
     bool isBpmValid = false;
     const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
     if (isBpmValid) {
@@ -100,56 +104,40 @@ bool parseBpm(
 }
 
 bool parseTrackGain(
-        TrackMetadata* pTrackMetadata,
-        const QString& dbGain) {
-    DEBUG_ASSERT(pTrackMetadata);
-
-    ReplayGain replayGain(pTrackMetadata->getTrackInfo().getReplayGain());
-    bool isRatioValid = parseReplayGainGain(&replayGain, dbGain);
-    if (isRatioValid) {
-        pTrackMetadata->refTrackInfo().setReplayGain(replayGain);
-    }
-    return isRatioValid;
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& dbGain,
+        bool resetIfEmpty) {
+    return parseReplayGainGain(pTrackMetadata->refTrackInfo().ptrReplayGain(),
+            dbGain,
+            resetIfEmpty);
 }
 
 bool parseTrackPeak(
-        TrackMetadata* pTrackMetadata,
-        const QString& strPeak) {
-    DEBUG_ASSERT(pTrackMetadata);
-
-    ReplayGain replayGain(pTrackMetadata->getTrackInfo().getReplayGain());
-    bool isPeakValid = parseReplayGainPeak(&replayGain, strPeak);
-    if (isPeakValid) {
-        pTrackMetadata->refTrackInfo().setReplayGain(replayGain);
-    }
-    return isPeakValid;
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& strPeak,
+        bool resetIfEmpty) {
+    return parseReplayGainPeak(pTrackMetadata->refTrackInfo().ptrReplayGain(),
+            strPeak,
+            resetIfEmpty);
 }
 
 #if defined(__EXTRA_METADATA__)
 bool parseAlbumGain(
-        TrackMetadata* pTrackMetadata,
-        const QString& dbGain) {
-    DEBUG_ASSERT(pTrackMetadata);
-
-    ReplayGain replayGain(pTrackMetadata->getAlbumInfo().getReplayGain());
-    bool isRatioValid = parseReplayGainGain(&replayGain, dbGain);
-    if (isRatioValid) {
-        pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
-    }
-    return isRatioValid;
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& dbGain,
+        bool resetIfEmpty) {
+    return parseReplayGainGain(pTrackMetadata->refAlbumInfo().ptrReplayGain(),
+            dbGain,
+            resetIfEmpty);
 }
 
 bool parseAlbumPeak(
-        TrackMetadata* pTrackMetadata,
-        const QString& strPeak) {
-    DEBUG_ASSERT(pTrackMetadata);
-
-    ReplayGain replayGain(pTrackMetadata->getAlbumInfo().getReplayGain());
-    bool isPeakValid = parseReplayGainPeak(&replayGain, strPeak);
-    if (isPeakValid) {
-        pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
-    }
-    return isPeakValid;
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& strPeak,
+        bool resetIfEmpty) {
+    return parseReplayGainPeak(pTrackMetadata->refAlbumInfo().ptrReplayGain(),
+            strPeak,
+            resetIfEmpty);
 }
 #endif // __EXTRA_METADATA__
 
@@ -286,10 +274,23 @@ void exportTrackMetadataIntoTag(
         WriteTagMask writeMask) {
     DEBUG_ASSERT(pTag); // already validated before
 
-    pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
     pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
     pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
-    pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
+
+    // The mapping of multi-valued fields in TagLib is not bijective.
+    // We don't want to overwrite existing values if the corresponding
+    // field has not been modified in Mixxx. This workaround only covers
+    // the most common multi-valued fields.
+    //
+    // See also: <https://github.com/mixxxdj/mixxx/issues/12587>
+    const auto artist = toTString(trackMetadata.getTrackInfo().getArtist());
+    if (artist != pTag->artist()) {
+        pTag->setArtist(artist);
+    }
+    const auto genre = toTString(trackMetadata.getTrackInfo().getGenre());
+    if (genre != pTag->genre()) {
+        pTag->setGenre(genre);
+    }
 
     // Using setComment() from TagLib::Tag might have undesirable
     // effects if the tag type supports multiple comment fields for

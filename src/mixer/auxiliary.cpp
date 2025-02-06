@@ -1,38 +1,45 @@
 #include "mixer/auxiliary.h"
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/engineaux.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "moc_auxiliary.cpp"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
-Auxiliary::Auxiliary(QObject* pParent, const QString& group, int index,
-                     SoundManager* pSoundManager, EngineMaster* pEngine,
-                     EffectsManager* pEffectsManager)
+Auxiliary::Auxiliary(PlayerManager* pParent,
+        const QString& group,
+        int index,
+        SoundManager* pSoundManager,
+        EngineMixer* pEngine,
+        EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     EngineAux* pAuxiliary = new EngineAux(channelGroup, pEffectsManager);
     pEngine->addChannel(pAuxiliary);
-    AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 2, index);
+    AudioInput auxInput = AudioInput(AudioPathType::Auxiliary,
+            0,
+            mixxx::audio::ChannelCount::stereo(),
+            index);
     pSoundManager->registerInput(auxInput, pAuxiliary);
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
-    m_pAuxMasterEnabled = make_parented<ControlProxy>(group, "master", this);
-    m_pAuxMasterEnabled->connectValueChanged(this, &Auxiliary::slotAuxMasterEnabled);
+    m_pAuxMainMixEnabled = make_parented<ControlProxy>(group, "main_mix", this);
+    m_pAuxMainMixEnabled->connectValueChanged(this, &Auxiliary::slotAuxMainMixEnabled);
 }
 
 Auxiliary::~Auxiliary() {
 }
 
-void Auxiliary::slotAuxMasterEnabled(double v) {
+void Auxiliary::slotAuxMainMixEnabled(double v) {
     bool configured = m_pInputConfigured->toBool();
-    bool auxMasterEnable = v > 0.0;
+    bool auxMainMixEnable = v > 0.0;
 
-    // Warn the user if they try to enable master on a auxiliary with no
+    // Warn the user if they try to enable main on a auxiliary with no
     // configured input.
-    if (!configured && auxMasterEnable) {
-        m_pAuxMasterEnabled->set(0.0);
+    if (!configured && auxMainMixEnable) {
+        m_pAuxMainMixEnabled->set(0.0);
         emit noAuxiliaryInputConfigured();
     }
 }

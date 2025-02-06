@@ -1,14 +1,16 @@
 #pragma once
 
-#include <QString>
-#include <QKeySequence>
 #include <QDomNode>
-#include <QMap>
 #include <QHash>
+#include <QKeySequence>
+#include <QMap>
 #include <QMetaType>
 #include <QReadWriteLock>
+#include <QString>
+#include <type_traits>
 
 #include "util/assert.h"
+#include "util/compatibility/qhash.h"
 #include "util/debug.h"
 
 // Class for the key for a specific configuration element. A key consists of a
@@ -59,8 +61,11 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline uint qHash(const ConfigKey& key) {
-    return qHash(key.group) ^ qHash(key.item);
+inline qhash_seed_t qHash(
+        const ConfigKey& key,
+        qhash_seed_t seed = 0) {
+    return qHash(key.group, seed) ^
+            qHash(key.item, seed);
 }
 
 // The value corresponding to a key. The basic value is a string, but can be
@@ -92,8 +97,10 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value.toUpper());
+inline qhash_seed_t qHash(
+        const ConfigValue& key,
+        qhash_seed_t seed = 0) {
+    return qHash(key.value.toUpper(), seed);
 }
 
 class ConfigValueKbd : public ConfigValue {
@@ -124,6 +131,7 @@ inline bool operator!=(const ConfigValueKbd& lhs, const ConfigValueKbd& rhs) {
 template <class ValueType> class ConfigObject {
   public:
     ConfigObject(const QString& file);
+    ConfigObject(const QString& file, const QString& resourcePath, const QString& settingsPath);
     ConfigObject(const QDomNode& node);
     ~ConfigObject();
 
@@ -148,6 +156,12 @@ template <class ValueType> class ConfigObject {
     // values. ResultType is serialized to string on a per-type basis.
     template <class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
+    template<class EnumType>
+        requires std::is_enum_v<EnumType>
+    // we need to take value as const ref otherwise the overload is ambiguous
+    void setValue(const ConfigKey& key, const EnumType& value) {
+        setValue<int>(key, static_cast<int>(value));
+    };
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns ResultType().
@@ -164,11 +178,19 @@ template <class ValueType> class ConfigObject {
     template <class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
+    template<typename EnumType>
+        requires std::is_enum_v<EnumType>
+    EnumType getValue(const ConfigKey& key, const EnumType& default_value) const {
+        // we need to take default_value as const ref otherwise the overload is ambiguous
+        return static_cast<EnumType>(getValue<int>(key, static_cast<int>(default_value)));
+    }
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
     void reopen(const QString& file);
     bool save();
+
+    static QString computeResourcePath();
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
@@ -197,3 +219,21 @@ template <class ValueType> class ConfigObject {
     // not be opened; otherwise true.
     bool parse();
 };
+
+// Specialization must be declared before the first use that would cause
+// implicit instantiation, in every translation unit where such use occurs.
+// See <https://en.cppreference.com/w/cpp/language/template_specialization> for
+// details.
+template<>
+template<>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const QString& default_value) const;
+template<>
+template<>
+bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key, const bool& default_value) const;
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& value);
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value);

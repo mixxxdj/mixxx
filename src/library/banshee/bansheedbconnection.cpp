@@ -1,12 +1,15 @@
-#include <QtDebug>
-#include <QStandardPaths>
-#include <QSettings>
+#include "library/banshee/bansheedbconnection.h"
+
 #include <QFile>
 #include <QFileInfo>
+#include <QMap>
+#include <QSettings>
 #include <QSqlError>
+#include <QSqlQuery>
+#include <QStandardPaths>
+#include <QtDebug>
 
 #include "library/queryutil.h"
-#include "library/banshee/bansheedbconnection.h"
 #include "util/performancetimer.h"
 
 BansheeDbConnection::BansheeDbConnection() {
@@ -41,7 +44,7 @@ bool BansheeDbConnection::open(const QString& databaseFile) {
 
 int BansheeDbConnection::getSchemaVersion() {
     QSqlQuery query(m_database);
-    query.prepare("SELECT Value FROM CoreConfiguration WHERE Key = \"DatabaseVersion\"");
+    query.prepare("SELECT Value FROM CoreConfiguration WHERE Key = 'DatabaseVersion'");
 
     if (query.exec()) {
         if (query.next()) {
@@ -87,7 +90,7 @@ QList<BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylistEntrie
     QString queryString;
 
     if (playlistId == 0) {
-        // Create Master Playlist
+        // Create Main Playlist
         queryString = QString(
             "SELECT "
             "CoreTracks.TrackID, "        // 0

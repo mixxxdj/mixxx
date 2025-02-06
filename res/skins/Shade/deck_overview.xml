@@ -12,6 +12,7 @@
     <SignalColor>#191F24</SignalColor>
     <PlayPosColor>#00FF00</PlayPosColor>
     <EndOfTrackColor>#EA0000</EndOfTrackColor>
+    <PassthroughLabelColor><Variable name="PassthroughLabelColor"/></PassthroughLabelColor>
     <PlayedOverlayColor>#60000000</PlayedOverlayColor>
     <DefaultMark>
       <Align>bottom|right</Align>
@@ -49,7 +50,6 @@
     <Mark>
       <Control>intro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
@@ -83,7 +83,6 @@
     <Mark>
       <Control>outro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <taglib/id3v2tag.h>
+#include <id3v2tag.h>
 
-#include "track/taglib/trackmetadata_common.h"
+class QImage;
 
 namespace mixxx {
+
+class TrackMetadata;
 
 namespace taglib {
 
@@ -12,7 +14,8 @@ namespace id3v2 {
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::ID3v2::Tag& tag);
+        const TagLib::ID3v2::Tag& tag,
+        bool resetMissingTagMetadata);
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

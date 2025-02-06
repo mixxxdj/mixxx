@@ -1,12 +1,12 @@
 #pragma once
-// seratoplaylistmodel.h
-// Created 2020-02-15 by Jan Holthuis
+
 #include "library/baseexternalplaylistmodel.h"
 
 class TrackCollectionManager;
-class BaseExternalPlaylistModel;
+class SeratoPlaylistModel;
 
 class SeratoPlaylistModel : public BaseExternalPlaylistModel {
+    Q_OBJECT
   public:
     SeratoPlaylistModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,

@@ -1,36 +1,55 @@
-//
-// C++ Implementation: parser
-//
-// Description: superclass for external formats parsers
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
-#include <QtDebug>
-#include <QDir>
-#include <QFile>
-#include <QIODevice>
-#include <QUrl>
-
 #include "library/parser.h"
 
-Parser::Parser() {
+#include <QDir>
+#include <QUrl>
+#include <QtDebug>
+
+#include "library/parsercsv.h"
+#include "library/parserm3u.h"
+#include "library/parserpls.h"
+
+// static
+bool Parser::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return ParserM3u::isPlaylistFilenameSupported(playlistFile) ||
+            ParserPls::isPlaylistFilenameSupported(playlistFile) ||
+            ParserCsv::isPlaylistFilenameSupported(playlistFile);
 }
 
-Parser::~Parser() {
+// static
+QList<QString> Parser::parseAllLocations(const QString& playlistFile) {
+    if (ParserM3u::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserM3u::parseAllLocations(playlistFile);
+    }
+
+    if (ParserPls::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserPls::parseAllLocations(playlistFile);
+    }
+
+    if (ParserCsv::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserCsv::parseAllLocations(playlistFile);
+    }
+
+    return QList<QString>();
 }
 
-void Parser::clearLocations() {
-    m_sLocations.clear();
-}
+// static
+QList<QString> Parser::parse(const QString& playlistFile) {
+    const QList<QString> allLocations = parseAllLocations(playlistFile);
 
-long Parser::countParsed() {
-    return (long)m_sLocations.count();
+    QFileInfo fileInfo(playlistFile);
+
+    QList<QString> existingLocations;
+    for (const auto& location : allLocations) {
+        mixxx::FileInfo trackFile = Parser::playlistEntryToFileInfo(
+                location, fileInfo.canonicalPath());
+        if (trackFile.checkFileExists()) {
+            existingLocations.append(trackFile.location());
+        } else {
+            qInfo() << "File" << trackFile.location() << "from playlist"
+                    << playlistFile << "does not exist.";
+        }
+    }
+    return existingLocations;
 }
 
 // The following public domain code is taken from
@@ -115,19 +134,20 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-TrackFile Parser::playlistEntryToTrackFile(
+// static
+mixxx::FileInfo Parser::playlistEntryToFileInfo(
         const QString& playlistEntry,
         const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
         // URLs are always absolute
-        return TrackFile::fromUrl(QUrl(playlistEntry));
+        return mixxx::FileInfo::fromQUrl(QUrl(playlistEntry));
     }
     auto filePath = QString(playlistEntry).replace('\\', '/');
-    auto trackFile = TrackFile(filePath);
-    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+    auto trackFile = mixxx::FileInfo(filePath);
+    if (basePath.isEmpty() || trackFile.isAbsolute()) {
         return trackFile;
     } else {
         // Fallback: Relative to base path
-        return TrackFile(QDir(basePath), filePath);
+        return mixxx::FileInfo(QDir(basePath), filePath);
     }
 }

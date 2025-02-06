@@ -31,13 +31,13 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
 const QString SoundSourceProviderOggVorbis::kDisplayName = QStringLiteral("Xiph.org OggVorbis");
 
 //static
-const QStringList SoundSourceProviderOggVorbis::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderOggVorbis::kSupportedFileTypes = {
         QStringLiteral("ogg"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;
@@ -165,7 +165,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
         // Use 'long' here, because ov_read_float() returns this type.
         // This is an exception from the rule not to any types with
         // differing sizes on different platforms.
-        // https://bugs.launchpad.net/mixxx/+bug/1094143
+        // https://github.com/mixxxdj/mixxx/issues/6812
         const long readResult = ov_read_float(&m_vf, &pcmChannels, numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;

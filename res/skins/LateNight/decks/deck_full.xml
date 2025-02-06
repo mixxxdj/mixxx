@@ -17,7 +17,7 @@
             <Layout>vertical</Layout>
             <Children>
 
-              <Template src="skin:/decks/row_1_keyVinylFx.xml"/>
+              <Template src="skins:LateNight/decks/row_1_keyVinylFx.xml"/>
 
               <WidgetGroup>
                 <ObjectName>DeckRows234</ObjectName>
@@ -35,7 +35,7 @@
                       </SingletonContainer>
                     </Children>
                     <Connection>
-                      <ConfigKey>[LateNight],show_big_spinny_cover</ConfigKey>
+                      <ConfigKey>[Skin],show_big_spinny_or_cover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- SpinnyCoverContainer_Big -->
@@ -44,15 +44,15 @@
                     <SizePolicy>me,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:/decks/row_2_3_TitleArtistTime.xml" />
-                      <Template src="skin:/decks/row_4_overviewSpinny.xml" />
+                      <Template src="skins:LateNight/decks/row_2_3_TitleArtistTime.xml" />
+                      <Template src="skins:LateNight/decks/row_4_overviewSpinny.xml" />
                     </Children>
                   </WidgetGroup>
 
                 </Children>
               </WidgetGroup><!-- DeckRows234 -->
 
-              <Template src="skin:/decks/row_5_transportLoopJump.xml" />
+              <Template src="skins:LateNight/decks/row_5_transportLoopJump.xml" />
 
             </Children>
           </WidgetGroup><!-- DeckRows12345 -->
@@ -69,7 +69,7 @@
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:/decks/rate_controls.xml"/>
+          <Template src="skins:LateNight/decks/rate_controls.xml"/>
         </Children>
       </WidgetGroup><!-- DeckN -->
     </Children>

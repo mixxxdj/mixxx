@@ -1,13 +1,11 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
+#include <memory>
+#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
-#include "util/memory.h"
-#include "util/samplebuffer.h"
 
 class DetectionFunction;
 
@@ -32,26 +30,26 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return pluginInfo();
     }
 
-    bool initialize(int samplerate) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    bool initialize(mixxx::audio::SampleRate sampleRate) override;
+    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     bool finalize() override;
 
     bool supportsBeatTracking() const override {
         return true;
     }
 
-    QVector<double> getBeats() const override {
+    QVector<mixxx::audio::FramePos> getBeats() const override {
         return m_resultBeats;
     }
 
   private:
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
-    int m_iSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     int m_windowSize;
-    int m_stepSize;
+    int m_stepSizeFrames;
     std::vector<double> m_detectionResults;
-    QVector<double> m_resultBeats;
+    QVector<mixxx::audio::FramePos> m_resultBeats;
 };
 
 } // namespace mixxx

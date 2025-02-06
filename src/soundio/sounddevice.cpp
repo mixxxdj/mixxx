@@ -1,10 +1,8 @@
 #include "soundio/sounddevice.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
-
-#include "soundio/soundmanager.h"
+#include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
+#include "soundmanagerconfig.h"
 #include "util/debug.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -13,31 +11,27 @@ SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
           m_strDisplayName("Unknown Soundcard"),
-          m_iNumOutputChannels(2),
-          m_iNumInputChannels(2),
-          m_dSampleRate(44100.0),
+          m_numOutputChannels(mixxx::audio::ChannelCount::stereo()),
+          m_numInputChannels(mixxx::audio::ChannelCount::stereo()),
+          m_sampleRate(SoundManagerConfig::kMixxxDefaultSampleRate),
           m_hostAPI("Unknown API"),
           m_configFramesPerBuffer(0) {
 }
 
-int SoundDevice::getNumInputChannels() const {
-    return m_iNumInputChannels;
+mixxx::audio::ChannelCount SoundDevice::getNumInputChannels() const {
+    return m_numInputChannels;
 }
 
-int SoundDevice::getNumOutputChannels() const {
-    return m_iNumOutputChannels;
+mixxx::audio::ChannelCount SoundDevice::getNumOutputChannels() const {
+    return m_numOutputChannels;
 }
 
-void SoundDevice::setSampleRate(double sampleRate) {
-    if (sampleRate <= 0.0) {
-        // this is the default value used elsewhere in this file
-        sampleRate = 44100.0;
-    }
-    m_dSampleRate = sampleRate;
+void SoundDevice::setSampleRate(mixxx::audio::SampleRate sampleRate) {
+    m_sampleRate = sampleRate.isValid() ? sampleRate : SoundManagerConfig::kMixxxDefaultSampleRate;
 }
 
 void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {
-    if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
+    if (framesPerBuffer > kMaxEngineFrames) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
         // this isn't checked elsewhere, so...
@@ -47,35 +41,35 @@ void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {
     m_configFramesPerBuffer = framesPerBuffer;
 }
 
-SoundDeviceError SoundDevice::addOutput(const AudioOutputBuffer &out) {
+SoundDeviceStatus SoundDevice::addOutput(const AudioOutputBuffer& out) {
     // Check if the output channels are already used
     foreach (AudioOutputBuffer myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
-            return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;
+            return SoundDeviceStatus::ErrorDuplicateOutputChannel;
         }
     }
     if (out.getChannelGroup().getChannelBase()
             + out.getChannelGroup().getChannelCount() > getNumOutputChannels()) {
-        return SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL;
+        return SoundDeviceStatus::ErrorExcessiveOutputChannel;
     }
     m_audioOutputs.append(out);
-    return SOUNDDEVICE_ERROR_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 void SoundDevice::clearOutputs() {
     m_audioOutputs.clear();
 }
 
-SoundDeviceError SoundDevice::addInput(const AudioInputBuffer &in) {
+SoundDeviceStatus SoundDevice::addInput(const AudioInputBuffer& in) {
     // DON'T check if the input channels are already used, there's no reason
     // we can't send the same inputted samples to different places in mixxx.
     // -- bkgood 20101108
     if (in.getChannelGroup().getChannelBase()
             + in.getChannelGroup().getChannelCount() > getNumInputChannels()) {
-        return SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL;
+        return SoundDeviceStatus::ErrorExcessiveInputChannel;
     }
     m_audioInputs.append(in);
-    return SOUNDDEVICE_ERROR_OK;
+    return SoundDeviceStatus::Ok;
 }
 
 void SoundDevice::clearInputs() {

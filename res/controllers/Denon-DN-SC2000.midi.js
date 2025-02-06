@@ -8,7 +8,7 @@ DenonDNSC2000.Deck = function (deckNumber, group) {
 }
 
 DenonDNSC2000.init = function (id) {
-    engine.setValue("[Master]", "num_decks", 4);
+    engine.setValue("[App]", "num_decks", 4);
     var leds = [0x11,0x13,0x15,0x17,0x19,0x1B,0x1D,0x20,/* cues */
                 0x24,0x40,0x2B,/* loops */
                 0x27,0x26,/* play,cue */
@@ -60,7 +60,7 @@ DenonDNSC2000.newValue = function(currentVal,min,max,increment,ticksCount) {
 
 DenonDNSC2000.flanger = function (midino, control, value, status, group) {
     DenonDNSC2000.toggleBinaryValue(group,'flanger');
-    engine.beginTimer(100, 'DenonDNSC2000.handleFlangerLed("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handleFlangerLed(group), true);
 }
 
 DenonDNSC2000.changeDepth = function (midino, control, value, status, group) {
@@ -100,7 +100,7 @@ DenonDNSC2000.loadSelectedTrack = function (midino, control, value, status, grou
     }
     else {
         engine.setValue(group, 'LoadSelectedTrack', 1);
-        engine.beginTimer(1500, 'DenonDNSC2000.handleLeds("'+group+'")', true);
+        engine.beginTimer(1500, ()=>DenonDNSC2000.handleLeds(group), true);
     }
 }
 
@@ -170,7 +170,7 @@ DenonDNSC2000.hotcue = function(cueIndex, group, value, shift) {
         else
         engine.setValue(group, 'hotcue_' + cueIndex + '_clear',1);
     }
-    engine.beginTimer(100, 'DenonDNSC2000.handleLoopAndHotcuesLeds("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handleLoopAndHotcuesLeds(group), true);
 }
 
 DenonDNSC2000.loopIn = function(group, value, shift) {
@@ -179,7 +179,7 @@ DenonDNSC2000.loopIn = function(group, value, shift) {
     }
     else
         engine.setValue(group, 'loop_in', 1);
-    engine.beginTimer(100, 'DenonDNSC2000.handleLoopAndHotcuesLeds("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handleLoopAndHotcuesLeds(group), true);
 }
 
 DenonDNSC2000.loopOut = function(group, value, shift) {
@@ -190,7 +190,7 @@ DenonDNSC2000.loopOut = function(group, value, shift) {
     }
     else
         engine.setValue(group, 'loop_out', 1);
-    engine.beginTimer(100, 'DenonDNSC2000.handleLoopAndHotcuesLeds("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handleLoopAndHotcuesLeds(group), true);
 }
 
 DenonDNSC2000.reloop = function(group, value, shift) {
@@ -221,7 +221,7 @@ DenonDNSC2000.reloop = function(group, value, shift) {
             engine.setValue(group, 'reloop_exit', 1);
         }
     }
-    engine.beginTimer(100, 'DenonDNSC2000.handleLoopAndHotcuesLeds("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handleLoopAndHotcuesLeds(group), true);
 }
 
 DenonDNSC2000.resizeLoop = function(midino, control, value, status, group) {
@@ -267,7 +267,7 @@ DenonDNSC2000.resizeLoop = function(midino, control, value, status, group) {
         newLoopOutPosition = Math.max(0,newLoopOutPosition - newLoopOutPosition % 2);
         engine.setValue(group, 'loop_end_position', newLoopOutPosition);
     }
-    engine.beginTimer(100, 'DenonDNSC2000.handleLoopAndHotcuesLeds("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handleLoopAndHotcuesLeds(group), true);
 }
 
 DenonDNSC2000.moveLoopLeft = function(midino, control, value, status, group) {
@@ -311,7 +311,7 @@ DenonDNSC2000.play = function (midino, control, value, status, group) {
             DenonDNSC2000.toggleBinaryValue(group,'play');
         }
     }
-    engine.beginTimer(100, 'DenonDNSC2000.handlePlayLed("'+group+'")', true);
+    engine.beginTimer(100, ()=>DenonDNSC2000.handlePlayLed(group), true);
 }
 
 DenonDNSC2000.cue = function (midino, control, value, status, group) {
@@ -330,14 +330,14 @@ DenonDNSC2000.cue = function (midino, control, value, status, group) {
 DenonDNSC2000.keyLock = function (midino, control, value, status, group) {
     if ((status & 0xF0) == 0x90) {
         DenonDNSC2000.toggleBinaryValue(group,'keylock');
-        engine.beginTimer(100, 'DenonDNSC2000.handleKeyLockLed("'+group+'")', true);
+        engine.beginTimer(100, ()=>DenonDNSC2000.handleKeyLockLed(group), true);
     }
 }
 
 DenonDNSC2000.beatSync = function (midino, control, value, status, group) {
     if ((status & 0xF0) == 0x90) {
         DenonDNSC2000.toggleBinaryValue(group,'beatsync');
-        engine.beginTimer(100, 'DenonDNSC2000.handleBeatSyncLed("'+group+'")', true);
+        engine.beginTimer(100, () => DenonDNSC2000.handleBeatSyncLed(group), true);
     }
 }
 

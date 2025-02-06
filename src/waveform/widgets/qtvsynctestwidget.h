@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QGLWidget>
+#include "glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class QtVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
+class QtVSyncTestWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     QtVSyncTestWidget(const QString& group, QWidget* parent);
@@ -16,7 +14,12 @@ class QtVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return true; }
+    static inline bool useTextureForWaveform() {
+        return false;
+    }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::DeveloperOnly;
+    }
 
   protected:
     virtual void castToQWidget();

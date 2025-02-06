@@ -1,25 +1,23 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-
 #include "mixer/baseplayer.h"
 #include "util/parented_ptr.h"
 
 class ControlProxy;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class SoundManager;
+class QString;
 
 class Microphone : public BasePlayer {
     Q_OBJECT
   public:
-    Microphone(QObject* pParent,
-               const QString& group,
-               int index,
-               SoundManager* pSoundManager,
-               EngineMaster* pMixingEngine,
-               EffectsManager* pEffectsManager);
+    Microphone(PlayerManager* pParent,
+            const QString& group,
+            int index,
+            SoundManager* pSoundManager,
+            EngineMixer* pMixingEngine,
+            EffectsManager* pEffectsManager);
     ~Microphone() override;
 
   signals:

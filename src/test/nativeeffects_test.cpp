@@ -31,7 +31,7 @@ class EffectsBenchmarkTest : public BaseEffectTest {
 };
 
 template <class EffectType>
-void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& bufferParameters,
+void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& engineParameters,
                                             benchmark::State* pState, EffectsManager* pEffectsManager) {
     EffectManifestPointer pManifest = EffectType::getManifest();
 
@@ -51,34 +51,34 @@ void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& buff
     GroupFeatureState featureState;
     EffectEnableState enableState = EffectEnableState::Enabled;
 
-    mixxx::SampleBuffer input(bufferParameters.samplesPerBuffer());
-    mixxx::SampleBuffer output(bufferParameters.samplesPerBuffer());
+    mixxx::SampleBuffer input(engineParameters.samplesPerBuffer());
+    mixxx::SampleBuffer output(engineParameters.samplesPerBuffer());
 
     while (pState->KeepRunning()) {
         effect.process(channel1, channel1, input.data(), output.data(),
-                       bufferParameters.samplesPerBuffer(),
-                       bufferParameters.sampleRate(),
+                       engineParameters.samplesPerBuffer(),
+                       engineParameters.sampleRate(),
                        enableState, featureState);
     }
 }
 
 #define FOR_COMMON_BUFFER_SIZES(bm) bm->Arg(32)->Arg(64)->Arg(128)->Arg(256)->Arg(512)->Arg(1024)->Arg(2048)->Arg(4096);
 
-#define DECLARE_EFFECT_BENCHMARK(EffectName)                           \
-TEST_F(EffectsBenchmarkTest, BM_BuiltInEffects_DefaultParameters_##EffectName) { \
-    ControlPotmeter loEqFrequency(                                     \
-        ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);     \
-    loEqFrequency.setDefaultValue(250.0);                              \
-    ControlPotmeter hiEqFrequency(                                     \
-        ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);     \
-    hiEqFrequency.setDefaultValue(2500.0);                             \
-    mixxx::EngineParameters bufferParameters(                          \
-        mixxx::audio::SampleRate(44100),                         \
-        state.range_x());                                              \
-    benchmarkBuiltInEffectDefaultParameters<EffectName>(                \
-        bufferParameters, &state, m_pEffectsManager);                                     \
-}                                                                      \
-FOR_COMMON_BUFFER_SIZES(BENCHMARK(BM_BuiltInEffects_DefaultParameters_##EffectName));
+#define DECLARE_EFFECT_BENCHMARK(EffectName)                                         \
+    TEST_F(EffectsBenchmarkTest, BM_BuiltInEffects_DefaultParameters_##EffectName) { \
+        ControlPotmeter loEqFrequency(                                               \
+                ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040);              \
+        loEqFrequency.setDefaultValue(250.0);                                        \
+        ControlPotmeter hiEqFrequency(                                               \
+                ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040);               \
+        hiEqFrequency.setDefaultValue(2500.0);                                       \
+        mixxx::EngineParameters engineParameters(                                    \
+                mixxx::audio::SampleRate(44100),                                     \
+                state.range_x());                                                    \
+        benchmarkBuiltInEffectDefaultParameters<EffectName>(                         \
+                engineParameters, &state, m_pEffectsManager);                        \
+    }                                                                                \
+    FOR_COMMON_BUFFER_SIZES(BENCHMARK(BM_BuiltInEffects_DefaultParameters_##EffectName));
 
 DECLARE_EFFECT_BENCHMARK(Bessel4LVMixEQEffect)
 DECLARE_EFFECT_BENCHMARK(Bessel8LVMixEQEffect)

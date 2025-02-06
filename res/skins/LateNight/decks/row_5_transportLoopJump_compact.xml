@@ -18,7 +18,7 @@
             <Layout>stacked</Layout>
             <Size>68f,26f</Size>
             <Children>
-              <Template src="skin:/controls/button_2state_right_display.xml">
+              <Template src="skins:LateNight/controls/button_2state_right_display.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ObjectName">PlayDeck</SetVariable>
                 <SetVariable name="Size">68f,26f</SetVariable>
@@ -56,15 +56,15 @@
               <Number>0</Number>
               <Text><Variable name="state_0_text"/></Text>
               <Alignment><Variable name="Align"/></Alignment>
-              <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
             </State>
             <State>
               <Number>1</Number>
               <Text><Variable name="state_1_text"/></Text>
               <Alignment><Variable name="Align"/></Alignment>
-              <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
             </State>
             <Connection>
               <ConfigKey><Variable name="Group"/>,cue_default</ConfigKey>
@@ -91,7 +91,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:/controls/button_2state_right_display.xml">
+              <Template src="skins:LateNight/controls/button_2state_right_display.xml">
                 <SetVariable name="TooltipId">beatloop_activate</SetVariable>
                 <SetVariable name="ObjectName">LoopActivate</SetVariable>
                 <SetVariable name="Size">26f,26f</SetVariable>
@@ -114,13 +114,24 @@
                   <BindProperty>highlight</BindProperty>
                 </Connection> -->
               </BeatSpinBox>
+            </Children>
+              <Connection>
+                <ConfigKey persist="true">[Skin],show_loop_controls_compact</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+          </WidgetGroup>
 
-              <WidgetGroup>
-                <SizePolicy>me,min</SizePolicy>
-                <MinimumSize>2,</MinimumSize>
-                <MaximumSize>20,</MaximumSize>
-              </WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>me,min</SizePolicy>
+            <MinimumSize>2,</MinimumSize>
+            <MaximumSize>40,</MaximumSize>
+          </WidgetGroup>
 
+          <WidgetGroup>
+            <ObjectName>BeatjumpControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
               <BeatSpinBox>
                 <TooltipId>beatjump_size</TooltipId>
                 <ObjectName>Spinbox_<Variable name="BtnType"/></ObjectName>
@@ -138,7 +149,7 @@
               </BeatSpinBox>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[LateNight],show_loopjump_controls_compact</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_beatjump_controls_compact</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -149,7 +160,7 @@
       <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
       <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-      <Template src="skin:/decks/vinyl_controls.xml"/>
+      <Template src="skins:LateNight/decks/vinyl_controls.xml"/>
 
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -157,7 +168,7 @@
         <MaximumSize>40,</MaximumSize>
       </WidgetGroup>
 
-      <Template src="skin:/fx/assign_buttons.xml"/>
+      <Template src="skins:LateNight/fx/assign_buttons.xml"/>
 
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>

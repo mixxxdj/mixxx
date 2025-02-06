@@ -1,12 +1,12 @@
 #include "widget/wcolorpicker.h"
 
 #include <QColorDialog>
-#include <QMapIterator>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QStyle>
+#include <QStyleFactory>
 
 #include "moc_wcolorpicker.cpp"
-#include "util/color/color.h"
 #include "util/parented_ptr.h"
 
 namespace {
@@ -44,11 +44,7 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
           m_pNoColorButton(nullptr),
           m_pCustomColorButton(nullptr) {
     QGridLayout* pLayout = new QGridLayout();
-    pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
-
-    pLayout->setSizeConstraint(QLayout::SetFixedSize);
-    setSizePolicy(QSizePolicy());
 
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
@@ -152,6 +148,9 @@ void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, i
             QString("QPushButton { background-color: %1; }").arg(mixxx::RgbColor::toQString(color)));
     pButton->setToolTip(mixxx::RgbColor::toQString(color));
     pButton->setCheckable(true);
+    // Without this the button might shrink when setting the checkmark icon,
+    // both here or via external stylesheets.
+    pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_colorButtons.append(pButton);
 
     connect(pButton,
@@ -174,6 +173,7 @@ void WColorPicker::addNoColorButton(QGridLayout* pLayout, int row, int column) {
         pButton->setProperty("noColor", true);
         pButton->setToolTip(tr("No color"));
         pButton->setCheckable(true);
+        pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
         connect(pButton,
                 &QPushButton::clicked,
                 this,
@@ -210,7 +210,7 @@ void WColorPicker::addCustomColorButton(QGridLayout* pLayout, int row, int colum
     pLayout->addWidget(pButton, row, column);
 }
 
-void WColorPicker::setColorButtonChecked(mixxx::RgbColor::optional_t color, bool checked) {
+void WColorPicker::setColorButtonChecked(const mixxx::RgbColor::optional_t& color, bool checked) {
     // Unset currently selected color
     QPushButton* pButton = nullptr;
     if (color) {
@@ -227,8 +227,10 @@ void WColorPicker::setColorButtonChecked(mixxx::RgbColor::optional_t color, bool
     }
 
     pButton->setChecked(checked);
+    if (m_options.testFlag(Option::NoExtStyleSheet)) {
+        pButton->setIcon(QIcon(checked ? ":/images/ic_checkmark.svg" : ""));
+    }
     // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
-    pButton->style()->unpolish(pButton);
     pButton->style()->polish(pButton);
 }
 
@@ -236,7 +238,7 @@ void WColorPicker::resetSelectedColor() {
     setColorButtonChecked(m_selectedColor, false);
 }
 
-void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
+void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
     resetSelectedColor();
 
     m_selectedColor = color;
@@ -254,6 +256,6 @@ void WColorPicker::setColorPalette(const ColorPalette& palette) {
     addColorButtons();
 }
 
-void WColorPicker::slotColorPicked(mixxx::RgbColor::optional_t color) {
+void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     setSelectedColor(color);
 }

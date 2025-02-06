@@ -4,50 +4,28 @@
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <Children>
+
+      <!-- Spinny -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-
           <WidgetGroup>
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-
-              <Spinny><!-- without cover -->
+              <Spinny>
                 <TooltipId>spinny</TooltipId>
                 <SizePolicy>me,me</SizePolicy>
                 <MinimumSize>40,40</MinimumSize>
                 <Group><Variable name="Group"/></Group>
-                <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
-                <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
-                <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
-                <ShowCover>false</ShowCover>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
+                <PathBackground scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
+                <PathForeground>skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
+                <PathGhost>skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
+                <ShowCoverControl>[Skin],show_coverart</ShowCoverControl>
               </Spinny>
-
-              <Spinny><!-- with cover -->
-                <TooltipId>spinny</TooltipId>
-                <SizePolicy>me,me</SizePolicy>
-                <MinimumSize>40,40</MinimumSize>
-                <Group><Variable name="Group"/></Group>
-                <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
-                <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
-                <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
-                <ShowCover>true</ShowCover>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </Spinny>
-
             </Children>
           </WidgetGroup>
         </Children>
@@ -57,11 +35,11 @@
         </Connection>
       </WidgetGroup>
 
+      <!-- Cover Art -->
       <WidgetGroup>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
@@ -76,7 +54,7 @@
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>40,40</MinimumSize>
                     <Group><Variable name="Group"/></Group>
-                    <DefaultCover>skin:/<Variable name="StyleScheme"/>/style/cover_default.svg</DefaultCover>
+                    <DefaultCover>skins:LateNight/<Variable name="StyleScheme"/>/style/cover_default.svg</DefaultCover>
                   </CoverArt>
                 </Children>
               </WidgetGroup>
@@ -86,7 +64,6 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>

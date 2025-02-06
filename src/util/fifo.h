@@ -9,20 +9,17 @@ template <class DataType>
 class FIFO {
   public:
     explicit FIFO(int size)
-            : m_data(NULL) {
-        size = roundUpToPowerOf2(size);
+            : m_data(roundUpToPowerOf2(size)) {
         // If we can't represent the next higher power of 2 then bail.
-        if (size < 0) {
+        if (m_data.size() == 0) {
             return;
         }
-        m_data = new DataType[size];
         PaUtil_InitializeRingBuffer(&m_ringBuffer,
                 static_cast<ring_buffer_size_t>(sizeof(DataType)),
-                static_cast<ring_buffer_size_t>(size),
-                m_data);
+                static_cast<ring_buffer_size_t>(m_data.size()),
+                m_data.data());
     }
     virtual ~FIFO() {
-        delete [] m_data;
     }
     int readAvailable() const {
         return PaUtil_GetRingBufferReadAvailable(&m_ringBuffer);
@@ -66,7 +63,7 @@ class FIFO {
     }
 
   private:
-    DataType* m_data;
+    std::vector<DataType> m_data;
     PaUtilRingBuffer m_ringBuffer;
-    DISALLOW_COPY_AND_ASSIGN(FIFO<DataType>);
+    DISALLOW_COPY_AND_ASSIGN(FIFO);
 };

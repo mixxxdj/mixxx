@@ -2,8 +2,7 @@
 
 #include <QtDebug>
 
-#include "encoder/encodercallback.h"
-#include "util/sample.h"
+#include "encoder/encoderflacsettings.h"
 
 namespace {
 constexpr SINT kEncBufferSize = 8192; // used inside libsndfile for flac
@@ -84,8 +83,8 @@ void EncoderSndfileFlac::initStream() {
     sf_command(m_pSndfile, SFC_SET_COMPRESSION_LEVEL, &m_compression, sizeof(double));
 #endif //SFC_SUPPORTS_SET_COMPRESSION_LEVEL
 
-    // Version 1.0.28 suffers broken clamping https://bugs.launchpad.net/mixxx/+bug/1915298
-    // We receive "libsndfile-1.0.28" on Ubuntu Bionic 18.04 LTS/Focal 20.04 LTS/Grovy 20.10
+    // Version 1.0.28 suffers broken clamping https://github.com/mixxxdj/mixxx/issues/10318
+    // We receive "libsndfile-1.0.28" on Ubuntu Focal 20.04 LTS/Grovy 20.10
     // Older versions are not expected. All newer version have a working internal clamping
     const char* sf_version = sf_version_string();
     if (strstr(sf_version, "-1.0.28") != nullptr) {

@@ -1,16 +1,12 @@
 #include "control/controlobject.h"
 
-#include <QHash>
-#include <QMutexLocker>
-#include <QSet>
 #include <QtDebug>
 
 #include "control/control.h"
 #include "moc_controlobject.cpp"
-#include "util/stat.h"
-#include "util/timer.h"
 
-ControlObject::ControlObject() {
+ControlObject::ControlObject()
+        : m_pControl(ControlDoublePrivate::getDefaultControl()) {
 }
 
 ControlObject::ControlObject(const ConfigKey& key,
@@ -37,15 +33,16 @@ ControlObject::ControlObject(const ConfigKey& key,
                 this,
                 &ControlObject::privateValueChanged,
                 Qt::DirectConnection);
+    } else {
+        m_pControl = ControlDoublePrivate::getDefaultControl();
     }
 }
 
 ControlObject::~ControlObject() {
-    if (m_pControl) {
-        const bool success = m_pControl->resetCreatorCO(this);
-        Q_UNUSED(success);
-        DEBUG_ASSERT(success);
-    }
+    DEBUG_ASSERT(m_pControl);
+    const bool success = m_pControl->resetCreatorCO(this);
+    Q_UNUSED(success);
+    DEBUG_ASSERT(success);
 }
 
 // slot
@@ -66,14 +63,16 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flag
     return nullptr;
 }
 
+bool ControlObject::exists(const ConfigKey& key) {
+    return !ControlDoublePrivate::getControl(key, ControlFlag::NoWarnIfMissing).isNull();
+}
+
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
-    if (m_pControl) {
-        m_pControl->setValueFromMidi(o, v);
-    }
+    m_pControl->setValueFromMidi(o, v);
 }
 
 double ControlObject::getMidiParameter() const {
-    return m_pControl ? m_pControl->getMidiParameter() : 0.0;
+    return m_pControl->getMidiParameter();
 }
 
 // static
@@ -83,27 +82,23 @@ double ControlObject::get(const ConfigKey& key) {
 }
 
 double ControlObject::getParameter() const {
-    return m_pControl ? m_pControl->getParameter() : 0.0;
+    return m_pControl->getParameter();
 }
 
 double ControlObject::getParameterForValue(double value) const {
-    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
+    return m_pControl->getParameterForValue(value);
 }
 
 double ControlObject::getParameterForMidi(double midiParameter) const {
-    return m_pControl ? m_pControl->getParameterForMidi(midiParameter) : 0.0;
+    return m_pControl->getParameterForMidi(midiParameter);
 }
 
 void ControlObject::setParameter(double v) {
-    if (m_pControl) {
-        m_pControl->setParameter(v, this);
-    }
+    m_pControl->setParameter(v, this);
 }
 
 void ControlObject::setParameterFrom(double v, QObject* pSender) {
-    if (m_pControl) {
-        m_pControl->setParameter(v, pSender);
-    }
+    m_pControl->setParameter(v, pSender);
 }
 
 // static

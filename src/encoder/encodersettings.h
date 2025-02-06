@@ -2,7 +2,7 @@
 
 #include <QList>
 #include <QObject>
-#include "util/memory.h"
+#include <memory>
 
 /// Encoder settings interface for encoders
 class EncoderSettings {

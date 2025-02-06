@@ -1,7 +1,6 @@
 <!DOCTYPE template>
 <Template>
   <SetVariable name="QuickEffectGroup">[QuickEffectRack1_<Variable name="Group"/>]</SetVariable>
-  <SetVariable name="QuickEffect">[QuickEffectRack1_<Variable name="Group"/>_Effect1]</SetVariable>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
@@ -20,8 +19,8 @@
                 <TooltipId>QuickEffectRack_super1</TooltipId>
                 <Pos>0,0</Pos>
                 <Size>40f,34f</Size>
-                <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColorQuickEffect"/>.svg</Knob>
-                <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
+                <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColorQuickEffect"/>.svg</Knob>
+                <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
@@ -50,7 +49,7 @@
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                  <ConfigKey><Variable name="QuickEffectGroup"/>,enabled</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
@@ -74,16 +73,16 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                  <ConfigKey><Variable name="QuickEffectGroup"/>,enabled</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -98,7 +97,11 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
+      <ConfigKey><Variable name="QuickEffectGroup"/>,loaded_chain_preset</ConfigKey>
+      <Transform>
+        <IsEqual>0</IsEqual>
+        <Not/>
+      </Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

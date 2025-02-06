@@ -1,63 +1,114 @@
 #include "control/controlobjectscript.h"
 
-#include <QtDebug>
-
 #include "moc_controlobjectscript.cpp"
 
-ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {
+ControlObjectScript::ControlObjectScript(
+        const ConfigKey& key, const RuntimeLoggingCategory& logger, QObject* pParent)
+        : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
+          m_logger(logger),
+          m_proxy(key, logger, this),
+          m_skipSuperseded(false) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
-        connect(m_pControl.data(),
-                &ControlDoublePrivate::valueChanged,
-                this,
-                &ControlObjectScript::slotValueChanged,
-                Qt::QueuedConnection);
+        m_skipSuperseded = conn.skipSuperseded;
+        if (conn.skipSuperseded) {
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    &m_proxy,
+                    &CompressingProxy::slotValueChanged,
+                    Qt::QueuedConnection);
+            connect(&m_proxy,
+                    &CompressingProxy::signalValueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged,
+                    Qt::DirectConnection);
+        } else {
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged,
+                    Qt::QueuedConnection);
+        }
         connect(this,
                 &ControlObjectScript::trigger,
                 this,
                 &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
+    } else {
+        // At least one callback function is already connected to this CO
+        if (conn.skipSuperseded == false && m_skipSuperseded == true) {
+            // Disconnect proxy if this is first callback function connected with skipSuperseded false
+            m_skipSuperseded = false;
+            qCWarning(m_logger) << conn.key.group + ", " + conn.key.item +
+                            "is connected to different callback functions with "
+                            "differing state of the skipSuperseded. Disable "
+                            "skipping of superseded events for all these "
+                            "callback functions.";
+            disconnect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    &m_proxy,
+                    &CompressingProxy::slotValueChanged);
+            disconnect(&m_proxy,
+                    &CompressingProxy::signalValueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged);
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged,
+                    Qt::QueuedConnection);
+        }
     }
 
-    for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
+    for (const auto& priorConnection : std::as_const(m_scriptConnections)) {
         if (conn == priorConnection) {
-            qWarning() << "Connection " + conn.id.toString() +
-                          " already connected to (" +
-                          conn.key.group + ", " + conn.key.item +
-                          "). Ignoring attempt to connect again.";
+            qCWarning(m_logger) << "Connection " + conn.id.toString() +
+                            " already connected to (" +
+                            conn.key.group + ", " + conn.key.item +
+                            "). Ignoring attempt to connect again.";
             return false;
         }
     }
 
     m_scriptConnections.append(conn);
-    controllerDebug("Connected (" +
+    qCDebug(m_logger) << "Connected (" +
                     conn.key.group + ", " + conn.key.item +
-                    ") to connection " + conn.id.toString());
+                    ") to connection " + conn.id.toString();
     return true;
 }
 
 bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     bool success = m_scriptConnections.removeOne(conn);
     if (success) {
-        controllerDebug("Disconnected (" +
+        qCDebug(m_logger) << "Disconnected (" +
                         conn.key.group + ", " + conn.key.item +
-                        ") from connection " + conn.id.toString());
+                        ") from connection " + conn.id.toString();
     } else {
-        qWarning() << "Failed to disconnect (" +
-                      conn.key.group + ", " + conn.key.item +
-                      ") from connection " + conn.id.toString();
+        qCWarning(m_logger) << "Failed to disconnect (" +
+                        conn.key.group + ", " + conn.key.item +
+                        ") from connection " + conn.id.toString();
     }
     if (m_scriptConnections.isEmpty()) {
         // no ScriptConnections left, so disconnect signals
-        disconnect(m_pControl.data(),
-                &ControlDoublePrivate::valueChanged,
-                this,
-                &ControlObjectScript::slotValueChanged);
+        if (m_skipSuperseded) {
+            disconnect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    &m_proxy,
+                    &CompressingProxy::slotValueChanged);
+            disconnect(&m_proxy,
+                    &CompressingProxy::signalValueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged);
+        } else {
+            disconnect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged);
+        }
         disconnect(this,
                 &ControlObjectScript::trigger,
                 this,
@@ -66,7 +117,7 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     return success;
 }
 
-void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {
+void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& function) {
     // Make a local copy of m_scriptConnections because items are removed within the loop.
     const QVector<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {

@@ -2,17 +2,16 @@
 
 #include <QFile>
 #include <QMetaType>
-#include <QMutexLocker>
 #include <QTextStream>
 #include <QtDebug>
 
 #include "moc_statsmanager.cpp"
 #include "util/cmdlineargs.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qmutex.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
-const int kStatsPipeSize = 1 << 10;
-const int kProcessLength = kStatsPipeSize * 4 / 5;
+constexpr int kStatsPipeSize = 1 << 10;
+constexpr int kProcessLength = kStatsPipeSize * 4 / 5;
 
 // static
 bool StatsManager::s_bStatsManagerEnabled = false;
@@ -164,7 +163,7 @@ void StatsManager::writeTimeline(const QString& filename) {
 }
 
 void StatsManager::onStatsPipeDestroyed(StatsPipe* pPipe) {
-    QMutexLocker locker(&m_statsPipeLock);
+    const auto locker = lockMutex(&m_statsPipeLock);
     processIncomingStatReports();
     m_statsPipes.removeAll(pPipe);
 }
@@ -175,7 +174,7 @@ StatsPipe* StatsManager::getStatsPipeForThread() {
     }
     StatsPipe* pResult = new StatsPipe(this);
     m_threadStatsPipes.setLocalData(pResult);
-    QMutexLocker locker(&m_statsPipeLock);
+    const auto locker = lockMutex(&m_statsPipeLock);
     m_statsPipes.push_back(pResult);
     return pResult;
 }

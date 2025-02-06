@@ -2,7 +2,7 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.2">
     <info>
         <name>Pioneer DDJ-400</name>
-        <author>Warker/nschloe/dj3730/jusko</author>
+        <author>Warker, nschloe, dj3730, jusko, tiesjan</author>
         <description>Midi Mapping for the Pioneer DDJ-400</description>
         <manual>pioneer_ddj_400</manual>
         <forums>https://mixxx.discourse.group/t/pioneer-ddj-400/17476</forums>
@@ -890,27 +890,6 @@
             </control>
 
             <control>
-                <description>CUE Channel +SHIFT - press - Adjust BPM to match tapped BPM</description>
-                <group>[Channel1]</group>
-                <key>bpm_tap</key>
-                <status>0x90</status>
-                <midino>0x68</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <description>CUE Channel +SHIFT - press - Adjust BPM to match tapped BPM</description>
-                <group>[Channel2]</group>
-                <key>bpm_tap</key>
-                <status>0x91</status>
-                <midino>0x68</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
                 <group>[Master]</group>
                 <key>headMix</key>
@@ -998,7 +977,7 @@
             <!-- BEAT FX SECTION START -->
 
             <control>
-                <description>BEAT LEFT - press - select effect unit 1</description>
+                <description>BEAT LEFT - press - toggle focused Effect leftward</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxLeftPressed</key>
                 <status>0x94</status>
@@ -1007,19 +986,9 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>BEAT LEFT + shift - select previous effect for the current unit</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectPreviousEffect</key>
-                <status>0x94</status>
-                <midino>0x66</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
 
             <control>
-                <description>BEAT RIGHT - press - select effect unit 2</description>
+                <description>BEAT RIGHT - press - toggle focused Effect rightward</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxRightPressed</key>
                 <status>0x94</status>
@@ -1028,23 +997,23 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>BEAT RIGHT + shift - select next effect for the current unit</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectNextEffect</key>
-                <status>0x94</status>
-                <midino>0x6B</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
 
             <control>
-              <description>BEAT FX SELECT - press once - select effect unit 3 - press again - clear focus back to wet/dry mix </description>
+                <description>BEAT FX SELECT - press - load next effect entry for focused Effect</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxSelectPressed</key>
                 <status>0x94</status>
                 <midino>0x63</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+              <description>BEAT FX SELECT +SHIFT - press - load previous effect entry for focused Effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJ400.beatFxSelectShiftPressed</key>
+                <status>0x94</status>
+                <midino>0x64</midino>
                 <options>
                     <Script-Binding/>
                 </options>

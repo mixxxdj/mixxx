@@ -2,16 +2,15 @@
 
 #include <QDomElement>
 #include <QList>
-#include <QMutex>
 #include <QObject>
 #include <QSet>
 #include <QString>
+#include <memory>
 
 #include "preferences/usersettings.h"
 #include "proto/skin.pb.h"
 #include "skin/legacy/skinparser.h"
 #include "skin/legacy/tooltips.h"
-#include "util/memory.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 class WBaseWidget;
@@ -85,7 +84,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEngineKey(const QDomElement& node);
     QWidget* parseBeatSpinBox(const QDomElement& node);
     QWidget* parseEffectChainName(const QDomElement& node);
+    QWidget* parseEffectChainPresetButton(const QDomElement& node);
+    QWidget* parseEffectChainPresetSelector(const QDomElement& node);
     QWidget* parseEffectName(const QDomElement& node);
+    QWidget* parseEffectMetaKnob(const QDomElement& node);
     QWidget* parseEffectParameterName(const QDomElement& node);
     QWidget* parseEffectParameterKnob(const QDomElement& node);
     QWidget* parseEffectParameterKnobComposed(const QDomElement& node);

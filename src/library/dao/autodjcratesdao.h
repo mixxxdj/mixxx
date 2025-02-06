@@ -3,20 +3,20 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-#include "library/crate/crateid.h"
+#include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/class.h"
 
-class TrackCollection;
+class TrackCollectionManager;
 
 class AutoDJCratesDAO : public QObject {
     Q_OBJECT
   public:
     AutoDJCratesDAO(
             int iAutoDjPlaylistId,
-            TrackCollection* pTrackCollection,
+            TrackCollectionManager* pTrackCollectionManager,
             UserSettingsPointer a_pConfig);
     ~AutoDJCratesDAO() override;
 
@@ -27,7 +27,6 @@ class AutoDJCratesDAO : public QObject {
     TrackId getRandomTrackIdFromLibrary(int iPlaylistId);
 
   private:
-
     // Disallow copy and assign.
     // (Isn't that normal for QObject subclasses?)
     DISALLOW_COPY_AND_ASSIGN(AutoDJCratesDAO);
@@ -83,12 +82,10 @@ class AutoDJCratesDAO : public QObject {
     void slotPlaylistDeleted(int playlistId);
 
     // Signaled by the playlist DAO when a track is added to a playlist.
-    void slotPlaylistTrackAdded(int playlistId, TrackId trackId,
-                                int position);
+    void slotPlaylistTrackAdded(int playlistId, TrackId trackId, int position);
 
     // Signaled by the playlist DAO when a track is removed from a playlist.
-    void slotPlaylistTrackRemoved(int playlistId, TrackId trackId,
-                                  int position);
+    void slotPlaylistTrackRemoved(int playlistId, TrackId trackId, int position);
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
@@ -105,7 +102,7 @@ class AutoDJCratesDAO : public QObject {
     // The auto-DJ playlist's ID.
     const int m_iAutoDjPlaylistId;
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     // The SQL database we interact with.
     QSqlDatabase m_database;

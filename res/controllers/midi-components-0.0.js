@@ -24,14 +24,14 @@
  * This library depends on Lodash, which is copyright JS Foundation
  * and other contributors and licensed under the MIT license. Refer to
  * the lodash.mixxx.js file in this directory for details.
-**/
+ */
 
 (function(global) {
-    var Component = function(options) {
+    const Component = function(options) {
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -118,12 +118,12 @@
             by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
             different color depending on the state of different Mixxx COs. Refer to
             SamplerButton.connect() and SamplerButton.output() for an example.
-            **/
+             */
             if (undefined !== this.group &&
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === "function") {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
         disconnect: function() {
@@ -159,7 +159,7 @@
         },
     };
 
-    var Button = function(options) {
+    const Button = function(options) {
         Component.call(this, options);
     };
     Button.prototype = new Component({
@@ -190,7 +190,7 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
                     }, true);
@@ -215,7 +215,7 @@
         },
     });
 
-    var PlayButton = function(options) {
+    const PlayButton = function(options) {
         Button.call(this, options);
     };
     PlayButton.prototype = new Button({
@@ -229,7 +229,7 @@
         outKey: "play_indicator",
     });
 
-    var CueButton = function(options) {
+    const CueButton = function(options) {
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
@@ -246,7 +246,7 @@
         outKey: "cue_indicator",
     });
 
-    var SyncButton = function(options) {
+    const SyncButton = function(options) {
         Button.call(this, options);
     };
     SyncButton.prototype = new Button({
@@ -255,7 +255,7 @@
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
                         }, true);
@@ -278,7 +278,7 @@
         outKey: "sync_enabled",
     });
 
-    var LoopToggleButton = function(options) {
+    const LoopToggleButton = function(options) {
         Button.call(this, options);
     };
     LoopToggleButton.prototype = new Button({
@@ -289,16 +289,16 @@
         outKey: "loop_enabled",
     });
 
-    var HotcueButton = function(options) {
+    const HotcueButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No hotcue number specified for new HotcueButton.");
+            console.warn("ERROR: No hotcue number specified for new HotcueButton.");
             return;
         }
         if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
             this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
-        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.outKey = "hotcue_" + this.number + "_status";
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
@@ -309,7 +309,7 @@
             this.inKey = "hotcue_" + this.number + "_clear";
         },
         output: function(value) {
-            var outval = this.outValueScale(value);
+            const outval = this.outValueScale(value);
             // NOTE: outputColor only handles hotcueColors
             // and there is no hotcueColor for turning the LED
             // off. So the `send()` function is responsible for turning the
@@ -324,7 +324,7 @@
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
             if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
-                print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
+                console.warn("Ignoring invalid color code '" + colorCode + "' in outputColor()");
                 return;
             }
 
@@ -332,7 +332,7 @@
                 // This HotcueButton holds a reference to a ColorMapper. This means
                 // that the controller only supports a fixed set of colors, so we
                 // get the MIDI value for the nearest supported color and send it.
-                var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
+                const nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
             } else {
                 // Since outputColor has been called but no ColorMapper is
@@ -353,17 +353,22 @@
                     if (engine.getValue(this.group, this.outKey)) {
                         this.outputColor(color);
                     }
-                });
+                }.bind(this));
             }
         },
     });
-    var SamplerButton = function(options) {
+    const SamplerButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No sampler number specified for new SamplerButton.");
+            console.warn("ERROR: No sampler number specified for new SamplerButton.");
             return;
         }
         this.volumeByVelocity = options.volumeByVelocity;
-        this.number = options.number;
+        const samNum = options.number;
+        if (engine.getValue("[App]", "num_samplers") < samNum) {
+            console.warn("Mapping tried to connect to non-existent sampler.");
+            engine.setValue("[App]", "num_samplers", samNum);
+        }
+        this.number = samNum;
         this.group = "[Sampler" + this.number + "]";
         Button.call(this, options);
     };
@@ -422,18 +427,18 @@
             }
         },
         connect: function() {
-            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output);
+            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (this.playing !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, "play", this.output);
+                this.connections[1] = engine.makeConnection(this.group, "play", this.output.bind(this));
             }
             if (this.looping !== undefined) {
-                this.connections[2] = engine.connectControl(this.group, "repeat", this.output);
+                this.connections[2] = engine.makeConnection(this.group, "repeat", this.output.bind(this));
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
     });
 
-    var EffectAssignmentButton = function(options) {
+    const EffectAssignmentButton = function(options) {
         options.key = "group_" + options.group + "_enable";
         options.group = "[EffectRack1_EffectUnit" + options.effectUnit + "]";
         Button.call(this, options);
@@ -442,7 +447,7 @@
         type: Button.prototype.types.toggle,
     });
 
-    var Pot = function(options) {
+    const Pot = function(options) {
         Component.call(this, options);
 
         this.firstValueReceived = false;
@@ -453,7 +458,7 @@
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
             }
-            var newValue = this.inValueScale(value);
+            let newValue = this.inValueScale(value);
             if (this.invert) {
                 newValue = 1 - newValue;
             }
@@ -476,8 +481,7 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
-                this.input(channel, control, value, status, group);
+                this.input(channel, control, (value << 7) + (this._firstLSB ? this._firstLSB : 0), status, group);
             }
             this.MSB = value;
         },
@@ -505,13 +509,15 @@
     /**
     The generic Component code provides everything to implement an Encoder. This Encoder Component
     exists so instanceof can be used to separate Encoders from other Components.
-    **/
-    var Encoder = function(options) {
+     *
+     * @param options
+     */
+    const Encoder = function(options) {
         Component.call(this, options);
     };
     Encoder.prototype = new Component();
 
-    var ComponentContainer = function(initialLayer) {
+    const ComponentContainer = function(initialLayer) {
         if (typeof initialLayer === "object") {
             this.applyLayer(initialLayer);
         }
@@ -519,12 +525,12 @@
     ComponentContainer.prototype = {
         forEachComponent: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponent requires a function argument");
+                console.warn("ERROR: ComponentContainer.forEachComponent requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
 
-            var that = this;
+            const that = this;
             var applyOperationTo = function(obj) {
                 if (obj instanceof Component) {
                     operation.call(that, obj);
@@ -537,7 +543,7 @@
                 }
             };
 
-            for (var memberName in this) {
+            for (const memberName in this) {
                 if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
@@ -545,12 +551,12 @@
         },
         forEachComponentContainer: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
+                console.warn("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
 
-            var that = this;
+            const that = this;
             var applyOperationTo = function(obj) {
                 if (obj instanceof ComponentContainer) {
                     operation.call(that, obj);
@@ -565,7 +571,7 @@
                 }
             };
 
-            for (var memberName in this) {
+            for (const memberName in this) {
                 if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
@@ -654,7 +660,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            Object.assign(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -673,7 +679,7 @@
         },
     };
 
-    var Deck = function(deckNumbers) {
+    const Deck = function(deckNumbers) {
         if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
             // These must be unique to each instance,
             // so they cannot be in the prototype.
@@ -683,7 +689,7 @@
                 isFinite(deckNumbers)) {
             this.deckNumbers = [deckNumbers];
         } else {
-            print("ERROR! new Deck() called without specifying any deck numbers");
+            console.warn("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
         this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
@@ -713,7 +719,7 @@
         },
         toggle: function() {
             // cycle through deckNumbers array
-            var index = this.deckNumbers.indexOf(parseInt(
+            let index = this.deckNumbers.indexOf(parseInt(
                 script.channelRegEx.exec(this.currentDeck)[1]
             ));
             if (index === (this.deckNumbers.length - 1)) {
@@ -725,12 +731,10 @@
         }
     });
 
-    var JogWheelBasic = function(options) {
+    const JogWheelBasic = function(options) {
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
-
-        if (!_.isInteger(this.deck)) {
+        if (!Number.isInteger(this.deck)) {
             console.warn("missing scratch deck");
             return;
         }
@@ -738,18 +742,18 @@
             console.warn("invalid deck number: " + this.deck);
             return;
         }
-        if (!_.isInteger(this.wheelResolution)) {
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
         if (this.group === undefined) {
@@ -784,10 +788,21 @@
                 engine.scratchDisable(this.deck);
             }
         },
+        input: function(_channel, control, _value, status, _group) {
+            throw "Called wrong input handler for " + status + ": " + control + ".\n" +
+                "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
+        },
+        // this is needed for features such as "deck switching" that work
+        // by changing the component group. It is assumed they call `connect`
+        // afterwards.
+        connect: function() {
+            Component.prototype.connect.call(this);
+            this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
+        }
     });
 
-    var EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
-        var eu = this;
+    const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
+        const eu = this;
         this.focusChooseModeActive = false;
 
         // This is only connected if allowFocusWhenParametersHidden is false.
@@ -840,7 +855,7 @@
                 // presses the skin button for show_parameters.
                 this.showParametersConnection = engine.makeConnection(this.group,
                     "show_parameters",
-                    this.onShowParametersChange);
+                    this.onShowParametersChange.bind(this));
                 this.showParametersConnection.trigger();
             }
             engine.setValue(this.group, "controller_input_active", 1);
@@ -848,8 +863,8 @@
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.
             if (this.hasInitialized === true) {
-                for (var n = 1; n <= 3; n++) {
-                    var effect = "[EffectRack1_EffectUnit" + this.currentUnitNumber +
+                for (let n = 1; n <= 3; n++) {
+                    const effect = "[EffectRack1_EffectUnit" + this.currentUnitNumber +
                                 "_Effect" + n + "]";
                     engine.softTakeover(effect, "meta", true);
                     engine.softTakeover(effect, "parameter1", true);
@@ -860,12 +875,12 @@
 
             this.reconnectComponents(function(component) {
                 // update [EffectRack1_EffectUnitX] groups
-                var unitMatch = component.group.match(script.effectUnitRegEx);
+                const unitMatch = component.group.match(script.effectUnitRegEx);
                 if (unitMatch !== null) {
                     component.group = eu.group;
                 } else {
                     // update [EffectRack1_EffectUnitX_EffectY] groups
-                    var effectMatch = component.group.match(script.individualEffectRegEx);
+                    const effectMatch = component.group.match(script.individualEffectRegEx);
                     if (effectMatch !== null) {
                         component.group = "[EffectRack1_EffectUnit" +
                                           eu.currentUnitNumber +
@@ -877,7 +892,7 @@
 
         this.toggle = function() {
             // cycle through unitNumbers array
-            var index = this.unitNumbers.indexOf(this.currentUnitNumber);
+            let index = this.unitNumbers.indexOf(this.currentUnitNumber);
             if (index === (this.unitNumbers.length - 1)) {
                 index = 0;
             } else {
@@ -893,7 +908,7 @@
                   isFinite(unitNumbers)) {
             this.unitNumbers = [unitNumbers];
         } else {
-            print("ERROR! new EffectUnit() called without specifying any unit numbers!");
+            console.warn("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
 
@@ -947,7 +962,7 @@
                     this.inSetParameter(this.inValueScale(value));
 
                     if (this.previousValueReceived === undefined) {
-                        var effect = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
+                        const effect = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
                                     "_Effect" + this.number + "]";
                         engine.softTakeover(effect, "meta", true);
                         engine.softTakeover(effect, "parameter1", true);
@@ -976,12 +991,12 @@
                         return;
                     }
 
-                    var change = value - this.valueAtLastEffectSwitch;
+                    const change = value - this.valueAtLastEffectSwitch;
                     if (Math.abs(change) >= this.changeThreshold
                         // this.valueAtLastEffectSwitch can be undefined if
                         // shift was pressed before the first MIDI value was received.
                         || this.valueAtLastEffectSwitch === undefined) {
-                        var effectGroup = "[EffectRack1_EffectUnit" +
+                        const effectGroup = "[EffectRack1_EffectUnit" +
                                            eu.currentUnitNumber + "_Effect" +
                                            this.number + "]";
                         engine.setValue(effectGroup, "effect_selector", change);
@@ -994,7 +1009,7 @@
             outKey: "focused_effect",
             connect: function() {
                 this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                    this.onFocusChange);
+                    this.onFocusChange.bind(this));
             },
             disconnect: function() {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
@@ -1057,11 +1072,11 @@
 
                 this.connect = function() {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                        this.onFocusChange);
+                        this.onFocusChange.bind(this));
                     // this.onFocusChange sets this.group and this.outKey, so trigger it
                     // before making the connection for LED output
                     this.connections[0].trigger();
-                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output);
+                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                 };
 
                 this.unshift = function() {
@@ -1105,14 +1120,14 @@
                     // Component.prototype.trigger() triggering the disconnected connection.
                     this.connections = [engine.makeConnection(eu.group,
                         "focused_effect",
-                        this.output)];
+                        this.output.bind(this))];
                 };
             },
         });
 
         this.knobs = new ComponentContainer();
         this.enableButtons = new ComponentContainer();
-        for (var n = 1; n <= 3; n++) {
+        for (let n = 1; n <= 3; n++) {
             this.knobs[n] = new this.EffectUnitKnob(n);
             this.enableButtons[n] = new this.EffectEnableButton(n);
         }
@@ -1144,10 +1159,10 @@
             },
             unshift: function() {
                 this.input = function(channel, control, value, status, _group) {
-                    var showParameters = engine.getValue(this.group, "show_parameters");
+                    const showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                            this.startEffectFocusChooseMode,
+                            this.startEffectFocusChooseMode.bind(this),
                             true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
@@ -1224,7 +1239,7 @@
     };
     EffectUnit.prototype = new ComponentContainer();
 
-    var exports = {};
+    const exports = {};
     exports.Component = Component;
     exports.Button = Button;
     exports.PlayButton = PlayButton;

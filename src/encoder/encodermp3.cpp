@@ -1,10 +1,13 @@
-#include <QtDebug>
-#include <QObject>
+#include "encoder/encodermp3.h"
+
 #include <limits.h>
 
-#include "encoder/encodermp3.h"
-#include "encoder/encodermp3settings.h"
+#include <QObject>
+#include <QtDebug>
+
+#include "audio/types.h"
 #include "encoder/encodercallback.h"
+#include "encoder/encodermp3settings.h"
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number
@@ -172,8 +175,8 @@ void EncoderMp3::initStream() {
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
 }
 
-int EncoderMp3::initEncoder(int samplerate, QString* pUserErrorMessage) {
-    unsigned long samplerate_in = samplerate;
+int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+    unsigned long samplerate_in = sampleRate;
     // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
 

@@ -32,6 +32,10 @@
 #   include <arpa/inet.h>
 #endif
 
+#ifdef _WIN32
+#include <process.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -131,10 +135,10 @@ static int shout_create_roaraudio_request_ident(shout_t *self)
     /* version number (1). */
     data[0] = 1;
     /* PID */
-    data[1] = (pid & 0xFF000000UL) >> 24;
-    data[2] = (pid & 0x00FF0000UL) >> 16;
-    data[3] = (pid & 0x0000FF00UL) >> 8;
-    data[4] = (pid & 0x000000FFUL) >> 0;
+    data[1] = (uint8_t)((pid & 0xFF000000UL) >> 24);
+    data[2] = (uint8_t)((pid & 0x00FF0000UL) >> 16);
+    data[3] = (uint8_t)((pid & 0x0000FF00UL) >> 8);
+    data[4] = (uint8_t)((pid & 0x000000FFUL) >> 0);
     /* agent name */
     memcpy(data + 5, agent, datalen - 5);
 

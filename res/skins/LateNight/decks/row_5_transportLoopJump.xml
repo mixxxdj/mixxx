@@ -31,15 +31,15 @@
                       <Number>0</Number>
                       <Text><Variable name="state_0_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Text><Variable name="state_1_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,cue_default</ConfigKey>
@@ -55,7 +55,7 @@
                     </Connection>
                   </PushButton>
 
-                  <Template src="skin:/controls/button_1state_right.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">reverse</SetVariable>
                     <SetVariable name="ObjectName">Reverse</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -71,7 +71,7 @@
                 <Layout>stacked</Layout>
                 <Size>68f,26f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_2state_right_display.xml">
+                  <Template src="skins:LateNight/controls/button_2state_right_display.xml">
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="ObjectName">PlayDeck</SetVariable>
                     <SetVariable name="Size">68f,26f</SetVariable>
@@ -113,20 +113,20 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:/controls/button_hotcue.xml">
+                  <Template src="skins:LateNight/controls/button_hotcue.xml">
                     <SetVariable name="number">1</SetVariable>
                   </Template>
-                  <Template src="skin:/controls/button_hotcue.xml">
+                  <Template src="skins:LateNight/controls/button_hotcue.xml">
                     <SetVariable name="number">2</SetVariable>
                   </Template>
 
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">3</SetVariable>
                       </Template>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">4</SetVariable>
                       </Template>
                     </Children>
@@ -144,10 +144,10 @@
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">3</SetVariable>
                       </Template>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">4</SetVariable>
                       </Template>
                     </Children>
@@ -156,16 +156,16 @@
                   <WidgetGroup  trigger="[Skin],show_8_hotcues">
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">5</SetVariable>
                       </Template>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">6</SetVariable>
                       </Template>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">7</SetVariable>
                       </Template>
-                      <Template src="skin:/controls/button_hotcue.xml">
+                      <Template src="skins:LateNight/controls/button_hotcue.xml">
                         <SetVariable name="number">8</SetVariable>
                       </Template>
                     </Children>
@@ -192,11 +192,11 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/controls/button_special_cue.xml">
+                  <Template src="skins:LateNight/controls/button_special_cue.xml">
                     <SetVariable name="CueType">intro_start</SetVariable>
                   </Template>
 
-                  <Template src="skin:/controls/button_special_cue.xml">
+                  <Template src="skins:LateNight/controls/button_special_cue.xml">
                     <SetVariable name="CueType">intro_end</SetVariable>
                   </Template>
                 </Children>
@@ -206,11 +206,11 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/controls/button_special_cue.xml">
+                  <Template src="skins:LateNight/controls/button_special_cue.xml">
                     <SetVariable name="CueType">outro_start</SetVariable>
                   </Template>
 
-                  <Template src="skin:/controls/button_special_cue.xml">
+                  <Template src="skins:LateNight/controls/button_special_cue.xml">
                     <SetVariable name="CueType">outro_end</SetVariable>
                   </Template>
                 </Children>
@@ -230,19 +230,20 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>78,52</MinimumSize>
-            <MaximumSize>86,52</MaximumSize>
+            <MaximumSize>104,52</MaximumSize>
             <Children>
               <WidgetGroup><!-- loop enable + beatloop size -->
                 <ObjectName>AlignLeftTop</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/button_2state_right.xml">
+                  <Template src="skins:LateNight/controls/button_2state_right_display.xml">
                     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
                     <SetVariable name="ObjectName">LoopActivate</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beatloop_activate</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatlooproll_activate</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,loop_enabled</SetVariable>
                   </Template>
 
                   <BeatSpinBox>
@@ -250,7 +251,7 @@
                     <ObjectName>Spinbox_<Variable name="BtnType"/></ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <MinimumSize>46,26</MinimumSize>
-                    <MaximumSize>72,26</MaximumSize>
+                    <MaximumSize>78,26</MaximumSize>
                     <Value><Variable name="Group"/>,beatloop_size</Value>
                     <!-- disabled until 'highlight' property has been added to WBeatSpinBox / wbasewidget.
                     <Connection>
@@ -266,16 +267,15 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/button_2state_right_display.xml">
+                  <Template src="skins:LateNight/controls/button_2state_right.xml">
                     <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                     <SetVariable name="ObjectName">Reloop</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,reloop_toggle</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,reloop_andstop</SetVariable>
-                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,loop_enabled</SetVariable>
                   </Template>
 
-                  <Template src="skin:/controls/button_1state_right.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">loop_in</SetVariable>
                     <SetVariable name="ObjectName">LoopIn</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -283,16 +283,27 @@
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,loop_in_goto</SetVariable>
                   </Template>
 
-                  <Template src="skin:/controls/button_1state_right.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">loop_out</SetVariable>
                     <SetVariable name="ObjectName">LoopOut</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,loop_out</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,loop_out_goto</SetVariable>
                   </Template>
+
+                  <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                    <SetVariable name="TooltipId">loop_anchor</SetVariable>
+                    <SetVariable name="ObjectName">LoopAnchor</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,loop_anchor</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_loop_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-80px wide -->
@@ -333,7 +344,7 @@
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
 
-                  <Template src="skin:/controls/button_1state_right.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beatjump_backward</SetVariable>
                     <SetVariable name="ObjectName">JumpBack</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -341,7 +352,7 @@
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatjump_1_backward</SetVariable>
                   </Template>
 
-                  <Template src="skin:/controls/button_1state_right.xml">
+                  <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beatjump_forward</SetVariable>
                     <SetVariable name="ObjectName">JumpForward</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -351,6 +362,10 @@
                 </Children>
               </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_beatjump_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>

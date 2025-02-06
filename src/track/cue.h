@@ -6,19 +6,17 @@
 #include <memory>
 #include <type_traits> // static_assert
 
+#include "audio/frame.h"
 #include "audio/types.h"
 #include "track/cueinfo.h"
-#include "track/trackid.h"
 #include "util/color/rgbcolor.h"
 #include "util/db/dbid.h"
-
-class CueDAO;
-class Track;
 
 class Cue : public QObject {
     Q_OBJECT
 
   public:
+    /// A position value for the cue that signals its position is not set
     static constexpr double kNoPosition = -1.0;
 
     /// Invalid hot cue index
@@ -27,51 +25,66 @@ class Cue : public QObject {
     static_assert(kNoHotCue != mixxx::kFirstHotCueIndex,
             "Conflicting definitions of invalid and first hot cue index");
 
-    Cue();
+    struct StartAndEndPositions {
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
+    };
+
+    Cue() = delete;
+
+    /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,
             mixxx::audio::SampleRate sampleRate,
             bool setDirty);
+
     /// Load entity from database.
     Cue(
             DbId id,
-            TrackId trackId,
             mixxx::CueType type,
-            double position,
-            double length,
+            mixxx::audio::FramePos position,
+            mixxx::audio::FrameDiff_t length,
             int hotCue,
             const QString& label,
             mixxx::RgbColor color);
+
+    /// Initialize new cue points
+    Cue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition,
+            mixxx::RgbColor color);
+
     ~Cue() override = default;
 
     bool isDirty() const;
     DbId getId() const;
-    TrackId getTrackId() const;
 
     mixxx::CueType getType() const;
     void setType(mixxx::CueType type);
 
-    double getPosition() const;
-    void setStartPosition(
-            double samplePosition = kNoPosition);
-    void setEndPosition(
-            double samplePosition = kNoPosition);
-    void shiftPositionFrames(double frameOffset);
+    mixxx::audio::FramePos getPosition() const;
+    void setStartPosition(mixxx::audio::FramePos position);
+    void setEndPosition(mixxx::audio::FramePos position);
+    void setStartAndEndPosition(
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition);
+    void shiftPositionFrames(mixxx::audio::FrameDiff_t frameOffset);
 
-    double getLength() const;
+    mixxx::audio::FrameDiff_t getLengthFrames() const;
 
     int getHotCue() const;
-    void setHotCue(
-            int hotCue = kNoHotCue);
 
     QString getLabel() const;
-    void setLabel(
-            const QString& label = QString());
+    void setLabel(const QString& label);
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);
 
-    double getEndPosition() const;
+    mixxx::audio::FramePos getEndPosition() const;
+
+    StartAndEndPositions getStartAndEndPosition() const;
 
     mixxx::CueInfo getCueInfo(
             mixxx::audio::SampleRate sampleRate) const;
@@ -83,23 +96,25 @@ class Cue : public QObject {
     void setDirty(bool dirty);
 
     void setId(DbId dbId);
-    void setTrackId(TrackId trackId);
 
     mutable QMutex m_mutex;
 
     bool m_bDirty;
     DbId m_dbId;
-    TrackId m_trackId;
     mixxx::CueType m_type;
-    double m_sampleStartPosition;
-    double m_sampleEndPosition;
-    int m_iHotCue;
+    mixxx::audio::FramePos m_startPosition;
+    mixxx::audio::FramePos m_endPosition;
+    const int m_iHotCue;
     QString m_label;
     mixxx::RgbColor m_color;
 
     friend class Track;
     friend class CueDAO;
 };
+
+static_assert(mixxx::audio::FramePos::kLegacyInvalidEnginePosition ==
+                Cue::kNoPosition,
+        "Invalid engine position value mismatch");
 
 class CuePointer : public std::shared_ptr<Cue> {
   public:
@@ -111,42 +126,3 @@ class CuePointer : public std::shared_ptr<Cue> {
   private:
     static void deleteLater(Cue* pCue);
 };
-
-class CuePosition {
-  public:
-    CuePosition()
-            : m_position(0.0) {
-    }
-    CuePosition(double position)
-            : m_position(position) {
-    }
-
-    double getPosition() const {
-        return m_position;
-    }
-
-    void setPosition(double position) {
-        m_position = position;
-    }
-
-    void set(double position) {
-        m_position = position;
-    }
-
-    void reset() {
-        m_position = 0.0;
-    }
-
-  private:
-    double m_position;
-};
-
-bool operator==(const CuePosition& lhs, const CuePosition& rhs);
-
-inline bool operator!=(const CuePosition& lhs, const CuePosition& rhs) {
-    return !(lhs == rhs);
-}
-
-inline QDebug operator<<(QDebug dbg, const CuePosition& arg) {
-    return dbg << "position =" << arg.getPosition();
-}

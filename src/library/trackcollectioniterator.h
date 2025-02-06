@@ -3,11 +3,9 @@
 
 #pragma once
 
-#include <QModelIndex>
-
 #include "track/trackiterator.h"
 
-class TrackCollection;
+class TrackCollectionManager;
 
 namespace mixxx {
 
@@ -17,11 +15,11 @@ class TrackByIdCollectionIterator final
         : public virtual TrackPointerIterator {
   public:
     TrackByIdCollectionIterator(
-            const TrackCollection* pTrackCollection,
+            const TrackCollectionManager* pTrackCollectionManager,
             const TrackIdList& trackIds)
-            : m_pTrackCollection(pTrackCollection),
+            : m_pTrackCollectionManager(pTrackCollectionManager),
               m_trackIdListIter(trackIds) {
-        DEBUG_ASSERT(m_pTrackCollection);
+        DEBUG_ASSERT(m_pTrackCollectionManager);
     }
     ~TrackByIdCollectionIterator() override = default;
 
@@ -36,7 +34,7 @@ class TrackByIdCollectionIterator final
     std::optional<TrackPointer> nextItem() override;
 
   private:
-    const TrackCollection* const m_pTrackCollection;
+    const TrackCollectionManager* const m_pTrackCollectionManager;
     TrackIdListIterator m_trackIdListIter;
 };
 

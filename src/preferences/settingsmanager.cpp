@@ -23,22 +23,14 @@ SettingsManager::SettingsManager(const QString& settingsPath)
     }
     m_bShouldRescanLibrary = upgrader.rescanLibrary();
 
-    initializeDefaults();
-
     ControlDoublePrivate::setUserConfig(m_pSettings);
 
+#ifdef __BROADCAST__
     m_pBroadcastSettings = BroadcastSettingsPointer(
                                new BroadcastSettings(m_pSettings));
+#endif
 }
 
 SettingsManager::~SettingsManager() {
     ControlDoublePrivate::setUserConfig(UserSettingsPointer());
-}
-
-void SettingsManager::initializeDefaults() {
-    QString resourcePath = m_pSettings->getResourcePath();
-
-    // Store the last resource path in the config database.
-    // TODO(rryan): this looks unused.
-    m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 }

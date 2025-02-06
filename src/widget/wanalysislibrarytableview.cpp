@@ -1,14 +1,15 @@
-#include "library/trackcollection.h"
 #include "widget/wanalysislibrarytableview.h"
+
+#include "moc_wanalysislibrarytableview.cpp"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         double trackTableBackgroundColorOpacity)
         : WTrackTableView(parent,
                   pConfig,
-                  pTrackCollectionManager,
+                  pLibrary,
                   trackTableBackgroundColorOpacity,
                   true) {
     setDragDropMode(QAbstractItemView::DragOnly);

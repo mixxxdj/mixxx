@@ -1,5 +1,8 @@
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
+#include <QPainter>
+#include <algorithm>
+
 #include "moc_vinylcontrolsignalwidget.cpp"
 
 VinylControlSignalWidget::VinylControlSignalWidget()
@@ -7,7 +10,6 @@ VinylControlSignalWidget::VinylControlSignalWidget()
           m_iVinylInput(-1),
           m_iSize(MIXXX_VINYL_SCOPE_SIZE),
           m_qImage(),
-          m_imageData(nullptr),
           m_iAngle(0),
           m_fSignalQuality(0.0f),
           m_bVinylActive(false) {
@@ -18,8 +20,8 @@ void VinylControlSignalWidget::setSize(int size) {
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     setMinimumSize(size, size);
     setMaximumSize(size, size);
-    m_imageData = new uchar[size * size * 4];
-    m_qImage = QImage(m_imageData, size, size, 0, QImage::Format_ARGB32);
+    m_imageData.resize(size * size * 4);
+    m_qImage = QImage(m_imageData.data(), size, size, 0, QImage::Format_ARGB32);
 }
 
 void VinylControlSignalWidget::setVinylInput(int input) {
@@ -27,7 +29,6 @@ void VinylControlSignalWidget::setVinylInput(int input) {
 }
 
 VinylControlSignalWidget::~VinylControlSignalWidget() {
-    delete [] m_imageData;
 }
 
 void VinylControlSignalWidget::setVinylActive(bool active)
@@ -57,7 +58,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     qual_color.setHsv((int)(120.0 * m_fSignalQuality), 255, 255);
     qual_color.getRgb(&r, &g, &b);
 
-    if (m_imageData == nullptr) {
+    if (m_imageData.empty()) {
         return;
     }
 
@@ -76,9 +77,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
 
 void VinylControlSignalWidget::resetWidget()
 {
-    if (m_imageData != nullptr) {
-        memset(m_imageData, 0, sizeof(uchar) * m_iSize * m_iSize * 4);
-    }
+    std::fill(std::begin(m_imageData), std::end(m_imageData), 0);
 }
 
 void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {

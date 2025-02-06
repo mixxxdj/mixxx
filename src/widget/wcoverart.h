@@ -1,20 +1,20 @@
 #pragma once
 
-#include <QColor>
-#include <QDomNode>
-#include <QMouseEvent>
-#include <QWidget>
 #include <QTimer>
+#include <QWidget>
 
-#include "mixer/basetrackplayer.h"
+#include "library/coverart.h"
 #include "preferences/usersettings.h"
-#include "library/coverartcache.h"
-#include "skin/legacy/skincontext.h"
+#include "track/track_decl.h"
+#include "util/cache.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
-#include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize;
+class QDomNode;
+class SkinContext;
+class WCoverArtMenu;
+class BaseTrackPlayer;
 
 class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     Q_OBJECT
@@ -37,11 +37,9 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
 
   private slots:
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            quint16 requestedHash,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();

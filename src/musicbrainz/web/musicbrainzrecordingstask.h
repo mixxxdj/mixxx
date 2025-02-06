@@ -24,11 +24,12 @@ class MusicBrainzRecordingsTask : public network::WebTask {
 
   signals:
     void succeeded(
-            const QList<musicbrainz::TrackRelease>& trackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& trackReleases);
     void failed(
-            const network::WebResponse& response,
+            const mixxx::network::WebResponse& response,
             int errorCode,
             const QString& errorMessage);
+    void currentRecordingFetchedFromMusicBrainz();
 
   protected:
     void onNetworkError(

@@ -12,24 +12,26 @@
 class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
     void loadCoverFromMetadata(const QString& trackLocation) {
+        QImage img;
+        // Both resetMissingTagMetadata = false/true have the same effect
+        constexpr auto resetMissingTagMetadata = false;
+        SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+                mixxx::FileAccess(mixxx::FileInfo(trackLocation)),
+                nullptr,
+                &img,
+                resetMissingTagMetadata);
+        ASSERT_FALSE(img.isNull());
+
         CoverInfo info;
         info.type = CoverInfo::METADATA;
         info.source = CoverInfo::GUESSED;
-        info.coverLocation = QString();
+        ASSERT_TRUE(info.coverLocation.isNull());
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_QSTRING_EQ(QString(), res.coverArt.coverLocation);
-        EXPECT_TRUE(CoverImageUtils::isValidHash(res.coverArt.hash));
-        EXPECT_TRUE(res.coverInfoUpdated);
-
-        SecurityTokenPointer securityToken =
-                Sandbox::openSecurityToken(QDir(trackLocation), true);
-        QImage img = SoundSourceProxy::importTemporaryCoverImage(
-                trackLocation, securityToken);
-        EXPECT_FALSE(img.isNull());
+        res = CoverArtCache::loadCover(TrackPointer(), info, 0);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
+        EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
 
     void loadCoverFromFile(const QString& trackLocation,
@@ -45,20 +47,15 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
+        res = CoverArtCache::loadCover(TrackPointer(), info, 0);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
-        EXPECT_EQ(CoverImageUtils::calculateHash(img), res.coverArt.hash);
         EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };
 
-const QString kCoverFileTest("cover_test.jpg");
-const QString kCoverLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/" % kCoverFileTest);
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
-
+const QString kCoverFileTest = QStringLiteral("cover_test.jpg");
+const QString kCoverLocationTest = QStringLiteral("id3-test-data/") + kCoverFileTest;
+const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
 
 // We need 3 separate test cases:
 // 1) loadCoverFromMetadata()
@@ -75,13 +72,19 @@ const QString kTrackLocationTest(QDir::currentPath() %
 // - absolute coverLocation
 
 TEST_F(CoverArtCacheTest, loadCoverFromMetadata) {
-    loadCoverFromMetadata(kTrackLocationTest);
+    loadCoverFromMetadata(getTestDir().filePath(kTrackLocationTest));
 }
 
 TEST_F(CoverArtCacheTest, loadCoverFromFileRelative) {
-    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest);
+    loadCoverFromFile(
+            getTestDir().filePath(kTrackLocationTest),
+            kCoverFileTest,
+            getTestDir().filePath(kCoverLocationTest));
 }
 
 TEST_F(CoverArtCacheTest, loadCoverFromFileAbsolute) {
-    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest);
+    loadCoverFromFile(
+            QString(),
+            getTestDir().filePath(kCoverLocationTest),
+            getTestDir().filePath(kCoverLocationTest));
 }

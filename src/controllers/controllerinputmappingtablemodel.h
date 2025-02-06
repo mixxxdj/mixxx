@@ -1,26 +1,29 @@
 #pragma once
 
 #include <QAbstractTableModel>
-#include <QVariant>
 #include <QModelIndex>
-#include <QAbstractItemDelegate>
 
 #include "controllers/controllermappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
 
+class QAbstractItemDelegate;
+class QTableView;
+
 /// Table Model for the "Inputs" table view in the preferences dialog.
 ///
-/// This allows editing the input mappings for a MIDI preset.
+/// This allows editing the input mappings for a MIDI mapping.
 class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
-    ControllerInputMappingTableModel(QObject* pParent, ControlPickerMenu* pControlPickerMenu);
+    ControllerInputMappingTableModel(QObject* pParent,
+            ControlPickerMenu* pControlPickerMenu,
+            QTableView* pTableView);
     ~ControllerInputMappingTableModel() override;
 
-    // Apply the changes to the loaded preset.
+    // Apply the changes to the loaded mapping.
     void apply();
 
-    // Clears all input mappings in the preset.
+    // Clears all input mappings in the mapping.
     void clear();
 
     // Adds an empty input mapping.
@@ -34,7 +37,7 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
 
     // HACK(rryan): This method only exists to communicate new mappings from
     // MIDI learn because doing a round-trip through the controller via
-    // onPresetLoaded takes too long. In the future we should replace this with
+    // onMappingLoaded takes too long. In the future we should replace this with
     // a polymorphic mapping structure.
     void addMappings(const MidiInputMappings& mappings);
 
@@ -48,11 +51,12 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    QString getDisplayString(const QModelIndex& index) const override;
     bool setData(const QModelIndex& index, const QVariant& value,
                  int role = Qt::EditRole) override;
 
   protected:
-    void onPresetLoaded() override;
+    void onMappingLoaded() override;
 
   private:
     enum MidiColumn {

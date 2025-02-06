@@ -1,0 +1,30 @@
+<svg width="38" height="36" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 18">
+  <g transform="translate(-14,-3)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+    <path d="m18 15v-7l2.5 2.5 3-3 3 3 2.5-2.5v7z" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/>
+  </g>
+  <path d="m4 13h11v1h-11z" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="paint-order:markers fill stroke"/>
+  <path d="m4 13h11v1h-11z" fill="#81817e" stroke-linejoin="round" stroke-width="1.6" style="paint-order:markers fill stroke"/>
+  <g transform="translate(-7,-2)" fill="none">
+    <path d="m16 8h-7v4h5v2h-5v1h7v-4h-5v-2h5v-1"/>
+    <path d="m26 8v7h2v-6h3v6h2v-7h-7"/>
+    <path d="m34 8v7h7v-1h-5v-5h5v-1h-7"/>
+    <path d="m20 15v-3.5l-3-3v-0.5h1.5l2.5 2.5 2.5-2.5h1.5v0.5l-3 3v3.5h-2"/>
+  </g>
+  <g transform="translate(-14,-3)" fill="#81817e">
+    <path d="m18 15v-7l2.5 2.5 3-3 3 3 2.5-2.5v7z" fill="#81817e"/>
+  </g>
+  <g transform="translate(6,-3)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+    <path d="m18 15v-7l2.5 2.5 3-3 3 3 2.5-2.5v7z" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/>
+  </g>
+  <path d="m24 13h11v1h-11z" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" style="paint-order:markers fill stroke"/>
+  <path d="m24 13h11v1h-11z" fill="#d2d2d1" stroke-linejoin="round" stroke-width="1.6" style="paint-order:markers fill stroke"/>
+  <g transform="translate(13,-2)" fill="none">
+    <path d="m16 8h-7v4h5v2h-5v1h7v-4h-5v-2h5v-1"/>
+    <path d="m26 8v7h2v-6h3v6h2v-7h-7"/>
+    <path d="m34 8v7h7v-1h-5v-5h5v-1h-7"/>
+    <path d="m20 15v-3.5l-3-3v-0.5h1.5l2.5 2.5 2.5-2.5h1.5v0.5l-3 3v3.5h-2"/>
+  </g>
+  <g transform="translate(6,-3)" fill="#d2d2d1">
+    <path d="m18 15v-7l2.5 2.5 3-3 3 3 2.5-2.5v7z" fill="#d2d2d1"/>
+  </g>
+</svg>

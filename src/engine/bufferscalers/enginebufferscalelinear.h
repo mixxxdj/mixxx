@@ -1,16 +1,17 @@
 #pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
-#include "engine/readaheadmanager.h"
+
+class ReadAheadManager;
 
 /** Number of samples to read ahead */
-const int kiLinearScaleReadAheadLength = 10240;
-
+constexpr int kiLinearScaleReadAheadLength = 10240;
 
 class EngineBufferScaleLinear : public EngineBufferScale  {
+    Q_OBJECT
   public:
     explicit EngineBufferScaleLinear(
-            ReadAheadManager *pReadAheadManager);
+            ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleLinear() override;
 
     double scaleBuffer(
@@ -25,7 +26,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
   private:
     void onSampleRateChanged() override {}
 
-    SINT do_scale(CSAMPLE* buf, SINT buf_size);
+    double do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
 
     // The read-ahead manager that we use to fetch samples

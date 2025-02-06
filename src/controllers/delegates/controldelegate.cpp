@@ -3,8 +3,8 @@
 #include <QLineEdit>
 #include <QRegExp>
 #include <QStringList>
-#include <QtDebug>
 
+#include "controllers/controlpickermenu.h"
 #include "controllers/midi/midimessage.h"
 #include "moc_controldelegate.cpp"
 
@@ -37,7 +37,7 @@ void ControlDelegate::paint(QPainter* painter,
         QModelIndex optionsColumn = index.sibling(index.row(),
                                                   m_iMidiOptionsColumn);
         MidiOptions options = optionsColumn.data().value<MidiOptions>();
-        m_bIsIndexScript = options.script;
+        m_bIsIndexScript = options.testFlag(MidiOption::Script);
     }
 
     QStyledItemDelegate::paint(painter, option, index);
@@ -46,22 +46,24 @@ void ControlDelegate::paint(QPainter* painter,
 QString ControlDelegate::displayText(const QVariant& value,
                                      const QLocale& locale) const {
     Q_UNUSED(locale);
-    ConfigKey key = value.value<ConfigKey>();
+    if (value.canConvert<ConfigKey>()) {
+        ConfigKey key = value.value<ConfigKey>();
 
-    if (key.group.isEmpty() && key.item.isEmpty()) {
+        QString description = m_pPicker->descriptionForConfigKey(key);
+        if (!description.isEmpty()) {
+            return description;
+        }
+
+        if (m_bIsIndexScript || description.isEmpty()) {
+            return QString("%1: %2").arg(translateConfigKeyGroup(key.group), key.item);
+        }
+
+        return key.group + "," + key.item;
+    } else if (value.canConvert<QString>()) {
+        return value.value<QString>();
+    } else {
         return tr("No control chosen.");
     }
-
-    QString description = m_pPicker->descriptionForConfigKey(key);
-    if (!description.isEmpty()) {
-        return description;
-    }
-
-    if (m_bIsIndexScript || description.isEmpty()) {
-        return QString("%1: %2").arg(translateConfigKeyGroup(key.group), key.item);
-    }
-
-    return key.group + "," + key.item;
 }
 
 void ControlDelegate::setEditorData(QWidget* editor,

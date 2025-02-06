@@ -3,7 +3,7 @@ Description:
   An effect chain widget.
   * EffectSlots, with or without highlight/focus option
   * mixer with Wet/Dry knob and Super knob (optional)
-  * assignment buttons for master & headphone
+  * assignment buttons for main & headphone
 Variables:
   FxUnit: number of effect unit for FX label
 -->
@@ -11,7 +11,7 @@ Variables:
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
 
   <WidgetGroup><!-- EffectUnit -->
-    <ObjectName>FxUnitLeft</ObjectName>
+    <ObjectName>FxUnitRight</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -19,24 +19,25 @@ Variables:
       <WidgetGroup><!-- FxUnitControls -->
         <ObjectName>FxUnitControls</ObjectName>
         <Layout>vertical</Layout>
-        <Size>-1min,131f</Size>
+        <Size>-1max,131f</Size>
         <Children>
 
           <WidgetGroup><!-- FX label + FX expand button -->
             <ObjectName>AlignTopCenter</ObjectName>
             <Layout>stacked</Layout>
-            <Size>34f,30f</Size>
+            <Size>34min,18f</Size>
             <Children>
-              <Template src="skin:../Tango/controls/button_2state_persist.xml">
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
                 <SetVariable name="ObjectName">FxMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">34f,30f</SetVariable>
+                <SetVariable name="Size">34min,18f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
               <Label>
                 <ObjectName>FxUnitLabel</ObjectName>
-                <Size>34f,15f</Size>
-                <Text>&#8201;FX&#8202;<Variable name="FxUnit"/>&#8202;</Text>
+                <Size>65f,18f</Size>
+                <Text>FX&#8202;<Variable name="FxUnit"/>&#8202;</Text>
+                <Align>right</Align>
               </Label>
             </Children>
           </WidgetGroup>
@@ -47,35 +48,55 @@ Variables:
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skins:Tango/controls/knob_textless.xml">
+                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                    <SetVariable name="Size">30min,26f</SetVariable>
+                    <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+                    <SetVariable name="ConfigKey">mix</SetVariable>
+                    <SetVariable name="Color">red</SetVariable>
+                  </Template>
 
-              <Template src="skin:../Tango/controls/knob_textless.xml">
-                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                <SetVariable name="Size">30min,26f</SetVariable>
-                <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
-                <SetVariable name="ConfigKey">mix</SetVariable>
-                <SetVariable name="Color">red</SetVariable>
-              </Template>
+                  <Template src="skins:Tango/controls/button_2state_persist.xml">
+                    <SetVariable name="ObjectName">MixModeButton</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+                    <SetVariable name="Size">24f,18f</SetVariable>
+                    <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
+                    <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
-              <Template src="skin:../Tango/controls/button_2state_persist.xml">
-                <SetVariable name="ObjectName">MixModeButton</SetVariable>
-                <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-                <SetVariable name="Size">30f,18f</SetVariable>
-                <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
-                <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
-              </Template>
+              <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
 
-              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <EffectChainPresetButton>
+                    <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                    <Size>24f,24f</Size>
+                    <ObjectName>EffectChainSelector</ObjectName>
+                  </EffectChainPresetButton>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
 
               <WidgetGroup><!-- Super Knob, if enabled -->
                 <SizePolicy>min,min</SizePolicy>
-                <Layout>vertical</Layout>
+                <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:../Tango/controls/knob_textless.xml">
+                  <WidgetGroup><Size>1min,2min</Size></WidgetGroup>
+                  <Template src="skins:Tango/controls/knob_textless.xml">
                     <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                    <SetVariable name="Size">30f,30f</SetVariable>
+                    <SetVariable name="Size">30f,26f</SetVariable>
                     <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
@@ -87,13 +108,7 @@ Variables:
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
-                <SizePolicy>min,me</SizePolicy>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
 
               <WidgetGroup><!-- Pfl button -->
                 <ObjectName>AlignCenter</ObjectName>
@@ -105,8 +120,8 @@ Variables:
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- Greyed out if no headphone device is configured -->
-                      <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
-                      <Template src="skin:../Tango/controls/button_2state.xml">
+                      <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+                      <Template src="skins:Tango/controls/button_2state.xml">
                         <SetVariable name="ObjectName">PflButton</SetVariable>
                         <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>
@@ -140,12 +155,12 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/focus_button.xml"><SetVariable name="FxNum">1</SetVariable></Template>
-                  <Template src="skin:../Tango/fx/metaknob.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skins:Tango/fx/focus_button.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skins:Tango/fx/metaknob.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skins:Tango/fx/toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/parameter_row.xml">
+                  <Template src="skins:Tango/fx/parameter_row.xml">
                     <SetVariable name="FxNum">1</SetVariable>
                     <SetVariable name="Side">Right</SetVariable>
                   </Template>
@@ -161,12 +176,12 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/focus_button.xml"><SetVariable name="FxNum">2</SetVariable></Template>
-                  <Template src="skin:../Tango/fx/metaknob.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skins:Tango/fx/focus_button.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skins:Tango/fx/metaknob.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skins:Tango/fx/toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/parameter_row.xml">
+                  <Template src="skins:Tango/fx/parameter_row.xml">
                     <SetVariable name="FxNum">2</SetVariable>
                     <SetVariable name="Side">Right</SetVariable>
                   </Template>
@@ -182,12 +197,12 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
-                  <Template src="skin:../Tango/fx/metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skins:Tango/fx/focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skins:Tango/fx/metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skins:Tango/fx/toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/parameter_row.xml">
+                  <Template src="skins:Tango/fx/parameter_row.xml">
                     <SetVariable name="FxNum">3</SetVariable>
                     <SetVariable name="Side">Right</SetVariable>
                   </Template>
@@ -209,7 +224,7 @@ Variables:
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
 
-              <Template src="skin:../Tango/fx/flow_noFocus_separator.xml">
+              <Template src="skins:Tango/fx/flow_noFocus_separator.xml">
                 <SetVariable name="widthLeft">57f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
               </Template>
@@ -219,7 +234,7 @@ Variables:
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
 
-              <Template src="skin:../Tango/fx/flow_noFocus_separator.xml">
+              <Template src="skins:Tango/fx/flow_noFocus_separator.xml">
                 <SetVariable name="widthLeft">57f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
               </Template>
@@ -244,39 +259,39 @@ Variables:
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/flow_focus_background.xml">
+              <Template src="skins:Tango/fx/flow_focus_background.xml">
                 <SetVariable name="Size">-1me,8f</SetVariable>
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/flow_focus_background.xml">
+              <Template src="skins:Tango/fx/flow_focus_background.xml">
                 <SetVariable name="Size">-1me,-1me</SetVariable>
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/fx/flow_focus_separator.xml">
+              <Template src="skins:Tango/fx/flow_focus_separator.xml">
                 <SetVariable name="widthLeft">71f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
                 <SetVariable name="FxTop">1</SetVariable>
                 <SetVariable name="FxBottom">2</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/fx/flow_focus_background.xml">
+              <Template src="skins:Tango/fx/flow_focus_background.xml">
                 <SetVariable name="Size">-1me,-1me</SetVariable>
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/fx/flow_focus_separator.xml">
+              <Template src="skins:Tango/fx/flow_focus_separator.xml">
                 <SetVariable name="widthLeft">71f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
                 <SetVariable name="FxTop">2</SetVariable>
                 <SetVariable name="FxBottom">3</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/fx/flow_focus_background.xml">
+              <Template src="skins:Tango/fx/flow_focus_background.xml">
                 <SetVariable name="Size">-1me,-1me</SetVariable>
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/flow_focus_background.xml">
+              <Template src="skins:Tango/fx/flow_focus_background.xml">
                 <SetVariable name="Size">-1me,8f</SetVariable>
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>

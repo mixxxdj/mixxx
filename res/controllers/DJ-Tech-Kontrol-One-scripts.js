@@ -68,7 +68,7 @@ KONTROL1.mod["s"]={state:"o",timer:false,doshift:true};
 KONTROL1.init = function init(id, debug) { // called when the device is opened & set up
     if (KONTROL1.debug>2){print("##function: "+KONTROL1.getFunctionName())};
     KONTROL1.updateLEDs();
-    if(KONTROL1.disableFlash!==true)KONTROL1.ledTimer = engine.beginTimer(1000, "KONTROL1.doLEDs()");//set timer for LED indicator flashes
+    if(KONTROL1.disableFlash!==true)KONTROL1.ledTimer = engine.beginTimer(1000, KONTROL1.doLEDs);//set timer for LED indicator flashes
     engine.connectControl("[Channel1]", "volume", "KONTROL1.testconnect");
     };
 
@@ -113,7 +113,7 @@ KONTROL1.knobPress = function knobPress(knobnum){
     //{state:"o",timer:false,dobankswitch:true};
     KONTROL1.modPress(knobnum);//turn mod on
     engine.stopTimer(KONTROL1.mod[knobnum]["timer"]);//kill any previous timer
-    KONTROL1.mod[knobnum]["timer"]=engine.beginTimer(KONTROL1.modTimeout, "KONTROL1.disableBankSwitch('"+knobnum+"')", true);
+    KONTROL1.mod[knobnum]["timer"]=engine.beginTimer(KONTROL1.modTimeout, () => KONTROL1.disableBankSwitch(knobnum), true);
     }
 
 KONTROL1.knobRelease = function knobRelease(knobnum){
@@ -145,7 +145,7 @@ KONTROL1.shiftPress = function shiftPress(){
     var knobnum="s";
     KONTROL1.modPress(knobnum);//turn mod on
     engine.stopTimer(KONTROL1.mod[knobnum]["timer"]);//kill any previous timer
-    KONTROL1.mod[knobnum]["timer"]=engine.beginTimer(500, "KONTROL1.disableShiftSwitch('"+knobnum+"')", true);
+    KONTROL1.mod[knobnum]["timer"]=engine.beginTimer(500, () => KONTROL1.disableShiftSwitch(knobnum), true);
     }
 
 KONTROL1.shiftRelease = function shiftRelease(){
@@ -198,7 +198,7 @@ KONTROL1.modRelease = function modRelease(knobnum){
 KONTROL1.doLEDs = function doLEDs() {
     if (KONTROL1.debug>2){print("##function: "+KONTROL1.getFunctionName())};
     engine.stopTimer(KONTROL1.flashTimer);
-    KONTROL1.flashTimer=engine.beginTimer(30, "KONTROL1.bankIndicators()");
+    KONTROL1.flashTimer=engine.beginTimer(30, KONTROL1.bankIndicators);
     return;
     };
 
@@ -589,7 +589,7 @@ KONTROL1.cueClear = function cueClear(cue, control, deck){//clear hotcue - OR mo
     if(engine.getValue(group, "hotcue_"+cue+"_enabled")!=true){//hotcue not set - prepare to move next hotcue pressed to this button
         KONTROL1.cueMoveToNum=cue;
         engine.stopTimer(KONTROL1.cueMoveIndicator);
-        KONTROL1.cueMoveIndicator=engine.beginTimer(100, "KONTROL1.cueMoveIndicatorLEDs("+control+")");//start timer for LED indicator flasher showing the button we're moving to
+        KONTROL1.cueMoveIndicator=engine.beginTimer(100, () => KONTROL1.cueMoveIndicatorLEDs(control));//start timer for LED indicator flasher showing the button we're moving to
         return true;
     }
 
@@ -881,7 +881,7 @@ KONTROL1.loopIn = function loopIn(value, deck) {
     if (value>0){//button was pressed
         KONTROL1.loopinbuttonDown=true;
         KONTROL1.doloopin=true;
-        KONTROL1.loopinbuttonTimer = engine.beginTimer(500, "KONTROL1.disableloopin()", true);
+        KONTROL1.loopinbuttonTimer = engine.beginTimer(500, KONTROL1.disableloopin, true);
         } else {//button was released
         KONTROL1.loopinbuttonDown=false;
         if (KONTROL1.doloopin===true) {engine.setValue(group, "loop_in", 1);engine.setValue(group, "loop_in", 0);};
@@ -900,7 +900,7 @@ KONTROL1.loopOut = function loopOut(value, deck) {
     if (value>0){//button was pressed
         KONTROL1.loopoutbuttonDown=true;
         KONTROL1.doloopout=true;
-        KONTROL1.loopoutbuttonTimer = engine.beginTimer(500, "KONTROL1.disableloopout()", true);
+        KONTROL1.loopoutbuttonTimer = engine.beginTimer(500, KONTROL1.disableloopout, true);
         } else {//button was released
         KONTROL1.loopoutbuttonDown=false;
         if (KONTROL1.doloopout===true) {engine.setValue(group, "loop_out", 1);};
@@ -1307,7 +1307,7 @@ KONTROL1.test = function test(channel, control, value, status, group) {
     };
 
 
-    //KONTROL1.ledTimer = engine.beginTimer(250, "KONTROL1.testflash()");
+    //KONTROL1.ledTimer = engine.beginTimer(250, KONTROL1.testflash);
     //midi.sendShortMsg(status, ctrl, state);
     //engine.stopTimer(KONTROL1.ledTimer);
 

@@ -1,42 +1,91 @@
 #pragma once
 
+#include <QDebug>
 #include <QString>
+
+#include "audio/frame.h"
+#include "track/bpm.h"
 
 class EngineChannel;
 
-enum SyncMode {
-    SYNC_INVALID = -1,
-    SYNC_NONE = 0,
-    SYNC_FOLLOWER = 1,
-    // SYNC_MASTER_SOFT is a master that Mixxx has chosen automatically.
-    // depending on how decks stop and start, it may reassign soft master at will.
-    SYNC_MASTER_SOFT = 2,
-    // SYNC_MASTER_EXPLICIT represents an explicit request that the synacable be
-    // master. Mixxx will only remove a SYNC_MASTER_SOFT if the track is stopped or
+enum class SyncMode {
+    Invalid = -1,
+    None = 0,
+    Follower = 1,
+    // LeaderSoft is a leader that Mixxx has chosen automatically.
+    // depending on how decks stop and start, it may reassign soft leader at will.
+    LeaderSoft = 2,
+    // LeaderExplicit represents an explicit request that the syncable be
+    // leader. Mixxx will only remove a LeaderSoft if the track is stopped or
     // ejected.
-    SYNC_MASTER_EXPLICIT = 3,
-    SYNC_NUM_MODES
+    LeaderExplicit = 3,
+    NumModes
 };
 
+inline QDebug operator<<(QDebug debug, const SyncMode& mode) {
+    switch (mode) {
+    case SyncMode::Invalid:
+        return debug << "SyncMode::Invalid";
+    case SyncMode::None:
+        return debug << "SyncMode::None";
+    case SyncMode::Follower:
+        return debug << "SyncMode::Follower";
+    case SyncMode::LeaderSoft:
+        return debug << "SyncMode::LeaderSoft";
+    case SyncMode::LeaderExplicit:
+        return debug << "SyncMode::LeaderExplicit";
+    case SyncMode::NumModes:
+        return debug << "SyncMode::NumModes";
+    }
+    return debug << "SyncMode::Invalid (not in switch/case)";
+}
 inline SyncMode syncModeFromDouble(double value) {
     // msvs does not allow to cast from double to an enum
     SyncMode mode = static_cast<SyncMode>(int(value));
-    if (mode >= SYNC_NUM_MODES || mode < 0) {
-        return SYNC_NONE;
+    if (mode >= SyncMode::NumModes || mode == SyncMode::Invalid) {
+        return SyncMode::None;
     }
     return mode;
 }
 
 inline bool toSynchronized(SyncMode mode) {
-    return mode > SYNC_NONE;
+    return mode > SyncMode::None;
 }
 
-inline bool isMaster(SyncMode mode) {
-    return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
+inline bool isFollower(SyncMode mode) {
+    return (mode == SyncMode::Follower);
+}
+
+inline bool isLeader(SyncMode mode) {
+    return (mode == SyncMode::LeaderSoft || mode == SyncMode::LeaderExplicit);
+}
+
+enum class SyncLeaderLight {
+    Invalid = -1,
+    Off = 0,
+    Soft = 1,
+    Explicit = 2,
+};
+
+inline SyncLeaderLight SyncModeToLeaderLight(SyncMode mode) {
+    switch (mode) {
+    case SyncMode::Invalid:
+    case SyncMode::None:
+    case SyncMode::Follower:
+        return SyncLeaderLight::Off;
+    case SyncMode::LeaderSoft:
+        return SyncLeaderLight::Soft;
+    case SyncMode::LeaderExplicit:
+        return SyncLeaderLight::Explicit;
+        break;
+    case SyncMode::NumModes:
+        break;
+    }
+    return SyncLeaderLight::Invalid;
 }
 
 /// Syncable is an abstract base class for any object that wants to participate
-/// in Master Sync.
+/// in Sync Lock.
 class Syncable {
   public:
     virtual ~Syncable() = default;
@@ -48,7 +97,7 @@ class Syncable {
     virtual void setSyncMode(SyncMode mode) = 0;
 
     // Notify a Syncable that it is now the only currently-playing syncable.
-    virtual void notifyOnlyPlayingSyncable() = 0;
+    virtual void notifyUniquePlaying() = 0;
 
     // Notify a Syncable that they should sync phase.
     virtual void requestSync() = 0;
@@ -64,35 +113,43 @@ class Syncable {
     // Only relevant for player Syncables.
     virtual bool isPlaying() const = 0;
     virtual bool isAudible() const = 0;
+    virtual bool isQuantized() const = 0;
 
     // Gets the current speed of the syncable in bpm (bpm * rate slider), doesn't
     // include scratch or FF/REW values.
-    virtual double getBpm() const = 0;
+    virtual mixxx::Bpm getBpm() const = 0;
 
     // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
-    virtual double getBaseBpm() const = 0;
+    virtual mixxx::Bpm getBaseBpm() const = 0;
 
     // The following functions are used to tell syncables about the state of the
-    // current Sync Master.
+    // current Sync Leader.
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    virtual void setMasterBeatDistance(double beatDistance) = 0;
+    virtual void updateLeaderBeatDistance(double beatDistance) = 0;
 
+    // Update the current playback speed (not including scratch values)
+    // of the current leader.
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
-    virtual void setMasterBpm(double bpm) = 0;
+    virtual void updateLeaderBpm(mixxx::Bpm bpm) = 0;
 
-    // Combines the above three calls into one, since they are often set
-    // simultaneously.  Avoids redundant recalculation that would occur by
-    // using the three calls separately.
-    virtual void setMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
+    // Tells a Syncable that it's going to be used as a source for leader
+    // params. This is a gross hack so that the SyncControl can undo its
+    // half/double adjustment so bpms are initialized correctly.
+    virtual void notifyLeaderParamSource() = 0;
 
+    // Perform a reset of Leader parameters. This function also triggers recalculation
+    // of half-double multiplier.
+    virtual void reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) = 0;
+
+    // Update the playback speed of the leader, including scratch values.
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    virtual void setInstantaneousBpm(double bpm) = 0;
+    virtual void updateInstantaneousBpm(mixxx::Bpm bpm) = 0;
 };
 
 /// SyncableListener is an interface class used by EngineSync to receive
@@ -106,22 +163,22 @@ class SyncableListener {
     // Syncable::notifySyncModeChanged.
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
 
-    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    // (master/follower).
-    virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
-
-    // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
+    // A Syncable must never call notifyBpmChanged in response to a updateLeaderBpm()
     // call.
-    virtual void notifyBpmChanged(Syncable* pSyncable, double bpm) = 0;
-    virtual void requestBpmUpdate(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
+    virtual void notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
+    virtual void requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
 
     // Syncables notify EngineSync directly about various events. EngineSync
     // does not have a say in whether these succeed or not, they are simply
     // notifications.
-    virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
 
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
+
+    // Notify that the Syncable has seeked.
+    virtual void notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position) = 0;
 
     // A Syncable must never call notifyBeatDistanceChanged in response to a
     // setBeatDistance() call.
@@ -130,5 +187,5 @@ class SyncableListener {
 
     virtual void notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) = 0;
 
-    virtual Syncable* getMasterSyncable() = 0;
+    virtual Syncable* getLeaderSyncable() = 0;
 };

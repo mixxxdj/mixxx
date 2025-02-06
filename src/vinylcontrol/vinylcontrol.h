@@ -4,11 +4,12 @@
 
 #include "util/types.h"
 #include "preferences/usersettings.h"
-#include "vinylcontrol/vinylsignalquality.h"
 
 class ControlProxy;
+struct VinylSignalQualityReport;
 
 class VinylControl : public QObject {
+    Q_OBJECT
   public:
     VinylControl(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControl();

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QHash>
-#include <QtSql>
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
@@ -49,10 +48,15 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId getTrackId(const QModelIndex& index) const override;
     QString getTrackLocation(const QModelIndex& index) const override;
 
+    QUrl getTrackUrl(const QModelIndex& index) const override;
+
     CoverInfo getCoverInfo(const QModelIndex& index) const override;
 
     const QVector<int> getTrackRows(TrackId trackId) const override {
         return m_trackIdToRows.value(trackId);
+    }
+    int getTrackRowByPosition(int position) const override {
+        return m_trackPosToRow.value(position);
     }
 
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
@@ -70,6 +74,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     ///////////////////////////////////////////////////////////////////////////
     int fieldIndex(
             ColumnCache::Column column) const final;
+
+    QString modelKey(bool noSearch) const override;
 
   protected:
     ///////////////////////////////////////////////////////////////////////////
@@ -93,10 +99,14 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-  protected:
     QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
 
+    bool hasPositionColumn() {
+        return fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION) >= 0;
+    }
+
     QSqlDatabase m_database;
+    QString m_tableName;
 
     QString m_tableOrderBy;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
@@ -116,30 +126,43 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     struct RowInfo {
         TrackId trackId;
-        int order;
-        QVector<QVariant> metadata;
+        int row;
+        QVector<QVariant> columnValues;
+
+        int getPosition(int posCol) const {
+            if (posCol < 0) {
+                return -1;
+            }
+            bool ok = false;
+            int pos = columnValues.at(posCol).toInt(&ok);
+            if (ok) {
+                return pos;
+            }
+            return -1;
+        }
 
         bool operator<(const RowInfo& other) const {
             // -1 is greater than anything
-            if (order == -1) {
+            if (row == -1) {
                 return false;
-            } else if (other.order == -1) {
+            } else if (other.row == -1) {
                 return true;
             }
-            return order < other.order;
+            return row < other.row;
         }
     };
 
     typedef QHash<TrackId, QVector<int>> TrackId2Rows;
+    typedef QHash<int, int> TrackPos2Row;
 
     void clearRows();
     void replaceRows(
             QVector<RowInfo>&& rows,
-            TrackId2Rows&& trackIdToRows);
+            TrackId2Rows&& trackIdToRows,
+            TrackPos2Row&& trackPosToRows);
 
     QVector<RowInfo> m_rowInfo;
 
-    QString m_tableName;
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;
@@ -147,9 +170,10 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     bool m_bInitialized;
     QHash<TrackId, int> m_trackSortOrder;
     TrackId2Rows m_trackIdToRows;
+    TrackPos2Row m_trackPosToRow;
     QString m_currentSearch;
     QString m_currentSearchFilter;
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);

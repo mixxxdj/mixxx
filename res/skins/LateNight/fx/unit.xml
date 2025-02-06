@@ -21,7 +21,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,max</SizePolicy>
         <Children>
-          <Template src="skin:/fx/unit_parameters_hidden.xml"/>
+          <Template src="skins:LateNight/fx/unit_parameters_hidden.xml"/>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],show_parameters</ConfigKey>
@@ -34,7 +34,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:/fx/unit_parameters_visible.xml"/>
+          <Template src="skins:LateNight/fx/unit_parameters_visible.xml"/>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],show_parameters</ConfigKey>

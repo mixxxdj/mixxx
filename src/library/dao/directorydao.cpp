@@ -1,100 +1,217 @@
 #include "library/dao/directorydao.h"
 
 #include <QDir>
-#include <QtDebug>
 
 #include "library/queryutil.h"
-#include "util/db/sqllikewildcardescaper.h"
-#include "util/db/sqllikewildcards.h"
+#include "util/db/fwdsqlquery.h"
+#include "util/logger.h"
 
 namespace {
 
-bool isChildDir(const QString& testDir, const QString& dirStr) {
-    QDir test = QDir(testDir);
-    QDir dir = QDir(dirStr);
-    bool child = dir == test;
-    while (test.cdUp()) {
-        if (dir == test) {
-            child = true;
-        }
-    }
-    // qDebug() << "--- test related function ---";
-    // qDebug() << "testDir " << testDir;
-    // qDebug() << "dir" << dirStr;
-    // qDebug() << "child = " << child;
-    // qDebug() << "-----------------------------";
-    return child;
-}
+const mixxx::Logger kLogger("DirectoryDAO");
+
+const QString kTable = QStringLiteral("directories");
+const QString kLocationColumn = QStringLiteral("directory");
 
 } // anonymous namespace
 
-int DirectoryDAO::addDirectory(const QString& newDir) const {
-    // Do nothing if the dir to add is a child of a directory that is already in
-    // the db.
-    QStringList dirs = getDirs();
-    QString childDir;
-    QString parentDir;
-    foreach (const QString& dir, dirs) {
-        if (isChildDir(newDir, dir)) {
-            childDir = dir;
+QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
+        bool skipInvalidOrMissing) const {
+    DEBUG_ASSERT(m_database.isOpen());
+    const auto statement =
+            QStringLiteral("SELECT %1 FROM %2")
+                    .arg(
+                            kLocationColumn,
+                            kTable);
+    FwdSqlQuery query(
+            m_database,
+            statement);
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return {};
+    }
+
+    QList<mixxx::FileInfo> allDirs;
+    const auto locationIndex = query.fieldIndex(kLocationColumn);
+    while (query.next()) {
+        const auto locationValue =
+                query.fieldValue(locationIndex).toString();
+        auto fileInfo = mixxx::FileInfo(locationValue);
+        if (skipInvalidOrMissing) {
+            if (!fileInfo.exists() || !fileInfo.isDir()) {
+                kLogger.debug()
+                        << "Skipping to load invalid or missing directory"
+                        << fileInfo;
+                continue;
+            }
         }
-        if (isChildDir(dir, newDir)) {
-            parentDir = dir;
-        }
+        allDirs.append(std::move(fileInfo));
     }
-
-    if (!childDir.isEmpty()) {
-        qDebug() << "return already watching";
-        return ALREADY_WATCHING;
-    }
-
-    if (!parentDir.isEmpty()) {
-        // removing the old directory won't harm because we are adding the
-        // parent later in this function
-        removeDirectory(parentDir);
-    }
-
-    QSqlQuery query(m_database);
-    query.prepare("INSERT INTO " % DIRECTORYDAO_TABLE %
-                  " (" % DIRECTORYDAO_DIR % ") VALUES (:dir)");
-    query.bindValue(":dir", newDir);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "Adding new dir (" % newDir % ") failed.";
-        return SQL_ERROR;
-    }
-    return ALL_FINE;
+    return allDirs;
 }
 
-int DirectoryDAO::removeDirectory(const QString& dir) const {
-    QSqlQuery query(m_database);
-    query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
-                   % DIRECTORYDAO_DIR % "= :dir");
-    query.bindValue(":dir", dir);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "purging dir (" % dir % ") failed";
-        return SQL_ERROR;
+QStringList DirectoryDAO::getRootDirStrings() const {
+    DEBUG_ASSERT(m_database.isOpen());
+    const auto statement =
+            QStringLiteral("SELECT %1 FROM %2")
+                    .arg(
+                            kLocationColumn,
+                            kTable);
+    FwdSqlQuery query(
+            m_database,
+            statement);
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return {};
     }
-    return ALL_FINE;
+
+    QStringList allDirs;
+    const auto locationIndex = query.fieldIndex(kLocationColumn);
+    while (query.next()) {
+        const auto locationValue =
+                query.fieldValue(locationIndex).toString();
+        allDirs.append(locationValue);
+    }
+    return allDirs;
 }
 
-QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
+DirectoryDAO::AddResult DirectoryDAO::addDirectory(
+        const mixxx::FileInfo& newDir) const {
+    DEBUG_ASSERT(m_database.isOpen());
+    if (!newDir.exists() || !newDir.isDir()) {
+        kLogger.warning()
+                << "Failed to add"
+                << newDir.location()
+                << ": Directory does not exist or is inaccessible";
+        return AddResult::InvalidOrMissingDirectory;
+    }
+    if (!newDir.isReadable()) {
+        kLogger.warning()
+                << "Aborting to to add"
+                << newDir.location()
+                << ": Directory can not be read";
+        return AddResult::UnreadableDirectory;
+    }
+    const auto newCanonicalLocation = newDir.canonicalLocation();
+    DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
+    QList<mixxx::FileInfo> obsoleteChildDirs;
+    // Ignore invalid or missing directories in order to allow adding new dirs
+    // while the list contains e.g. currently unmounted removable drives.
+    // Worst that can happen is that we have orphan tracks in the database that
+    // would be moved to missing after the rescan (which is required anyway after
+    // having added a new dir).
+    for (auto&& oldDir : loadAllDirectories(true /* ignore missing */)) {
+        const auto oldCanonicalLocation = oldDir.canonicalLocation();
+        DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
+        if (mixxx::FileInfo::isRootSubCanonicalLocation(
+                    oldCanonicalLocation,
+                    newCanonicalLocation)) {
+            // New dir is a child of an existing dir, return
+            return AddResult::AlreadyWatching;
+        }
+        if (mixxx::FileInfo::isRootSubCanonicalLocation(
+                    newCanonicalLocation,
+                    oldCanonicalLocation)) {
+            // New dir is the parent of an existing dir. Remove the child from
+            // the dir list.
+            obsoleteChildDirs.append(std::move(oldDir));
+        }
+    }
+
+    const auto statement =
+            QStringLiteral("INSERT INTO %1 (%2) VALUES (:location)")
+                    .arg(
+                            kTable,
+                            kLocationColumn);
+    FwdSqlQuery query(m_database, statement);
+    query.bindValue(
+            QStringLiteral(":location"),
+            newDir.location());
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return AddResult::SqlError;
+    }
+
+    for (const auto& oldDir : obsoleteChildDirs) {
+        if (RemoveResult::Ok != removeDirectory(oldDir)) {
+            kLogger.warning()
+                    << "Failed to remove obsolete child directory"
+                    << oldDir.location();
+            DEBUG_ASSERT(!"removeDirectory failed");
+            continue;
+        }
+    }
+
+    return AddResult::Ok;
+}
+
+DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
+        const mixxx::FileInfo& oldDir) const {
+    DEBUG_ASSERT(m_database.isOpen());
+    const auto statement =
+            QStringLiteral("DELETE FROM %1 WHERE %2=:location")
+                    .arg(
+                            kTable,
+                            kLocationColumn);
+    FwdSqlQuery query(
+            m_database,
+            statement);
+    query.bindValue(
+            QStringLiteral(":location"),
+            oldDir.location());
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return RemoveResult::SqlError;
+    }
+
+    if (query.numRowsAffected() < 1) {
+        return RemoveResult::NotFound;
+    }
+    DEBUG_ASSERT(query.numRowsAffected() == 1);
+
+    return RemoveResult::Ok;
+}
+
+std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::relocateDirectory(
         const QString& oldDirectory,
         const QString& newDirectory) const {
-    DEBUG_ASSERT(oldDirectory == QDir(oldDirectory).absolutePath());
-    DEBUG_ASSERT(newDirectory == QDir(newDirectory).absolutePath());
+    // Don't verify the old directory with
+    // DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
+    // The path may have been set on another OS and therefore it will not have a
+    //  valid location.
+    // Just work with the QString; in case of an invalid path track relocation
+    // will simply fail if the database query yields no results.
+    const mixxx::FileInfo newFileInfo(newDirectory);
+    DEBUG_ASSERT(newDirectory == newFileInfo.location());
+
+    if (!newFileInfo.exists() || !newFileInfo.isDir()) {
+        kLogger.warning()
+                << "Aborting to relocate"
+                << oldDirectory
+                << ": "
+                << newDirectory
+                << "does not exist or is inaccessible";
+        return {RelocateResult::InvalidOrMissingDirectory, {}};
+    }
+    if (!newFileInfo.isReadable()) {
+        kLogger.warning()
+                << "Aborting to relocate"
+                << oldDirectory
+                << ": "
+                << newDirectory
+                << "can not be read";
+        return {RelocateResult::UnreadableDirectory, {}};
+    }
+
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldDirectory also has a zombie
     // track location in newDirectory then the replace query will fail because the
     // location column becomes non-unique.
     QSqlQuery query(m_database);
-    query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR %
-            "=:newDirectory WHERE " % DIRECTORYDAO_DIR % "=:oldDirectory");
+    query.prepare("UPDATE " % kTable % " SET " % kLocationColumn %
+            "=:newDirectory WHERE " % kLocationColumn % "=:oldDirectory");
     query.bindValue(":newDirectory", newDirectory);
     query.bindValue(":oldDirectory", oldDirectory);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
                                 << oldDirectory << "to" << newDirectory;
-        return {};
+        return {RelocateResult::SqlError, {}};
     }
 
     // Appending '/' is required to disambiguate files from parent
@@ -102,20 +219,15 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     // match both instead of only files in the parent directory "a/b/".
     DEBUG_ASSERT(!oldDirectory.endsWith('/'));
     const QString oldDirectoryPrefix = oldDirectory + '/';
-    const QString startsWithOldDirectory = SqlLikeWildcardEscaper::apply(
-                                                   oldDirectoryPrefix, kSqlLikeMatchAll) +
-            kSqlLikeMatchAll;
-
     query.prepare(QStringLiteral(
             "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id=library.location WHERE "
-            "track_locations.location LIKE :startsWithOldDirectory ESCAPE :escape"));
-    query.bindValue(":startsWithOldDirectory", startsWithOldDirectory);
-    query.bindValue(":escape", kSqlLikeMatchAll);
+            "INSTR(track_locations.location,:oldDirectoryPrefix)=1"));
+    query.bindValue(":oldDirectoryPrefix", oldDirectoryPrefix);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-        return {};
+        return {RelocateResult::SqlError, {}};
     }
 
     QList<DbId> loc_ids;
@@ -124,22 +236,14 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         const auto oldLocation = query.value(2).toString();
         const int oldSuffixLen = oldLocation.size() - oldDirectory.size();
         QString newLocation = newDirectory + oldLocation.right(oldSuffixLen);
-        // LIKE is case-insensitive! We cannot decide if the file system
-        // at the old location was case-sensitive or case-insensitive
-        // and must assume that the stored path is at least case-correct.
-        DEBUG_ASSERT(oldLocation.startsWith(oldDirectoryPrefix, Qt::CaseInsensitive));
-        if (!oldLocation.startsWith(oldDirectoryPrefix, Qt::CaseSensitive)) {
-            qDebug() << "Skipping relocation of" << oldLocation
-                     << "to" << newLocation;
-            continue;
-        }
-        loc_ids.append(DbId(query.value(1).toInt()));
+        DEBUG_ASSERT(oldLocation.startsWith(oldDirectoryPrefix));
+        loc_ids.append(DbId(query.value(1)));
         const auto trackId = TrackId(query.value(0));
-        auto missingTrackRef = TrackRef::fromFileInfo(
-                TrackFile(oldLocation),
+        auto missingTrackRef = TrackRef::fromFilePath(
+                oldLocation,
                 std::move(trackId));
-        auto addedTrackRef = TrackRef::fromFileInfo(
-                TrackFile(newLocation)); // without TrackId, because no new track will be added!
+        auto addedTrackRef = TrackRef::fromFilePath(
+                newLocation); // without TrackId, because no new track will be added!
         relocatedTracks.append(RelocatedTrack(
                 std::move(missingTrackRef),
                 std::move(addedTrackRef)));
@@ -147,31 +251,20 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track.
-    const QString replacement = "UPDATE track_locations SET location=:newloc WHERE id=:id";
+    const QString replacement =
+            "UPDATE track_locations SET location=:newloc, directory=:newdir WHERE id=:id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        query.bindValue("newloc", relocatedTracks.at(i).updatedTrackRef().getLocation());
-        query.bindValue("id", loc_ids.at(i).toVariant());
+        query.bindValue(QStringLiteral(":newloc"),
+                relocatedTracks.at(i).updatedTrackRef().getLocation());
+        query.bindValue(QStringLiteral(":newdir"), newDirectory);
+        query.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
         if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-            return {};
+            LOG_FAILED_QUERY(query) << "could not relocate path of track";
+            return {RelocateResult::SqlError, relocatedTracks};
         }
     }
 
     qDebug() << "Relocated tracks:" << relocatedTracks.size();
-    return relocatedTracks;
-}
-
-QStringList DirectoryDAO::getDirs() const {
-    QSqlQuery query(m_database);
-    query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not retrieve directory list from database";
-    }
-    QStringList dirs;
-    const int dirColumn = query.record().indexOf(DIRECTORYDAO_DIR);
-    while (query.next()) {
-        dirs << query.value(dirColumn).toString();
-    }
-    return dirs;
+    return {RelocateResult::Ok, relocatedTracks};
 }

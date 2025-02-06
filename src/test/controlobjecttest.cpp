@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
+
 #include <QtDebug>
+#include <memory>
 
 #include "control/controlobject.h"
-#include "util/memory.h"
 #include "test/mixxxtest.h"
 
 namespace {
@@ -44,7 +45,7 @@ TEST_F(ControlObjectTest, AliasRetrieval) {
     auto co = std::make_unique<ControlObject>(ck);
 
     // Insert the alias before it is going to be used
-    ControlDoublePrivate::insertAlias(ckAlias, ck);
+    co->addAlias(ckAlias);
 
     // Check if getControl on alias returns us the original ControlObject
     EXPECT_EQ(ControlObject::getControl(ckAlias), co.get());

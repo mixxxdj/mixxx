@@ -96,8 +96,7 @@ class BaseTrackCache : public QObject {
     void updateTrackInIndex(TrackId trackId);
     bool updateTrackInIndex(const TrackPointer& pTrack);
     void updateTracksInIndex(const QSet<TrackId>& trackIds);
-    void getTrackValueForColumn(TrackPointer pTrack, int column,
-                                QVariant& trackValue) const;
+    QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
 
     int findSortInsertionPoint(TrackPointer pTrack,
                                const QList<SortColumn>& sortColumns,
@@ -108,7 +107,7 @@ class BaseTrackCache : public QObject {
             const QVariant& val1,
             const QVariant& val2) const;
     bool trackMatches(const TrackPointer& pTrack,
-                      const QRegExp& matcher) const;
+            const QRegularExpression& matcher) const;
     bool trackMatchesNumeric(const TrackPointer& pTrack,
                              const QStringList& numberMatchers) const;
     bool trackMatchesNamedString(const TrackPointer& pTrack,
@@ -124,7 +123,7 @@ class BaseTrackCache : public QObject {
 
     const std::unique_ptr<SearchQueryParser> m_pQueryParser;
 
-    const StringCollator m_collator;
+    const mixxx::StringCollator m_collator;
 
     // Temporary storage for filterAndSort()
 
@@ -144,7 +143,7 @@ class BaseTrackCache : public QObject {
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;
-    QHash<TrackId, QVector<QVariant> > m_trackInfo;
+    QHash<TrackId, QVector<QVariant>> m_trackInfo;
     QSqlDatabase m_database;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);

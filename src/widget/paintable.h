@@ -1,17 +1,16 @@
 #pragma once
 
-#include <QPixmap>
-#include <QHash>
-#include <QSharedPointer>
-#include <QSvgRenderer>
 #include <QImage>
-#include <QScopedPointer>
-#include <QPainter>
 #include <QRectF>
 #include <QString>
+#include <memory>
 
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/pixmapsource.h"
+
+class QPainter;
+class QPixmap;
+class QSvgRenderer;
 
 // Wrapper around QImage and QSvgRenderer to support rendering SVG images in
 // high fidelity.
@@ -34,6 +33,7 @@ class Paintable {
     int width() const;
     int height() const;
     QRectF rect() const;
+    QImage toImage() const;
     DrawMode drawMode() const {
         return m_drawMode;
     }
@@ -53,9 +53,10 @@ class Paintable {
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,
                       const QRectF& sourceRect);
+    void mayCorrectColors();
 
-    QScopedPointer<QPixmap> m_pPixmap;
-    QScopedPointer<QSvgRenderer> m_pSvg;
+    std::unique_ptr<QPixmap> m_pPixmap;
+    std::unique_ptr<QSvgRenderer> m_pSvg;
     DrawMode m_drawMode;
-    PixmapSource m_source;
+    QRectF m_lastSourceRect;
 };

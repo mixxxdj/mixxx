@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>575</width>
-    <height>595</height>
+    <height>642</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,6 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-
      <widget class="QWidget" name="tabSummary">
       <attribute name="title">
        <string>Summary</string>
@@ -54,7 +53,6 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,10,0,2">
-
             <item row="0" column="0">
              <widget class="QLabel" name="lblTrackName">
               <property name="sizePolicy">
@@ -76,7 +74,6 @@
               </property>
              </widget>
             </item>
-
             <item row="0" column="1">
              <widget class="QLineEdit" name="txtTrackName">
               <property name="sizePolicy">
@@ -93,8 +90,7 @@
               </property>
              </widget>
             </item>
-
-            <item row="0" column="2" colspan="2" rowspan="3">
+            <item row="0" column="2" rowspan="3" colspan="2">
              <widget class="QWidget" name="verticalWidgetCover" native="true">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -112,7 +108,6 @@
               </layout>
              </widget>
             </item>
-
             <item row="1" column="0">
              <widget class="QLabel" name="lblArtist">
               <property name="sizePolicy">
@@ -129,7 +124,6 @@
               </property>
              </widget>
             </item>
-
             <item row="1" column="1">
              <widget class="QLineEdit" name="txtArtist">
               <property name="sizePolicy">
@@ -146,7 +140,6 @@
               </property>
              </widget>
             </item>
-
             <item row="2" column="0">
              <widget class="QLabel" name="lblAlbum">
               <property name="sizePolicy">
@@ -163,7 +156,6 @@
               </property>
              </widget>
             </item>
-
             <item row="2" column="1">
              <widget class="QLineEdit" name="txtAlbum">
               <property name="sizePolicy">
@@ -180,7 +172,6 @@
               </property>
              </widget>
             </item>
-
             <item row="3" column="0">
              <widget class="QLabel" name="lblAlbumArtist">
               <property name="sizePolicy">
@@ -197,7 +188,6 @@
               </property>
              </widget>
             </item>
-
             <item row="3" column="1">
              <widget class="QLineEdit" name="txtAlbumArtist">
               <property name="sizePolicy">
@@ -214,7 +204,6 @@
               </property>
              </widget>
             </item>
-
             <item row="3" column="2" colspan="2">
              <widget class="QWidget" name="verticalWidgetStars" native="true">
               <property name="sizePolicy">
@@ -233,7 +222,6 @@
               </layout>
              </widget>
             </item>
-
             <item row="4" column="0">
              <widget class="QLabel" name="lblComposer">
               <property name="text">
@@ -244,7 +232,6 @@
               </property>
              </widget>
             </item>
-
             <item row="4" column="1">
              <widget class="QLineEdit" name="txtComposer">
               <property name="sizePolicy">
@@ -261,15 +248,16 @@
               </property>
              </widget>
             </item>
-
             <item row="4" column="2">
              <widget class="QLabel" name="lblYear">
               <property name="text">
                <string>Year</string>
               </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
              </widget>
             </item>
-
             <item row="4" column="3">
              <widget class="QLineEdit" name="txtYear">
               <property name="sizePolicy">
@@ -280,7 +268,6 @@
               </property>
              </widget>
             </item>
-
             <item row="5" column="0">
              <widget class="QLabel" name="lblGenre">
               <property name="text">
@@ -291,7 +278,6 @@
               </property>
              </widget>
             </item>
-
             <item row="5" column="1">
              <widget class="QLineEdit" name="txtGenre">
               <property name="sizePolicy">
@@ -308,15 +294,16 @@
               </property>
              </widget>
             </item>
-
             <item row="5" column="2">
              <widget class="QLabel" name="lblKey">
               <property name="text">
                <string>Key</string>
               </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
              </widget>
             </item>
-
             <item row="5" column="3">
              <widget class="QLineEdit" name="txtKey">
               <property name="sizePolicy">
@@ -333,18 +320,16 @@
               </property>
              </widget>
             </item>
-
             <item row="6" column="0">
              <widget class="QLabel" name="lblGrouping">
               <property name="text">
                <string>Grouping</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-
             <item row="6" column="1">
              <widget class="QLineEdit" name="txtGrouping">
               <property name="sizePolicy">
@@ -361,15 +346,16 @@
               </property>
              </widget>
             </item>
-
             <item row="6" column="2">
              <widget class="QLabel" name="lblTrackNumber">
               <property name="text">
                <string>Track #</string>
               </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
              </widget>
             </item>
-
             <item row="6" column="3">
              <widget class="QLineEdit" name="txtTrackNumber">
               <property name="sizePolicy">
@@ -386,18 +372,16 @@
               </property>
              </widget>
             </item>
-
             <item row="7" column="0">
              <widget class="QLabel" name="lblTrackComment">
               <property name="text">
                <string>Comments</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-
             <item row="7" column="1" colspan="3">
              <widget class="QPlainTextEdit" name="txtComment">
               <property name="tabChangesFocus">
@@ -405,7 +389,6 @@
               </property>
              </widget>
             </item>
-
             <item row="8" column="1" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
@@ -437,7 +420,26 @@
               </item>
              </layout>
             </item>
-
+            <item row="9" column="0">
+             <widget class="QLabel" name="lblTrackColor">
+              <property name="text">
+               <string>Color</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1" colspan="3">
+             <widget class="QPushButton" name="btnColorPicker">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -453,73 +455,11 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0" columnstretch="0,1,0,1">
-            <item row="0" column="0">
-             <widget class="QLabel" name="lblDuration">
-              <property name="text">
-               <string>Duration:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="txtDuration">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
+           <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0" columnstretch="0,1,0,1">
             <item row="1" column="0">
              <widget class="QLabel" name="lblBpm">
               <property name="text">
                <string>BPM:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="txtBpm">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="lblReplayGain">
-              <property name="text">
-               <string>ReplayGain:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="txtReplayGain">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>
@@ -546,10 +486,80 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="lblLocation">
+              <property name="text">
+               <string>Location:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="3">
+             <widget class="QLabel" name="txtLocation">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="2">
              <widget class="QLabel" name="lblBitrate">
               <property name="text">
                <string>Bitrate:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="lblDuration">
+              <property name="text">
+               <string>Duration:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" colspan="3">
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QPushButton" name="btnOpenFileBrowser">
+                <property name="text">
+                 <string>Open in File Browser</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>10</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="txtBpm">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>
@@ -569,15 +579,14 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
-             <widget class="QLabel" name="lblDateAdded">
-              <property name="text">
-               <string>Date added:</string>
+            <item row="0" column="1">
+             <widget class="QLabel" name="txtDuration">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
               </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QLabel" name="txtDateAdded">
               <property name="text">
                <string/>
               </property>
@@ -587,51 +596,70 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="lblLocation">
+             <widget class="QLabel" name="lblReplayGain">
               <property name="text">
-               <string>Location:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <string>ReplayGain:</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1" colspan="3">
-             <widget class="QLabel" name="txtLocation">
+            <item row="2" column="0">
+             <widget class="QLabel" name="lblDateAdded">
+              <property name="text">
+               <string>Date added:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLabel" name="txtReplayGain">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string/>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
               </property>
               <property name="textInteractionFlags">
                <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>
-            <item row="4" column="1" colspan="3">
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <item>
-               <widget class="QPushButton" name="btnOpenFileBrowser">
-                <property name="text">
-                 <string>Open in File Browser</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>10</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+            <item row="2" column="1">
+             <widget class="QLabel" name="txtDateAdded">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="lblSamplerate">
+              <property name="text">
+               <string>Samplerate:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QLabel" name="txtSamplerate">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -656,7 +684,6 @@
        </item>
       </layout>
      </widget>
-
      <widget class="QWidget" name="tabBPM">
       <attribute name="title">
        <string>BPM</string>
@@ -994,17 +1021,18 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
   <tabstop>btnImportMetadataFromFile</tabstop>
+  <tabstop>btnColorPicker</tabstop>
   <tabstop>btnOpenFileBrowser</tabstop>
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmConst</tabstop>
   <tabstop>bpmTap</tabstop>
   <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
-  <tabstop>bpmClear</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
   <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmClear</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
   <tabstop>btnCancel</tabstop>

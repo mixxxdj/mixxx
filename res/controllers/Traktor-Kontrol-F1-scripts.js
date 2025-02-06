@@ -75,94 +75,94 @@ function KontrolF1Controller() {
     this.registerOutputPackets = function() {
         var packet = new HIDPacket("lights", 0x80);
         // Right 7-segment element - 0x0 off, 0x40 on
-        packet.addControl("hid", "right_segment_dp", 0,"B");
-        packet.addControl("hid", "right_segment_1", 1,"B");
-        packet.addControl("hid", "right_segment_2", 2,"B");
-        packet.addControl("hid", "right_segment_3", 3,"B");
-        packet.addControl("hid", "right_segment_4", 4,"B");
-        packet.addControl("hid", "right_segment_5", 5,"B");
-        packet.addControl("hid", "right_segment_6", 6,"B");
-        packet.addControl("hid", "right_segment_7", 7,"B");
+        packet.addOutput("hid", "right_segment_dp", 1, "B");
+        packet.addOutput("hid", "right_segment_1", 2, "B");
+        packet.addOutput("hid", "right_segment_2", 3, "B");
+        packet.addOutput("hid", "right_segment_3", 4, "B");
+        packet.addOutput("hid", "right_segment_4", 5, "B");
+        packet.addOutput("hid", "right_segment_5", 6, "B");
+        packet.addOutput("hid", "right_segment_6", 7, "B");
+        packet.addOutput("hid", "right_segment_7", 8, "B");
 
         // Left 7-segment element - 0x0 off, 0x40 on
-        packet.addControl("hid", "left_segment_dp", 8,"B");
-        packet.addControl("hid", "left_segment_1", 9,"B");
-        packet.addControl("hid", "left_segment_2", 10,"B");
-        packet.addControl("hid", "left_segment_3", 11,"B");
-        packet.addControl("hid", "left_segment_4", 12,"B");
-        packet.addControl("hid", "left_segment_5", 13,"B");
-        packet.addControl("hid", "left_segment_6", 14,"B");
-        packet.addControl("hid", "left_segment_7", 15,"B");
+        packet.addOutput("hid", "left_segment_dp", 9, "B");
+        packet.addOutput("hid", "left_segment_1", 10, "B");
+        packet.addOutput("hid", "left_segment_2", 11, "B");
+        packet.addOutput("hid", "left_segment_3", 12, "B");
+        packet.addOutput("hid", "left_segment_4", 13, "B");
+        packet.addOutput("hid", "left_segment_5", 14, "B");
+        packet.addOutput("hid", "left_segment_6", 15, "B");
+        packet.addOutput("hid", "left_segment_7", 16, "B");
 
         // Button led brightness, 0-0xff
-        packet.addControl("hid", "browse_brightness", 16,"B");
-        packet.addControl("hid", "size_brightness", 17,"B");
-        packet.addControl("hid", "type_brightness", 18,"B");
-        packet.addControl("hid", "reverse_brightness", 19,"B");
-        packet.addControl("hid", "shift_brightness", 20,"B");
-        packet.addControl("hid", "capture_brightness", 21,"B");
-        packet.addControl("hid", "quant_brightness", 22,"B");
-        packet.addControl("hid", "sync_brightness", 23,"B");
+        packet.addOutput("hid", "browse_brightness", 17, "B");
+        packet.addOutput("hid", "size_brightness", 18, "B");
+        packet.addOutput("hid", "type_brightness", 19, "B");
+        packet.addOutput("hid", "reverse_brightness", 20, "B");
+        packet.addOutput("hid", "shift_brightness", 21, "B");
+        packet.addOutput("hid", "capture_brightness", 22, "B");
+        packet.addOutput("hid", "quant_brightness", 23, "B");
+        packet.addOutput("hid", "sync_brightness", 24, "B");
 
         // Pad RGB color button controls, 3 bytes per pad
-        packet.addControl("hid", "grid_1_blue", 24,"B")
-        packet.addControl("hid", "grid_1_red", 25,"B")
-        packet.addControl("hid", "grid_1_green", 26,"B")
-        packet.addControl("hid", "grid_2_blue", 27,"B")
-        packet.addControl("hid", "grid_2_red", 28,"B")
-        packet.addControl("hid", "grid_2_green", 29,"B")
-        packet.addControl("hid", "grid_3_blue", 30,"B")
-        packet.addControl("hid", "grid_3_red", 31,"B")
-        packet.addControl("hid", "grid_3_green", 32,"B")
-        packet.addControl("hid", "grid_4_blue", 33,"B")
-        packet.addControl("hid", "grid_4_red", 34,"B")
-        packet.addControl("hid", "grid_4_green", 35,"B")
-        packet.addControl("hid", "grid_5_blue", 36,"B")
-        packet.addControl("hid", "grid_5_red", 37,"B")
-        packet.addControl("hid", "grid_5_green", 38,"B")
-        packet.addControl("hid", "grid_6_blue", 39,"B")
-        packet.addControl("hid", "grid_6_red", 40,"B")
-        packet.addControl("hid", "grid_6_green", 41,"B")
-        packet.addControl("hid", "grid_7_blue", 42,"B")
-        packet.addControl("hid", "grid_7_red", 43,"B")
-        packet.addControl("hid", "grid_7_green", 44,"B")
-        packet.addControl("hid", "grid_8_blue", 45,"B")
-        packet.addControl("hid", "grid_8_red", 46,"B")
-        packet.addControl("hid", "grid_8_green", 47,"B")
-        packet.addControl("hid", "grid_9_blue", 48,"B")
-        packet.addControl("hid", "grid_9_red", 49,"B")
-        packet.addControl("hid", "grid_9_green", 50,"B")
-        packet.addControl("hid", "grid_10_blue", 51,"B")
-        packet.addControl("hid", "grid_10_red", 52,"B")
-        packet.addControl("hid", "grid_10_green", 53,"B")
-        packet.addControl("hid", "grid_11_blue", 54,"B")
-        packet.addControl("hid", "grid_11_red", 55,"B")
-        packet.addControl("hid", "grid_11_green", 56,"B")
-        packet.addControl("hid", "grid_12_blue", 57,"B")
-        packet.addControl("hid", "grid_12_red", 58,"B")
-        packet.addControl("hid", "grid_12_green", 59,"B")
-        packet.addControl("hid", "grid_13_blue", 60,"B")
-        packet.addControl("hid", "grid_13_red", 61,"B")
-        packet.addControl("hid", "grid_13_green", 62,"B")
-        packet.addControl("hid", "grid_14_blue", 63,"B")
-        packet.addControl("hid", "grid_14_red", 64,"B")
-        packet.addControl("hid", "grid_14_green", 65,"B")
-        packet.addControl("hid", "grid_15_blue", 66,"B")
-        packet.addControl("hid", "grid_15_red", 67,"B")
-        packet.addControl("hid", "grid_15_green", 68,"B")
-        packet.addControl("hid", "grid_16_blue", 69,"B")
-        packet.addControl("hid", "grid_16_red", 70,"B")
-        packet.addControl("hid", "grid_16_green", 71,"B")
+        packet.addOutput("hid", "grid_1_blue", 25, "B");
+        packet.addOutput("hid", "grid_1_red", 26, "B");
+        packet.addOutput("hid", "grid_1_green", 27, "B");
+        packet.addOutput("hid", "grid_2_blue", 28, "B");
+        packet.addOutput("hid", "grid_2_red", 29, "B");
+        packet.addOutput("hid", "grid_2_green", 30, "B");
+        packet.addOutput("hid", "grid_3_blue", 31, "B");
+        packet.addOutput("hid", "grid_3_red", 32, "B");
+        packet.addOutput("hid", "grid_3_green", 33, "B");
+        packet.addOutput("hid", "grid_4_blue", 34, "B");
+        packet.addOutput("hid", "grid_4_red", 35, "B");
+        packet.addOutput("hid", "grid_4_green", 36, "B");
+        packet.addOutput("hid", "grid_5_blue", 37, "B");
+        packet.addOutput("hid", "grid_5_red", 38, "B");
+        packet.addOutput("hid", "grid_5_green", 39, "B");
+        packet.addOutput("hid", "grid_6_blue", 40, "B");
+        packet.addOutput("hid", "grid_6_red", 41, "B");
+        packet.addOutput("hid", "grid_6_green", 42, "B");
+        packet.addOutput("hid", "grid_7_blue", 43, "B");
+        packet.addOutput("hid", "grid_7_red", 44, "B");
+        packet.addOutput("hid", "grid_7_green", 45, "B");
+        packet.addOutput("hid", "grid_8_blue", 46, "B");
+        packet.addOutput("hid", "grid_8_red", 47, "B");
+        packet.addOutput("hid", "grid_8_green", 48, "B");
+        packet.addOutput("hid", "grid_9_blue", 49, "B");
+        packet.addOutput("hid", "grid_9_red", 50, "B");
+        packet.addOutput("hid", "grid_9_green", 51, "B");
+        packet.addOutput("hid", "grid_10_blue", 52, "B");
+        packet.addOutput("hid", "grid_10_red", 53, "B");
+        packet.addOutput("hid", "grid_10_green", 54, "B");
+        packet.addOutput("hid", "grid_11_blue", 55, "B");
+        packet.addOutput("hid", "grid_11_red", 56, "B");
+        packet.addOutput("hid", "grid_11_green", 57, "B");
+        packet.addOutput("hid", "grid_12_blue", 58, "B");
+        packet.addOutput("hid", "grid_12_red", 59, "B");
+        packet.addOutput("hid", "grid_12_green", 60, "B");
+        packet.addOutput("hid", "grid_13_blue", 61, "B");
+        packet.addOutput("hid", "grid_13_red", 62, "B");
+        packet.addOutput("hid", "grid_13_green", 63, "B");
+        packet.addOutput("hid", "grid_14_blue", 64, "B");
+        packet.addOutput("hid", "grid_14_red", 65, "B");
+        packet.addOutput("hid", "grid_14_green", 66, "B");
+        packet.addOutput("hid", "grid_15_blue", 67, "B");
+        packet.addOutput("hid", "grid_15_red", 68, "B");
+        packet.addOutput("hid", "grid_15_green", 69, "B");
+        packet.addOutput("hid", "grid_16_blue", 70, "B");
+        packet.addOutput("hid", "grid_16_red", 71, "B");
+        packet.addOutput("hid", "grid_16_green", 72, "B");
 
         // Play key brightness control, 0-0xff
-        packet.addControl("hid", "play_4_1_brightness", 72,"B");
-        packet.addControl("hid", "play_4_2_brightness", 73,"B");
-        packet.addControl("hid", "play_3_1_brightness", 74,"B");
-        packet.addControl("hid", "play_3_2_brightness", 75,"B");
-        packet.addControl("hid", "play_2_1_brightness", 76,"B");
-        packet.addControl("hid", "play_2_2_brightness", 77,"B");
-        packet.addControl("hid", "play_1_1_brightness", 78,"B");
-        packet.addControl("hid", "play_1_2_brightness", 79,"B");
+        packet.addOutput("hid", "play_4_1_brightness", 73, "B");
+        packet.addOutput("hid", "play_4_2_brightness", 74, "B");
+        packet.addOutput("hid", "play_3_1_brightness", 75, "B");
+        packet.addOutput("hid", "play_3_2_brightness", 76, "B");
+        packet.addOutput("hid", "play_2_1_brightness", 77, "B");
+        packet.addOutput("hid", "play_2_2_brightness", 78, "B");
+        packet.addOutput("hid", "play_1_1_brightness", 79, "B");
+        packet.addOutput("hid", "play_1_2_brightness", 80, "B");
 
         this.controller.registerOutputPacket(packet);
 
@@ -351,7 +351,7 @@ KontrolF1.init = function (id) {
     KontrolF1.testUpdateInterval = 20;
     KontrolF1.testTimer = engine.beginTimer(
         KontrolF1.testUpdateInterval,
-        "KontrolF1.testSegments()"
+        KontrolF1.testSegments
     );
 
     KontrolF1.updateLEDs();

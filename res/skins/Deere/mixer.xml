@@ -20,23 +20,74 @@
             <SizePolicy>max,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
+
               <WidgetGroup> <!-- 2 Decks -->
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:mixer_controls_2decks_left.xml">
-                    <SetVariable name="i">1</SetVariable>
-                  </Template>
-                  <Template src="skin:mixer_column_master_vu_2decks.xml"/>
-                  <Template src="skin:mixer_controls_2decks_right.xml">
-                    <SetVariable name="i">2</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:mixer_controls_2decks_left.xml">
+                        <SetVariable name="i">1</SetVariable>
+                      </Template>
+                      <Template src="skin:mixer_column_main_vu_2decks.xml"/>
+                      <Template src="skin:mixer_controls_2decks_right.xml">
+                        <SetVariable name="i">2</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup><!-- Quick effect selectors -->
+                    <ObjectName>QuickEffectSelectors_2Decks</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <SizePolicy>i,f</SizePolicy>
+                        <MinimumSize>,18</MinimumSize>
+                        <MaximumSize>90,18</MaximumSize>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <EffectChainPresetSelector>
+                            <ObjectName>QuickEffectSelectorLeft</ObjectName>
+                            <Size>60me,18f</Size>
+                            <EffectUnitGroup>[QuickEffectRack1_[Channel1]]</EffectUnitGroup>
+                          </EffectChainPresetSelector>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                      <!-- Spacer for a gap below MAIN VU meter -->
+                      <WidgetGroup><Size>32min,0f</Size></WidgetGroup>
+                      <WidgetGroup>
+                        <SizePolicy>i,f</SizePolicy>
+                        <MinimumSize>,18</MinimumSize>
+                        <MaximumSize>90,18</MaximumSize>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <EffectChainPresetSelector>
+                            <ObjectName>QuickEffectSelectorRight</ObjectName>
+                            <Size>60me,18f</Size>
+                            <EffectUnitGroup>[QuickEffectRack1_[Channel2]]</EffectUnitGroup>
+                          </EffectChainPresetSelector>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- Quick effect selectors -->
                 </Children>
                 <Connection>
                   <ConfigKey>[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                   <Transform><Not/></Transform>
                 </Connection>
-              </WidgetGroup> <!-- 2 Decks -->
+              </WidgetGroup><!-- 2 Decks -->
+
+
               <WidgetGroup> <!-- 4 Decks -->
                 <Layout>horizontal</Layout>
                 <Children>
@@ -47,11 +98,11 @@
                   <Template src="skin:mixer_controls_4decks_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
-                  <!-- The 4-deck master VU meter column contains the same
+                  <!-- The 4-deck main VU meter column contains the same
                       structure and mechanisms as the left/right channel controls.
                       When altering those remember to change i.e. <MaximumSize>
                       and fixed spacers there as well -->
-                  <Template src="skin:mixer_column_master_vu_4decks.xml"/>
+                  <Template src="skin:mixer_column_main_vu_4decks.xml"/>
                   <Template src="skin:mixer_controls_4decks_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
@@ -66,6 +117,7 @@
               </WidgetGroup> <!-- 4 Decks -->
             </Children>
           </WidgetGroup><!-- DeckControls -->
+
 
           <WidgetGroup><!-- CrossfaderContainer -->
             <ObjectName>CrossfaderContainer</ObjectName>
@@ -117,6 +169,7 @@
               <WidgetGroup>
                 <ObjectName>Crossfader</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
+                <MaximumSize>200,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <SliderComposed>
@@ -124,7 +177,7 @@
                     <Size>1me,40f</Size>
                     <MaximumSize>200,</MaximumSize>
                     <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
-                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
+                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
                     <Horizontal>true</Horizontal>
                     <Connection>
                       <ConfigKey>[Master],crossfader</ConfigKey>
@@ -197,7 +250,7 @@
                 </Children>
               </WidgetStack>
 
-              <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
+              <WidgetStack><!-- when there is enough space for xFader buttons show them. -->
                 <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>121,0</MinimumSize>
                 <MaximumSize>-1,0</MaximumSize>
@@ -213,7 +266,7 @@
       </WidgetGroup><!-- Mixer -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_mixer</ConfigKey>
+      <ConfigKey>[Skin],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- MixerBorder -->

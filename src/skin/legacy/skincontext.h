@@ -1,24 +1,22 @@
 #pragma once
 
-#include <memory>
-
-#include <QHash>
-#include <QString>
-#include <QDomNode>
-#include <QDomElement>
-#include <QScriptEngine>
 #include <QDir>
-#include <QScriptEngineDebugger>
+#include <QDomElement>
+#include <QDomNode>
+#include <QHash>
+#include <QRegularExpression>
+#include <QString>
 #include <QtDebug>
-#include <QRegExp>
+#include <memory>
 
 #include "preferences/usersettings.h"
 #include "skin/legacy/pixmapsource.h"
 #include "util/color/color.h"
-#include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wsingletoncontainer.h"
 
-#define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
+#define SKIN_WARNING(node, context, message) \
+    (context).logWarning(__FILE__, __LINE__, (node), (message))
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -30,7 +28,7 @@ class SkinContext {
             const QString& xmlPath);
     SkinContext(
             const SkinContext* parent);
-    virtual ~SkinContext();
+    virtual ~SkinContext() = default;
 
     // Not copiable
     SkinContext(const SkinContext&) = delete;
@@ -228,16 +226,10 @@ class SkinContext {
         return defaultDrawMode;
     }
 
-    QScriptValue evaluateScript(const QString& expression,
-                                const QString& filename=QString(),
-                                int lineNumber=1) const;
-    QScriptValue importScriptExtension(const QString& extensionName);
-    bool hasUncaughtScriptException() const {
-        return m_pSharedState->scriptEngine.hasUncaughtException();
-    }
-    void enableDebugger(bool state) const;
-
-    QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
+    QDebug logWarning(const char* file,
+            const int line,
+            const QDomNode& node,
+            const QString& message) const;
 
     void defineSingleton(const QString& objectName, QWidget* widget) {
         m_pSharedState->singletons.insertSingleton(objectName, widget);
@@ -247,7 +239,7 @@ class SkinContext {
         return m_pSharedState->singletons.getSingletonWidget(objectName);
     }
 
-    const QRegExp& getHookRegex() const {
+    const QRegularExpression& getHookRegex() const {
         return m_hookRx;
     }
 
@@ -270,10 +262,6 @@ class SkinContext {
 
     QDomElement loadSvg(const QString& filename) const;
 
-    // If our parent global isValid() then we were constructed with a
-    // parent. Otherwise we are a root SkinContext.
-    bool isRoot() const { return !m_parentGlobal.isValid(); }
-
     QString variableNodeToText(const QDomElement& element) const;
 
     UserSettingsPointer m_pConfig;
@@ -286,8 +274,6 @@ class SkinContext {
         SharedState(const SharedState&) = delete;
         SharedState(SharedState&&) = delete;
 
-        QScriptEngine scriptEngine;
-        QScriptEngineDebugger scriptDebugger;
         QHash<QString, QDomElement> svgCache;
         // The SingletonContainer map is passed to child SkinContexts, so that all
         // templates in the tree can share a single map.
@@ -298,8 +284,7 @@ class SkinContext {
     std::shared_ptr<SharedState> m_pSharedState;
 
     QHash<QString, QString> m_variables;
-    QScriptValue m_parentGlobal;
-    QRegExp m_hookRx;
+    QRegularExpression m_hookRx;
 
     double m_scaleFactor;
 };

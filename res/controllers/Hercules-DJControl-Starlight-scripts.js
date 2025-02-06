@@ -61,11 +61,11 @@ DJCStarlight.kScratchActionBend = 3;
 DJCStarlight.baseLEDUpdate = function(value, group, control){
     value = (value*127);
     switch(control) {
-    case "VuMeterL":
+    case "vu_meter_left":
         midi.sendShortMsg(0x91, 0x23, value);
         break;
 
-    case "VuMeterR":
+    case "vu_meter_right":
         midi.sendShortMsg(0x92, 0x23, value);
         break;
     }
@@ -73,6 +73,9 @@ DJCStarlight.baseLEDUpdate = function(value, group, control){
 
 
 DJCStarlight.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     DJCStarlight.scratchButtonState = true;
     DJCStarlight.scratchAction = {
         1: DJCStarlight.kScratchActionNone,
@@ -85,8 +88,8 @@ DJCStarlight.init = function() {
     midi.sendShortMsg(0x91, 0x03, 0x7F);
 
     // Connect the base LEDs
-    engine.connectControl("[Channel1]","VuMeterL","DJCStarlight.baseLEDUpdate");
-    engine.connectControl("[Channel2]","VuMeterR","DJCStarlight.baseLEDUpdate");
+    engine.connectControl("[Channel1]","vu_meter_left","DJCStarlight.baseLEDUpdate");
+    engine.connectControl("[Channel2]","vu_meter_right","DJCStarlight.baseLEDUpdate");
 
     // Set effects Levels - Dry/Wet
     engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);

@@ -61,7 +61,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack1],show</ConfigKey>
+          <ConfigKey>[Skin],show_effectrack</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

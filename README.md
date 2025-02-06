@@ -2,6 +2,8 @@
 
 [![GitHub latest tag](https://img.shields.io/github/tag/mixxxdj/mixxx.svg)](https://mixxx.org/download)
 [![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
+[![Build status](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml/badge.svg)](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml)
+[![Coverage status](https://coveralls.io/repos/github/mixxxdj/mixxx/badge.svg)](https://coveralls.io/github/mixxxdj/mixxx)
 [![Zulip chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://mixxx.zulipchat.com)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://mixxx.org/donate)
 
@@ -18,12 +20,13 @@ To get started with Mixxx:
 
 ## Bug tracker
 
-The Mixxx team uses [Launchpad] to manage Mixxx development.
+The Mixxx team uses [Github Issues][issues] to manage Mixxx development.
 
-Have a bug or feature request? [File a bug on Launchpad][fileabug].
+Have a bug or feature request? [File a bug on Github][fileabug].
 
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
+Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
 
@@ -34,10 +37,18 @@ source code and navigate to it:
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies and set up the build environment (on Windows,
-macOS and Debian/Ubuntu, you can do that by running
-`tools\windows_buildenv.bat`, `source tools/macos_buildenv.sh setup` or `source
-tools/debian_buildenv.sh setup` respectively), then run:
+Fetch the required dependencies and set up the build environment by running the
+corresponding command for your operating system:
+
+| OS | Command |
+| -- | ------- |
+| Windows | `tools\windows_buildenv.bat` |
+| macOS | `source tools/macos_buildenv.sh setup` |
+| Debian/Ubuntu | `tools/debian_buildenv.sh setup` |
+| Fedora | `tools/rpm_buildenv.sh setup` |
+| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) |
+
+To build Mixxx, run
 
     $ mkdir build
     $ cd build
@@ -53,7 +64,6 @@ For help using Mixxx, there are a variety of options:
 
 - [Mixxx manual][manual]
 - [Mixxx wiki][wiki]
-- [Frequently Asked Questions][FAQ]
 - [Hardware Compatibility]
 - [Creating Skins]
 
@@ -72,7 +82,7 @@ Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
 - Chat with us on [Zulip][zulip].
-- Follow us on [Twitter] and [Facebook].
+- Follow us on [Mastodon], [Twitter] and [Facebook].
 - Subscribe to the [Mixxx Blog][blog].
 - Post on the [Mixxx forums][discourse].
 
@@ -84,13 +94,14 @@ license.
 [mixxx]: https://mixxx.org
 [download-stable]: https://mixxx.org/download/#stable
 [download-testing]: https://mixxx.org/download/#testing
+[issues]: https://github.com/mixxxdj/mixxx/issues
 [fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
+[mastodon]: https://floss.social/@mixxx
 [twitter]: https://twitter.com/mixxxdj
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxx.org/news/
 [manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
-[faq]: https://github.com/mixxxdj/mixxx/wiki/Faq
 [visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins

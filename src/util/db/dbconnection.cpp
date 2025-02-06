@@ -8,7 +8,6 @@
 #include "util/db/dbconnection.h"
 
 #include "util/db/sqllikewildcards.h"
-#include "util/memory.h"
 #include "util/logger.h"
 #include "util/assert.h"
 
@@ -180,7 +179,7 @@ const QChar kSqlLikeEscapeDefault = '\0';
 int sqliteStringCompareUTF16(void* pArg,
                              int len1, const void* data1,
                              int len2, const void* data2) {
-    StringCollator* pCollator = static_cast<StringCollator*>(pArg);
+    const auto* pCollator = static_cast<mixxx::StringCollator*>(pArg);
     // Construct a QString without copy
     QString string1 = QString::fromRawData(static_cast<const QChar*>(data1),
                                            len1 / sizeof(QChar));
@@ -233,7 +232,7 @@ void sqliteLikeUtf8(sqlite3_context* context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
+bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();

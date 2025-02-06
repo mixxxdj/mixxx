@@ -14,7 +14,7 @@ Description:
         <Layout>horizontal</Layout>
         <Size>180min,18f</Size>
         <Children>
-          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
             <SetVariable name="Text">Hotcues</SetVariable>
             <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
             <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
@@ -29,20 +29,20 @@ Description:
             <Layout>stacked</Layout>
             <Children>
               <!-- translucent cover when hotcues are hidden -->
-              <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                 <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
               </Template>
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Size>0me,1min</Size>
                 <Children>
-                  <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                  <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
                     <SetVariable name="Text">4</SetVariable>
                     <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                     <SetVariable name="IsEqual">0</SetVariable>
                     <SetVariable name="Width">20f</SetVariable>
                   </Template>
-                  <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                  <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
                     <SetVariable name="Text">8</SetVariable>
                     <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                     <SetVariable name="IsEqual">1</SetVariable>
@@ -58,16 +58,30 @@ Description:
       </WidgetGroup><!-- 4/8 Hotcues -->
 
       <!-- Intro & Outro cues -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
         <SetVariable name="Text">Intro &amp; Outro Cues</SetVariable>
         <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+      <!-- Loop Controls -->
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_loop_controls</SetVariable>
+        <SetVariable name="Text">Loop Controls</SetVariable>
+        <SetVariable name="Setting">[Skin],show_loop_controls</SetVariable>
+      </Template>
+
+      <!-- Beatjump Controls -->
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_beatjump_controls</SetVariable>
+        <SetVariable name="Text">Beatjump Controls</SetVariable>
+        <SetVariable name="Setting">[Skin],show_beatjump_controls</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Rate Controls -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">rate_toggle</SetVariable>
         <SetVariable name="Text">Rate Controls</SetVariable>
         <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
@@ -80,10 +94,10 @@ Description:
         <Size>180min,18f</Size>
         <Children>
           <!-- translucent cover when rate controls are hidden -->
-          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
             <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
           </Template>
-          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
             <SetVariable name="TooltipId">rate_toggle</SetVariable>
             <SetVariable name="Text">Rate Adjust Buttons</SetVariable>
             <SetVariable name="Setting">[Skin],show_rate_control_buttons</SetVariable>
@@ -92,30 +106,30 @@ Description:
       </WidgetGroup>
 
       <!-- Key Control -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-        <SetVariable name="TooltipId">rate_toggle</SetVariable>
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_key_controls</SetVariable>
         <SetVariable name="Text">Key Controls</SetVariable>
         <SetVariable name="Setting">[Skin],show_key_controls</SetVariable>
       </Template>
 
       <!-- Vinyl Control -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
         <SetVariable name="Text">Vinyl Control</SetVariable>
-        <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+        <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Spinny -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_spinny</SetVariable>
         <SetVariable name="Text">Spinny</SetVariable>
         <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
       </Template>
 
       <!-- Cover Art -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_coverart</SetVariable>
         <SetVariable name="Text">Cover Art</SetVariable>
         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
@@ -128,13 +142,13 @@ Description:
         <Size>180min,18f</Size>
         <Children>
           <!-- translucent cover when neither Spinny nor Cover is shown -->
-          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
-            <SetVariable name="Setting">[LateNight],show_spinny_cover</SetVariable>
+          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+            <SetVariable name="Setting">[Skin],show_spinny_or_cover</SetVariable>
           </Template>
-          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
             <SetVariable name="TooltipId">show_coverart</SetVariable>
             <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
-            <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
+            <SetVariable name="Setting">[Skin],select_big_spinny_or_cover</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

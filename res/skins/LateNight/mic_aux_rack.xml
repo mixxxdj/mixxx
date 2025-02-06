@@ -28,17 +28,17 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <Template src="skin:/mic_aux/ducking_controls.xml">
+              <Template src="skins:LateNight/mic_aux/ducking_controls.xml">
                 <SetVariable name="KnobColor">red</SetVariable>
               </Template>
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/mic_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
                     <SetVariable name="Mic1Hack">1</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
                     <SetVariable name="Mic1Hack">1</SetVariable>
                   </Template>
                 </Children>
@@ -47,10 +47,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/mic_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
                     <SetVariable name="MicNum">2</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
                     <SetVariable name="MicNum">2</SetVariable>
                   </Template>
                 </Children>
@@ -59,10 +59,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/mic_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
                     <SetVariable name="MicNum">3</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
                     <SetVariable name="MicNum">3</SetVariable>
                   </Template>
                 </Children>
@@ -71,10 +71,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/mic_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
                     <SetVariable name="MicNum">4</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
                     <SetVariable name="MicNum">4</SetVariable>
                   </Template>
                 </Children>
@@ -96,10 +96,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/aux_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
                     <SetVariable name="AuxNum">1</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
                     <SetVariable name="AuxNum">1</SetVariable>
                   </Template>
                 </Children>
@@ -108,10 +108,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/aux_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
                     <SetVariable name="AuxNum">2</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
                     <SetVariable name="AuxNum">2</SetVariable>
                   </Template>
                 </Children>
@@ -120,10 +120,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/aux_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
                     <SetVariable name="AuxNum">3</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
                     <SetVariable name="AuxNum">3</SetVariable>
                   </Template>
                 </Children>
@@ -132,10 +132,10 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/mic_aux/aux_unit.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
                     <SetVariable name="AuxNum">4</SetVariable>
                   </Template>
-                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
                     <SetVariable name="AuxNum">4</SetVariable>
                   </Template>
                 </Children>
@@ -153,7 +153,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_microphones</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

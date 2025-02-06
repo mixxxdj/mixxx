@@ -1,8 +1,8 @@
 #pragma once
 
-#include <type_traits>
-
 #include <QtDebug>
+#include <gsl/pointers>
+#include <type_traits>
 
 // Helper macro for defining simple properties with setters and
 // getters.
@@ -49,12 +49,12 @@
     }                                                                   \
                                                                         \
   public:                                                               \
-    constexpr TYPE* ptr##CAP_NAME() {                                   \
+    constexpr gsl::not_null<TYPE*> ptr##CAP_NAME() {                    \
         return &m_##NAME;                                               \
     }                                                                   \
                                                                         \
   public:                                                               \
-    constexpr const TYPE* ptr##CAP_NAME() const {                       \
+    constexpr gsl::not_null<const TYPE*> ptr##CAP_NAME() const {        \
         return &m_##NAME;                                               \
     }                                                                   \
                                                                         \

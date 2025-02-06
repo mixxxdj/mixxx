@@ -1,11 +1,11 @@
 #include "library/trackloader.h"
 
-#include <QMetaMethod>
 #include <QThread>
 #include <mutex>
 
 #include "library/trackcollectionmanager.h"
 #include "moc_trackloader.cpp"
+#include "track/trackref.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -43,18 +43,10 @@ void TrackLoader::invokeSlotLoadTrack(
             (connectionType != Qt::DirectConnection));
     QMetaObject::invokeMethod(
             this,
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-            "slotLoadTrack"
-#else
             [this, trackRef = std::move(trackRef)] {
                 this->slotLoadTrack(trackRef);
-            }
-#endif
-            , connectionType
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-            , Q_ARG(TrackRef, std::move(trackRef))
-#endif
-            );
+            },
+            connectionType);
 }
 
 void TrackLoader::slotLoadTrack(

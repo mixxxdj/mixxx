@@ -64,7 +64,7 @@ NumarkV7.RPM = 33+1/3; //Motor-Scratch rpm
 NumarkV7.init = function () {
     //flash LED's
     NumarkV7.FlashAllLED(1000);
-    engine.beginTimer(3500, "NumarkV7.init2()", true);
+    engine.beginTimer(3500, NumarkV7.init2, true);
 }
 NumarkV7.init2 = function () {
     //Tap Light
@@ -176,36 +176,36 @@ NumarkV7.shutdown = function () {
 
 NumarkV7.FlashAllLED = function (sustain) {
     midi.sendShortMsg(0xB0,0x39,0x01);
-    engine.beginTimer(sustain, "NumarkV7.OffAllLED()", true);
-    engine.beginTimer(sustain, "NumarkV7.RunLED()", true);
+    engine.beginTimer(sustain, NumarkV7.OffAllLED, true);
+    engine.beginTimer(sustain, NumarkV7.RunLED, true );
 }
 NumarkV7.OffAllLED = function () {
     midi.sendShortMsg(0xB0,0x39,0x00);
 }
 NumarkV7.RunLED = function () {
     NumarkV7.RunLED1()
-    engine.beginTimer(100, "NumarkV7.RunLED2()", true);
-    engine.beginTimer(200, "NumarkV7.RunLED3()", true);
-    engine.beginTimer(300, "NumarkV7.RunLED4()", true);
-    engine.beginTimer(400, "NumarkV7.RunLED5()", true);
-    engine.beginTimer(500, "NumarkV7.RunLED6()", true);
-    engine.beginTimer(600, "NumarkV7.RunLED7()", true);
-    engine.beginTimer(700, "NumarkV7.RunLED8()", true);
-    engine.beginTimer(800, "NumarkV7.RunLED9()", true);
-    engine.beginTimer(900, "NumarkV7.RunLED10()", true);
-    engine.beginTimer(1000, "NumarkV7.RunLED11()", true);
-    engine.beginTimer(1100, "NumarkV7.RunLED12()", true);
-    engine.beginTimer(1200, "NumarkV7.RunLED11()", true);
-    engine.beginTimer(1300, "NumarkV7.RunLED10()", true);
-    engine.beginTimer(1400, "NumarkV7.RunLED9()", true);
-    engine.beginTimer(1500, "NumarkV7.RunLED8()", true);
-    engine.beginTimer(1600, "NumarkV7.RunLED7()", true);
-    engine.beginTimer(1700, "NumarkV7.RunLED6()", true);
-    engine.beginTimer(1800, "NumarkV7.RunLED5()", true);
-    engine.beginTimer(1900, "NumarkV7.RunLED4()", true);
-    engine.beginTimer(2000, "NumarkV7.RunLED3()", true);
-    engine.beginTimer(2100, "NumarkV7.RunLED2()", true);
-    engine.beginTimer(2200, "NumarkV7.RunLED13()", true);
+    engine.beginTimer(100, NumarkV7.RunLED2 , true);
+    engine.beginTimer(200, NumarkV7.RunLED3 , true);
+    engine.beginTimer(300, NumarkV7.RunLED4 , true);
+    engine.beginTimer(400, NumarkV7.RunLED5 , true);
+    engine.beginTimer(500, NumarkV7.RunLED6 , true);
+    engine.beginTimer(600, NumarkV7.RunLED7 , true);
+    engine.beginTimer(700, NumarkV7.RunLED8 , true);
+    engine.beginTimer(800, NumarkV7.RunLED9 , true);
+    engine.beginTimer(900, NumarkV7.RunLED10 , true);
+    engine.beginTimer(1000, NumarkV7.RunLED11 , true);
+    engine.beginTimer(1100, NumarkV7.RunLED12 , true);
+    engine.beginTimer(1200, NumarkV7.RunLED11 , true);
+    engine.beginTimer(1300, NumarkV7.RunLED10 , true);
+    engine.beginTimer(1400, NumarkV7.RunLED9 , true);
+    engine.beginTimer(1500, NumarkV7.RunLED8 , true);
+    engine.beginTimer(1600, NumarkV7.RunLED7 , true);
+    engine.beginTimer(1700, NumarkV7.RunLED6 , true);
+    engine.beginTimer(1800, NumarkV7.RunLED5 , true);
+    engine.beginTimer(1900, NumarkV7.RunLED4 , true);
+    engine.beginTimer(2000, NumarkV7.RunLED3 , true);
+    engine.beginTimer(2100, NumarkV7.RunLED2 , true);
+    engine.beginTimer(2200, NumarkV7.RunLED13 , true);
 }
 NumarkV7.RunLED1 = function () {
     midi.sendShortMsg(0xB0,0x34,0x01);
@@ -1030,7 +1030,7 @@ NumarkV7.PitchA = function () {
 		engine.scratchDisable(1, false);
 		NumarkV7.PitchAPause = 2;
 		if (!NumarkV7.PitchAPauseOn) {
-			NumarkV7.timer1 = engine.beginTimer(100, "NumarkV7.PitchScratchEnableA");
+			NumarkV7.timer1 = engine.beginTimer(100, NumarkV7.PitchScratchEnableA);
 		}
 	}
     engine.setValue("[Channel1]","rate", (currentvalue * 1));
@@ -1075,7 +1075,7 @@ NumarkV7.PitchB = function () {
 		engine.scratchDisable(2, false);
 		NumarkV7.PitchBPause = 2;
 		if (!NumarkV7.PitchBPauseOn) {
-			NumarkV7.timer2 = engine.beginTimer(100, "NumarkV7.PitchScratchEnableB");
+			NumarkV7.timer2 = engine.beginTimer(100, NumarkV7.PitchScratchEnableB);
 		}
 	}
     engine.setValue("[Channel2]","rate", (currentvalue * 1));
@@ -1584,12 +1584,12 @@ NumarkV7.DeckSelectR = function (channel, control, value, status, group) {
 	}
 }
 NumarkV7.MasterL = function (channel, control, value, status, group) {
-	if (value == 00) {
+	if (value == 0x00) {
 		NumarkV7.init;
 	}
 }
 NumarkV7.MasterR = function (channel, control, value, status, group) {
-	if ((value == 00)&&(!NumarkV7.ScratchDisableB)) {
+	if ((value == 0x00)&&(!NumarkV7.ScratchDisableB)) {
 		engine.scratchEnable(2, 37056, NumarkV7.RPM, (1.0), (0.27), false);
 	}
 	if (value == 0x7F){

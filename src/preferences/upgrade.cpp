@@ -4,14 +4,13 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QScopedPointer>
-#include <QTranslator>
 #include <QVersionNumber>
 
 #include "config.h"
 #include "controllers/defs_controllers.h"
 #include "database/mixxxdb.h"
 #include "defs_urls.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
@@ -20,6 +19,8 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
 #include "util/versionstore.h"
+#include "waveform/vsyncthread.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -28,6 +29,78 @@ Upgrade::Upgrade()
 
 Upgrade::~Upgrade() {
 }
+
+namespace {
+// mapping to proactively move users to the new all-shader waveform types
+WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformType) {
+    // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
+    using WWT = WaveformWidgetType;
+    switch (waveformType) {
+    case WWT::EmptyWaveform:
+    case WWT::SoftwareSimpleWaveform:
+    case WWT::SoftwareWaveform:
+    case WWT::GLVSyncTest:
+    case WWT::QtVSyncTest:
+    case WWT::AllShaderRGBWaveform:
+    case WWT::AllShaderLRRGBWaveform:
+    case WWT::AllShaderFilteredWaveform:
+    case WWT::AllShaderRGBStackedWaveform:
+    case WWT::AllShaderSimpleWaveform:
+    case WWT::AllShaderHSVWaveform:
+    case WWT::AllShaderTexturedFiltered:
+    case WWT::AllShaderTexturedRGB:
+    case WWT::AllShaderTexturedStacked:
+    case WWT::Count_WaveformwidgetType:
+        return waveformType;
+    case WWT::QtSimpleWaveform:
+    case WWT::GLSimpleWaveform:
+        return WaveformWidgetType::AllShaderSimpleWaveform;
+    case WWT::GLFilteredWaveform:
+        return WaveformWidgetType::AllShaderFilteredWaveform;
+    case WWT::GLSLFilteredWaveform:
+        return WaveformWidgetType::AllShaderTexturedFiltered;
+    case WWT::QtWaveform:
+    case WWT::RGBWaveform:
+    case WWT::GLRGBWaveform:
+    case WWT::QtRGBWaveform:
+        return WWT::AllShaderRGBWaveform;
+    case WWT::GLSLRGBWaveform:
+        return WWT::AllShaderTexturedRGB;
+    case WWT::GLSLRGBStackedWaveform:
+        return WWT::AllShaderTexturedStacked;
+    case WWT::HSVWaveform:
+    case WWT::QtHSVWaveform:
+        return WWT::AllShaderHSVWaveform;
+    }
+    return WWT::AllShaderRGBWaveform;
+}
+
+VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
+    using VT = VSyncThread;
+    if (configVSyncMode >= 0 || configVSyncMode <= static_cast<int>(VT::ST_COUNT)) {
+        switch (static_cast<VSyncThread::VSyncMode>(configVSyncMode)) {
+        case VT::ST_DEFAULT:
+            return VT::ST_DEFAULT;
+        case VT::ST_MESA_VBLANK_MODE_1_DEPRECATED:
+            return VT::ST_DEFAULT;
+        case VT::ST_SGI_VIDEO_SYNC_DEPRECATED:
+            return VT::ST_DEFAULT;
+        case VT::ST_OML_SYNC_CONTROL_DEPRECATED:
+            return VT::ST_DEFAULT;
+        case VT::ST_FREE:
+            return VT::ST_FREE;
+        case VT::ST_TIMER:
+            return VT::ST_TIMER;
+        case VT::ST_PLL:
+            return VT::ST_PLL;
+        case VT::ST_COUNT:
+            return VT::ST_DEFAULT;
+        }
+    }
+
+    return VT::ST_DEFAULT;
+}
+} // namespace
 
 // We return the UserSettings here because we have to make changes to the
 // configuration and the location of the file may change between releases.
@@ -202,7 +275,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
@@ -229,10 +302,14 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             return config;
 #ifdef __APPLE__
         }
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         }
 #endif
     }
+
+    config->set(ConfigKey("[Waveform]", "VSync"),
+            ConfigValue(upgradeDeprecatedVSyncModes(
+                    config->getValue(ConfigKey("[Waveform]", "VSync"), 0))));
 
     // If it's already current, stop here
     if (configVersion == VersionStore::version()) {
@@ -287,12 +364,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QDir newOSXDir(OSXLocation190);
         newOSXDir.mkpath(OSXLocation190);
 
-        QList<QPair<QString, QString> > dirsToMove;
+        QList<QPair<QString, QString>> dirsToMove;
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180, OSXLocation190));
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/midi", OSXLocation190 + "midi"));
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/presets", OSXLocation190 + "presets"));
 
-        QListIterator<QPair<QString, QString> > dirIt(dirsToMove);
+        QListIterator<QPair<QString, QString>> dirIt(dirsToMove);
         QPair<QString, QString> curPair;
         while (dirIt.hasNext())
         {
@@ -335,8 +412,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = true;
 
         qDebug() << "Copying midi/ to controllers/";
-        QString midiPath = legacyUserPresetsPath(config);
-        QString controllerPath = userPresetsPath(config);
+        QString midiPath = legacyUserMappingsPath(config);
+        QString controllerPath = userMappingsPath(config);
         QDir oldDir(midiPath);
         QDir newDir(controllerPath);
         newDir.mkpath(controllerPath);  // create the new directory
@@ -390,7 +467,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     tc.connectDatabase(dbConnection);
 
                     // upgrade to the multi library folder settings
-                    QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+                    QString currentFolder =
+                            config->getValueString(mixxx::library::prefs::
+                                            kLegacyDirectoryConfigKey);
                     // to migrate the DB just add the current directory to the new
                     // directories table
                     // NOTE(rryan): We don't have to ask for sandbox permission to this
@@ -399,8 +478,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     // Sandbox isn't setup yet at this point in startup because it relies on
                     // the config settings path and this function is what loads the config
                     // so it's not ready yet.
-                    successful = tc.addDirectory(currentFolder);
-
+                    successful =
+                            tc.addDirectory(mixxx::FileInfo(currentFolder)) ==
+                            DirectoryDAO::AddResult::Ok;
+                    ;
                     tc.disconnectDatabase();
                 }
             }
@@ -424,8 +505,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = VersionStore::version();
-            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+            configVersion = "1.12.0";
+            config->set(ConfigKey("[Config]", "Version"),
+                    ConfigValue(configVersion));
         }
         else {
             qDebug() << "Upgrade failed!\n";
@@ -434,9 +516,36 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     const auto configFileVersion = QVersionNumber::fromString(configVersion);
 
+    // When upgrading from 2.3.x or older to 2.4, or when upgrading
+    // from 2.4.0-beta once we are out of beta
+    if (QVersionNumber::fromString(configVersion) < QVersionNumber(2, 4, 0) ||
+            (VersionStore::version() != "2.4.0-beta" &&
+                    configVersion.startsWith("2.4.0-"))) {
+        // Proactively move users to an all-shader waveform widget type and set the
+        // framerate to 60 fps
+        bool ok = false;
+        auto waveformType =
+                config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
+                        .toInt(&ok);
+        if (ok) {
+            config->set(ConfigKey("[Waveform]", "WaveformType"),
+                    ConfigValue(upgradeToAllShaders(
+                            static_cast<WaveformWidgetType::Type>(
+                                    waveformType))));
+        }
+        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
+
+        // mark the configuration as updated
+        configVersion = "2.4.0";
+        config->set(ConfigKey("[Config]", "Version"),
+                ConfigValue(configVersion));
+    }
+
     // This variable indicates the first known version that requires no changes.
-    const QVersionNumber cleanVersion(1, 12, 0);
-    if (configFileVersion >= cleanVersion) {
+    // If additional upgrades are added for later versions, they should go before
+    // this block and cleanVersion should be bumped to the latest version.
+    const QVersionNumber cleanVersion(2, 4, 0);
+    if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));

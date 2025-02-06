@@ -1,15 +1,12 @@
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 
-#include <QMetaMethod>
 #include <QXmlStreamReader>
 
 #include "defs_urls.h"
 #include "moc_musicbrainzrecordingstask.cpp"
-#include "musicbrainz/gzip.h"
 #include "musicbrainz/musicbrainzxml.h"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 #include "util/versionstore.h"
@@ -56,7 +53,7 @@ QNetworkRequest createNetworkRequest(
     DEBUG_ASSERT(kBaseUrl.isValid());
     DEBUG_ASSERT(!recordingId.isNull());
     QUrl url = kBaseUrl;
-    url.setPath(kRequestPath + uuidToStringWithoutBraces(recordingId));
+    url.setPath(kRequestPath + recordingId.toString(QUuid::WithoutBraces));
     url.setQuery(createUrlQuery());
     DEBUG_ASSERT(url.isValid());
     QNetworkRequest networkRequest(url);
@@ -187,6 +184,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
     const Duration delayBeforeNextRequest =
             kMinDurationBetweenRequests -
             std::min(kMinDurationBetweenRequests, elapsedSinceLastRequestSent);
+    emit currentRecordingFetchedFromMusicBrainz();
     slotStart(m_parentTimeoutMillis, delayBeforeNextRequest.toIntegerMillis());
 }
 

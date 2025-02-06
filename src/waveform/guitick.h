@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QObject>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "util/duration.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
 
-// A helper class that manages the "guiTickTime" COs, that drive updates of the
-// GUI from the VsyncThread at the user's configured FPS (possibly downsampled).
+/// A helper class that manages the `gui_Tick` COs, that drive updates of the
+/// GUI from the `VSyncThread` at the user's configured FPS (possibly
+/// downsampled).
 class GuiTick {
   public:
     GuiTick();

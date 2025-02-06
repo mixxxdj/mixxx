@@ -1,7 +1,8 @@
 #pragma once
 
+#include <memory>
+
 #include "sources/soundsourceprovider.h"
-#include "util/memory.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
@@ -42,18 +43,18 @@ class SoundSourceOggVorbis final : public SoundSource {
 class SoundSourceProviderOggVorbis : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
-    static const QStringList kSupportedFileExtensions;
+    static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override {
-        return kSupportedFileExtensions;
+    QStringList getSupportedFileTypes() const override {
+        return kSupportedFileTypes;
     }
 
     SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override;
+            const QString& supportedFileType) const override;
 
     SoundSourcePointer newSoundSource(const QUrl &url) override {
         return newSoundSourceFromUrl<SoundSourceOggVorbis>(url);

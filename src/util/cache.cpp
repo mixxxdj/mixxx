@@ -15,10 +15,10 @@ cache_key_t cacheKeyFromMessageDigest(const QByteArray& messageDigest) {
     // SP 800-107
     // 5 Hash function Usage
     // 5.1 Truncated Message Digest
-    const auto significantByteCount = math_min(
-            messageDigest.size(),
+    const int significantByteCount = math_min(
+            static_cast<int>(messageDigest.size()),
             static_cast<int>(sizeof(cache_key_t)));
-    for (auto i = 0; i < significantByteCount; ++i) {
+    for (int i = 0; i < significantByteCount; ++i) {
         // Only 8 bits are relevant and we don't want the sign
         // extension of a (signed) char during the conversion.
         const cache_key_t nextByte =

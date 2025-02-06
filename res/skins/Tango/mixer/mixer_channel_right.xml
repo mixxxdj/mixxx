@@ -21,7 +21,7 @@ Variables:
         <ObjectName>AlignCenter</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:../Tango/mixer/vumeter_mixer.xml"/>
+          <Template src="skins:Tango/mixer/vumeter_mixer.xml"/>
             <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
 
           <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
@@ -30,8 +30,8 @@ Variables:
             <Layout>stacked</Layout>
             <Children>
               <!-- Greyed out if no headphone device is configured -->
-              <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
@@ -44,77 +44,92 @@ Variables:
         </Children>
       </WidgetGroup><!-- /VU Meter + Pfl button -->
 
-      <WidgetGroup><!--  Volume Slider + Gain knob -->
-        <ObjectName>VolumeSliderGain</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>f,min</SizePolicy>
-        <Children>
-          <SliderComposed><!-- Volume slider -->
-            <Size>34f,103f</Size>
-            <ObjectName>VolumeSlider</ObjectName>
-            <TooltipId>channel_volume</TooltipId>
-            <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/volume_scale.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/volume_handle.svg</Handle>
-            <Horizontal>false</Horizontal>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-            </Connection>
-          </SliderComposed><!-- /Volume slider -->
-
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-
-          <!-- Gain knob, centered below Volume slider -->
-          <Template src="skin:../Tango/controls/knob_textless.xml">
-            <SetVariable name="ObjectName">GainKnob</SetVariable>
-            <SetVariable name="TooltipId">pregain</SetVariable>
-            <SetVariable name="Size">34f,30f</SetVariable>
-            <SetVariable name="Color">yellow</SetVariable>
-            <SetVariable name="group"><Variable name="group"/></SetVariable>
-            <SetVariable name="ConfigKey">pregain</SetVariable>
-          </Template>
-
-        </Children>
-      </WidgetGroup><!-- /Volume Slider + Gain knob -->
-
-      <WidgetGroup><!-- Spacer when EQ plugin is loaded & Kill buttons are shown -->
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <WidgetGroup>
-            <Size>4f,0min</Size>
-            <Connection>
-              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <WidgetGroup><!-- EQ + QuickEffect knobs/buttons -->
+      <!-- EQ + QuickEffect | Vol + gain __ QuickEffect selector -->
+      <WidgetGroup>
         <Layout>vertical</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
-          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:../Tango/mixer/eq_knob_right.xml"><!-- High EQ -->
-            <SetVariable name="FxParameter">3</SetVariable>
-          </Template>
-          <Template src="skin:../Tango/mixer/eq_knob_right.xml"><!-- Mid EQ -->
-            <SetVariable name="FxParameter">2</SetVariable>
-          </Template>
-          <Template src="skin:../Tango/mixer/eq_knob_right.xml"><!-- Low EQ -->
-            <SetVariable name="FxParameter">1</SetVariable>
-          </Template>
-          <Template src="skin:../Tango/mixer/quick_fx_knob_right.xml"/><!-- Quick Effect -->
+
+          <WidgetGroup><!-- EQ + QuickEffect | Vol + gain  -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><!--  Volume Slider + Gain knob -->
+                <ObjectName>VolumeSliderGain</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>f,min</SizePolicy>
+                <Children>
+                  <SliderComposed><!-- Volume slider -->
+                    <Size>34f,89me</Size>
+                    <ObjectName>VolumeSlider</ObjectName>
+                    <TooltipId>channel_volume</TooltipId>
+                    <Slider scalemode="STRETCH">skins:Tango/knobs_sliders/volume_scale.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/volume_handle.svg</Handle>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                    </Connection>
+                  </SliderComposed><!-- /Volume slider -->
+
+                  <!-- Gain knob, centered below Volume slider -->
+                  <Template src="skins:Tango/controls/knob_textless.xml">
+                    <SetVariable name="ObjectName">GainKnob</SetVariable>
+                    <SetVariable name="TooltipId">pregain</SetVariable>
+                    <SetVariable name="Size">34f,30f</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="ConfigKey">pregain</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /Volume Slider + Gain knob -->
+
+              <WidgetGroup><!-- EQ + QuickEffect knobs/buttons -->
+                <Layout>vertical</Layout>
+                <SizePolicy>max,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                  <Template src="skins:Tango/mixer/eq_knob_right.xml"><!-- High EQ -->
+                    <SetVariable name="FxParameter">3</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/mixer/eq_knob_right.xml"><!-- Mid EQ -->
+                    <SetVariable name="FxParameter">2</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/mixer/eq_knob_right.xml"><!-- Low EQ -->
+                    <SetVariable name="FxParameter">1</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/mixer/quick_fx_knob_right.xml"/><!-- Quick Effect -->
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
+
+            </Children>
+          </WidgetGroup><!-- EQ + QuickEffect | Vol + gain  -->
+
+          <WidgetGroup><!-- QuickEffect selector -->
+            <SizePolicy>i,f</SizePolicy>
+            <MinimumSize>,18</MinimumSize>
+            <MaximumSize>,18</MaximumSize>
+            <Layout>vertical</Layout>
+            <Children>
+              <EffectChainPresetSelector>
+                <ObjectName>QuickEffectSelectorRight</ObjectName>
+                <Size>40min,18f</Size>
+                <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
+              </EffectChainPresetSelector>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
+      </WidgetGroup><!-- EQ + QuickEffect | Vol + gain __ QuickEffect selector -->
 
       <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 

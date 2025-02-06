@@ -31,7 +31,7 @@
                       </SingletonContainer>
                     </Children>
                     <Connection>
-                      <ConfigKey>[LateNight],show_big_spinny_cover</ConfigKey>
+                      <ConfigKey>[Skin],show_big_spinny_or_cover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- SpinnyCoverContainer_BigCompact -->
@@ -40,8 +40,8 @@
                     <SizePolicy>me,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:/decks/row_2_3_TitleArtistTime_compact.xml" />
-                      <Template src="skin:/decks/row_4_overviewSpinny_compact.xml" />
+                      <Template src="skins:LateNight/decks/row_2_3_TitleArtistTime_compact.xml" />
+                      <Template src="skins:LateNight/decks/row_4_overviewSpinny_compact.xml" />
                     </Children>
                   </WidgetGroup>
 
@@ -57,7 +57,7 @@
                 </Children>
               </WidgetGroup><!-- DeckRows234 -->
 
-              <Template src="skin:/decks/row_5_transportLoopJump_compact.xml" />
+              <Template src="skins:LateNight/decks/row_5_transportLoopJump_compact.xml" />
 
             </Children>
           </WidgetGroup><!-- DeckRows2345 -->
@@ -84,7 +84,7 @@
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:/decks/rate_controls_compact.xml"/>
+          <Template src="skins:LateNight/decks/rate_controls_compact.xml"/>
 
         </Children>
         <!-- This is supposed to reduce margin and eliminate the border that

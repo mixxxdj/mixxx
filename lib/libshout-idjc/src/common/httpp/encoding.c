@@ -97,7 +97,7 @@ ssize_t __copy_buffer(void *dst, void **src, size_t *boffset, size_t *blen, size
         *blen = 0;
     }
 
-    return todo;
+    return (ssize_t)todo;
 }
 
 /* try to flush output buffers */
@@ -329,7 +329,7 @@ ssize_t           httpp_encoding_pending(httpp_encoding_t *self)
         return -1;
     if (!self->buf_write_encoded)
         return 0;
-    return self->buf_write_encoded_len - self->buf_write_encoded_offset;
+    return (ssize_t)(self->buf_write_encoded_len - self->buf_write_encoded_offset);
 }
 
 /* Attach meta data to the stream.
@@ -568,11 +568,11 @@ static ssize_t __enc_chunked_read(httpp_encoding_t *self, void *buf, size_t len,
         if (*c == '"') {
             in_quote = 1;
         } else if (*c == ';' && offset_extentions == -1) {
-            offset_extentions = i;
+            offset_extentions = (ssize_t)i;
         } else if (*c == '\r') {
-            offset_CR = i;
+            offset_CR = (ssize_t)i;
         } else if (*c == '\n' && offset_CR == (ssize_t)(i - 1)) {
-            offset_LF = i;
+            offset_LF = (ssize_t)i;
             break;
         }
     }
@@ -763,8 +763,8 @@ static ssize_t __enc_chunked_write(httpp_encoding_t *self, const void *buf, size
     extensions = __enc_chunked_write_extensions(self);
 
     /* 2 = end of header and tailing "\r\n" */
-    header_length = strlen(encoded_length) + (extensions ? strlen(extensions) : 0) + 2;
-    total_chunk_size = header_length + len + 2;
+    header_length = (ssize_t)(strlen(encoded_length) + (extensions ? strlen(extensions) : 0) + 2);
+    total_chunk_size = header_length + (ssize_t)(len + 2);
     if (!buf)
         total_chunk_size += 2;
 
@@ -786,5 +786,5 @@ static ssize_t __enc_chunked_write(httpp_encoding_t *self, const void *buf, size
     if (extensions)
         free(extensions);
 
-    return len;
+    return (ssize_t)len;
 }

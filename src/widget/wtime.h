@@ -3,10 +3,7 @@
 
 #pragma once
 
-#include <QTimer>
-
 #include "widget/wlabel.h"
-#include "skin/legacy/skincontext.h"
 
 class WTime: public WLabel {
     Q_OBJECT
@@ -28,6 +25,6 @@ class WTime: public WLabel {
     short m_interval;
     // m_interval is set to s_iSecondInterval if seconds are shown
     // otherwise, m_interval = s_iMinuteInterval
-    static const short s_iSecondInterval = 100;
-    static const short s_iMinuteInterval = 1000;
+    static constexpr short s_iSecondInterval = 100;
+    static constexpr short s_iMinuteInterval = 1000;
 };

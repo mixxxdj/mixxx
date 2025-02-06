@@ -3,10 +3,10 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
-#include <QTimer>
 #include <QVariant>
 
 class LibraryFeature;
+class QTimer;
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
@@ -14,6 +14,12 @@ class SidebarModel : public QAbstractItemModel {
     // Keep object tree functions from QObject accessible
     // for parented_ptr
     using QObject::parent;
+
+    enum Roles {
+        IconNameRole = Qt::UserRole + 1,
+        DataRole,
+    };
+    Q_ENUM(Roles);
 
     explicit SidebarModel(
             QObject* parent = nullptr);
@@ -36,12 +42,20 @@ class SidebarModel : public QAbstractItemModel {
     bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
+    QModelIndex translateChildIndex(const QModelIndex& index) {
+        return translateIndex(index, index.model());
+    }
+    QModelIndex getFeatureRootIndex(LibraryFeature* pFeature);
 
+    void clear(const QModelIndex& index);
+    void paste(const QModelIndex& index);
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);
     void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
+    void renameItem(const QModelIndex& index);
+    void deleteItem(const QModelIndex& index);
     void slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& index = QModelIndex());
 
     // Slots for every single QAbstractItemModel signal
@@ -72,6 +86,7 @@ class SidebarModel : public QAbstractItemModel {
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
+    QModelIndex translateIndex(const QModelIndex& index, const QAbstractItemModel* model);
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */

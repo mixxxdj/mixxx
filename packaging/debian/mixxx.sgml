@@ -367,8 +367,8 @@ manpage.1: manpage.sgml
   <refsect1>
     <title>BUGS</title>
     <para>
-      To report a bug or request a feature, go to the &dhpackage; bug tracker:
-      <ulink url="http://bugs.launchpad.net/mixxx"></ulink>
+      To report a bug or request a feature, go to the &dhpackage; bug tracker on Github:
+      <ulink url="https://github.com/mixxxdj/mixxx/issues/new"></ulink>
     </para>
   </refsect1>
 

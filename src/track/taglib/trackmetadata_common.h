@@ -1,25 +1,17 @@
 #pragma once
 
-#include <taglib/tag.h>
-#include <taglib/tstringlist.h>
+#include <tag.h>
+#include <tstringlist.h>
 
 #include <QByteArray>
 #include <QFlags>
 #include <QImage>
 #include <QString>
+#include <gsl/pointers>
 
 #if defined(__EXTRA_METADATA__)
-// UUID -> QString
-#include "util/compatibility.h"
+#include "util/quuid.h"
 #endif // __EXTRA_METADATA__
-
-// TagLib has support for the Ogg Opus file format since version 1.9
-#define TAGLIB_HAS_OPUSFILE \
-    ((TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9)))
-
-// TagLib has support for hasID3v2Tag()/ID3v2Tag() for WAV files since version 1.9
-#define TAGLIB_HAS_WAV_ID3V2TAG \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
 #include "track/trackmetadata.h"
 
@@ -71,13 +63,17 @@ inline TagLib::String uuidToTString(
 
 inline QString formatBpm(
         const TrackMetadata& trackMetadata) {
-    return Bpm::valueToString(
-            trackMetadata.getTrackInfo().getBpm().getValue());
+    const Bpm bpm = trackMetadata.getTrackInfo().getBpm();
+    if (!bpm.isValid()) {
+        return {};
+    }
+    return Bpm::valueToString(bpm.value());
 }
 
 bool parseBpm(
         TrackMetadata* pTrackMetadata,
-        const QString& sBpm);
+        const QString& sBpm,
+        bool resetIfEmpty);
 
 inline QString formatReplayGainGain(
         const ReplayGain& replayGain) {
@@ -96,8 +92,9 @@ inline QString formatTrackGain(
 }
 
 bool parseTrackGain(
-        TrackMetadata* pTrackMetadata,
-        const QString& dbGain);
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& dbGain,
+        bool resetIfEmpty);
 
 inline QString formatTrackPeak(
         const TrackMetadata& trackMetadata) {
@@ -106,8 +103,9 @@ inline QString formatTrackPeak(
 }
 
 bool parseTrackPeak(
-        TrackMetadata* pTrackMetadata,
-        const QString& strPeak);
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& strPeak,
+        bool resetIfEmpty);
 
 #if defined(__EXTRA_METADATA__)
 inline QString formatAlbumGain(
@@ -116,8 +114,9 @@ inline QString formatAlbumGain(
 }
 
 bool parseAlbumGain(
-        TrackMetadata* pTrackMetadata,
-        const QString& dbGain);
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& dbGain,
+        bool resetIfEmpty);
 
 inline QString formatAlbumPeak(
         const TrackMetadata& trackMetadata) {
@@ -125,8 +124,9 @@ inline QString formatAlbumPeak(
 }
 
 bool parseAlbumPeak(
-        TrackMetadata* pTrackMetadata,
-        const QString& strPeak);
+        gsl::not_null<TrackMetadata*> pTrackMetadata,
+        const QString& strPeak,
+        bool resetIfEmpty);
 #endif // __EXTRA_METADATA__
 
 bool parseSeratoBeatGrid(

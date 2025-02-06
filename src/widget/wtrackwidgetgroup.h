@@ -1,22 +1,22 @@
 #pragma once
 
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wwidgetgroup.h"
 
+class Library;
 class WTrackMenu;
-class TrackCollectionManager;
 
 class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
-            const QString& group);
+            Library* pLibrary,
+            const QString& group,
+            bool isMainDeck);
     ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -38,15 +38,20 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
   private:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
 
     void updateColor();
 
+    void ensureTrackMenuIsCreated();
+
     const QString m_group;
     const UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
     TrackPointer m_pCurrentTrack;
     QColor m_trackColor;
     int m_trackColorAlpha;
+    const bool m_isMainDeck;
 
-    const parented_ptr<WTrackMenu> m_pTrackMenu;
+    parented_ptr<WTrackMenu> m_pTrackMenu;
 };

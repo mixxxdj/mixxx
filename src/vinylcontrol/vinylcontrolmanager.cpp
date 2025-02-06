@@ -1,16 +1,20 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 
+#include <QRegularExpression>
+
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_vinylcontrolmanager.cpp"
 #include "soundio/soundmanager.h"
-#include "util/compatibility.h"
-#include "util/timer.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
-#include "vinylcontrol/vinylcontrolxwax.h"
+
+namespace {
+const QRegularExpression kChannelRegex(QStringLiteral("\\[Channel([1-9]\\d*)\\]"));
+} // namespace
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,
@@ -25,7 +29,11 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
+                AudioInput(AudioPathType::VinylControl,
+                        0,
+                        mixxx::audio::ChannelCount::stereo(),
+                        i),
+                m_pProcessor);
     }
 }
 
@@ -37,17 +45,17 @@ VinylControlManager::~VinylControlManager() {
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_cueing")))));
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_mode")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("cueing_ch%1").arg(i + 1)),
+                ConfigValue(static_cast<int>(ControlObject::get(
+                        ConfigKey(group, "vinylcontrol_cueing")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("mode_ch%1").arg(i + 1)),
+                ConfigValue(static_cast<int>(ControlObject::get(
+                        ConfigKey(group, "vinylcontrol_mode")))));
     }
 }
 
 void VinylControlManager::init() {
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }
@@ -98,8 +106,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 }
 
 void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
-    if (deck < 0 || deck >= m_pVcEnabled.size()) {
-        DEBUG_ASSERT(false);
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_pVcEnabled.size()) {
         return;
     }
 
@@ -123,10 +130,10 @@ bool VinylControlManager::vinylInputConnected(int deck) {
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {
-    QRegExp channelMatcher("\\[Channel([1-9]\\d*)\\]");
-    if (channelMatcher.exactMatch(group)) {
+    QRegularExpressionMatch channelMatch = kChannelRegex.match(group);
+    if (channelMatch.hasMatch()) {
         bool ok = false;
-        int input = channelMatcher.cap(1).toInt(&ok);
+        int input = channelMatch.captured(1).toInt(&ok);
         return ok ? input - 1 : -1;
     }
     return -1;

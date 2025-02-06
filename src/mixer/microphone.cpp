@@ -1,21 +1,28 @@
 #include "mixer/microphone.h"
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginemicrophone.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "moc_microphone.cpp"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
-Microphone::Microphone(QObject* pParent, const QString& group, int index,
-                       SoundManager* pSoundManager, EngineMaster* pEngine,
-                       EffectsManager* pEffectsManager)
+Microphone::Microphone(PlayerManager* pParent,
+        const QString& group,
+        int index,
+        SoundManager* pSoundManager,
+        EngineMixer* pEngine,
+        EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
+    AudioInput micInput = AudioInput(AudioPathType::Microphone,
+            0,
+            mixxx::audio::ChannelCount::stereo(),
+            index);
     pSoundManager->registerInput(micInput, pMicrophone);
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);

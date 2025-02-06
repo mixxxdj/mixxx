@@ -56,7 +56,7 @@ DDJ200.init = function() {
     DDJ200.LEDsOff();
 
     // start with focus on library for selecting tracks (delay seems required)
-    engine.beginTimer(500, function() {
+    engine.beginTimer(500, () => {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
 
@@ -152,11 +152,11 @@ DDJ200.touch = function(channel, control, value, status, group) {
         var alpha = 1.0 / 8;
         engine.scratchEnable(vDeckNo, 128, 33 + 1 / 3, alpha, alpha / 32);
         // disable jog not to prevent track alignment
-        DDJ200.vDeck[vDeckNo]["jogEnabled"] = false;
+        DDJ200.vDeck[vDeckNo].jogEnabled = false;
     } else {
         // enable jog after 900 ms again
-        engine.beginTimer(900, function() {
-            DDJ200.vDeck[vDeckNo]["jogEnabled"] = true;
+        engine.beginTimer(900, () => {
+            DDJ200.vDeck[vDeckNo].jogEnabled = true;
         }, true);
         // disable scratch
         engine.scratchDisable(vDeckNo);
@@ -233,7 +233,7 @@ DDJ200.rateMSB = function(channel, control, value, status, group) {
 DDJ200.rateLSB = function(channel, control, value, status, group) {
     var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
     var vgroup = "[Channel" + vDeckNo + "]";
-    // calculte rate value from its most and least significant bytes
+    // calculate rate value from its most and least significant bytes
     var rateMSB = DDJ200.vDeck[vDeckNo]["rateMSB"];
     var rate = 1 - (((rateMSB << 7) + value) / 0x1FFF);
     engine.setValue(vgroup, "rate", rate);
@@ -248,7 +248,7 @@ DDJ200.volumeMSB = function(channel, control, value, status, group) {
 DDJ200.volumeLSB = function(channel, control, value, status, group) {
     var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
     var vgroup = "[Channel" + vDeckNo + "]";
-    // calculte volume value from its most and least significant bytes
+    // calculate volume value from its most and least significant bytes
     var volMSB = DDJ200.vDeck[vDeckNo]["volMSB"];
     var vol = ((volMSB << 7) + value) / 0x3FFF;
     //var vol = ((volMSB << 7) + value); // use for linear correction

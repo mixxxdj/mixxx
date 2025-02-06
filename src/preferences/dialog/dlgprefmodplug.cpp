@@ -1,12 +1,10 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 
-#include <QtDebug>
-
-#include "defs_urls.h"
 #include "moc_dlgprefmodplug.cpp"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 #include "preferences/usersettings.h"
 #include "sources/soundsourcemodplug.h"
+#include "util/string.h"
 
 #define kConfigKey "[Modplug]"
 
@@ -40,6 +38,8 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
                             m_pLinkColor,
                             "OpenMPT manual",
                             "http://wiki.openmpt.org/Manual:_Setup/Player")));
+
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefModplug::~DlgPrefModplug() {
@@ -149,11 +149,11 @@ void DlgPrefModplug::applySettings() {
     // Currently this is fixed to 16bit 44.1kHz stereo
 
     // Number of channels - 1 for mono or 2 for stereo
-    settings.mChannels = mixxx::SoundSourceModPlug::kChannelCount;
+    settings.mChannels = mixxx::SoundSourceModPlug::kChannelCount.value();
     // Bits per sample - 8, 16, or 32
     settings.mBits = mixxx::SoundSourceModPlug::kBitsPerSample;
     // Sample rate - 11025, 22050, or 44100
-    settings.mFrequency = mixxx::SoundSourceModPlug::kSampleRate;
+    settings.mFrequency = mixxx::SoundSourceModPlug::kSampleRate.value();
 
     // enabled features flags
     settings.mFlags = 0;

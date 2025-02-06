@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QSqlDatabase>
-
 #include "preferences/usersettings.h"
-
 #include "util/db/dbconnectionpool.h"
 
+class QSqlDatabase;
 
 class MixxxDb : public QObject {
     Q_OBJECT
@@ -17,8 +15,8 @@ class MixxxDb : public QObject {
 
     static bool initDatabaseSchema(
             const QSqlDatabase& database,
-            const QString& schemaFile = kDefaultSchemaFile,
-            int schemaVersion = kRequiredSchemaVersion);
+            int schemaVersion = kRequiredSchemaVersion,
+            const QString& schemaFile = kDefaultSchemaFile);
 
     explicit MixxxDb(
             const UserSettingsPointer& pConfig,

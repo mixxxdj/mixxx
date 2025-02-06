@@ -36,52 +36,52 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">1</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">2</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">3</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">4</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">5</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">6</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">7</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_button.xml">
+              <Template src="skins:LateNight/fx/parameter_button.xml">
                 <SetVariable name="FxParameter">8</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">1</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">2</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">3</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">4</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">5</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">6</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">7</SetVariable>
               </Template>
-              <Template src="skin:/fx/parameter_knob.xml">
+              <Template src="skins:LateNight/fx/parameter_knob.xml">
                 <SetVariable name="FxParameter">8</SetVariable>
               </Template>
             </Children>

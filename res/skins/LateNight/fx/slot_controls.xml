@@ -29,9 +29,9 @@
         <MaximumSize>190,</MaximumSize>
         <Children>
 
-          <Template src="skin:/fx/focus_button.xml"/>
+          <Template src="skins:LateNight/fx/focus_button.xml"/>
 
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skins:LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
             <SetVariable name="ObjectName">FxToggleButton</SetVariable>
             <SetVariable name="BtnSize">square</SetVariable>
@@ -39,11 +39,7 @@
             <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit_FxNum"/>],enabled</SetVariable>
           </Template>
 
-          <Template src="skin:/fx/meta_knob.xml">
-            <SetVariable name="Group">[<Variable name="FxRack_FxUnit_FxNum"/>]</SetVariable>
-            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="Control">meta</SetVariable>
-          </Template>
+          <Template src="skins:LateNight/fx/meta_knob.xml"/>
 
           <EffectSelector>
             <MinimumSize>60,24</MinimumSize>

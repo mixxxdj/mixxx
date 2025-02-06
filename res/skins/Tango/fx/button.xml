@@ -18,18 +18,21 @@ Variables:
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
+    <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
+    <Effect><Variable name="FxNum"/></Effect>
+    <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
     <State>
       <Number>0</Number>
-      <Pressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
-      <Pressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
     </State>
     <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,<Variable name="FxParameter"/></ConfigKey>
+      <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </EffectPushButton>

@@ -39,7 +39,7 @@
 char *shout_http_basic_authorization(shout_t *self)
 {
     char *out, *in;
-    int   len;
+    size_t len;
 
     if (!self || !self->user || !self->password)
         return NULL;

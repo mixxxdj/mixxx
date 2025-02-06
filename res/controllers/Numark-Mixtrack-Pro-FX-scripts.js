@@ -74,6 +74,9 @@ MixtrackProFX.init = function() {
     var faderCutSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
     midi.sendSysexMsg(faderCutSysex, faderCutSysex.length);
 
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
     // initialize component containers
     MixtrackProFX.deck = new components.ComponentContainer();
     MixtrackProFX.effect = new components.ComponentContainer();
@@ -89,8 +92,8 @@ MixtrackProFX.init = function() {
     var statusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
     midi.sendSysexMsg(statusSysex, statusSysex.length);
 
-    engine.makeConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
-    engine.makeConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", MixtrackProFX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", MixtrackProFX.vuCallback);
 
     // trigger is needed to initialize lights to 0x01
     MixtrackProFX.deck.forEachComponent(function(component) {
@@ -536,7 +539,7 @@ MixtrackProFX.PadSection = function(deckNumber) {
     this.blinkLedOn = function(midi1, midi2) {
         this.blinkLedOff();
         this.blinkLedState = true;
-        this.blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, function() {
+        this.blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, () => {
             midi.sendShortMsg(midi1, midi2, this.blinkLedState ? 0x7F : 0x01);
             this.blinkLedState = !this.blinkLedState;
         });

@@ -6,7 +6,6 @@
 
 #include "track/keyutils.h"
 #include "control/controlproxy.h"
-#include "preferences/usersettings.h"
 
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
@@ -51,7 +50,10 @@ class ColumnCache : public QObject {
         COLUMN_LIBRARYTABLE_COVERART_SOURCE,
         COLUMN_LIBRARYTABLE_COVERART_TYPE,
         COLUMN_LIBRARYTABLE_COVERART_LOCATION,
+        COLUMN_LIBRARYTABLE_COVERART_COLOR,
+        COLUMN_LIBRARYTABLE_COVERART_DIGEST,
         COLUMN_LIBRARYTABLE_COVERART_HASH,
+        COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
 
         COLUMN_TRACKLOCATIONSTABLE_LOCATION,
         COLUMN_TRACKLOCATIONSTABLE_FSDELETED,

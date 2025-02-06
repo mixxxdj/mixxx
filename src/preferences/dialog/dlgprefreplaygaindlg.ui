@@ -231,6 +231,9 @@
         <property name="text">
          <string>ReplayGain 2.0 (ITU-R BS.1770)</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupAnalyzer</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -238,6 +241,9 @@
         <property name="text">
          <string>ReplayGain 1.0</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupAnalyzer</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -245,6 +251,9 @@
         <property name="text">
          <string>Disabled</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupAnalyzer</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -268,7 +277,7 @@
         <property name="text">
          <string>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
 
-The loudness target is approximate and assumes track pregain and master output level are unchanged.</string>
+The loudness target is approximate and assumes track pregain and main output level are unchanged.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -307,6 +316,18 @@ The loudness target is approximate and assumes track pregain and master output l
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>EnableGain</tabstop>
+  <tabstop>SliderReplayGainBoost</tabstop>
+  <tabstop>SliderDefaultBoost</tabstop>
+  <tabstop>radioButtonRG1</tabstop>
+  <tabstop>radioButtonRG2</tabstop>
+  <tabstop>radioButtonDisable</tabstop>
+  <tabstop>checkBoxReanalyze</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupAnalyzer"/>
+ </buttongroups>
 </ui>

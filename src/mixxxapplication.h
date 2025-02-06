@@ -18,5 +18,5 @@ class MixxxApplication : public QApplication {
 
     int m_rightPressedButtons;
     ControlProxy* m_pTouchShift;
-
+    bool m_isDeveloper;
 };

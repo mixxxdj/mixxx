@@ -17,7 +17,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   public:
     BaseExternalLibraryFeature(
             Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            const QString& iconName);
     ~BaseExternalLibraryFeature() override = default;
 
   public slots:
@@ -26,12 +27,9 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
   protected:
-    // Must be implemented by external Libraries copied to Mixxx DB
+    // Must be re-implemented by external Libraries copied to Mixxx DB
     virtual std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QString& playlist) {
-        Q_UNUSED(playlist);
-        return {};
-    }
+            const QString& playlist);
     // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
@@ -40,6 +38,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     void slotAddToAutoDJTop();
     void slotAddToAutoDJReplace();
     void slotImportAsMixxxPlaylist();
+    void slotImportAsMixxxCrate();
 
   protected:
     QModelIndex lastRightClickedIndex() const {
@@ -62,6 +61,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     parented_ptr<QAction> m_pAddToAutoDJTopAction;
     parented_ptr<QAction> m_pAddToAutoDJReplaceAction;
     parented_ptr<QAction> m_pImportAsMixxxPlaylistAction;
+    parented_ptr<QAction> m_pImportAsMixxxCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

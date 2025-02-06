@@ -609,7 +609,7 @@
   	<!-- LED Lighting -->
             <output>
                 <group>[Master]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
 		<status>0x92</status>
                 <midino>0x3</midino>
                 <on>0x7F</on>

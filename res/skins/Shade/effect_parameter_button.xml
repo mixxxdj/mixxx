@@ -9,59 +9,66 @@
     EffectParameter: the parameter
 -->
 <Template>
-	<WidgetGroup>
-		<ObjectName>EffectParameterButton</ObjectName>
-		<Layout>vertical</Layout>
-		<SizePolicy>me,f</SizePolicy>
-		<MinimumSize>38,45</MinimumSize>
-		<MaximumSize>60,45</MaximumSize>
-		<Children>
-			<EffectButtonParameterName>
-			<Style>
-				WEffectButtonParameter {
+  <WidgetGroup>
+    <ObjectName>EffectParameterButton</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>-1,45</MinimumSize>
+    <MaximumSize>-1,45</MaximumSize>
+    <Children>
+      <EffectButtonParameterName>
+      <Style>
+        WEffectButtonParameterName {
           font-size: 10px;
           line-height: 8px;
-					background-color: transparent;
-					color: #191F24;
-					padding-left: 1px;
-				}
-				QLabel { qproperty-alignment: AlignCenter; }
-			</Style>
+          background-color: transparent;
+          color: #191F24;
+          padding-left: 3px;
+          padding-right: 3px;
+         }
+        QLabel {
+          qproperty-alignment: AlignCenter;
+        }
+      </Style>
       <Elide>right</Elide>
-			<ObjectName>ButtonLabel</ObjectName>
-			<EffectRack>1</EffectRack>
-			<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
-			<Effect><Variable name="effectnum"/></Effect>
-			<EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
-		</EffectButtonParameterName>
-		<WidgetGroup>
-			<Layout>vertical</Layout>
-			<Size>38,26</Size>
-			<Children>
-				<EffectPushButton>
-					<NumberStates>2</NumberStates>
-					<State>
-						<Number>0</Number>
-						<Pressed>skin:/btn/btn_kill_down.png</Pressed>
-						<Unpressed>skin:/btn/btn_kill.png</Unpressed>
-					</State>
-					<State>
-						<Number>1</Number>
-						<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-						<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
-					</State>
-					<Pos>11,57</Pos>
-					<Connection>
-						<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/></ConfigKey>
-						<ButtonState>LeftButton</ButtonState>
-					</Connection>
-				</EffectPushButton>
-			</Children>
-		</WidgetGroup>
-    	</Children>
-    	<Connection>
-      		<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/>_loaded</ConfigKey>
-      		<BindProperty>visible</BindProperty>
-    	</Connection>
-  	</WidgetGroup>
+      <Alignment>center</Alignment>
+      <ObjectName>ButtonLabel</ObjectName>
+      <EffectRack>1</EffectRack>
+      <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+      <Effect><Variable name="effectnum"/></Effect>
+      <EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
+    </EffectButtonParameterName>
+    <WidgetGroup>
+      <Layout>vertical</Layout>
+      <Size>38,26</Size>
+      <Children>
+        <EffectPushButton>
+          <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+          <Effect><Variable name="effectnum"/></Effect>
+          <EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Pressed>skin:/btn/btn_kill_down.png</Pressed>
+            <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+            <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+          </State>
+          <Pos>11,57</Pos>
+          <Connection>
+            <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/></ConfigKey>
+            <ButtonState>LeftButton</ButtonState>
+          </Connection>
+        </EffectPushButton>
+      </Children>
+    </WidgetGroup>
+      </Children>
+      <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/>_loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+      </Connection>
+    </WidgetGroup>
 </Template>

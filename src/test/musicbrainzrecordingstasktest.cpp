@@ -5,19 +5,19 @@
 #include <QNetworkAccessManager>
 #include <QTest>
 
+#include "moc_musicbrainzrecordingstasktest.cpp"
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 #include "test/mixxxtest.h"
 #include "test/mock_networkaccessmanager.h"
-#include "util/compatibility.h"
 
 class MusicBrainzRecordingsTaskTest : public MixxxTest {
   protected:
     MusicBrainzRecordingsTaskTest() {
         m_pReceiver.reset(new MockMusicBrainzReceiver());
         m_recordingIds = {
-                "416a273e-51b8-4b1c-8873-4c9b4ed54a0f",
-                "5e0aa7e4-01cb-441c-9fc2-d89e890cb981",
-                "5f6340ae-9cab-4f00-83d5-7ad00ac35f5b"};
+                QUuid::fromString(QLatin1String("416a273e-51b8-4b1c-8873-4c9b4ed54a0f")),
+                QUuid::fromString(QLatin1String("5e0aa7e4-01cb-441c-9fc2-d89e890cb981")),
+                QUuid::fromString(QLatin1String("5f6340ae-9cab-4f00-83d5-7ad00ac35f5b"))};
         m_expectedParams = {
                 {"inc", "artists+artist-credits+releases+release-groups+media"}};
 
@@ -87,7 +87,7 @@ void MockMusicBrainzReceiver::slotMusicBrainzTaskNetworkError(
 TEST_F(MusicBrainzRecordingsTaskTest, ClinetSideTimeout) {
     EXPECT_CALL(*m_pReceiver.data(), MocNetworkError()).Times(1);
     m_network.ExpectGet(
-            uuidToStringWithoutBraces(m_recordingIds[0]),
+            m_recordingIds[0].toString(QUuid::WithoutBraces),
             m_expectedParams,
             404,
             QByteArray());
@@ -102,7 +102,7 @@ TEST_F(MusicBrainzRecordingsTaskTest, ClinetSideTimeout) {
 TEST_F(MusicBrainzRecordingsTaskTest, RespodsEmpty) {
     EXPECT_CALL(*m_pReceiver.data(), MocFailed()).Times(1);
     MockNetworkReply* pReply0 = m_network.ExpectGet(
-            uuidToStringWithoutBraces(m_recordingIds[0]),
+            m_recordingIds[0].toString(QUuid::WithoutBraces),
             m_expectedParams,
             200,
             QByteArray());
@@ -112,7 +112,7 @@ TEST_F(MusicBrainzRecordingsTaskTest, RespodsEmpty) {
     qDebug() << "pReply0->Done()" << pReply0;
     pReply0->Done();
     MockNetworkReply* pReply1 = m_network.ExpectGet(
-            uuidToStringWithoutBraces(m_recordingIds[1]),
+            m_recordingIds[1].toString(QUuid::WithoutBraces),
             m_expectedParams,
             200,
             QByteArray());
@@ -123,7 +123,7 @@ TEST_F(MusicBrainzRecordingsTaskTest, RespodsEmpty) {
     qDebug() << "pReply1->Done()" << pReply1;
     pReply1->Done();
     MockNetworkReply* pReply2 = m_network.ExpectGet(
-            uuidToStringWithoutBraces(m_recordingIds[2]),
+            m_recordingIds[2].toString(QUuid::WithoutBraces),
             m_expectedParams,
             200,
             QByteArray());

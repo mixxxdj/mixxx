@@ -12,7 +12,6 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
-#include "util/file.h"
 #include "util/logger.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -21,14 +20,14 @@
 namespace {
 
 // TODO(rryan) make configurable
-const int kScannerThreadPoolSize = 1;
+constexpr int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 
 QAtomicInt s_instanceCounter(0);
 
 // Returns the number of affected rows or -1 on error
-int execCleanupQuery(FwdSqlQuery& query) {
+int execRowCountQuery(FwdSqlQuery& query) {
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return -1;
     }
@@ -39,7 +38,7 @@ int execCleanupQuery(FwdSqlQuery& query) {
 }
 
 /// Clean up the database and fix inconsistencies from previous runs.
-/// See also: https://bugs.launchpad.net/mixxx/+bug/1846945
+/// See also: https://github.com/mixxxdj/mixxx/issues/9771
 void cleanUpDatabase(const QSqlDatabase& database) {
     kLogger.info()
             << "Cleaning up database...";
@@ -57,18 +56,40 @@ void cleanUpDatabase(const QSqlDatabase& database) {
     FwdSqlQuery query(database, sqlStmt);
     query.bindValue(
             QStringLiteral(":unequalHash"),
-            static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
-    auto numRows = execCleanupQuery(query);
-    if (numRows < 0) {
+            QVariant(mixxx::invalidCacheKey()));
+    const auto numRows = execRowCountQuery(query);
+    VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()
                 << "Failed to delete orphaned directory hashes";
-    } else if (numRows > 0) {
+    }
+    else if (numRows > 0) {
         kLogger.info()
                 << "Deleted" << numRows << "orphaned directory hashes";
     }
     kLogger.info()
             << "Finished database cleanup:"
             << timer.elapsed().debugMillisWithUnit();
+}
+
+/// Update statistics for the query planner
+/// See also: https://www.sqlite.org/lang_analyze.html
+void updateQueryPlannerStatisticsForDatabase(const QSqlDatabase& database) {
+    kLogger.info()
+            << "Updating query planner statistics for database...";
+    PerformanceTimer timer;
+    timer.start();
+    const auto sqlStmt = QStringLiteral("ANALYZE");
+    FwdSqlQuery query(database, sqlStmt);
+    const auto numRows = execRowCountQuery(query);
+    VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
+        kLogger.warning()
+                << "Failed to update query planner statistics for database";
+    }
+    else {
+        kLogger.info()
+                << "Finished updating query planner statistics for database:"
+                << timer.elapsed().debugMillisWithUnit();
+    }
 }
 
 } // anonymous namespace
@@ -168,7 +189,7 @@ void LibraryScanner::slotStartScan() {
     cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
-    m_libraryRootDirs = m_directoryDao.getDirs();
+    m_libraryRootDirs = m_directoryDao.loadAllDirectories();
     // If there are no directories then we have nothing to do. Cleanup and
     // finish the scan immediately.
     if (m_libraryRootDirs.isEmpty()) {
@@ -179,10 +200,10 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
-    QRegExp coverExtensionFilter =
-            QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                    Qt::CaseInsensitive);
+    QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
+    QRegularExpression coverExtensionFilter =
+            QRegularExpression(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                    QRegularExpression::CaseInsensitiveOption);
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
 
     m_scannerGlobal = ScannerGlobalPointer(
@@ -224,17 +245,19 @@ void LibraryScanner::slotStartScan() {
             this,
             &LibraryScanner::slotFinishHashedScan);
 
-    foreach (const QString& dirPath, m_libraryRootDirs) {
+    for (const mixxx::FileInfo& rootDir : std::as_const(m_libraryRootDirs)) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
         // scanning so that relies on having an open bookmark for the containing
         // directory.
-        MDir dir(dirPath);
-        if (!m_scannerGlobal->testAndMarkDirectoryScanned(dir.dir())) {
-            queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
-                                                     dir.dir(),
-                                                     dir.token(),
-                                                     false));
+        if (!rootDir.exists() || !rootDir.isDir()) {
+            qWarning() << "Skipping to scan" << rootDir;
+            continue;
+        }
+        auto dirAccess = mixxx::FileAccess(rootDir);
+        if (!m_scannerGlobal->testAndMarkDirectoryScanned(rootDir.toQDir())) {
+            queueTask(new RecursiveScanDirectoryTask(
+                    this, m_scannerGlobal, std::move(dirAccess), false));
         }
     }
     pWatcher->taskDone();
@@ -269,13 +292,11 @@ void LibraryScanner::slotFinishHashedScan() {
             this,
             &LibraryScanner::slotFinishUnhashedScan);
 
-    foreach (const DirInfo& dirInfo, m_scannerGlobal->unhashedDirs()) {
+    for (mixxx::FileAccess dirAccess : m_scannerGlobal->unhashedDirs()) {
         // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
         // are already tracked
-        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
-                                                 dirInfo.dir(),
-                                                 dirInfo.token(),
-                                                 true));
+        queueTask(new RecursiveScanDirectoryTask(
+                this, m_scannerGlobal, std::move(dirAccess), true));
     }
     pWatcher->taskDone();
 }
@@ -391,6 +412,11 @@ void LibraryScanner::slotFinishUnhashedScan() {
     }
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
+        const auto dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        updateQueryPlannerStatisticsForDatabase(dbConnection);
+    }
+
+    if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
         kLogger.debug() << "Scan finished cleanly";
     } else {
         kLogger.debug() << "Scan cancelled";
@@ -402,11 +428,11 @@ void LibraryScanner::slotFinishUnhashedScan() {
            "%d changed/added directories. "
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
-           m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
-           m_scannerGlobal->verifiedDirectories().size(),
-           m_scannerGlobal->numScannedDirectories(),
-           m_scannerGlobal->verifiedTracks().size(),
-           m_scannerGlobal->addedTracks().size());
+            m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
+            static_cast<int>(m_scannerGlobal->verifiedDirectories().size()),
+            m_scannerGlobal->numScannedDirectories(),
+            static_cast<int>(m_scannerGlobal->verifiedTracks().size()),
+            static_cast<int>(m_scannerGlobal->addedTracks().size()));
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
@@ -463,7 +489,7 @@ void LibraryScanner::cancel() {
 
 void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
-    ScopedTimer timer("LibraryScanner::queueTask");
+    ScopedTimer timer(u"LibraryScanner::queueTask");
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
         return;
     }
@@ -505,7 +531,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, mixxx::cache_key_t hash) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
+    ScopedTimer timer(u"LibraryScanner::slotDirectoryHashedAndScanned");
     //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
@@ -524,7 +550,7 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
 }
 
 void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryUnchanged");
+    ScopedTimer timer(u"LibraryScanner::slotDirectoryUnchanged");
     //kLogger.debug() << "slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
@@ -534,7 +560,7 @@ void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
 
 void LibraryScanner::slotTrackExists(const QString& trackPath) {
     //kLogger.debug() << "slotTrackExists" << trackPath;
-    ScopedTimer timer("LibraryScanner::slotTrackExists");
+    ScopedTimer timer(u"LibraryScanner::slotTrackExists");
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedTrack(trackPath);
     }
@@ -542,9 +568,11 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     //kLogger.debug() << "slotAddNewTrack" << trackPath;
-    ScopedTimer timer("LibraryScanner::addNewTrack");
+    ScopedTimer timer(u"LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
-    TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
+    TrackPointer pTrack = m_trackDao.addTracksAddFile(
+            trackPath,
+            false);
     if (pTrack) {
         DEBUG_ASSERT(!pTrack->isDirty());
         // The track's actual location might differ from the

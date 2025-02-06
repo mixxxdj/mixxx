@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QCoreApplication>
+#include <QLibraryInfo>
 #include <QLocale>
-#include <QTranslator>
 #include <QString>
+#include <QTranslator>
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
@@ -69,18 +70,27 @@ class Translations {
         // English translation file and the fact that we don't ship a
         // mixxx_en.qm.
         if (locale.language() == QLocale::English &&
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                (locale.territory() == QLocale::UnitedStates ||
+                        locale.territory() == QLocale::AnyCountry)
+#else
                 (locale.country() == QLocale::UnitedStates ||
-                        locale.country() == QLocale::AnyCountry)) {
+                        locale.country() == QLocale::AnyCountry)
+#endif
+        ) {
             qDebug() << "Skipping loading of translations because the locale is 'en' or 'en_US'.";
             return;
         }
-
         // Load Qt translations for this locale from the system translation
         // path. This is the lowest precedence QTranslator.
         bool qtFound = installTranslations(pApp,
                 locale,
                 QStringLiteral("qt"),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QLibraryInfo::path(QLibraryInfo::TranslationsPath),
+#else
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath),
+#endif
                 false);
 
         if (!qtFound) {
@@ -117,7 +127,7 @@ class Translations {
 
         qDebug() << "Loaded" << translation << "translations for locale"
                  << locale.name()
-                 << "from" << translationsPath;
+                 << "from" << pTranslator->filePath();
         pApp->installTranslator(pTranslator);
         return true;
     }

@@ -34,7 +34,7 @@ Variables:
             <Layout>stacked</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
                 <SetVariable name="ObjectName">VinylControlButton</SetVariable>
                 <SetVariable name="Size">40f,27f</SetVariable>
@@ -43,7 +43,7 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
               </Template>
-              <Template src="skin:../Tango/controls/statuslight_4state.xml">
+              <Template src="skins:Tango/controls/statuslight_4state.xml">
                 <SetVariable name="ObjectName">VinylControlStatus</SetVariable>
                 <SetVariable name="Size">40f,27f</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
@@ -53,7 +53,7 @@ Variables:
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
             <SetVariable name="ObjectName">PassthroughButton</SetVariable>
             <SetVariable name="Size">40f,27f</SetVariable>
@@ -75,7 +75,7 @@ Variables:
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <Template src="skin:../Tango/controls/button_3state_persist.xml">
+          <Template src="skins:Tango/controls/button_3state_persist.xml">
             <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
             <SetVariable name="ObjectName">VinylModeButton</SetVariable>
             <SetVariable name="Size">40f,21f</SetVariable>
@@ -103,7 +103,7 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-              <Template src="skin:../Tango/controls/button_3state_persist.xml">
+              <Template src="skins:Tango/controls/button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
                 <SetVariable name="Size">40f,21f</SetVariable>

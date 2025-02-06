@@ -6,7 +6,6 @@
     CSAMPLE* pInOut,
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
-void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
         pInOut[i] = (CSAMPLE) processSample(fbuf1, (double) pInOut[i]);
         pInOut[i + 1] = (CSAMPLE) processSample(fbuf2, (double) pInOut[i + 1]);
             m_pDelayBuffer[m_iDelayPos] = pInOut[i];
@@ -38,3 +37,40 @@ void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
     "curren" : 164,
     // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
         // An `egal` comparison is performed for other numeric values.
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    /// Process the prefader EngineEffectChains on the pInOut buffer, modifying
+    /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
+void EngineEffectsDelay::process(CSAMPLE* pInOut,
+            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
+            pInOut[i] = m_pDelayBuffer[delaySourcePos];
+            pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
+            pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
+            pInOut,
+            CSAMPLE* pInOut,
+    mixxx::SampleBuffer pInOut(numSamples);
+    SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);
+    SampleUtil::copy(pInOut.data(), zeroBuffer, numSamples);
+    m_effectsDelay.process(pInOut.data(), numSamples);
+    AssertIdenticalBufferEquals(pInOut.span(), expectedResult);
+    AssertIdenticalBufferEquals(pInOut.span(), firstExpectedResult);
+    AssertIdenticalBufferEquals(pInOut.span(), secondExpectedResult);
+    AssertIdenticalBufferEquals(pInOut.span(), thirdExpectedResult);
+    AssertIdenticalBufferEquals(pInOut.span(), fourthExpectedResult);
+    AssertIdenticalBufferEquals(pInOut.span(), fifthExpectedResult);
+    AssertIdenticalBufferEquals(pInOut.span(), sixthExpectedResult);
+    mixxx::SampleBuffer pInOut(bufferSizeInSamples);
+    SampleUtil::fill(pInOut.data(), 0.0f, bufferSizeInSamples);
+        effectsDelay.process(pInOut.data(), bufferSizeInSamples);
+            } else if (!strcmp(pavInputFormat->name, "caf")) {
+                list.append("caf");
+// Adopted from Csound code at http://www.kunstmusik.com/udo/cache/moogladder.udo
+                << "-alac.caf"
+        // Test fails for file type "caf" supported by SoundSourceSndfile
+        //QStringLiteral("caf"),
+    // Source: FIPS 180-4 Secure Hash Standard (SHS)
+        // ALAC/CAF has been added in version 1.0.26
+        QStringLiteral("caf"),
+void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
+    // Note(RRyan/Max Linke):
+    // https://github.com/codders/libshout/blob/a17fb84671d3732317b0353d7281cc47e2df6cf6/src/timing/timing.c

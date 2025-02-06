@@ -1,8 +1,8 @@
 #pragma once
 
 #include "track/trackid.h"
-#include "track/trackfile.h"
-
+#include "util/compatibility/qhash.h"
+#include "util/fileinfo.h"
 
 // A track in the library is identified by a location and an id.
 // The location is mandatory to identify the file, whereas the id
@@ -11,20 +11,41 @@
 // This class is intended to be used as a simple, almost immutable
 // value object. Only the id can be set once.
 class TrackRef final {
-public:
-    // Converts a TrackFile and an optional TrackId into a TrackRef. This
-    // involves obtaining the file-related track properties from QFileInfo
-    // (see above) and should used consciously! The file info is refreshed
-    // implicitly if the canonical location if necessary.
-    static TrackRef fromFileInfo(
-            TrackFile fileInfo,
+  public:
+    /// Converts a file path and an optional TrackId into a TrackRef.
+    ///
+    /// This involves and intermediate creation of mixxx::FileInfo
+    /// and accessing the file system!
+    static TrackRef fromFilePath(
+            const QString& filePath,
             TrackId id = TrackId()) {
-        auto canonicalLocation = fileInfo.freshCanonicalLocation();
+        return fromFileInfo(mixxx::FileInfo(filePath), id);
+    }
+
+    /// Converts a mixxx::FileInfo and an optional TrackId into a TrackRef.
+    ///
+    /// This involves obtaining the file-related track properties from
+    /// the file info and might involve accessing the file system!
+    static TrackRef fromFileInfo(
+            mixxx::FileInfo fileInfo,
+            TrackId id = TrackId()) {
+        // The conditional refresh ensures that files that were previously
+        // unavailable (e.g. file system volume not mounted before) are
+        // resolved successfully.
+        auto canonicalLocation = fileInfo.resolveCanonicalLocation();
         // All properties of the file info are now considered fresh
         return TrackRef(
                 fileInfo.location(),
                 std::move(canonicalLocation),
                 std::move(id));
+    }
+
+    /// Convert a local file URL into a TrackRef.
+    static TrackRef fromUrl(
+            const QUrl& url,
+            TrackId id = TrackId()) {
+        const auto fileInfo = mixxx::FileInfo::fromQUrl(url);
+        return TrackRef::fromFileInfo(fileInfo, id);
     }
 
     // Default constructor
@@ -113,3 +134,11 @@ Q_DECLARE_METATYPE(TrackRef)
 std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
+
+inline qhash_seed_t qHash(
+        const TrackRef& key,
+        qhash_seed_t seed = 0) {
+    return qHash(
+            key.getLocation(), seed) ^
+            qHash(key.getId(), seed);
+}

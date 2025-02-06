@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+
 import argparse
 import datetime
 import functools
 import hashlib
 import json
+import logging
 import os
 import pathlib
 import shutil
@@ -39,13 +41,11 @@ def url_exists(url):
 
 
 def url_download_json(url):
-    """Returns the JSON object from the given URL or return None."""
-    try:
-        resp = url_fetch(url)
-        manifest_data = resp.read().decode()
-    except IOError:
-        return None
-
+    """Returns the JSON object from the given URL or returns None."""
+    resp = url_fetch(url)
+    if resp.status != 200:
+        raise IOError(f"Server responded with HTTP status {resp.status}")
+    manifest_data = resp.read().decode().strip()
     return json.loads(manifest_data)
 
 
@@ -116,9 +116,15 @@ def slug(text):
 
 
 def prepare_deployment(args):
+    logger = logging.getLogger(__name__)
+
     # Get artifact and build metadata
-    file_stat = os.stat(args.file)
-    file_sha256 = sha256(args.file)
+    try:
+        file_stat = os.stat(args.file)
+        file_sha256 = sha256(args.file)
+    except Exception as e:
+        logger.error("Error accessing file: %s", e)
+        return 1
 
     try:
         commit_id = os.environ["GITHUB_SHA"]
@@ -157,7 +163,7 @@ def prepare_deployment(args):
     download_slug, package_slug = args.slug
 
     # Build destination path scheme
-    print(f"Destination path pattern: {args.dest_path}")
+    logger.info("Destination path pattern: %s", args.dest_path)
     destpath = args.dest_path.format(
         filename=os.path.basename(args.file),
         filename_without_ext=filename_without_ext,
@@ -168,7 +174,7 @@ def prepare_deployment(args):
         package_slug=package_slug,
         download_slug=download_slug,
     )
-    print(f"Destination path: {destpath}")
+    logger.info("Destination path: %s", destpath)
 
     # Move files to deploy in place and create sha256sum file
     output_destpath = os.path.join(args.output_dir, destpath)
@@ -187,47 +193,52 @@ def prepare_deployment(args):
     )
 
     # Show metadata and files to deploy
-    print("Metadata: ", json.dumps(metadata, indent=2, sort_keys=True))
-    print("Files:")
-    for path in tree(args.output_dir):
-        print(path)
+    logger.info("Metadata: %s", json.dumps(metadata, indent=2, sort_keys=True))
+    logger.info("Files: \n%s", "\n".join(tree(args.output_dir)))
 
     # Write metadata to GitHub Actions step output, so that it can be used for
     # manifest creation in the final job after all builds finished.
     if os.getenv("CI") == "true":
-        # Set GitHub Actions job output
-        print(
-            "::set-output name=artifact-{}-{}::{}".format(
-                download_slug,
-                package_slug,
-                json.dumps(metadata),
+        # Set GitHub Actions job output using environment files
+        output_file = os.getenv("GITHUB_OUTPUT")
+        with open(output_file, "a") as f:
+            f.write(
+                "artifact-{}-{}={}\n".format(
+                    download_slug,
+                    package_slug,
+                    json.dumps(metadata),
+                )
             )
-        )
-
     return 0
 
 
 def collect_manifest_data(job_data):
     """Parse the job metadata dict and return the manifest data."""
+    logger = logging.getLogger(__name__)
     job_result = job_data["result"]
-    print(f"Build job result: {job_result}")
-    assert job_result == "success"
+    logger.info("Build job result: %s", job_result)
 
     manifest_data = {}
     for output_name, output_data in job_data["outputs"].items():
         # Filter out unrelated job outputs that don't start with "artifact-".
         prefix, _, artifact_slug = output_name.partition("-")
         if prefix != "artifact" or not artifact_slug:
-            print(f"Ignoring output '{output_name}'...")
+            logger.info("Ignoring output '%s'...", output_name)
             continue
         artifact_data = json.loads(output_data)
 
         url = artifact_data["file_url"]
 
         # Make sure that the file actually exists on the download server
-        resp = url_fetch(url, method="HEAD")
-        if not resp.status == 200:
-            raise LookupError(f"Unable to find URL '{url}' on remote server")
+        try:
+            resp = url_fetch(url, method="HEAD")
+            if resp.status != 200:
+                raise LookupError(
+                    f"Unable to find URL '{url}' on remote server"
+                )
+        except Exception as e:
+            logger.error("Error checking URL: %s", e)
+            raise
 
         manifest_data[artifact_slug] = artifact_data
 
@@ -235,6 +246,7 @@ def collect_manifest_data(job_data):
 
 
 def generate_manifest(args):
+    logger = logging.getLogger(__name__)
     try:
         commit_id = os.getenv("GITHUB_SHA")
     except KeyError:
@@ -247,9 +259,9 @@ def generate_manifest(args):
     }
 
     # Build destination path scheme
-    print(f"Destination path pattern: {args.dest_path}")
+    logger.info("Destination path pattern: %s", args.dest_path)
     destpath = args.dest_path.format_map(format_data)
-    print(f"Destination path: {destpath}")
+    logger.info("Destination path: %s", destpath)
 
     # Create the deployment directory
     output_destpath = os.path.join(args.output_dir, destpath)
@@ -258,14 +270,9 @@ def generate_manifest(args):
     # Parse the JOB_DATA JSON data, generate the manifest data and print it
     job_data = json.loads(os.environ["JOB_DATA"])
     manifest_data = collect_manifest_data(job_data)
-    print("Manifest:", json.dumps(manifest_data, indent=2, sort_keys=True))
-
-    # Write the manifest.json for subsequent deployment to the server
-    with open(output_destpath, mode="w") as fp:
-        json.dump(manifest_data, fp, indent=2, sort_keys=True)
 
     # If possible, check if the remote manifest is the same as our local one
-    remote_manifest_data = None
+    remote_manifest_data = {}
     if args.dest_url:
         # Check if generated manifest.json file differs from the one that
         # is currently deployed.
@@ -273,22 +280,35 @@ def generate_manifest(args):
         manifest_url = manifest_url.format_map(format_data)
 
         try:
-            remote_manifest_data = url_fetch(manifest_url)
-        except IOError:
-            pass
+            remote_manifest_data = url_download_json(manifest_url) or {}
+        except IOError as e:
+            logger.error("Fetching remote manifest failed: %s", e)
+
+    if args.update:
+        for key, value in remote_manifest_data.items():
+            if key not in manifest_data:
+                manifest_data[key] = value
+
+    logger.info(
+        "Manifest: %s", json.dumps(manifest_data, indent=2, sort_keys=True)
+    )
+
+    # Write the manifest.json for subsequent deployment to the server
+    with open(output_destpath, mode="w") as fp:
+        json.dump(manifest_data, fp, indent=2, sort_keys=True)
 
     # Skip deployment if the remote manifest is the same as the local one.
     if manifest_data != remote_manifest_data:
-        print("Remote manifest differs from local version.")
+        logger.info("Remote manifest differs from local version.")
         if os.getenv("CI") == "true":
             with open(os.environ["GITHUB_ENV"], mode="a") as fp:
                 fp.write("MANIFEST_DIRTY=1\n")
     else:
-        print("Remote manifest is the same as local version.")
+        logger.info(
+            "Remote manifest is the same as local version, skipping upload."
+        )
 
-    print("Files:")
-    for path in tree(args.output_dir):
-        print(path)
+    logger.info("Files:\n%s", "\n".join(tree(args.output_dir)))
 
     return 0
 
@@ -297,8 +317,22 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    parent_parser = argparse.ArgumentParser(add_help=False)
+    parent_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_const",
+        dest="loglevel",
+        const=logging.DEBUG,
+        default=logging.INFO,
+        help="Increase output verbosity",
+    )
+
     artifact_parser = subparsers.add_parser(
-        "prepare-deployment", help=" artifact metadata from file"
+        "prepare-deployment",
+        help="Prepare artifact metadata from file",
+        parents=[parent_parser],
+        add_help=False,
     )
     artifact_parser.set_defaults(cmd=prepare_deployment)
     artifact_parser.add_argument(
@@ -333,6 +367,8 @@ def main(argv=None):
     manifest_parser = subparsers.add_parser(
         "generate-manifest",
         help="Collect artifact metadata and generate manifest.json file",
+        parents=[parent_parser],
+        add_help=False,
     )
     manifest_parser.set_defaults(cmd=generate_manifest)
     manifest_parser.add_argument(
@@ -350,8 +386,15 @@ def main(argv=None):
     manifest_parser.add_argument(
         "--dest-url", action="store", help="Destination URL prefix"
     )
+    manifest_parser.add_argument(
+        "--update",
+        action="store_true",
+        help="Fetch the remote manifest and update it",
+    )
 
     args = parser.parse_args(argv)
+
+    logging.basicConfig(level=args.loglevel, format="%(message)s")
 
     if os.path.exists(args.output_dir):
         if not os.path.isdir(args.output_dir):

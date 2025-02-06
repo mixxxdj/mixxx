@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QFile>
 
+#include "test/mixxxtest.h"
 #include "track/serato/tags.h"
 #include "util/color/predefinedcolorpalettes.h"
 
@@ -21,14 +22,14 @@ bool dumpToFile(const QString& filename, const QByteArray& data) {
 
 class SeratoTagsTest : public testing::Test {
   protected:
-    void trackColorRoundtrip(mixxx::RgbColor::optional_t displayedColor) {
+    void trackColorRoundtrip(const mixxx::RgbColor::optional_t& displayedColor) {
         mixxx::SeratoStoredTrackColor storedColor =
                 mixxx::SeratoStoredTrackColor::fromDisplayedColor(displayedColor);
         mixxx::RgbColor::optional_t actualDisplayedColor = storedColor.toDisplayedColor();
         EXPECT_EQ(displayedColor, actualDisplayedColor);
     }
     void trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional_t displayedColor,
+            const mixxx::RgbColor::optional_t& displayedColor,
             mixxx::SeratoStoredTrackColor storedColor) {
         mixxx::SeratoStoredTrackColor actualStoredColor =
                 mixxx::SeratoStoredTrackColor::fromDisplayedColor(displayedColor);
@@ -129,12 +130,11 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
     // To be able to compare the whole list easily, the reference CueInfo list
     // needs to be in a specific order:
     //
-    //    1. Cue 1
+    //    0. Cue 0
     //    2. Cue 2
-    //       ...
-    //    5. Cue 5
-    //    6. Loop 1
-    //       ...
+    //    3. Cue 3
+    //    7. Cue 7
+    //    8. Loop 1
     //   14. Loop 9
     const QList<mixxx::CueInfo> cueInfos = {
             mixxx::CueInfo(mixxx::CueType::HotCue,
@@ -180,6 +180,81 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
     EXPECT_EQ(seratoTags.getCueInfos(), cueInfos);
 }
 
+TEST_F(SeratoTagsTest, SetIncompatibleCueInfos) {
+    mixxx::SeratoTags seratoTags;
+    EXPECT_TRUE(seratoTags.getCueInfos().isEmpty());
+
+    // These are invalid entries or entries not expressible in Serato
+    const QList<mixxx::CueInfo> cueInfos = {
+            // Invalid Loop Index
+            mixxx::CueInfo(mixxx::CueType::Loop,
+                    4444,
+                    5555,
+                    -2,
+                    QStringLiteral("Hello World!"),
+                    mixxx::RgbColor(0x123456)),
+            // Invalid HotCue Index
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    100,
+                    std::nullopt,
+                    -1,
+                    QStringLiteral("Bar"),
+                    mixxx::RgbColor(0x123456)),
+            // Hotcue without a start position
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    std::nullopt,
+                    std::nullopt,
+                    0,
+                    QString(),
+                    mixxx::RgbColor(0xFF0000)),
+            // Incompatible cue type
+            mixxx::CueInfo(mixxx::CueType::MainCue,
+                    100,
+                    std::nullopt,
+                    -1,
+                    QStringLiteral("Bar"),
+                    mixxx::RgbColor(0x123456)),
+            // Loop at in the HotCue bank
+            mixxx::CueInfo(mixxx::CueType::Loop,
+                    1337,
+                    2222,
+                    2,
+                    QStringLiteral("Hello World!"),
+                    mixxx::RgbColor(0x123456)),
+            // HotCue in the Loop bank
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    2500,
+                    std::nullopt,
+                    8,
+                    QStringLiteral("Foo"),
+                    mixxx::RgbColor(0x123456)),
+            // Hotcue with out of range Index
+            mixxx::CueInfo(mixxx::CueType::Loop,
+                    4000,
+                    2000,
+                    16,
+                    QStringLiteral("Some Loop"),
+                    std::nullopt),
+            // Hotcue with out of range Index
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    100,
+                    std::nullopt,
+                    17,
+                    QStringLiteral("Bar"),
+                    mixxx::RgbColor(0x123456)),
+            // Hotcue without an index
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    1,
+                    std::nullopt,
+                    std::nullopt,
+                    QString(),
+                    mixxx::RgbColor(0xFF0000)),
+    };
+
+    seratoTags.setCueInfos(cueInfos);
+    EXPECT_EQ(seratoTags.getCueInfos().size(), 0);
+}
+
 TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
     for (const auto color : mixxx::PredefinedColorPalettes::
                     kSeratoTrackMetadataHotcueColorPalette) {
@@ -196,8 +271,8 @@ TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
 }
 
 TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
-    const auto filetype = mixxx::taglib::FileType::MP3;
-    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers_/"));
+    const auto filetype = mixxx::taglib::FileType::MPEG;
+    QDir dir(MixxxTest::getOrInitTestDir().filePath(QStringLiteral("/serato/data/mp3/markers_/")));
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << "*.octet-stream");
     const QFileInfoList fileList = dir.entryInfoList();
@@ -231,8 +306,8 @@ TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
 }
 
 TEST_F(SeratoTagsTest, Markers2RoundTrip) {
-    const auto filetype = mixxx::taglib::FileType::MP3;
-    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers2/"));
+    const auto filetype = mixxx::taglib::FileType::MPEG;
+    QDir dir(MixxxTest::getOrInitTestDir().filePath(QStringLiteral("serato/data/mp3/markers2/")));
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << "*.octet-stream");
     const QFileInfoList fileList = dir.entryInfoList();

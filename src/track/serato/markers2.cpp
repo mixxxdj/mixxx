@@ -2,7 +2,6 @@
 
 #include <QtEndian>
 
-#include "track/serato/tags.h"
 #include "util/logger.h"
 
 namespace {
@@ -360,14 +359,14 @@ bool SeratoMarkers2::parse(
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers2, data);
     case taglib::FileType::MP4:
         return parseBase64Encoded(seratoMarkers2, data);
     case taglib::FileType::FLAC:
         return parseFLAC(seratoMarkers2, data);
-    case taglib::FileType::OGG:
+    case taglib::FileType::OggVorbis:
         return parseCommon(seratoMarkers2, data);
     default:
         return false;
@@ -422,12 +421,7 @@ bool SeratoMarkers2::parseCommon(
         }
 
         // Entry Size
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         auto entrySize = qFromBigEndian<quint32>(data.mid(offset, 4));
-#else
-        auto entrySize = qFromBigEndian<quint32>(
-                reinterpret_cast<const uchar*>(data.mid(offset, 4).constData()));
-#endif
         offset += 4;
 
         QByteArray entryData = data.mid(offset, entrySize);
@@ -500,14 +494,14 @@ bool SeratoMarkers2::parseFLAC(
 
 QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
         return dumpBase64Encoded();
     case taglib::FileType::FLAC:
         return dumpFLAC();
-    case taglib::FileType::OGG:
+    case taglib::FileType::OggVorbis:
         return dumpCommon();
     default:
         DEBUG_ASSERT(false);
@@ -570,7 +564,7 @@ QByteArray SeratoMarkers2::dumpID3() const {
 QList<SeratoMarkers2EntryPointer> SeratoMarkers2::findEntriesByType(
         SeratoMarkers2Entry::TypeId typeId) const {
     QList<SeratoMarkers2EntryPointer> entriesFound;
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -584,7 +578,7 @@ QList<SeratoMarkers2EntryPointer> SeratoMarkers2::findEntriesByType(
 
 SeratoMarkers2EntryPointer SeratoMarkers2::findEntryByType(
         SeratoMarkers2Entry::TypeId typeId) const {
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -658,7 +652,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     QMap<int, CueInfo> cueMap;
     QMap<int, CueInfo> loopMap;
 
-    for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
+    for (const CueInfo& cueInfo : std::as_const(cueInfos)) {
         // All of these check can be debug assertions, as the list should be
         // pre-filtered by the seratoTags class.
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
@@ -801,9 +795,9 @@ QByteArray SeratoMarkers2::dumpFLAC() const {
 }
 
 std::optional<SeratoStoredTrackColor> SeratoMarkers2::getTrackColor() const {
-    kLogger.info() << "Reading track color from 'Serato Markers2' tag data...";
+    kLogger.debug() << "Reading track color from 'Serato Markers2' tag data...";
 
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -851,9 +845,9 @@ void SeratoMarkers2::setTrackColor(SeratoStoredTrackColor color) {
 }
 
 bool SeratoMarkers2::isBpmLocked() const {
-    kLogger.info() << "Reading bpmlock state from 'Serato Markers2' tag data...";
+    kLogger.debug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
 
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -902,7 +896,7 @@ void SeratoMarkers2::setBpmLocked(bool bpmLocked) {
 
 int SeratoMarkers2::countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const {
     int numEntries = 0;
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }

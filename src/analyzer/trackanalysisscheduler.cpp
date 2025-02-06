@@ -1,8 +1,9 @@
 #include "analyzer/trackanalysisscheduler.h"
 
-#include "library/library.h"
-#include "library/trackcollection.h"
+#include "analyzer/analyzerscheduledtrack.h"
+#include "analyzer/analyzertrack.h"
 #include "moc_trackanalysisscheduler.cpp"
+#include "track/trackid.h"
 #include "util/logger.h"
 
 namespace {
@@ -31,29 +32,33 @@ TrackAnalysisScheduler::NullPointer::NullPointer()
 
 //static
 TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::createInstance(
-        Library* library,
+        std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
         int numWorkerThreads,
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
         const UserSettingsPointer& pConfig,
         AnalyzerModeFlags modeFlags) {
     return Pointer(new TrackAnalysisScheduler(
-            library,
-            numWorkerThreads,
-            pConfig,
-            modeFlags),
+                           std::move(pEnvironment),
+                           numWorkerThreads,
+                           pDbConnectionPool,
+                           pConfig,
+                           modeFlags),
             deleteTrackAnalysisScheduler);
 }
 
 TrackAnalysisScheduler::TrackAnalysisScheduler(
-        Library* library,
+        std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
         int numWorkerThreads,
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
         const UserSettingsPointer& pConfig,
         AnalyzerModeFlags modeFlags)
-        : m_library(library),
+        : m_pEnvironment(std::move(pEnvironment)),
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_currentTrackNumber(0),
           m_dequeuedTracksCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
+    DEBUG_ASSERT(m_pEnvironment);
     VERIFY_OR_DEBUG_ASSERT(numWorkerThreads > 0) {
             kLogger.warning()
                     << "Invalid number of worker threads:"
@@ -70,11 +75,13 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
     for (int threadId = 0; threadId < numWorkerThreads; ++threadId) {
         m_workers.emplace_back(AnalyzerThread::createInstance(
                 threadId,
-                library->dbConnectionPool(),
+                pDbConnectionPool,
                 pConfig,
                 modeFlags));
-        connect(m_workers.back().thread(), &AnalyzerThread::progress,
-            this, &TrackAnalysisScheduler::onWorkerThreadProgress);
+        connect(m_workers.back().thread(),
+                &AnalyzerThread::progress,
+                this,
+                &TrackAnalysisScheduler::onWorkerThreadProgress);
     }
     // 2nd pass: Start worker threads in a suspended state
     for (const auto& worker: m_workers) {
@@ -163,7 +170,7 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
         }
     }
     const int totalTracksCount =
-            m_dequeuedTracksCount + static_cast<int>(m_queuedTrackIds.size());
+            m_dequeuedTracksCount + static_cast<int>(m_queuedTracks.size());
     DEBUG_ASSERT(m_currentTrackNumber <= m_dequeuedTracksCount);
     DEBUG_ASSERT(m_dequeuedTracksCount <= totalTracksCount);
     emit progress(
@@ -229,14 +236,14 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
     emitProgressOrFinished();
 }
 
-bool TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
-    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+bool TrackAnalysisScheduler::scheduleTrack(AnalyzerScheduledTrack track) {
+    VERIFY_OR_DEBUG_ASSERT(track.getTrackId().isValid()) {
         qWarning()
                 << "Cannot schedule track with invalid id"
-                << trackId;
+                << track.getTrackId();
         return false;
     }
-    m_queuedTrackIds.push_back(trackId);
+    m_queuedTracks.push_back(track);
     // Don't wake up the suspended thread now to avoid race conditions
     // if multiple threads are added in a row by calling this function
     // multiple times. The caller is responsible to finish the scheduling
@@ -244,10 +251,10 @@ bool TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
     return true;
 }
 
-int TrackAnalysisScheduler::scheduleTracksById(const QList<TrackId>& trackIds) {
+int TrackAnalysisScheduler::scheduleTracks(const QList<AnalyzerScheduledTrack>& tracks) {
     int scheduledCount = 0;
-    for (auto trackId: trackIds) {
-        if (scheduleTrackById(std::move(trackId))) {
+    for (auto track : tracks) {
+        if (scheduleTrack(std::move(track))) {
             ++scheduledCount;
         }
     }
@@ -270,16 +277,18 @@ void TrackAnalysisScheduler::resume() {
 
 bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
-    while (!m_queuedTrackIds.empty()) {
-        TrackId nextTrackId = m_queuedTrackIds.front();
+    while (!m_queuedTracks.empty()) {
+        AnalyzerScheduledTrack nextScheduledTrack = m_queuedTracks.front();
+        TrackId nextTrackId = nextScheduledTrack.getTrackId();
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
-            TrackPointer nextTrack =
-                    m_library->trackCollection().getTrackById(nextTrackId);
-            if (nextTrack) {
+            TrackPointer nextTrackPtr =
+                    m_pEnvironment->loadTrackById(nextTrackId);
+            if (nextTrackPtr) {
+                AnalyzerTrack nextTrack(nextTrackPtr, nextScheduledTrack.getOptions());
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {
-                        m_queuedTrackIds.pop_front();
+                        m_queuedTracks.pop_front();
                         ++m_dequeuedTracksCount;
                         return true;
                     } else {
@@ -310,7 +319,7 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
                     << nextTrackId;
         }
         // Skip this track
-        m_queuedTrackIds.pop_front();
+        m_queuedTracks.pop_front();
         ++m_dequeuedTracksCount;
     }
     return false;
@@ -323,22 +332,7 @@ void TrackAnalysisScheduler::stop() {
     }
     // The worker threads are still running at this point
     // and m_workers must not be modified!
-    m_queuedTrackIds.clear();
+    m_queuedTracks.clear();
     m_pendingTrackIds.clear();
     DEBUG_ASSERT((allTracksFinished()));
-}
-
-QList<TrackId> TrackAnalysisScheduler::stopAndCollectScheduledTrackIds() {
-    QList<TrackId> scheduledTrackIds;
-    scheduledTrackIds.reserve(static_cast<int>(m_queuedTrackIds.size() + m_pendingTrackIds.size()));
-    for (auto queuedTrackId: m_queuedTrackIds) {
-        scheduledTrackIds.append(std::move(queuedTrackId));
-    }
-    for (auto pendingTrackId: m_pendingTrackIds) {
-        scheduledTrackIds.append(std::move(pendingTrackId));
-    }
-    // Stopping the scheduler will clear all queued and pending tracks,
-    // so we need to do this after we have collected all scheduled tracks!
-    stop();
-    return scheduledTrackIds;
 }

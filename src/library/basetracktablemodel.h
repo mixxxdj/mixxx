@@ -3,7 +3,6 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
-#include <QTableView>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
@@ -17,9 +16,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   public:
     explicit BaseTrackTableModel(
-            const char* settingsNamespace,
+            QObject* parent,
             TrackCollectionManager* const pTrackCollectionManager,
-            QObject* parent);
+            const char* settingsNamespace);
     ~BaseTrackTableModel() override = default;
 
     ///////////////////////////////////////////////////////
@@ -82,11 +81,32 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.fieldIndex(fieldName);
     }
 
+    void cutTracks(const QModelIndexList& indices) override;
+    void copyTracks(const QModelIndexList& indices) const override;
+    QList<int> pasteTracks(const QModelIndex& index) override;
+
     bool isColumnHiddenByDefault(
             int column) override;
 
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
+
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
+
+    static constexpr int kBpmColumnPrecisionDefault = 1;
+    static constexpr int kBpmColumnPrecisionMinimum = 0;
+    static constexpr int kBpmColumnPrecisionMaximum = 10;
+    static void setBpmColumnPrecision(int precision);
+
+    static constexpr bool kApplyPlayedTrackColorDefault = true;
+    static void setApplyPlayedTrackColor(bool apply);
 
   protected:
     static constexpr int defaultColumnWidth() {
@@ -149,14 +169,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(
             const QModelIndex& index) const;
 
-    /// At least one of the following functions must be overridden,
-    /// because each default implementation will call the other
-    /// function!!
-    ///
     /// Return the raw data value at the given index.
     ///
     /// Expected types by ColumnCache field (pass-through = not validated):
-    /// COLUMN_LIBRARYTABLE_ID: DbId::value_type (pass-through)
+    /// COLUMN_LIBRARYTABLE_ID: int (pass-through)
     /// COLUMN_LIBRARYTABLE_ARTIST: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_TITLE: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_ALBUM: QString (pass-through)
@@ -195,12 +211,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_COVERART_COLOR: mixxx::RgbColor::code_t (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_DIGEST: QByteArray (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_HASH: quint16 (pass-through)
+    /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
-            const QModelIndex& index) const;
-    virtual QVariant rawSiblingValue(
-            const QModelIndex& index,
-            ColumnCache::Column siblingField) const;
+            const QModelIndex& index) const = 0;
 
     QVariant roleValue(
             const QModelIndex& index,
@@ -230,7 +244,16 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     void slotRefreshAllRows();
 
+    void slotCoverFound(
+            const QObject* pRequester,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap);
+
   private:
+    QVariant rawSiblingValue(
+            const QModelIndex& index,
+            ColumnCache::Column siblingField) const;
+
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
     // the internal database.
@@ -249,6 +272,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
+    QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
 
     ColumnCache m_columnCache;
 
@@ -261,4 +286,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     int countValidColumnHeaders() const;
 
     TrackId m_previewDeckTrackId;
+
+    mutable QModelIndex m_toolTipIndex;
+
+    static int s_bpmColumnPrecision;
+
+    static bool s_bApplyPlayedTrackColor;
 };

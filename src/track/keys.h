@@ -1,16 +1,14 @@
 #pragma once
 
 #include <QByteArray>
+#include <QList>
 #include <QPair>
-#include <QVector>
 
 #include "proto/keys.pb.h"
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
-typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeList;
-
-class KeyFactory;
+typedef QList<QPair<mixxx::track::io::key::ChromaticKey, double>> KeyChangeList;
 
 class Keys final {
   public:
@@ -31,14 +29,11 @@ class Keys final {
     const QString& getSubVersion() const;
     void setSubVersion(const QString& subVersion);
 
-    bool isValid() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Key calculations
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Return the average key over the entire track if the key is valid.
+    // Return the average key over the entire track if analyzed by Mixxx
+    // or the Key found in the track metadata
     mixxx::track::io::key::ChromaticKey getGlobalKey() const;
+
+    // Return key text form the track metadata literally (not normalized)
     QString getGlobalKeyText() const;
 
   private:

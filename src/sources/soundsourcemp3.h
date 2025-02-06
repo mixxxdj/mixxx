@@ -56,6 +56,8 @@ class SoundSourceMp3 final : public SoundSource {
     /** Returns the position in m_seekFrameList of the requested frame index. */
     SINT findSeekFrameIndex(SINT frameIndex) const;
 
+    bool copyLeftoverFrame();
+
     SINT m_curFrameIndex;
 
     // NOTE(uklotzde): Each invocation of initDecoding() must be
@@ -77,19 +79,21 @@ class SoundSourceMp3 final : public SoundSource {
 class SoundSourceProviderMp3 : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
-    static const QStringList kSupportedFileExtensions;
+    static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
-        return kDisplayName;
+        return kDisplayName + QStringLiteral(": ") + getVersionString();
     }
 
-    QStringList getSupportedFileExtensions() const override {
-        return kSupportedFileExtensions;
+    QStringList getSupportedFileTypes() const override {
+        return kSupportedFileTypes;
     }
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceMp3>(url);
     }
+
+    QString getVersionString() const;
 };
 
 } // namespace mixxx

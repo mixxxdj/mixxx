@@ -2,48 +2,65 @@
 
 #include <QDir>
 #include <QList>
+#include <QObject>
 #include <QSet>
-#include <QWidget>
 
 #include "preferences/usersettings.h"
+#include "skin/skin.h"
+#include "util/parented_ptr.h"
 
-class KeyboardEventFilter;
-class PlayerManager;
-class ControllerManager;
-class ControlObject;
-class Library;
-class VinylControlManager;
-class EffectsManager;
-class RecordingManager;
-class LaunchImage;
+class ControlProxy;
+class ControlPushButton;
+class QWidget;
 
-class SkinLoader {
+namespace mixxx {
+namespace skin {
+
+class SkinLoader : public QObject {
+    Q_OBJECT
   public:
     SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
 
     QWidget* loadConfiguredSkin(QWidget* pParent,
             QSet<ControlObject*>* skinCreatedControls,
-            KeyboardEventFilter* pKeyboard,
-            PlayerManager* pPlayerManager,
-            ControllerManager* pControllerManager,
-            Library* pLibrary,
-            VinylControlManager* pVCMan,
-            EffectsManager* pEffectsManager,
-            RecordingManager* pRecordingManager);
+            mixxx::CoreServices* pCoreServices);
 
-    LaunchImage* loadLaunchImage(QWidget* pParent);
+    LaunchImage* loadLaunchImage(QWidget* pParent) const;
 
-    QString getSkinPath(const QString& skinName) const;
-    QPixmap getSkinPreview(const QString& skinName,
-            const QString& schemeName,
-            const double devicePixelRatio) const;
-    QString getConfiguredSkinPath() const;
+    SkinPointer getSkin(const QString& skinName) const;
+    SkinPointer getConfiguredSkin() const;
     QString getDefaultSkinName() const;
     QList<QDir> getSkinSearchPaths() const;
+    QList<SkinPointer> getSkins() const;
+
+  private slots:
+    void slotNumMicsChanged(double numMics);
 
   private:
     QString pickResizableSkin(const QString& oldSkin) const;
+    SkinPointer skinFromDirectory(const QDir& dir) const;
 
     UserSettingsPointer m_pConfig;
+
+    bool m_spinnyCoverControlsCreated;
+    void setupSpinnyCoverControls();
+    void updateSpinnyCoverControls();
+    parented_ptr<ControlProxy> m_pShowSpinny;
+    parented_ptr<ControlProxy> m_pShowCover;
+    std::unique_ptr<ControlPushButton> m_pShowSpinnyAndOrCover;
+    std::unique_ptr<ControlPushButton> m_pSelectBigSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pShowSmallSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pShowBigSpinnyCover;
+
+    bool m_micDuckingControlsCreated;
+    void setupMicDuckingControls();
+    void updateDuckingControl();
+    std::unique_ptr<ControlPushButton> m_pShowDuckingControls;
+    parented_ptr<ControlProxy> m_pNumMics;
+    int m_numMicsEnabled;
+    QList<ControlProxy*> m_pMicConfiguredControls;
 };
+
+} // namespace skin
+} // namespace mixxx

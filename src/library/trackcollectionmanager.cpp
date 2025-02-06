@@ -1,6 +1,9 @@
 #include "library/trackcollectionmanager.h"
 
+#include <utility>
+
 #include "library/externaltrackcollection.h"
+#include "library/library_prefs.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
 #include "moc_trackcollectionmanager.cpp"
@@ -56,7 +59,7 @@ TrackCollectionManager::TrackCollectionManager(
     } else {
         // TODO: Add external collections
     }
-    for (const auto& externalCollection : qAsConst(m_externalCollections)) {
+    for (const auto& externalCollection : std::as_const(m_externalCollections)) {
         kLogger.info()
                 << "Connecting to"
                 << externalCollection->name();
@@ -148,7 +151,7 @@ TrackCollectionManager::~TrackCollectionManager() {
     // components are accessing those files at this point.
     GlobalTrackCacheLocker().deactivateCache();
 
-    for (const auto& externalCollection : qAsConst(m_externalCollections)) {
+    for (const auto& externalCollection : std::as_const(m_externalCollections)) {
         kLogger.info()
                 << "Disconnecting from"
                 << externalCollection->name();
@@ -177,16 +180,13 @@ void TrackCollectionManager::stopLibraryScan() {
     m_pScanner->slotCancel();
 }
 
-bool TrackCollectionManager::saveTrack(const TrackPointer& pTrack) {
+TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
+        const TrackPointer& pTrack) const {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return false;
+        return SaveTrackResult::Skipped;
     }
-    if (!pTrack->isDirty()) {
-        return false;
-    }
-    saveTrack(pTrack.get(), TrackMetadataExportMode::Deferred);
-    DEBUG_ASSERT(!pTrack->isDirty());
-    return true;
+    const auto res = saveTrack(pTrack.get(), TrackMetadataExportMode::Deferred);
+    return res;
 }
 
 // Export metadata and save the track in both the internal database
@@ -195,70 +195,98 @@ void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
     saveTrack(pTrack, TrackMetadataExportMode::Immediate);
 }
 
-void TrackCollectionManager::saveTrack(
+TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
         Track* pTrack,
-        TrackMetadataExportMode mode) {
+        TrackMetadataExportMode mode) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    DEBUG_ASSERT(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return SaveTrackResult::Skipped;
+    }
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
-    // The metadata must be exported while the cache is locked to
-    // ensure that we have exclusive (write) access on the file
-    // and not reader or writer is accessing the same file
-    // concurrently.
-    exportTrackMetadata(pTrack, mode);
+    // Export track metadata regardless of the track's clean/dirty
+    // status. An unmodified track might have been marked for metadata
+    // export by the user or export of metadata was deferred during a
+    // previous invocation.
+    const auto exportTrackMetadataResult =
+            exportTrackMetadataBeforeSaving(pTrack, mode);
+    DEBUG_ASSERT(
+            exportTrackMetadataResult != ExportTrackMetadataResult::Succeeded ||
+            pTrack->getSourceSynchronizedAt().isValid());
+    if (exportTrackMetadataResult == ExportTrackMetadataResult::Failed) {
+        // The metadata in the library could no longer be considered
+        // as synchronized with the source, i.e. with the file tags.
+        pTrack->resetSourceSynchronizedAt();
+    }
 
-    // The dirty flag is reset while saving the track in the internal
-    // collection!
-    const bool trackDirty = pTrack->isDirty();
+    if (!pTrack->getId().isValid()) {
+        // Track has been purged from the internal collection/database
+        // while it was cached in-memory.
+        // TODO: Is this race condition even possible?? The debug assertion
+        // in TrackDAO::saveTrack() never triggered so it must at least be
+        // very unlikely.
+        if (!m_externalCollections.isEmpty()) {
+            kLogger.debug()
+                    << "Purging deleted track"
+                    << pTrack->getLocation()
+                    << "from"
+                    << m_externalCollections.size()
+                    << "external collection(s)";
+            for (const auto& externalTrackCollection : std::as_const(m_externalCollections)) {
+                externalTrackCollection->purgeTracks(
+                        QStringList{pTrack->getLocation()});
+            }
+        }
+        // Only the metadata needs to be exported for saving this track.
+        // Reset the dirty flag as the TrackDAO would have done.
+        pTrack->markClean();
+        return SaveTrackResult::Saved;
+    }
+
+    if (!pTrack->isDirty()) {
+        // Neither purged nor modified
+        return SaveTrackResult::Skipped;
+    }
 
     // This operation must be executed synchronously while the cache is
     // locked to prevent that a new track is created from outdated
-    // metadata in the database before saving finished.
+    // metadata in the database before saving has finished.
     kLogger.debug()
             << "Saving track"
             << pTrack->getLocation()
             << "in internal collection";
-    m_pInternalCollection->saveTrack(pTrack);
-
-    if (m_externalCollections.isEmpty()) {
-        return;
+    if (!m_pInternalCollection->saveTrack(pTrack)) {
+        // The dirty flag is not reset when saving fails
+        DEBUG_ASSERT(pTrack->isDirty());
+        return SaveTrackResult::Failed;
     }
-    if (pTrack->getId().isValid()) {
+    // The dirty flag is reset after the track has been saved successfully
+    DEBUG_ASSERT(!pTrack->isDirty());
+
+    if (!m_externalCollections.isEmpty()) {
         // Track still exists in the internal collection/database
-        if (trackDirty) {
-            kLogger.debug()
-                    << "Saving modified track"
-                    << pTrack->getLocation()
-                    << "in"
-                    << m_externalCollections.size()
-                    << "external collection(s)";
-            for (const auto& externalTrackCollection : qAsConst(m_externalCollections)) {
-                externalTrackCollection->saveTrack(
-                        *pTrack,
-                        ExternalTrackCollection::ChangeHint::Modified);
-            }
-        }
-    } else {
-        // Track has been deleted from the internal collection/database
-        // while it was cached in-memory
         kLogger.debug()
-                << "Purging deleted track"
+                << "Saving modified track"
                 << pTrack->getLocation()
-                << "from"
+                << "in"
                 << m_externalCollections.size()
                 << "external collection(s)";
-        for (const auto& externalTrackCollection : qAsConst(m_externalCollections)) {
-            externalTrackCollection->purgeTracks(
-                    QStringList{pTrack->getLocation()});
+        for (const auto& externalTrackCollection : std::as_const(m_externalCollections)) {
+            externalTrackCollection->saveTrack(
+                    *pTrack,
+                    ExternalTrackCollection::ChangeHint::Modified);
         }
     }
+
+    return SaveTrackResult::Saved;
 }
 
-void TrackCollectionManager::exportTrackMetadata(
+ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSaving(
         Track* pTrack,
         TrackMetadataExportMode mode) const {
-    DEBUG_ASSERT(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return ExportTrackMetadataResult::Skipped;
+    }
 
     // Write audio meta data, if explicitly requested by the user
     // for individual tracks or enabled in the preferences for all
@@ -269,12 +297,31 @@ void TrackCollectionManager::exportTrackMetadata(
     // last synchronized. Exporting metadata will update this time
     // stamp on the track object!
     if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
+            (pTrack->isDirty() &&
+                    m_pConfig &&
+                    m_pConfig->getValueString(
+                                     mixxx::library::prefs::kSyncTrackMetadataConfigKey)
+                                    .toInt() == 1)) {
         switch (mode) {
-        case TrackMetadataExportMode::Immediate:
+        case TrackMetadataExportMode::Immediate: {
             // Export track metadata now by saving as file tags.
-            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack, m_pConfig);
-            break;
+            const auto result = SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack,
+                    SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
+            if (result == ExportTrackMetadataResult::Failed) {
+                const auto fileInfo = pTrack->getFileInfo();
+                if (fileInfo.checkFileExists()) {
+                    kLogger.warning()
+                            << "Failed to export track metadata"
+                            << fileInfo.location();
+                } else {
+                    kLogger.warning()
+                            << "Failed to export track metadata into missing file"
+                            << fileInfo.location();
+                }
+            }
+            return result;
+        }
         case TrackMetadataExportMode::Deferred:
             // Export track metadata later when the track object goes out
             // of scope and we have exclusive file access. This is required
@@ -285,23 +332,28 @@ void TrackCollectionManager::exportTrackMetadata(
             // always feasible.
             pTrack->markForMetadataExport();
             break;
+        default:
+            DEBUG_ASSERT(!"unreachable");
         }
     }
+    return ExportTrackMetadataResult::Skipped;
 }
 
-bool TrackCollectionManager::addDirectory(const QString& dir) const {
+DirectoryDAO::AddResult TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->addDirectory(dir);
+    return m_pInternalCollection->addDirectory(newDir);
 }
 
-bool TrackCollectionManager::removeDirectory(const QString& dir) const {
+DirectoryDAO::RemoveResult TrackCollectionManager::removeDirectory(
+        const mixxx::FileInfo& oldDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->removeDirectory(dir);
+    return m_pInternalCollection->removeDirectory(oldDir);
 }
 
-void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {
+DirectoryDAO::RelocateResult TrackCollectionManager::relocateDirectory(
+        const QString& oldDir, const QString& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -309,21 +361,24 @@ void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QStr
             << oldDir
             << "->"
             << newDir;
-    // TODO(XXX): Add error handling in TrackCollection::relocateDirectory()
-    m_pInternalCollection->relocateDirectory(oldDir, newDir);
-    if (m_externalCollections.isEmpty()) {
-        return;
+    DirectoryDAO::RelocateResult result =
+            m_pInternalCollection->relocateDirectory(oldDir, newDir);
+
+    if (result == DirectoryDAO::RelocateResult::Ok &&
+            !m_externalCollections.isEmpty()) {
+        kLogger.debug()
+                << "Relocating directory in"
+                << m_externalCollections.size()
+                << "external track collection(s):"
+                << oldDir
+                << "->"
+                << newDir;
+        // NOTE(ronso0) What are external track collections?
+        for (const auto& externalTrackCollection : m_externalCollections) {
+            externalTrackCollection->relocateDirectory(oldDir, newDir);
+        }
     }
-    kLogger.debug()
-            << "Relocating directory in"
-            << m_externalCollections.size()
-            << "external track collection(s):"
-            << oldDir
-            << "->"
-            << newDir;
-    for (const auto& externalTrackCollection : m_externalCollections) {
-        externalTrackCollection->relocateDirectory(oldDir, newDir);
-    }
+    return result;
 }
 
 bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) const {
@@ -468,7 +523,7 @@ void TrackCollectionManager::afterTracksUpdated(const QSet<TrackId>& updatedTrac
     for (const auto& trackId : updatedTrackIds) {
         auto trackLocation = m_pInternalCollection->getTrackDAO().getTrackLocation(trackId);
         if (!trackLocation.isEmpty()) {
-            trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
+            trackRefs.append(TrackRef::fromFilePath(trackLocation, trackId));
         }
     }
     DEBUG_ASSERT(trackRefs.size() <= updatedTrackIds.size());
@@ -512,3 +567,47 @@ void TrackCollectionManager::afterTracksRelocated(
         externalTrackCollection->relocateTracks(relocatedTracks);
     }
 }
+
+TrackPointer TrackCollectionManager::getTrackById(
+        TrackId trackId) const {
+    return internalCollection()->getTrackById(
+            trackId);
+}
+
+TrackPointer TrackCollectionManager::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return internalCollection()->getTrackByRef(
+            trackRef);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls,
+        bool addMissing) const {
+    return internalCollection()->resolveTrackIdsFromUrls(
+            urls,
+            addMissing);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) const {
+    return internalCollection()->resolveTrackIdsFromLocations(
+            locations);
+}
+
+bool TrackCollectionManager::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return pTrack->updateGenre(
+            // TODO: Pass tagging config
+            genre);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool TrackCollectionManager::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return pTrack->updateMood(
+            // TODO: Pass tagging config
+            mood);
+}
+#endif // __EXTRA_METADATA__

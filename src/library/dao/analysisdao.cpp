@@ -1,9 +1,9 @@
+#include "library/dao/analysisdao.h"
+
 #include <QSqlQuery>
-#include <QSqlResult>
-#include <QSqlError>
+#include <QSqlRecord>
 #include <QtDebug>
 
-#include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
 #include "preferences/waveformsettings.h"
 #include "util/performancetimer.h"
@@ -15,7 +15,7 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // compression level (-1) takes the size down to about 600KB. The difference
 // between the default and 9 (the max) was only about 1-2KB for a lot of extra
 // CPU time so I think we should stick with the default. rryan 4/3/2012
-const int kCompressionLevel = -1;
+constexpr int kCompressionLevel = -1;
 
 AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
         : m_pConfig(pConfig) {
@@ -84,9 +84,15 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
         int checksum = query->value(dataChecksumColumn).toInt();
         QString dataPath = analysisPath.absoluteFilePath(
             QString::number(info.analysisId));
-        QByteArray compressedData = loadDataFromFile(dataPath);
-        int file_checksum = qChecksum(compressedData.constData(),
-                                      compressedData.length());
+        const QByteArray compressedData = loadDataFromFile(dataPath);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        const int file_checksum = qChecksum(
+                compressedData);
+#else
+        const int file_checksum = qChecksum(
+                compressedData.constData(),
+                compressedData.length());
+#endif
         if (checksum != file_checksum) {
             qDebug() << "WARNING: Corrupt analysis loaded from" << dataPath
                      << "length" << compressedData.length();
@@ -114,10 +120,15 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     PerformanceTimer time;
     time.start();
 
-    QByteArray compressedData = qCompress(info->data, kCompressionLevel);
-    int checksum = qChecksum(compressedData.constData(),
-                             compressedData.length());
-
+    const QByteArray compressedData = qCompress(info->data, kCompressionLevel);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const int checksum = qChecksum(
+            compressedData);
+#else
+    const int checksum = qChecksum(
+            compressedData.constData(),
+            compressedData.length());
+#endif
     QSqlQuery query(m_database);
     if (info->analysisId == -1) {
         query.prepare(QString(

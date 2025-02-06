@@ -1,9 +1,8 @@
 #include "widget/wraterange.h"
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wraterange.cpp"
-#include "util/math.h"
+#include "skin/legacy/skincontext.h"
 
 WRateRange::WRateRange(const QString& group, QWidget* parent)
         : WNumber(parent),
@@ -32,6 +31,7 @@ void WRateRange::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         m_nodeDisplay = DisplayType::Default;
     }
+    setAlignment(Qt::AlignCenter);
 
     // Initialize the widget (overrides the base class initial value).
     const double range = m_pRateRangeControl->get();

@@ -13,11 +13,11 @@ namespace network {
 struct JsonWebRequest final {
   public:
     JsonWebRequest() = delete;
-    JsonWebRequest(const JsonWebRequest&) = default;
-    JsonWebRequest(JsonWebRequest&&) = default;
-
-    JsonWebRequest& operator=(const JsonWebRequest&) = default;
-    JsonWebRequest& operator=(JsonWebRequest&&) = default;
+    JsonWebRequest(HttpRequestMethod method, QString path, QUrlQuery query, QJsonDocument content)
+            : method(std::move(method)),
+              path(std::move(path)),
+              query(std::move(query)),
+              content(std::move(content)){};
 
     HttpRequestMethod method;
     QString path;
@@ -78,7 +78,7 @@ class JsonWebTask : public WebTask {
 
   signals:
     void failed(
-            const network::JsonWebResponse& response);
+            const mixxx::network::JsonWebResponse& response);
 
   protected:
     // Customizable in derived classes

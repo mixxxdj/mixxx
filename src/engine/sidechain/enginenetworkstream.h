@@ -1,11 +1,11 @@
 #pragma once
 
-#include <engine/sidechain/networkoutputstreamworker.h>
-#include <engine/sidechain/networkinputstreamworker.h>
 #include <QVector>
 
+#include "engine/sidechain/networkoutputstreamworker.h"
 #include "util/types.h"
-#include "util/fifo.h"
+
+class NetworkInputStreamWorker;
 
 class EngineNetworkStream {
   public:
@@ -13,7 +13,7 @@ class EngineNetworkStream {
             int numInputChannels);
     virtual ~EngineNetworkStream();
 
-    void startStream(double sampleRate);
+    void startStream(mixxx::audio::SampleRate sampleRate);
     void stopStream();
 
     int getReadExpected();
@@ -22,11 +22,11 @@ class EngineNetworkStream {
     qint64 getInputStreamTimeUs();
     qint64 getInputStreamTimeFrames();
 
-    int getNumOutputChannels() {
+    mixxx::audio::ChannelCount getNumOutputChannels() {
         return m_numOutputChannels;
     }
 
-    int getNumInputChannels() {
+    mixxx::audio::ChannelCount getNumInputChannels() {
         return m_numInputChannels;
     }
 
@@ -45,9 +45,9 @@ class EngineNetworkStream {
     void debugOutputSlots();
 
     FIFO<CSAMPLE>* m_pInputFifo;
-    int m_numOutputChannels;
-    int m_numInputChannels;
-    double m_sampleRate;
+    mixxx::audio::ChannelCount m_numOutputChannels;
+    mixxx::audio::ChannelCount m_numInputChannels;
+    mixxx::audio::SampleRate m_sampleRate;
     qint64 m_inputStreamStartTimeUs;
     qint64 m_inputStreamFramesWritten;
     qint64 m_inputStreamFramesRead;

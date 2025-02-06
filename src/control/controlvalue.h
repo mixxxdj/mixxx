@@ -1,12 +1,11 @@
 #pragma once
 
-#include <limits>
-
 #include <QAtomicInt>
 #include <QObject>
+#include <limits>
 
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
@@ -124,8 +123,8 @@ class ControlValueAtomicBase {
 // Specialized template for types that are deemed to be atomic on the target
 // architecture. Instead of using a read/write ring to guarantee atomicity,
 // direct assignment/read of an aligned member variable is used.
-template <typename T>
-class ControlValueAtomicBase<T, true> {
+template<typename T, int cRingSize>
+class ControlValueAtomicBase<T, cRingSize, true> {
   public:
     inline T getValue() const {
         return m_value;
