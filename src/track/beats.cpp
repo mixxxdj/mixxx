@@ -1,7 +1,9 @@
 #include "track/beats.h"
 
 #include <cmath>
+#include <cstddef>
 #include <iterator>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -24,6 +26,7 @@ constexpr double kEpsilon = 0.01;
 } // namespace
 
 namespace mixxx {
+using std::transform;
 
 mixxx::audio::FrameDiff_t Beats::ConstIterator::beatLengthFrames() const {
     if (m_it == m_beats->m_markers.cend()) {
@@ -628,6 +631,20 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
 
     const auto lastMarkerPosition = m_lastMarkerPosition + offsetFrames;
     return BeatsPointer(new Beats(markers,
+            lastMarkerPosition.toLowerFrameBoundary(),
+            m_lastMarkerBpm,
+            m_sampleRate,
+            m_subVersion));
+}
+
+std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
+    if (!m_markers.empty()) {
+        return std::nullopt;
+    }
+    const mixxx::audio::FrameDiff_t lastOffsetFrames =
+            xBeats * m_sampleRate.value() * 60.0 / m_lastMarkerBpm.value();
+    const auto lastMarkerPosition = m_lastMarkerPosition + lastOffsetFrames;
+    return BeatsPointer(new Beats(m_markers,
             lastMarkerPosition.toLowerFrameBoundary(),
             m_lastMarkerBpm,
             m_sampleRate,

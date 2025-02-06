@@ -330,12 +330,17 @@ void BpmControl::slotTranslateBeatsHalf(double v) {
     if (!pTrack) {
         return;
     }
-    const double bpm = pTrack->getBpm();
-    const double halfBeat = 3000.0 / bpm;
-    slotTranslateBeatsMove(halfBeat);
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats) {
+        const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
+    }
 }
 
 void BpmControl::slotTranslateBeatsMove(double v) {
+    v = std::round(v);
     if (v == 0) {
         return;
     }
@@ -346,7 +351,9 @@ void BpmControl::slotTranslateBeatsMove(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
-        const double frameOffset = frameInfo().sampleRate * v * 0.01;
+        const double sampleOffset = frameInfo().sampleRate * v * 0.01;
+        const mixxx::audio::FrameDiff_t frameOffset =
+                sampleOffset / mixxx::kEngineChannelOutputCount;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
