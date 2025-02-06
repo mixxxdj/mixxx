@@ -7,6 +7,7 @@
 #include <QSqlTableModel>
 #include <QStandardPaths>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "library/export/trackexportwizard.h"
