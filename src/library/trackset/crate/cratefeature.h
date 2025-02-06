@@ -14,6 +14,7 @@
 #include "util/parented_ptr.h"
 
 // forward declaration(s)
+class ControlObject;
 class Library;
 class WLibrarySidebar;
 class QAction;
