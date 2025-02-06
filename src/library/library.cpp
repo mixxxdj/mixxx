@@ -549,10 +549,10 @@ void Library::bindLibraryPreparationWindowWidget(
             m_pLibraryControl,
             &LibraryControl::slotUpdateTrackMenuControl);
 
-    for (const auto& feature : std::as_const(m_features)) {
-        //    feature->bindLibraryPreparationWindowWidget(m_pLibraryPreparationWindowWidget,
-        //    pKeyboard);
-    }
+    // for (const auto& feature : std::as_const(m_features)) {
+    // feature->bindLibraryPreparationWindowWidget(m_pLibraryPreparationWindowWidget,
+    //    pKeyboard);
+    // }
 
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
