@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "library/export/trackexportwizard.h"

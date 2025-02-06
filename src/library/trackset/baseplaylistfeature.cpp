@@ -252,9 +252,9 @@ void BasePlaylistFeature::slotShowInPreparationWindow() {
         return;
     }
 
-    bool existsConfigKey = ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"));
-    if (existsConfigKey) {
-        // if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+    // bool existsConfigKey = ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"));
+    // if (existsConfigKey) {
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
         auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
         proxy->set(1);
     }
