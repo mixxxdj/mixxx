@@ -150,6 +150,7 @@ class SoundManager : public QObject {
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
+    SoundManagerConfig m_prevConfig;
     SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
     QMultiHash<AudioInput, AudioDestination*> m_registeredDestinations;
