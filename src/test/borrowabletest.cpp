@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <util/borrowable_ptr.h>
 
-#include <QtConcurrent>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 namespace {
