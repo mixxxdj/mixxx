@@ -63,9 +63,9 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     }
 
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
-    void searchToWindow(const QString& searchText,
-            const QString& extraFilter,
-            QString targetWindow);
+    // void searchToWindow(const QString& searchText,
+    //         const QString& extraFilter,
+    //         QString targetWindow);
     const QString currentSearch() const override;
     const QString currentSearchInPreparationWindow();
 

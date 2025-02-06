@@ -10,6 +10,7 @@
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 
+class ControlObject;
 class WLibrary;
 class WLibraryPreparationWindow;
 class KeyboardEventFilter;

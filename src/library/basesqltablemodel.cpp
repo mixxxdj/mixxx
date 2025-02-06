@@ -465,15 +465,15 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
     select();
 }
 
-void BaseSqlTableModel::searchToWindow(const QString& searchText,
-        const QString& extraFilter,
-        QString targetWindow) {
-    if (sDebug) {
-        qDebug() << this << "search" << searchText;
-    }
-    setSearch(searchText, extraFilter, targetWindow);
-    select();
-}
+// void BaseSqlTableModel::searchToWindow(const QString& searchText,
+//         const QString& extraFilter,
+//         QString targetWindow) {
+//     if (sDebug) {
+//         qDebug() << this << "search" << searchText;
+//     }
+//     setSearch(searchText, extraFilter, targetWindow);
+//     select();
+// }
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
