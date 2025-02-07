@@ -1128,17 +1128,19 @@ class Mixer extends ComponentContainer {
                 switch (value) {
                 case 0x00:  // Picnic Bench / Fast Cut
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
                     break;
                 case 0x01:  // Constant Power
                     engine.setValue("[Mixer Profile]", "xFaderMode", 1);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
+                    // Constant power requires to set an appropriate calibration value
+                    // in order to get a smooth curve.
+                    // This is the output of EngineXfader::getPowerCalibration() for
+                    // the "xFaderCurve" 0.6 (pow(0.5, 1.0 / 0.6))
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.31498);
                     break;
                 case 0x02: // Additive
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
                 }
             },
