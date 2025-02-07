@@ -113,20 +113,20 @@ void WLibraryPreparationWindow::pasteFromSidebarInPreparationWindow() {
     }
 }
 
-void WLibraryPreparationWindow::search(const QString& name) {
-    //    auto lock = lockMutex(&m_mutex);
-    //    QWidget* pCurrent = currentWidget();
-    //    LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
-    //    if (pView == nullptr) {
-    //        qDebug() << "WARNING: Attempted to search in view" << name <<
-    //        "with WLibraryPreparationWindow "
-    //                 << "which does not implement the LibraryView interface.
-    //                 Ignoring.";
-    //        return;
-    //    }
-    //    lock.unlock();
-    //    pView->onSearch(name);
-}
+// void WLibraryPreparationWindow::search(const QString& name) {
+//     auto lock = lockMutex(&m_mutex);
+//     QWidget* pCurrent = currentWidget();
+//     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+//     if (pView == nullptr) {
+//         qDebug() << "WARNING: Attempted to search in view" << name <<
+//         "with WLibraryPreparationWindow "
+//                  << "which does not implement the LibraryView interface.
+//                  Ignoring.";
+//         return;
+//     }
+//     lock.unlock();
+//     pView->onSearch(name);
+//}
 
 // LibraryView* WLibraryPreparationWindow::getActiveView() const {
 //     return dynamic_cast<LibraryView*>(currentWidget());

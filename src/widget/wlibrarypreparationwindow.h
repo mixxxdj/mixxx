@@ -66,7 +66,7 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     void slotSelectTrackInActiveTrackView(const TrackId& trackId);
     void pasteFromSidebarInPreparationWindow();
 
-    void search(const QString&);
+    // void search(const QString&);
 
   protected:
     bool event(QEvent* pEvent) override;
