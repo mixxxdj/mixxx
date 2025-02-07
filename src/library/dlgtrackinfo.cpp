@@ -758,12 +758,7 @@ mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
 }
 
 void DlgTrackInfo::displayKeyText() {
-    QString keyText;
-    if (m_pLoadedTrack) {
-        keyText = KeyUtils::keyFromKeyTextAndIdValues(
-                m_pLoadedTrack->getKeyText(),
-                m_pLoadedTrack->getKey());
-    }
+    const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
 }
 
