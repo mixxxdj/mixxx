@@ -164,6 +164,7 @@ class LibraryFeature : public QObject {
     void restoreSearch(const QString&);
     void disableSearch();
     void pasteFromSidebar();
+    void pasteFromSidebarInPreparationWindow();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);

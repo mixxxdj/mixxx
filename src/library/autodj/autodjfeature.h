@@ -55,6 +55,7 @@ class AutoDJFeature : public LibraryFeature {
     void onRightClick(const QPoint& globalPos) override;
     // Temporary, until WCrateTableView can be written.
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+    void slotShowInPreparationWindow();
 
   private:
     TrackCollection* const m_pTrackCollection;
@@ -84,6 +85,7 @@ class AutoDJFeature : public LibraryFeature {
     parented_ptr<QAction> m_pEnableAutoDJAction;
     parented_ptr<QAction> m_pDisableAutoDJAction;
     parented_ptr<QAction> m_pClearQueueAction;
+    parented_ptr<QAction> m_pShowTrackModelInPreparationWindowAction;
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.

@@ -20,6 +20,7 @@
 #include "util/defs.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 
 namespace {
@@ -98,6 +99,12 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &AutoDJFeature::slotCrateChanged);
 
     // Create context-menu items for enabling/disabling the auto-DJ
+    m_pShowTrackModelInPreparationWindowAction =
+            make_parented<QAction>(tr("Show in Preparation Window"), this);
+    connect(m_pShowTrackModelInPreparationWindowAction,
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotShowInPreparationWindow);
     m_pEnableAutoDJAction = make_parented<QAction>(tr("Enable Auto DJ"), this);
     connect(m_pEnableAutoDJAction.get(),
             &QAction::triggered,

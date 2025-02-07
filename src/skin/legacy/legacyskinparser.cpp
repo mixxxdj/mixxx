@@ -1697,7 +1697,8 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 
 // Eve Preparation Window
 QWidget* LegacySkinParser::parseLibraryPreparationWindow(const QDomElement& node) {
-    WLibrary* pLibraryPreparationWindowWidget = new WLibrary(m_pParent);
+    WLibraryPreparationWindow* pLibraryPreparationWindowWidget =
+            new WLibraryPreparationWindow(m_pParent);
     pLibraryPreparationWindowWidget->installEventFilter(m_pKeyboard);
     pLibraryPreparationWindowWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());

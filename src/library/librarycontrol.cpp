@@ -15,6 +15,7 @@
 #include "moc_librarycontrol.cpp"
 #include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
@@ -93,6 +94,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
+          m_pLibraryPreparationWindowWidget(nullptr),
           m_numDecks(kAppGroup, QStringLiteral("num_decks"), this),
           m_numSamplers(kAppGroup, QStringLiteral("num_samplers"), this),
           m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks"), this) {
@@ -612,6 +614,20 @@ void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFi
             &LibraryControl::libraryWidgetDeleted);
 }
 
+void LibraryControl::bindLibraryPreparationWindowWidget(
+        WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+        KeyboardEventFilter* pKeyboard) {
+    Q_UNUSED(pKeyboard);
+    if (m_pLibraryPreparationWindowWidget) {
+        disconnect(m_pLibraryPreparationWindowWidget, nullptr, this, nullptr);
+    }
+    m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
+    connect(m_pLibraryPreparationWindowWidget,
+            &WLibraryPreparationWindow::destroyed,
+            this,
+            &LibraryControl::libraryPreparationWindowWidgetDeleted);
+}
+
 void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     if (m_pSearchbox) {
         disconnect(m_pSearchbox, nullptr, this, nullptr);
@@ -625,6 +641,10 @@ void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
 
 void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
+}
+
+void LibraryControl::libraryPreparationWindowWidgetDeleted() {
+    m_pLibraryPreparationWindowWidget = nullptr;
 }
 
 void LibraryControl::sidebarWidgetDeleted() {

@@ -62,7 +62,8 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     // Show the view registered with the given name. Does nothing if the current
     // view is the specified view, or if the name does not specify any
     // registered view.
-    void switchToViewInPreparationWindow(const QString& name);
+    // void switchToViewInPreparationWindow(const QString& name);
+    void switchToView(const QString& name);
     void slotSelectTrackInActiveTrackView(const TrackId& trackId);
     void pasteFromSidebarInPreparationWindow();
 

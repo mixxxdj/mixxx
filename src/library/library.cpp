@@ -470,9 +470,10 @@ void Library::bindLibraryWidget(
 }
 
 void Library::bindLibraryPreparationWindowWidget(
-        WLibrary* pLibraryPreparationWindowWidget, KeyboardEventFilter* pKeyboard) {
+        WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+        KeyboardEventFilter* pKeyboard) {
     m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
-    WLibraryPreparationWindowTrackTableView* pPreparationWindowTrackTableView =
+    WLibraryPreparationWindowTrackTableView* pLibraryPreparationWindowTrackTableView =
             new WLibraryPreparationWindowTrackTableView(
                     m_pLibraryPreparationWindowWidget,
                     m_pConfig,
@@ -480,79 +481,79 @@ void Library::bindLibraryPreparationWindowWidget(
                     m_pLibraryPreparationWindowWidget
                             ->getTrackTableBackgroundColorOpacity(),
                     true);
-    pPreparationWindowTrackTableView->installEventFilter(pKeyboard);
+    pLibraryPreparationWindowTrackTableView->installEventFilter(pKeyboard);
     connect(this,
             &Library::showTrackModelInPreparationWindow,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::loadTrackModelInPreparationWindow);
-    // connect(this,
-    //         &Library::pasteFromSidebar,
-    //         m_pLibraryPreparationWindowWidget,
-    //         &WLibrary::pasteFromSidebar);
-    connect(pPreparationWindowTrackTableView,
+    connect(this,
+            &Library::pasteFromSidebarInPreparationWindow,
+            m_pLibraryPreparationWindowWidget,
+            &WLibraryPreparationWindow::pasteFromSidebarInPreparationWindow);
+    connect(pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::loadTrack,
             this,
             &Library::slotLoadTrack);
-    connect(pPreparationWindowTrackTableView,
+    connect(pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::loadTrackToPlayer,
             this,
             &Library::slotLoadTrackToPlayer);
     m_pLibraryPreparationWindowWidget->registerView(
-            m_sTrackViewName, pPreparationWindowTrackTableView);
+            m_sTrackViewName, pLibraryPreparationWindowTrackTableView);
 
     connect(m_pLibraryPreparationWindowWidget,
-            &WLibrary::setLibraryFocus,
+            &WLibraryPreparationWindow::setLibraryFocus,
             m_pLibraryControl,
             &LibraryControl::setLibraryFocus);
-    // connect(this,
-    //         &Library::switchToView,
-    //         m_pLibraryPreparationWindowWidget,
-    //         &WLibrary::switchToView);
+    connect(this,
+            &Library::switchToView,
+            m_pLibraryPreparationWindowWidget,
+            &WLibraryPreparationWindow::switchToView);
     connect(this,
             &Library::saveModelState,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::slotSaveCurrentViewState);
     connect(this,
             &Library::restoreModelState,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::slotRestoreCurrentViewState);
     connect(this,
             &Library::selectTrack,
             m_pLibraryPreparationWindowWidget,
-            &WLibrary::slotSelectTrackInActiveTrackView);
-    connect(pPreparationWindowTrackTableView,
+            &WLibraryPreparationWindow::slotSelectTrackInActiveTrackView);
+    connect(pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::trackSelected,
             this,
             &Library::trackSelected);
 
     connect(this,
             &Library::setTrackTableFont,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::setTrackTableFont);
     connect(this,
             &Library::setTrackTableRowHeight,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::setTrackTableRowHeight);
     connect(this,
             &Library::setSelectedClick,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::setSelectedClick);
 
-    m_pLibraryControl->bindLibraryWidget(m_pLibraryPreparationWindowWidget, pKeyboard);
+    m_pLibraryControl->bindLibraryPreparationWindowWidget(
+            m_pLibraryPreparationWindowWidget, pKeyboard);
 
     connect(m_pLibraryControl,
             &LibraryControl::showHideTrackMenu,
-            pPreparationWindowTrackTableView,
+            pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::slotShowHideTrackMenu);
-    connect(pPreparationWindowTrackTableView,
+    connect(pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::trackMenuVisible,
             m_pLibraryControl,
             &LibraryControl::slotUpdateTrackMenuControl);
 
-    // for (const auto& feature : std::as_const(m_features)) {
-    // feature->bindLibraryPreparationWindowWidget(m_pLibraryPreparationWindowWidget,
-    //    pKeyboard);
-    // }
+    for (const auto& feature : std::as_const(m_features)) {
+        feature->bindLibraryPreparationWindowWidget(m_pLibraryPreparationWindowWidget, pKeyboard);
+    }
 
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
@@ -571,6 +572,10 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::pasteFromSidebar,
             this,
             &Library::pasteFromSidebar);
+    connect(feature,
+            &LibraryFeature::pasteFromSidebarInPreparationWindow,
+            this,
+            &Library::pasteFromSidebarInPreparationWindow);
     connect(feature,
             &LibraryFeature::showTrackModel,
             this,
@@ -648,6 +653,7 @@ void Library::slotShowTrackModelInPreparationWindow(QAbstractItemModel* model) {
         return;
     }
     emit showTrackModelInPreparationWindow(model);
+    // emit switchToViewInPreparationWindow(m_sTrackViewName);
     emit switchToView(m_sTrackViewName);
     emit restoreSearch(trackModel->currentSearch());
 }
@@ -656,6 +662,11 @@ void Library::slotSwitchToView(const QString& view) {
     // qDebug() << "Library::slotSwitchToView" << view;
     emit switchToView(view);
 }
+
+// void Library::switchToViewInPreparationWindow(const QString& view) {
+//     // qDebug() << "Library::slotSwitchToView" << view;
+//     emit switchToViewInPreparationWindow(view);
+// }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
