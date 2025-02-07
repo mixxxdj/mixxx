@@ -287,8 +287,10 @@ void MidiController::receivedShortMessage(unsigned char status,
         }
     }
 
-    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
-    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    for (auto [it, end] =
+                    m_pMapping->getInputMappings().equal_range(mappingKey.key);
+            it != end;
+            ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -585,11 +587,12 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
         }
     }
 
-    const auto [inputMappingsBegin, inputMappingsEnd] =
-            m_pMapping->getInputMappings().equal_range(mappingKey.key);
-    std::for_each(inputMappingsBegin, inputMappingsEnd, [&](const auto& inputMapping) {
-        processInputMapping(inputMapping, data, timestamp);
-    });
+    for (auto [it, end] =
+                    m_pMapping->getInputMappings().equal_range(mappingKey.key);
+            it != end;
+            ++it) {
+        processInputMapping(it.value(), data, timestamp);
+    };
 }
 
 void MidiController::processInputMapping(const MidiInputMapping& mapping,
