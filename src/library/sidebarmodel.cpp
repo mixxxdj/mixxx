@@ -332,16 +332,31 @@ void SidebarModel::clicked(const QModelIndex& index) {
     // invoked immediately before. That doesn't matter,
     // because we stop any running timer before handling
     // this event.
+    qWarning() << "SidebarModel::clicked" << index;
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
+        qWarning() << "  index valid";
         if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->activate();
+            LibraryFeature* pFeature = m_sFeatures[index.row()];
+            if (!pFeature) {
+                qWarning() << "  no assoc. LibraryFeature found !!";
+                return;
+            }
+            qWarning() << "  index is root of"
+                       << pFeature->title().toString()
+                       << "-> activate()";
+            pFeature->activate();
         } else {
             TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
             if (pTreeItem) {
+                qWarning() << "  found assoc. TreeItem*:" << pTreeItem->getLabel();
                 LibraryFeature* pFeature = pTreeItem->feature();
                 DEBUG_ASSERT(pFeature);
+                qWarning() << "  of feature" << pFeature->title().toString();
+                qWarning() << "  -> activate()";
                 pFeature->activateChild(index);
+            } else {
+                qWarning() << "  no assoc. TreeItem* found";
             }
         }
     }
