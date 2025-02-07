@@ -818,6 +818,9 @@ void DlgPrefMixer::slotUpdateXFader() {
         return;
     }
 
+    qWarning() << "     .";
+    qWarning() << "     .";
+    qWarning() << "     slotUpdateXFader";
     // Read values from config only on first update if the xfader curve controls
     // are still at their default values. This should detect if controller mappings
     // (or skin attributes) have changed the xfader controls.
@@ -827,6 +830,7 @@ void DlgPrefMixer::slotUpdateXFader() {
             m_xfCalibrationCO->get() == m_xfCalibrationCO->getDefault() &&
             m_xfModeCO->get() == m_xfModeCO->getDefault() &&
             m_xfReverseCO->get() == m_xfReverseCO->getDefault()) {
+        qWarning() << "     --> init from config";
         m_xFaderCurve = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
         // "xFaderCalibration" is not stored in the config and it's not expsoed
         // with a slider here. Each time the slider is touched it's calculated
@@ -838,6 +842,7 @@ void DlgPrefMixer::slotUpdateXFader() {
         m_xFaderMode = m_pConfig->getValue<int>(kXfaderModeKey);
         m_xFaderReverse = m_pConfig->getValue<int>(kXfaderReverseKey) == 1;
     } else {
+        qWarning() << "     --> from controls";
         // Update xfader from controls
         // deactivated for now. resolve dupe debug etc.
         // slotXFaderControlChanged();
@@ -846,6 +851,13 @@ void DlgPrefMixer::slotUpdateXFader() {
         m_xFaderMode = static_cast<int>(m_xfModeCO->get());
         m_xFaderReverse = static_cast<bool>(m_xfReverseCO->get());
     }
+
+    qWarning().noquote() << "         mode:       "
+                         << QString(m_xFaderMode == MIXXX_XFADER_CONSTPWR ? "Const" : "Addi");
+    qWarning() << "         curve:  " << m_xFaderCurve;
+    qWarning() << "         calibration:" << m_xFaderCal;
+    qWarning().noquote() << "         reverse:    "
+                         << QString(m_xFaderReverse ? "Yes" : "normal");
 
     updateXFaderWidgets();
 }
@@ -861,12 +873,15 @@ void DlgPrefMixer::updateXFaderWidgets() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
+    qWarning() << "     --> SliderXFader->setValue" << sliderVal;
     SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
 
     // Same here
     if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
+        qWarning() << "     --> radioButtonConstantPower->setChecked";
         radioButtonConstantPower->setChecked(true);
     } else {
+        qWarning() << "     --> radioButtonAdditive->setChecked";
         radioButtonAdditive->setChecked(true);
     }
 
@@ -877,9 +892,12 @@ void DlgPrefMixer::updateXFaderWidgets() {
     checkBoxReverse->blockSignals(false);
 
     drawXfaderDisplay();
+    qWarning() << "     .";
+    qWarning() << "     .";
 }
 
 void DlgPrefMixer::drawXfaderDisplay() {
+    qWarning() << "------------- draw xFader";
     // Initialize or clear scene
     if (m_pxfScene) {
         m_pxfScene->clear();
@@ -1003,6 +1021,9 @@ void DlgPrefMixer::slotXFaderSliderChanged() {
 }
 
 void DlgPrefMixer::slotXFaderModeBoxToggled() {
+    qWarning() << "     .";
+    qWarning() << "     slotXFaderModeBoxToggled";
+    qWarning() << "     .";
     m_xFaderMode = radioButtonConstantPower->isChecked()
             ? MIXXX_XFADER_CONSTPWR
             : MIXXX_XFADER_ADDITIVE;
@@ -1012,16 +1033,20 @@ void DlgPrefMixer::slotXFaderModeBoxToggled() {
 
 void DlgPrefMixer::slotXFaderCurveControlChanged(double v) {
     if (v == m_xFaderCurve) {
+        qWarning() << "    (Curve CO changed, no-op)" << v;
         return;
     }
+    qWarning() << "     Curve CO changed" << v;
     m_xFaderCurve = v;
     updateXFaderWidgets();
 }
 
 void DlgPrefMixer::slotXFaderCalibrationControlChanged(double v) {
     if (v == m_xFaderCal) {
+        qWarning() << "    (Calibration CO changed, no-op)" << v;
         return;
     }
+    qWarning() << "     Calibration CO changed" << v;
     m_xFaderCal = v;
     updateXFaderWidgets();
 }
@@ -1029,8 +1054,10 @@ void DlgPrefMixer::slotXFaderCalibrationControlChanged(double v) {
 void DlgPrefMixer::slotXFaderModeControlChanged(double v) {
     int mode = static_cast<int>(v);
     if (mode == m_xFaderMode) {
+        qWarning() << "    (Mode CO changed, no-op)" << v;
         return;
     }
+    qWarning() << "     Mode CO changed" << v;
     m_xFaderMode = mode;
     updateXFaderWidgets();
 }
@@ -1038,8 +1065,10 @@ void DlgPrefMixer::slotXFaderModeControlChanged(double v) {
 void DlgPrefMixer::slotXFaderReverseControlChanged(double v) {
     bool reverse = v > 0;
     if (reverse == m_xFaderReverse) {
+        qWarning() << "    (Reverse CO changed, no-op)" << v;
         return;
     }
+    qWarning() << "     Reverse CO changed" << v;
     m_xFaderReverse = reverse;
     updateXFaderWidgets();
 }
