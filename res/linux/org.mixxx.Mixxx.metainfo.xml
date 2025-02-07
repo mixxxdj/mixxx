@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-01-30" timestamp="1738276464">
+    <release version="2.5.1" type="development" date="2025-01-31" timestamp="1738358788">
       <description>
  <p>
   Controller Mappings
@@ -107,8 +107,9 @@
    #14232
   </li>
   <li>
-   Hercules Inpulse 300: Updated mapping
+   Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
    #14051
+   #14057
   </li>
   <li>
    Numark NS6II: Add new controller mapping
@@ -117,6 +118,10 @@
   <li>
    Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
    #14249
+  </li>
+  <li>
+   Traktor Kontrol S3: Use pitch absolute mode as described in the manual
+   #14123
   </li>
  </ul>
  <p>
@@ -210,6 +215,28 @@
    Hidden Tracks: Allow 'load to' via track context manu
    #14077
   </li>
+  <li>
+   Controller preferences: don't reload mapping after MIDI learn
+   #14253
+  </li>
+  <li>
+   Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
+   #14281
+   #14280
+   #14292
+  </li>
+  <li>
+   Fix: Allow
+   midino
+   0 in `MidiController::makeInputHandler()
+   #14266
+   #14265
+  </li>
+  <li>
+   Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
+   #14172
+   #14289
+  </li>
  </ul>
  <p>
   Target support
@@ -225,6 +252,7 @@
    #14080
    #14071
    #14200
+   #14204
   </li>
   <li>
    Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
@@ -244,6 +272,10 @@
    Update FindFFTW3.cmake to not find version 2
    #13937
    #13931
+  </li>
+  <li>
+   Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
+   #14269
   </li>
  </ul>
 </description>
