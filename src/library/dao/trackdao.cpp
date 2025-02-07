@@ -175,11 +175,35 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
 }
 
 QList<TrackId> TrackDAO::resolveTrackIds(
+        const QList<QUrl>& urls,
+        ResolveTrackIdFlags flags) {
+    QStringList pathList;
+    pathList.reserve(urls.size());
+    for (const auto& url : urls) {
+        const QString urlStr = url.isLocalFile() ? url.toLocalFile() : url.toString();
+        pathList << "(" + SqlStringFormatter::format(m_database, urlStr) + ")";
+    }
+
+    return resolveTrackIds(pathList, flags);
+}
+
+QList<TrackId> TrackDAO::resolveTrackIds(
         const QList<mixxx::FileInfo>& fileInfos,
         ResolveTrackIdFlags flags) {
-    QList<TrackId> trackIds;
-    trackIds.reserve(fileInfos.size());
+    QStringList pathList;
+    pathList.reserve(fileInfos.size());
+    for (const auto& fileInfo : fileInfos) {
+        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
+    }
 
+    return resolveTrackIds(pathList, flags);
+}
+
+QList<TrackId> TrackDAO::resolveTrackIds(
+        const QStringList& pathList,
+        ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds;
+    trackIds.reserve(pathList.size());
     // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
     query.prepare(
@@ -189,12 +213,6 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
         return trackIds;
-    }
-
-    QStringList pathList;
-    pathList.reserve(fileInfos.size());
-    for (const auto& fileInfo : fileInfos) {
-        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
     }
 
     // Add all the track paths temporary to this database.
@@ -249,12 +267,12 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
         }
-        DEBUG_ASSERT(trackIds.size() <= fileInfos.size());
-        if (trackIds.size() < fileInfos.size()) {
+        DEBUG_ASSERT(trackIds.size() <= pathList.size());
+        if (trackIds.size() < pathList.size()) {
             qDebug() << "TrackDAO::getTrackIds(): Found only"
                      << trackIds.size()
                      << "of"
-                     << fileInfos.size()
+                     << pathList.size()
                      << "tracks in library";
         }
     } else {
@@ -1228,7 +1246,11 @@ void setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Tr
     if (!value.isNull() && value.canConvert<quint64>()) {
         DEBUG_ASSERT(value.isValid());
         const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+        sourceSynchronizedAt.setTimeZone(QTimeZone::UTC);
+#else
         sourceSynchronizedAt.setTimeSpec(Qt::UTC);
+#endif
         sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
     }
     pTrack->setSourceSynchronizedAt(sourceSynchronizedAt);
@@ -2063,17 +2085,19 @@ bool TrackDAO::verifyRemainingTracks(
                    "SET fs_deleted=:fs_deleted, needs_verification=0 "
                    "WHERE location=:location");
 
+    const int fsDeletedColumn = query.record().indexOf(TRACKLOCATIONSTABLE_FSDELETED);
     const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
     QString trackLocation;
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
         int fs_deleted = 0;
+        int old_fs_deleded = query.value(fsDeletedColumn).toInt();
         for (const auto& rootDir : libraryRootDirs) {
             if (trackLocation.startsWith(rootDir.location())) {
                 // Track is under the library root, but was not verified.
                 // This happens if the track was deleted
                 // a symlink duplicate or on a non normalized
-                // path like on non case sensitive file systems.
+                // path like on non-case-sensitive file systems.
                 fs_deleted = 1;
                 break;
             }
@@ -2089,6 +2113,16 @@ bool TrackDAO::verifyRemainingTracks(
             LOG_FAILED_QUERY(query2);
         }
         emit progressVerifyTracksOutside(trackLocation);
+        if (fs_deleted != old_fs_deleded) {
+            // Emit update so e.g. the tack model knows.
+            // Otherwise the table view may still paint it with 'track missing'
+            // color even though it has been re-discovered.
+            TrackId id = getTrackIdByLocation(trackLocation);
+            if (id.isValid()) {
+                QSet<TrackId> ids{id};
+                emit tracksChanged(ids);
+            }
+        }
         if (*pCancel) {
             return false;
         }

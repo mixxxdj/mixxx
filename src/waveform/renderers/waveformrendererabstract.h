@@ -9,10 +9,6 @@ QT_FORWARD_DECLARE_CLASS(QPainter)
 class SkinContext;
 class WaveformWidgetRenderer;
 
-namespace allshader {
-class WaveformRendererAbstract;
-}
-
 class WaveformRendererAbstract {
   public:
     /// The type of cursor for which the waveform is rendered
@@ -32,9 +28,6 @@ class WaveformRendererAbstract {
 
     virtual void onResize() {}
     virtual void onSetTrack() {}
-    virtual allshader::WaveformRendererAbstract* allshaderWaveformRenderer() {
-        return nullptr;
-    }
 
   protected:
     bool isDirty() const {
