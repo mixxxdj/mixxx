@@ -2,8 +2,9 @@
 
 #include <QLineEdit>
 
-/// Subclass of QLineEdit that allows the Up and Down arrow keys
-/// to be used like the Tab/Backtab keys.
+/// Subclass of QLineEdit for DlgTrackInfo/~Multi and similar dialogs
+/// that allows the Up and Down arrow keys to move keyboard focus
+/// to the prev/next focusable widget.
 class WBasicLineEdit : public QLineEdit {
     Q_OBJECT
   public:
