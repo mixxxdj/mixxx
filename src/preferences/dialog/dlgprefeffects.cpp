@@ -450,9 +450,14 @@ bool DlgPrefEffects::eventFilter(QObject* pObj, QEvent* pEvent) {
     } else if (pEvent->type() == QEvent::KeyPress &&
             m_pFocusedEffectList &&
             pObj == m_pFocusedEffectList) {
-        // Left/Right key in focused effect list trigger Hide/Unhide
+        // Left/Right key in focused effect list trigger Hide/Unhide:
+        // only Right is allowed in the left view, only Left in the right view,
+        // matching the enabled state of the GUI buttons.
         QKeyEvent* pKE = static_cast<QKeyEvent*>(pEvent);
-        if (pKE->key() == Qt::Key_Left || pKE->key() == Qt::Key_Right) {
+        if ((pKE->key() == Qt::Key_Left &&
+                    m_pFocusedEffectList == hiddenEffectsTableView) ||
+                (pKE->key() == Qt::Key_Right &&
+                        m_pFocusedEffectList == visibleEffectsTableView)) {
             slotHideUnhideEffect();
         }
     }
