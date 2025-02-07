@@ -48,6 +48,12 @@ WCoverArtLabel::WCoverArtLabel(QWidget* pParent, WCoverArtMenu* pCoverMenu)
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
     setPixmapAndResize(m_defaultCover);
+
+    if (m_pCoverMenu != nullptr) {
+        setToolTip(
+                tr("Left-click to show larger preview") + "\n" +
+                tr("Right-click for more options"));
+    }
 }
 
 WCoverArtLabel::~WCoverArtLabel() = default;

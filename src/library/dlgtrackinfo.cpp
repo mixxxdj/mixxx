@@ -281,10 +281,6 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotOpenInFileBrowser);
 
     // Cover art
-    m_pWCoverArtLabel->setToolTip(
-            tr("Left-click to show larger preview") + "\n" +
-            tr("Right-click for more options"));
-
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
