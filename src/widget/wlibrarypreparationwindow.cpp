@@ -137,16 +137,21 @@ WLibraryPreparationWindow::getCurrentTrackTableViewInPreparationWindow() const {
     QWidget* pCurrent = currentWidget();
     WLibraryPreparationWindowTrackTableView* pTracksView =
             qobject_cast<WLibraryPreparationWindowTrackTableView*>(pCurrent);
-    qDebug() << "WLibraryPreparationWindow pCurrent " << pCurrent;
-    qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
+    if (sDebug) {
+        qDebug() << "WLibraryPreparationWindow pCurrent " << pCurrent;
+        qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
+    }
 
     if (!pTracksView) {
         // This view is not a tracks view, but possibly a special library view
         // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
         pTracksView = pCurrent->findChild<WLibraryPreparationWindowTrackTableView*>();
-        qDebug() << "WLibraryPreparationWindow pCurrent->findChild pTracksView " << pTracksView;
+        if (sDebug) {
+            qDebug() << "WLibraryPreparationWindow pCurrent->findChild pTracksView " << pTracksView;
+            qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
+        }
     }
-    qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
+
     return pTracksView; // might still be nullptr
 }
 
@@ -160,12 +165,14 @@ bool WLibraryPreparationWindow::isTrackInCurrentView(const TrackId& trackId) {
     if (!pTracksView) {
         return false;
     }
-    qDebug() << "WLibraryPreparationWindow "
-                "getCurrentTrackTableViewInPreparationWindow() "
-             << pTracksView;
-    qDebug() << "WLibraryPreparationWindow "
-                "pTracksView->isTrackInCurrentView(trackId) "
-             << pTracksView->isTrackInCurrentView(trackId);
+    if (sDebug) {
+        qDebug() << "WLibraryPreparationWindow "
+                    "getCurrentTrackTableViewInPreparationWindow() "
+                 << pTracksView;
+        qDebug() << "WLibraryPreparationWindow "
+                    "pTracksView->isTrackInCurrentView(trackId) "
+                 << pTracksView->isTrackInCurrentView(trackId);
+    }
     return pTracksView->isTrackInCurrentView(trackId);
 }
 
