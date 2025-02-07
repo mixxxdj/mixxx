@@ -84,5 +84,5 @@ class BulkController : public Controller {
 
     QString m_sUID;
     BulkReader* m_pReader;
-    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };
